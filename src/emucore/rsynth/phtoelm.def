@@ -1,0 +1,111 @@
+COMMENT("We are using COMMENT() so this file can be perl or C");
+
+COMMENT("Silences");
+enter(".","END",NULL); COMMENT("This is 1st non-aware upper layer can inject");
+enter(" ","Q",NULL);   COMMENT("This is 1st non-aware upper layer can inject");
+enter("_","Q",NULL);   COMMENT("'mbrola' compatibility");
+enter("#","Q",NULL);   COMMENT("'mbrola' compatibility");
+
+COMMENT("Affricates (compounds) - put before singles to aid lookup");
+enter("tS","T","CH",NULL);
+enter("dZ","D","DY","DZ","ZH","ZH",NULL);
+
+COMMENT("Plosives");
+enter("p","P","PY","PZ",NULL);
+enter("b","B","BY","BZ",NULL);
+enter("t","T","TY","TZ",NULL);
+enter("d","D","DY","DZ",NULL);
+enter("k","K","KY","KZ",NULL);
+enter("g","G","GY","GZ",NULL);
+enter("?","QQ",NULL); COMMENT("stop-ness - not quite glottal stop");
+
+COMMENT("Nasals");
+enter("m","M",NULL);
+enter("n","N",NULL);
+enter("N","NG",NULL);
+
+COMMENT("Trills and flaps");
+enter("4","DT",NULL);
+enter("rr","R","QQ","R",NULL);
+enter("R","RX",NULL);
+enter("`","RX",NULL); COMMENT("rhoticity diacritic - fallback");
+
+COMMENT("Fricatives");
+enter("f","F",NULL);
+enter("v","V",NULL);
+enter("T","TH",NULL);
+enter("D","DH",NULL);
+enter("s","S",NULL);
+enter("z","Z",NULL);
+enter("S","SH",NULL);
+enter("Z","ZH",NULL);
+enter("x","X",NULL);
+enter("h","H",NULL);
+
+COMMENT("Latterals");
+enter("l","L",NULL);
+enter("K","HL",NULL);
+enter("5","LL",NULL);
+
+COMMENT("Approximants");
+enter("w","W",NULL);
+enter("j","Y",NULL);
+enter("r","R",NULL);
+
+COMMENT("Dipthongs");
+enter("eI","AI","I",NULL);
+enter("aI","IE","I",NULL);
+enter("OI","OI","I",NULL);
+enter("aU","AI","OV",NULL);
+enter("@U","OA","OV",NULL);
+enter("I@","IA","IB",NULL);
+enter("e@","AIR","IB",NULL);
+enter("U@","OOR","IB",NULL);
+enter("O@","OI","IB",NULL);
+enter("oU","o","OV",NULL);
+
+COMMENT("close vowels");
+enter("i","EE",NULL);
+enter("y","YY",NULL);
+enter("1","EY",NULL);
+enter("}","JU",NULL);
+enter("M","UW",NULL);
+enter("u","UU",NULL);
+
+COMMENT("lax vowels");
+enter("I","I",NULL);
+enter("Y","IU",NULL);
+enter("U","OO",NULL);
+
+COMMENT("close-mid vowels");
+enter("e","e",NULL);
+enter("e~","eN",NULL);
+enter("2","EU",NULL);
+enter("@\\","Ur",NULL);
+enter("8","UR",NULL);
+enter("7","UE",NULL);
+enter("o","o",NULL);
+enter("o~","oN",NULL);
+
+COMMENT("schwa");
+enter("@","A",NULL);
+
+COMMENT("open-mid vowels");
+enter("E","EH",NULL);
+enter("9","oe",NULL);
+enter("9~","oeN",NULL);
+enter("3","ER",NULL);
+enter("3\\","Er",NULL);
+enter("V","U",NULL);
+enter("O","AW",NULL);
+
+enter("{","AA",NULL);
+enter("6","AA",NULL);
+
+COMMENT("open vowels");
+enter("a", "a",NULL);
+enter("a~", "aN",NULL);
+enter("&", "OE",NULL);
+enter("A","AR",NULL);
+enter("Q","O",NULL);
+

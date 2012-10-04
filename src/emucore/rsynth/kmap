@@ -1,0 +1,71 @@
+# Klatt symbol mappings to CMU's and our SAMPA via dlookup of example word(s) shown.
+#
+
+# Vowels
+AA	bob	AA1	[A]
+AX	about	AX	[@]
+EXR	bear	A 	[e@R]
+IY	beet	IY	[i]
+UW	boot	UW	[u]
+AE	bat	AE	[{]
+AXR	bar	AA 	[A]
+EY	bait	EY	[eI]
+OW	boat	OW	[@U]
+UXR	poor	UA 	[U@R]
+AH	but	AH	[V]
+AY	bite	AY	[aI]
+IH	bit	IH	[I]
+OXR	boar	AO 	[OR]
+YU	beauty	Y UW1 	[ju]
+AO	bought	AO 	[O]
+EH	bet	EH	[e]
+IX	impunity IH	[I]
+OY	boy	AO IY 	[Oi]
+AW	bout	AW	[aU]
+ER	bird	ER	[3`]
+IXR	beer	IA	[I@R]
+UH	book	UH	[U]
+# Sonorants
+RR	rent	R	[r]
+RX	fire	AX 	[@`]	# Rhotic
+HH	hat	HH	[h]
+HX	hurrah	HH	[h]	# Allophone ?
+WW	wet	W	[w]
+WH	which	W 	[W]	# [hw] sound ?
+LL	let	L	[l]	# Allophone before vowel
+LX	bill	L	[5]	# Allophone after vowel
+EL	bottle	L	[l=]	# Syllabic l
+YY	yet	Y	[j]
+# Nasals
+EM	'em	M	[m=]	# syllabic m
+EN	button	N	[n=]	# syllabic n
+MM	met	M	[m]
+NN	net	N	[n]
+NG	sing	NG 	[N]
+# Fricatives
+DH	that	DH	[D]
+VV	vat	V	[v]
+FF	fin	F	[f]
+ZZ	zoo	Z	[z]
+SS	sat	S 	[s]
+ZH	azure	ZH 	[Z]
+SH	shin	SH	[S]
+TH	thin	TH	[T]
+# Plosives
+BB	bet	B	[b]
+KK	core	K	[k]	# allophone before back vowel?
+KP	keen	K	[k]	# allophone before front vowel?
+GG	gore	G	[g]	# allophone before back vowel?
+GP	give	G	[g]	# allophone before front vowel?
+DD	debt	D	[d]
+PP	pet	P	[p]
+TT	ten	T	[t]	#
+DX	butter	T	[4]	# allophone beween vowels
+TQ	at Alan	T	[t]	# allophone before stressed vowel?
+# Affricates
+CH	chin	CH 	[tS]
+JJ	gin	G 	[g]
+# Plosive release
+AXP	ship	P	[p]	# artifact of terminal plosive?
+
+

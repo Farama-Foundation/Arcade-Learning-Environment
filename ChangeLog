@@ -1,0 +1,9 @@
+October 3rd, 2012. Moving to GITHub.
+
+August 7th, 2012. ALE 0.3.1.
+  * Fixed frames per episode cap for FIFO agents, added functionality to
+    limit the total number of frames per run for FIFO agents.
+
+July 22nd, 2012. ALE 0.3.
+  * Initial ALE release.
+
