@@ -57,6 +57,8 @@ FIFOController::FIFOController(OSystem* _osystem, bool named_pipes) :
     i_max_num_frames_per_episode = p_osystem->settings().getInt("max_num_frames_per_episode");
     i_max_num_frames = p_osystem->settings().getInt("max_num_frames");
     b_run_length_encoding = p_osystem->settings().getBool("run_length_encoding");
+    b_disable_color_averaging = p_osystem->settings().getBool("disable_color_averaging");
+
     // send the width and height of the screen through the pipe
     char out_buffer [50];
     cerr << "i_screen_width = " << i_screen_width << " - i_screen_height =" <<   i_screen_height << endl;
@@ -127,6 +129,8 @@ void FIFOController::update() {
     i_current_frame_number++;
 
     if (hasMaxFrames()) {
+      player_a_action = PLAYER_A_NOOP;
+      player_b_action = PLAYER_B_NOOP;
       // Terminate process if we have reached a max number of frames
       fprintf (p_fout, "DIE\n");
     }
@@ -159,7 +163,9 @@ void FIFOController::update() {
         if (b_send_screen_matrix) {
 
             // MGB @phosphor
-            phosphorBlend();
+            if (!b_disable_color_averaging)
+              phosphorBlend();
+
             // The next section is taken from FrameBufferSoft
             bool has_change = false;
 
@@ -169,8 +175,15 @@ void FIFOController::update() {
             int runLength = 0;
 
             for (int i = 0; i < i_screen_width * i_screen_height; i++) {
-                uInt32 rgb = pi_curr_frame_buffer[i];
-                uInt8 col = rgbToNTSC(rgb);
+                uInt8 col;
+                // If not using color averaging, read directly from the current buffer
+                if (b_disable_color_averaging) {
+                  col = p_console->mediaSource().currentFrameBuffer()[i];
+                }
+                else {
+                  uInt32 rgb = pi_curr_frame_buffer[i];
+                  col = rgbToNTSC(rgb);
+                }
 
                 if (b_run_length_encoding) {
                   // Lengthen this run
@@ -262,6 +275,12 @@ void FIFOController::update() {
     e_previous_a_action = player_a_action;
     e_previous_b_action = player_b_action;
     state.apply_action(player_a_action, player_b_action);
+
+    // Not quite the right place... move to main
+    if (has_terminated()) {
+      p_osystem->quit();
+      return;
+    }
 }
 
 

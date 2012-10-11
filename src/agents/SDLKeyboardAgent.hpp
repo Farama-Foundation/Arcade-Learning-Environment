@@ -20,16 +20,44 @@
 #include "../common/Constants.h"
 #include "PlayerAgent.hpp"
 #include "../emucore/OSystem.hxx"
+#include "../common/display_screen.h"
 
-class SDLKeyboardAgent : public PlayerAgent {
-    public:
-        SDLKeyboardAgent(OSystem * _osystem, RomSettings * _settings);
+#ifdef __USE_SDL
+class SDLKeyboardAgent : public PlayerAgent, SDLEventHandler {
+  public:
+    SDLKeyboardAgent(OSystem * _osystem, RomSettings * _settings);
 		
+    /* *********************************************************************
+       Handles SDL events such as allowing the player to control the screen
+       using the keyboard.
+       * ****************************************************************** */
+    bool handleSDLEvent(const SDL_Event& event);
+    void display_screen(IntMatrix& screen_matrix, int screen_width, int screen_height) {};
+    void usage();
+
 	protected:
-        /* *********************************************************************
-            Returns the best action from the set of possible actions
-         ******************************************************************** */
-        virtual Action act();
+    /* *********************************************************************
+       Captures the users keypresses. Used for manually controlling the game.
+       * ****************************************************************** */
+    Action waitForKeypress();
+
+    /* *********************************************************************
+        Returns the best action from the set of possible actions
+     ******************************************************************** */
+    virtual Action act();
+
+  private:
+    bool returnToPause;               // This is used after manual control is released to set paused state
+    bool manual_control;              // Is the game being controlled manually?
 };
+#else
+/** A dummy class for when SDL is not used. */
+class SDLKeyboardAgent : public PlayerAgent {
+  public:
+    SDLKeyboardAgent(OSystem * _osystem, RomSettings * _settings):PlayerAgent(_osystem, _settings) {}
+    
+    virtual Action act() { return (Action)0; }
+};
+#endif
 
 #endif // __SDL_KEYBOARD_AGENT_HPP__

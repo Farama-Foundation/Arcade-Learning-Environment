@@ -18,14 +18,13 @@
 #include "../emucore/OSystem.hxx"
 #include "../common/Constants.h"
 #include "../games/RomSettings.hpp"
-#include "../common/display_screen.h"
 
-class PlayerAgent : public SDLEventHandler {
+class PlayerAgent { 
 public:
     PlayerAgent(OSystem* _osystem, RomSettings* _settings);
     virtual ~PlayerAgent();
         
-    /** This methods handles the basic agent functionality: bookeeping
+    /** This methods handles the basic agent functionality: bookkeeping
      *  the number of episodes, frames, etc... It calls the method 
      *  act(), which will provide it with an action. act() which should 
      *  be overriden by subclasses.
@@ -34,7 +33,7 @@ public:
         
     /* *********************************************************************
        This method is called when the game ends. The superclass 
-       implementation takes care of counting number of episodes, and 
+       implementation takes care of counting the number of episodes, and 
        saving the reward history. Any other update should be taken care of
        in the derived classes
        ******************************************************************** */
@@ -55,14 +54,6 @@ public:
     static PlayerAgent* generate_agent_instance(OSystem* _osystem, 
                                                 RomSettings * _settings);
    
-    /* *********************************************************************
-       Handles SDL events such as allowing the player to control the screen
-       using the keyboard.
-       * ****************************************************************** */
-    bool handleSDLEvent(const SDL_Event& event);
-    void display_screen(IntMatrix& screen_matrix, int screen_width, int screen_height) {};
-    void usage();
-
     /** Returns true when the agent is done playing the game. */
     virtual bool has_terminated();
 
@@ -73,11 +64,6 @@ protected:
     void end_game();
         
     void record_action(Action a);
-
-    /* *********************************************************************
-       Captures the users keypresses. Used for manually controlling the game.
-       * ****************************************************************** */
-    Action waitForKeypress();
 
 protected:
     OSystem* p_osystem;               // Pointer to the stella's OSystem 
@@ -97,9 +83,6 @@ protected:
     ActionVect trajectory;
 
     bool m_has_terminated;
-
-    bool returnToPause;               // This is used after manual control is released to set paused state
-    bool manual_control;              // Is the game being controlled manually?
 };
 
 

@@ -66,6 +66,7 @@ class FIFOController : public GameController {
         int i_current_frame_number;
 
         bool b_run_length_encoding;
+        bool b_disable_color_averaging;
 
         FILE* p_fout;               // Output Pipe
         FILE* p_fin;                // Input Pipe

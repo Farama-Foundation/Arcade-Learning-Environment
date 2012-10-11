@@ -1,6 +1,6 @@
 #include "display_screen.h"
 
-
+#ifdef __USE_SDL
 DisplayScreen::DisplayScreen(ExportScreen* _export_screen, int _screen_width, int _screen_height):
     window_height(420), window_width(337), paused(false), export_screen(_export_screen),
     screen_height(_screen_height), screen_width(_screen_width)
@@ -151,7 +151,7 @@ bool DisplayScreen::handleSDLEvent(const SDL_Event& event) {
         case SDLK_SPACE:
             paused = !paused;
             if (paused) fprintf(stderr, "Paused...\n");
-            else printf("Unpaused...\n");
+            else fprintf(stderr, "Unpaused...\n");
             return true;
         case SDLK_h: // Print help info
             fprintf(stderr, "Screen Display Commands:\n");
@@ -169,3 +169,4 @@ bool DisplayScreen::handleSDLEvent(const SDL_Event& event) {
 void DisplayScreen::usage() {
     fprintf(stderr, "  -h: print help info\n  -Space Bar: Pause/Unpause game.\n");
 };
+#endif

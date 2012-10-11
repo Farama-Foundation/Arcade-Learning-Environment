@@ -8,7 +8,7 @@ LDFLAGS     :=
 # /opt/local/include for MacPorts
 INCLUDES    := -Isrc/control -Isrc/os_dependent -I/usr/include -I/opt/local/include 
 LIBS_SDL := -lSDL -lSDLmain -lSDL_gfx -lSDL_image
-LIBS	    := -L/opt/local/lib -lboost_thread-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt $(LIBS_SDL)
+LIBS	    := -L/opt/local/lib $(LIBS_SDL)
 OBJS	    :=
 PROF        :=
 MODULES     :=

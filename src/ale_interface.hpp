@@ -75,7 +75,7 @@ public:
     // Loads and initializes a game. After this call the game should be ready to play.
     bool loadROM(string rom_file, bool display_screen) {
         display_active = display_screen;
-        int argc = 8;
+        int argc = 6;
         char** argv = new char*[argc];
         for (int i=0; i<=argc; i++) {
             argv[i] = new char[200];
@@ -120,8 +120,6 @@ public:
         //// Main loop ////
         // First we check if a ROM is specified on the commandline.  If so, and if
         //   the ROM actually exists, use it to create a new console.
-        // If not, use the built-in ROM launcher.  In this case, we enter 'launcher'
-        //   mode and let the main event loop take care of opening a new console/ROM.
         if(argc == 1 || romfile == "" || !FilesystemNode::fileExists(romfile)) {
             printf("No ROM File specified or the ROM file was not found.\n");
             return false;
@@ -180,7 +178,8 @@ public:
     // Resets the game
     void reset_game() {
         game_controller->systemReset();
-        
+       
+        game_settings->reset();
         game_settings->step(*emulator_system);
         
         // Get the first screen
@@ -217,10 +216,9 @@ public:
         frame++;
         float action_reward = 0;
             
-        game_settings->step(*emulator_system);
-
         // Apply action to simulator and update the simulator
         game_controller->getState()->apply_action(action, PLAYER_B_NOOP);
+        game_settings->step(*emulator_system);
 
         // Get the latest screen
         mediasrc->update();

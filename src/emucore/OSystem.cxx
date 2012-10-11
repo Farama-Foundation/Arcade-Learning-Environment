@@ -59,28 +59,19 @@
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem()
-  : //ALE  myEventHandler(NULL),
+  : 
     myEvent(NULL),          //ALE 
-//  myEventStreamer(NULL),  //ALE 
     myGameController(NULL), //ALE 
     p_export_screen(NULL),  //ALE
-    p_display_screen(NULL), //ALE
-    //ALE  myFrameBuffer(NULL),
     mySound(NULL),
+    p_display_screen(NULL), //ALE
     mySettings(NULL),
     myPropSet(NULL),
     myConsole(NULL),
-    //ALE  myMenu(NULL),
-    //ALE  myCommandMenu(NULL),
-    //ALE  myLauncher(NULL),
-    //ALE  myDebugger(NULL),
-    //ALE  myCheatManager(NULL),
     myQuitLoop(false),
     mySkipEmulation(false),
     myRomFile(""),
     myFeatures("")
-    //ALE  myFont(NULL),
-    //ALE  myConsoleFont(NULL)
 {
     #ifdef DISPLAY_OPENGL
       myFeatures += "OpenGL ";
