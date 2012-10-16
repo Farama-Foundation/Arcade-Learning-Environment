@@ -61,8 +61,8 @@ reward_t VentureSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool VentureSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool VentureSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

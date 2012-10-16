@@ -64,8 +64,8 @@ reward_t AlienSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool AlienSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool AlienSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

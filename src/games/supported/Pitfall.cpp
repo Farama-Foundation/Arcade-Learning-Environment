@@ -60,8 +60,8 @@ reward_t PitfallSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool PitfallSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool PitfallSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

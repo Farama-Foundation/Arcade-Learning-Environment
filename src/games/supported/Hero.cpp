@@ -58,8 +58,8 @@ reward_t HeroSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool HeroSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool HeroSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

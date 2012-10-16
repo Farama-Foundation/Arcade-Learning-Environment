@@ -72,8 +72,8 @@ reward_t BattleZoneSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool BattleZoneSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool BattleZoneSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

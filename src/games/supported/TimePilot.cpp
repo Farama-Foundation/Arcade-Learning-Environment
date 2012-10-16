@@ -58,8 +58,8 @@ reward_t TimePilotSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool TimePilotSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool TimePilotSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

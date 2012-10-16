@@ -60,8 +60,8 @@ reward_t JourneyEscapeSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool JourneyEscapeSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool JourneyEscapeSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

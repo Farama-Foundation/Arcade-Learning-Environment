@@ -50,6 +50,8 @@ class ALEState {
     OSystem * m_osystem;
     RomSettings * m_settings;
 
+    bool m_use_starting_actions;
+
     string serialized;
     string s_cartridge_md5;
 

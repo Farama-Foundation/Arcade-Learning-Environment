@@ -44,8 +44,8 @@ struct RomSettings {
     // create a new instance of the rom
     virtual RomSettings *clone() const = 0;
 
-    // is an action legal
-    virtual bool isLegal(const Action &a) const = 0;
+    // is an action part of the minimal set?
+    virtual bool isMinimal(const Action &a) const = 0;
 
     // process the latest information from ALE
     virtual void step(const System &system) = 0;
@@ -56,9 +56,13 @@ struct RomSettings {
     // loads the state of the rom settings
     virtual void loadState(Deserializer & ser) = 0;
 
-    // Returns a list of available actions. By default, this is all actions.
-    virtual ActionVect &getAvailableActions();
+    // is an action legal (default: yes)
+    virtual bool isLegal(const Action &a) const; 
 
+    // Returns a restricted (minimal) set of actions. If not overriden, this is all actions.
+    virtual ActionVect &getMinimalActionSet();
+
+    // Returns the set of all legal actions
     ActionVect &getAllActions();
 
     // Returns a list of actions that are required to start the game.

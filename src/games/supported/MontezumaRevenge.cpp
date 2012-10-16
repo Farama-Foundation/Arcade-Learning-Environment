@@ -59,8 +59,8 @@ reward_t MontezumaRevengeSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool MontezumaRevengeSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool MontezumaRevengeSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

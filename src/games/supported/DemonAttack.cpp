@@ -62,8 +62,8 @@ reward_t DemonAttackSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool DemonAttackSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool DemonAttackSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

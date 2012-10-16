@@ -61,8 +61,8 @@ reward_t FishingDerbySettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool FishingDerbySettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool FishingDerbySettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

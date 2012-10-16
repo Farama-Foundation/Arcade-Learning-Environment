@@ -38,8 +38,8 @@ class RiverRaidSettings : public RomSettings {
         // create a new instance of the rom
         RomSettings* clone() const;
 
-        // is an action legal
-        bool isLegal(const Action& a) const;
+        // is an action part of the minimal set?
+        bool isMinimal(const Action& a) const;
 
         // process the latest information from ALE
         void step(const System& system);

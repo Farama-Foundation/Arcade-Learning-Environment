@@ -37,7 +37,9 @@ class SkiingSettings : public RomSettings {
         // create a new instance of the rom
         RomSettings* clone() const;
 
-        // is an action legal
+        // is an action part of the minimal set?
+        bool isMinimal(const Action& a) const;
+
         bool isLegal(const Action& a) const;
 
         // process the latest information from ALE

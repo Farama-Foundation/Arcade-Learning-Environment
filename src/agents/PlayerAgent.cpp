@@ -25,7 +25,7 @@
 PlayerAgent::PlayerAgent(OSystem* _osystem, RomSettings* _settings) :
     p_osystem(_osystem), p_rom_settings(_settings),
     frame_number(0), episode_frame_number(0), episode_number(0),
-    available_actions(_settings->getAvailableActions()),
+    available_actions(_settings->getMinimalActionSet()),
     m_has_terminated(false) { 
   Settings& settings = p_osystem->settings();
 

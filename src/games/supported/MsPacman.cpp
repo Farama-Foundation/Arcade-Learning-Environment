@@ -60,8 +60,8 @@ reward_t MsPacmanSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool MsPacmanSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool MsPacmanSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

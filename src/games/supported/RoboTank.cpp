@@ -61,8 +61,8 @@ reward_t RoboTankSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool RoboTankSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool RoboTankSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

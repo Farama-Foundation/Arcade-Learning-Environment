@@ -61,8 +61,8 @@ reward_t ZaxxonSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool ZaxxonSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool ZaxxonSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

@@ -60,8 +60,8 @@ reward_t KrullSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool KrullSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool KrullSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

@@ -58,8 +58,8 @@ reward_t VideoPinballSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool VideoPinballSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool VideoPinballSettings::isMinimal(const Action &a) const {
     
     switch (a) {
         case PLAYER_A_NOOP:

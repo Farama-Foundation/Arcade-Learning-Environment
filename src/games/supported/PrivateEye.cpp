@@ -59,8 +59,8 @@ reward_t PrivateEyeSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool PrivateEyeSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool PrivateEyeSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

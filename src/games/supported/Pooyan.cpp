@@ -59,8 +59,8 @@ reward_t PooyanSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool PooyanSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool PooyanSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

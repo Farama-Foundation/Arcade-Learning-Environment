@@ -57,8 +57,8 @@ reward_t BerzerkSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool BerzerkSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool BerzerkSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

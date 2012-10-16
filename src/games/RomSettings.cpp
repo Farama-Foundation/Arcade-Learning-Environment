@@ -20,10 +20,14 @@
 ActionVect RomSettings::actions;
 ActionVect RomSettings::all_actions;
 
-ActionVect& RomSettings::getAvailableActions() {
+bool RomSettings::isLegal(const Action& a) const {
+  return true;
+}
+
+ActionVect& RomSettings::getMinimalActionSet() {
   if (actions.empty()) {
     for (int a = 0; a < PLAYER_B_NOOP; a++)
-      if (isLegal((Action)a))
+      if (isMinimal((Action)a) && isLegal((Action)a))
         actions.push_back((Action)a);
   }
 
@@ -34,7 +38,8 @@ ActionVect& RomSettings::getAllActions() {
   // Generate the set of all actions
   if (all_actions.empty()) {
     for (int a = 0; a < PLAYER_B_NOOP; a++)
-      all_actions.push_back((Action)a);
+      if (isLegal((Action)a))
+        all_actions.push_back((Action)a);
   }
 
   return all_actions;

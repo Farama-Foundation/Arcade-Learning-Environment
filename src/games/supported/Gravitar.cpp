@@ -58,8 +58,8 @@ reward_t GravitarSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool GravitarSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool GravitarSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

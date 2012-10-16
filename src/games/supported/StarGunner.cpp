@@ -67,8 +67,8 @@ reward_t StarGunnerSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool StarGunnerSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool StarGunnerSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

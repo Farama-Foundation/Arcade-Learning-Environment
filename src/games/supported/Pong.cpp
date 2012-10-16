@@ -59,8 +59,8 @@ reward_t PongSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool PongSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool PongSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

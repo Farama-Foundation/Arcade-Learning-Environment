@@ -58,8 +58,8 @@ reward_t KungFuMasterSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool KungFuMasterSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool KungFuMasterSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

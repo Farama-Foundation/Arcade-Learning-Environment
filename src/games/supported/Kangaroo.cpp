@@ -59,8 +59,8 @@ reward_t KangarooSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool KangarooSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool KangarooSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

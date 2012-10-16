@@ -64,8 +64,8 @@ reward_t DefenderSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool DefenderSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool DefenderSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

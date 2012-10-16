@@ -81,8 +81,8 @@ reward_t RiverRaidSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool RiverRaidSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool RiverRaidSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

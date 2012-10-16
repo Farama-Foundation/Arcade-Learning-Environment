@@ -63,8 +63,8 @@ reward_t JamesBondSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool JamesBondSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool JamesBondSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

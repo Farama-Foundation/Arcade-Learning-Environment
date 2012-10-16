@@ -61,8 +61,8 @@ reward_t SolarisSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool SolarisSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool SolarisSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

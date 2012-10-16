@@ -57,8 +57,8 @@ reward_t BowlingSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool BowlingSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool BowlingSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

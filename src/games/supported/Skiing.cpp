@@ -60,8 +60,8 @@ reward_t SkiingSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool SkiingSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool SkiingSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
@@ -74,6 +74,23 @@ bool SkiingSettings::isLegal(const Action &a) const {
     }   
 }
 
+bool SkiingSettings::isLegal(const Action &a) const {
+  switch (a) {
+    // Don't allow pressing 'fire'
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_DOWNFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_UPLEFTFIRE:
+    case PLAYER_A_UPRIGHTFIRE:
+    case PLAYER_A_DOWNLEFTFIRE:
+    case PLAYER_A_DOWNRIGHTFIRE:
+      return false;
+    default:
+      return true;
+  }
+}
 
 /* reset the state of the game */
 void SkiingSettings::reset() {

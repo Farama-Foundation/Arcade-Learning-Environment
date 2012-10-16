@@ -70,8 +70,8 @@ reward_t BoxingSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool BoxingSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool BoxingSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

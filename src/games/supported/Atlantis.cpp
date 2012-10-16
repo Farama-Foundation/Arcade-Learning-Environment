@@ -61,8 +61,8 @@ reward_t AtlantisSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool AtlantisSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool AtlantisSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

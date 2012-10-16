@@ -60,8 +60,8 @@ reward_t AmidarSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool AmidarSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool AmidarSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

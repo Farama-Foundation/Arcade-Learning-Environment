@@ -62,8 +62,8 @@ reward_t IceHockeySettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool IceHockeySettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool IceHockeySettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

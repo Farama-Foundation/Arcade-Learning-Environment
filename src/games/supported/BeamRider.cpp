@@ -59,8 +59,8 @@ reward_t BeamRiderSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool BeamRiderSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool BeamRiderSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

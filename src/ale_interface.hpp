@@ -218,7 +218,6 @@ public:
             
         // Apply action to simulator and update the simulator
         game_controller->getState()->apply_action(action, PLAYER_B_NOOP);
-        game_settings->step(*emulator_system);
 
         // Get the latest screen
         mediasrc->update();
@@ -239,6 +238,7 @@ public:
         }
 
         // Get the reward
+        game_settings->step(*emulator_system);
         action_reward += game_settings->getReward();
 
         if (frame % 1000 == 0) {

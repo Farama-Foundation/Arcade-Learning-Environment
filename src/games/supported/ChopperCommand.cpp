@@ -58,8 +58,8 @@ reward_t ChopperCommandSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool ChopperCommandSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool ChopperCommandSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

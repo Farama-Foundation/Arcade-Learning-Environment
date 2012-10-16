@@ -58,8 +58,8 @@ reward_t CarnivalSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool CarnivalSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool CarnivalSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

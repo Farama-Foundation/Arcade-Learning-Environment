@@ -60,8 +60,8 @@ reward_t BreakoutSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool BreakoutSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool BreakoutSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:

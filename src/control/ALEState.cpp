@@ -28,6 +28,8 @@ ALEState::ALEState(OSystem * osystem): m_osystem(osystem), m_settings(NULL) {
  
   frame_number = 0;
   s_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
+
+  m_use_starting_actions = m_osystem->settings().getBool("use_starting_actions");
 }
 
 /** Copy constructor - copy everything */
@@ -37,7 +39,9 @@ ALEState::ALEState(ALEState & _state):
   serialized(_state.serialized),
   s_cartridge_md5(_state.s_cartridge_md5), 
   frame_number(_state.frame_number),
-  uses_paddles(_state.uses_paddles) {
+  uses_paddles(_state.uses_paddles) 
+{
+  m_use_starting_actions = m_osystem->settings().getBool("use_starting_actions");
 }
 
 void ALEState::setSettings(RomSettings * settings) {
@@ -100,11 +104,13 @@ void ALEState::reset(int numResetSteps) {
   }
 
   // Apply necessary actions specified by the rom itself
-  ActionVect startingActions = m_settings->getStartingActions();
-  for (int i = 0; i < startingActions.size(); i++) {
+  if (m_use_starting_actions) {
+    ActionVect startingActions = m_settings->getStartingActions();
+    for (size_t i = 0; i < startingActions.size(); i++) {
       apply_action(startingActions[i], PLAYER_B_NOOP);
       simulate();
       frame_number--;
+    }
   }
 }
 
@@ -165,6 +171,12 @@ void ALEState::set_paddles(int left, int right) {
  *  Applies the actions recieved from the controller for player A and B
  * ***************************************************************************/
 void ALEState::apply_action(Action player_a_action, Action player_b_action) {
+  // Convert illegal actions into NOOPs; actions such as reset are always legal
+  if (player_a_action < (Action)PLAYER_B_NOOP && !m_settings->isLegal(player_a_action))
+    player_a_action = (Action)PLAYER_A_NOOP;
+  if (player_b_action < (Action)RESET && !m_settings->isLegal((Action)((int)player_b_action - PLAYER_B_NOOP)))
+    player_b_action = (Action)PLAYER_B_NOOP;
+
   // Set keys
   reset_keys(m_osystem->event());
 

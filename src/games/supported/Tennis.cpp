@@ -73,8 +73,8 @@ reward_t TennisSettings::getReward() const {
 }
 
 
-/* is an action legal */
-bool TennisSettings::isLegal(const Action &a) const {
+/* is an action part of the minimal set? */
+bool TennisSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
