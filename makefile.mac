@@ -3,12 +3,14 @@
 ##============================================================================
 
 srcdir      ?= .
+# Set this to 1 to enable SDL and display_screen
+USE_SDL     := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     :=
 # /opt/local/include for MacPorts
 INCLUDES    := -Isrc/control -Isrc/os_dependent -I/usr/include -I/opt/local/include 
 LIBS_SDL := -lSDL -lSDLmain -lSDL_gfx -lSDL_image
-LIBS	    := -L/opt/local/lib $(LIBS_SDL)
+LIBS	    := -L/opt/local/lib
 OBJS	    :=
 PROF        :=
 MODULES     :=
@@ -54,6 +56,11 @@ INCLUDES += -Isrc/games -Isrc/emucore -Isrc/emucore/m6502/src -Isrc/emucore/m650
 OBJS += 
 DEFINES +=  -DUNIX -DHAS_ALTIVEC -DUSE_NASM -DBSPF_UNIX -DHAVE_INTTYPES -DWINDOWED_SUPPORT  -DHAVE_GETTIMEOFDAY -DSNAPSHOT_SUPPORT 
 LDFLAGS += 
+
+ifeq ("$(USE_SDL)", "1")
+  DEFINES +=  -D__USE_SDL
+  LIBS += $(LIBS_SDL)
+endif
 
 
 # Uncomment this for stricter compile time code verification
