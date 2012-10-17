@@ -45,7 +45,7 @@ void BoxingSettings::step(const System& system) {
 
     // update terminal status
     // if either is KO, the game is over
-    if (my_score == 0xC0 || oppt_score == 0xC0) {
+    if (my_score == 100 || oppt_score == 100) {
         m_terminal = true;
     } else {  // otherwise check to see if out of time
         int minutes = readRam(&system, 0x90) >> 4;
