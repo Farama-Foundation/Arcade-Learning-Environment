@@ -79,15 +79,14 @@ bool EnduroSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
+        case PLAYER_A_FIRE:
         case PLAYER_A_RIGHT:
         case PLAYER_A_LEFT:
-        case PLAYER_A_UP:
         case PLAYER_A_DOWN:
+        case PLAYER_A_DOWNRIGHT:
+        case PLAYER_A_DOWNLEFT:
         case PLAYER_A_RIGHTFIRE:
         case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_UPFIRE:
-        case PLAYER_A_DOWNFIRE:
-        case PLAYER_A_FIRE:
             return true;
         default:
             return false;

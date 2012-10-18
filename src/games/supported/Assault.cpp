@@ -62,11 +62,12 @@ bool AssaultSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
+        case PLAYER_A_FIRE:
+        case PLAYER_A_UP:
         case PLAYER_A_RIGHT:
         case PLAYER_A_LEFT:
-        case PLAYER_A_UP:
-        case PLAYER_A_LEFTFIRE:
         case PLAYER_A_RIGHTFIRE:
+        case PLAYER_A_LEFTFIRE:
             return true;
         default:
             return false;

@@ -64,11 +64,11 @@ bool PooyanSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UP:
-        case PLAYER_A_DOWNFIRE:
-        case PLAYER_A_UPFIRE:
         case PLAYER_A_FIRE:
+        case PLAYER_A_UP:
+        case PLAYER_A_DOWN:
+        case PLAYER_A_UPFIRE:
+        case PLAYER_A_DOWNFIRE:
             return true;
         default:
             return false;

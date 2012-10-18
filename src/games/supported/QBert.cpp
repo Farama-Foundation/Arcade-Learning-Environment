@@ -74,10 +74,11 @@ bool QBertSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_DOWN:
+        case PLAYER_A_FIRE:
         case PLAYER_A_UP:
+        case PLAYER_A_RIGHT:
+        case PLAYER_A_LEFT:
+        case PLAYER_A_DOWN:
             return true;
         default:
             return false;

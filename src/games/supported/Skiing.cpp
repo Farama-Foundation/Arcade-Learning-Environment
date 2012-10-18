@@ -65,9 +65,8 @@ bool SkiingSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
-        case PLAYER_A_LEFT:
         case PLAYER_A_RIGHT:
-        case PLAYER_A_DOWN:
+        case PLAYER_A_LEFT:
             return true;
         default:
             return false;

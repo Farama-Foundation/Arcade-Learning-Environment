@@ -66,9 +66,9 @@ bool AtlantisSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
+        case PLAYER_A_FIRE:
         case PLAYER_A_RIGHTFIRE:
         case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_FIRE:
             return true;
         default:
             return false;
