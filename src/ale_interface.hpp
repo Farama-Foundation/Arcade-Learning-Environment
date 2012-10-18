@@ -168,7 +168,7 @@ public:
 
         emulator_system = &theOSystem->console().system();
         game_settings = buildRomRLWrapper(theOSystem->romFile());
-        legal_actions = game_settings->getAvailableActions();
+        legal_actions = game_settings->getAllActions();
         minimal_actions = game_settings->getMinimalActionSet();
         max_num_frames = theOSystem->settings().getInt("max_num_frames", true);
     
