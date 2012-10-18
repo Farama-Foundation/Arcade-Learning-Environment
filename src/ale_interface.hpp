@@ -56,7 +56,8 @@ public:
     int frame;                   // Current frame number
     int max_num_frames;          // Maximum number of frames allowed in this episode
     float game_score;            // Score accumulated throughout the course of a game
-    ActionVect allowed_actions;  // Vector of allowed actions for this game
+    ActionVect legal_actions;    // Vector of allowed actions for this game
+    ActionVect minimal_actions;  // Vector of minimal actions for this game
     Action last_action;          // Always stores the latest action taken
     time_t time_start, time_end; // Used to keep track of fps
     bool display_active;         // Should the screen be displayed or not
@@ -167,7 +168,8 @@ public:
 
         emulator_system = &theOSystem->console().system();
         game_settings = buildRomRLWrapper(theOSystem->romFile());
-        allowed_actions = game_settings->getAvailableActions();
+        legal_actions = game_settings->getAvailableActions();
+        minimal_actions = game_settings->getMinimalActionSet();
         max_num_frames = theOSystem->settings().getInt("max_num_frames", true);
     
         reset_game();
