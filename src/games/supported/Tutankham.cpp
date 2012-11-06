@@ -73,11 +73,6 @@ bool TutankhamSettings::isMinimal(const Action &a) const {
         case PLAYER_A_UPFIRE:
         case PLAYER_A_RIGHTFIRE:
         case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_DOWNFIRE:
-        case PLAYER_A_UPRIGHTFIRE:
-        case PLAYER_A_UPLEFTFIRE:
-        case PLAYER_A_DOWNRIGHTFIRE:
-        case PLAYER_A_DOWNLEFTFIRE:
             return true;
         default:
             return false;
