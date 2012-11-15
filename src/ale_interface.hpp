@@ -203,7 +203,7 @@ public:
         }
 
         game_score = 0;
-        frames = 0;
+        frame = 0;
 
         // Record the starting time of this game
         time_start = time(NULL);
