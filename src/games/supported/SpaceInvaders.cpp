@@ -38,16 +38,19 @@ void SpaceInvadersSettings::step(const System& system) {
     m_score = score;
 
     // update terminal status
-    int reset_val = readRam(&system, 0xAA);
+    // MGB - commenting some of the code below; seems to run fine, hoping
+    //  to fix the blue screen after death (!)
+    /* int reset_val = readRam(&system, 0xAA);
     reset_val = (reset_val - (reset_val & 15)) >> 4;
     if (reset_val == 8) {
         // game is not reset yet; not end of game
         m_terminal = false; 
-    } else {
+    } else */ {
         // If bit 0x80 is on, then game is over 
-        int some_byte = readRam(&system, 0x98); 
+        //int some_byte = readRam(&system, 0x98); 
         int lives = readRam(&system, 0xC9);
-        m_terminal = (some_byte & 0x80) || lives == 0;
+        //m_terminal = (some_byte & 0x80) || lives == 0;
+        m_terminal = (lives == 0);
     }
 }
 
