@@ -202,6 +202,9 @@ public:
             ram_content[i] = emulator_system->peek(offset + 0x80);
         }
 
+        game_score = 0;
+        frame = 0;
+
         // Record the starting time of this game
         time_start = time(NULL);
     }
