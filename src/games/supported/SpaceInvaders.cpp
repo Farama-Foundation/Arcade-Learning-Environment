@@ -47,10 +47,9 @@ void SpaceInvadersSettings::step(const System& system) {
         m_terminal = false; 
     } else */ {
         // If bit 0x80 is on, then game is over 
-        //int some_byte = readRam(&system, 0x98); 
+        int some_byte = readRam(&system, 0x98); 
         int lives = readRam(&system, 0xC9);
-        //m_terminal = (some_byte & 0x80) || lives == 0;
-        m_terminal = (lives == 0);
+        m_terminal = (some_byte & 0x80) || lives == 0;
     }
 }
 
