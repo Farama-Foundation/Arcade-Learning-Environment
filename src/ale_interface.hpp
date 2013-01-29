@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <string.h>
 #include "emucore/m6502/src/bspf/src/bspf.hxx"
 #include "emucore/Console.hxx"
 #include "emucore/Event.hxx"
@@ -263,6 +264,11 @@ public:
         return action_reward;
     }
 
+
+    // Returns the vector of legal actions. This should be called only after the rom is loaded.
+    ActionVect getLegalActions() {
+        return legal_actions;
+    }
 };
 
 #endif
