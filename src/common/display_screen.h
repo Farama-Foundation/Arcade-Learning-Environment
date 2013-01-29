@@ -1,3 +1,17 @@
+/* *****************************************************************************
+ * A.L.E (Arcade Learning Environment)
+ * Copyright (c) 2009-2012 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ *   the Reinforcement Learning and Artificial Intelligence Laboratory
+ * Released under the GNU General Public License; see License.txt for details. 
+ *
+ * Based on: Stella  --  "An Atari 2600 VCS Emulator"
+ * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
+ *
+ * *****************************************************************************
+ *  PlayerAgent.hpp
+ *
+ * The implementation of the PlayerAgent abstract class
+ **************************************************************************** */
 #ifndef DISPLAY_SCREEN_H
 #define DISPLAY_SCREEN_H
 
@@ -91,6 +105,6 @@ class DisplayScreen {
     // draw on the screen.
     void display_screen(IntMatrix& screen_matrix, int image_width, int image_height) {}
 };
-#endif
+#endif // __USE_SDL
 
-#endif
+#endif // DISPLAY_SCREEN
