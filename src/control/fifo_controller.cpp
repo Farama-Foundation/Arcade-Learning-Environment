@@ -128,6 +128,13 @@ void FIFOController::update() {
 
     i_current_frame_number++;
 
+    bool max_frames_lim = i_max_num_frames_per_episode > 0 && 
+      i_current_frame_number >= i_max_num_frames_per_episode;
+
+    m_rom_settings->step(*p_emulator_system);
+
+    bool is_terminal = max_frames_lim || m_rom_settings->isTerminal();
+
     if (hasMaxFrames()) {
       player_a_action = PLAYER_A_NOOP;
       player_b_action = PLAYER_B_NOOP;
@@ -225,14 +232,8 @@ void FIFOController::update() {
 
         // Send the RL data
         if (b_send_rewards) {
-            bool max_frames_lim = i_max_num_frames_per_episode > 0 && 
-              i_current_frame_number >= i_max_num_frames_per_episode;
-
-            m_rom_settings->step(*p_emulator_system);
-
             int r = m_rom_settings->getReward();
-            int t = max_frames_lim || m_rom_settings->isTerminal();
-            final_str_n += sprintf(final_str + final_str_n, "%d,%d:", t, r);
+            final_str_n += sprintf(final_str + final_str_n, "%d,%d:", is_terminal, r);
         }
 
         final_str_n += sprintf(final_str + final_str_n, "\n");
@@ -272,9 +273,15 @@ void FIFOController::update() {
             break;
     }
 
-    e_previous_a_action = player_a_action;
-    e_previous_b_action = player_b_action;
-    state.apply_action(player_a_action, player_b_action);
+    // Once we reach a terminal state - don't allow actions to affect the world anymore...
+    //  this avoids all kinds of messes, and prevents resetting games with the fire button.
+    if (!is_terminal) {
+      e_previous_a_action = player_a_action;
+      e_previous_b_action = player_b_action;
+      state.apply_action(player_a_action, player_b_action);
+    }
+    else
+      p_osystem->skipEmulation();
 
     // Not quite the right place... move to main
     if (has_terminated()) {

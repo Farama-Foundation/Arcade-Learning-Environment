@@ -41,8 +41,10 @@
 
 #define PADDLE_DELTA 23000
 // MGB Values taken from Paddles.cxx (Stella 3.3) - 1400000 * [5,235] / 255
-#define PADDLE_MIN 27450 
-#define PADDLE_MAX 1290196 
+#define PADDLE_MIN 27450
+// MGB - was 1290196; updated to 790196... seems to be fine for breakout and pong; 
+//  avoids pong paddle going off screen
+#define PADDLE_MAX 790196 
 #define PADDLE_DEFAULT_VALUE (((PADDLE_MAX - PADDLE_MIN) / 2) + PADDLE_MIN)
 
 class ALEState {

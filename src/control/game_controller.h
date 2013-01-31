@@ -23,12 +23,6 @@
 #include "ALEState.hpp"
 #include "../common/Constants.h"
 
-#define PADDLE_DELTA 23000
-// MGB Values taken from Paddles.cxx (Stella 3.3) - 1400000 * [5,235] / 255
-#define PADDLE_MIN 27450 
-#define PADDLE_MAX 1290196 
-#define PADDLE_DEFAULT_VALUE (((PADDLE_MAX - PADDLE_MIN) / 2) + PADDLE_MIN)
-
 
 class GameController {
     /* *************************************************************************
