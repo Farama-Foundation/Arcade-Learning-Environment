@@ -77,6 +77,16 @@ public:
     // Loads and initializes a game. After this call the game should be ready to play.
     bool loadROM(string rom_file, bool display_screen) {
         display_active = display_screen;
+
+#ifndef __USE_SDL
+        if (display_active) {
+            cout << "Screen display requires directive __USE_SDL to be defined." << endl;
+            cout << "Please recompile this code with flag '-D__USE_SDL'." << endl;
+            cout << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)." << endl;
+            exit(0);
+        }
+#endif
+
         int argc = 6;
         char** argv = new char*[argc];
         for (int i=0; i<=argc; i++) {
@@ -185,23 +195,8 @@ public:
         game_settings->reset();
         game_settings->step(*emulator_system);
         
-        // Get the first screen
-        mediasrc->update();
-        int ind_i, ind_j;
-        uInt8* pi_curr_frame_buffer = mediasrc->currentFrameBuffer();
-        for (int i = 0; i < screen_width * screen_height; i++) {
-            uInt8 v = pi_curr_frame_buffer[i];
-            ind_i = i / screen_width;
-            ind_j = i - (ind_i * screen_width);
-            screen_matrix[ind_i][ind_j] = v;
-        }
-
-        // Get the first ram content
-        for(int i = 0; i<RAM_LENGTH; i++) {
-            int offset = i;
-            offset &= 0x7f; // there are only 128 bytes
-            ram_content[i] = emulator_system->peek(offset + 0x80);
-        }
+        updateScreen();
+        updateRam();
 
         game_score = 0;
         frame = 0;
@@ -220,32 +215,17 @@ public:
     // buttons on the game over screen.
     float act(Action action) {
         frame++;
-        float action_reward = 0;
             
         // Apply action to simulator and update the simulator
         game_controller->getState()->apply_action(action, PLAYER_B_NOOP);
 
-        // Get the latest screen
-        mediasrc->update();
-        int ind_i, ind_j;
-        uInt8* pi_curr_frame_buffer = mediasrc->currentFrameBuffer();
-        for (int i = 0; i < screen_width * screen_height; i++) {
-            uInt8 v = pi_curr_frame_buffer[i];
-            ind_i = i / screen_width;
-            ind_j = i - (ind_i * screen_width);
-            screen_matrix[ind_i][ind_j] = v;
-        }
+        updateScreen();
+        updateRam();
 
-        // Get the latest ram content
-        for(int i = 0; i<RAM_LENGTH; i++) {
-            int offset = i;
-            offset &= 0x7f; // there are only 128 bytes
-            ram_content[i] = emulator_system->peek(offset + 0x80);
-        }
+        game_settings->step(*emulator_system);
 
         // Get the reward
-        game_settings->step(*emulator_system);
-        action_reward += game_settings->getReward();
+        float action_reward = game_settings->getReward();
 
         if (frame % 1000 == 0) {
             time_end = time(NULL);
@@ -256,7 +236,6 @@ public:
         // Display the screen
         if (display_active) {
             theOSystem->p_display_screen->display_screen(screen_matrix, screen_width, screen_height);
-            //theOSystem->p_display_screen->display_screen(*mediasrc);            
         }
 
         game_score += action_reward;
@@ -268,6 +247,28 @@ public:
     // Returns the vector of legal actions. This should be called only after the rom is loaded.
     ActionVect getLegalActions() {
         return legal_actions;
+    }
+
+    // Get the latest screen from the mediasrc and store in screen_matrix
+    void updateScreen() {
+        mediasrc->update();
+        int ind_i, ind_j;
+        uInt8* pi_curr_frame_buffer = mediasrc->currentFrameBuffer();
+        for (int i = 0; i < screen_width * screen_height; i++) {
+            uInt8 v = pi_curr_frame_buffer[i];
+            ind_i = i / screen_width;
+            ind_j = i - (ind_i * screen_width);
+            screen_matrix[ind_i][ind_j] = v;
+        }
+    }
+
+    // Get the latest ram from the emulator and store in ram_content
+    void updateRam() {
+        for(int i = 0; i<RAM_LENGTH; i++) {
+            int offset = i;
+            offset &= 0x7f; // there are only 128 bytes
+            ram_content[i] = emulator_system->peek(offset + 0x80);
+        }
     }
 };
 
