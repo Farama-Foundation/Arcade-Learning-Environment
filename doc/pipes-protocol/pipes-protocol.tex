@@ -12,11 +12,11 @@
 
 \section{Overview}
 
-This document describes the agent/environment communication protocol for agents with ALE via stdin/stdout. The protocol is text-based and allows the possibility of run-length encoding the screen.
+This document describes the agent/environment protocol for agents communicating with ALE via stdin/stdout. The protocol is text-based and allows the possibility of run-length encoding the screen.
 
 \section{Protocol}
 
-After preliminary handshaking, the protocol enters a loop in which ALE sends information about the current time step and the agent responds with both players' actions (in general programs will only control the first player). The loop is exited when one of a number of termination conditions occurs.
+After preliminary handshaking, the protocol enters a loop in which ALE sends information about the current time step and the agent responds with both players' actions (in general agents will only control the first player). The loop is exited when one of a number of termination conditions occurs.
 
 \subsection{Handshaking}
 
@@ -34,7 +34,7 @@ The agent then responds with a comma-separated string:
 s,r,k,R\n
 \end{verbatim}
 
-where \verb+s+, \verb+r+, \verb+R+ are 1 or 0 to indicate that ALE should or should not send, at every time step, screen, RAM and reinforcement learning-related information. The third argument, \verb+k+, correspond to a desired frame skip: if greater than 0, then \verb+k+ frames are skipped between every observation.
+where \verb+s+, \verb+r+, \verb+R+ are 1 or 0 to indicate that ALE should or should not send, at every time step, screen, RAM and episode-related information (see below for details). The third argument, \verb+k+, correspond to a desired frame skip: if greater than 0, then \verb+k+ frames are skipped between every observation.
 
 \textbf{Note.} Frame skipping is currently incompletely supported and should be set to 0.
 
@@ -49,11 +49,11 @@ DIE\n
 Otherwise, ALE sends
 
 \begin{verbatim}
-<RAM_string><screen_string><rl_string>\n
+<RAM_string><screen_string><episode_string>\n
 \end{verbatim}
 
 Where each of the three strings is either the empty string (if the agent did not request this
-particular piece of information) or the relevant data, terminated by a colon.
+particular piece of information), or the relevant data terminated by a colon.
 
 \subsubsection{\texttt{RAM\_string}}
 
@@ -63,30 +63,30 @@ $i^{th}$ byte of RAM; in total this string is 256 characters long, not including
 
 \subsubsection{\texttt{screen\_string}}
 
-In ``full'' mode, the screen string is \texttt{www} $\times$ \texttt{hhh} 2-digit hexadecimal numbers, each represent a pixel. Pixels are sent row by row, with \texttt{www} characters for each row. In total this string is 2 $\times$ \texttt{www} $\times$ \texttt{hhh} characters long.
+In ``full'' mode, the screen string is \texttt{www} $\times$ \texttt{hhh} 2-digit hexadecimal numbers, each representing a pixel. Pixels are sent row by row, with \texttt{www} characters for each row. In total this string is 2 $\times$ \texttt{www} $\times$ \texttt{hhh} characters long.
 
-In run-length encoding mode, the screen string consists of a variable length number of (colour,length) pairs; denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next length + 1 pixels take on the given colour; run length is thus limited to 256. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour,length) pair, and varies depending on the screen.
+In run-length encoding mode, the screen string consists of a variable number of (colour,length) pairs; denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next length + 1 pixels take on the given colour; run length is thus limited to 256. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour,length) pair, and varies depending on the screen.
 
 In either case, the screen string is terminated by a colon.
 
-\subsubsection{\texttt{rl\_string}}
+\subsubsection{\texttt{episode\_string}}
 
-The RL data string contains two comma-separated integers indicating episode termination (1 for
+The episode string contains two comma-separated integers indicating episode termination (1 for
 termination, 0 otherwise) and the most recent reward. It is also colon-terminated.
 
 \subsubsection{Example}
 
-Assuming that the agent requested screen, RAM and RL-related information, a string sent by ALE might look like:
+Assuming that the agent requested screen, RAM and episode-related information, a string sent by ALE might look like:
 
 \begin{verbatim}
 000100...A401B2:3C3C3C3C00003C3C3C...4F4F0000:0,1:\n
-^ 2x128 characters   ^ 2x160x210 characters    ^episode not terminated, reward of 1
+^ 2x128 characters   ^ 2x160x210 characters    ^ongoing episode, reward of 1
 \end{verbatim}
 
 \subsection{Main Loop -- Agent}
 
 After receiving a string from ALE, the agent should now send the actions of player A and player B.
-Both are sent as a pair of comma-separated integers on a single line:
+Both are sent as a pair of comma-separated integers on a single line, e.g.:
 
 \begin{verbatim}
 2,18\n
@@ -96,7 +96,7 @@ where the first integer is player A's action -- \textsc{fire} -- and the second 
 
 \subsection{Termination}\label{subsec:termination_conditions}
 
-The pipes-controlled ALE will terminate (and potentially send a \verb+DIE+ message to the agent) whe one of the following conditions occur:
+ALE will terminate (and potentially send a \verb+DIE+ message to the agent) whe one of the following conditions occur:
 
 \begin{itemize}
   \item{\texttt{stdin} is closed, indicating that the agent is no longer sending data, or}
@@ -112,6 +112,6 @@ ALE will send an end-of-episode signal when one the following is true:
 
 Once the end of episode is reached, no further emulation takes place. This avoids odd situations
 where the player can reset the game through button presses, or where the game normally resets itself
-after a number of frames. This makes for a cleaner reinforcement learning interface.
+after a number of frames. This makes for a cleaner environment interface.
 
 \end{document}
