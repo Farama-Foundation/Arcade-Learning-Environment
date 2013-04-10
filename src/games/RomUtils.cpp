@@ -19,7 +19,7 @@
 #include "System.hxx"
 
 
-/* reads a byte at a memory location between 0 and 1023 */
+/* reads a byte at a memory location between 0 and 128 */
 int readRam(const System* system, int offset) {
 
     // peek modifies data-bus state, but is logically const from

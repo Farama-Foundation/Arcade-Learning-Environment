@@ -359,18 +359,6 @@ class OSystem
     */
     virtual uInt32 getTicks() = 0;
 
-    //////////////////////////////////////////////////////////////////////
-    // The following methods are system-specific and can be overrided in
-    // derived classes.  Otherwise, the base methods will be used.
-    //////////////////////////////////////////////////////////////////////
-    /**
-      This method runs the main loop.  Since different platforms
-      may use different timing methods and/or algorithms, this method can
-      be overrided.  However, the port then takes all responsibility for
-      running the emulation and taking care of timing.
-    */
-    virtual void mainLoop();
-
     /**
       This method determines the default mapping of joystick buttons to
       Stella events for a specific system/platform.
@@ -406,13 +394,6 @@ class OSystem
     */
     //ALE  virtual void stateChanged(EventHandler::State state);
 
-    void setGameController(GameController* game_controller) {
-        myGameController = game_controller;
-    }
-    
-    inline GameController* getGameController(void) {return myGameController;}
-
-
     
   protected:
     /**
@@ -444,9 +425,6 @@ class OSystem
     // Global Event object  //ALE 
     Event* myEvent;
     
-    GameController* myGameController; // Pointer to a game-controller, which
-                                      // sits between stella and an AI algorithm  
-        
     // The EventStreamer to use for loading/saving eventstreams
 //ALE     EventStreamer* myEventStreamer;
 

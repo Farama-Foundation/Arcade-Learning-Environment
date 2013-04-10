@@ -17,7 +17,6 @@
 #include "RandomAgent.hpp"
 #include "SingleActionAgent.hpp"
 #include "SDLKeyboardAgent.hpp"
-#include "game_controller.h"
 
 /* **********************************************************************
     Constructor
@@ -138,6 +137,8 @@ PlayerAgent* PlayerAgent::generate_agent_instance(OSystem* _osystem,
                                                 RomSettings * _settings) {
     string player_agent = _osystem->settings().getString("player_agent");
     PlayerAgent* new_agent = NULL;
+
+    fprintf (stderr, "Agent is %s\n", player_agent.c_str());
 
     if (player_agent == "random_agent")
       new_agent = new RandomAgent(_osystem, _settings);

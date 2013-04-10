@@ -21,7 +21,8 @@
 #include "games/Roms.hpp"
 #include "agents/PlayerAgent.hpp"
 
-static const std::string Version = "0.3";
+// @todo 
+static const std::string Version = "0.4";
 
 /* display welcome message */
 static std::string welcomeMessage() {

@@ -32,16 +32,13 @@
 #   include "os_dependent/OSystemUNIX.hxx"
 #endif
 
-#include "control/fifo_controller.h"
-#include "control/internal_controller.h"
+#include "controllers/ale_controller.hpp"
+#include "controllers/fifo_controller.hpp"
+#include "controllers/internal_controller.hpp"
 #include "common/Constants.h"
 
 // ALE Version number
-static const std::string Version = "0.3";
-
-
-static std::auto_ptr<OSystem> theOSystem(NULL);
-static std::auto_ptr<GameController> p_game_controller(NULL);
+static const std::string Version = "0.4";
 
 
 /* display welcome message */
@@ -72,27 +69,31 @@ static void disableBufferedIO() {
 
 std::streambuf * redirected_buffer;
 std::ofstream * os;
+std::string redirected_file;
 
 void redirectOutput(string & outputFile) {
   cerr << "Redirecting ... " << outputFile << endl;
+
+  redirected_file = outputFile;
 
   os = new std::ofstream(outputFile.c_str(), ios_base::out | ios_base::app);
   redirected_buffer = std::cout.rdbuf(os->rdbuf());
 }
 
-/* application entry point */
-int main(int argc, char* argv[]) {
+static std::auto_ptr<OSystem> theOSystem(NULL);
+#ifdef WIN32
+static std::auto_ptr<SettingsWin32> theSettings(NULL);
+#else
+static std::auto_ptr<SettingsUNIX> theSettings(NULL);
+#endif
 
-    disableBufferedIO();
-
-	std::cerr << welcomeMessage() << endl;
-    
+void createOSystem(int argc, char* argv[]) {
 #ifdef WIN32
     theOSystem.reset(new OSystemWin32());
-    SettingsWin32 settings(theOSystem.get());
+    theSettings.reset(new SettingsWin32(theOSystem.get()));
 #else
     theOSystem.reset(new OSystemUNIX());
-    SettingsUNIX settings(theOSystem.get());
+    theSettings.reset(new SettingsUNIX(theOSystem.get()));
 #endif
    
     setDefaultSettings(theOSystem->settings());
@@ -120,7 +121,7 @@ int main(int argc, char* argv[]) {
     if (argc == 1 || romfile == "" || !FilesystemNode::fileExists(romfile)) {
 		
 		std::cerr << "No ROM File specified or the ROM file was not found." << std::endl;
-        return -1;
+        exit(1); 
 
     } else if (theOSystem->createConsole(romfile))  {
         
@@ -128,8 +129,7 @@ int main(int argc, char* argv[]) {
         theOSystem->settings().setString("rom_file", romfile);
 
     } else {
-
-        return -1;
+         exit(1);
     }
 
     // seed random number generator
@@ -145,41 +145,54 @@ int main(int argc, char* argv[]) {
         //srand48((unsigned)seed);
     }
 
-    // create game controller
-    if (theOSystem->settings().getString("game_controller") == "fifo") {
-        if (!outputFile.empty()) {
-          cerr << "Cannot redirect stdout when using FIFO." << endl;
-          return -1;
-        }
-
-        p_game_controller.reset(new FIFOController(theOSystem.get()));
-        theOSystem->setGameController(p_game_controller.get());
-        cerr << "Game will be controlled through FIFO pipes." << endl;
-
-    } else if (theOSystem->settings().getString("game_controller") == "fifo_named") {
-
-        p_game_controller.reset(new FIFOController(theOSystem.get(), true));
-        theOSystem->setGameController(p_game_controller.get());
-        std::cerr << "Game will be controlled through FIFO pipes." << std::endl;
-    } else if (theOSystem->settings().getString("game_controller") == "internal") {
-        p_game_controller.reset(new InternalController(theOSystem.get()));
-        theOSystem->setGameController(p_game_controller.get());
-        std::cerr << "Game will be controlled internally." << std::endl;
-    }
-
     theOSystem->console().setPalette("standard");
-    theOSystem->mainLoop();
+}
 
-    // If we redirected stdout, restore it
-    if (!outputFile.empty()) {
-      std::cout.rdbuf(redirected_buffer);
-      delete os;
-    }
+ALEController* createController(OSystem* osystem, std::string type) {
+  if (type == "fifo") {
+    std::cerr << "Game will be controlled through FIFO pipes." << std::endl;
+    return new FIFOController(osystem, false);
+  } 
+  else if (type == "fifo_named") {
+    std::cerr << "Game will be controlled through named FIFO pipes." << std::endl;
+    return new FIFOController(osystem, true);
+  }
+  else if (type == "internal") {
+    std::cerr << "Game will be controlled by an internal agent." << std::endl;
+    return new InternalController(osystem); 
+  }
+  else {
+    std::cerr << "Invalid controller type: " << type << " " << std::endl;
+    exit(1);
+  }
+}
 
-    // MUST delete theOSystem to avoid a segfault (theOSystem relies on Settings
-    //  still being a valid construct)
-    theOSystem.reset(NULL);
 
-    return 0;
+/* application entry point */
+int main(int argc, char* argv[]) {
+
+  disableBufferedIO();
+
+	std::cerr << welcomeMessage() << endl;
+    
+  createOSystem(argc, argv);
+
+  // Create the game controller 
+  std::string controller_type = theOSystem->settings().getString("game_controller");
+  std::auto_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
+
+  controller->run();
+
+  // If we redirected stdout, restore it
+  if (!redirected_file.empty()) {
+    std::cout.rdbuf(redirected_buffer);
+    delete os;
+  }
+
+  // MUST delete theOSystem to avoid a segfault (theOSystem relies on Settings
+  //  still being a valid construct)
+  theOSystem.reset(NULL);
+
+  return 0;
 }
 

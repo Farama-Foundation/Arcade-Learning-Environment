@@ -48,7 +48,6 @@
 //ALE   #include "StellaFont.hxx"
 //ALE   #include "ConsoleFont.hxx"
 #include "OSystem.hxx"
-#include "game_controller.h"
 //ALE   #include "Widget.hxx"   
 #define MAX_ROM_SIZE  512 * 1024
 
@@ -61,17 +60,16 @@
 OSystem::OSystem()
   : 
     myEvent(NULL),          //ALE 
-    myGameController(NULL), //ALE 
-    p_export_screen(NULL),  //ALE
     mySound(NULL),
-    p_display_screen(NULL), //ALE
     mySettings(NULL),
     myPropSet(NULL),
     myConsole(NULL),
     myQuitLoop(false),
     mySkipEmulation(false),
     myRomFile(""),
-    myFeatures("")
+    myFeatures(""),
+    p_export_screen(NULL),
+    p_display_screen(NULL)
 {
     #ifdef DISPLAY_OPENGL
       myFeatures += "OpenGL ";
@@ -607,15 +605,14 @@ bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
   // Get a valid set of properties, including any entered on the commandline
   string s;
   myPropSet->getMD5(md5, props);
-
-
+  
     s = mySettings->getString("type");
     if(s != "") props.set(Cartridge_Type, s);
     s = mySettings->getString("channels");
     if(s != "") props.set(Cartridge_Sound, s);
     s = mySettings->getString("ld");
     if (s == "A") {
-        cerr << "Setting Left Player's Diffuclty to mode: A" << endl;
+        cerr << "Setting Left Player's Difficulty to mode: A" << endl;
     }
     if(s != "") props.set(Console_LeftDifficulty, s);
     s = mySettings->getString("rd");
@@ -724,17 +721,17 @@ void OSystem::stateChanged(EventHandler::State state)
 }
 ALE */
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/* ALE
 void OSystem::mainLoop()
 {
+  // MGB: This is now obsolete. @todo -- remove it.
     for(;;)
     {
-        //ALE  /****************************************************
-        assert(myGameController != NULL);
-        myGameController->update();
+        //ALE  
         MediaSource& mediasrc = console().mediaSource();
         if (p_display_screen) // Display the screen if applicable
             p_display_screen->display_screen(mediasrc);
-        //ALE  ****************************************************/
+        //ALE  
         
         myTimingInfo.start = getTicks();
         //ALE  myEventHandler->poll(myTimingInfo.start);
@@ -754,6 +751,7 @@ void OSystem::mainLoop()
         myTimingInfo.totalFrames++; 
     }
 }
+*/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /* ALE

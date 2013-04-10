@@ -217,12 +217,12 @@ void ExportScreen::export_any_matrix (const IntMatrix* pm_matrix,
 void ExportScreen::get_rgb_from_palette(int val, int& r, int& g, int& b) const {
     assert (pi_palette);
     if (val < 256) {
-        // Regulat palette
+        // Regular palette
         r = (pi_palette[val] >> 16) & 0xff;
         g = (pi_palette[val] >> 8) & 0xff;
         b = pi_palette[val] & 0xff;
     } else {
-        // custom palette 
+        // Custom palette 
         val = val - 256;
         assert (val <= v_custom_palette.size());
         r = v_custom_palette[val][0];

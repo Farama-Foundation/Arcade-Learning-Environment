@@ -48,7 +48,6 @@
 //ALE #include "Menu.hxx"
 //ALE #include "CommandMenu.hxx"
 #include "Version.hxx"
-#include "game_controller.h"
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
@@ -69,7 +68,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySwitches = 0;
   mySystem = 0;
   myEvent = 0;
-    
+  
   int random_seed = atoi(myOSystem->settings().getString("random_seed").c_str());
   Random::seed(random_seed);
 
