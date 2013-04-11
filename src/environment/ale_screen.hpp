@@ -19,6 +19,7 @@
 #define __ALE_SCREEN_HPP__
 
 #include <string.h>
+#include <memory>
 
 typedef unsigned char pixel_t;
 
@@ -54,7 +55,7 @@ class ALEScreen {
     int m_rows;
     int m_columns;
 
-    std::auto_ptr<pixel_t> m_pixels; 
+    std::unique_ptr<pixel_t> m_pixels; 
 };
 
 inline ALEScreen::ALEScreen(int h, int w):

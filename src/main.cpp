@@ -80,11 +80,11 @@ void redirectOutput(string & outputFile) {
   redirected_buffer = std::cout.rdbuf(os->rdbuf());
 }
 
-static std::auto_ptr<OSystem> theOSystem(NULL);
+static std::unique_ptr<OSystem> theOSystem;
 #ifdef WIN32
-static std::auto_ptr<SettingsWin32> theSettings(NULL);
+static std::unique_ptr<SettingsWin32> theSettings;
 #else
-static std::auto_ptr<SettingsUNIX> theSettings(NULL);
+static std::unique_ptr<SettingsUNIX> theSettings;
 #endif
 
 void createOSystem(int argc, char* argv[]) {
@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
 
   // Create the game controller 
   std::string controller_type = theOSystem->settings().getString("game_controller");
-  std::auto_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
+  std::unique_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
 
   controller->run();
 
