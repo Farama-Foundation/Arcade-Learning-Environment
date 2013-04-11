@@ -42,8 +42,8 @@ class InternalController : public ALEController {
     int m_episode_score; // Keeping track of score
     int m_episode_number; // Keeping track of episode 
 
-    std::unique_ptr<PlayerAgent> m_agent_left; // Agents 
-    std::unique_ptr<PlayerAgent> m_agent_right; 
+    std::auto_ptr<PlayerAgent> m_agent_left; // Agents 
+    std::auto_ptr<PlayerAgent> m_agent_right; 
 };
 
 #endif // __INTERNAL_CONTROLLER_HPP__

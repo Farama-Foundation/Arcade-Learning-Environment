@@ -21,8 +21,8 @@ InternalController::InternalController(OSystem* osystem):
   m_max_num_frames(0),
   m_episode_score(0),
   m_episode_number(0),
-  m_agent_left(),
-  m_agent_right() {
+  m_agent_left(NULL),
+  m_agent_right(NULL) {
 
   m_max_num_frames = m_osystem->settings().getInt("max_num_frames");
   m_max_num_episodes = m_osystem->settings().getInt("max_num_episodes");

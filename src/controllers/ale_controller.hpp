@@ -38,7 +38,7 @@ class ALEController {
 
   protected:
     OSystem* m_osystem;
-    std::unique_ptr<RomSettings> m_settings;
+    std::auto_ptr<RomSettings> m_settings;
     StellaEnvironment m_environment;
 };
 
