@@ -182,6 +182,10 @@ int FIFOController::stringScreenRLE(const ALEScreen& screen, char* buffer) {
     }
   }
 
+  appendByte(buffer + sn, currentColor);
+  appendByte(buffer + sn + 2, runLength);
+  sn += 4;
+
   return sn;
 }
 
