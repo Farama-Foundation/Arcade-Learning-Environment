@@ -1,43 +1,37 @@
 #ifndef ALE_INTERFACE_H
 #define ALE_INTERFACE_H
 
-#include <cstdlib>
-#include <ctime>
-#include <string.h>
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
-#include "emucore/Console.hxx"
-#include "emucore/Event.hxx"
-#include "emucore/PropsSet.hxx"
-#include "emucore/Settings.hxx"
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
+#include "os_dependent/SettingsWin32.hxx"
+#include "os_dependent/OSystemWin32.hxx"
 #include "os_dependent/SettingsUNIX.hxx"
 #include "os_dependent/OSystemUNIX.hxx"
-#include "control/fifo_controller.h"
-#include "control/internal_controller.h"
-#include "common/Constants.h"
 #include "common/Defaults.hpp"
-#include "games/RomSettings.hpp"
-#include "games/Roms.hpp"
-#include "agents/PlayerAgent.hpp"
+#include "controllers/internal_controller.hpp"
 
 // @todo 
 static const std::string Version = "0.4";
 
-/* display welcome message */
+// Display welcome message 
 static std::string welcomeMessage() {
-
     // ALE welcome message
     std::ostringstream oss;
-
     oss << "A.L.E: Arcade Learning Environment (version "
         << Version << ")\n" 
         << "[Powered by Stella]\n"
         << "Use -help for help screen.";
-
     return oss.str();
 }
 
+static void disableBufferedIO() {
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stdin, NULL, _IONBF, 0);
+    cin.rdbuf()->pubsetbuf(0,0);
+    cout.rdbuf()->pubsetbuf(0,0);
+    cin.sync_with_stdio();
+    cout.sync_with_stdio();
+}
 
 /**
    This class interfaces ALE with external code for controlling agents.
@@ -45,40 +39,26 @@ static std::string welcomeMessage() {
 class ALEInterface
 {
 public:
-    OSystem* theOSystem;
-    InternalController* game_controller;
-    MediaSource *mediasrc;
-    System* emulator_system;
-    RomSettings* game_settings;
+    std::streambuf * redirected_buffer;
+    std::ofstream * os;
+    std::string redirected_file;
 
-    int screen_width, screen_height;  // Dimensions of the screen
-    IntMatrix screen_matrix;     // This contains the raw pixel representation of the screen
-    IntVect ram_content;         // This contains the ram content of the Atari
+    std::auto_ptr<OSystem> theOSystem;
+#ifdef WIN32
+    std::auto_ptr<SettingsWin32> theSettings;
+#else
+    std::auto_ptr<SettingsUNIX> theSettings;
+#endif
 
-    int frame;                   // Current frame number
-    int max_num_frames;          // Maximum number of frames allowed in this episode
-    float game_score;            // Score accumulated throughout the course of a game
-    ActionVect legal_actions;    // Vector of allowed actions for this game
-    ActionVect minimal_actions;  // Vector of minimal actions for this game
-    Action last_action;          // Always stores the latest action taken
-    time_t time_start, time_end; // Used to keep track of fps
-    bool display_active;         // Should the screen be displayed or not
+    std::auto_ptr<ALEController> controller;
+
+protected:
+    reward_t episode_score; // Score accumulated throughout the course of an episode
+    bool display_active;    // Should the screen be displayed or not
+    int max_num_frames;     // Maximum number of frames for each episode
 
 public:
-    ALEInterface(): theOSystem(NULL), game_controller(NULL), mediasrc(NULL), emulator_system(NULL),
-                    game_settings(NULL), frame(0), max_num_frames(-1),
-                    game_score(0), display_active(false) {
-    }
-
-    ~ALEInterface() {
-        if (theOSystem) delete theOSystem;
-        if (game_controller) delete game_controller;
-    }
-
-    // Loads and initializes a game. After this call the game should be ready to play.
-    bool loadROM(string rom_file, bool display_screen) {
-        display_active = display_screen;
-
+    ALEInterface(bool display_screen=false): episode_score(0), display_active(display_screen) {
 #ifndef __USE_SDL
         if (display_active) {
             cout << "Screen display requires directive __USE_SDL to be defined." << endl;
@@ -87,7 +67,14 @@ public:
             exit(0);
         }
 #endif
+        disableBufferedIO();
+        std::cerr << welcomeMessage() << endl;
+    }
 
+    ~ALEInterface() {}
+
+    // Loads and initializes a game. After this call the game should be ready to play.
+    void loadROM(string rom_file) {
         int argc = 6;
         char** argv = new char*[argc];
         for (int i=0; i<=argc; i++) {
@@ -97,22 +84,90 @@ public:
         strcpy(argv[1],"-player_agent");
         strcpy(argv[2],"random_agent");
         strcpy(argv[3],"-display_screen");
-        if (display_screen) strcpy(argv[4],"true");
+        if (display_active) strcpy(argv[4],"true");
         else                strcpy(argv[4],"false");
         strcpy(argv[5],rom_file.c_str());  
 
-        cout << welcomeMessage() << endl;
-    
-        if (theOSystem) delete theOSystem;
+        createOSystem(argc, argv);
+        controller.reset(new InternalController(theOSystem.get()));
+        max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
+        reset_game();
+    }
 
+    // Resets the game
+    void reset_game() {
+        controller->m_environment.reset();
+    }
+
+    // Indicates if the game has ended
+    bool game_over() {
+        return (controller->m_environment.isTerminal() || 
+                (max_num_frames > 0 && getEpisodeFrameNumber() >= max_num_frames));
+    }
+
+    // Applies an action to the game and returns the reward. It is the user's responsibility
+    // to check if the game has ended and reset when necessary - this method will keep pressing
+    // buttons on the game over screen.
+    reward_t act(Action action) {
+        controller->applyActions(action, PLAYER_B_NOOP);
+        reward_t reward = controller->m_settings->getReward();
+        controller->display();
+        return reward;
+    }
+
+    // Returns the vector of legal actions. This should be called only after the rom is loaded.
+    ActionVect getLegalActionSet() {
+        return controller->m_settings->getAllActions();
+    }
+
+    // Returns the vector of the minimal set of actions needed to play the game.
+    ActionVect getMinimalActionSet() {
+        return controller->m_settings->getMinimalActionSet();
+    }
+
+    // Returns the frame number since the loading of the ROM
+    int getFrameNumber() {
+        return controller->m_environment.getFrameNumber();
+    }
+
+    // Returns the frame number since the start of the current episode
+    int getEpisodeFrameNumber() {
+        return controller->m_environment.getEpisodeFrameNumber();
+    }
+
+    void setMaxNumFrames(int newMax) {
+        max_num_frames = newMax;
+    }
+
+    // Returns the current game screen
+    const ALEScreen &getScreen() {
+        return controller->m_environment.getScreen();
+    }
+
+    // Returns the current RAM content
+    const ALERAM &getRAM() {
+        return controller->m_environment.getRAM();
+    }
+
+protected:
+    void redirectOutput(string & outputFile) {
+        cerr << "Redirecting ... " << outputFile << endl;
+
+        redirected_file = outputFile;
+
+        os = new std::ofstream(outputFile.c_str(), ios_base::out | ios_base::app);
+        redirected_buffer = std::cout.rdbuf(os->rdbuf());
+    }
+
+    void createOSystem(int argc, char* argv[]) {
 #ifdef WIN32
-        theOSystem = new OSystemWin32();
-        SettingsWin32 settings(theOSystem);
+        theOSystem.reset(new OSystemWin32());
+        theSettings.reset(new SettingsWin32(theOSystem.get()));
 #else
-        theOSystem = new OSystemUNIX();
-        SettingsUNIX settings(theOSystem);
+        theOSystem.reset(new OSystemUNIX());
+        theSettings.reset(new SettingsUNIX(theOSystem.get()));
 #endif
-
+   
         setDefaultSettings(theOSystem->settings());
 
         theOSystem->settings().loadConfig();
@@ -130,146 +185,39 @@ public:
         theOSystem->settings().validate();
         theOSystem->create();
   
-        //// Main loop ////
-        // First we check if a ROM is specified on the commandline.  If so, and if
-        //   the ROM actually exists, use it to create a new console.
-        if(argc == 1 || romfile == "" || !FilesystemNode::fileExists(romfile)) {
-            printf("No ROM File specified or the ROM file was not found.\n");
-            return false;
-        } else if(theOSystem->createConsole(romfile)) 	{
-            printf("Running ROM file...\n");
+        string outputFile = theOSystem->settings().getString("output_file", false);
+        if (!outputFile.empty())
+            redirectOutput(outputFile);
+   
+        // attempt to load the ROM
+        if (argc == 1 || romfile == "" || !FilesystemNode::fileExists(romfile)) {
+		
+            std::cerr << "No ROM File specified or the ROM file was not found." << std::endl;
+            exit(1); 
+
+        } else if (theOSystem->createConsole(romfile))  {
+        
+            std::cerr << "Running ROM file..." << std::endl;
             theOSystem->settings().setString("rom_file", romfile);
+
         } else {
-            printf("Unable to create console from ROM file.\n");
-            return false;
+            exit(1);
         }
 
-        // Seed the Random number generator
+        // seed random number generator
         if (theOSystem->settings().getString("random_seed") == "time") {
-            cout << "Random Seed: Time" << endl;
-            srand((unsigned)time(0)); 
+            cerr << "Random Seed: Time" << endl;
+            srand((unsigned)time(0));
+            //srand48((unsigned)time(0));
         } else {
             int seed = theOSystem->settings().getInt("random_seed");
             assert(seed >= 0);
-            cout << "Random Seed: " << seed << endl;
-            srand((unsigned)seed); 
+            cerr << "Random Seed: " << seed << endl;
+            srand((unsigned)seed);
+            //srand48((unsigned)seed);
         }
 
-        // Generate the GameController
-        if (game_controller) delete game_controller;
-        game_controller = new InternalController(theOSystem);
-        theOSystem->setGameController(game_controller);
-
-        // Set the palette 
         theOSystem->console().setPalette("standard");
-
-        // Setup the screen representation
-        mediasrc = &theOSystem->console().mediaSource();
-        screen_width = mediasrc->width();
-        screen_height = mediasrc->height();
-        for (int i=0; i<screen_height; ++i) { // Initialize our screen matrix
-            IntVect row;
-            for (int j=0; j<screen_width; ++j)
-                row.push_back(-1);
-            screen_matrix.push_back(row);
-        }
-
-        // Intialize the ram array
-        for (int i=0; i<RAM_LENGTH; i++)
-            ram_content.push_back(0);
-
-        emulator_system = &theOSystem->console().system();
-        game_settings = buildRomRLWrapper(theOSystem->romFile());
-        legal_actions = game_settings->getAllActions();
-        minimal_actions = game_settings->getMinimalActionSet();
-        max_num_frames = theOSystem->settings().getInt("max_num_frames", true);
-    
-        reset_game();
-
-        return true;
-    }
-
-    // Resets the game
-    void reset_game() {
-        game_controller->systemReset();
-       
-        game_settings->reset();
-        game_settings->step(*emulator_system);
-        
-        updateScreen();
-        updateRam();
-
-        game_score = 0;
-        frame = 0;
-
-        // Record the starting time of this game
-        time_start = time(NULL);
-    }
-
-    // Indicates if the game has ended
-    bool game_over() {
-        return game_settings->isTerminal() || (max_num_frames > 0 && frame > max_num_frames);
-    }
-
-    // Applies an action to the game and returns the reward. It is the user's responsibility
-    // to check if the game has ended and reset when necessary -- this method will keep pressing
-    // buttons on the game over screen.
-    float act(Action action) {
-        frame++;
-            
-        // Apply action to simulator and update the simulator
-        game_controller->getState()->apply_action(action, PLAYER_B_NOOP);
-
-        updateScreen();
-        updateRam();
-
-        game_settings->step(*emulator_system);
-
-        // Get the reward
-        float action_reward = game_settings->getReward();
-
-        if (frame % 1000 == 0) {
-            time_end = time(NULL);
-            double avg = ((double)frame)/(time_end - time_start);
-            cout << "Average main loop iterations per sec = " << avg << endl;
-        }
-
-        // Display the screen
-        if (display_active) {
-            theOSystem->p_display_screen->display_screen(screen_matrix, screen_width, screen_height);
-        }
-
-        game_score += action_reward;
-        last_action = action;
-        return action_reward;
-    }
-
-
-    // Returns the vector of legal actions. This should be called only after the rom is loaded.
-    ActionVect getLegalActions() {
-        return legal_actions;
-    }
-
-    // Get the latest screen from the mediasrc and store in screen_matrix
-    void updateScreen() {
-        mediasrc->update();
-        int ind_i, ind_j;
-        uInt8* pi_curr_frame_buffer = mediasrc->currentFrameBuffer();
-        for (int i = 0; i < screen_width * screen_height; i++) {
-            uInt8 v = pi_curr_frame_buffer[i];
-            ind_i = i / screen_width;
-            ind_j = i - (ind_i * screen_width);
-            screen_matrix[ind_i][ind_j] = v;
-        }
-    }
-
-    // Get the latest ram from the emulator and store in ram_content
-    void updateRam() {
-        for(int i = 0; i<RAM_LENGTH; i++) {
-            int offset = i;
-            offset &= 0x7f; // there are only 128 bytes
-            ram_content[i] = emulator_system->peek(offset + 0x80);
-        }
     }
 };
 

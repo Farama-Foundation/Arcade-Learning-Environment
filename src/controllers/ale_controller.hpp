@@ -31,6 +31,8 @@ class ALEController {
     virtual void run() = 0;
 
   protected:
+    friend class ALEInterface;
+
     /** Applies the given action to the environment (e.g. by emulating or resetting) */
     void applyActions(Action a, Action b); 
     /** Support for SDL display... available to all controllers. Simply call it from run(). */

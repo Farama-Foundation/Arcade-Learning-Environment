@@ -55,6 +55,7 @@ class StellaEnvironment {
     const ALERAM &getRAM() const { return m_ram; }
 
     int getFrameNumber() const { return m_frame_number; }
+    int getEpisodeFrameNumber() const { return m_episode_frame_number; }
 
   private:
     /** Actually emulates the emulator for a given number of steps. */
