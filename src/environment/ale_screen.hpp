@@ -19,6 +19,7 @@
 #define __ALE_SCREEN_HPP__
 
 #include <string.h>
+#include <memory>
 
 typedef unsigned char pixel_t;
 
