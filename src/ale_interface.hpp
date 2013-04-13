@@ -7,8 +7,10 @@
 #include "os_dependent/OSystemWin32.hxx"
 #include "os_dependent/SettingsUNIX.hxx"
 #include "os_dependent/OSystemUNIX.hxx"
+#include "games/Roms.hpp"
 #include "common/Defaults.hpp"
-#include "controllers/internal_controller.hpp"
+#include "common/display_screen.h"
+#include "environment/stella_environment.hpp"
 
 // @todo 
 static const std::string Version = "0.4";
@@ -50,7 +52,8 @@ public:
     std::auto_ptr<SettingsUNIX> theSettings;
 #endif
 
-    std::auto_ptr<ALEController> controller;
+    std::auto_ptr<RomSettings> settings;
+    std::auto_ptr<StellaEnvironment> environment;
 
 protected:
     reward_t episode_score; // Score accumulated throughout the course of an episode
@@ -89,64 +92,76 @@ public:
         strcpy(argv[5],rom_file.c_str());  
 
         createOSystem(argc, argv);
-        controller.reset(new InternalController(theOSystem.get()));
+        settings.reset(buildRomRLWrapper(rom_file));
+        environment.reset(new StellaEnvironment(theOSystem.get(), settings.get()));
         max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
         reset_game();
     }
 
     // Resets the game
     void reset_game() {
-        controller->m_environment.reset();
+        environment->reset();
     }
 
     // Indicates if the game has ended
     bool game_over() {
-        return (controller->m_environment.isTerminal() || 
-                (max_num_frames > 0 && getEpisodeFrameNumber() >= max_num_frames));
+        return (environment->isTerminal() || (max_num_frames > 0 && getEpisodeFrameNumber() >= max_num_frames));
     }
 
     // Applies an action to the game and returns the reward. It is the user's responsibility
     // to check if the game has ended and reset when necessary - this method will keep pressing
     // buttons on the game over screen.
     reward_t act(Action action) {
-        controller->applyActions(action, PLAYER_B_NOOP);
-        reward_t reward = controller->m_settings->getReward();
-        controller->display();
+        environment->act(action, PLAYER_B_NOOP);
+        reward_t reward = settings->getReward();
+        if (display_active)
+            theOSystem->p_display_screen->display_screen(theOSystem->console().mediaSource());
         return reward;
     }
 
     // Returns the vector of legal actions. This should be called only after the rom is loaded.
     ActionVect getLegalActionSet() {
-        return controller->m_settings->getAllActions();
+        return settings->getAllActions();
     }
 
     // Returns the vector of the minimal set of actions needed to play the game.
     ActionVect getMinimalActionSet() {
-        return controller->m_settings->getMinimalActionSet();
+        return settings->getMinimalActionSet();
     }
 
     // Returns the frame number since the loading of the ROM
     int getFrameNumber() {
-        return controller->m_environment.getFrameNumber();
+        return environment->getFrameNumber();
     }
 
     // Returns the frame number since the start of the current episode
     int getEpisodeFrameNumber() {
-        return controller->m_environment.getEpisodeFrameNumber();
+        return environment->getEpisodeFrameNumber();
     }
 
+    // Sets the episodic frame limit
     void setMaxNumFrames(int newMax) {
         max_num_frames = newMax;
     }
 
     // Returns the current game screen
     const ALEScreen &getScreen() {
-        return controller->m_environment.getScreen();
+        return environment->getScreen();
     }
 
     // Returns the current RAM content
     const ALERAM &getRAM() {
-        return controller->m_environment.getRAM();
+        return environment->getRAM();
+    }
+
+    // Saves the state of the system
+    void saveState() {
+        environment->save();
+    }
+
+    // Loads the state of the system
+    void loadState() {
+        environment->load();
     }
 
 protected:

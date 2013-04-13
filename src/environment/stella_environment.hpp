@@ -30,7 +30,7 @@
 
 class StellaEnvironment {
   public:
-    StellaEnvironment(OSystem * system, RomSettings *);
+    StellaEnvironment(OSystem * system, RomSettings * settings);
 
     /** Resets the system to its start state. */
     void reset();
