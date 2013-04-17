@@ -34,6 +34,7 @@
 
 #include "controllers/ale_controller.hpp"
 #include "controllers/fifo_controller.hpp"
+#include "controllers/rlglue_controller.hpp"
 #include "controllers/internal_controller.hpp"
 #include "common/Constants.h"
 
@@ -157,6 +158,10 @@ ALEController* createController(OSystem* osystem, std::string type) {
     std::cerr << "Game will be controlled through named FIFO pipes." << std::endl;
     return new FIFOController(osystem, true);
   }
+  else if (type == "rlglue") {
+    std::cerr << "Game will be controlled through RL-Glue." << std::endl;
+    return new RLGlueController(osystem); 
+  } 
   else if (type == "internal") {
     std::cerr << "Game will be controlled by an internal agent." << std::endl;
     return new InternalController(osystem); 

@@ -71,6 +71,9 @@ enum Action {
     LAST_ACTION_INDEX       = 50
 };
 
+#define PLAYER_A_MAX (18)
+#define PLAYER_B_MAX (36)
+
 string action_to_string(Action a);
 
 //  Define datatypes
