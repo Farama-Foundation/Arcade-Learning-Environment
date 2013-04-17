@@ -35,23 +35,79 @@ static void disableBufferedIO() {
     cout.sync_with_stdio();
 }
 
+static void createOSystem(int argc, char* argv[],
+                          std::auto_ptr<OSystem> &theOSystem,
+                          std::auto_ptr<Settings> &theSettings) {
+#ifdef WIN32
+    theOSystem.reset(new OSystemWin32());
+    theSettings.reset(new SettingsWin32(theOSystem.get()));
+#else
+    theOSystem.reset(new OSystemUNIX());
+    theSettings.reset(new SettingsUNIX(theOSystem.get()));
+#endif
+   
+    setDefaultSettings(theOSystem->settings());
+
+    theOSystem->settings().loadConfig();
+
+    // process commandline arguments, which over-ride all possible config file settings
+    string romfile = theOSystem->settings().loadCommandLine(argc, argv);
+
+    // Load the configuration from a config file (passed on the command
+    //  line), if provided
+    string configFile = theOSystem->settings().getString("config", false);
+   
+    if (!configFile.empty())
+        theOSystem->settings().loadConfig(configFile.c_str());
+
+    theOSystem->settings().validate();
+    theOSystem->create();
+  
+    string outputFile = theOSystem->settings().getString("output_file", false);
+    if (!outputFile.empty()) {
+        cerr << "Redirecting ... " << outputFile << endl;
+        freopen(outputFile.c_str(), "w", stdout);
+    }
+
+    // attempt to load the ROM
+    if (argc == 1 || romfile == "" || !FilesystemNode::fileExists(romfile)) {
+		
+        std::cerr << "No ROM File specified or the ROM file was not found." << std::endl;
+        exit(1); 
+
+    } else if (theOSystem->createConsole(romfile))  {
+        
+        std::cerr << "Running ROM file..." << std::endl;
+        theOSystem->settings().setString("rom_file", romfile);
+
+    } else {
+        exit(1);
+    }
+
+    // seed random number generator
+    if (theOSystem->settings().getString("random_seed") == "time") {
+        cerr << "Random Seed: Time" << endl;
+        srand((unsigned)time(0));
+        //srand48((unsigned)time(0));
+    } else {
+        int seed = theOSystem->settings().getInt("random_seed");
+        assert(seed >= 0);
+        cerr << "Random Seed: " << seed << endl;
+        srand((unsigned)seed);
+        //srand48((unsigned)seed);
+    }
+
+    theOSystem->console().setPalette("standard");
+}
+
 /**
    This class interfaces ALE with external code for controlling agents.
  */
 class ALEInterface
 {
 public:
-    std::streambuf * redirected_buffer;
-    std::ofstream * os;
-    std::string redirected_file;
-
     std::auto_ptr<OSystem> theOSystem;
-#ifdef WIN32
-    std::auto_ptr<SettingsWin32> theSettings;
-#else
-    std::auto_ptr<SettingsUNIX> theSettings;
-#endif
-
+    std::auto_ptr<Settings> theSettings;
     std::auto_ptr<RomSettings> settings;
     std::auto_ptr<StellaEnvironment> environment;
 
@@ -91,7 +147,7 @@ public:
         else                strcpy(argv[4],"false");
         strcpy(argv[5],rom_file.c_str());  
 
-        createOSystem(argc, argv);
+        createOSystem(argc, argv, theOSystem, theSettings);
         settings.reset(buildRomRLWrapper(rom_file));
         environment.reset(new StellaEnvironment(theOSystem.get(), settings.get()));
         max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
@@ -162,77 +218,6 @@ public:
     // Loads the state of the system
     void loadState() {
         environment->load();
-    }
-
-protected:
-    void redirectOutput(string & outputFile) {
-        cerr << "Redirecting ... " << outputFile << endl;
-
-        redirected_file = outputFile;
-
-        os = new std::ofstream(outputFile.c_str(), ios_base::out | ios_base::app);
-        redirected_buffer = std::cout.rdbuf(os->rdbuf());
-    }
-
-    void createOSystem(int argc, char* argv[]) {
-#ifdef WIN32
-        theOSystem.reset(new OSystemWin32());
-        theSettings.reset(new SettingsWin32(theOSystem.get()));
-#else
-        theOSystem.reset(new OSystemUNIX());
-        theSettings.reset(new SettingsUNIX(theOSystem.get()));
-#endif
-   
-        setDefaultSettings(theOSystem->settings());
-
-        theOSystem->settings().loadConfig();
-
-        // process commandline arguments, which over-ride all possible config file settings
-        string romfile = theOSystem->settings().loadCommandLine(argc, argv);
-
-        // Load the configuration from a config file (passed on the command
-        //  line), if provided
-        string configFile = theOSystem->settings().getString("config", false);
-   
-        if (!configFile.empty())
-            theOSystem->settings().loadConfig(configFile.c_str());
-
-        theOSystem->settings().validate();
-        theOSystem->create();
-  
-        string outputFile = theOSystem->settings().getString("output_file", false);
-        if (!outputFile.empty())
-            redirectOutput(outputFile);
-   
-        // attempt to load the ROM
-        if (argc == 1 || romfile == "" || !FilesystemNode::fileExists(romfile)) {
-		
-            std::cerr << "No ROM File specified or the ROM file was not found." << std::endl;
-            exit(1); 
-
-        } else if (theOSystem->createConsole(romfile))  {
-        
-            std::cerr << "Running ROM file..." << std::endl;
-            theOSystem->settings().setString("rom_file", romfile);
-
-        } else {
-            exit(1);
-        }
-
-        // seed random number generator
-        if (theOSystem->settings().getString("random_seed") == "time") {
-            cerr << "Random Seed: Time" << endl;
-            srand((unsigned)time(0));
-            //srand48((unsigned)time(0));
-        } else {
-            int seed = theOSystem->settings().getInt("random_seed");
-            assert(seed >= 0);
-            cerr << "Random Seed: " << seed << endl;
-            srand((unsigned)seed);
-            //srand48((unsigned)seed);
-        }
-
-        theOSystem->console().setPalette("standard");
     }
 };
 
