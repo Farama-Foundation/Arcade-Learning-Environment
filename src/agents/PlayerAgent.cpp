@@ -138,16 +138,17 @@ PlayerAgent* PlayerAgent::generate_agent_instance(OSystem* _osystem,
     string player_agent = _osystem->settings().getString("player_agent");
     PlayerAgent* new_agent = NULL;
 
-    fprintf (stderr, "Agent is %s\n", player_agent.c_str());
-
     if (player_agent == "random_agent")
       new_agent = new RandomAgent(_osystem, _settings);
     else if (player_agent == "single_action_agent")
       new_agent = new SingleActionAgent(_osystem, _settings);
     else if (player_agent == "keyboard_agent")
       new_agent = new SDLKeyboardAgent(_osystem, _settings);
-    else
-      new_agent = NULL;
+    else {
+      std::cerr << "Invalid agent type requested: " << player_agent << ". Terminating." << std::endl;
+      // We can't play without any agent, so exit now.
+      exit(-1);
+    }
 
     return new_agent;
 }

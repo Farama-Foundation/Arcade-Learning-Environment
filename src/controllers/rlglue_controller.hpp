@@ -20,7 +20,7 @@
 #include "ale_controller.hpp"
 #include "../common/Constants.h"
 
-// @todo #ifdef this
+#ifdef __USE_RLGLUE
 // We namespace the whole RL-Glue business to avoid name conflicts
 #include <rlglue/Environment_common.h>
 #include <rlglue/network/RL_network.h>
@@ -73,5 +73,16 @@ class RLGlueController : public ALEController {
 
     int m_frame_skip;  // Requested frame skip
 };
+#else
+class RLGlueController : public ALEController {
+  public:
+    RLGlueController(OSystem* osystem);
+    virtual ~RLGlueController() {}
+
+    /** This prints an error message and terminate. */
+    virtual void run();
+};
+#endif // __USE_RLGLUE
+
 
 #endif // __RLGLUE_CONTROLLER_HPP__

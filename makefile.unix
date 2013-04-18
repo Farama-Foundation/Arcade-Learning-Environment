@@ -5,10 +5,13 @@
 srcdir      ?= .
 # Set this to 1 to enable SDL and display_screen
 USE_SDL     := 0
+# Set this to 1 to enable the RLGlue interface
+USE_RLGLUE  := 1
 DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     := 
 INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -Isrc/environment 
 LIBS_SDL    := -lSDL -lSDL_gfx -lSDL_image 
+LIBS_RLGLUE := -lrlutils -lrlgluenetdev
 LIBS        :=
 OBJS	    :=
 PROF        :=
@@ -21,8 +24,6 @@ DEBUG       := 0
 CXX := g++
 CXXFLAGS := 
 LD := g++
-# LIBS += -lz -lX11
-# For the Mac
 LIBS += -lz 
 RANLIB := ranlib
 INSTALL := install
@@ -59,6 +60,11 @@ LDFLAGS +=
 ifeq ("$(USE_SDL)", "1")
   DEFINES +=  -D__USE_SDL
   LIBS += $(LIBS_SDL)
+endif
+
+ifeq ("$(USE_RLGLUE)", "1")
+  DEFINES +=  -D__USE_RLGLUE
+  LIBS += $(LIBS_RLGLUE)
 endif
 
 

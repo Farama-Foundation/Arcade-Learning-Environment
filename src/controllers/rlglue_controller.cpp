@@ -16,11 +16,12 @@
  **************************************************************************** */
 
 #include "rlglue_controller.hpp"
-#include "../environment/ale_ram.hpp"
 
+#ifdef __USE_RLGLUE
 #include <stdio.h>
 #include <cassert>
 
+#include "../environment/ale_ram.hpp"
 #include <rlglue/utils/C/RLStruct_util.h>
 
 // How many observation dimensions
@@ -245,4 +246,16 @@ reward_observation_terminal_t RLGlueController::constructRewardObservationTermin
   return ro;
 }
 
+#else
 
+RLGlueController::RLGlueController(OSystem* system):
+  ALEController(system) {
+}
+
+void RLGlueController::run() {
+  std::cerr << "RL-Glue interface unavailable. Please recompile with RL-Glue support." << 
+    std::endl;
+
+  // We should return and terminate gracefully, since we can.
+}
+#endif // __USE_RLGLUE
