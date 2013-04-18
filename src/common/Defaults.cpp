@@ -34,6 +34,8 @@ void setDefaultSettings(Settings &settings) {
     settings.setBool("record_trajectory", false);
     settings.setBool("restricted_action_set", false);
     settings.setBool("use_starting_actions", true);
+    settings.setBool("use_environment_distribution", false);
+    settings.setString("random_seed", "time");
 
     // Display Settings
     settings.setBool("display_screen", false);

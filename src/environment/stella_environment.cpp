@@ -39,26 +39,36 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_colour_averaging = !m_osystem->settings().getBool("disable_color_averaging");
 
   m_backward_compatible_save = m_osystem->settings().getBool("backward_compatible_save");
+  m_stochastic_start = m_osystem->settings().getBool("use_environment_distribution");
 }
 
 /** Resets the system to its start state. */
 void StellaEnvironment::reset() {
+  // RNG for generating environments
+  Random randGen;
+
   m_episode_frame_number = 0;
 
-  // reset the rom
-  m_settings->reset();
-  
   // Reset the paddles
   m_state.resetPaddles(m_osystem->event());
 
   // Reset the emulator
   m_osystem->console().system().reset();
 
-  // NOOP for 60 steps
-  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 60);
+  // NOOP for 60 steps in the deterministic environment setting, or some random amount otherwise 
+  int noopSteps;
+  if (m_stochastic_start)
+    noopSteps = 60 + rand() % NUM_RANDOM_ENVIRONMENTS;
+  else
+    noopSteps = 60;
+
+  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, noopSteps);
   // reset for n steps
   emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
 
+  // reset the rom (after emulating, in case the NOOPs led to reward)
+  m_settings->reset();
+  
   // Apply necessary actions specified by the rom itself
   if (m_use_starting_actions) {
     ActionVect startingActions = m_settings->getStartingActions();

@@ -69,8 +69,11 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySystem = 0;
   myEvent = 0;
   
-  int random_seed = atoi(myOSystem->settings().getString("random_seed").c_str());
-  Random::seed(random_seed);
+  std::string seedStr = myOSystem->settings().getString("random_seed").c_str();
+  if (seedStr == "time")
+    Random::seed(time(NULL));
+  else
+    Random::seed(atoi(seedStr.c_str()));
 
   // Attach the event subsystem to the current console
   //ALE  myEvent = myOSystem->eventHandler().event();

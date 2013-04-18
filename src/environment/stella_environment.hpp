@@ -28,6 +28,9 @@
 
 #include <stack>
 
+// This defines the number of "random" environments
+#define NUM_RANDOM_ENVIRONMENTS (500)
+
 class StellaEnvironment {
   public:
     StellaEnvironment(OSystem * system, RomSettings * settings);
@@ -90,6 +93,7 @@ class StellaEnvironment {
     bool m_use_starting_actions; // Whether we run a set of starting actions after reset 
     int m_num_reset_steps; // Number of RESET frames per reset
     bool m_colour_averaging; // Whether to average frames
+    bool m_stochastic_start; // Whether to "draw" the environment from a random distribution
     int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
 
     bool m_backward_compatible_save; // Enable the save/load mechanism from ALE 0.2 (no stack)
