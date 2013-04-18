@@ -267,27 +267,43 @@ void Settings::usage() {
     << endl
     << " * Usage: ale [options ...] romfile" << endl
     << endl
+    << " * Example Usage: ./ale -player_agent random_agent roms/asterix.bin" << endl
     << endl
     << " * Valid options are:" << endl
-    << " *  -game_controller [internal]/[fifo]" << endl 
+    << " *  -game_controller (internal|fifo|fifo_named"
+#ifdef __USE_RLGLUE
+    << "|rlglue"
+#endif
+    << ")"                                                                             << endl 
     << " *   Defines how Stella communicates with the player agent:"                   << endl
-    << " *           - 'internal': (default) an instance of the PlayerAgent"             << endl 
-    << " *                        subclass controls the game"     << endl
-    << " *           - 'fifo':    Control occurs through FIFO pipes "<< endl
+    << " *           - 'internal':   (default) an instance of the PlayerAgent"             << endl 
+    << " *                           subclass controls the game"     << endl
+    << " *           - 'fifo':       Control occurs through FIFO pipes "<< endl
+    << " *           - 'fifo_named': Control occurs through named FIFO pipes "<< endl
+#ifdef __USE_RLGLUE
+    << " *           - 'rlglue':     External control via RL-Glue  "<< endl
+#endif
     << endl
+    << " *  -player_agent (random_agent|single_action_agent"
+#ifdef __USE_SDL
+    << "|keyboard_agent" 
+#endif
+    << ")"                                                                                << endl
+    << " *   Specifies which PlayerAgent to run from the internal controller. "                  << endl
+<< endl
     << " *  -random_seed  [time]/[n] "                                                      << endl
-    << " *  Sets the seed used for random number generation. "                         << endl 
-    << " *  'time' will use the the current time."                                     << endl
+    << " *   Sets the seed used for random number generation. "                         << endl 
+    << " *   'time' will use the the current time."                                     << endl
 << endl 
     << " *  -max_num_episodes n"                                                            << endl
     << " *   The program will quit after this number of episodes. " << endl
     << " *   0 means never; default is 10."<< endl
 << endl
     << " *  -max_num_frames m"                                                              << endl
-    << " *  The program will quit after this number of frames. 0 (default) means never."   << endl
+    << " *   The program will quit after this number of frames. 0 (default) means never."   << endl
 << endl 
     << " *  -max_num_frames_per_episode m"                                                  << endl
-    << " *  Ends each episode after this number of frames. 0 (default) means never."       << endl
+    << " *   Ends each episode after this number of frames. 0 (default) means never."       << endl
 << endl                                                                                 
     << " *  -ld [A/B]"                                                                      << endl
     << " *   Left player difficulty. B (default) means easy"                                << endl
@@ -295,6 +311,11 @@ void Settings::usage() {
     << " *  -rd [A/B]"                                                                      << endl
     << " *   Right player difficulty. B (default) means easy"                               << endl
 << endl
+#ifdef __USE_SDL
+    << " *  -display_screen [true]/[false]"                                                 << endl
+    << " *   Displays the game screen."                                                     << endl
+<< endl
+#endif
 << endl;
 }
 

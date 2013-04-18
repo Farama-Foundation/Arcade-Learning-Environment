@@ -39,7 +39,4 @@ void setDefaultSettings(Settings &settings) {
 
     // Display Settings
     settings.setBool("display_screen", false);
-
-    // Visual Processing Setting
-    settings.setBool("process_screen", false);
 }
