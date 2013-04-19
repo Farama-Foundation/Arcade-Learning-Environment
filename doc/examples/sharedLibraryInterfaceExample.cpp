@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
     ALEInterface ale;
 
     // Load the ROM file
-    ale.loadROM(argv[1], false);
+    ale.loadROM(argv[1]);
 
     // Get the vector of legal actions
     ActionVect legal_actions = ale.getLegalActionSet();

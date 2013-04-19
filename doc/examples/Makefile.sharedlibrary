@@ -1,0 +1,18 @@
+# Modified from the RL-Glue C/C++ codec sharedLibraryInterfaceExample's makefile.
+
+# This will likely need to be changed to suit your installation. 
+ALE := /home/marc/ale_0_4 
+
+FLAGS := -I$(ALE)/src -L$(ALE) 
+CXX := g++
+FILE := sharedLibraryInterfaceExample
+LDFLAGS := -lale -lz
+
+all: sharedLibraryInterfaceExample 
+
+sharedLibraryInterfaceExample: 
+	$(CXX) $(FLAGS) $(FILE).cpp $(LDFLAGS) -o $(FILE) 
+
+clean:
+	rm -rf sharedLibraryInterfaceExample *.o
+

@@ -1,4 +1,4 @@
-FILE=pipes-protocol
+FILE=manual
 
 all: $(FILE).pdf
 
@@ -7,4 +7,4 @@ all: $(FILE).pdf
 	pdflatex $(FILE).tex
 
 clean:
-	rm -f *.{aux,log,pdf}
+	rm -f *.{aux,log,toc}
