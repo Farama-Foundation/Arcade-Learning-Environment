@@ -1,0 +1,47 @@
+% A LaTeX file that describes how to install and run ALE 0.4.
+%
+% Created by Marc G. Bellemare.
+
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+
+\title{ALE 0.4 Tutorial}
+\author{Marc G. Bellemare\\ mgbellemare@ualberta.ca}
+
+\begin{document}
+
+\maketitle
+
+\section{Requirements}
+
+To build and run ALE, you will need:
+
+\begin{itemize}
+  \item{g++ / make tools}
+\end{itemize}
+
+\section{Installation/Compilation}
+
+This tutorial assumes that you have extracted ALE to \verb+ale_0_4+. Compiling
+ALE on a UNIX machine is as simple as:
+
+\begin{verbatim}
+> cd ale_0_4
+ale_0_4> cp makefile.unix makefile
+ale_0_4> make
+\end{verbatim}
+
+Alternate makefiles are provided for 
+
+\begin{itemize}
+  \item{Mac OS X: \verb+makefile.mac+ , and}
+  \item{Cygwin: \verb+makefile.cygwin+ .}
+\end{itemize}
+
+\section{Installing Agents}
+
+Refer to the ALE Java Agent tutorial for information on installing and using 
+the accompanying Java agent.
+
+\end{document}
