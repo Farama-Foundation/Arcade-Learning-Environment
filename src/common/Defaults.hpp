@@ -1,6 +1,6 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2012 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
  * Released under the GNU General Public License; see License.txt for details. 
  *
