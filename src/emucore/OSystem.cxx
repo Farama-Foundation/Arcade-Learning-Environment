@@ -721,37 +721,6 @@ void OSystem::stateChanged(EventHandler::State state)
 }
 ALE */
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/* ALE
-void OSystem::mainLoop()
-{
-  // MGB: This is now obsolete. @todo -- remove it.
-    for(;;)
-    {
-        //ALE  
-        MediaSource& mediasrc = console().mediaSource();
-        if (p_display_screen) // Display the screen if applicable
-            p_display_screen->display_screen(mediasrc);
-        //ALE  
-        
-        myTimingInfo.start = getTicks();
-        //ALE  myEventHandler->poll(myTimingInfo.start);
-        if(myQuitLoop) break;  // Exit if the user wants to quit
-        //ALE  myFrameBuffer->update();
-        // Emulate, but only if we were not explicitly told not to 
-        if (mySkipEmulation) {
-            mySkipEmulation = false;
-        }
-        else
-            mediasrc.update(); //ALE 
-        
-        myTimingInfo.current = getTicks();
-        myTimingInfo.virt += myTimePerFrame;
-        
-        myTimingInfo.totalTime += (getTicks() - myTimingInfo.start);
-        myTimingInfo.totalFrames++; 
-    }
-}
-*/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /* ALE
