@@ -14,6 +14,14 @@
  limitations under the License.
  */
 
+/** This example was *minimally* adapted from the SkeletonAgent code from 
+  * Brian Tanner. The chief modification is the two random actions, instead
+  * of one. The following is required to execute this code:
+  *
+  *  - RL-Glue core
+  *  - RL-Glue C/C++ codec
+  */
+
 #include <stdio.h>	/* for printf */
 #include <rlglue/RL_glue.h> /* RL_ function prototypes and RL-Glue types */
 	

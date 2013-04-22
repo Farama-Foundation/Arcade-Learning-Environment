@@ -25,7 +25,7 @@ void setDefaultSettings(Settings &settings) {
     settings.setInt("max_num_episodes", 0);
     settings.setInt("max_num_frames", 0);
     settings.setInt("max_num_frames_per_episode", 0);
-    settings.setInt("system_reset_steps", 2);
+    settings.setInt("system_reset_steps", 4);
 
     // FIFO controller settings
     settings.setBool("run_length_encoding", true);

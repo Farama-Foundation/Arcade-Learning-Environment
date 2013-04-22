@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-/** This file was *minimally* adapted from the SkeletonAgent code from 
+/** This example was *minimally* adapted from the SkeletonAgent code from 
   * Brian Tanner. The chief modification is the two random actions, instead
   * of one. The following is required to execute this code:
   *

@@ -2,6 +2,7 @@
 
 \documentclass[12pt]{article}
 
+\usepackage{hyperref}
 \usepackage{fullpage}
 
 \title{Technical Manual}
@@ -16,7 +17,7 @@
 
 This document describes how to install the Arcade Learning Environment as well as its technical 
 details, including 
-command-line flags, how to use the shared library interface, and the agent/environment protocol 
+command-line flags, how to use the shared library interface, and the FIFO protocol 
 for agents communicating with ALE via stdin/stdout.
 
 The following ways of interfacing with ALE are detailed in this document:
@@ -35,7 +36,7 @@ The following ways of interfacing with ALE are detailed in this document:
 To build and run ALE, you will need:
 
 \begin{itemize}
-  \item{g++ / make tools}
+  \item{g++ / make}
 \end{itemize}
 
 \subsection{Installation/Compilation}
@@ -63,13 +64,15 @@ The following sample agents are available:
 \begin{itemize}
   \item{\textbf{Java agents / FIFO interface.} Refer to the accompanying ALE Java Agent tutorial.}
   \item{\textbf{C++ agent / internal interface.} See Section \ref{sec:internal_interface}.}
-  \item{\textbf{C++ agent / RL-Glue interface.} See Section \ref{sec:rlglue_interface} and \verb+doc/examples/RLGlueAgent.c+.}
-  \item{\textbf{C++ agent / shared library interface.} See Section \ref{sec:shared_library_interface} and \verb+doc/examples/sharedLibraryInterfaceExample.cpp+.}
+  \item{\textbf{C++ agent / shared library interface.} See Section \ref{sec:shared_library_interface} and \\ 
+    \verb+ale_0_4/doc/examples/sharedLibraryInterfaceExample.cpp+.}
+  \item{\textbf{C++ agent / RL-Glue interface.} See Section \ref{sec:rlglue_interface} and \\
+    \verb+ale_0_4/doc/examples/RLGlueAgent.c+.}
 \end{itemize}
 
 \section{Command-line Arguments}
 
-Command-line arguments can be passed to ALE before the ROM name. For example, the following runs
+Command-line arguments are passed to ALE before the ROM filename. For example, the following runs
 the internal random agent on Space Invaders:
 
 \begin{verbatim}
@@ -77,7 +80,8 @@ ale_0_4> ./ale -player_agent random_agent -game_controller internal
   roms/space_invaders.bin
 \end{verbatim}
 
-The following command-line arguments to ALE are available.
+The configuration file \verb+ale_0_4/stellarc+ can also be used to set frequently used
+command-line arguments. 
 
 \subsection{Main Arguments}
 \small{
@@ -114,26 +118,27 @@ The following command-line arguments to ALE are available.
   -max_num_frames_per_episode ### -- max. number of frames per episode
     default: 0
 
-  -system_reset_steps ### -- how many frames to hold reset button for. Should be >= 2.
-    default: 2
+  -system_reset_steps ### -- how many frames to hold reset button for 
+      Should be >= 2.
+    default: 4
 
   -use_environment_distribution <true|false> -- if true, the environment start 
-      state is drawn from a small distribution of states.
+      state is drawn from a distribution of states
     default: false
 
   -use_starting_actions <true|false> -- if true, a game-specific sequence
-      of actions is applied after each reset.
+      of actions is applied after each reset
     default: false
 
   -restricted_action_set <true|false> -- if true, agents use a smaller set of 
       actions (internal interface only)
     default: false
 
-  -backward_compatible_save <true|false> -- uses ALE 0.2's state saving/loading 
-      mechanism.
+  -backward_compatible_save <true|false> -- if true, uses ALE 0.2's 
+      save/load state mechanism
     default: false
 
-  -disable_color_averaging <true|false> -- if true, color averaging is disabled
+  -disable_color_averaging <true|false> -- if true, disables colour averaging 
     default: false
 \end{verbatim}
 }
@@ -143,7 +148,7 @@ The following command-line arguments to ALE are available.
 \small{
 \begin{verbatim}
   -run_length_encoding <true|false> -- if true, encodes data using run-length
-      encoding.
+      encoding
     default: true
 \end{verbatim}
 }
@@ -152,7 +157,7 @@ The following command-line arguments to ALE are available.
 
 \small{
 \begin{verbatim}
-  -record_trajectory <true|false> -- if true, records the agent's trajectory.
+  -record_trajectory <true|false> -- if true, records the agent's trajectory
     default: false
 
   -player_agent <random_agent|single_action_agent|keyboard_agent>
@@ -176,7 +181,7 @@ can be found under
 ale_0_4/src/agents
 \end{verbatim}
 
-These agents are the random agent, the single-action agent and the keyboard agent\footnote{Requires SDL support.}.
+These agents are the random agent, the single-action agent and the keyboard agent\footnote{The keyboard agent requires SDL support.}.
 
 \section{Shared Library Interface}\label{sec:shared_library_interface}
 
@@ -270,7 +275,7 @@ $i^{th}$ byte of RAM; in total this string is 256 characters long, not including
 
 In ``full'' mode, the screen string is \texttt{www} $\times$ \texttt{hhh} 2-digit hexadecimal numbers, each representing a pixel. Pixels are sent row by row, with \texttt{www} characters for each row. In total this string is 2 $\times$ \texttt{www} $\times$ \texttt{hhh} characters long.
 
-In run-length encoding mode, the screen string consists of a variable number of (colour,length) pairs; denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next length + 1 pixels take on the given colour; run length is thus limited to 256. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour,length) pair, and varies depending on the screen.
+In run-length encoding mode, the screen string consists of a variable number of (colour,length) pairs denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next length + 1 pixels take on the given colour; run length is thus limited to 256. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour,length) pair, and varies depending on the screen.
 
 In either case, the screen string is terminated by a colon.
 
@@ -291,13 +296,13 @@ Assuming that the agent requested screen, RAM and episode-related information, a
 \subsection{Main Loop -- Agent}
 
 After receiving a string from ALE, the agent should now send the actions of player A and player B.
-Both are sent as a pair of comma-separated integers on a single line, e.g.:
+These are sent as a pair of comma-separated integers on a single line, e.g.:
 
 \begin{verbatim}
 2,18\n
 \end{verbatim}
 
-where the first integer is player A's action -- \textsc{fire} -- and the second integer, player B's action -- \textsc{noop}. Emulator control (reset, save/load state) is also handled by sending a special action value as player A's action. See Section \ref{sec:available_actions} for the list of available actions.
+where the first integer is player A's action (here, \textsc{fire}) and the second integer, player B's action (here, \textsc{noop}). Emulator control (reset, save/load state) is also handled by sending a special action value as player A's action. See Section \ref{sec:available_actions} for the list of available actions.
 
 \subsection{Termination}\label{subsec:termination_conditions}
 
@@ -315,10 +320,6 @@ ALE will send an end-of-episode signal when one the following is true:
   \item{The game has ended, usually when player A loses their last life.}
 \end{itemize}
 
-Once the end of episode is reached, no further emulation takes place. This avoids odd situations
-where the player can reset the game through button presses, or where the game normally resets itself
-after a number of frames. This makes for a cleaner environment interface.
-
 \section{RL-Glue Interface}\label{sec:rlglue_interface}
 
 The RL-Glue interface implements the RL-Glue 3.0 protocol.
@@ -330,12 +331,11 @@ In order to use the RL-Glue interface, ALE must be compiled with RL-Glue support
 by setting \verb+USE_RL=1+ in the makefile.
 
 Specifying the command-line argument \verb+-game_controller rlglue+ is sufficient to put ALE in 
-RL-Glue mode. It will then communicate with the RL-Glue core like a normal RL-Glue environment.
+RL-Glue mode. It will then communicate with the RL-Glue core like a regular RL-Glue environment.
 
 \subsection{Sample Agent and Experiment}
 
-Example source code (copied near-verbatim from the skeleton agent and experiment provided
-with the C/C++ RL-Glue codec) can be found under
+Example source code can be found under
 
 \begin{verbatim}
 ale_0_4/doc/examples
@@ -363,9 +363,10 @@ Please refer to the RL-Glue documentation for more details.
 
 \subsection{Actions and Observations}
 
-The action space consists of both Player A and Player B's actions (see \ref{sec:available_actions}
+The action space consists of both Player A and Player B's actions (see Section 
+\ref{sec:available_actions}
 for details). In general, Player B's action may safely be set to noop (18). The observation
-space consist in 33728 integers: first the 128 bytes of RAM (taking values in 0--255), then the 
+space consists in 33728 integers: first the 128 bytes of RAM (taking values in 0--255), then the 
 33,600 screen pixels (taking value in 0--127). The screen is provided in row-order, i.e. beginning
 with the 160 pixels that compose the first row.
 
@@ -410,6 +411,16 @@ save-state (43) & load-state (44) & system-reset (45) \\
 \end{tabular}
 \end{center}
 
+\subsection{Terminal States}
+
+Once the end of episode is reached (a terminal state in RL terminology), no further emulation 
+takes place until the appropriate reset command is sent. This command is distinct from the Atari 
+2600 reset. This ``system reset'' avoids odd situations where the player can reset the game
+through button presses, or where the game normally resets itself after a number of frames. This 
+makes for a cleaner environment interface. With the exception of the RL-Glue interface, which 
+automatically resets the environment, the interfaces described here all provide a system reset
+command or method.
+
 \subsection{Saving and Loading States}
 
 State saving and loading operates in a stack-based manner: each call to save stores the current
@@ -422,8 +433,8 @@ is preserved.
 
 Many Atari 2600 games display objects on alternating frames (sometimes even less frequently).
 This can be an issue for agents that do not consider the whole screen history. By default, 
-colour averaging is enabled: the environment output (as observed by agents) averages the last
-two frames. This behaviour can be turned off using the command-line argument 
+\emph{colour averaging} is enabled: the environment output (as observed by agents) is a weighted
+blend of the last two frames. This behaviour can be turned off using the command-line argument 
 \verb+-disable_colour_averaging+. 
 
 \subsection{Randomness}
