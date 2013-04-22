@@ -259,64 +259,96 @@ void Settings::validate()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::usage() {
 
-    cerr << endl
-    << " *************************************************************************"         << endl
-    << " * Welcome to A.L.E (Arcade Learning Environment) "                                 << endl
-    << " * (Powered by Stella)"                                                             << endl
-    << " ***************************************************************************"       << endl
-    << endl
-    << " * Usage: ale [options ...] romfile" << endl
-    << endl
-    << " * Example Usage: ./ale -player_agent random_agent roms/asterix.bin" << endl
-    << endl
-    << " * Valid options are:" << endl
-    << " *  -game_controller (internal|fifo|fifo_named"
+    cerr << "\n" 
+       " ***************************************************************************\n"         
+       " * Welcome to A.L.E (Arcade Learning Environment)\n"                                
+       " * (Powered by Stella)\n"
+       " ***************************************************************************\n"       
+       "\n"
+       " Usage: ale [options ...] romfile"
+       "\n"
+       " Example Usage: ./ale -player_agent random_agent roms/asterix.bin\n" 
+       "\n"
+       " Main arguments:\n"
+       "   -help -- prints out help information\n\n"
+       "   -game_controller [internal|fifo|fifo_named"
 #ifdef __USE_RLGLUE
-    << "|rlglue"
+       "|rlglue"
 #endif
-    << ")"                                                                             << endl 
-    << " *   Defines how Stella communicates with the player agent:"                   << endl
-    << " *           - 'internal':   (default) an instance of the PlayerAgent"             << endl 
-    << " *                           subclass controls the game"     << endl
-    << " *           - 'fifo':       Control occurs through FIFO pipes "<< endl
-    << " *           - 'fifo_named': Control occurs through named FIFO pipes "<< endl
+       "]\n"
+       "      Defines how Stella communicates with the player agent:\n"                  
+       "            - 'internal':   (default) an instance of the PlayerAgent\n"       
+       "                            subclass controls the game\n"   
+       "            - 'fifo':       Control occurs through FIFO pipes\n"
+       "            - 'fifo_named': Control occurs through named FIFO pipes\n"
 #ifdef __USE_RLGLUE
-    << " *           - 'rlglue':     External control via RL-Glue  "<< endl
+       "            - 'rlglue':     External control via RL-Glue\n"
 #endif
-    << endl
-    << " *  -player_agent (random_agent|single_action_agent"
+       "\n"
+       "   -random_seed  [time]/[n]\n"
+       "     Sets the seed used for random number generation.\n"
+       "     'time' will use the the current time.\n"
+       "\n"
 #ifdef __USE_SDL
-    << "|keyboard_agent" 
+       "   -display_screen [true]/[false]\n"
+       "     Displays the game screen.\n"
+       "\n"
 #endif
-    << ")"                                                                                << endl
-    << " *   Specifies which PlayerAgent to run from the internal controller. "                  << endl
-<< endl
-    << " *  -random_seed  [time]/[n] "                                                      << endl
-    << " *   Sets the seed used for random number generation. "                         << endl 
-    << " *   'time' will use the the current time."                                     << endl
-<< endl 
-    << " *  -max_num_episodes n"                                                            << endl
-    << " *   The program will quit after this number of episodes. " << endl
-    << " *   0 means never; default is 10."<< endl
-<< endl
-    << " *  -max_num_frames m"                                                              << endl
-    << " *   The program will quit after this number of frames. 0 (default) means never."   << endl
-<< endl 
-    << " *  -max_num_frames_per_episode m"                                                  << endl
-    << " *   Ends each episode after this number of frames. 0 (default) means never."       << endl
-<< endl                                                                                 
-    << " *  -ld [A/B]"                                                                      << endl
-    << " *   Left player difficulty. B (default) means easy"                                << endl
-<< endl
-    << " *  -rd [A/B]"                                                                      << endl
-    << " *   Right player difficulty. B (default) means easy"                               << endl
-<< endl
+       "   -output_file [filename] -- if true and SDL is enabled, displays ALE screen\n"
+       "     default: not set\n\n"
+       "\n"
+       " Environment arguments:\n"
+       "   -max_num_episodes n\n"
+       "     The program will quit after this number of episodes. 0 means never.\n"
+       "    default: 0\n"
+       "   -max_num_frames m\n"  
+       "     The program will quit after this number of frames. 0 means never.\n"
+       "    default: 0\n"
+       "   -max_num_frames_per_episode m\n"
+       "     Ends each episode after this number of frames. 0 means never.\n"
+       "    default: 0\n"
+       "   -system_reset_steps ### -- how many frames to hold reset button for\n" 
+       "      Should be >= 2.\n"
+       "    default: 4\n\n"
+       "   -use_environment_distribution [true|false]  -- if true, the environment start\n" 
+       "      state is drawn from a distribution of states\n"
+       "    default: false\n\n"
+       "   -use_starting_actions [true|false] -- if true, a game-specific sequence\n"
+       "      of actions is applied after each reset\n"
+       "    default: false\n\n"
+       "   -restricted_action_set [true|false] -- if true, agents use a smaller set of\n" 
+       "      actions (internal interface only)\n"
+       "    default: false\n\n"
+       "   -backward_compatible_save [true|false] -- if true, uses ALE 0.2's\n" 
+       "      save/load state mechanism\n"
+       "    default: false\n\n"
+       "   -disable_color_averaging [true|false] -- if true, disables color averaging\n" 
+       "    default: false\n\n"
+       "\n"
+       " FIFO arguments:\n"
+       "   -run_length_encoding [true|false] -- if true, encodes data using run-length encoding\n"
+       "    default: true\n\n"
+       "\n"
+       " Internal Controller arguments:\n"
+       "   -player_agent [random_agent|single_action_agent"
 #ifdef __USE_SDL
-    << " *  -display_screen [true]/[false]"                                                 << endl
-    << " *   Displays the game screen."                                                     << endl
-<< endl
+       "|keyboard_agent" 
 #endif
-<< endl;
+       "]\n"                                                                   
+       "     Specifies which PlayerAgent to run from the internal controller.\n\n"
+       "   -record_trajectory <true|false> -- if true, records the agent's trajectory\n"
+       "    default: false\n\n"
+       "   -agent_epsilon ### -- probability of a random action in single_action_agent\n"
+       "    default: unset\n\n"
+       "\n"
+       " Misc. arguments:\n"
+       "   -ld [A/B]\n"
+       "     Left player difficulty. B (default) means easy.\n"
+       "\n"
+       "   -rd [A/B]\n"
+       "     Right player difficulty. B (default) means easy.\n"
+       "\n"
+    ; // Closing the std::cerr statement
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
