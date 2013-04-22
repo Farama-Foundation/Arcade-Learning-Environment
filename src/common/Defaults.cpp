@@ -36,7 +36,7 @@ void setDefaultSettings(Settings &settings) {
     settings.setBool("use_starting_actions", true);
     settings.setBool("use_environment_distribution", false);
     settings.setString("random_seed", "time");
-    settings.setString("disable_color_averaging", false);
+    settings.setBool("disable_color_averaging", false);
 
     // Display Settings
     settings.setBool("display_screen", false);
