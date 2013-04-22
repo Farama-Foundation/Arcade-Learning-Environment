@@ -8,4 +8,4 @@ all: $(FILE).pdf
 	pdflatex $(FILE).tex
 
 clean:
-	rm -f *.{aux,log,toc}
+	rm -f *.{aux,log,toc,out}

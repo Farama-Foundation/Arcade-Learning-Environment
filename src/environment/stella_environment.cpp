@@ -117,10 +117,16 @@ void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & pl
         !m_settings->isLegal(player_a_action)) {
     player_a_action = (Action)PLAYER_A_NOOP;
   }
+  // Also drop RESET, which doesn't play nice with our clean notions of RL environments
+  else if (player_a_action == RESET) 
+    player_a_action = (Action)PLAYER_A_NOOP;
+
   if (player_b_action < (Action)RESET && 
         !m_settings->isLegal((Action)((int)player_b_action - PLAYER_B_NOOP))) {
     player_b_action = (Action)PLAYER_B_NOOP;
   }
+  else if (player_b_action == RESET) 
+    player_b_action = (Action)PLAYER_B_NOOP;
 }
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)

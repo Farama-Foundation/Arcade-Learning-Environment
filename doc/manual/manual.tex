@@ -393,7 +393,7 @@ up-left-fire (15) & down-right-fire (16) & down-left-fire (17) & reset* (40) & \
 \end{center}
 
 Note that the \verb+reset+ (40) action toggles the Atari 2600 switch, rather than reset the 
-environment.
+environment, and as such is ignored by most interfaces.
 In general it should be replaced by either a call to \verb+StellaEnvironment::reset+ or by
 sending the \verb+system_reset+ command, depending on the interface. 
 
