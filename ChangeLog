@@ -1,3 +1,11 @@
+April 22nd, 2013. ALE 0.4.0.
+  * RL-Glue support 
+  * Shared library interface
+  * Simpler direct environment interfacing
+  * Improved environment handling
+  * Improved environment customization 
+  * Better documentation
+
 October 3rd, 2012. Moving to GITHub.
 
 August 7th, 2012. ALE 0.3.1.
