@@ -1,6 +1,6 @@
 /* *****************************************************************************
  * A.L.E (Atari 2600 Learning Environment)
- * Copyright (c) 2009-2010 by Yavar Naddaf
+ * Copyright (c) 2009-2013 by Yavar Naddaf
  * Released under GNU General Public License www.gnu.org/licenses/gpl-3.0.txt
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"

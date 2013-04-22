@@ -7,6 +7,12 @@
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
+ * *****************************************************************************
+ *  stella_environment.cpp
+ *
+ *  A class that wraps around the Stella core to provide users with a typical
+ *  reinforcement learning environment interface.
+ *  
  **************************************************************************** */
 
 #include "stella_environment.hpp"

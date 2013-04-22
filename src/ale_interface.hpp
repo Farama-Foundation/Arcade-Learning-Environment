@@ -1,5 +1,20 @@
-#ifndef ALE_INTERFACE_H
-#define ALE_INTERFACE_H
+/* *****************************************************************************
+ * A.L.E (Arcade Learning Environment)
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare,
+ *  Matthew Hausknecht, and the Reinforcement Learning and Artificial Intelligence 
+ *  Laboratory
+ * Released under the GNU General Public License; see License.txt for details. 
+ *
+ * Based on: Stella  --  "An Atari 2600 VCS Emulator"
+ * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
+ *
+ * *****************************************************************************
+ *  ale_interface.hpp
+ *
+ *  The shared library interface.
+ **************************************************************************** */
+#ifndef __ALE_INTERFACE_HPP__
+#define __ALE_INTERFACE_HPP__
 
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
