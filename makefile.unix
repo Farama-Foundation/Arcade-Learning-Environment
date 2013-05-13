@@ -57,12 +57,12 @@ OBJS +=
 DEFINES +=  -DUNIX -DHAS_ALTIVEC -DUSE_NASM -DBSPF_UNIX -DHAVE_INTTYPES -DWINDOWED_SUPPORT  -DHAVE_GETTIMEOFDAY -DSNAPSHOT_SUPPORT 
 LDFLAGS += 
 
-ifeq ("$(USE_SDL)", "1")
+ifeq ($(strip $(USE_SDL)), 1)
   DEFINES +=  -D__USE_SDL
   LIBS += $(LIBS_SDL)
 endif
 
-ifeq ("$(USE_RLGLUE)", "1")
+ifeq ($(strip $(USE_RLGLUE)), 1)
   DEFINES +=  -D__USE_RLGLUE
   LIBS += $(LIBS_RLGLUE)
 endif
@@ -73,7 +73,7 @@ endif
 
 CXXFLAGS += -Wall -Wno-multichar -Wunused -fno-rtti -fPIC
 
-ifeq ("$(DEBUG)", "1")
+ifeq ($(strip $(DEBUG)), 1)
   CXXFLAGS += -g -O0
 else
   CXXFLAGS += -O3
