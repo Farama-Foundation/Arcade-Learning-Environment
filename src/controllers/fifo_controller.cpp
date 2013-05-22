@@ -52,7 +52,6 @@ void FIFOController::run() {
 
   // Main loop
   while (!isDone()) { 
-    // @todo frame skip
     // Send data over to agent
     sendData();
     // Read agent's response & process it
@@ -100,13 +99,14 @@ void FIFOController::handshake() {
   char in_buffer [1024];
   fgets (in_buffer, sizeof(in_buffer), m_fin);
 
-  // Parse response: send_screen, send_ram, frame_skip, send_RL
+  // Parse response: send_screen, send_ram, <obsolete>, send_RL
   char * token = strtok (in_buffer,",\n");
   m_send_screen = atoi(token);
   token = strtok (NULL,",\n");
   m_send_ram = atoi(token);
   token = strtok (NULL,",\n");
-  m_frame_skip = atoi(token);
+  // Used to be frame skip; now obsolete
+  atoi(token);
   token = strtok(NULL, ",\n");
   m_send_rl = atoi(token);
 }

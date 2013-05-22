@@ -118,6 +118,9 @@ command-line arguments.
   -max_num_frames_per_episode ### -- max. number of frames per episode
     default: 0
 
+  -frame_skip ### -- frame skipping rate; 1 indicates no frame skip 
+    default: 1
+
   -system_reset_steps ### -- how many frames to hold reset button for 
       Should be >= 2.
     default: 4
@@ -213,10 +216,10 @@ g++ -I/home/marc/ale_0_4/src -L/home/marc/ale_0_4
   -lale -lz sharedLibraryInterfaceExample.cpp 
 \end{verbatim}
 
-or alternatively
+or alternatively by appropriately setting paths in \verb+ale_0_4/doc/examples/Makefile.sharedlibrary+ before running 
 
 \begin{verbatim}
-make sharedLibraryAgent
+ale_0_4/doc/examples> make sharedLibraryAgent
 \end{verbatim}
 
 To run the agent, you may need to add ALE to your library path:
@@ -253,9 +256,7 @@ The agent then responds with a comma-separated string:
 s,r,k,R\n
 \end{verbatim}
 
-where \verb+s+, \verb+r+, \verb+R+ are 1 or 0 to indicate that ALE should or should not send, at every time step, screen, RAM and episode-related information (see below for details). The third argument, \verb+k+, correspond to a desired frame skip: if greater than 0, then \verb+k+ frames are skipped between every observation.
-
-\textbf{Note.} Frame skipping is currently incompletely supported and should be set to 0.
+where \verb+s+, \verb+r+, \verb+R+ are 1 or 0 to indicate that ALE should or should not send, at every time step, screen, RAM and episode-related information (see below for details). The third argument, \verb+k+, is deprecated and currently ignored.
 
 \subsection{Main Loop -- ALE}
 

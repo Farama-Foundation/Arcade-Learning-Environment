@@ -43,7 +43,11 @@ class StellaEnvironment {
     void load();
 
     /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
-      *  and performs one simulation step in Stella. Returns the resultant reward. */
+      *  and performs one simulation step in Stella. Returns the resultant reward. When 
+      *  frame skip is set to > 1, up the corresponding number of simulation steps are performed.
+      *  Note that the post-act() frame number might not correspond to the pre-act() frame
+      *  number plus the frame skip.
+      */
     reward_t act(Action player_a_action, Action player_b_action);
 
     /** Returns true once we reach a terminal state */
@@ -61,6 +65,9 @@ class StellaEnvironment {
     int getEpisodeFrameNumber() const { return m_episode_frame_number; }
 
   private:
+    /** This applies an action exactly one time step. Helper function to act(). */
+    reward_t oneStepAct(Action player_a_action, Action player_b_action);
+
     /** Actually emulates the emulator for a given number of steps. */
     void emulate(Action player_a_action, Action player_b_action, size_t num_steps = 1);
 
@@ -95,6 +102,7 @@ class StellaEnvironment {
     bool m_colour_averaging; // Whether to average frames
     bool m_stochastic_start; // Whether to "draw" the environment from a random distribution
     int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
+    size_t m_frame_skip; // How many frames to emulate per act()
 
     bool m_backward_compatible_save; // Enable the save/load mechanism from ALE 0.2 (no stack)
 };

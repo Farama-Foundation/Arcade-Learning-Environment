@@ -46,6 +46,12 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
 
   m_backward_compatible_save = m_osystem->settings().getBool("backward_compatible_save");
   m_stochastic_start = m_osystem->settings().getBool("use_environment_distribution");
+  
+  m_frame_skip = m_osystem->settings().getInt("frame_skip");
+  if (m_frame_skip < 1) {
+    fprintf (stderr, "Warning: frame skip set to < 1. Setting to 1.\n");
+    m_frame_skip = 1;
+  }
 }
 
 /** Resets the system to its start state. */
@@ -129,9 +135,21 @@ void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & pl
     player_b_action = (Action)PLAYER_B_NOOP;
 }
 
+reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) {
+  // Total reward received as we repeat the action
+  reward_t sum_rewards = 0;
+
+  // Apply the same action for a given number of times... note that act() will refuse to emulate 
+  //  past the terminal state
+  for (size_t i = 0; i < m_frame_skip; i++)
+    sum_rewards += oneStepAct(player_a_action, player_b_action);
+
+  return sum_rewards;
+}
+
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
   *  and performs one simulation step in Stella. */
-reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) {
+reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_action) {
   // Once in a terminal state, refuse to go any further (special actions must be handled
   //  outside of this environment; in particular reset() should be called rather than passing
   //  RESET or SYSTEM_RESET.

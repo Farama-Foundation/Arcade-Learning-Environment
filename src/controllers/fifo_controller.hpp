@@ -46,7 +46,6 @@ class FIFOController : public ALEController {
     int m_max_num_frames; // Maximum number of total frames before we stop
     bool m_run_length_encoding; // Whether to encode the data in a run-length fashion
 
-    int m_frame_skip;  // Requested frame skip
     bool m_send_screen; // Agent requested screen data
     bool m_send_ram; // Agent requested RAM data
     bool m_send_rl; // Agent requested RL data

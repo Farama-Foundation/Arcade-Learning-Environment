@@ -201,7 +201,7 @@ void RLGlueController::envMessage() {
   unsigned int messageLength;
   unsigned int offset = 0;
 
-  rlBufferRead(&m_buffer, offset, &messageLength, 1, sizeof(int));
+  offset = rlBufferRead(&m_buffer, offset, &messageLength, 1, sizeof(int));
   // This could, of course, be stored somewhere for efficiency reasons
   if (messageLength > 0) {
     char * message = new char[messageLength+1];
@@ -211,7 +211,7 @@ void RLGlueController::envMessage() {
 
     std::cerr << "Message from RL-Glue: " << message << std::endl;
 
-    delete message;
+    delete[] message;
   }
 }
 

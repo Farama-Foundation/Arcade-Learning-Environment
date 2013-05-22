@@ -1,3 +1,6 @@
+May 22nd, 2013. ALE 0.4.1.
+  * Added frame skipping support directly in StellaEnvironment.
+
 April 22nd, 2013. ALE 0.4.0.
   * RL-Glue support 
   * Shared library interface

@@ -37,6 +37,7 @@ void setDefaultSettings(Settings &settings) {
     settings.setBool("use_environment_distribution", false);
     settings.setString("random_seed", "time");
     settings.setBool("disable_color_averaging", false);
+    settings.setInt("frame_skip", 1);
 
     // Display Settings
     settings.setBool("display_screen", false);
