@@ -1,5 +1,6 @@
 May 22nd, 2013. ALE 0.4.1.
   * Added frame skipping support directly in StellaEnvironment.
+  * Reverted default number of episodes to 10.
 
 April 22nd, 2013. ALE 0.4.0.
   * RL-Glue support 
