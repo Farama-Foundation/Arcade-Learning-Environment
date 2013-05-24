@@ -129,7 +129,7 @@ void RLGlueController::envInit() {
     "VERSION RL-Glue-3.0 "+
     "PROBLEMTYPE episodic "+
     "DISCOUNTFACTOR 1 "+ // Goal is to maximize score... avoid unpleasant tradeoffs with 1 
-    "OBSERVATION INTS (128 0 255)(33600 0 127) "+ // RAM, then screen
+    "OBSERVATIONS INTS (128 0 255)(33600 0 127) "+ // RAM, then screen
     //"ACTIONS INTS (0 17) "+ // Inactive PlayerB 
     "ACTIONS INTS (0 17)(18 35) "+ // Two actions: player A and player B
     "REWARDS (UNSPEC UNSPEC) "+ // While rewards are technically bounded, this is safer 
