@@ -1,3 +1,6 @@
+May 24th, 2013. Bug fix to ALE 0.4.1.
+  * Fixed RL-Glue syntax from OBSERVATION to OBSERVATIONS. Thanks to Angus MacIsaac for picking this bug up.
+
 May 22nd, 2013. ALE 0.4.1.
   * Added frame skipping support directly in StellaEnvironment.
   * Reverted default number of episodes to 10.
