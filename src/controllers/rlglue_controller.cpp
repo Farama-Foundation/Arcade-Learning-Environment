@@ -58,6 +58,16 @@ void RLGlueController::initRLGlue() {
   const char* host = kLocalHost;
   short port = kDefaultPort;
 
+  const char* envptr = 0;
+ 
+  envptr = getenv("RLGLUE_PORT");  
+  if (envptr != 0) {
+    port = strtol(envptr, 0, 10);
+    if (port == 0) {
+      port = kDefaultPort;
+    }
+  }
+
   rlBufferCreate(&m_buffer, 4096);
 
   m_connection = rlWaitForConnection(host, port, kRetryTimeout);
