@@ -234,6 +234,14 @@ public:
     void loadState() {
         environment->load();
     }
+
+    ALEState cloneState() {
+      return environment->cloneState();
+    }
+
+    void restoreState(const ALEState& state) {
+      return environment->restoreState(state);
+    }
 };
 
 #endif
