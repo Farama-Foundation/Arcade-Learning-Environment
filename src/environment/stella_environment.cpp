@@ -92,7 +92,7 @@ void StellaEnvironment::reset() {
 /** Save/restore the environment state. */
 void StellaEnvironment::save() {
   // Store the current state into a new object
-  ALEState new_state = m_state.save(m_osystem, m_settings, m_cartridge_md5);
+  ALEState new_state = cloneState();
 
   if (m_backward_compatible_save) { // 0.2, 0.3: overwrite on save
     while (!m_saved_states.empty())
@@ -109,7 +109,7 @@ void StellaEnvironment::load() {
   ALEState& target_state = m_saved_states.top(); 
  
   // Deserialize it into 'm_state'
-  m_state.load(m_osystem, m_settings, m_cartridge_md5, target_state);
+  restoreState(target_state);
 
   if (m_backward_compatible_save) { // 0.2, 0.3: persistent save 
   }
@@ -117,6 +117,17 @@ void StellaEnvironment::load() {
     m_saved_states.pop();
   }
 }
+
+/** Returns a copy of the current emulator state. */
+ALEState StellaEnvironment::cloneState() {
+  return m_state.save(m_osystem, m_settings, m_cartridge_md5);
+}
+
+/** Restores a previously saved copy of the state. */
+void StellaEnvironment::restoreState(const ALEState& target_state) {
+  m_state.load(m_osystem, m_settings, m_cartridge_md5, target_state);
+}
+
 
 void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & player_b_action) {
   if (player_a_action < (Action)PLAYER_B_NOOP && 

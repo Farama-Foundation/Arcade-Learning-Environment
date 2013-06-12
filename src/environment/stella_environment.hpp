@@ -38,9 +38,14 @@ class StellaEnvironment {
     /** Resets the system to its start state. */
     void reset();
 
-    /** Save/restore the environment state. */
+    /** Save/restore the environment state onto the stack. */
     void save();
     void load();
+
+    /** Returns a copy of the current emulator state. */
+    ALEState cloneState();
+    /** Restores a previously saved copy of the state. */
+    void restoreState(const ALEState&);
 
     /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
       *  and performs one simulation step in Stella. Returns the resultant reward. When 

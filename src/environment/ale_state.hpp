@@ -37,13 +37,6 @@ class ALEState {
     // Makes a copy of this state, also storing emulator information provided as a string
     ALEState(const ALEState &rhs, std::string serialized);
 
-    /** Restores the environment to a previously saved state. */ 
-    void load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs);
-
-    /** Returns a "copy" of the current state, including the information necessary to restore
-      *  the emulator. */
-    ALEState save(OSystem* osystem, RomSettings* settings, std::string md5);
-
     /** Resets the system to its start state. numResetSteps 'RESET' actions are taken after the
       *  start. */
     void reset(int numResetSteps = 1);
@@ -62,6 +55,14 @@ class ALEState {
   protected:
     // Let StellaEnvironment access these methods: they are needed for emulation purposes
     friend class StellaEnvironment;
+
+    // The two methods below are meant to be used by StellaEnvironment.
+    /** Restores the environment to a previously saved state. */ 
+    void load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs);
+
+    /** Returns a "copy" of the current state, including the information necessary to restore
+      *  the emulator. */
+    ALEState save(OSystem* osystem, RomSettings* settings, std::string md5);
 
     /** Reset key presses */
     void resetKeys(Event* event_obj);
