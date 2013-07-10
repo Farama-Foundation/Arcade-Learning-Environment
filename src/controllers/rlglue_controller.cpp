@@ -154,7 +154,8 @@ void RLGlueController::envStart() {
   m_environment.reset();
 
   // Create the observation (we don't need reward/terminal here, but it's easier this way)
-  reward_observation_terminal_t ro = constructRewardObservationTerminal();
+  reward_t reset_reward = 0;
+  reward_observation_terminal_t ro = constructRewardObservationTerminal(reset_reward);
 
   // Copy into buffer
   rlBufferClear(&m_buffer);
@@ -177,9 +178,9 @@ void RLGlueController::envStep() {
   filterActions(player_a_action, player_b_action);
  
   // Pass these actions to ALE
-  applyActions(player_a_action, player_b_action);
+  reward_t reward = applyActions(player_a_action, player_b_action);
 
-  reward_observation_terminal_t ro = constructRewardObservationTerminal();
+  reward_observation_terminal_t ro = constructRewardObservationTerminal(reward);
 
   // Copy relevant data into the buffer
   rlBufferClear(&m_buffer);
@@ -222,7 +223,7 @@ void RLGlueController::filterActions(Action& player_a_action, Action& player_b_a
     player_b_action = PLAYER_B_NOOP;
 }
 
-reward_observation_terminal_t RLGlueController::constructRewardObservationTerminal() {
+reward_observation_terminal_t RLGlueController::constructRewardObservationTerminal(reward_t reward) {
   reward_observation_terminal_t ro;
   
   int index = 0;
@@ -238,7 +239,7 @@ reward_observation_terminal_t RLGlueController::constructRewardObservationTermin
   ro.observation = &m_observation;
 
   // Fetch reward, terminal from the game settings
-  ro.reward = m_settings->getReward();
+  ro.reward = reward;
   ro.terminal = m_settings->isTerminal();
 
   __RL_CHECK_STRUCT(ro.observation)
