@@ -42,7 +42,8 @@ void ALEController::display() {
     display->display_screen(m_osystem->console().mediaSource());
 }
 
-void ALEController::applyActions(Action player_a, Action player_b) {
+reward_t ALEController::applyActions(Action player_a, Action player_b) {
+  reward_t sum_rewards = 0;
   // Perform different operations based on the first player's action 
   switch (player_a) {
     case LOAD_STATE: // Load system state
@@ -58,8 +59,9 @@ void ALEController::applyActions(Action player_a, Action player_b) {
       break;
     default:
       // Pass action to emulator!
-      m_environment.act(player_a, player_b);
+      sum_rewards = m_environment.act(player_a, player_b);
       break;
   }
+  return sum_rewards;
 }
 
