@@ -71,9 +71,7 @@ void InternalController::run() {
         episodeStep(action_a, action_b);
     
       // Apply said actions
-      applyActions(action_a, action_b);
-
-      m_episode_score += m_settings->getReward();
+      m_episode_score += applyActions(action_a, action_b);
     }
 
     // Display if necessary

@@ -58,7 +58,7 @@ class RLGlueController : public ALEController {
 
     /** RL-Glue helper methods. */
 
-    reward_observation_terminal_t constructRewardObservationTerminal();
+    reward_observation_terminal_t constructRewardObservationTerminal(reward_t reward);
     /** Filters the action received by RL-Glue */
     void filterActions(Action& player_a_action, Action& player_b_action);
 
