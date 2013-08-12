@@ -19,6 +19,7 @@
 
 #ifdef __USE_RLGLUE
 #include <stdio.h>
+#include <stdlib.h> // getenv
 #include <cassert>
 
 #include "../environment/ale_ram.hpp"
