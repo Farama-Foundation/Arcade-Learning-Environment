@@ -1,5 +1,6 @@
 June 12th, 2013. ALE 0.4.2. 
   * Modified StellaEnvironment save/load interface to provide additional flexibility. 
+  * Series of bug fixes from Matthew Hausknecht and community.
 
 May 24th, 2013. Bug fix to ALE 0.4.1.
   * Fixed RL-Glue syntax from OBSERVATION to OBSERVATIONS. Thanks to Angus MacIsaac for picking this bug up.
