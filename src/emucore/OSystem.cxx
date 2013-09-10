@@ -40,7 +40,6 @@
 #include "PropsSet.hxx"
 //ALE   #include "EventHandler.hxx"
 #include "Event.hxx"            //ALE 
-#include "EventStreamer.hxx"
 //ALE   #include "Menu.hxx"
 //ALE   #include "CommandMenu.hxx"
 //ALE   #include "Launcher.hxx"
@@ -118,7 +117,6 @@ OSystem::~OSystem()
 
   delete myPropSet;
   //ALE  delete myEventHandler;
-//  delete myEventStreamer; //ALE 
   delete myEvent;           //ALE 
   if (p_export_screen) {
       delete p_export_screen;
@@ -150,9 +148,8 @@ bool OSystem::create()
   //ALE  myEventHandler->initialize();
   
   // Create the streamer used for accessing eventstreams/recordings
-//  myEventStreamer = new EventStreamer(this);
   // Create the event object which will be used for this handler
-  myEvent = new Event(NULL);
+  myEvent = new Event();
   // Create a properties set for us to use and set it up
   myPropSet = new PropertiesSet(this);
 

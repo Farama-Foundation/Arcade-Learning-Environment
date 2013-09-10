@@ -17,12 +17,10 @@
 //============================================================================
 
 #include "Event.hxx"
-#include "EventStreamer.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Event::Event(EventStreamer* ev)
+Event::Event()
   : myNumberOfTypes(Event::LastType)
-//ALE     myEventStreamer(ev)
 {
   // Set all of the events to 0 / false to start with,
   // including analog paddle events.  Doing it this way
@@ -50,12 +48,6 @@ Int32 Event::get(Type type) const
 void Event::set(Type type, Int32 value)
 {
   myValues[type] = value;
-
-/* FIXME - add full functionality at some point
-  // Add to history if we're in recording mode
-  if(myEventStreamer->isRecording())
-    myEventStreamer->addEvent(type, value);
-*/
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

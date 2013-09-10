@@ -22,7 +22,6 @@
 #include "m6502/src/bspf/src/bspf.hxx"
 
 class Event;
-class EventStreamer;
 
 /**
   @author  Bradford W. Mott
@@ -90,7 +89,7 @@ class Event
     /**
       Create a new event object and use the given eventstreamer
     */
-    Event(EventStreamer* ev);
+    Event();
  
     /**
       Destructor
@@ -119,9 +118,6 @@ class Event
 
     // Array of values associated with each event type
     Int32 myValues[LastType];
-
-    // The eventstreamer to record events to
-//ALE     EventStreamer* myEventStreamer;
 };
 
 #endif

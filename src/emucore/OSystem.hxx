@@ -39,7 +39,6 @@ class VideoDialog;
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "../common/export_screen.h" //ALE
 #include "../common/display_screen.h" //MHAUSKN
-class EventStreamer; //ALE 
 
 struct Resolution {
   uInt32 width;
@@ -424,9 +423,6 @@ class OSystem
     //ALE  EventHandler* myEventHandler;
     // Global Event object  //ALE 
     Event* myEvent;
-    
-    // The EventStreamer to use for loading/saving eventstreams
-//ALE     EventStreamer* myEventStreamer;
 
     // Pointer to the FrameBuffer object
     //ALE  FrameBuffer* myFrameBuffer;
