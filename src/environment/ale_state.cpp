@@ -55,6 +55,11 @@ ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::string md5
   return ALEState(*this, ser.get_str());
 }
 
+void ALEState::incrementFrame(int steps /* = 1 */) {
+    m_frame_number++;
+}
+
+
 /* ***************************************************************************
  *  Calculates the Paddle resistance, based on the given x val
  * ***************************************************************************/

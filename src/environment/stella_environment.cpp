@@ -172,6 +172,8 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
   
   // Emulate in the emulator
   emulate(player_a_action, player_b_action);
+  m_state.incrementFrame();
+
   // Increment the number of frames seen so far
   m_frame_number++;
   m_episode_frame_number++;

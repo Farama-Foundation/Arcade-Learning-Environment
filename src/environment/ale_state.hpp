@@ -52,6 +52,8 @@ class ALEState {
     /** Sets the joystick events. No effect until the emulator is run forward. */
     void setActionJoysticks(Event* event_obj, int player_a_action, int player_b_action);
 
+    void incrementFrame(int steps = 1);
+
   protected:
     // Let StellaEnvironment access these methods: they are needed for emulation purposes
     friend class StellaEnvironment;
