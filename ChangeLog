@@ -1,3 +1,6 @@
+January 7th, 2013. ALE 0.4.3.
+  * Fixed a bug with ALEState's m_frame_number.
+
 June 12th, 2013. ALE 0.4.2. 
   * Modified StellaEnvironment save/load interface to provide additional flexibility. 
   * Series of bug fixes from Matthew Hausknecht and community.
