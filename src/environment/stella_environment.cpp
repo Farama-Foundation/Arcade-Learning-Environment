@@ -21,9 +21,7 @@
 StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_osystem(osystem),
   m_settings(settings),
-  m_phosphor_blend(osystem),
-  m_frame_number(0),
-  m_episode_frame_number(0),
+  m_phosphor_blend(osystem),  
   m_screen(m_osystem->console().mediaSource().height(),
         m_osystem->console().mediaSource().width()) {
 
@@ -58,9 +56,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
 void StellaEnvironment::reset() {
   // RNG for generating environments
   Random randGen;
-
-  m_episode_frame_number = 0;
-
+  
+  m_state.resetEpisodeFrameNumber();
   // Reset the paddles
   m_state.resetPaddles(m_osystem->event());
 
@@ -152,8 +149,9 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
 
   // Apply the same action for a given number of times... note that act() will refuse to emulate 
   //  past the terminal state
-  for (size_t i = 0; i < m_frame_skip; i++)
+  for (size_t i = 0; i < m_frame_skip; i++) {
     sum_rewards += oneStepAct(player_a_action, player_b_action);
+  }
 
   return sum_rewards;
 }
@@ -172,18 +170,15 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
   
   // Emulate in the emulator
   emulate(player_a_action, player_b_action);
-  m_state.incrementFrame();
-
   // Increment the number of frames seen so far
-  m_frame_number++;
-  m_episode_frame_number++;
+  m_state.incrementFrame();
 
   return m_settings->getReward();
 }
 
 bool StellaEnvironment::isTerminal() {
   return (m_settings->isTerminal() || 
-    (m_max_num_frames_per_episode > 0 && m_episode_frame_number >= m_max_num_frames_per_episode));
+    (m_max_num_frames_per_episode > 0 && m_state.m_episode_frame_number >= m_max_num_frames_per_episode));
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {

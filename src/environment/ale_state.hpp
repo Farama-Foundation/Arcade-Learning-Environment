@@ -53,6 +53,15 @@ class ALEState {
     void setActionJoysticks(Event* event_obj, int player_a_action, int player_b_action);
 
     void incrementFrame(int steps = 1);
+    
+    void resetEpisodeFrameNumber();
+    
+    //Get the frames executed so far
+    const int getFrameNumber() const { return m_frame_number;   }
+
+    //Get the number of frames executed this episode.
+    const int getEpisodeFrameNumber() const { return m_episode_frame_number; }
+
 
   protected:
     // Let StellaEnvironment access these methods: they are needed for emulation purposes
@@ -82,7 +91,8 @@ class ALEState {
     int m_left_paddle;   // Current value for the left-paddle
     int m_right_paddle;  // Current value for the right-paddle
 
-    int m_frame_number; // Current frame number
+    int m_frame_number; // How many frames since the start
+    int m_episode_frame_number; // How many frames since the beginning of this episode
 
     string m_serialized_state; // The stored environment state, if this is a saved state
 
