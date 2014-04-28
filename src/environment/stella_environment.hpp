@@ -66,8 +66,8 @@ class StellaEnvironment {
     const ALEScreen &getScreen() const { return m_screen; }
     const ALERAM &getRAM() const { return m_ram; }
 
-    int getFrameNumber() const { return m_frame_number; }
-    int getEpisodeFrameNumber() const { return m_episode_frame_number; }
+    int getFrameNumber() const { return m_state.getFrameNumber(); }
+    int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
   private:
     /** This applies an action exactly one time step. Helper function to act(). */
@@ -93,9 +93,7 @@ class StellaEnvironment {
 
     std::stack<ALEState> m_saved_states; // States are saved on a stack
     
-    ALEState m_state; // Current environment state
-    int m_frame_number; // How many frames since the start
-    int m_episode_frame_number; // How many frames since the beginning of this episode
+    ALEState m_state; // Current environment state    
     ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)
     ALERAM m_ram; // The current ALE RAM
 

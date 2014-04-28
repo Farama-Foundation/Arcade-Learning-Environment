@@ -183,8 +183,7 @@ public:
     // to check if the game has ended and reset when necessary - this method will keep pressing
     // buttons on the game over screen.
     reward_t act(Action action) {
-        environment->act(action, PLAYER_B_NOOP);
-        reward_t reward = settings->getReward();
+        reward_t reward = environment->act(action, PLAYER_B_NOOP);        
         if (display_active)
             theOSystem->p_display_screen->display_screen(theOSystem->console().mediaSource());
         return reward;
