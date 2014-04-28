@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <memory>
+#include <vector>
 
 typedef unsigned char pixel_t;
 
@@ -39,7 +40,7 @@ class ALEScreen {
     pixel_t *getRow(int r) const;
     
     /** Access the whole array */
-    pixel_t *getArray() const { return (pixel_t*)m_pixels.get(); }
+    pixel_t *getArray() const { return const_cast<pixel_t *>(&m_pixels[0]); }
 
     /** Dimensionality information */
     size_t height() const { return m_rows; }
@@ -55,36 +56,31 @@ class ALEScreen {
     int m_rows;
     int m_columns;
 
-    std::auto_ptr<pixel_t> m_pixels; 
+    std::vector<pixel_t> m_pixels; 
 };
 
 inline ALEScreen::ALEScreen(int h, int w):
   m_rows(h),
   m_columns(w),
   // Create a pixel array of the requisite size
-  m_pixels(new pixel_t[m_rows * m_columns]) {
+  m_pixels(m_rows * m_columns) {
 }
 
 inline ALEScreen::ALEScreen(const ALEScreen &rhs):
   m_rows(rhs.m_rows),
   m_columns(rhs.m_columns),
-  m_pixels(new pixel_t[m_rows * m_columns]) {
+  m_pixels(rhs.m_pixels) {
 
-  // Copy data over
-  memcpy(m_pixels.get(), rhs.m_pixels.get(), arraySize());
 }
 
 inline ALEScreen& ALEScreen::operator=(const ALEScreen &rhs) {
-  // If array dimensions are mistmatched, must reallocate the array
-  if (m_rows != rhs.m_rows || m_columns != rhs.m_columns) {
-    m_rows = rhs.m_rows;
-    m_columns = rhs.m_columns;
-
-    m_pixels.reset(new pixel_t[m_rows * m_columns]);
-  }
   
-  // Copy data over 
-  memcpy(m_pixels.get(), rhs.m_pixels.get(), arraySize());
+  m_rows = rhs.m_rows;
+  m_columns = rhs.m_columns;
+
+  // We rely here on the std::vector constructor doing something sensible (i.e. not wasteful)
+  // inside its assignment operator
+  m_pixels = rhs.m_pixels;
 
   return *this;
 }
@@ -92,26 +88,26 @@ inline ALEScreen& ALEScreen::operator=(const ALEScreen &rhs) {
 inline bool ALEScreen::equals(const ALEScreen &rhs) const {
   return (m_rows == rhs.m_rows &&
           m_columns == rhs.m_columns &&
-          (memcmp(m_pixels.get(), rhs.m_pixels.get(), arraySize()) == 0) );
+          (memcmp(&m_pixels[0], &rhs.m_pixels[0], arraySize()) == 0) );
 }
 
 // pixel accessors, (row, column)-ordered
 inline pixel_t ALEScreen::get(int r, int c) const {
   // Perform some bounds-checking
   assert (r >= 0 && r < m_rows && c >= 0 && c < m_columns);
-  return m_pixels.get()[r * m_columns + c];
+  return m_pixels[r * m_columns + c];
 }
 
 inline pixel_t* ALEScreen::pixel(int r, int c) {
   // Perform some bounds-checking
   assert (r >= 0 && r < m_rows && c >= 0 && c < m_columns);
-  return &(m_pixels.get()[r * m_columns + c]);
+  return &m_pixels[r * m_columns + c];
 }
 
 // Access a whole row
 inline pixel_t* ALEScreen::getRow(int r) const {
   assert (r >= 0 && r < m_rows);
-  return &(m_pixels.get()[r * m_columns]);
+  return const_cast<pixel_t*>(&m_pixels[r * m_columns]);
 }
 
 
