@@ -178,7 +178,8 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
 
 bool StellaEnvironment::isTerminal() {
   return (m_settings->isTerminal() || 
-    (m_max_num_frames_per_episode > 0 && m_state.m_episode_frame_number >= m_max_num_frames_per_episode));
+    (m_max_num_frames_per_episode > 0 && 
+     m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {
