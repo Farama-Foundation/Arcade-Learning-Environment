@@ -1,3 +1,10 @@
+April 28th, 2014. ALE 0.4.4.
+  * Fixed a memory issue in ALEScreen.
+
+April 26th, 2014. Bug fix (Mayank Daswani).
+  * Fixed issues with frame numbers not being correctly updated.
+  * Fixed a bug where total reward was not properly reported under frame skipping. 
+
 January 7th, 2013. ALE 0.4.3.
   * Fixed a bug with ALEState's m_frame_number.
 
