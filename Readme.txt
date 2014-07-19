@@ -1,4 +1,4 @@
-This is the 0.3 release of the Arcade Learning Environment (ALE), a platform 
+This is the 0.4 release of the Arcade Learning Environment (ALE), a platform 
 designed for AI research. ALE is based on Stella, an Atari 2600 VCS emulator. 
 More information and ALE-related publications can be found at
 
@@ -61,20 +61,18 @@ General Agents
 
 If you use ALE in your research, we ask that you please cite the following.
 
-M. G. Bellemare, Y. Naddaf, J. Veness, and M. Bowling. The arcade learning environment: An evaluation platform for general agents. ArXiv e-prints, July 2012. ArXiv:1207.4708.
+M. G. Bellemare, Y. Naddaf, J. Veness and M. Bowling. The Arcade Learning Environment: An Evaluation Platform for General Agents, Journal of Artificial Intelligence Research, Volume 47, pages 253-279, 2013.
 
 In BibTeX format:
 
-@ARTICLE{bellemare12arcade,
+@ARTICLE{bellemare13arcade,
   author = {{Bellemare}, M.~G. and {Naddaf}, Y. and {Veness}, J. and {Bowling}, M.},
   title = {The Arcade Learning Environment: An Evaluation Platform for General Agents},
-  journal = {ArXiv e-prints},
-  archivePrefix = "arXiv",
-  eprint = {1207.4708},
-  primaryClass = "cs.AI",
-  keywords = {Computer Science - Artificial Intelligence},
-  year = 2012,
-  month = jul,
+  journal = {Journal of Artificial Intelligence Research},
+  year = "2013",
+  month = "jun",
+  volume = "47",
+  pages = "253--279",
 }
 
 
