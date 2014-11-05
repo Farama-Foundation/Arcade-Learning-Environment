@@ -148,7 +148,7 @@ $(EXECUTABLE):  $(OBJS)
 	$(LD) $(LDFLAGS) $(PRE_OBJS_FLAGS) $+ $(POST_OBJS_FLAGS) $(LIBS) $(PROF) -o $@
 
 $(LIBRARY): $(OBJS)
-	$(LD) $(LDFLAGS) -shared -o $(LIBRARY) $(OBJS)        
+	$(LD) $(LDFLAGS) -shared -o $(LIBRARY) $(OBJS) $(LIBS)
 
 distclean: clean
 	$(RM_REC) $(DEPDIRS)
