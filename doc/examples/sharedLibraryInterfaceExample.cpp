@@ -24,9 +24,14 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    // Load the ROM file
     ALEInterface ale;
 
-    // Load the ROM file
+    // Set the desired settings
+    ale.set("random_seed", 123);
+
+    // Load the ROM. (Also resets the system for new settings to take
+    // effect.)
     ale.loadROM(argv[1]);
 
     // Get the vector of legal actions
@@ -45,4 +50,3 @@ int main(int argc, char** argv) {
         ale.reset_game();
     }
 };
-

@@ -71,10 +71,14 @@ int main(int argc, char* argv[]) {
   disableBufferedIO();
 
   std::cerr << welcomeMessage() << endl;
-    
-  createOSystem(argc, argv, theOSystem, theSettings);
 
-  // Create the game controller 
+  createOSystem(theOSystem, theSettings);
+  // Process commandline arguments, which over-ride all possible
+  // config file settings
+  string romfile = theOSystem->settings().loadCommandLine(argc, argv);
+  loadSettings(romfile, theOSystem);
+
+  // Create the game controller
   std::string controller_type = theOSystem->settings().getString("game_controller");
   std::auto_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
 
@@ -86,4 +90,3 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
-
