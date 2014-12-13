@@ -412,9 +412,17 @@ bool OSystem::createConsole(const string& romfile)
   p_export_screen = new ExportScreen(this); //ALE 
 
   if (mySettings->getBool("display_screen", true)) {
-      int screen_width = myConsole->mediaSource().width();
-      int screen_height = myConsole->mediaSource().height();
-      p_display_screen = new DisplayScreen(p_export_screen, screen_width, screen_height);
+#ifndef __USE_SDL
+    std::cerr << "Screen display requires directive __USE_SDL to be defined."
+              << " Please recompile with flag '-D__USE_SDL'."
+              << " See makefile for more information."
+              << std::endl;
+    exit(1);
+#endif
+    int screen_width = myConsole->mediaSource().width();
+    int screen_height = myConsole->mediaSource().height();
+    p_display_screen = new DisplayScreen(p_export_screen, screen_width,
+                                         screen_height);
   }
 
   return retval;
@@ -446,6 +454,10 @@ void OSystem::deleteConsole()
     delete p_export_screen;     //ALE 
     p_export_screen = NULL;     //ALE 
   }                             //ALE 
+  if (p_display_screen) {       //ALE
+    delete p_display_screen;    //ALE
+    p_display_screen = NULL;    //ALE 
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
