@@ -78,7 +78,7 @@ static void loadSettings(const string& romfile,
   string outputFile = theOSystem->settings().getString("output_file", false);
   if (!outputFile.empty()) {
     cerr << "Redirecting ... " << outputFile << endl;
-    freopen(outputFile.c_str(), "w", stdout);
+    FILE* fp = freopen(outputFile.c_str(), "w", stdout);
   }
 
   // Attempt to load the ROM
