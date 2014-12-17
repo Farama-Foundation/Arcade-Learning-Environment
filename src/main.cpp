@@ -68,13 +68,17 @@ static ALEController* createController(OSystem* osystem, std::string type) {
 /* application entry point */
 int main(int argc, char* argv[]) {
 
-  disableBufferedIO();
+  ALEInterface::disableBufferedIO();
 
-  std::cerr << welcomeMessage() << endl;
-    
-  createOSystem(argc, argv, theOSystem, theSettings);
+  std::cerr << ALEInterface::welcomeMessage() << endl;
 
-  // Create the game controller 
+  ALEInterface::createOSystem(theOSystem, theSettings);
+  // Process commandline arguments, which over-ride all possible
+  // config file settings
+  string romfile = theOSystem->settings().loadCommandLine(argc, argv);
+  ALEInterface::loadSettings(romfile, theOSystem);
+
+  // Create the game controller
   std::string controller_type = theOSystem->settings().getString("game_controller");
   std::auto_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
 
@@ -86,4 +90,3 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
-

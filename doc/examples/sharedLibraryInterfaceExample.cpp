@@ -26,7 +26,12 @@ int main(int argc, char** argv) {
 
     ALEInterface ale;
 
-    // Load the ROM file
+    // Get & Set the desired settings
+    int max_frames_per_episode = ale.getInt("max_num_frames_per_episode");
+    ale.set("random_seed", 123);
+
+    // Load the ROM file. (Also resets the system for new settings to
+    // take effect.)
     ale.loadROM(argv[1]);
 
     // Get the vector of legal actions
@@ -45,4 +50,3 @@ int main(int argc, char** argv) {
         ale.reset_game();
     }
 };
-
