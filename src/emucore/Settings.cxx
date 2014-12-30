@@ -300,7 +300,7 @@ void Settings::usage() {
        " Environment arguments:\n"
        "   -max_num_episodes n\n"
        "     The program will quit after this number of episodes. 0 means never.\n"
-       "    default: 0\n"
+       "    default: 10\n"
        "   -max_num_frames m\n"  
        "     The program will quit after this number of frames. 0 means never.\n"
        "    default: 0\n"
