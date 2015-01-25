@@ -143,6 +143,7 @@ command-line arguments.
 
   -disable_color_averaging <true|false> -- if true, disables colour averaging 
     default: false
+
 \end{verbatim}
 }
 
@@ -175,6 +176,17 @@ command-line arguments.
 
 \end{verbatim}
 }
+
+\subsection{RL-Glue Interface Arguments}
+
+\small{
+\begin{verbatim}
+  -send_rgb [true|false] -- if true, RGB values are sent for each pixel
+      instead of the pallette index values
+    default: false
+\end{verbatim}
+}
+
 
 \section{Internal Interface}\label{sec:internal_interface}
 
@@ -376,9 +388,16 @@ Please refer to the RL-Glue documentation for more details.
 The action space consists of both Player A and Player B's actions (see Section 
 \ref{sec:available_actions}
 for details). In general, Player B's action may safely be set to noop (18). The observation
-space consists in 33728 integers: first the 128 bytes of RAM (taking values in 0--255), then the 
-33,600 screen pixels (taking value in 0--127). The screen is provided in row-order, i.e. beginning
-with the 160 pixels that compose the first row.
+space depends on whether the \verb+-send_rgb+ argument was passed to ALE. If it was not passed, 
+or it was set to false, the observation space consists of 33728 integers: first the 128 bytes 
+of RAM (taking values in 0--255), then the 33,600 screen pixels (taking value in 0--127). The 
+screen is provided in row-order, i.e. beginning with the 160 pixels that compose the first row.
+
+ If \verb+-send_rgb+ was set to true on the command-line, the observation space consists of 100928 
+ integers: first the same 128 bytes of RAM, followed by 100,800 bytes describing the screen.
+ Each pixel is described by three bytes, taking values from 0--255, specifying the pixel's 
+ red, green and blue components in that order. The pixel order is the same as in the default
+ case.
 
 \section{Environment Specifications}\label{sec:environment_specifications}
 

@@ -25,9 +25,6 @@
 #include "../environment/ale_ram.hpp"
 #include <rlglue/utils/C/RLStruct_util.h>
 
-// How many observation dimensions
-#define NUM_OBSERVATION_DIMENSIONS (128 + 210*160)
-
 RLGlueController::RLGlueController(OSystem* _osystem) :
   ALEController(_osystem) {
   m_max_num_frames = m_osystem->settings().getInt("max_num_frames");
@@ -135,22 +132,37 @@ void RLGlueController::envInit() {
   unsigned int taskSpecLength = 0;
   unsigned int offset = 0;
  
+  bool send_rgb = m_osystem->settings().getBool("send_rgb");
+
+  unsigned int observation_dimensions;
+  if (send_rgb) {
+    observation_dimensions = 128 + 210 * 160 * 3;
+  } else {
+    observation_dimensions = 128 + 210 * 160;
+  }
+
   // Possibly this should be one big snprintf.
   std::string taskSpec = std::string("") +
-    "VERSION RL-Glue-3.0 "+
-    "PROBLEMTYPE episodic "+
-    "DISCOUNTFACTOR 1 "+ // Goal is to maximize score... avoid unpleasant tradeoffs with 1 
-    "OBSERVATIONS INTS (128 0 255)(33600 0 127) "+ // RAM, then screen
-    //"ACTIONS INTS (0 17) "+ // Inactive PlayerB 
-    "ACTIONS INTS (0 17)(18 35) "+ // Two actions: player A and player B
-    "REWARDS (UNSPEC UNSPEC) "+ // While rewards are technically bounded, this is safer 
+    "VERSION RL-Glue-3.0 "
+    "PROBLEMTYPE episodic "
+    "DISCOUNTFACTOR 1 " // Goal is to maximize score... avoid unpleasant tradeoffs with 1 
+    "OBSERVATIONS INTS (128 0 255)"; //RAM
+
+  if (send_rgb) {
+    taskSpec += "(100800 0 255) "; // Screen specified as an RGB triple per pixel
+  } else {
+    taskSpec += "(33600 0 127) "; // Screen specified as one pallette index per pixel
+  }
+
+  taskSpec += "ACTIONS INTS (0 17)(18 35) " // Two actions: player A and player B
+    "REWARDS (UNSPEC UNSPEC) " // While rewards are technically bounded, this is safer 
     "EXTRA Name: Arcade Learning Environment ";
 
   taskSpecLength = taskSpec.length();
  
   // Allocate...? 
   allocateRLStruct(&m_rlglue_action, 2, 0, 0);
-  allocateRLStruct(&m_observation, NUM_OBSERVATION_DIMENSIONS, 0, 0);
+  allocateRLStruct(&m_observation, observation_dimensions, 0, 0);
 
   // First write the task-spec length
   rlBufferClear(&m_buffer);
@@ -244,8 +256,22 @@ reward_observation_terminal_t RLGlueController::constructRewardObservationTermin
   // Copy RAM and screen into our big int-vector observation 
   for (size_t i = 0; i < ram.size(); i++)
     m_observation.intArray[index++] = ram.get(i);
-  for (size_t i = 0; i < screen.arraySize(); i++)
-    m_observation.intArray[index++] = screen.getArray()[i];
+
+  if (m_osystem->settings().getBool("send_rgb")) {
+    size_t arraySize = screen.arraySize();
+    pixel_t *screenArray = screen.getArray();
+    int red, green, blue;
+    for (size_t i = 0; i < arraySize; i++) {
+      m_osystem->p_export_screen->
+          get_rgb_from_palette(screenArray[i], red, green, blue);
+      m_observation.intArray[index++] = red;
+      m_observation.intArray[index++] = green;
+      m_observation.intArray[index++] = blue;
+    }
+  } else {
+    for (size_t i = 0; i < screen.arraySize(); i++)
+      m_observation.intArray[index++] = screen.getArray()[i];
+  }
 
   ro.observation = &m_observation;
 
