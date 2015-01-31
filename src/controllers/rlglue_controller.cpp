@@ -257,8 +257,12 @@ reward_observation_terminal_t RLGlueController::constructRewardObservationTermin
   for (size_t i = 0; i < ram.size(); i++)
     m_observation.intArray[index++] = ram.get(i);
 
+  size_t arraySize = screen.arraySize();
+
   if (m_osystem->settings().getBool("send_rgb")) {
-    size_t arraySize = screen.arraySize();
+    // Make sure we've allocated enough space for this
+    assert (arraySize * 3 + ram.size() == m_observation.numInts);
+
     pixel_t *screenArray = screen.getArray();
     int red, green, blue;
     for (size_t i = 0; i < arraySize; i++) {
@@ -269,7 +273,8 @@ reward_observation_terminal_t RLGlueController::constructRewardObservationTermin
       m_observation.intArray[index++] = blue;
     }
   } else {
-    for (size_t i = 0; i < screen.arraySize(); i++)
+    assert (arraySize + ram.size() == m_observation.numInts);
+    for (size_t i = 0; i < arraySize; i++)
       m_observation.intArray[index++] = screen.getArray()[i];
   }
 
