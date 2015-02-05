@@ -141,6 +141,21 @@ void RLGlueController::envInit() {
     observation_dimensions = 128 + 210 * 160;
   }
 
+  std::string action_spec = "ACTIONS INTS (0 ";
+  if (m_osystem->settings().getBool("restricted_action_set")) {
+    // Use minimal number of actions
+    char max_action_player_a[21]; 
+    int num_actions;
+
+    num_actions = m_settings->getMinimalActionSet().size();
+    sprintf(max_action_player_a, "%d", num_actions - 1);
+
+    action_spec += max_action_player_a;
+    action_spec += ") "; // Only player A gets to play here
+  } else {
+    action_spec += "17)(18 35) "; // Player A and player B inputs
+  }
+  
   // Possibly this should be one big snprintf.
   std::string taskSpec = std::string("") +
     "VERSION RL-Glue-3.0 "
@@ -154,7 +169,7 @@ void RLGlueController::envInit() {
     taskSpec += "(33600 0 127) "; // Screen specified as one pallette index per pixel
   }
 
-  taskSpec += "ACTIONS INTS (0 17)(18 35) " // Two actions: player A and player B
+  taskSpec += action_spec +
     "REWARDS (UNSPEC UNSPEC) " // While rewards are technically bounded, this is safer 
     "EXTRA Name: Arcade Learning Environment ";
 
@@ -193,13 +208,28 @@ void RLGlueController::envStep() {
   offset = rlCopyBufferToADT(&m_buffer, offset, &m_rlglue_action);
   __RL_CHECK_STRUCT(&m_rlglue_action);
 
-  // We expect here an integer-valued action
-  Action player_a_action = (Action)m_rlglue_action.intArray[0];
-  Action player_b_action = (Action)m_rlglue_action.intArray[1]; 
+  bool restricted_action_set = m_osystem->settings().getBool("restricted_action_set");
 
-  // Filter out non-regular actions ... let RL-Glue deal with those
-  filterActions(player_a_action, player_b_action);
- 
+  Action player_a_action, player_b_action;
+  
+  if (restricted_action_set) {
+    ActionVect legal_actions = m_settings->getMinimalActionSet();
+    player_b_action  = (Action)PLAYER_B_NOOP; // No player B action input on restricted action set
+    int player_a_action_index = m_rlglue_action.intArray[0];
+    if (player_a_action_index >= legal_actions.size()) // Filter for actions outside the expected range
+      player_a_action_index = 0;
+    player_a_action = legal_actions[player_a_action_index];
+  } else {
+    // Default case
+
+    // We expect here an integer-valued action
+    player_a_action = (Action)m_rlglue_action.intArray[0]; 
+    player_b_action = (Action)m_rlglue_action.intArray[1]; 
+
+    // Filter out non-regular actions ... let RL-Glue deal with those
+    filterActions(player_a_action, player_b_action);
+  }
+
   // Pass these actions to ALE
   reward_t reward = applyActions(player_a_action, player_b_action);
 
