@@ -317,7 +317,7 @@ void Settings::usage() {
        "      of actions is applied after each reset\n"
        "    default: false\n\n"
        "   -restricted_action_set [true|false] -- if true, agents use a smaller set of\n" 
-       "      actions (internal interface only)\n"
+       "      actions (internal and RL-Glue interfaces only)\n"
        "    default: false\n\n"
        "   -backward_compatible_save [true|false] -- if true, uses ALE 0.2's\n" 
        "      save/load state mechanism\n"

@@ -134,7 +134,7 @@ command-line arguments.
     default: false
 
   -restricted_action_set <true|false> -- if true, agents use a smaller set of 
-      actions (internal interface only)
+      actions (internal and RL-Glue interfaces only)
     default: false
 
   -backward_compatible_save <true|false> -- if true, uses ALE 0.2's 
@@ -387,11 +387,13 @@ Please refer to the RL-Glue documentation for more details.
 
 The action space consists of both Player A and Player B's actions (see Section 
 \ref{sec:available_actions}
-for details). In general, Player B's action may safely be set to noop (18). The observation
-space depends on whether the \verb+-send_rgb+ argument was passed to ALE. If it was not passed, 
-or it was set to false, the observation space consists of 33,728 integers: first the 128 bytes 
-of RAM (taking values in 0--255), then the 33,600 screen pixels (taking value in 0--127). The 
-screen is provided in row-order, i.e. beginning with the 160 pixels that compose the first row.
+for details). In general, Player B's action may safely be set to noop (18) but it should be left out
+altogether if the \verb+-restricted_action_set+ command--line argument was set to true. 
+
+The observation space depends on whether the \verb+-send_rgb+ argument was passed to ALE. If it was
+not passed,  or it was set to false, the observation space consists of 33,728 integers: first the
+128 bytes of RAM (taking values in 0-- 255), then the 33,600 screen pixels (taking value in 0--127).
+The screen is provided in row-order, i.e. beginning with the 160 pixels that compose the first row.
 
  If \verb+-send_rgb+ was set to true on the command-line, the observation space consists of 100,928 
  integers: first the same 128 bytes of RAM, followed by 100,800 bytes describing the screen.
