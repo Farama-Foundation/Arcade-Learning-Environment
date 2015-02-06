@@ -1,4 +1,4 @@
-This is the 0.4 release of the Arcade Learning Environment (ALE), a platform 
+This is the 1.0 release of the Arcade Learning Environment (ALE), a platform 
 designed for AI research. ALE is based on Stella, an Atari 2600 VCS emulator. 
 More information and ALE-related publications can be found at
 
@@ -28,9 +28,6 @@ available at http://www.arcadelearningenvironment.org.
 
 -config [file] -- specifies a configuration file, from which additional 
   parameters are read
-
--output_file [file] -- if set, standard output is redirected to the given file.
-  Do not use in conjunction with -game_controller fifo_named
 
 -run_length_encoding [false|true] -- determine whether run-length encoding is
   used to send data over pipes; irrelevant when -game_controller internal is 

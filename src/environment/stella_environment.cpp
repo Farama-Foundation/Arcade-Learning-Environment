@@ -33,17 +33,11 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   } else {
     m_use_paddles = false;
   }
-
+  m_num_reset_steps = 4;
   m_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
   
-  m_num_reset_steps = atoi(m_osystem->settings().getString("system_reset_steps").c_str());
-  m_use_starting_actions = m_osystem->settings().getBool("use_starting_actions");
-  
   m_max_num_frames_per_episode = m_osystem->settings().getInt("max_num_frames_per_episode");
-  m_colour_averaging = !m_osystem->settings().getBool("disable_color_averaging");
-
-  m_backward_compatible_save = m_osystem->settings().getBool("backward_compatible_save");
-  m_stochastic_start = m_osystem->settings().getBool("use_environment_distribution");
+  m_colour_averaging = !m_osystem->settings().getBool("color_averaging");
   
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
@@ -66,10 +60,7 @@ void StellaEnvironment::reset() {
 
   // NOOP for 60 steps in the deterministic environment setting, or some random amount otherwise 
   int noopSteps;
-  if (m_stochastic_start)
-    noopSteps = 60 + rand() % NUM_RANDOM_ENVIRONMENTS;
-  else
-    noopSteps = 60;
+  noopSteps = 60;
 
   emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, noopSteps);
   // reset for n steps
@@ -79,10 +70,9 @@ void StellaEnvironment::reset() {
   m_settings->reset();
   
   // Apply necessary actions specified by the rom itself
-  if (m_use_starting_actions) {
-    ActionVect startingActions = m_settings->getStartingActions();
-    for (size_t i = 0; i < startingActions.size(); i++)
-      emulate(startingActions[i], PLAYER_B_NOOP);
+  ActionVect startingActions = m_settings->getStartingActions();
+  for (size_t i = 0; i < startingActions.size(); i++){
+    emulate(startingActions[i], PLAYER_B_NOOP);
   }
 }
 
@@ -90,15 +80,7 @@ void StellaEnvironment::reset() {
 void StellaEnvironment::save() {
   // Store the current state into a new object
   ALEState new_state = cloneState();
-
-  if (m_backward_compatible_save) { // 0.2, 0.3: overwrite on save
-    while (!m_saved_states.empty())
-      m_saved_states.pop();
-    m_saved_states.push(new_state);
-  }
-  else { // 0.4 and above: put it on the stack
-    m_saved_states.push(new_state);
-  }
+  m_saved_states.push(new_state);
 }
 
 void StellaEnvironment::load() {
@@ -107,12 +89,7 @@ void StellaEnvironment::load() {
  
   // Deserialize it into 'm_state'
   restoreState(target_state);
-
-  if (m_backward_compatible_save) { // 0.2, 0.3: persistent save 
-  }
-  else { // 0.4 and above: take it off the stack
-    m_saved_states.pop();
-  }
+  m_saved_states.pop();
 }
 
 /** Returns a copy of the current emulator state. */
@@ -221,14 +198,14 @@ const ALEState& StellaEnvironment::getState() const {
 }
 
 void StellaEnvironment::processScreen() {
-  if (!m_colour_averaging) {
+  if (m_colour_averaging) {
+    // Perform phosphor averaging; the blender stores its result in the given screen
+    m_phosphor_blend.process(m_screen);
+  }
+  else {
     // Copy screen over and we're done! 
     memcpy(m_screen.getArray(), 
       m_osystem->console().mediaSource().currentFrameBuffer(), m_screen.arraySize());
-  }
-  else {
-    // Perform phosphor averaging; the blender stores its result in the given screen
-    m_phosphor_blend.process(m_screen);
   }
 }
 

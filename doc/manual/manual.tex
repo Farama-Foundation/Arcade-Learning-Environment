@@ -98,8 +98,6 @@ command-line arguments.
   -display_screen <true|false> -- if true and SDL is enabled, displays ALE screen
     default: false
 
-  -output_file <filename> -- redirects standard output (shared library interface only)
-    default: unset
 \end{verbatim}
 }
 
@@ -121,27 +119,11 @@ command-line arguments.
   -frame_skip ### -- frame skipping rate; 1 indicates no frame skip 
     default: 1
 
-  -system_reset_steps ### -- how many frames to hold reset button for 
-      Should be >= 2.
-    default: 4
-
-  -use_environment_distribution <true|false> -- if true, the environment start 
-      state is drawn from a distribution of states
-    default: false
-
-  -use_starting_actions <true|false> -- if true, a game-specific sequence
-      of actions is applied after each reset
-    default: false
-
   -restricted_action_set <true|false> -- if true, agents use a smaller set of 
       actions (internal interface only)
     default: false
 
-  -backward_compatible_save <true|false> -- if true, uses ALE 0.2's 
-      save/load state mechanism
-    default: false
-
-  -disable_color_averaging <true|false> -- if true, disables colour averaging 
+  -color_averaging <true|false> -- if true, enables colour averaging 
     default: false
 
 \end{verbatim}
@@ -470,9 +452,7 @@ blend of the last two frames. This behaviour can be turned off using the command
 
 The Atari 2600 games, as emulated by Stella, are deterministic. Sometimes it may be of interest
 to add a tiny amount of stochasticity to prevent agents from simply learning a trajectory by
-rote. This is done via the command-line argument \verb+-use_environment_distribution+. Effectively,
-the start state is slightly randomized by applying a random number of noop actions before
-resetting the game; this influences the game timing sufficiently for our purposes.
+rote. This is done \textbf{TODO}.
 
 \subsection{Minimal Action Set}
 

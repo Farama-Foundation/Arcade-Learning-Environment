@@ -61,12 +61,6 @@ void ALEInterface::loadSettings(const string& romfile,
   theOSystem->settings().validate();
   theOSystem->create();
 
-  string outputFile = theOSystem->settings().getString("output_file", false);
-  if (!outputFile.empty()) {
-    cerr << "Redirecting ... " << outputFile << endl;
-    FILE* fp = freopen(outputFile.c_str(), "w", stdout);
-  }
-
   // Attempt to load the ROM
   if (romfile == "" || !FilesystemNode::fileExists(romfile)) {
     std::cerr << "No ROM File specified or the ROM file was not found."

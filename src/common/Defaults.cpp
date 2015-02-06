@@ -25,7 +25,6 @@ void setDefaultSettings(Settings &settings) {
     settings.setInt("max_num_episodes", 10);
     settings.setInt("max_num_frames", 0);
     settings.setInt("max_num_frames_per_episode", 0);
-    settings.setInt("system_reset_steps", 4);
 
     // FIFO controller settings
     settings.setBool("run_length_encoding", true);
@@ -33,10 +32,8 @@ void setDefaultSettings(Settings &settings) {
     // Environment customization settings
     settings.setBool("record_trajectory", false);
     settings.setBool("restricted_action_set", false);
-    settings.setBool("use_starting_actions", true);
-    settings.setBool("use_environment_distribution", false);
     settings.setString("random_seed", "time");
-    settings.setBool("disable_color_averaging", false);
+    settings.setBool("color_averaging", false);
     settings.setBool("send_rgb", false);
     settings.setInt("frame_skip", 1);
 
