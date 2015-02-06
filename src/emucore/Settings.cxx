@@ -305,7 +305,7 @@ void Settings::usage() {
        "     Ends each episode after this number of frames. 0 means never.\n"
        "    default: 0\n"
        "   -restricted_action_set [true|false] -- if true, agents use a smaller set of\n" 
-       "      actions (internal interface only)\n"
+       "      actions (internal and RL-Glue interfaces only)\n"
        "    default: false\n\n"
        "   -color_averaging [true|false] -- if true, enables color averaging\n" 
        "    default: false\n\n"
