@@ -35,7 +35,6 @@
 #include "controllers/ale_controller.hpp"
 #include "controllers/fifo_controller.hpp"
 #include "controllers/rlglue_controller.hpp"
-#include "controllers/internal_controller.hpp"
 #include "common/Constants.h"
 #include "ale_interface.hpp"
 
@@ -43,7 +42,11 @@ static std::auto_ptr<OSystem> theOSystem(NULL);
 static std::auto_ptr<Settings> theSettings(NULL);
 
 static ALEController* createController(OSystem* osystem, std::string type) {
-  if (type == "fifo") {
+  if(type.empty()){
+    std::cerr << "You must inform a controller type." << std::endl;
+    exit(1);
+  }
+  else if (type == "fifo") {
     std::cerr << "Game will be controlled through FIFO pipes." << std::endl;
     return new FIFOController(osystem, false);
   } 
@@ -55,10 +58,6 @@ static ALEController* createController(OSystem* osystem, std::string type) {
     std::cerr << "Game will be controlled through RL-Glue." << std::endl;
     return new RLGlueController(osystem); 
   } 
-  else if (type == "internal") {
-    std::cerr << "Game will be controlled by an internal agent." << std::endl;
-    return new InternalController(osystem); 
-  }
   else {
     std::cerr << "Invalid controller type: " << type << " " << std::endl;
     exit(1);

@@ -20,9 +20,6 @@ void setDefaultSettings(Settings &settings) {
     settings.setString("random_seed", "time");
 
     // Controller settings
-    settings.setString("game_controller", "internal");
-    settings.setString("player_agent", "random_agent");
-    settings.setInt("max_num_episodes", 10);
     settings.setInt("max_num_frames", 0);
     settings.setInt("max_num_frames_per_episode", 0);
 
@@ -30,7 +27,6 @@ void setDefaultSettings(Settings &settings) {
     settings.setBool("run_length_encoding", true);
 
     // Environment customization settings
-    settings.setBool("record_trajectory", false);
     settings.setBool("restricted_action_set", false);
     settings.setString("random_seed", "time");
     settings.setBool("color_averaging", false);

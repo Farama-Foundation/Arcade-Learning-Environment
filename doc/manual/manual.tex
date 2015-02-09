@@ -23,7 +23,6 @@ for agents communicating with ALE via stdin/stdout.
 The following ways of interfacing with ALE are detailed in this document:
 
 \begin{itemize}
-  \item{\textbf{Internal interface.} Internal agents are directly compiled inside ALE (Section \ref{sec:internal_interface}).}
   \item{\textbf{Shared library interface.} Loads ALE as a shared library (Section \ref{sec:shared_library_interface}).}
   \item{\textbf{FIFO interface.} Communicates with ALE through a text interface (Section \ref{sec:pipes_interface}).}
   \item{\textbf{RL-Glue interface.} Communicates with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).}
@@ -62,7 +61,6 @@ The following sample agents are available:
 
 \begin{itemize}
   \item{\textbf{Java agents / FIFO interface.} Refer to the accompanying ALE Java Agent tutorial.}
-  \item{\textbf{C++ agent / internal interface.} See Section \ref{sec:internal_interface}.}
   \item{\textbf{C++ agent / shared library interface.} See Section \ref{sec:shared_library_interface} and \\ 
     \verb+ale_0_4/doc/examples/sharedLibraryInterfaceExample.cpp+.}
   \item{\textbf{C++ agent / RL-Glue interface.} See Section \ref{sec:rlglue_interface} and \\
@@ -71,14 +69,15 @@ The following sample agents are available:
 
 \section{Command-line Arguments}
 
-Command-line arguments are passed to ALE before the ROM filename. For example, assuming you
-have the appropriate ROM file saved in the directory \verb+ale_0_4/roms+, the following runs
-the internal random agent on Space Invaders:
+Command-line arguments are passed to ALE before the ROM filename. TODO: Provide a different
+example to use the command-line arguments (if any, since we removed the internal agent).
+%: For example, assuming you have the appropriate ROM file saved in the directory 
+%\verb+ale_0_4/roms+, the following runs the internal random agent on Space Invaders:
 
-\begin{verbatim}
-ale_0_4> ./ale -game_controller internal -player_agent random_agent  
-  roms/space_invaders.bin
-\end{verbatim}
+%\begin{verbatim}
+%ale_0_4> ./ale -game_controller internal -player_agent random_agent  
+%  roms/space_invaders.bin
+%\end{verbatim}
 
 The configuration file \verb+ale_0_4/stellarc+ can also be used to set frequently used
 command-line arguments. 
@@ -89,8 +88,8 @@ command-line arguments.
 
   -help -- prints out help information
 
-  -game_controller <internal|fifo|fifo_named|rlglue> -- selects an ALE interface
-    default: internal
+  -game_controller <fifo|fifo_named|rlglue> -- selects an ALE interface
+    default: unset
 
   -random_seed <###|time> -- picks the ALE random seed, or sets it to current time
     default: time
@@ -105,9 +104,6 @@ command-line arguments.
 
 \small{
 \begin{verbatim}
-  -max_num_episodes ### -- max. number of episodes, or 0 for no maximum 
-      (internal interface only)
-    default: 10
 
   -max_num_frames ### -- max. total number of frames, or 0 for no maximum 
       (not in shared library interface)
@@ -120,7 +116,7 @@ command-line arguments.
     default: 1
 
   -restricted_action_set <true|false> -- if true, agents use a smaller set of 
-      actions (internal and RL-Glue interfaces only)
+      actions (RL-Glue interfaces only)
     default: false
 
   -color_averaging <true|false> -- if true, enables colour averaging 
@@ -139,26 +135,6 @@ command-line arguments.
 \end{verbatim}
 }
 
-\subsection{Internal Interface Arguments}
-
-\small{
-\begin{verbatim}
-  -record_trajectory <true|false> -- if true, records the agent's first trajectory
-      (the trajectory is output after all episodes have been played) 
-    default: false
-
-  -player_agent <random_agent|single_action_agent|keyboard_agent>
-      random_agent -- an agent that selects actions uniformly at random
-      single_action_agent -- an agent that takes the same action most of the time
-      keyboard_agent -- an "agent" controlled via keyboard (requires SDL)
-    default: random_agent
-
-  -agent_epsilon ### -- probability of a random action in single_action_agent
-    default: unset
-
-\end{verbatim}
-}
-
 \subsection{RL-Glue Interface Arguments}
 
 \small{
@@ -168,26 +144,6 @@ command-line arguments.
     default: false
 \end{verbatim}
 }
-
-
-\section{Internal Interface}\label{sec:internal_interface}
-
-The internal interface is used by agents compiled together with ALE. Three such agents
-can be found under 
-
-\begin{verbatim}
-ale_0_4/src/agents
-\end{verbatim}
-
-These agents are the random agent, the single-action agent and the keyboard agent\footnote{The keyboard agent requires SDL support.}.
-
-For example, assuming that your ROM files are under the directory \verb+ale_0_4/roms+, the
-random agent can be run on Space Invaders with the following command:
-
-\begin{verbatim}
-ale_0_4> ./ale -game_controller internal -player_agent random_agent  
-  roms/space_invaders.bin
-\end{verbatim}
 
 \section{Shared Library Interface}\label{sec:shared_library_interface}
 
@@ -414,7 +370,7 @@ Player B's actions are the same as those of Player A, but with 18 added. For exa
 up action corresponds to the integer 20.
 
 In addition to the regular ALE actions, the following actions are also processed by the 
-internal and FIFO interfaces:
+FIFO interfaces:
 
 \begin{center}
 \begin{tabular}{|r|r|r|r|r|}
