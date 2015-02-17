@@ -326,7 +326,9 @@ ALE */
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::createSound()
 {
-  delete mySound;  mySound = NULL;
+  if (mySound != NULL)
+    delete mySound;
+
   //ALE  mySound = MediaFactory::createAudio(this);
    mySound = new SoundNull(this); //ALE 
 #ifndef SOUND_SUPPORT
