@@ -95,7 +95,7 @@ ALEInterface::ALEInterface() {
   createOSystem(theOSystem, theSettings);
 }
 
-ALEInterface::ALEInterface(bool display_screen=false) {
+ALEInterface::ALEInterface(bool display_screen) {
   disableBufferedIO();
   std::cerr << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
