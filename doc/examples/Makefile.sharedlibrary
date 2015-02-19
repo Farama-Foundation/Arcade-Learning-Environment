@@ -1,17 +1,34 @@
 # Modified from the RL-Glue C/C++ codec sharedLibraryInterfaceExample's makefile.
 
+USE_SDL := 0
+
 # This will likely need to be changed to suit your installation.
 ALE := ../..
 
-FLAGS := -I$(ALE)/src -L$(ALE) -Wl,-rpath=$(ALE)
+FLAGS := -I$(ALE)/src -L$(ALE)
 CXX := g++
 FILE := sharedLibraryInterfaceExample
 LDFLAGS := -lale -lz
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+    FLAGS += -Wl,-rpath=$(ALE)
+    LIBS_SDL := -lSDL -lSDL_gfx -lSDL_image -lSDLmain
+endif
+ifeq ($(UNAME_S),Darwin)
+    FLAGS += -framework Cocoa
+    LIBS_SDL := -lsdl -lsdl_gfx -lsdl_image -lsdlmain
+endif
+
+ifeq ($(strip $(USE_SDL)), 1)
+  DEFINES += -D__USE_SDL
+  LDFLAGS += $(LIBS_SDL)
+endif
+
 all: sharedLibraryInterfaceExample
 
 sharedLibraryInterfaceExample:
-	$(CXX) $(FLAGS) $(FILE).cpp $(LDFLAGS) -o $(FILE)
+	$(CXX) $(DEFINES) $(FLAGS) $(FILE).cpp $(LDFLAGS) -o $(FILE)
 
 clean:
 	rm -rf sharedLibraryInterfaceExample *.o
