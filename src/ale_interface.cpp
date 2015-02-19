@@ -50,7 +50,7 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
 }
 
 void ALEInterface::loadSettings(const string& romfile,
-                         std::auto_ptr<OSystem> &theOSystem) {
+                                std::auto_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
   string configFile = theOSystem->settings().getString("config", false);
@@ -191,8 +191,12 @@ bool ALEInterface::game_over() {
 reward_t ALEInterface::act(Action action) {
   reward_t reward = environment->act(action, PLAYER_B_NOOP);
   if (theOSystem->p_display_screen != NULL) {
-    theOSystem->p_display_screen->display_screen(
-        theOSystem->console().mediaSource());
+    theOSystem->p_display_screen->display_screen();
+    while (theOSystem->p_display_screen->manual_control_engaged()) {
+      Action user_action = theOSystem->p_display_screen->getUserAction();
+      environment->act(user_action, PLAYER_B_NOOP);
+      theOSystem->p_display_screen->display_screen();
+    }
   }
   return reward;
 }

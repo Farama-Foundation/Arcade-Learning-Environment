@@ -409,7 +409,7 @@ bool OSystem::createConsole(const string& romfile)
   if(size != -1) {
     delete[] image;
   }
-  p_export_screen = new ExportScreen(this); //ALE 
+  p_export_screen = new ExportScreen(this); //ALE
 
   if (mySettings->getBool("display_screen", true)) {
 #ifndef __USE_SDL
@@ -419,10 +419,8 @@ bool OSystem::createConsole(const string& romfile)
               << std::endl;
     exit(1);
 #endif
-    int screen_width = myConsole->mediaSource().width();
-    int screen_height = myConsole->mediaSource().height();
-    p_display_screen = new DisplayScreen(p_export_screen, screen_width,
-                                         screen_height);
+    p_display_screen = new DisplayScreen(&myConsole->mediaSource(),
+                                         p_export_screen);
   }
 
   return retval;
