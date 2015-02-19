@@ -95,6 +95,13 @@ ALEInterface::ALEInterface() {
   createOSystem(theOSystem, theSettings);
 }
 
+ALEInterface::ALEInterface(bool display_screen) {
+  disableBufferedIO();
+  std::cerr << welcomeMessage() << std::endl;
+  createOSystem(theOSystem, theSettings);
+  this->set("display_screen", display_screen);
+}
+
 ALEInterface::~ALEInterface() {}
 
 // Loads and initializes a game. After this call the game should be

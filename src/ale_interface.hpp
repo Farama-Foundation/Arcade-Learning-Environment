@@ -36,6 +36,8 @@ class ALEInterface {
 public:
   ALEInterface();
   ~ALEInterface();
+  // Legacy constructor
+  ALEInterface(bool display_screen);
 
   // Get the value of a setting.
   std::string getString(const std::string& key);
