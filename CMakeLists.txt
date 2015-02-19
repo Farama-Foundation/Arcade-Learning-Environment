@@ -41,6 +41,7 @@ else()
 endif()
 
 include_directories(
+  ${SOURCE_DIR}
   ${SOURCE_DIR}/common
   ${SOURCE_DIR}/controllers
   ${SOURCE_DIR}/emucore
@@ -58,3 +59,8 @@ set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
 
 target_link_libraries(ale ${LINK_LIBS})
 target_link_libraries(ale-bin ${LINK_LIBS})
+
+link_directories(${CMAKE_CURRENT_SOURCE_DIR})
+add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
+set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+target_link_libraries(sharedLibraryInterfaceExample ale)
