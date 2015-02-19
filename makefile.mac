@@ -11,7 +11,7 @@ DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     :=
 # /opt/local/include for MacPorts
 INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/opt/local/include -Isrc/environment  
-LIBS_SDL := -lSDL
+LIBS_SDL    := -lSDL -lSDLmain
 LIBS_RLGLUE := -lrlutils -lrlgluenetdev
 LIBS	    := -L/opt/local/lib 
 OBJS	    :=

@@ -64,7 +64,10 @@ void DisplayScreen::display_screen() {
         y = i / screen_width;
         x = i - (y * screen_width);
         export_screen->get_rgb_from_palette(pi_curr_frame_buffer[i], r, g, b);
-        rect = {(int)(x * xratio), (int)(y * yratio), xciel, yciel};
+        rect.x = (int)(x * xratio);
+        rect.y = (int)(y * yratio);
+        rect.w = xciel;
+        rect.h = yciel;
         SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, r, g, b));
     }
     if (SDL_MUSTLOCK(screen)) {
