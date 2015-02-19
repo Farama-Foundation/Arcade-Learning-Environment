@@ -16,6 +16,11 @@
 
 #include <iostream>
 #include <ale_interface.hpp>
+
+#ifdef __USE_SDL
+  #include "SDL/SDL.h"
+#endif
+
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -29,6 +34,10 @@ int main(int argc, char** argv) {
     // Get & Set the desired settings
     int max_frames_per_episode = ale.getInt("max_num_frames_per_episode");
     ale.set("random_seed", 123);
+
+#ifdef __USE_SDL
+    ale.set("display_screen", true);
+#endif
 
     // Load the ROM file. (Also resets the system for new settings to
     // take effect.)
