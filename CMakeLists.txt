@@ -3,6 +3,7 @@ project(ale)
 
 option(USE_SDL "Use SDL" OFF)
 option(USE_RLGLUE "Use RL-Glue" OFF)
+option(BUILD_EXAMPLES "Build Example Agents" ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-multichar -Wunused -fno-rtti -fPIC -O3 -fomit-frame-pointer")
 add_definitions(-DHAVE_INTTYPES)
@@ -10,6 +11,7 @@ set(LINK_LIBS z)
 
 if(USE_SDL)
   add_definitions(-D__USE_SDL)
+  add_definitions(-DSOUND_SUPPORT)
   if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -framework Cocoa")
     list(APPEND LINK_LIBS sdl sdlmain)
@@ -53,14 +55,17 @@ include_directories(
   ${SOURCE_DIR}/os_dependent
 )
 
-add_library(ale SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
 add_executable(ale-bin ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
 
-target_link_libraries(ale ${LINK_LIBS})
+target_link_libraries(ale-lib ${LINK_LIBS})
 target_link_libraries(ale-bin ${LINK_LIBS})
 
-link_directories(${CMAKE_CURRENT_SOURCE_DIR})
-add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
-set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
-target_link_libraries(sharedLibraryInterfaceExample ale)
+if(BUILD_EXAMPLES)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
+  set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  target_link_libraries(sharedLibraryInterfaceExample ale)
+endif()

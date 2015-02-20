@@ -14,12 +14,15 @@
  *  Supports displaying the screen via SDL. 
  **************************************************************************** */
 #include "display_screen.h"
+#include "SoundSDL.hxx"
 
 #ifdef __USE_SDL
 DisplayScreen::DisplayScreen(MediaSource* mediaSource,
+                             Sound* sound,
                              ExportScreen* exportScreen):
         manual_control_active(false),
         media_source(mediaSource),
+        my_sound(sound),
         export_screen(exportScreen),
         delay_msec(10)
 {
@@ -40,7 +43,7 @@ DisplayScreen::DisplayScreen(MediaSource* mediaSource,
     }
     SDL_WM_SetCaption("ALE Viz", NULL);
     fprintf(stderr, "Screen Display Active. [Manual Control Mode] 'm' "
-            "[Slowdown] 'a' [Speedup] 's'.\n");
+            "[Slowdown] 'a' [Speedup] 's' [VolumeDown] '[' [VolumeUp] ']'.\n");
 }
 
 DisplayScreen::~DisplayScreen() {
@@ -109,6 +112,20 @@ void DisplayScreen::handleSDLEvent(const SDL_Event& event) {
                     delay_msec = max(0, delay_msec + 5);
                     fprintf(stderr, "[Slowdown] %d msec delay\n", delay_msec);
                     break;
+#ifdef SOUND_SUPPORT
+                case SDLK_LEFTBRACKET:
+                    fprintf(stderr, "[VolumeDown]\n");
+                    for (int i=0; i<5; ++i) {
+                        ((SoundSDL*)my_sound)->adjustVolume(-1);
+                    }
+                    break;
+                case SDLK_RIGHTBRACKET:
+                    fprintf(stderr, "[VolumeUp]\n");
+                    for (int i=0; i<5; ++i) {
+                        ((SoundSDL*)my_sound)->adjustVolume(1);
+                    }
+                    break;
+#endif
                 default:
                     break;
             }
