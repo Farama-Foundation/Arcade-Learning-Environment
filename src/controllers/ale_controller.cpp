@@ -36,10 +36,16 @@ ALEController::ALEController(OSystem* osystem):
 }
 
 void ALEController::display() {
+  // Display the screen if applicable
   DisplayScreen* display = m_osystem->p_display_screen;
-
-  if (display) // Display the screen if applicable
-    display->display_screen(m_osystem->console().mediaSource());
+  if (display) {
+    display->display_screen();
+    while (display->manual_control_engaged()) {
+      Action user_action = display->getUserAction();
+      applyActions(user_action, PLAYER_B_NOOP);
+      display->display_screen();
+    }
+  }
 }
 
 reward_t ALEController::applyActions(Action player_a, Action player_b) {
