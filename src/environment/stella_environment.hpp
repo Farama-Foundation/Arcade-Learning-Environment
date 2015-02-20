@@ -66,6 +66,9 @@ class StellaEnvironment {
     const ALEScreen &getScreen() const { return m_screen; }
     const ALERAM &getRAM() const { return m_ram; }
 
+    /** Saves the current screen as a png image. */
+    void saveScreenPNG(const string& filename);
+
     int getFrameNumber() const { return m_state.getFrameNumber(); }
     int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 

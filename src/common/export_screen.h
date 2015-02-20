@@ -20,8 +20,8 @@
 #define EXPORT_SCREEN_H
 
 #include <vector>
-#include "../emucore/Props.hxx"
 #include "Constants.h"
+#include "ale_screen.hpp"
 
 class OSystem;
 
@@ -29,7 +29,6 @@ class ExportScreen {
     /* *************************************************************************
         This class is responsible for saving the screen matrix to an image file. 
 
-        
         Instance Variables:
             - pi_palette        An array containing the palette
             - p_props           Pointer to a Properties object
@@ -40,16 +39,9 @@ class ExportScreen {
                                 for drawing external info on the screen
     ************************************************************************* */
     public:
-        /* *********************************************************************
-            Constructor
-         ******************************************************************** */
-        ExportScreen(OSystem* osystem);
-
-        /* *********************************************************************
-            Destructor 
-         ******************************************************************** */
+        ExportScreen();
          virtual ~ExportScreen() {}
-        
+
         /* *********************************************************************
             Sets the default palette. This needs to be called before any
             export methods can be called.
@@ -59,35 +51,22 @@ class ExportScreen {
         }
 
         /* *********************************************************************
-            Saves the given screen matrix as a PNG file
-         ******************************************************************** */        
-        void save_png(const IntMatrix* screen_matrix, const string& filename);
+            Saves the given screen as a PNG file
+         ******************************************************************** */
+        void save_png(const ALEScreen& screen, const string& filename);
 
-    /* *********************************************************************
-        Saves a  matrix (e.g. the screen matrix) as a PNG file
-     ******************************************************************** */        
-    void export_any_matrix (    const IntMatrix* screen_matrix, 
-                            const string& filename) const;
-                                         
         /* *********************************************************************
-            Gets the RGB values for a given screen value from the current palette 
-         ******************************************************************** */    
+            Gets the RGB values for a given screen value from the current palette
+         ******************************************************************** */
         void get_rgb_from_palette(int val, int& r, int& g, int& b) const;
 
     protected:
         /* *********************************************************************
-            Initializes the custom palette 
+            Initializes the custom palette
          ******************************************************************** */    
         void init_custom_palette(void);
         void writePNGChunk(ofstream& out, const char* type, uInt8* data, int size) const;
-        void writePNGText(ofstream& out, const string& key, 
-                         const string& text) const;
-
         const uInt32* pi_palette;
-        const Properties* p_props;
-        OSystem* p_osystem;
-        int i_screen_width;      // Width of the screen
-        int i_screen_height;     // Height of the screen
         vector< vector <int> > v_custom_palette;
 };
 

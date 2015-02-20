@@ -19,42 +19,35 @@
 #include <fstream>
 #include <cstring>
 #include <sstream>
-#include "OSystem.hxx"
 #include "export_screen.h"
 #include "random_tools.h"
 
 #include <algorithm>
 
-ExportScreen::ExportScreen(OSystem* osystem) {
-    p_osystem = osystem;
-    pi_palette = NULL;
-    MediaSource& mediasrc = p_osystem->console().mediaSource();
-    p_props = &p_osystem->console().properties();
-    i_screen_width  = mediasrc.width();
-    i_screen_height = mediasrc.height();
+ExportScreen::ExportScreen() {
     init_custom_palette();
 }
 
-        
-/* *********************************************************************
-    Saves the given screen matrix as a PNG file
- ******************************************************************** */        
-void ExportScreen::save_png(const IntMatrix* screen_matrix, const string& filename) {
+void ExportScreen::save_png(const ALEScreen& screen, const string& filename) {
     uInt8* buffer  = (uInt8*) NULL;
     uInt8* compmem = (uInt8*) NULL;
     ofstream out;
-    
+
     try {
+        pixel_t *screenArray = screen.getArray();
+        int i_screen_height = screen.height();
+        int i_screen_width = screen.width();
+
         // Get actual image dimensions. which are not always the same
         // as the framebuffer dimensions
         out.open(filename.c_str(), ios_base::binary);
         if(!out)
             throw "Couldn't open PNG file";
-        
+
         // PNG file header
         uInt8 header[8] = { 137, 80, 78, 71, 13, 10, 26, 10 };
         out.write((const char*)header, 8);
-        
+
         // PNG IHDR
         uInt8 ihdr[13];
         ihdr[0]  = i_screen_width >> 24;   // i_screen_width
@@ -71,7 +64,7 @@ void ExportScreen::save_png(const IntMatrix* screen_matrix, const string& filena
         ihdr[11] = 0;  // PNG_FILTER_TYPE_DEFAULT
         ihdr[12] = 0;  // PNG_INTERLACE_NONE
         writePNGChunk(out, "IHDR", ihdr, 13);
-        
+
         // Fill the buffer with scanline data
         int rowbytes = i_screen_width * 3;
         buffer = new uInt8[(rowbytes + 1) * i_screen_height];
@@ -80,39 +73,34 @@ void ExportScreen::save_png(const IntMatrix* screen_matrix, const string& filena
             *buf_ptr++ = 0;                  // first byte of row is filter type
             for(int j = 0; j < i_screen_width; j++) {
                 int r, g, b;
-                get_rgb_from_palette((*screen_matrix)[i][j], r, g, b);
+                get_rgb_from_palette(screenArray[i*i_screen_width+j], r, g, b);
                 buf_ptr[j * 3 + 0] = r;
                 buf_ptr[j * 3 + 1] = g;
                 buf_ptr[j * 3 + 2] = b;
             }
             buf_ptr += rowbytes;                 // add pitch
         }
-        
+
         // Compress the data with zlib
-        uLongf compmemsize = (uLongf)((i_screen_height * (i_screen_width + 1) 
+        uLongf compmemsize = (uLongf)((i_screen_height * (i_screen_width + 1)
                                         * 3 * 1.001 + 1) + 12);
         compmem = new uInt8[compmemsize];
         if(compmem == NULL ||
-           (compress(compmem, &compmemsize, buffer, i_screen_height * 
+           (compress(compmem, &compmemsize, buffer, i_screen_height *
                                             (i_screen_width * 3 + 1)) != Z_OK))
             throw "Error: Couldn't compress PNG";
-        
+
         // Write the compressed framebuffer data
         writePNGChunk(out, "IDAT", compmem, compmemsize);
-        
-        // Add some info about this snapshot
-        writePNGText(out, "ROM Name", p_props->get(Cartridge_Name));
-        writePNGText(out, "ROM MD5", p_props->get(Cartridge_MD5));
-        writePNGText(out, "Display Format", p_props->get(Display_Format));
-        
+
         // Finish up
         writePNGChunk(out, "IEND", 0, 0);
-        
+
         // Clean up
         if(buffer)  delete[] buffer;
         if(compmem) delete[] compmem;
         out.close();
-        
+
     }
     catch(const char *msg)
     {
@@ -122,98 +110,10 @@ void ExportScreen::save_png(const IntMatrix* screen_matrix, const string& filena
         cerr << msg << endl;
     }
 }
-
-
-/* *********************************************************************
-    Saves a matrix (e.g. the screen matrix)  as a PNG file
- ******************************************************************** */        
-void ExportScreen::export_any_matrix (const IntMatrix* pm_matrix, 
-                                     const string& filename) const {
-    uInt8* buffer  = (uInt8*) NULL;
-    uInt8* compmem = (uInt8*) NULL;
-    ofstream out;
-    int height = pm_matrix->size();
-    int width = (*pm_matrix)[0].size();
-    
-    try {
-        // Get actual image dimensions. which are not always the same
-        // as the framebuffer dimensions
-        out.open(filename.c_str(), ios_base::binary);
-        if(!out)
-            throw "Couldn't open PNG file";
-        
-        // PNG file header
-        uInt8 header[8] = { 137, 80, 78, 71, 13, 10, 26, 10 };
-        out.write((const char*)header, 8);
-        
-        // PNG IHDR
-        uInt8 ihdr[13];
-        ihdr[0]  = width >> 24;   // i_screen_width
-        ihdr[1]  = width >> 16;
-        ihdr[2]  = width >> 8;
-        ihdr[3]  = width & 0xFF;
-        ihdr[4]  = height >> 24;  // i_screen_height
-        ihdr[5]  = height >> 16;
-        ihdr[6]  = height >> 8;
-        ihdr[7]  = height & 0xFF;
-        ihdr[8]  = 8;  // 8 bits per sample (24 bits per pixel)
-        ihdr[9]  = 2;  // PNG_COLOR_TYPE_RGB
-        ihdr[10] = 0;  // PNG_COMPRESSION_TYPE_DEFAULT
-        ihdr[11] = 0;  // PNG_FILTER_TYPE_DEFAULT
-        ihdr[12] = 0;  // PNG_INTERLACE_NONE
-        writePNGChunk(out, "IHDR", ihdr, 13);
-        
-        // Fill the buffer with scanline data
-        int rowbytes = width * 3;
-        buffer = new uInt8[(rowbytes + 1) * height];
-        uInt8* buf_ptr = buffer;
-        for(int i = 0; i < height; i++) {
-            *buf_ptr++ = 0;                  // first byte of row is filter type
-            for(int j = 0; j < width; j++) {
-                int r, g, b;
-                get_rgb_from_palette((*pm_matrix)[i][j], r, g, b);
-                buf_ptr[j * 3 + 0] = r;
-                buf_ptr[j * 3 + 1] = g;
-                buf_ptr[j * 3 + 2] = b;
-            }
-            buf_ptr += rowbytes;                 // add pitch
-        }
-        
-        // Compress the data with zlib
-        uLongf compmemsize = (uLongf)((height * (width + 1) 
-                                        * 3 * 1.001 + 1) + 12);
-        compmem = new uInt8[compmemsize];
-        if(compmem == NULL ||
-           (compress(compmem, &compmemsize, buffer, height * 
-                                            (width * 3 + 1)) != Z_OK))
-            throw "Error: Couldn't compress PNG";
-        
-        // Write the compressed framebuffer data
-        writePNGChunk(out, "IDAT", compmem, compmemsize);
-        
-        
-        // Finish up
-        writePNGChunk(out, "IEND", 0, 0);
-        
-        // Clean up
-        if(buffer)  delete[] buffer;
-        if(compmem) delete[] compmem;
-        out.close();
-        
-    }
-    catch(const char *msg)
-    {
-        if(buffer)  delete[] buffer;
-        if(compmem) delete[] compmem;
-        out.close();
-        cerr << msg << endl;
-    }
-}
-
 
 /* *********************************************************************
     Gets the RGB values for a given screen value from the current palette
- ******************************************************************** */    
+ ******************************************************************** */
 void ExportScreen::get_rgb_from_palette(int val, int& r, int& g, int& b) const {
     assert (pi_palette);
     if (val < 256) {
@@ -222,7 +122,7 @@ void ExportScreen::get_rgb_from_palette(int val, int& r, int& g, int& b) const {
         g = (pi_palette[val] >> 8) & 0xff;
         b = pi_palette[val] & 0xff;
     } else {
-        // Custom palette 
+        // Custom palette
         val = val - 256;
         assert (val <= v_custom_palette.size());
         r = v_custom_palette[val][0];
@@ -230,9 +130,9 @@ void ExportScreen::get_rgb_from_palette(int val, int& r, int& g, int& b) const {
         b = v_custom_palette[val][2];
     }
 }
-        
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ExportScreen::writePNGChunk(ofstream& out, const char* type, uInt8* data, 
+void ExportScreen::writePNGChunk(ofstream& out, const char* type, uInt8* data,
                                 int size) const {
     // Stuff the length/type into the buffer
     uInt8 temp[8];
@@ -244,10 +144,10 @@ void ExportScreen::writePNGChunk(ofstream& out, const char* type, uInt8* data,
     temp[5] = type[1];
     temp[6] = type[2];
     temp[7] = type[3];
-    
+
     // Write the header
     out.write((const char*)temp, 8);
-    
+
     // Append the actual data
     uInt32 crc = crc32(0, temp + 4, 4);
     if(size > 0)
@@ -255,7 +155,7 @@ void ExportScreen::writePNGChunk(ofstream& out, const char* type, uInt8* data,
         out.write((const char*)data, size);
         crc = crc32(crc, data, size);
     }
-    
+
     // Write the CRC
     temp[0] = crc >> 24;
     temp[1] = crc >> 16;
@@ -264,24 +164,9 @@ void ExportScreen::writePNGChunk(ofstream& out, const char* type, uInt8* data,
     out.write((const char*)temp, 4);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ExportScreen::writePNGText(ofstream& out, const string& key, 
-                                const string& text) const
-{
-    int length = key.length() + 1 + text.length() + 1;
-    uInt8* data = new uInt8[length];
-    
-    strcpy((char*)data, key.c_str());
-    strcpy((char*)data + key.length() + 1, text.c_str());
-    
-    writePNGChunk(out, "tEXt", data, length-1);
-    
-    delete[] data;
-}
-
 /* *********************************************************************
     Initializes the custom palette
- ******************************************************************** */    
+ ******************************************************************** */
 void ExportScreen::init_custom_palette(void) {
     // add the 216 'web-safe' standard colors
     int shades[] = {0, 51, 102, 153, 204, 255};
@@ -304,7 +189,7 @@ void ExportScreen::init_custom_palette(void) {
         }
     }
     std::random_shuffle(v_custom_palette.begin(), v_custom_palette.end() );
-    // add CUSTOM_PALLETE_SIZE random colors   
+    // add CUSTOM_PALLETE_SIZE random colors
     for (int i = 0; i < CUSTOM_PALETTE_SIZE; i++) {
         r = rand_range(0, 256);
         g = rand_range(0, 256);
@@ -322,7 +207,6 @@ void ExportScreen::init_custom_palette(void) {
     int secam_0[] = {0, 0, 0};
     int white[] = {255, 255, 255};
     v_custom_palette[WHITE_COLOR_IND] = vector<int>(white, white + 3);
-
 
     v_custom_palette[SECAM_COLOR_IND + 0] = vector<int>(secam_0, secam_0 + 3);
     int secam_1[] = {33, 33, 255};

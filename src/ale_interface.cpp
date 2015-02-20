@@ -250,3 +250,7 @@ ALEState ALEInterface::cloneState() {
 void ALEInterface::restoreState(const ALEState& state) {
   return environment->restoreState(state);
 }
+
+void ALEInterface::saveScreenPNG(const string& filename) {
+  environment->saveScreenPNG(filename);
+}
