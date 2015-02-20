@@ -24,7 +24,7 @@
 #include <SDL/SDL.h>
 
 #include "TIASnd.hxx"
-#include "FrameBuffer.hxx"
+// #include "FrameBuffer.hxx"
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "Settings.hxx"
@@ -254,11 +254,10 @@ void SoundSDL::adjustVolume(Int8 direction)
   setVolume(percent);
 
   // Now show an onscreen message
-  strval << percent;
-  message = "Volume set to ";
-  message += strval.str();
-
-  myOSystem->frameBuffer().showMessage(message);
+  // strval << percent;
+  // message = "Volume set to ";
+  // message += strval.str();
+  // myOSystem->frameBuffer().showMessage(message);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -29,7 +29,7 @@
 
 class DisplayScreen {
 public:
-    DisplayScreen(MediaSource* mediaSource, ExportScreen* exportScreen);
+    DisplayScreen(MediaSource* mediaSource, Sound* sound, ExportScreen* exportScreen);
     virtual ~DisplayScreen();
 
     // Displays the current frame buffer from the mediasource.
@@ -55,6 +55,7 @@ protected:
     // Maintains the paused/unpaused state of the game
     bool manual_control_active;
     MediaSource* media_source;
+    Sound* my_sound;
     ExportScreen* export_screen;
     int screen_height, screen_width;
     SDL_Surface *screen, *image;

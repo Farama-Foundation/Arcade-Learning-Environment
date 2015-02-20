@@ -39,7 +39,7 @@
 #include "Props.hxx"
 #include "PropsSet.hxx"
 #include "Settings.hxx" 
-//ALE #include "Sound.hxx"
+#include "Sound.hxx"
 #include "Switches.hxx"
 #include "System.hxx"
 #include "TIA.hxx"

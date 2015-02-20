@@ -47,6 +47,7 @@
 //ALE   #include "StellaFont.hxx"
 //ALE   #include "ConsoleFont.hxx"
 #include "OSystem.hxx"
+#include "SoundSDL.hxx"
 //ALE   #include "Widget.hxx"   
 #define MAX_ROM_SIZE  512 * 1024
 
@@ -326,11 +327,15 @@ ALE */
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::createSound()
 {
-  delete mySound;  mySound = NULL;
-  //ALE  mySound = MediaFactory::createAudio(this);
-   mySound = new SoundNull(this); //ALE 
-#ifndef SOUND_SUPPORT
+  delete mySound;
+  mySound = NULL;
+#ifdef SOUND_SUPPORT
+  mySettings->setBool("sound", true);
+  mySound = new SoundSDL(this);
+  mySound->initialize();
+#else
   mySettings->setBool("sound", false);
+  mySound = new SoundNull(this);
 #endif
 }
 
@@ -420,7 +425,7 @@ bool OSystem::createConsole(const string& romfile)
     exit(1);
 #endif
     p_display_screen = new DisplayScreen(&myConsole->mediaSource(),
-                                         p_export_screen);
+                                         mySound, p_export_screen);
   }
 
   return retval;
