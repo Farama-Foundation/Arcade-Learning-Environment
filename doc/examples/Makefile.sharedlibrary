@@ -21,7 +21,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 ifeq ($(strip $(USE_SDL)), 1)
-  DEFINES += -D__USE_SDL
+  DEFINES += -D__USE_SDL -DSOUND_SUPPORT
   LDFLAGS += $(LIBS_SDL)
 endif
 

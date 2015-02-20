@@ -66,7 +66,7 @@ protected:
 /** A dummy class that simply ignores display events. */
 class DisplayScreen {
   public:
-    DisplayScreen(MediaSource* mediaSource, ExportScreen* exportScreen) {}
+    DisplayScreen(MediaSource* mediaSource, Sound* sound, ExportScreen* exportScreen) {}
     void display_screen() {}
     bool manual_control_engaged() { return false; }
     Action getUserAction() { return UNDEFINED; }

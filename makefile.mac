@@ -4,7 +4,7 @@
 
 srcdir      ?= .
 # Set this to 1 to enable SDL and display_screen
-USE_SDL     := 0
+USE_SDL     := 1
 # Set this to 1 to enable the RLGlue interface
 USE_RLGLUE  := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
