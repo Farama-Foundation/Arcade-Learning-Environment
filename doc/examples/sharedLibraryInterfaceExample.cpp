@@ -16,7 +16,6 @@
 
 #include <iostream>
 #include <ale_interface.hpp>
-#include <sstream>
 
 #ifdef __USE_SDL
   #include "SDL/SDL.h"
@@ -55,12 +54,6 @@ int main(int argc, char** argv) {
             // Apply the action and get the resulting reward
             float reward = ale.act(a);
             totalReward += reward;
-            static int frame = 0;
-            std::stringstream ss;
-            ss << "screens/" << setfill('0') << setw(5) <<
-                frame << ".png";
-            ale.saveScreenPNG(ss.str());
-            frame++;
         }
         cout << "Episode " << episode << " ended with score: " << totalReward << endl;
         ale.reset_game();
