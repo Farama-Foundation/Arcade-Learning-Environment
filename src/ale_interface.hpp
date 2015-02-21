@@ -99,6 +99,9 @@ public:
 
   void restoreState(const ALEState& state);
 
+  // Save the current screen as a png file
+  void saveScreenPNG(const string& filename);
+
  public:
   std::auto_ptr<OSystem> theOSystem;
   std::auto_ptr<Settings> theSettings;

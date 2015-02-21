@@ -416,7 +416,7 @@ bool OSystem::createConsole(const string& romfile)
   if(size != -1) {
     delete[] image;
   }
-  p_export_screen = new ExportScreen(this); //ALE
+  p_export_screen = new ExportScreen(); //ALE
 
   if (mySettings->getBool("display_screen", true)) {
 #ifndef __USE_SDL

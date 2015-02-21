@@ -197,6 +197,10 @@ const ALEState& StellaEnvironment::getState() const {
   return m_state;
 }
 
+void StellaEnvironment::saveScreenPNG(const string& filename) {
+  m_osystem->p_export_screen->save_png(m_screen, filename);
+}
+
 void StellaEnvironment::processScreen() {
   if (m_colour_averaging) {
     // Perform phosphor averaging; the blender stores its result in the given screen
