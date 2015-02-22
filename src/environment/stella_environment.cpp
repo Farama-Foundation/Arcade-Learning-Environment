@@ -139,9 +139,9 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   if (!m_record_screen_dir.empty()) {
     static int recorded_frame = 0;
     std::stringstream ss;
-    ss << m_record_screen_dir << "/" << setfill('0') << setw(6) <<
-        std::to_string(recorded_frame++) << ".png";
+    ss << m_record_screen_dir << "/" << setfill('0') << setw(6) << recorded_frame << ".png";
     saveScreenPNG(ss.str());
+    recorded_frame++;
   }
 
   return sum_rewards;

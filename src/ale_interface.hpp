@@ -48,9 +48,9 @@ public:
   // Set the value of a setting. loadRom() must be called before the
   // setting will take effect.
   void setString(const std::string& key, const std::string& value);
-  void setInt(const std::string& key, const int& value);
-  void setBool(const std::string& key, const bool& value);
-  void setFloat(const std::string& key, const float& value);
+  void setInt(const std::string& key, const int value);
+  void setBool(const std::string& key, const bool value);
+  void setFloat(const std::string& key, const float value);
 
   // Resets the Atari and loads a game. After this call the game
   // should be ready to play. This is necessary after changing a

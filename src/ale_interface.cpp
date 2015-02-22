@@ -153,19 +153,19 @@ void ALEInterface::setString(const string& key, const string& value) {
   theSettings->setString(key, value);
   theSettings->validate();
 }
-void ALEInterface::setInt(const string& key, const int& value) {
+void ALEInterface::setInt(const string& key, const int value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setInt(key, value);
   theSettings->validate();
 }
-void ALEInterface::setBool(const string& key, const bool& value) {
+void ALEInterface::setBool(const string& key, const bool value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setBool(key, value);
   theSettings->validate();
 }
-void ALEInterface::setFloat(const string& key, const float& value) {
+void ALEInterface::setFloat(const string& key, const float value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setFloat(key, value);
