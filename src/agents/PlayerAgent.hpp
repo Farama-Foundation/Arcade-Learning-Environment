@@ -77,7 +77,7 @@ protected:
     int episode_frame_number;
     int episode_number;
         
-    ActionVect & available_actions;
+    ActionVect available_actions;
 
     bool record_trajectory;
     ActionVect trajectory;
