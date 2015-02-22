@@ -71,7 +71,7 @@ endif
 # Uncomment this for stricter compile time code verification
 # CXXFLAGS+= -Werror
 
-CXXFLAGS += -Wall -Wno-multichar -Wunused -fno-rtti -fPIC
+CXXFLAGS += -Wall -Wunused -fPIC
 
 ifeq ($(strip $(DEBUG)), 1)
   CXXFLAGS += -g -O0
