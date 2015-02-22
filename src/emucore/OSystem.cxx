@@ -103,25 +103,30 @@ OSystem::~OSystem()
   // OSystem takes responsibility for framebuffer and sound,
   // since it created them
   //ALE  delete myFrameBuffer;
-  delete mySound;
+  if (mySound != NULL)
+    delete mySound;
 
   // These must be deleted after all the others
   // This is a bit hacky, since it depends on ordering
   // of d'tor calls
 #ifdef DEBUGGER_SUPPORT
-  delete myDebugger;
+  if (myDebugger != NULL)
+    delete myDebugger;
 #endif
 #ifdef CHEATCODE_SUPPORT
-  delete myCheatManager;
+  if (myCheatManager != NULL)
+    delete myCheatManager;
 #endif
 
-  delete myPropSet;
+  if (myPropSet != NULL)
+    delete myPropSet;
   //ALE  delete myEventHandler;
-  delete myEvent;           //ALE 
-  if (p_export_screen) {
+  if (myEvent != NULL)
+    delete myEvent;           //ALE 
+  if (p_export_screen != NULL) {
       delete p_export_screen;
   }
-  if (p_display_screen) {
+  if (p_display_screen != NULL) {
       delete p_display_screen;
   }
     
