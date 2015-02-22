@@ -17,6 +17,7 @@
 
 #include "stella_environment.hpp"
 #include "../emucore/m6502/src/System.hxx"
+#include <sstream>
 
 StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_osystem(osystem),
@@ -43,6 +44,11 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   if (m_frame_skip < 1) {
     fprintf (stderr, "Warning: frame skip set to < 1. Setting to 1.\n");
     m_frame_skip = 1;
+  }
+
+  m_record_screen_dir = m_osystem->settings().getString("record_screen_dir");
+  if (!m_record_screen_dir.empty()) {
+    fprintf (stderr, "Recording screens to directory: %s\n", m_record_screen_dir.c_str());
   }
 }
 
@@ -128,6 +134,14 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   //  past the terminal state
   for (size_t i = 0; i < m_frame_skip; i++) {
     sum_rewards += oneStepAct(player_a_action, player_b_action);
+  }
+
+  if (!m_record_screen_dir.empty()) {
+    static int recorded_frame = 0;
+    std::stringstream ss;
+    ss << m_record_screen_dir << "/" << setfill('0') << setw(6) <<
+        std::to_string(recorded_frame++) << ".png";
+    saveScreenPNG(ss.str());
   }
 
   return sum_rewards;

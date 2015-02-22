@@ -107,6 +107,7 @@ class StellaEnvironment {
     bool m_colour_averaging; // Whether to average frames
     int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
     size_t m_frame_skip; // How many frames to emulate per act()
+    std::string m_record_screen_dir; // Directory to record screens to
 };
 
 #endif // __STELLA_ENVIRONMENT_HPP__

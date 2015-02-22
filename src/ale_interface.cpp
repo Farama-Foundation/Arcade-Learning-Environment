@@ -99,7 +99,7 @@ ALEInterface::ALEInterface(bool display_screen) {
   disableBufferedIO();
   std::cerr << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
-  this->set("display_screen", display_screen);
+  this->setBool("display_screen", display_screen);
 }
 
 ALEInterface::~ALEInterface() {}
@@ -147,25 +147,25 @@ float ALEInterface::getFloat(const std::string& key) {
 }
 
 // Set the value of a setting.
-void ALEInterface::set(const string& key, const string& value) {
+void ALEInterface::setString(const string& key, const string& value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setString(key, value);
   theSettings->validate();
 }
-void ALEInterface::set(const string& key, const int& value) {
+void ALEInterface::setInt(const string& key, const int& value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setInt(key, value);
   theSettings->validate();
 }
-void ALEInterface::set(const string& key, const bool& value) {
+void ALEInterface::setBool(const string& key, const bool& value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setBool(key, value);
   theSettings->validate();
 }
-void ALEInterface::set(const string& key, const float& value) {
+void ALEInterface::setFloat(const string& key, const float& value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setFloat(key, value);
