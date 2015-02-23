@@ -273,13 +273,12 @@ void Settings::usage() {
 #ifdef __USE_RLGLUE
        "|rlglue"
 #endif
-       "]\n"
+       "] (default: unset)\n"
        "      Defines how Stella communicates with the player agent:\n"
        "            - 'fifo':       Control occurs through FIFO pipes\n"
        "            - 'fifo_named': Control occurs through named FIFO pipes\n"
 #ifdef __USE_RLGLUE
        "            - 'rlglue':     External control via RL-Glue\n"
-       "              default: unset\n"
 #endif
        "   -random_seed [n|time] (default: time)\n"
        "     Sets the seed used for random number generation\n"
