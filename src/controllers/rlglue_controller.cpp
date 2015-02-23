@@ -28,6 +28,12 @@
 RLGlueController::RLGlueController(OSystem* _osystem) :
   ALEController(_osystem) {
   m_max_num_frames = m_osystem->settings().getInt("max_num_frames");
+  if (m_osystem->settings().getBool("restricted_action_set")) {
+    available_actions = m_settings->getMinimalActionSet();
+  } else {
+    available_actions = m_settings->getAllActions();
+  }
+  m_send_rgb = m_osystem->settings().getBool("send_rgb");
 }
 
 RLGlueController::~RLGlueController() {
@@ -37,7 +43,7 @@ void RLGlueController::run() {
   // First perform handshaking
   initRLGlue();
 
-  // Main loop 
+  // Main loop
   rlGlueLoop();
 
   // Cleanly terminate RL-Glue
@@ -57,8 +63,8 @@ void RLGlueController::initRLGlue() {
   short port = kDefaultPort;
 
   const char* envptr = 0;
- 
-  envptr = getenv("RLGLUE_PORT");  
+
+  envptr = getenv("RLGLUE_PORT");
   if (envptr != 0) {
     port = strtol(envptr, 0, 10);
     if (port == 0) {
@@ -75,9 +81,9 @@ void RLGlueController::initRLGlue() {
 }
 
 void RLGlueController::endRLGlue() {
-	// Taken from teardown_rlglue_network
+  // Taken from teardown_rlglue_network
   rlClose(m_connection);
-	rlBufferDestroy(&m_buffer);
+  rlBufferDestroy(&m_buffer);
 }
 
 void RLGlueController::rlGlueLoop() {
@@ -124,66 +130,37 @@ void RLGlueController::rlGlueLoop() {
     rlSendBufferData(m_connection, &m_buffer, envState);
 
     display();
-  } 
+  }
 }
 
 /** Initializes the environment; sends a 'task spec' */
 void RLGlueController::envInit() {
-  unsigned int taskSpecLength = 0;
   unsigned int offset = 0;
- 
-  bool send_rgb = m_osystem->settings().getBool("send_rgb");
-
   unsigned int observation_dimensions;
-  if (send_rgb) {
-    observation_dimensions = 128 + 210 * 160 * 3;
-  } else {
-    observation_dimensions = 128 + 210 * 160;
-  }
-
-  std::string action_spec = "ACTIONS INTS (0 ";
-  if (m_osystem->settings().getBool("restricted_action_set")) {
-    // Use minimal number of actions
-    char max_action_player_a[21]; 
-    int num_actions;
-
-    num_actions = m_settings->getMinimalActionSet().size();
-    sprintf(max_action_player_a, "%d", num_actions - 1);
-
-    action_spec += max_action_player_a;
-    action_spec += ") "; // Only player A gets to play here
-  } else {
-    action_spec += "17)(18 35) "; // Player A and player B inputs
-  }
-  
-  // Possibly this should be one big snprintf.
-  std::string taskSpec = std::string("") +
-    "VERSION RL-Glue-3.0 "
+  std::stringstream taskSpec;
+  taskSpec << "VERSION RL-Glue-3.0 "
     "PROBLEMTYPE episodic "
     "DISCOUNTFACTOR 1 " // Goal is to maximize score... avoid unpleasant tradeoffs with 1 
     "OBSERVATIONS INTS (128 0 255)"; //RAM
-
-  if (send_rgb) {
-    taskSpec += "(100800 0 255) "; // Screen specified as an RGB triple per pixel
+  if (m_send_rgb) {
+    taskSpec << "(100800 0 255) "; // Screen specified as an RGB triple per pixel
+    observation_dimensions = 128 + 210 * 160 * 3;
   } else {
-    taskSpec += "(33600 0 127) "; // Screen specified as one pallette index per pixel
+    taskSpec << "(33600 0 127) "; // Screen specified as one pallette index per pixel
+    observation_dimensions = 128 + 210 * 160;
   }
-
-  taskSpec += action_spec +
+  taskSpec << "ACTIONS INTS (0 " << available_actions.size() << ") "
     "REWARDS (UNSPEC UNSPEC) " // While rewards are technically bounded, this is safer 
     "EXTRA Name: Arcade Learning Environment ";
-
-  taskSpecLength = taskSpec.length();
- 
-  // Allocate...? 
-  allocateRLStruct(&m_rlglue_action, 2, 0, 0);
+  // Allocate...?
+  allocateRLStruct(&m_rlglue_action, 1, 0, 0);
   allocateRLStruct(&m_observation, observation_dimensions, 0, 0);
-
   // First write the task-spec length
   rlBufferClear(&m_buffer);
+  unsigned int taskSpecLength = taskSpec.str().size();
   offset += rlBufferWrite(&m_buffer, offset, &taskSpecLength, 1, sizeof(int));
   // Then the string itself
-  rlBufferWrite(&m_buffer, offset, taskSpec.c_str(), taskSpec.length(), sizeof(char));
+  rlBufferWrite(&m_buffer, offset, taskSpec.str().c_str(), taskSpecLength, sizeof(char));
 }
 
 /** Sends the first observation out -- beginning an episode */
@@ -193,7 +170,7 @@ void RLGlueController::envStart() {
 
   // Create the observation (we don't need reward/terminal here, but it's easier this way)
   reward_t reset_reward = 0;
-  reward_observation_terminal_t ro = constructRewardObservationTerminal(reset_reward);
+  constructRewardObservationTerminal(reset_reward);
 
   // Copy into buffer
   rlBufferClear(&m_buffer);
@@ -201,34 +178,24 @@ void RLGlueController::envStart() {
 }
 
 /** Reads in an action, returns the next observation-reward-terminal tuple.
-  *  derived from onEnvStep(). */ 
+    derived from onEnvStep(). */
 void RLGlueController::envStep() {
   unsigned int offset = 0;
- 
+
   offset = rlCopyBufferToADT(&m_buffer, offset, &m_rlglue_action);
   __RL_CHECK_STRUCT(&m_rlglue_action);
 
-  bool restricted_action_set = m_osystem->settings().getBool("restricted_action_set");
+  unsigned int player_a_action_index = m_rlglue_action.intArray[0];
 
-  Action player_a_action, player_b_action;
-  
-  if (restricted_action_set) {
-    ActionVect legal_actions = m_settings->getMinimalActionSet();
-    player_b_action  = (Action)PLAYER_B_NOOP; // No player B action input on restricted action set
-    int player_a_action_index = m_rlglue_action.intArray[0];
-    if (player_a_action_index >= legal_actions.size()) // Filter for actions outside the expected range
-      player_a_action_index = 0;
-    player_a_action = legal_actions[player_a_action_index];
-  } else {
-    // Default case
-
-    // We expect here an integer-valued action
-    player_a_action = (Action)m_rlglue_action.intArray[0]; 
-    player_b_action = (Action)m_rlglue_action.intArray[1]; 
-
-    // Filter out non-regular actions ... let RL-Glue deal with those
-    filterActions(player_a_action, player_b_action);
+  // Filter for actions outside the expected range
+  if (player_a_action_index >= available_actions.size()) {
+    player_a_action_index = 0;
   }
+  Action player_a_action = available_actions[player_a_action_index];
+  Action player_b_action = (Action) PLAYER_B_NOOP;
+
+  // Filter out non-regular actions ... let RL-Glue deal with those
+  filterActions(player_a_action, player_b_action);
 
   // Pass these actions to ALE
   reward_t reward = applyActions(player_a_action, player_b_action);
@@ -270,26 +237,26 @@ void RLGlueController::envMessage() {
 }
 
 void RLGlueController::filterActions(Action& player_a_action, Action& player_b_action) {
-  if (player_a_action >= PLAYER_A_MAX) 
+  if (player_a_action >= PLAYER_A_MAX)
     player_a_action = PLAYER_A_NOOP;
-  if (player_b_action < PLAYER_B_NOOP || player_b_action >= PLAYER_B_MAX) 
+  if (player_b_action < PLAYER_B_NOOP || player_b_action >= PLAYER_B_MAX)
     player_b_action = PLAYER_B_NOOP;
 }
 
 reward_observation_terminal_t RLGlueController::constructRewardObservationTerminal(reward_t reward) {
   reward_observation_terminal_t ro;
-  
+
   int index = 0;
   const ALERAM & ram = m_environment.getRAM();
   const ALEScreen & screen = m_environment.getScreen();
 
-  // Copy RAM and screen into our big int-vector observation 
+  // Copy RAM and screen into our big int-vector observation
   for (size_t i = 0; i < ram.size(); i++)
     m_observation.intArray[index++] = ram.get(i);
 
   size_t arraySize = screen.arraySize();
 
-  if (m_osystem->settings().getBool("send_rgb")) {
+  if (m_send_rgb) {
     // Make sure we've allocated enough space for this
     assert (arraySize * 3 + ram.size() == m_observation.numInts);
 
@@ -315,7 +282,7 @@ reward_observation_terminal_t RLGlueController::constructRewardObservationTermin
   ro.terminal = m_settings->isTerminal();
 
   __RL_CHECK_STRUCT(ro.observation)
-  
+
   return ro;
 }
 
