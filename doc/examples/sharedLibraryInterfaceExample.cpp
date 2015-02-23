@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
 
 #ifdef __USE_SDL
     ale.setBool("display_screen", true);
+    ale.setBool("sound", true);
 #endif
 
     // Load the ROM file. (Also resets the system for new settings to

@@ -286,6 +286,10 @@ void Settings::usage() {
        "   -display_screen [true|false] (default: false)\n"
        "     Displays the game screen\n"
 #endif
+#ifdef SOUND_SUPPORT
+       "   -sound [true|false] (default: false)\n"
+       "     Enable game sounds\n"
+#endif
        "\n"
        " Environment arguments:\n"
        "   -max_num_frames m (default: 0)\n"
