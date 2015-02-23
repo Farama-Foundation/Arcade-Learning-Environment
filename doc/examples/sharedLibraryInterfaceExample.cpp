@@ -33,10 +33,10 @@ int main(int argc, char** argv) {
 
     // Get & Set the desired settings
     int max_frames_per_episode = ale.getInt("max_num_frames_per_episode");
-    ale.set("random_seed", 123);
+    ale.setInt("random_seed", 123);
 
 #ifdef __USE_SDL
-    ale.set("display_screen", true);
+    ale.setBool("display_screen", true);
 #endif
 
     // Load the ROM file. (Also resets the system for new settings to
