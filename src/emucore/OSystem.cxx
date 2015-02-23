@@ -337,7 +337,6 @@ void OSystem::createSound()
   }
   mySound = NULL;
 #ifdef SOUND_SUPPORT
-  mySettings->setBool("sound", true);
   mySound = new SoundSDL(this);
   mySound->initialize();
 #else
