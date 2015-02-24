@@ -22,7 +22,7 @@ if(USE_SDL)
     include_directories(${SDL_INCLUDE_DIR})
     list(APPEND LINK_LIBS ${SDL_LIBRARY} ${SDL_MAIN_LIBRARY})
   else()
-    MESSAGE("SDL not found. You may need to manually specify your SDL path in CMakeLists.txt")
+    MESSAGE("SDL not found: You may need to manually edit CMakeLists.txt or run \"cmake -i\" to specify your SDL path.")
     # Specify the path to your SDL libraries. Run "locate libSDL" if unsure.
     # link_directories(path_to_your_SDL)
     if(APPLE)
