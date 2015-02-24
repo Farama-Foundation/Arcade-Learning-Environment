@@ -21,7 +21,7 @@
 
 #include <vector>
 #include "Constants.h"
-#include "ale_screen.hpp"
+#include "../environment/ale_screen.hpp"
 
 class OSystem;
 
