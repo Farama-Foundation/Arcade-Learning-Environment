@@ -15,15 +15,12 @@ if(USE_RLGLUE)
 endif()
 
 if(USE_SDL)
-  if(UNIX) # Unix doesn't require SDLmain
-    add_definitions(SDL_BUILDING_LIBRARY)
-  endif()
   add_definitions(-D__USE_SDL)
   add_definitions(-DSOUND_SUPPORT)
   find_package(SDL)
   if(SDL_FOUND)
-    include_directories(${SDL_INCLUDE_DIRS})
-    list(APPEND LINK_LIBS ${SDL_LIBRARIES})
+    include_directories(${SDL_INCLUDE_DIR})
+    list(APPEND LINK_LIBS ${SDL_LIBRARY} ${SDL_MAIN_LIBRARY})
   else()
     MESSAGE("SDL not found. You may need to manually specify your SDL path in CMakeLists.txt")
     # Specify the path to your SDL libraries. Run "locate libSDL" if unsure.
