@@ -52,29 +52,23 @@ struct RomSettings {
 
     // saves the state of the rom settings
     virtual void saveState(Serializer & ser) = 0;
-    
+
     // loads the state of the rom settings
     virtual void loadState(Deserializer & ser) = 0;
 
     // is an action legal (default: yes)
-    virtual bool isLegal(const Action &a) const; 
+    virtual bool isLegal(const Action &a) const;
 
     // Returns a restricted (minimal) set of actions. If not overriden, this is all actions.
-    virtual ActionVect &getMinimalActionSet();
+    virtual ActionVect getMinimalActionSet();
 
     // Returns the set of all legal actions
-    ActionVect &getAllActions();
+    ActionVect getAllActions();
 
     // Returns a list of actions that are required to start the game.
     // By default this is an empty list.
     virtual ActionVect getStartingActions();
-
-    protected:
-      static ActionVect actions;
-      static ActionVect all_actions;
 };
 
 
 #endif // __ROMSETTINGS_HPP__
-
-

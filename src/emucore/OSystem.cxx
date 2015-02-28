@@ -336,6 +336,7 @@ void OSystem::createSound()
     delete mySound;
   }
   mySound = NULL;
+
 #ifdef SOUND_SUPPORT
   mySound = new SoundSDL(this);
   mySound->initialize();
