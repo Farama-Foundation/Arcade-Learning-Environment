@@ -43,7 +43,7 @@ static std::auto_ptr<Settings> theSettings(NULL);
 
 static ALEController* createController(OSystem* osystem, std::string type) {
   if(type.empty()){
-    std::cerr << "You must inform a controller type." << std::endl;
+    std::cerr << "You must specify a controller type (via -game_controller)." << std::endl;
     exit(1);
   }
   else if (type == "fifo") {
