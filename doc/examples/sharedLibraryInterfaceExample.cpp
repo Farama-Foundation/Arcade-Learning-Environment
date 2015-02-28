@@ -58,4 +58,6 @@ int main(int argc, char** argv) {
         cout << "Episode " << episode << " ended with score: " << totalReward << endl;
         ale.reset_game();
     }
-};
+
+    return 0;
+}
