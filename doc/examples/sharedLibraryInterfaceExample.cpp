@@ -18,7 +18,7 @@
 #include <ale_interface.hpp>
 
 #ifdef __USE_SDL
-  #include "SDL/SDL.h"
+  #include <SDL.h>
 #endif
 
 using namespace std;
