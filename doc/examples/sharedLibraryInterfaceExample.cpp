@@ -32,7 +32,6 @@ int main(int argc, char** argv) {
     ALEInterface ale;
 
     // Get & Set the desired settings
-    int max_frames_per_episode = ale.getInt("max_num_frames_per_episode");
     ale.setInt("random_seed", 123);
 
 #ifdef __USE_SDL
