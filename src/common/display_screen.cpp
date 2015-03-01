@@ -36,7 +36,7 @@ DisplayScreen::DisplayScreen(MediaSource* mediaSource,
         fprintf(stderr, "Could not initialize SDL: %s\n", SDL_GetError());
         exit(1);
     }
-    screen = SDL_SetVideoMode(window_width,window_height, 8, SDL_HWPALETTE);
+    screen = SDL_SetVideoMode(window_width, window_height, 8, SDL_HWPALETTE);
     if (screen == NULL) {
         fprintf(stderr, "Couldn't Initialize Screen: %s\n", SDL_GetError());
         exit(1);

@@ -74,19 +74,13 @@ enum Action {
 #define PLAYER_A_MAX (18)
 #define PLAYER_B_MAX (36)
 
-string action_to_string(Action a);
+std::string action_to_string(Action a);
 
 //  Define datatypes
-typedef vector<int>         IntVect;
-typedef vector<Action>      ActionVect;
-typedef vector<double>      FloatVect;
-typedef vector<IntVect>     IntMatrix;
-typedef vector<FloatVect>   FloatMatrix;
+typedef std::vector<Action> ActionVect;
 
 // reward type for RL interface
 typedef int reward_t;
-// return (sum of discounted rewards) type for RL
-typedef float return_t;
 
 // Other constant values
 #define RAM_LENGTH 128
