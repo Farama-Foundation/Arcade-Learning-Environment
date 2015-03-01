@@ -68,7 +68,6 @@ OSystem::OSystem()
     mySkipEmulation(false),
     myRomFile(""),
     myFeatures(""),
-    p_export_screen(NULL),
     p_display_screen(NULL)
 {
     #ifdef DISPLAY_OPENGL
@@ -123,10 +122,7 @@ OSystem::~OSystem()
     delete myPropSet;
   //ALE  delete myEventHandler;
   if (myEvent != NULL)
-    delete myEvent;           //ALE 
-  if (p_export_screen != NULL) {
-      delete p_export_screen;
-  }
+    delete myEvent; 
   if (p_display_screen != NULL) {
       delete p_display_screen;
   }
@@ -421,8 +417,6 @@ bool OSystem::createConsole(const string& romfile)
   if(size != -1) {
     delete[] image;
   }
-  p_export_screen = new ExportScreen(); //ALE
-
   if (mySettings->getBool("display_screen", true)) {
 #ifndef __USE_SDL
     std::cerr << "Screen display requires directive __USE_SDL to be defined."
@@ -432,7 +426,7 @@ bool OSystem::createConsole(const string& romfile)
     exit(1);
 #endif
     p_display_screen = new DisplayScreen(&myConsole->mediaSource(),
-                                         mySound, p_export_screen);
+                                         mySound, m_colour_palette); 
   }
 
   return retval;
@@ -460,10 +454,6 @@ void OSystem::deleteConsole()
     delete myConsole;  
     myConsole = NULL;
   }
-  if (p_export_screen) {        //ALE 
-    delete p_export_screen;     //ALE 
-    p_export_screen = NULL;     //ALE 
-  }                             //ALE 
   if (p_display_screen) {       //ALE
     delete p_display_screen;    //ALE
     p_display_screen = NULL;    //ALE 

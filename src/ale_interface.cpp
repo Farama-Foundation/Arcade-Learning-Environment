@@ -252,5 +252,11 @@ void ALEInterface::restoreState(const ALEState& state) {
 }
 
 void ALEInterface::saveScreenPNG(const string& filename) {
-  environment->saveScreenPNG(filename);
+  
+  ScreenExporter exporter(theOSystem->colourPalette());
+  exporter.save(environment->getScreen(), filename);
+}
+
+ScreenExporter *ALEInterface::createScreenExporter(const std::string &filename) const {
+    return new ScreenExporter(theOSystem->colourPalette(), filename); 
 }

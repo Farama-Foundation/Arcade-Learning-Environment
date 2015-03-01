@@ -374,7 +374,7 @@ void Console::setPalette(const string& type)
      palettes[paletteNum][0];
 
   //ALE  myOSystem->frameBuffer().setTIAPalette(palette);
-  myOSystem->p_export_screen->set_palette(palette);
+  myOSystem->colourPalette().setPalette(palette);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
