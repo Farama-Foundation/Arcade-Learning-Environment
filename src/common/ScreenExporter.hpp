@@ -28,9 +28,9 @@ class ScreenExporter {
         /** Creates a new ScreenExporter which can be used to save screens using save(filename). */ 
         ScreenExporter(ColourPalette &palette);
 
-        /** Creates a new ScreenExporter which will save frames successively as basename + ######, where
+        /** Creates a new ScreenExporter which will save frames successively as basepath######.png, where
             ###### is an integer between 000000 and 999999. */
-        ScreenExporter(ColourPalette &palette, const std::string &basename);
+        ScreenExporter(ColourPalette &palette, const std::string &basepath);
 
         /** Save the given screen to the given filename. No paths are created. */
         void save(const ALEScreen &screen, const std::string &filename) const;
@@ -49,7 +49,7 @@ class ScreenExporter {
         int m_frame_field_width;
 
         /** The base path, to which we append the frame number. */
-        std::string m_basename;
+        std::string m_basepath;
 };
 
 #endif // __SCREEN_EXPORTER_HPP__ 
