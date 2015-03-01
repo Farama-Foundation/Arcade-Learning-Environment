@@ -150,13 +150,11 @@ ScreenExporter::ScreenExporter(ColourPalette &palette):
 }
 
 
-ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &basepath):
+ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path):
     m_palette(palette),
     m_frame_number(0),
     m_frame_field_width(6),
-    m_basepath(basepath) {
-
-    // MGB: Should we strip '.png' from filename if present?
+    m_path(path) {
 }
 
 
@@ -181,15 +179,16 @@ void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) 
 
 void ScreenExporter::saveNext(const ALEScreen &screen) {
 
-    // Must have specified a filename. 
-    assert(m_basepath.size() > 0);
+    // Must have specified a directory. 
+    assert(m_path.size() > 0);
 
     // MGB: It would be nice here to automagically create paths, but the only way I know of 
     // doing this cleanly is via boost, which we don't include.
 
     // Construct the filename from basepath & current frame number
     std::ostringstream oss;
-    oss << m_basepath << std::setw(m_frame_field_width) << std::setfill('0') << m_frame_number << ".png";
+    oss << m_path << "/" << 
+        std::setw(m_frame_field_width) << std::setfill('0') << m_frame_number << ".png";
 
     // Save the png
     save(screen, oss.str());
