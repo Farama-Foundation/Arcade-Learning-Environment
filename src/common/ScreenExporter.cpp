@@ -157,7 +157,7 @@ ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &basena
     m_frame_field_width(6),
     m_basename(basename) {
 
-    // @todo strip '.png' from filename if present
+    // MGB: Should we strip '.png' from filename if present?
 }
 
 
@@ -182,7 +182,8 @@ void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) 
 
 void ScreenExporter::saveNext(const ALEScreen &screen) {
 
-    // @todo -- handle automagic path creation
+    // MGB: It would be nice here to automagically create paths, but the only way I know of 
+    // doing this cleanly is via boost, which we don't include.
 
     // Construct the filename from basename & current frame number
     std::ostringstream oss;
