@@ -55,9 +55,9 @@ static void writePNGChunk(std::ofstream& out, const char* type, uInt8* data, int
 }
 
 
-static void writePNGHeader(std::ofstream& out, const ALEScreen &screen) {
+static void writePNGHeader(std::ofstream& out, const ALEScreen &screen, bool doubleWidth = true) {
 
-        int width = screen.width();
+        int width = doubleWidth ? screen.width() * 2: screen.width();
         int height = screen.height();
         // PNG file header
         uInt8 header[8] = { 137, 80, 78, 71, 13, 10, 26, 10 };
@@ -65,14 +65,14 @@ static void writePNGHeader(std::ofstream& out, const ALEScreen &screen) {
 
         // PNG IHDR
         uInt8 ihdr[13];
-        ihdr[0]  = width >> 24;   // width
-        ihdr[1]  = width >> 16;
-        ihdr[2]  = width >> 8;
-        ihdr[3]  = width & 0xFF;
-        ihdr[4]  = height >> 24;  // height
-        ihdr[5]  = height >> 16;
-        ihdr[6]  = height >> 8;
-        ihdr[7]  = height & 0xFF;
+        ihdr[0]  = (width >> 24) & 0xFF;   // width
+        ihdr[1]  = (width >> 16) & 0xFF;
+        ihdr[2]  = (width >>  8) & 0xFF;
+        ihdr[3]  = (width >>  0) & 0xFF;
+        ihdr[4]  = (height >> 24) & 0xFF;  // height
+        ihdr[5]  = (height >> 16) & 0xFF;
+        ihdr[6]  = (height >>  8) & 0xFF;
+        ihdr[7]  = (height >>  0) & 0xFF;
         ihdr[8]  = 8;  // 8 bits per sample (24 bits per pixel)
         ihdr[9]  = 2;  // PNG_COLOR_TYPE_RGB
         ihdr[10] = 0;  // PNG_COMPRESSION_TYPE_DEFAULT
@@ -84,26 +84,39 @@ static void writePNGHeader(std::ofstream& out, const ALEScreen &screen) {
 
 static void writePNGData(std::ofstream &out, const ALEScreen &screen, const ColourPalette &palette, bool doubleWidth = true) {
 
-    int width = screen.width();
+    int dataWidth = screen.width(); 
+    int width = doubleWidth ? dataWidth * 2 : dataWidth; 
     int height = screen.height();
-    
+   
+    // If so desired, double the width
+
     // Fill the buffer with scanline data
     int rowbytes = width * 3;
 
     std::vector<uInt8> buffer((rowbytes + 1) * height, 0);
     uInt8* buf_ptr = &buffer[0];
 
-    // @todo -- double width
     for(int i = 0; i < height; i++) {
         *buf_ptr++ = 0;                  // first byte of row is filter type
-        for(int j = 0; j < width; j++) {
+        for(int j = 0; j < dataWidth; j++) {
             int r, g, b;
 
-            palette.getRGB(screen.getArray()[i * width + j], r, g, b);
+            palette.getRGB(screen.getArray()[i * dataWidth + j], r, g, b);
+            // Double the pixel width, if so desired
+            int jj = doubleWidth ? 2 * j : j;
 
-            buf_ptr[j * 3 + 0] = r;
-            buf_ptr[j * 3 + 1] = g;
-            buf_ptr[j * 3 + 2] = b;
+            buf_ptr[jj * 3 + 0] = r;
+            buf_ptr[jj * 3 + 1] = g;
+            buf_ptr[jj * 3 + 2] = b;
+            
+            if (doubleWidth) {
+                
+                jj = jj + 1;
+
+                buf_ptr[jj * 3 + 0] = r;
+                buf_ptr[jj * 3 + 1] = g;
+                buf_ptr[jj * 3 + 2] = b;
+            }
         }
         buf_ptr += rowbytes;                 // add pitch
     }
@@ -160,7 +173,7 @@ void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) 
     }
 
     // Now write the PNG proper
-    writePNGHeader(out, screen);
+    writePNGHeader(out, screen, true);
     writePNGData(out, screen, m_palette, true);
     writePNGEnd(out);
 
