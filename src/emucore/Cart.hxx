@@ -73,6 +73,9 @@ class Cartridge : public Device
     */
     bool save(ofstream& out);
 
+    /** MGB: Added to drop warning on overloaded save() method. */  
+    virtual bool save(Serializer& out) = 0; 
+
     /**
       Lock/unlock bankswitching capability.
     */
