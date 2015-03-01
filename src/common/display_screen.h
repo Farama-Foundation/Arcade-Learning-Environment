@@ -21,7 +21,6 @@
 #include <stdlib.h>
 
 #include "Constants.h"
-#include "export_screen.h"
 #include "ColourPalette.hpp"
 #include "../emucore/MediaSrc.hxx"
 
@@ -67,7 +66,7 @@ protected:
 /** A dummy class that simply ignores display events. */
 class DisplayScreen {
   public:
-    DisplayScreen(MediaSource* mediaSource, Sound* sound, ExportScreen* exportScreen) {}
+    DisplayScreen(MediaSource* mediaSource, Sound* sound, ColourPalette &palette) {}
     void display_screen() {}
     bool manual_control_engaged() { return false; }
     Action getUserAction() { return UNDEFINED; }

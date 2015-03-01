@@ -37,9 +37,9 @@ class VideoDialog;
 #include "Event.hxx"  //ALE 
 //ALE  #include "Font.hxx"
 #include "m6502/src/bspf/src/bspf.hxx"
-#include "../common/export_screen.h" //ALE
-#include "../common/display_screen.h" //MHAUSKN
+#include "../common/display_screen.h" 
 #include "../common/ColourPalette.hpp"
+#include "../common/ScreenExporter.hpp"
 
 struct Resolution {
   uInt32 width;
