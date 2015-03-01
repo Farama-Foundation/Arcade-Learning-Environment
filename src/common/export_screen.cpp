@@ -25,7 +25,7 @@
 #include <algorithm>
 
 ExportScreen::ExportScreen() {
-    init_custom_palette();
+
 }
 
 void ExportScreen::save_png(const ALEScreen& screen, const string& filename) {
@@ -116,19 +116,14 @@ void ExportScreen::save_png(const ALEScreen& screen, const string& filename) {
  ******************************************************************** */
 void ExportScreen::get_rgb_from_palette(int val, int& r, int& g, int& b) const {
     assert (pi_palette);
+    assert(val < 256);
+    
     if (val < 256) {
         // Regular palette
         r = (pi_palette[val] >> 16) & 0xff;
         g = (pi_palette[val] >> 8) & 0xff;
         b = pi_palette[val] & 0xff;
-    } else {
-        // Custom palette
-        val = val - 256;
-        assert (val <= v_custom_palette.size());
-        r = v_custom_palette[val][0];
-        g = v_custom_palette[val][1];
-        b = v_custom_palette[val][2];
-    }
+    } 
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -162,65 +157,4 @@ void ExportScreen::writePNGChunk(ofstream& out, const char* type, uInt8* data,
     temp[2] = crc >> 8;
     temp[3] = crc;
     out.write((const char*)temp, 4);
-}
-
-/* *********************************************************************
-    Initializes the custom palette
- ******************************************************************** */
-void ExportScreen::init_custom_palette(void) {
-    // add the 216 'web-safe' standard colors
-    int shades[] = {0, 51, 102, 153, 204, 255};
-    int r, g, b;
-    for (int i = 5; i >= 0; i--) {
-        for (int j = 5; j >= 0; j--) {
-            for (int k = 0; k < 6; k++) {
-                r = shades[i];
-                g = shades[j];
-                b = shades[k];
-                if (r == 0 && g == 0 && b == 0) {
-                    continue; // we'll add black later
-                }
-                vector<int> rand_color;
-                rand_color.push_back(r);
-                rand_color.push_back(g);
-                rand_color.push_back(b);
-                v_custom_palette.push_back(rand_color);
-            }
-        }
-    }
-    std::random_shuffle(v_custom_palette.begin(), v_custom_palette.end() );
-    // add CUSTOM_PALLETE_SIZE random colors
-    for (int i = 0; i < CUSTOM_PALETTE_SIZE; i++) {
-        r = rand_range(0, 256);
-        g = rand_range(0, 256);
-        b = rand_range(0, 256);
-        vector<int> rand_color;
-        rand_color.push_back(r);
-        rand_color.push_back(g);
-        rand_color.push_back(b);
-        v_custom_palette.push_back(rand_color);
-    }
-    int black[] = {0, 0, 0};
-    v_custom_palette[BLACK_COLOR_IND] = vector<int>(black, black + 3);
-    int red[] = {255, 0, 0};
-    v_custom_palette[RED_COLOR_IND] = vector<int>(red, red + 3);
-    int secam_0[] = {0, 0, 0};
-    int white[] = {255, 255, 255};
-    v_custom_palette[WHITE_COLOR_IND] = vector<int>(white, white + 3);
-
-    v_custom_palette[SECAM_COLOR_IND + 0] = vector<int>(secam_0, secam_0 + 3);
-    int secam_1[] = {33, 33, 255};
-    v_custom_palette[SECAM_COLOR_IND + 1] = vector<int>(secam_1, secam_1 + 3);
-    int secam_2[] = {240, 60, 121};
-    v_custom_palette[SECAM_COLOR_IND + 2] = vector<int>(secam_2, secam_2 + 3);
-    int secam_3[] = {255, 80, 255};
-    v_custom_palette[SECAM_COLOR_IND + 3] = vector<int>(secam_3, secam_3 + 3);
-    int secam_4[] = {127, 255, 0};
-    v_custom_palette[SECAM_COLOR_IND + 4] = vector<int>(secam_4, secam_4 + 3);
-    int secam_5[] = {127, 255, 255};
-    v_custom_palette[SECAM_COLOR_IND + 5] = vector<int>(secam_5, secam_5 + 3);
-    int secam_6[] = {255, 255, 63};
-    v_custom_palette[SECAM_COLOR_IND + 6] = vector<int>(secam_6, secam_6 + 3);
-    int secam_7[] = {255, 255, 255};
-    v_custom_palette[SECAM_COLOR_IND + 7] = vector<int>(secam_7, secam_7 + 3);
 }

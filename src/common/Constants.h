@@ -84,12 +84,6 @@ typedef int reward_t;
 
 // Other constant values
 #define RAM_LENGTH 128
-#define CUSTOM_PALETTE_SIZE 1020    // Number of colors in custom palette
-#define BLACK_COLOR_IND 1000        // color index in custom palette for Black
-#define RED_COLOR_IND 1001          // color index in custom palette for Red
-#define WHITE_COLOR_IND 1003        // color index in custom palette for White
-#define SECAM_COLOR_IND 1010        // starting index in the custom palette for
-                                    // the eight SECAM colors
 
 #endif // __CONSTANTS_H__
 

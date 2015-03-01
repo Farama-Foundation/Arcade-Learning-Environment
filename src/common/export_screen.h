@@ -31,12 +31,6 @@ class ExportScreen {
 
         Instance Variables:
             - pi_palette        An array containing the palette
-            - p_props           Pointer to a Properties object
-            - p_osystem         pointer to the Osystem object
-            - i_screen_width    Width of the screen
-            - i_screen_height   Height of the screen
-            - v_custom_palette  Holds the rgb values for custom colors used
-                                for drawing external info on the screen
     ************************************************************************* */
     public:
         ExportScreen();
@@ -46,7 +40,7 @@ class ExportScreen {
             Sets the default palette. This needs to be called before any
             export methods can be called.
          ******************************************************************** */
-        virtual void set_palette(const uInt32* palette) {
+        void set_palette(const uInt32* palette) {
             pi_palette = palette;
         }
 
@@ -64,10 +58,8 @@ class ExportScreen {
         /* *********************************************************************
             Initializes the custom palette
          ******************************************************************** */    
-        void init_custom_palette(void);
         void writePNGChunk(ofstream& out, const char* type, uInt8* data, int size) const;
         const uInt32* pi_palette;
-        vector< vector <int> > v_custom_palette;
 };
 
 #endif // __EXPORT_SCREEN_H__
