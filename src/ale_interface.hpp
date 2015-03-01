@@ -26,6 +26,7 @@
 #include "common/Defaults.hpp"
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
+#include "common/ScreenExporter.hpp"
 
 static const std::string Version = "0.4.4";
 
@@ -101,6 +102,10 @@ public:
 
   // Save the current screen as a png file
   void saveScreenPNG(const string& filename);
+
+  // Creates a ScreenExporter object which can be used to save a sequence of frames. Ownership 
+  // said object is passed to the caller.
+  ScreenExporter *createScreenExporter(const std::string &basename) const;
 
  public:
   std::auto_ptr<OSystem> theOSystem;
