@@ -19,11 +19,11 @@
 #ifdef __USE_SDL
 DisplayScreen::DisplayScreen(MediaSource* mediaSource,
                              Sound* sound,
-                             ExportScreen* exportScreen):
+                             ColourPalette &palette):
         manual_control_active(false),
         media_source(mediaSource),
         my_sound(sound),
-        export_screen(exportScreen),
+        colour_palette(palette),
         delay_msec(10)
 {
     screen_height = media_source->height();
@@ -66,7 +66,7 @@ void DisplayScreen::display_screen() {
     for (int i = 0; i < screen_width * screen_height; i++) {
         y = i / screen_width;
         x = i - (y * screen_width);
-        export_screen->get_rgb_from_palette(pi_curr_frame_buffer[i], r, g, b);
+        colour_palette.getRGB(pi_curr_frame_buffer[i], r, g, b);
         rect.x = (int)(x * xratio);
         rect.y = (int)(y * yratio);
         rect.w = xciel;

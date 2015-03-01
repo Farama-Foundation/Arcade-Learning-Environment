@@ -34,32 +34,17 @@ class ExportScreen {
     ************************************************************************* */
     public:
         ExportScreen();
-         virtual ~ExportScreen() {}
-
-        /* *********************************************************************
-            Sets the default palette. This needs to be called before any
-            export methods can be called.
-         ******************************************************************** */
-        void set_palette(const uInt32* palette) {
-            pi_palette = palette;
-        }
 
         /* *********************************************************************
             Saves the given screen as a PNG file
          ******************************************************************** */
         void save_png(const ALEScreen& screen, const string& filename);
 
-        /* *********************************************************************
-            Gets the RGB values for a given screen value from the current palette
-         ******************************************************************** */
-        void get_rgb_from_palette(int val, int& r, int& g, int& b) const;
-
     protected:
         /* *********************************************************************
             Initializes the custom palette
          ******************************************************************** */    
         void writePNGChunk(ofstream& out, const char* type, uInt8* data, int size) const;
-        const uInt32* pi_palette;
 };
 
 #endif // __EXPORT_SCREEN_H__

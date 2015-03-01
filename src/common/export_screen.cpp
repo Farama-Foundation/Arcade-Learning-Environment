@@ -73,7 +73,7 @@ void ExportScreen::save_png(const ALEScreen& screen, const string& filename) {
             *buf_ptr++ = 0;                  // first byte of row is filter type
             for(int j = 0; j < i_screen_width; j++) {
                 int r, g, b;
-                get_rgb_from_palette(screenArray[i*i_screen_width+j], r, g, b);
+                // @todo get_rgb_from_palette(screenArray[i*i_screen_width+j], r, g, b);
                 buf_ptr[j * 3 + 0] = r;
                 buf_ptr[j * 3 + 1] = g;
                 buf_ptr[j * 3 + 2] = b;
@@ -109,21 +109,6 @@ void ExportScreen::save_png(const ALEScreen& screen, const string& filename) {
         out.close();
         cerr << msg << endl;
     }
-}
-
-/* *********************************************************************
-    Gets the RGB values for a given screen value from the current palette
- ******************************************************************** */
-void ExportScreen::get_rgb_from_palette(int val, int& r, int& g, int& b) const {
-    assert (pi_palette);
-    assert(val < 256);
-    
-    if (val < 256) {
-        // Regular palette
-        r = (pi_palette[val] >> 16) & 0xff;
-        g = (pi_palette[val] >> 8) & 0xff;
-        b = pi_palette[val] & 0xff;
-    } 
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

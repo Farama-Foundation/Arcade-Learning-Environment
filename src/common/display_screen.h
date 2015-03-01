@@ -22,6 +22,7 @@
 
 #include "Constants.h"
 #include "export_screen.h"
+#include "ColourPalette.hpp"
 #include "../emucore/MediaSrc.hxx"
 
 #ifdef __USE_SDL
@@ -29,7 +30,7 @@
 
 class DisplayScreen {
 public:
-    DisplayScreen(MediaSource* mediaSource, Sound* sound, ExportScreen* exportScreen);
+    DisplayScreen(MediaSource* mediaSource, Sound* sound, ColourPalette &palette); 
     virtual ~DisplayScreen();
 
     // Displays the current frame buffer from the mediasource.
@@ -56,7 +57,7 @@ protected:
     bool manual_control_active;
     MediaSource* media_source;
     Sound* my_sound;
-    ExportScreen* export_screen;
+    ColourPalette &colour_palette;
     int screen_height, screen_width;
     SDL_Surface *screen, *image;
     float yratio, xratio;
