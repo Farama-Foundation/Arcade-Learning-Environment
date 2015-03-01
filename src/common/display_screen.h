@@ -49,9 +49,9 @@ protected:
     void handleSDLEvent(const SDL_Event& event);
 
 protected:
-    // Dimensions of the SDL window
-    static const int window_height = 320;
-    static const int window_width = 384;
+    // Dimensions of the SDL window (4:3 aspect ratio)
+    static const int window_height = 321;
+    static const int window_width = 428;
     // Maintains the paused/unpaused state of the game
     bool manual_control_active;
     MediaSource* media_source;
