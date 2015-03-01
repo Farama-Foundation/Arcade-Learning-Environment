@@ -10,8 +10,7 @@
  * *****************************************************************************
  *  ColourPalette.cpp 
  *
- *  The colour palette of the now-defunct ExportScreen. Enables conversion from
- *  NTSC/SECAM/PAL to RGB via the OSystem's palette.
+ *  Enables conversion from NTSC/SECAM/PAL to RGB via the OSystem's palette.
  **************************************************************************** */
 
 #include "ColourPalette.hpp"

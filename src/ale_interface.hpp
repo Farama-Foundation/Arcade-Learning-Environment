@@ -104,8 +104,9 @@ public:
   void saveScreenPNG(const string& filename);
 
   // Creates a ScreenExporter object which can be used to save a sequence of frames. Ownership 
-  // said object is passed to the caller.
-  ScreenExporter *createScreenExporter(const std::string &basename) const;
+  // said object is passed to the caller. Frames are saved in the directory 'path', which needs
+  // to exists. 
+  ScreenExporter *createScreenExporter(const std::string &path) const;
 
  public:
   std::auto_ptr<OSystem> theOSystem;
