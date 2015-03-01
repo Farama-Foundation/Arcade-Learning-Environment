@@ -42,13 +42,17 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
-    fprintf (stderr, "Warning: frame skip set to < 1. Setting to 1.\n");
+    std::cerr << "Warning: frame skip set to < 1. Setting to 1." << std::endl;
     m_frame_skip = 1;
   }
 
-  m_record_screen_dir = m_osystem->settings().getString("record_screen_dir");
-  if (!m_record_screen_dir.empty()) {
-    fprintf (stderr, "Recording screens to directory: %s\n", m_record_screen_dir.c_str());
+  // If so desired, we record all emulated frames to a given directory 
+  std::string recordDir = m_osystem->settings().getString("record_screen_dir");
+  if (!recordDir.empty()) {
+    std::cerr << "Recording screens to directory: " << recordDir << std::endl;
+    
+    // Create the screen exporter
+    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
   }
 }
 
@@ -136,13 +140,8 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
     sum_rewards += oneStepAct(player_a_action, player_b_action);
   }
 
-  if (!m_record_screen_dir.empty()) {
-    static int recorded_frame = 0;
-    std::stringstream ss;
-    ss << m_record_screen_dir << "/" << setfill('0') << setw(6) << recorded_frame << ".png";
-    saveScreenPNG(ss.str());
-    recorded_frame++;
-  }
+  if (m_screen_exporter.get() != NULL)
+    m_screen_exporter->saveNext(m_screen);
 
   return sum_rewards;
 }
@@ -209,14 +208,6 @@ void StellaEnvironment::setState(const ALEState& state) {
 
 const ALEState& StellaEnvironment::getState() const {
   return m_state;
-}
-
-void StellaEnvironment::saveScreenPNG(const string& filename) {
-
-  // Create a new screen exporter, just for this png
-  ScreenExporter exporter(m_osystem->colourPalette());
-
-  exporter.save(m_screen, filename);
 }
 
 void StellaEnvironment::processScreen() {

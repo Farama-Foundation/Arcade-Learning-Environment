@@ -25,6 +25,7 @@
 #include "../emucore/OSystem.hxx"
 #include "../emucore/Event.hxx"
 #include "../games/RomSettings.hpp"
+#include "../common/ScreenExporter.hpp"
 
 #include <stack>
 
@@ -66,9 +67,6 @@ class StellaEnvironment {
     const ALEScreen &getScreen() const { return m_screen; }
     const ALERAM &getRAM() const { return m_ram; }
 
-    /** Saves the current screen as a png image. */
-    void saveScreenPNG(const string& filename);
-
     int getFrameNumber() const { return m_state.getFrameNumber(); }
     int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
@@ -107,7 +105,7 @@ class StellaEnvironment {
     bool m_colour_averaging; // Whether to average frames
     int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
     size_t m_frame_skip; // How many frames to emulate per act()
-    std::string m_record_screen_dir; // Directory to record screens to
+    std::auto_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
 };
 
 #endif // __STELLA_ENVIRONMENT_HPP__
