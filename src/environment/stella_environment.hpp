@@ -89,8 +89,8 @@ class StellaEnvironment {
     void processRAM();
 
   private:
-    OSystem * m_osystem;
-    RomSettings * m_settings;
+    OSystem *m_osystem;
+    RomSettings *m_settings;
     PhosphorBlend m_phosphor_blend; // For performing phosphor colour averaging, if so desired
     std::string m_cartridge_md5; // Necessary for saving and loading emulator state
 

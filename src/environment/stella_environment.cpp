@@ -212,7 +212,11 @@ const ALEState& StellaEnvironment::getState() const {
 }
 
 void StellaEnvironment::saveScreenPNG(const string& filename) {
-  // @todo m_osystem->p_export_screen->save_png(m_screen, filename);
+
+  // Create a new screen exporter, just for this png
+  ScreenExporter exporter(m_osystem->colourPalette());
+
+  exporter.save(m_screen, filename);
 }
 
 void StellaEnvironment::processScreen() {
