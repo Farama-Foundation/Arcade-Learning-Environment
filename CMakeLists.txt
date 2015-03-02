@@ -71,8 +71,10 @@ include_directories(
 
 add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
+set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(ale-bin ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
+set_target_properties(ale-bin PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(ale-lib ${LINK_LIBS})
 target_link_libraries(ale-bin ${LINK_LIBS})
