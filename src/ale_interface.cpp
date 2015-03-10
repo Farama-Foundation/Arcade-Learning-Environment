@@ -194,7 +194,7 @@ reward_t ALEInterface::act(Action action) {
     theOSystem->p_display_screen->display_screen();
     while (theOSystem->p_display_screen->manual_control_engaged()) {
       Action user_action = theOSystem->p_display_screen->getUserAction();
-      environment->act(user_action, PLAYER_B_NOOP);
+      reward += environment->act(user_action, PLAYER_B_NOOP);
       theOSystem->p_display_screen->display_screen();
     }
   }
