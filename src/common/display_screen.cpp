@@ -20,11 +20,11 @@
 DisplayScreen::DisplayScreen(MediaSource* mediaSource,
                              Sound* sound,
                              ColourPalette &palette):
-        manual_control_active(false),
+        manual_control_active(true),
         media_source(mediaSource),
         my_sound(sound),
         colour_palette(palette),
-        delay_msec(10)
+        delay_msec(12)
 {
     screen_height = media_source->height();
     screen_width = media_source->width();
@@ -139,54 +139,52 @@ Action DisplayScreen::getUserAction() {
     if (!manual_control_active) {
         return UNDEFINED;
     }
-    Action a = UNDEFINED;
-    while (a == UNDEFINED) {
-        poll();
-        SDL_PumpEvents();
-        Uint8* keymap = SDL_GetKeyState(NULL);
-        // Break out of this loop if the 'p' key is pressed
-        if (keymap[SDLK_p]) {
-            return PLAYER_A_NOOP;
-        // Triple Actions
-        } else if (keymap[SDLK_UP] && keymap[SDLK_RIGHT] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_UPRIGHTFIRE;
-        } else if (keymap[SDLK_UP] && keymap[SDLK_LEFT] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_UPLEFTFIRE;
-        } else if (keymap[SDLK_DOWN] && keymap[SDLK_RIGHT] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_DOWNRIGHTFIRE;
-        } else if (keymap[SDLK_DOWN] && keymap[SDLK_LEFT] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_DOWNLEFTFIRE;
-        // Double Actions
-        } else if (keymap[SDLK_UP] && keymap[SDLK_LEFT]) {
-            a = PLAYER_A_UPLEFT;
-        } else if (keymap[SDLK_UP] && keymap[SDLK_RIGHT]) {
-            a = PLAYER_A_UPRIGHT;
-        } else if (keymap[SDLK_DOWN] && keymap[SDLK_LEFT]) {
-            a = PLAYER_A_DOWNLEFT;
-        } else if (keymap[SDLK_DOWN] && keymap[SDLK_RIGHT]) {
-            a = PLAYER_A_DOWNRIGHT;
-        } else if (keymap[SDLK_UP] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_UPFIRE;
-        } else if (keymap[SDLK_DOWN] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_DOWNFIRE;
-        } else if (keymap[SDLK_LEFT] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_LEFTFIRE;
-        } else if (keymap[SDLK_RIGHT] && keymap[SDLK_SPACE]) {
-            a = PLAYER_A_RIGHTFIRE;
-        // Single Actions
-        } else if (keymap[SDLK_SPACE]) {
-            a = PLAYER_A_FIRE;
-        } else if (keymap[SDLK_RETURN]) {
-            a = PLAYER_A_NOOP;
-        } else if (keymap[SDLK_LEFT]) {
-            a = PLAYER_A_LEFT;
-        } else if (keymap[SDLK_RIGHT]) {
-            a = PLAYER_A_RIGHT;
-        } else if (keymap[SDLK_UP]) {
-            a = PLAYER_A_UP;
-        } else if (keymap[SDLK_DOWN]) {
-            a = PLAYER_A_DOWN;
-        }
+    Action a = PLAYER_A_NOOP;
+    poll();
+    SDL_PumpEvents();
+    Uint8* keymap = SDL_GetKeyState(NULL);
+    // Break out of this loop if the 'p' key is pressed
+    if (keymap[SDLK_p]) {
+      return PLAYER_A_NOOP;
+      // Triple Actions
+    } else if (keymap[SDLK_UP] && keymap[SDLK_RIGHT] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_UPRIGHTFIRE;
+    } else if (keymap[SDLK_UP] && keymap[SDLK_LEFT] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_UPLEFTFIRE;
+    } else if (keymap[SDLK_DOWN] && keymap[SDLK_RIGHT] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_DOWNRIGHTFIRE;
+    } else if (keymap[SDLK_DOWN] && keymap[SDLK_LEFT] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_DOWNLEFTFIRE;
+      // Double Actions
+    } else if (keymap[SDLK_UP] && keymap[SDLK_LEFT]) {
+      a = PLAYER_A_UPLEFT;
+    } else if (keymap[SDLK_UP] && keymap[SDLK_RIGHT]) {
+      a = PLAYER_A_UPRIGHT;
+    } else if (keymap[SDLK_DOWN] && keymap[SDLK_LEFT]) {
+      a = PLAYER_A_DOWNLEFT;
+    } else if (keymap[SDLK_DOWN] && keymap[SDLK_RIGHT]) {
+      a = PLAYER_A_DOWNRIGHT;
+    } else if (keymap[SDLK_UP] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_UPFIRE;
+    } else if (keymap[SDLK_DOWN] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_DOWNFIRE;
+    } else if (keymap[SDLK_LEFT] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_LEFTFIRE;
+    } else if (keymap[SDLK_RIGHT] && keymap[SDLK_SPACE]) {
+      a = PLAYER_A_RIGHTFIRE;
+      // Single Actions
+    } else if (keymap[SDLK_SPACE]) {
+      a = PLAYER_A_FIRE;
+    } else if (keymap[SDLK_RETURN]) {
+      a = PLAYER_A_NOOP;
+    } else if (keymap[SDLK_LEFT]) {
+      a = PLAYER_A_LEFT;
+    } else if (keymap[SDLK_RIGHT]) {
+      a = PLAYER_A_RIGHT;
+    } else if (keymap[SDLK_UP]) {
+      a = PLAYER_A_UP;
+    } else if (keymap[SDLK_DOWN]) {
+      a = PLAYER_A_DOWN;
     }
     return a;
 }
