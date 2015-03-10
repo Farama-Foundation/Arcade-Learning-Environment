@@ -263,8 +263,7 @@ reward_observation_terminal_t RLGlueController::constructRewardObservationTermin
     pixel_t *screenArray = screen.getArray();
     int red, green, blue;
     for (size_t i = 0; i < arraySize; i++) {
-      m_osystem->p_export_screen->
-          get_rgb_from_palette(screenArray[i], red, green, blue);
+      m_osystem->colourPalette().getRGB(screenArray[i], red, green, blue);
       m_observation.intArray[index++] = red;
       m_observation.intArray[index++] = green;
       m_observation.intArray[index++] = blue;
