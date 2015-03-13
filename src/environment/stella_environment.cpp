@@ -58,9 +58,6 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
 
 /** Resets the system to its start state. */
 void StellaEnvironment::reset() {
-  // RNG for generating environments
-  Random randGen;
-  
   m_state.resetEpisodeFrameNumber();
   // Reset the paddles
   m_state.resetPaddles(m_osystem->event());
@@ -138,6 +135,10 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   //  past the terminal state
   for (size_t i = 0; i < m_frame_skip; i++) {
     sum_rewards += oneStepAct(player_a_action, player_b_action);
+    float repeat_prob = 0.0;
+    while ((rand() / (float) RAND_MAX) < repeat_prob) {
+      sum_rewards += oneStepAct(player_a_action, player_b_action);
+    }
   }
 
   if (m_screen_exporter.get() != NULL)
