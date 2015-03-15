@@ -18,6 +18,7 @@
 
 #include "System.hxx"
 #include "TIASnd.hxx"
+#include <cassert>
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TIASound::TIASound(Int32 outputFrequency, Int32 tiaFrequency, uInt32 channels)
@@ -137,7 +138,8 @@ uInt8 TIASound::get(uInt16 address)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void TIASound::volume(uInt32 percent)
 {
-  if((percent >= 0) && (percent <= 100))
+  assert(percent >= 0);
+  if(percent <= 100)
     myVolumePercentage = percent;
 }
 

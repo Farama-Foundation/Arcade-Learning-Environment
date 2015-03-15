@@ -24,7 +24,9 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_settings(settings),
   m_phosphor_blend(osystem),  
   m_screen(m_osystem->console().mediaSource().height(),
-        m_osystem->console().mediaSource().width()) {
+        m_osystem->console().mediaSource().width()),
+  m_player_a_action(PLAYER_A_NOOP),
+  m_player_b_action(PLAYER_B_NOOP) {
 
   // Determine whether this is a paddle-based game
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
@@ -128,17 +130,24 @@ void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & pl
 }
 
 reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) {
+  
+  double repeat_prob = 0.5;
+  // Stochastically drop actions, according to repeatProb
+  // @todo -- don't use rand()
+  if (rand() / double(RAND_MAX + 1.0) >= repeat_prob)
+    m_player_a_action = player_a_action;
+  // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
+  if (rand() / double(RAND_MAX + 1.0) >= repeat_prob)
+    m_player_b_action = player_b_action;
+
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
   // Apply the same action for a given number of times... note that act() will refuse to emulate 
   //  past the terminal state
   for (size_t i = 0; i < m_frame_skip; i++) {
-    sum_rewards += oneStepAct(player_a_action, player_b_action);
-    float repeat_prob = 0.0;
-    while ((rand() / (float) RAND_MAX) < repeat_prob) {
-      sum_rewards += oneStepAct(player_a_action, player_b_action);
-    }
+    // Use the stored actions, which may or may not have changed this frame
+    sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }
 
   if (m_screen_exporter.get() != NULL)
