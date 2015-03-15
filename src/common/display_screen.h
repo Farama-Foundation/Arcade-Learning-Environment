@@ -61,6 +61,8 @@ protected:
     SDL_Surface *screen, *image;
     float yratio, xratio;
     int delay_msec;
+    // Used to calibrate delay between frames
+    Uint32 time_since_last_frame;
 };
 #else
 /** A dummy class that simply ignores display events. */

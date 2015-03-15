@@ -24,7 +24,7 @@ DisplayScreen::DisplayScreen(MediaSource* mediaSource,
         media_source(mediaSource),
         my_sound(sound),
         colour_palette(palette),
-        delay_msec(12)
+        delay_msec(17)
 {
     screen_height = media_source->height();
     screen_width = media_source->width();
@@ -44,6 +44,8 @@ DisplayScreen::DisplayScreen(MediaSource* mediaSource,
     SDL_WM_SetCaption("ALE Viz", NULL);
     fprintf(stderr, "Screen Display Active. [Manual Control Mode] 'm' "
             "[Slowdown] 'a' [Speedup] 's' [VolumeDown] '[' [VolumeUp] ']'.\n");
+
+    time_since_last_frame = SDL_GetTicks();
 }
 
 DisplayScreen::~DisplayScreen() {
@@ -78,7 +80,17 @@ void DisplayScreen::display_screen() {
     }
     SDL_UpdateRect(screen, 0, 0, 0, 0);
     poll();
-    SDL_Delay(delay_msec);
+    
+    // Wait a while, calibrating so that the delay remains the same
+    Uint32 newTime = SDL_GetTicks();
+    Uint32 delta = newTime - time_since_last_frame;
+
+    if (delta < delay_msec)
+        SDL_Delay(delay_msec - delta);
+    else
+
+    // Try to keep up with the delay
+    time_since_last_frame = SDL_GetTicks() + (delta > delay_msec ? delta - delay_msec : 0);
 }
 
 void DisplayScreen::poll() {
