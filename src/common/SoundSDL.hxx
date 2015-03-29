@@ -30,6 +30,10 @@ class OSystem;
 #include "MediaSrc.hxx"
 #include "TIASnd.hxx"
 
+// If desired, we save sound to disk
+#include "SoundExporter.hpp"
+#include <memory>
+
 /**
   This class implements the sound API for SDL.
 
@@ -276,6 +280,8 @@ class SoundSDL : public Sound
   private:
     // Callback function invoked by the SDL Audio library when it needs data
     static void callback(void* udata, uInt8* stream, int len);
+
+    std::auto_ptr<ale::sound::SoundExporter> m_sound_exporter;
 };
 
 #endif  // SOUND_SUPPORT

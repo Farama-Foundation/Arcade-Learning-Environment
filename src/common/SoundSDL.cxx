@@ -45,6 +45,12 @@ SoundSDL::SoundSDL(OSystem* osystem)
     myIsMuted(false),
     myVolume(100)
 {
+
+    if (osystem->settings().getString("record_sound_filename").size() > 0) {
+      
+        std::string filename = osystem->settings().getString("record_sound_filename");
+        m_sound_exporter.reset(new ale::sound::SoundExporter(filename, myNumChannels));
+    }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -397,6 +403,10 @@ void SoundSDL::processFragment(uInt8* stream, Int32 length)
       }
     }
   }
+
+  // If recording sound, do so now
+  if (m_sound_exporter.get() != NULL)
+    m_sound_exporter->addSamples(stream, length);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
