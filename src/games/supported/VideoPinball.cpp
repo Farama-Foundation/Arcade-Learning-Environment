@@ -1,4 +1,19 @@
 /* *****************************************************************************
+ * The lines 60 - 65, 109, 117 and 125 are based on Xitari's code, from Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
@@ -41,6 +56,13 @@ void VideoPinballSettings::step(const System& system) {
     // update terminal status
     int flag = readRam(&system, 0xAF) & 0x1;
     m_terminal = flag != 0;
+
+    // The lives in video pinball are displayed as ball number; so #1 == 3 lives
+    int lives_byte = readRam(&system, 0x99) & 0x7;
+    // And of course, we keep the 'extra ball' counter in a different memory location
+    int extra_ball = readRam(&system, 0xA8) & 0x1;
+
+    m_lives = 4 + extra_ball - lives_byte;
 }
 
 
@@ -84,6 +106,7 @@ void VideoPinballSettings::reset() {
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
+    m_lives    = 3;
 }
         
 /* saves the state of the rom settings */
@@ -91,6 +114,7 @@ void VideoPinballSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
+  ser.putInt(m_lives);
 }
 
 // loads the state of the rom settings
@@ -98,5 +122,6 @@ void VideoPinballSettings::loadState(Deserializer & ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
+  m_lives = ser.getInt();
 }
 
