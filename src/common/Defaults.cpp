@@ -35,4 +35,7 @@ void setDefaultSettings(Settings &settings) {
 
     // Display Settings
     settings.setBool("display_screen", false);
+
+    // Record settings
+    settings.setString("record_sound_filename", "");
 }
