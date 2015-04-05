@@ -20,7 +20,7 @@
 DisplayScreen::DisplayScreen(MediaSource* mediaSource,
                              Sound* sound,
                              ColourPalette &palette):
-        manual_control_active(true),
+        manual_control_active(false),
         media_source(mediaSource),
         my_sound(sound),
         colour_palette(palette),
