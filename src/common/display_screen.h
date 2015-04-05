@@ -60,9 +60,9 @@ protected:
     int screen_height, screen_width;
     SDL_Surface *screen, *image;
     float yratio, xratio;
-    int delay_msec;
+    Uint32 delay_msec;
     // Used to calibrate delay between frames
-    Uint32 time_since_last_frame;
+    Uint32 last_frame_time;
 };
 #else
 /** A dummy class that simply ignores display events. */

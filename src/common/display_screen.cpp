@@ -45,7 +45,7 @@ DisplayScreen::DisplayScreen(MediaSource* mediaSource,
     fprintf(stderr, "Screen Display Active. [Manual Control Mode] 'm' "
             "[Slowdown] 'a' [Speedup] 's' [VolumeDown] '[' [VolumeUp] ']'.\n");
 
-    time_since_last_frame = SDL_GetTicks();
+    last_frame_time = SDL_GetTicks();
 }
 
 DisplayScreen::~DisplayScreen() {
@@ -80,17 +80,17 @@ void DisplayScreen::display_screen() {
     }
     SDL_UpdateRect(screen, 0, 0, 0, 0);
     poll();
-    
+
     // Wait a while, calibrating so that the delay remains the same
     Uint32 newTime = SDL_GetTicks();
-    Uint32 delta = newTime - time_since_last_frame;
+    Uint32 delta = newTime - min(last_frame_time, newTime);
 
-    if (delta < delay_msec)
+    if (delta < delay_msec) {
         SDL_Delay(delay_msec - delta);
-    else
-
-    // Try to keep up with the delay
-    time_since_last_frame = SDL_GetTicks() + (delta > delay_msec ? delta - delay_msec : 0);
+    } else {
+        // Try to keep up with the delay
+        last_frame_time = SDL_GetTicks() + delta - delay_msec;
+    }
 }
 
 void DisplayScreen::poll() {
@@ -117,11 +117,11 @@ void DisplayScreen::handleSDLEvent(const SDL_Event& event) {
                     }
                     break;
                 case SDLK_s:
-                    delay_msec = max(0, delay_msec - 5);
+                    delay_msec = delay_msec > 5 ? delay_msec - 5 : 0;
                     fprintf(stderr, "[Speedup] %d msec delay\n", delay_msec);
                     break;
                 case SDLK_a:
-                    delay_msec = max(0, delay_msec + 5);
+                    delay_msec = delay_msec + 5;
                     fprintf(stderr, "[Slowdown] %d msec delay\n", delay_msec);
                     break;
 #ifdef SOUND_SUPPORT
