@@ -19,7 +19,7 @@
 
 #include <string>
 #include "display_screen.h"
-#include "ale_screen.hpp"
+#include "../environment/ale_screen.hpp"
 
 class ScreenExporter {
 
