@@ -1,15 +1,72 @@
 # ale_python_interface.py
 # Author: Ben Goodrich
-# This directly implements a python version of the arcade learning environment interface.
-# It requires the C wrapper library to be built and on shared object path, as "ale_c_wrapper.so"
+# This directly implements a python version of the arcade learning
+# environment interface.
 
-from ctypes import cdll
+from ctypes import *
 import numpy as np
 from numpy.ctypeslib import as_ctypes
 import os
 
 ale_lib = cdll.LoadLibrary(os.path.join(os.path.dirname(__file__),
                                         'libale_c.so'))
+
+ale_lib.ALE_new.argtypes = None
+ale_lib.ALE_new.restype = c_void_p
+ale_lib.ALE_del.argtypes = [c_void_p]
+ale_lib.ALE_del.restype = None
+ale_lib.getString.argtypes = [c_void_p, c_char_p]
+ale_lib.getString.restype = c_char_p
+ale_lib.getInt.argtypes = [c_void_p, c_char_p]
+ale_lib.getInt.restype = c_int
+ale_lib.getBool.argtypes = [c_void_p, c_char_p]
+ale_lib.getBool.restype = c_bool
+ale_lib.getFloat.argtypes = [c_void_p, c_char_p]
+ale_lib.getFloat.restype = c_float
+ale_lib.setString.argtypes = [c_void_p, c_char_p, c_int]
+ale_lib.setString.restype = None
+ale_lib.setInt.argtypes = [c_void_p, c_char_p, c_int]
+ale_lib.setInt.restype = None
+ale_lib.setBool.argtypes = [c_void_p, c_char_p, c_bool]
+ale_lib.setBool.restype = None
+ale_lib.setFloat.argtypes = [c_void_p, c_char_p, c_float]
+ale_lib.setFloat.restype = None
+ale_lib.loadROM.argtypes = [c_void_p, c_char_p]
+ale_lib.loadROM.restype = None
+ale_lib.act.argtypes = [c_void_p, c_int]
+ale_lib.act.restype = c_int
+ale_lib.game_over.argtypes = [c_void_p]
+ale_lib.game_over.restype = c_bool
+ale_lib.reset_game.argtypes = [c_void_p]
+ale_lib.reset_game.restype = None
+ale_lib.getLegalActionSet.argtypes = [c_void_p, c_void_p]
+ale_lib.getLegalActionSet.restype = None
+ale_lib.getLegalActionSize.argtypes = [c_void_p]
+ale_lib.getLegalActionSize.restype = c_int
+ale_lib.getMinimalActionSet.argtypes = [c_void_p, c_void_p]
+ale_lib.getMinimalActionSet.restype = None
+ale_lib.getMinimalActionSize.argtypes = [c_void_p]
+ale_lib.getMinimalActionSize.restype = c_int
+ale_lib.getFrameNumber.argtypes = [c_void_p]
+ale_lib.getFrameNumber.restype = c_int
+ale_lib.lives.argtypes = [c_void_p]
+ale_lib.lives.restype = c_int
+ale_lib.getEpisodeFrameNumber.argtypes = [c_void_p]
+ale_lib.getEpisodeFrameNumber.restype = c_int
+ale_lib.getScreen.argtypes = [c_void_p, c_void_p]
+ale_lib.getScreen.restype = None
+ale_lib.getRAM.argtypes = [c_void_p, c_void_p]
+ale_lib.getRAM.restype = None
+ale_lib.getRAMSize.argtypes = [c_void_p]
+ale_lib.getRAMSize.restype = c_int
+ale_lib.getScreenWidth.argtypes = [c_void_p]
+ale_lib.getScreenWidth.restype = c_int
+ale_lib.getScreenHeight.argtypes = [c_void_p]
+ale_lib.getScreenHeight.restype = c_int
+ale_lib.getScreenRGB.argtypes = [c_void_p, c_void_p]
+ale_lib.getScreenRGB.restype = None
+ale_lib.saveScreenPNG.argtypes = [c_void_p, c_char_p]
+ale_lib.saveScreenPNG.restype = None
 
 class ALEInterface(object):
     def __init__(self):
@@ -47,13 +104,13 @@ class ALEInterface(object):
 
     def getLegalActionSet(self):
         act_size = ale_lib.getLegalActionSize(self.obj)
-        act = np.zeros((act_size), dtype=np.int32)
+        act = np.zeros((act_size), dtype=np.intc)
         ale_lib.getLegalActionSet(self.obj, as_ctypes(act))
         return act
 
     def getMinimalActionSet(self):
         act_size = ale_lib.getMinimalActionSize(self.obj)
-        act = np.zeros((act_size), dtype=np.int32)
+        act = np.zeros((act_size), dtype=np.intc)
         ale_lib.getMinimalActionSet(self.obj, as_ctypes(act))
         return act
 
@@ -84,22 +141,22 @@ class ALEInterface(object):
         """
         if(screen_data is None):
             width = ale_lib.getScreenWidth(self.obj)
-            height = ale_lib.getScreenWidth(self.obj)
+            height = ale_lib.getScreenHeight(self.obj)
             screen_data = np.zeros(width*height, dtype=np.uint8)
         ale_lib.getScreen(self.obj, as_ctypes(screen_data))
         return screen_data
 
     def getScreenRGB(self, screen_data=None):
         """This function fills screen_data with the data
-        screen_data MUST be a numpy array of uint32/int32. This can be initialized like so:
-        screen_data = np.array(w*h, dtype=np.uint32)
+        screen_data MUST be a numpy array of uint/int. This can be initialized like so:
+        screen_data = np.array(w*h, dtype=np.intc)
         Notice,  it must be width*height in size also
         If it is None,  then this function will initialize it
         """
         if(screen_data is None):
             width = ale_lib.getScreenWidth(self.obj)
-            height = ale_lib.getScreenWidth(self.obj)
-            screen_data = np.zeros(width*height, dtype=np.uint32)
+            height = ale_lib.getScreenHeight(self.obj)
+            screen_data = np.zeros(width*height, dtype=np.intc)
         ale_lib.getScreenRGB(self.obj, as_ctypes(screen_data))
         return screen_data
 

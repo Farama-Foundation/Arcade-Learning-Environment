@@ -22,14 +22,14 @@ extern "C" {
   void reset_game(ALEInterface *ale){ale->reset_game();}
   void getLegalActionSet(ALEInterface *ale,int *actions){
     ActionVect action_vect = ale->getLegalActionSet();
-    for(uint i = 0;i < ale->getLegalActionSet().size();i++){
+    for(unsigned int i = 0;i < ale->getLegalActionSet().size();i++){
       actions[i] = action_vect[i];
     }
   }
   int getLegalActionSize(ALEInterface *ale){return ale->getLegalActionSet().size();}
   void getMinimalActionSet(ALEInterface *ale,int *actions){
     ActionVect action_vect = ale->getMinimalActionSet();
-    for(uint i = 0;i < ale->getMinimalActionSet().size();i++){
+    for(unsigned int i = 0;i < ale->getMinimalActionSet().size();i++){
       actions[i] = action_vect[i];
     }
   }
