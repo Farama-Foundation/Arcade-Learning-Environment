@@ -9,9 +9,9 @@
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  ale_interface.hpp
+ *  sharedLibraryInterfaceExample.cpp 
  *
- *  The shared library interface.
+ *  Sample code for running an agent with the shared library interface. 
  **************************************************************************** */
 
 #include <iostream>
