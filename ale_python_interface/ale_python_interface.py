@@ -65,6 +65,10 @@ ale_lib.getScreenHeight.argtypes = [c_void_p]
 ale_lib.getScreenHeight.restype = c_int
 ale_lib.getScreenRGB.argtypes = [c_void_p, c_void_p]
 ale_lib.getScreenRGB.restype = None
+ale_lib.saveState.argtypes = [c_void_p]
+ale_lib.saveState.restype = None
+ale_lib.loadState.argtypes = [c_void_p]
+ale_lib.loadState.restype = None
 ale_lib.saveScreenPNG.argtypes = [c_void_p, c_char_p]
 ale_lib.saveScreenPNG.restype = None
 
@@ -177,6 +181,12 @@ class ALEInterface(object):
 
     def saveScreenPNG(self, filename):
         return ale_lib.saveScreenPNG(self.obj, filename)
+
+    def saveState(self):
+        return ale_lib.saveState(self.obj)
+
+    def loadState(self):
+        return ale_lib.loadState(self.obj)
 
     def __del__(self):
         ale_lib.ALE_del(self.obj)

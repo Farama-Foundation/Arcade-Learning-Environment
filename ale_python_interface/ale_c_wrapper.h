@@ -59,6 +59,8 @@ extern "C" {
       screen_data[i] = rgb_palette[ale_screen_data[i]];
     }
   }
+  void saveState(ALEInterface *ale){ale->saveState();}
+  void loadState(ALEInterface *ale){ale->loadState();}
   void saveScreenPNG(ALEInterface *ale,const char *filename){ale->saveScreenPNG(filename);}
 }
 
