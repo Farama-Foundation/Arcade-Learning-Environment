@@ -178,6 +178,7 @@ class ALEInterface(object):
             ram_size = ale_lib.getRAMSize(self.obj)
             ram = np.zeros(ram_size, dtype=np.uint8)
         ale_lib.getRAM(self.obj, as_ctypes(ram))
+        return ram
 
     def saveScreenPNG(self, filename):
         return ale_lib.saveScreenPNG(self.obj, filename)
