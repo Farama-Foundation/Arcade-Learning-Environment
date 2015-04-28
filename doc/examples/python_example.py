@@ -1,23 +1,21 @@
 #!/usr/bin/env python
-
-# ale_python_test1.py
+# ale_python_example.py
 # Author: Ben Goodrich
 #
-# This is a direct port to python of the shared library example from ALE provided in
-# doc/examples/sharedLibraryInterfaceExample.cpp
-
+# This is a direct port to python of the shared library example from
+# ALE provided in doc/examples/sharedLibraryInterfaceExample.cpp
 import sys
+from random import randrange
 from ale_python_interface import ALEInterface
-import numpy as np
 
 if len(sys.argv) < 2:
-  print("Usage ./ale_python_test1.py <ROM_FILE_NAME>")
+  print 'Usage:', sys.argv[0], 'rom_file'
   sys.exit()
 
 ale = ALEInterface()
 
-max_frames_per_episode = ale.getInt("max_num_frames_per_episode");
-ale.setInt("random_seed",123)
+# Get & Set the desired settings
+ale.setInt('random_seed', 123)
 
 # Set USE_SDL to true to display the screen. ALE must be compilied
 # with SDL enabled for this to work. On OSX, pygame init is used to
@@ -27,20 +25,22 @@ if USE_SDL:
   if sys.platform == 'darwin':
     import pygame
     pygame.init()
-  ale.setBool("display_screen",True)
-  ale.setBool("sound",True)
+  ale.setBool('display_screen', True)
+  ale.setBool('sound', True)
 
-random_seed = ale.getInt("random_seed")
-print("random_seed: " + str(random_seed))
-
+# Load the ROM file
 ale.loadROM(sys.argv[1])
+
+# Get the list of legal actions
 legal_actions = ale.getLegalActionSet()
 
-for episode in range(10):
-  total_reward = 0.0
+# Play 10 episodes
+for episode in xrange(10):
+  total_reward = 0
   while not ale.game_over():
-    a = legal_actions[np.random.randint(legal_actions.size)]
+    a = legal_actions[randrange(len(legal_actions))]
+    # Apply an action and get the resulting reward
     reward = ale.act(a);
     total_reward += reward
-  print("Episode " + str(episode) + " ended with score: " + str(total_reward))
+  print 'Episode', episode, 'ended with score:', total_reward
   ale.reset_game()
