@@ -10,7 +10,7 @@ import sys
 from ale_python_interface import ALEInterface
 import numpy as np
 
-if(len(sys.argv) < 2):
+if len(sys.argv) < 2:
   print("Usage ./ale_python_test1.py <ROM_FILE_NAME>")
   sys.exit()
 
@@ -18,6 +18,17 @@ ale = ALEInterface()
 
 max_frames_per_episode = ale.getInt("max_num_frames_per_episode");
 ale.setInt("random_seed",123)
+
+# Set USE_SDL to true to display the screen. ALE must be compilied
+# with SDL enabled for this to work. On OSX, pygame init is used to
+# proxy-call SDL_main.
+USE_SDL = False
+if USE_SDL:
+  if sys.platform == 'darwin':
+    import pygame
+    pygame.init()
+  ale.setBool("display_screen",True)
+  ale.setBool("sound",True)
 
 random_seed = ale.getInt("random_seed")
 print("random_seed: " + str(random_seed))
