@@ -29,7 +29,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " rom_file" << std::endl;
+        std::cout << "Usage: " << argv[0] << " rom_file" << std::endl;
         return 1;
     }
 
@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
 
     // We enable both screen and sound, which we will need for recording. 
     ale.setBool("display_screen", true);
+    // You may leave sound disabled (by setting this flag to false) if so desired. 
     ale.setBool("sound", true);
 
     std::string recordPath = "record";
@@ -68,6 +69,9 @@ int main(int argc, char** argv) {
         // Apply the action (discard the resulting reward) 
         ale.act(a);
     }
+
+    std::cout << std::endl;
+    std::cout << "Recording complete. See manual for instructions on creating a video." << std::endl;
 
     return 0;
 }
