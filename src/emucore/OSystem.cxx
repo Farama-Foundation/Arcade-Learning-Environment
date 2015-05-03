@@ -181,13 +181,6 @@ bool OSystem::create()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::setConfigPaths()
 {
-  myStateDir = mySettings->getString("statedir");
-  if(myStateDir == "")
-    myStateDir = myBaseDir + BSPF_PATH_SEPARATOR + "state";
-  if(!FilesystemNode::dirExists(myStateDir))
-    FilesystemNode::makeDir(myStateDir);
-  mySettings->setString("statedir", myStateDir);
-
   myGameListCacheFile = myBaseDir + BSPF_PATH_SEPARATOR + "stella.cache";
 
   myCheatFile = mySettings->getString("cheatfile");

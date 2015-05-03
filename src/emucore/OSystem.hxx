@@ -238,11 +238,6 @@ class OSystem
     const string& baseDir() const { return myBaseDir; }
 
     /**
-      Return the directory for storing state files.
-    */
-    const string& stateDir() const { return myStateDir; }
-
-    /**
       This method should be called to get the full path of the gamelist
       cache file (used by the Launcher to show a listing of available games).
 
@@ -479,7 +474,6 @@ class OSystem
   private:
     enum { kNumUIPalettes = 2 };
     string myBaseDir;
-    string myStateDir;
 
     string myCheatFile;
     string myConfigFile;
