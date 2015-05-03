@@ -86,6 +86,12 @@ if(BUILD_EXAMPLES)
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
+  
+  add_executable(videoRecordingExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/videoRecordingExample.cpp)
+  set_target_properties(videoRecordingExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  target_link_libraries(videoRecordingExample ale)
+  target_link_libraries(videoRecordingExample ${LINK_LIBS})
+  add_dependencies(videoRecordingExample ale-lib)
 endif()
 
 if(USE_RLGLUE)
