@@ -55,7 +55,7 @@ void ZaxxonSettings::step(const System& system) {
     m_score = score;
 
     // update terminal status
-    int lives_byte = readRam(&system, 0xEA) & 0xF;
+    int lives_byte = readRam(&system, 0xEA) & 0x7;
     // Note - this *requires* a reset at load time; lives are set to 0 before
     //  reset is pushed
     m_terminal = (lives_byte == 0);

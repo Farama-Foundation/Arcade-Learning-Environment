@@ -47,8 +47,9 @@ RomSettings* AtlantisSettings::clone() const {
 /* process the latest information from ALE */
 void AtlantisSettings::step(const System& system) {
 
-    // update the reward
-    reward_t score = getDecimalScore(34, 35, &system); 
+    // update the reward. Score in Atlantis is a bit funky: when you "roll" the score, it increments
+    // the *lowest* digit. E.g., 999900 -> 000001. 
+    reward_t score = getDecimalScore(0xA2, 0xA3, 0xA1, &system); 
     score *= 100;
     m_reward = score - m_score;
     m_score = score;
