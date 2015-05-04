@@ -424,7 +424,7 @@ on this minimal action set for success.
 
 This section provides additional relevant ALE information.
 
-\subsection{Displaying the Screen}
+\subsection{Displaying the Screen}\label{subsec:displaying_screen}
 
 ALE offers screen display capabilities via the Simple DirectMedia Layer (SDL). This requires
 the following libraries:
@@ -439,5 +439,63 @@ To compile with SDL support, you should set \verb+USE_SDL=1+ in the ALE makefile
 display can be enabled with the \verb+-display_screen+ command-line argument. 
 
 SDL support has been tested under Linux and Mac OS X. 
+
+\subsection{Recording Movies}
+
+ALE now contains support for recording frames and sound via SDL (Section \ref{subsec:displaying_screen}).
+An example C++ program is provided which will record a single episode of play. This program is located at
+
+\begin{center}
+\texttt{doc/examples/videoRecordingExample.cpp}
+\end{center}
+
+Compiling and running this program will create a directory \texttt{record}\footnote{The example program creates this directory, using a system call to \texttt{mkdir}. If this fails on your machine, you will need to manually create this directory.} in which frames will be saved sequentially and named according to their frame numbers. Thus, if the episode lasts 683 frames then the files \verb+record/000000.png+ to \verb+record/000682.png+ are created. Furthermore, sound output is also recorded as \verb+record/sound.wav+. The following flags control recording behaviour:
+
+\small{
+\begin{verbatim}
+  -display_screen <true|false> -- should be set to true for recording
+    default: false
+  -sound <true|false> -- whether to enable sound output
+    default: false
+  -record_screen_dir -- path to record screens; if empty, no recording occurs
+    default: ""
+  -record_sound_filename -- path to single wav file to be recorded; 
+            if empty, no recording occurs
+    default: ""
+\end{verbatim}
+}
+
+Once frames and/or sound have been recorded, they may be joined into a movie file using the external program \texttt{ffmpeg} (installable on Mac OS X and most *nix OSes through a package manager). For your convenience, two example scripts are provided:
+
+\begin{itemize}
+    \item{\texttt{doc/scripts/videoRecordingExampleJoinMacOSX.sh}}
+    \item{\texttt{doc/scripts/videoRecordingExampleJoinUnix.sh}}
+\end{itemize}
+
+These should be run from the same directory that the C++ example was run from. Unfortunately \texttt{ffmpeg} is a complicated beast and taming it may require tweaking specific to your system configuration. Please contact us if you would like to provide an example script for a different configuration.
+
+Here is a full, step-by-step example on Mac OS X (after building the project):
+\begin{verbatim}
+> cd ale_0_4
+ale_0_4> doc/examples/videoRecordingExample space_invaders.bin
+
+A.L.E: Arcade Learning Environment (version 0.4.4)
+[Powered by Stella]
+
+[ usual ALE output ]
+
+Recording screens to directory: record
+
+Recording complete. See manual for instructions on creating a video.
+
+ale_0_4> doc/scripts/videoRecordingExampleJoinMacOSX.sh
+
+ffmpeg version 2.6.1 Copyright (c) 2000-2015 the FFmpeg developers
+  built with Apple clang version 4.1 (tags/Apple/clang-421.11.65) ... 
+
+[ loads of output ]
+
+ale_0_4> open agent.mov
+\end{verbatim}
 
 \end{document}
