@@ -8,4 +8,12 @@
 # -c:a mp3 specifies the sound codec 
 # -c:v libx264 specifies the video codec
 # 
-ffmpeg -r 60 -i record/%06d.png -i record/sound.wav -f mov -c:a mp3 -c:v libx264 agent.mov 
+
+
+# Attempt to use ffmpeg. If this fails, use avconv (fix for Ubuntu 14.04). 
+{
+    ffmpeg -r 60 -i record/%06d.png -i record/sound.wav -f mov -c:a mp3 -c:v libx264 agent.mov
+} || {
+    avconv -r 60 -i record/%06d.png -i record/sound.wav -f mov -c:a mp3 -c:v libx264 agent.mov
+}
+
