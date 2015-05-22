@@ -24,6 +24,7 @@ void Random::seed(uInt32 value)
 {
   ourSeed = value;
   ourSeeded = true;
+  rndGenerator.seed(ourSeed);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,18 +33,16 @@ Random::Random()
   // If we haven't been seeded then seed ourself
   if(!ourSeeded)
   {
-    cerr << "random seed " << endl;
     ourSeed = (uInt32)time(0);
     ourSeeded = true;
+    rndGenerator.seed(ourSeed);
   }
-
-  myValue = ourSeed;
 }
  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt32 Random::next()
 {
-  return (myValue = (myValue * 2416 + 374441) % 1771875);
+  return rndGenerator();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,4 +50,8 @@ uInt32 Random::ourSeed = 0;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Random::ourSeeded = false;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::mt19937 Random::rndGenerator;
+
 

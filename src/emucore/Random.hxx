@@ -20,6 +20,7 @@
 #define RANDOM_HXX
 
 #include "m6502/src/bspf/src/bspf.hxx"
+#include <random>
 
 /**
   This is a quick-and-dirty random number generator.  It is based on 
@@ -55,8 +56,8 @@ class Random
     uInt32 next();
 
   private:
-    // Indicates the next random number
-    uInt32 myValue;
+    // Mersenne Twister object to randomization
+    static std::mt19937 rndGenerator;
 
   private:
     // Seed to use for creating new random number generators

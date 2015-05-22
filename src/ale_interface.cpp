@@ -90,14 +90,12 @@ void ALEInterface::loadSettings(const string& romfile,
   // Seed random number generator
   if (theOSystem->settings().getString("random_seed") == "time") {
     cerr << "Random Seed: Time" << endl;
-    srand((unsigned)time(0));
-    //srand48((unsigned)time(0));
+    Random::seed((unsigned)time(0));
   } else {
     int seed = theOSystem->settings().getInt("random_seed");
     assert(seed >= 0);
     cerr << "Random Seed: " << seed << endl;
-    srand((unsigned)seed);
-    //srand48((unsigned)seed);
+    Random::seed((unsigned)seed);
   }
 
   theOSystem->console().setPalette("standard");

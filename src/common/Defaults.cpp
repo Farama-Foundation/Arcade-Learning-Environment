@@ -16,9 +16,6 @@
 #include "Defaults.hpp"
 
 void setDefaultSettings(Settings &settings) {
-    // General settings
-    settings.setString("random_seed", "time");
-
     // Controller settings
     settings.setInt("max_num_frames", 0);
     settings.setInt("max_num_frames_per_episode", 0);
