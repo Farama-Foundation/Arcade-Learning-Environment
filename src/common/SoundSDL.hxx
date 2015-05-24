@@ -23,7 +23,7 @@
 
 class OSystem;
 
-#include <SDL/SDL.h>
+#include "SDL.h"
 
 #include "../emucore/Sound.hxx"
 #include "../emucore/m6502/src/bspf/src/bspf.hxx"

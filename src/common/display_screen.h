@@ -25,7 +25,7 @@
 #include "../emucore/MediaSrc.hxx"
 
 #ifdef __USE_SDL
-#include <SDL/SDL.h>
+#include "SDL.h"
 
 class DisplayScreen {
 public:

@@ -21,7 +21,7 @@
 #include <sstream>
 #include <cassert>
 #include <cmath>
-#include <SDL/SDL.h>
+#include "SDL.h"
 
 #include "TIASnd.hxx"
 // #include "FrameBuffer.hxx"
