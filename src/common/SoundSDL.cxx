@@ -136,15 +136,6 @@ void SoundSDL::initialize()
       myIsMuted = false;
       myFragmentSizeLogBase2 = log((double)myHardwareSpec.samples) / log(2.0);
 
-        /*
-        cerr << "Freq: " << (int)myHardwareSpec.freq << endl;
-        cerr << "Format: " << (int)myHardwareSpec.format << endl;
-        cerr << "Channels: " << (int)myHardwareSpec.channels << endl;
-        cerr << "Silence: " << (int)myHardwareSpec.silence << endl;
-        cerr << "Samples: " << (int)myHardwareSpec.samples << endl;
-        cerr << "Size: " << (int)myHardwareSpec.size << endl;
-          */
-
       // Now initialize the TIASound object which will actually generate sound
       myTIASound.outputFrequency(myHardwareSpec.freq);
       myTIASound.tiaFrequency(tiafreq);
