@@ -111,7 +111,7 @@ void DisplayScreen::handleSDLEvent(const SDL_Event& event) {
                     manual_control_active = !manual_control_active;
                     if (manual_control_active) {
                         fprintf(stderr, "Manual Control Enabled: [Move] "
-                                "Arrow keys [Shoot] Space [NO-OP] Return.\n");
+                                "Arrow keys [Fire] Space [NO-OP] Return.\n");
                     } else {
                         fprintf(stderr, "Manual Control Disabled\n");
                     }
