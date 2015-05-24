@@ -136,6 +136,11 @@ class SoundNull : public Sound
     */
     void adjustVolume(Int8 direction) { }
 
+    /**
+      * Tells the sound engine to record one frame's worth of sound.
+      */
+    virtual void recordNextFrame() { }
+
 public:
     /**
       Loads the current state of this device from the given Deserializer.

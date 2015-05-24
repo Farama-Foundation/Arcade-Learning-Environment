@@ -134,6 +134,11 @@ class Sound
     */
     virtual void adjustVolume(Int8 direction) = 0;
 
+    /**
+      * Tells the sound engine to record one frame's worth of sound.
+      */
+    virtual void recordNextFrame() = 0;
+
 public:
     /**
       Loads the current state of this device from the given Deserializer.

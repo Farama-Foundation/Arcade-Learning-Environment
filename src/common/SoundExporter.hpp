@@ -38,6 +38,8 @@ class SoundExporter {
 
     public:
     
+        static const int SamplesPerFrame = 512;
+
         typedef uInt8 SampleType;
   
         /** Create a new sound exporter which, on program termination, will write out a wav file. */

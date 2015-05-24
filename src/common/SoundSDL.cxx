@@ -43,13 +43,14 @@ SoundSDL::SoundSDL(OSystem* osystem)
     myNumChannels(1),
     myFragmentSizeLogBase2(0),
     myIsMuted(false),
-    myVolume(100)
+    myVolume(100),
+    myNumRecordSamplesNeeded(0)
 {
 
     if (osystem->settings().getString("record_sound_filename").size() > 0) {
       
         std::string filename = osystem->settings().getString("record_sound_filename");
-        m_sound_exporter.reset(new ale::sound::SoundExporter(filename, myNumChannels));
+        mySoundExporter.reset(new ale::sound::SoundExporter(filename, myNumChannels));
     }
 }
 
@@ -396,9 +397,22 @@ void SoundSDL::processFragment(uInt8* stream, Int32 length)
   }
 
   // If recording sound, do so now
-  if (m_sound_exporter.get() != NULL)
-    m_sound_exporter->addSamples(stream, length);
+  if (mySoundExporter.get() != NULL && myNumRecordSamplesNeeded > 0) {
+
+     mySoundExporter->addSamples(stream, length);
+     // Consume this many samples
+     myNumRecordSamplesNeeded -= length; 
+  }
 }
+
+
+void SoundSDL::recordNextFrame() {
+
+    // Grow the required samples by a frame's worth 
+    if (mySoundExporter.get() != NULL)
+        myNumRecordSamplesNeeded += ale::sound::SoundExporter::SamplesPerFrame;
+}
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SoundSDL::callback(void* udata, uInt8* stream, int len)
