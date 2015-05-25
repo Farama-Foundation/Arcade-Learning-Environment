@@ -30,6 +30,7 @@ void Random::seed(uInt32 value)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Random::Random()
 {
+  maxPossibleValue = rndGenerator.max();
   // If we haven't been seeded then seed ourself
   if(!ourSeeded)
   {
@@ -46,9 +47,9 @@ uInt32 Random::next()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-unsigned long Random::max()
+float Random::nextDouble()
 {
-  return rndGenerator.max();
+  return rndGenerator() / double(maxPossibleValue + 1.0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

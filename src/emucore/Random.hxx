@@ -41,13 +41,11 @@ class Random
     */
     static void seed(uInt32 value);
 
-  public:
     /**
       Create a new random number generator
     */
     Random();
     
-  public:
     /**
       Answer the next random number from the random number generator
 
@@ -55,10 +53,17 @@ class Random
     */
     uInt32 next();
 
-  public:
-    static unsigned long max();
+    /**
+      Answer the next random number between 0 and 1 from the random number generator
+
+      @return A random number between 0 and 1
+    */
+    float nextDouble();
 
   private:
+    //Mersenne Twister maximum possible value
+    unsigned int maxPossibleValue;
+
     // Mersenne Twister object to randomization
     static std::mt19937 rndGenerator;
 
