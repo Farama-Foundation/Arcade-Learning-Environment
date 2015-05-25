@@ -29,6 +29,7 @@ void setDefaultSettings(Settings &settings) {
     settings.setBool("color_averaging", false);
     settings.setBool("send_rgb", false);
     settings.setInt("frame_skip", 1);
+    settings.setFloat("stochasticity", 0.25);
 
     // Display Settings
     settings.setBool("display_screen", false);

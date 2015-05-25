@@ -300,6 +300,8 @@ void Settings::usage() {
        "     Phosphor blends screens to reduce flicker\n"
        "   -record_screen_dir [save_directory]\n"
        "     Saves game screen images to save_directory\n"
+       "   -stochasticity (default: 0.25)\n"
+       "     Stochasticity in the environment. It is the probability an action will not be executed.\n"
        "\n"
        " FIFO Controller arguments:\n"
        "   -run_length_encoding [true|false] (default: true)\n"

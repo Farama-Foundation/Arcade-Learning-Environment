@@ -55,11 +55,13 @@ class Random
     */
     uInt32 next();
 
+  public:
+    static unsigned long max();
+
   private:
     // Mersenne Twister object to randomization
     static std::mt19937 rndGenerator;
 
-  private:
     // Seed to use for creating new random number generators
     static uInt32 ourSeed;
 

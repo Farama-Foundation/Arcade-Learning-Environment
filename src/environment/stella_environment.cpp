@@ -41,6 +41,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   
   m_max_num_frames_per_episode = m_osystem->settings().getInt("max_num_frames_per_episode");
   m_colour_averaging = !m_osystem->settings().getBool("color_averaging");
+
+  m_stochasticity = m_osystem->settings().getFloat("stochasticity");
   
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
@@ -56,6 +58,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
     // Create the screen exporter
     m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
   }
+
+   MAX_RAND = Random::max();
 }
 
 /** Resets the system to its start state. */
@@ -131,7 +135,6 @@ void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & pl
 
 reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) {
   
-  double repeat_prob = 0.25;
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
@@ -139,11 +142,12 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   //  past the terminal state
   for (size_t i = 0; i < m_frame_skip; i++) {
     
-    // Stochastically drop actions, according to repeatProb
-    if (m_rand_gen.next() / double(RAND_MAX + 1.0) >= repeat_prob)
+    // Stochastically drop actions, according to m_stochasticity
+    if (m_rand_gen.next() / double(MAX_RAND + 1.0) >= m_stochasticity){
       m_player_a_action = player_a_action;
+    }
     // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
-    if (m_rand_gen.next() / double(RAND_MAX + 1.0) >= repeat_prob)
+    if (m_rand_gen.next() / double(MAX_RAND + 1.0) >= m_stochasticity)
       m_player_b_action = player_b_action;
 
     // Use the stored actions, which may or may not have changed this frame
