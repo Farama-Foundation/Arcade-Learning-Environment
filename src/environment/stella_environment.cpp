@@ -40,7 +40,7 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
   
   m_max_num_frames_per_episode = m_osystem->settings().getInt("max_num_frames_per_episode");
-  m_colour_averaging = !m_osystem->settings().getBool("color_averaging");
+  m_colour_averaging = m_osystem->settings().getBool("color_averaging");
 
   m_repeat_action_probability = m_osystem->settings().getFloat("repeat_action_probability");
   
