@@ -16,9 +16,6 @@
 #include "Defaults.hpp"
 
 void setDefaultSettings(Settings &settings) {
-    // General settings
-    settings.setString("random_seed", "time");
-
     // Controller settings
     settings.setInt("max_num_frames", 0);
     settings.setInt("max_num_frames_per_episode", 0);
@@ -32,6 +29,7 @@ void setDefaultSettings(Settings &settings) {
     settings.setBool("color_averaging", false);
     settings.setBool("send_rgb", false);
     settings.setInt("frame_skip", 1);
+    settings.setFloat("repeat_action_probability", 0.25);
 
     // Display Settings
     settings.setBool("display_screen", false);

@@ -20,6 +20,7 @@
 #define RANDOM_HXX
 
 #include "m6502/src/bspf/src/bspf.hxx"
+#include <random>
 
 /**
   This is a quick-and-dirty random number generator.  It is based on 
@@ -40,13 +41,11 @@ class Random
     */
     static void seed(uInt32 value);
 
-  public:
     /**
       Create a new random number generator
     */
     Random();
     
-  public:
     /**
       Answer the next random number from the random number generator
 
@@ -54,11 +53,20 @@ class Random
     */
     uInt32 next();
 
-  private:
-    // Indicates the next random number
-    uInt32 myValue;
+    /**
+      Answer the next random number between 0 and 1 from the random number generator
+
+      @return A random number between 0 and 1
+    */
+    float nextDouble();
 
   private:
+    //Mersenne Twister maximum possible value
+    unsigned int maxPossibleValue;
+
+    // Mersenne Twister object to randomization
+    static std::mt19937 rndGenerator;
+
     // Seed to use for creating new random number generators
     static uInt32 ourSeed;
 

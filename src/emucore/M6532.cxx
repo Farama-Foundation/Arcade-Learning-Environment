@@ -19,7 +19,6 @@
 #include <assert.h>
 #include "Console.hxx"
 #include "M6532.hxx"
-#include "Random.hxx"
 #include "Switches.hxx"
 #include "System.hxx"
 #include "Serializer.hxx"

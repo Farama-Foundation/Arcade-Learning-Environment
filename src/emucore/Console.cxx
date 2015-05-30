@@ -71,9 +71,9 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   
   std::string seedStr = myOSystem->settings().getString("random_seed").c_str();
   if (seedStr == "time")
-    Random::seed(time(NULL));
+    Random::seed((uInt32)time(NULL));
   else
-    Random::seed(atoi(seedStr.c_str()));
+    Random::seed((uInt32)atoi(seedStr.c_str()));
 
   // Attach the event subsystem to the current console
   //ALE  myEvent = myOSystem->eventHandler().event();
@@ -463,8 +463,8 @@ void Console::initializeAudio()
 */
 void Console::fry() const
 {
-  for (int ZPmem=0; ZPmem<0x100; ZPmem += rand() % 4)
-    mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uInt8)rand() % 256);
+  for (int ZPmem=0; ZPmem<0x100; ZPmem += randNumGen.next() % 4)
+    mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uInt8)randNumGen.next() % 256);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

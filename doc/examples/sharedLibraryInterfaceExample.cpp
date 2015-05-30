@@ -33,6 +33,8 @@ int main(int argc, char** argv) {
 
     // Get & Set the desired settings
     ale.setInt("random_seed", 123);
+    //The default is already 0.25, this is just an example
+    ale.setFloat("stochasticity", 0.25);
 
 #ifdef __USE_SDL
     ale.setBool("display_screen", true);

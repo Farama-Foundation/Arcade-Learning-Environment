@@ -42,7 +42,7 @@
 #include "environment/stella_environment.hpp"
 #include "common/ScreenExporter.hpp"
 
-static const std::string Version = "0.4.4";
+static const std::string Version = "0.5.0";
 
 /**
    This class interfaces ALE with external code for controlling agents.
