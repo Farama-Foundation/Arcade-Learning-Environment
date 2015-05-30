@@ -142,6 +142,11 @@ class SoundSDL : public Sound
     */
     void adjustVolume(Int8 direction);
 
+    /**
+      * Tells the sound engine to record one frame's worth of sound.
+      */
+    void recordNextFrame(); 
+
   public:
     /**
       Loads the current state of this device from the given Deserializer.
@@ -281,7 +286,10 @@ class SoundSDL : public Sound
     // Callback function invoked by the SDL Audio library when it needs data
     static void callback(void* udata, uInt8* stream, int len);
 
-    std::auto_ptr<ale::sound::SoundExporter> m_sound_exporter;
+    // Keeps track of how many samples we still need to record
+    int myNumRecordSamplesNeeded; 
+
+    std::auto_ptr<ale::sound::SoundExporter> mySoundExporter; 
 };
 
 #endif  // SOUND_SUPPORT

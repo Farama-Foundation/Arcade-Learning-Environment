@@ -148,6 +148,10 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
     if (m_rand_gen.nextDouble() >= m_repeat_action_probability)
       m_player_b_action = player_b_action;
 
+    // If so desired, request one frame's worth of sound (this does nothing if recording
+    // is not enabled)
+    m_osystem->sound().recordNextFrame();
+
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }

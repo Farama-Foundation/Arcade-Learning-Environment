@@ -49,6 +49,8 @@ int main(int argc, char** argv) {
     // Set record flags
     ale.setString("record_screen_dir", recordPath.c_str());
     ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
+    // We set fragsize to 64 to ensure proper sound sync 
+    ale.setInt("fragsize", 64);
 
     // Not completely portable, but will work in most cases
     std::string cmd = "mkdir ";
@@ -71,7 +73,8 @@ int main(int argc, char** argv) {
     }
 
     std::cout << std::endl;
-    std::cout << "Recording complete. See manual for instructions on creating a video." << std::endl;
+    std::cout << "Recording complete. To create a video, you may want to run \n"
+        "  doc/scripts/videoRecordingExampleJoinXXX.sh. See manual for details.." << std::endl;
 
     return 0;
 }
