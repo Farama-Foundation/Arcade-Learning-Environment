@@ -35,7 +35,7 @@ if(USE_SDL)
 endif()
 
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(MODULES common controllers emucore emucore/m6502/src emucore/m6502/src/bspf/src environment games games/supported)
+set(MODULES common controllers emucore emucore/m6502/src emucore/m6502/src/bspf/src environment games games/supported external external/TinyMT)
 
 foreach(module ${MODULES})
   file(GLOB module_sources ${SOURCE_DIR}/${module}/*.c)
@@ -67,6 +67,8 @@ include_directories(
   ${SOURCE_DIR}/games
   ${SOURCE_DIR}/games/supported
   ${SOURCE_DIR}/os_dependent
+  ${SOURCE_DIR}/external
+  ${SOURCE_DIR}/external/TinyMT
 )
 
 add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
