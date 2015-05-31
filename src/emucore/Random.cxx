@@ -24,32 +24,34 @@ void Random::seed(uInt32 value)
 {
   ourSeed = value;
   ourSeeded = true;
-  rndGenerator.seed(ourSeed);
+  // TODO(mgb): this is the C++11 variant. 
+  // rndGenerator.seed(ourSeed);
+
+  tinymt32_init(&rndGenerator, ourSeed);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Random::Random()
 {
-  maxPossibleValue = rndGenerator.max();
   // If we haven't been seeded then seed ourself
   if(!ourSeeded)
-  {
-    ourSeed = (uInt32)time(NULL);
-    ourSeeded = true;
-    rndGenerator.seed(ourSeed);
-  }
+    seed((uInt32) time(NULL));
 }
  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt32 Random::next()
 {
-  return rndGenerator();
+  // TODO(mgb): C++11
+  // return rndGenerator();
+  return static_cast<uInt32>(tinymt32_generate_uint32(&rndGenerator));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-float Random::nextDouble()
+double Random::nextDouble()
 {
-  return rndGenerator() / double(maxPossibleValue + 1.0);
+  // TODO(mgb): C++11
+  // return rndGenerator() / double(rndGenerator.max() + 1.0);
+  return tinymt32_generate_32double(&rndGenerator);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,6 +61,6 @@ uInt32 Random::ourSeed = 0;
 bool Random::ourSeeded = false;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::mt19937 Random::rndGenerator;
+Random::randgen_t Random::rndGenerator;
 
 

@@ -20,7 +20,10 @@
 #define RANDOM_HXX
 
 #include "m6502/src/bspf/src/bspf.hxx"
-#include <random>
+
+// TODO(mgb): bring this include in once we switch to C++11.
+// #include <random>
+#include "TinyMT/tinymt32.h"
 
 /**
   This is a quick-and-dirty random number generator.  It is based on 
@@ -33,6 +36,9 @@
 class Random
 {
   public:
+    
+    typedef tinymt32_t randgen_t;
+
     /**
       Class method which allows you to set the seed that'll be used
       for created new instances of this class
@@ -58,14 +64,12 @@ class Random
 
       @return A random number between 0 and 1
     */
-    float nextDouble();
+    double nextDouble();
 
   private:
-    //Mersenne Twister maximum possible value
-    unsigned int maxPossibleValue;
-
+    
     // Mersenne Twister object to randomization
-    static std::mt19937 rndGenerator;
+    static randgen_t rndGenerator;
 
     // Seed to use for creating new random number generators
     static uInt32 ourSeed;
