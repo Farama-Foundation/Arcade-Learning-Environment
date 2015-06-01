@@ -6,7 +6,7 @@ namespace sound {
 
 // Sample rate is 60Hz x SamplesPerFrame bytes
 // TODO(mgb): in reality this should be 31,400 Hz, but currently we are just short of this
-static const int SampleRate = 60 * SoundExporter::SamplesPerFrame; 
+static const unsigned int SampleRate = 60 * SoundExporter::SamplesPerFrame; 
 // Save wav file every 30 seconds
 static const unsigned int WriteInterval = SampleRate * 30;
 

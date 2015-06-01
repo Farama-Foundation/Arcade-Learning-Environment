@@ -60,11 +60,11 @@ static void period_certification(tinymt32_t * random) {
  * @param seed a 32-bit unsigned integer used as a seed.
  */
 void tinymt32_init(tinymt32_t * random, uint32_t seed) {
+    int i;
     random->status[0] = seed;
     random->status[1] = random->mat1;
     random->status[2] = random->mat2;
     random->status[3] = random->tmat;
-    int i;
     for (i = 1; i < MIN_LOOP; i++) {
 	random->status[i & 3] ^= i + UINT32_C(1812433253)
 	    * (random->status[(i - 1) & 3]
