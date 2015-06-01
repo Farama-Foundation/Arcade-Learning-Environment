@@ -45,8 +45,10 @@ const string& Properties::get(PropertyType key) const
 {
   if(key >= 0 && key < LastPropType)
     return myProperties[key];
-  else
-    return std::string("");
+  else {
+    static std::string EmptyString("");
+    return EmptyString;
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
