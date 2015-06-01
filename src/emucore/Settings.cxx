@@ -20,12 +20,12 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <string>
 
 #include "OSystem.hxx"
 #include "Version.hxx"
 #include "bspf.hxx"
 #include "Settings.hxx"
-#include "GuiUtils.hxx"  //ALE 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
@@ -516,7 +516,8 @@ const string& Settings::getString(const string& key, bool strict) const {
             cerr << "Make sure all the settings files are loaded." << endl;
             exit(-1);
         } else {
-            return EmptyString;
+            static std::string EmptyString("");
+            return EmptyString; 
         }
     }
 }

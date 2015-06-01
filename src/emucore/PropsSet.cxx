@@ -20,7 +20,6 @@
 #include <string.h>
 
 #include "OSystem.hxx"
-#include "GuiUtils.hxx"
 #include "DefProps.hxx"
 #include "Props.hxx"
 #include "PropsSet.hxx"
