@@ -4,13 +4,12 @@
 
 srcdir      ?= .
 # Set this to 1 to enable SDL, display_screen, and sound support
-USE_SDL     := 0
+USE_SDL     := 1
 # Set this to 1 to enable the RLGlue interface
 USE_RLGLUE  := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     := 
 INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -Isrc/environment -Isrc/external 
-LIBS_SDL    := -lSDL
 LIBS_RLGLUE := -lrlutils -lrlgluenetdev
 LIBS        :=
 OBJS	    :=
@@ -58,8 +57,8 @@ DEFINES +=  -DUNIX -DHAS_ALTIVEC -DUSE_NASM -DBSPF_UNIX -DHAVE_INTTYPES -DWINDOW
 LDFLAGS += 
 
 ifeq ($(strip $(USE_SDL)), 1)
-  DEFINES +=  -D__USE_SDL -DSOUND_SUPPORT
-  LIBS += $(LIBS_SDL)
+  CXXFLAGS+=$(shell sdl-config --cflags)
+  LDFLAGS+=$(shell sdl-config --libs)
 endif
 
 ifeq ($(strip $(USE_RLGLUE)), 1)
