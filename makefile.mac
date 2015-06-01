@@ -4,7 +4,7 @@
 
 srcdir      ?= .
 # Set this to 1 to enable SDL and display_screen
-USE_SDL     := 1
+USE_SDL     := 0
 # Set this to 1 to enable the RLGlue interface
 USE_RLGLUE  := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
@@ -61,8 +61,9 @@ DEFINES +=  -DUNIX -DHAS_ALTIVEC -DUSE_NASM -DBSPF_UNIX -DHAVE_INTTYPES -DWINDOW
 LDFLAGS += 
 
 ifeq ("$(USE_SDL)", "1")
+  CXXFLAGS+=$(shell sdl-config --cflags)
+  LDFLAGS+=$(shell sdl-config --libs)
   DEFINES +=  -D__USE_SDL -DSOUND_SUPPORT
-  LIBS += $(LIBS_SDL)
 endif
 
 ifeq ("$(USE_RLGLUE)", "1")
@@ -73,7 +74,7 @@ endif
 # Uncomment this for stricter compile time code verification
 # CXXFLAGS+= -Werror
 
-CXXFLAGS += -Wall -Wno-multichar -Wunused -fPIC
+CXXFLAGS += -Wall -Wunused -fPIC
 
 ifeq ("$(DEBUG)", "1")
   CXXFLAGS += -g -O0
@@ -126,7 +127,8 @@ MODULES += \
 	src/controllers \
 	src/os_dependent \
   src/games \
-  src/environment
+  src/environment \
+  src/external
 
 
 ######################################################################
@@ -149,7 +151,7 @@ $(EXECUTABLE):  $(OBJS)
 	$(LD) $(LDFLAGS) $(PRE_OBJS_FLAGS) $+ $(POST_OBJS_FLAGS) $(LIBS) $(PROF) -o $@
 
 $(LIBRARY): $(OBJS)
-	$(LD) $(LDFLAGS) -shared -o $(LIBRARY) $(LIBS) $(OBJS)        
+	$(LD) $(LDFLAGS) -shared -o $(LIBRARY) $(OBJS) $(LIBS)
 
 distclean: clean
 	$(RM_REC) $(DEPDIRS)
