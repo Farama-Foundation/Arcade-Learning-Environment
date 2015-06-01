@@ -124,7 +124,8 @@ MODULES += \
 	src/controllers \
 	src/os_dependent \
   src/games \
-  src/environment
+  src/environment \
+  src/external
 
 
 ######################################################################
