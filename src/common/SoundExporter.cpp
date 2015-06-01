@@ -8,7 +8,7 @@ namespace sound {
 // TODO(mgb): in reality this should be 31,400 Hz, but currently we are just short of this
 static const int SampleRate = 60 * SoundExporter::SamplesPerFrame; 
 // Save wav file every 30 seconds
-static const int WriteInterval = SampleRate * 30;
+static const unsigned int WriteInterval = SampleRate * 30;
 
 
 SoundExporter::SoundExporter(const std::string &filename, int channels):
