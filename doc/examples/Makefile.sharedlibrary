@@ -5,7 +5,7 @@ USE_SDL := 0
 # This will likely need to be changed to suit your installation.
 ALE := ../..
 
-FLAGS := -I$(ALE)/src -I$(ALE)/src/controllers -I$(ALE)/src/os_dependent -I$(ALE)/src/environment -L$(ALE)
+FLAGS := -I$(ALE)/src -I$(ALE)/src/controllers -I$(ALE)/src/os_dependent -I$(ALE)/src/environment -I$(ALE)/src/external -L$(ALE)
 CXX := g++
 FILE := sharedLibraryInterfaceExample
 LDFLAGS := -lale -lz
