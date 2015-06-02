@@ -58,7 +58,8 @@ LDFLAGS +=
 
 ifeq ($(strip $(USE_SDL)), 1)
   CXXFLAGS+=$(shell sdl-config --cflags)
-  LDFLAGS+=$(shell sdl-config --libs)
+  LIBS+=$(shell sdl-config --libs)
+  DEFINES +=  -D__USE_SDL -DSOUND_SUPPORT
 endif
 
 ifeq ($(strip $(USE_RLGLUE)), 1)
