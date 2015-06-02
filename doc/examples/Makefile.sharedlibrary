@@ -13,16 +13,15 @@ LDFLAGS := -lale -lz
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
     FLAGS += -Wl,-rpath=$(ALE)
-    LIBS_SDL := -lSDL -lSDL_gfx -lSDL_image -lSDLmain
 endif
 ifeq ($(UNAME_S),Darwin)
     FLAGS += -framework Cocoa
-    LIBS_SDL := -lsdl -lsdl_gfx -lsdl_image -lsdlmain
 endif
 
 ifeq ($(strip $(USE_SDL)), 1)
   DEFINES += -D__USE_SDL -DSOUND_SUPPORT
-  LDFLAGS += $(LIBS_SDL)
+  FLAGS += $(shell sdl-config --cflags)
+  LDFLAGS += $(shell sdl-config --libs)
 endif
 
 all: sharedLibraryInterfaceExample
