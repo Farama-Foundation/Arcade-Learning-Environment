@@ -1,4 +1,4 @@
-This is the 1.0 release of the Arcade Learning Environment (ALE), a platform 
+This is the 0.5 release of the Arcade Learning Environment (ALE), a platform 
 designed for AI research. ALE is based on Stella, an Atari 2600 VCS emulator. 
 More information and ALE-related publications can be found at
 
