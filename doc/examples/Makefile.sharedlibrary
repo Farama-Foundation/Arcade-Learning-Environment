@@ -16,6 +16,7 @@ ifeq ($(UNAME_S),Linux)
 endif
 ifeq ($(UNAME_S),Darwin)
     FLAGS += -framework Cocoa
+    $(shell ln -fs $(ALE)/libale.so .)
 endif
 
 ifeq ($(strip $(USE_SDL)), 1)
@@ -30,4 +31,4 @@ sharedLibraryInterfaceExample:
 	$(CXX) $(DEFINES) $(FLAGS) $(FILE).cpp $(LDFLAGS) -o $(FILE)
 
 clean:
-	rm -rf sharedLibraryInterfaceExample *.o
+	rm -rf sharedLibraryInterfaceExample *.o libale.so
