@@ -308,12 +308,14 @@ void Settings::usage() {
        "   -run_length_encoding [true|false] (default: true)\n"
        "     Encodes data using run-length encoding\n"
        "\n"
+#ifdef __USE_RLGLUE
        " RL-Glue Controller arguments:\n"
        "   -send_rgb [true|false] (default: false)\n"
        "     Sends RGB values for each pixel instead of the pallette index values\n"
        "   -restricted_action_set [true|false] (default: false)\n"
        "     Agents use a smaller set of actions (RL-Glue interfaces only)\n"
        "\n"
+#endif
        " Misc. arguments:\n"
        "   -ld [A/B] (default: B)\n"
        "     Left player difficulty. B means easy.\n"
