@@ -27,7 +27,7 @@
 	
 int whichEpisode=0;
 
-/* Run One Episode of length maximum cutOff*/
+// This uses RL-Glue to run a single episode.
 void runEpisode(int stepLimit) {        
     int terminal=RL_episode(stepLimit);
 	printf("Episode %d\t %d steps \t%f total reward\t %d natural end \n",whichEpisode,RL_num_steps(),RL_return(), terminal);
@@ -46,20 +46,13 @@ int main(int argc, char *argv[]) {
 	task_spec=RL_init();
 	printf("RL_init called, the environment sent task spec: %s\n",task_spec);
 
-	printf("\n\n----------Sending some sample messages----------\n");
-	/*Talk to the agent and environment a bit...*/
-	responseMessage=RL_agent_message("what is your name?");
-	printf("Agent responded to \"what is your name?\" with: %s\n",responseMessage);
-	responseMessage=RL_agent_message("If at first you don't succeed; call it version 1.0");
-	printf("Agent responded to \"If at first you don't succeed; call it version 1.0\" with: %s\n\n",responseMessage);
-
-	responseMessage=RL_env_message("what is your name?");
-	printf("Environment responded to \"what is your name?\" with: %s\n",responseMessage);
-	responseMessage=RL_env_message("If at first you don't succeed; call it version 1.0");
-	printf("Environment responded to \"If at first you don't succeed; call it version 1.0\" with: %s\n",responseMessage);
+	// RL_env_message and RL_agent_message may be used to communicate with the environment
+    // and agent, respectively. See RL-Glue documentation for details.
+	// responseMessage=RL_agent_message("what is your name?");
 
 	printf("\n\n----------Running a few episodes----------\n");
-	/* Remember that stepLimit of 0 means there is no limit at all!*/
+	// Use the RL-Glue-provided RL_episode to run a few episodes of ALE. 
+    // 0 means no limit at all.
 	runEpisode(10000);
 	runEpisode(0);
 	runEpisode(0);
@@ -68,30 +61,23 @@ int main(int argc, char *argv[]) {
 	RL_cleanup();
 
 	printf("\n\n----------Stepping through an episode----------\n");
-	/*We could also start over and do another experiment */
-	task_spec=RL_init();
+	// The following demonstrates how to step through an episode. 
+    task_spec=RL_init();
 
-	/*We could run one step at a time instead of one episode at a time */
-	/*Start the episode */
+	// Start the episode
 	startResponse=RL_start();
-	printf("First observation and action were: %d %d\n",startResponse->observation->intArray[0],startResponse->action->intArray[0]);
+	printf("First action was: %d\n", startResponse->action->intArray[0]);
 
-	/*Run one step */
+    // Run one step	
 	stepResponse=RL_step();
 	
-	/*Run until the episode ends*/
-	while(stepResponse->terminal!=1){
+	// Run until end of episode
+	while(stepResponse->terminal != 1) {
 		stepResponse=RL_step();
-		if(stepResponse->terminal!=1){
-			/*Could optionally print state,action pairs */
-			/*printf("(%d,%d) ",stepResponse.o.intArray[0],stepResponse.a.intArray[0]);*/
-		}
 	}
-	
-	printf("\n\n----------Summary----------\n");
-	
 
-	printf("It ran for %d steps, total reward was: %f\n",RL_num_steps(),RL_return());
+    // Demonstrates other RL-Glue functionality.
+	printf("It ran for %d steps, total reward was: %f\n",RL_num_steps(), RL_return());
 	RL_cleanup();
 
 
