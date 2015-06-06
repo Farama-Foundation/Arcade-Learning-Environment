@@ -16,10 +16,6 @@
  *  C++ agents.
  **************************************************************************** */
 
-#define __FIFO_EXAMPLE
-// @clean
-// Only compile this example if requested, since it is OS-specific
-#ifdef __FIFO_EXAMPLE
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -143,11 +139,3 @@ int main(int argc, char** argv) {
 
     pclose(alePipe);
 }
-#else 
-int main(int argc, char** argv) {
-
-    std::cerr << "To run this example you should run cmake with "
-        "-DBUILD_FIFO_EXAMPLE=ON." << std::endl;
-    return 1;
-}
-#endif // __FIFO_EXAMPLE
