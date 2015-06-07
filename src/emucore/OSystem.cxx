@@ -342,12 +342,11 @@ bool OSystem::createConsole(const string& romfile)
   // Do a little error checking; it shouldn't be necessary
   if(myConsole) deleteConsole();
 
-  bool retval = false, showmessage = false;
+  bool retval = false; 
 
   // If a blank ROM has been given, we reload the current one (assuming one exists)
   if(romfile == "")
   {
-    showmessage = true;  // we show a message if a ROM is being reloaded
     if(myRomFile == "")
     {
       cerr << "ERROR: Rom file not specified ..." << endl;
@@ -381,8 +380,6 @@ bool OSystem::createConsole(const string& romfile)
       myDebugger->initialize();
     #endif
 
-      //ALE  if(showmessage)
-        //ALE  myFrameBuffer->showMessage("New console created");
       if(mySettings->getBool("showinfo") || 1)
         cerr << "Game console created:" << endl
              << "  ROM file:  " << myRomFile << endl
