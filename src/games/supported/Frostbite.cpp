@@ -54,6 +54,8 @@ void FrostbiteSettings::step(const System& system) {
     m_score = score;
 
     // update terminal status
+    // MGB: the maximum achievable life is 9. The system will actually let us set the byte to
+    // higher values & properly decrement, but we do not gain lives beyond 9. 
     int lives_byte = (readRam(&system, 0xCC) & 0xF);
     int flag  = readRam(&system, 0xF1) & 0x80;
     m_terminal = (lives_byte == 0 && flag != 0);
