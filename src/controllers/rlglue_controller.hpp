@@ -71,7 +71,6 @@ class RLGlueController : public ALEController {
 
     int m_max_num_frames; // Maximum number of total frames before we stop
 
-    int m_frame_skip;  // Requested frame skip
     ActionVect available_actions;
     bool m_send_rgb;
 };
