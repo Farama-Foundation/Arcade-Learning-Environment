@@ -5,183 +5,240 @@
 \usepackage{hyperref}
 \usepackage{fullpage}
 
-\title{Arcade Learning Environment\\ Technical Manual}
+\title{Arcade Learning Environment\\ Technical Manual (v.0.5.0)}
 \author{}
 
 \begin{document}
 
 \maketitle
+
+\clearpage
+
 \tableofcontents
+
+\clearpage
 
 \section{Overview}
 
-This document describes how to install the Arcade Learning Environment as well as its technical 
-details, including 
-command-line flags, how to use the shared library interface, and the FIFO protocol 
-for agents communicating with ALE via stdin/stdout.
+This document describes how to install the Arcade Learning Environment as well as how to use it.
+We will present the different ways to implement an agent: 
+\begin{enumerate}
+  \item \textbf{Shared Library interface} (C++): Loads ALE as a shared library (Section 
+  \ref{sec:shared_library_interface}).}
+  \item \textbf{CTypes interface} (Python): Uses the ALE as an external Python library, 
+  allowing one to write ALE code by just importing the correspondent library. This is a very
+  fast interface (Section \ref{sec:python_interface}).
+  \item \textbf{RL-Glue interface} (C/C++, Java, Python, Matlab or Lisp): Communicates
+  with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).}
+  \item \textbf{FIFO interface} (any language): Communicates with ALE through a text interface 
+  using \verb+stdin/stdout+ (Section \ref{sec:pipes_interface}).}.
+\end{enumerate}
 
-The following ways of interfacing with ALE are detailed in this document:
+We also discuss some sensible features of this environment, such as its stochasticity.
 
-\begin{itemize}
-  \item{\textbf{Shared library interface.} Loads ALE as a shared library (Section \ref{sec:shared_library_interface}).}
-  \item{\textbf{FIFO interface.} Communicates with ALE through a text interface (Section \ref{sec:pipes_interface}).}
-  \item{\textbf{RL-Glue interface.} Communicates with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).}
-\end{itemize}
-
-\section{Installing}
+\section{Installing}\label{sec:install}
 
 \subsection{Requirements}
 
-To build and run ALE, you will need:
-
+The basic requirements to build and run the ALE are:
 \begin{itemize}
-  \item{g++ / make}
+  \item \verb+CMake / make / g+++
+\end{itemize}
+Notice that in the past (previous to version 0.5.0) the recommended method to compile the ALE was
+through Makefiles written by the ALE developers. This has changed and now we suggest everyone to
+use CMake to generate a Makefile and then to compile the code using such generated Makefile. The
+old Makefiles written for Linux and OS X (files \verb+makefile.mac+ and \verb+makefile.unix+) are
+still available, but we do not support them anymore.
+
+The ALE provides some functionalities that are not activated by default, but if chosen the user is 
+required to use additional packages:
+\begin{itemize}
+  \item \verb+SDL / RL-Glue+
 \end{itemize}
 
 \subsection{Installation/Compilation}
 
-This tutorial assumes that you have extracted ALE to \verb+ale_0_4+. Compiling
-ALE on a UNIX machine is as simple as:
+One first has to install the ALE requirements before compiling the ALE itself. Assuming that 
+\verb+g+++ and \verb+make+ are already available to the user, to install CMake and SDL is 
+straightforward, and it can be done through package managers in both OS X and Linux:
 
+\subsubsection*{OS X:}
 \begin{verbatim}
-> cd ale_0_4
-ale_0_4> cp makefile.unix makefile
-ale_0_4> make
+  > brew install cmake
+  > brew install sdl
 \end{verbatim}
 
-Alternate makefiles are provided for 
-
-\begin{itemize}
-  \item{Mac OS X: \verb+makefile.mac+}
-\end{itemize}
-
-\subsection{Sample Agents}
-
-The following sample agents are available:
-
-\begin{itemize}
-  \item{\textbf{Java agents / FIFO interface.} Refer to the accompanying ALE Java Agent tutorial.}
-  \item{\textbf{C++ agent / shared library interface.} See Section \ref{sec:shared_library_interface} and \\ 
-    \verb+ale_0_4/doc/examples/sharedLibraryInterfaceExample.cpp+.}
-  \item{\textbf{C++ agent / RL-Glue interface.} See Section \ref{sec:rlglue_interface} and \\
-    \verb+ale_0_4/doc/examples/RLGlueAgent.c+.}
-\end{itemize}
-
-\section{Command-line Arguments}
-
-Command-line arguments are passed to ALE before the ROM filename. TODO: Provide a different
-example to use the command-line arguments (if any, since we removed the internal agent).
-%: For example, assuming you have the appropriate ROM file saved in the directory 
-%\verb+ale_0_4/roms+, the following runs the internal random agent on Space Invaders:
-
-%\begin{verbatim}
-%ale_0_4> ./ale -game_controller internal -player_agent random_agent  
-%  roms/space_invaders.bin
-%\end{verbatim}
-
-The configuration file \verb+ale_0_4/stellarc+ can also be used to set frequently used
-command-line arguments. 
-
-\subsection{Main Arguments}
-\small{
+\subsubsection*{Linux (e.g.: Ubuntu):}
 \begin{verbatim}
-
-  -help -- prints out help information
-
-  -game_controller <fifo|fifo_named|rlglue> -- selects an ALE interface
-    default: unset
-
-  -random_seed <###|time> -- picks the ALE random seed, or sets it to current time
-    default: time
-
-  -display_screen <true|false> -- if true and SDL is enabled, displays ALE screen
-    default: false
-
+  > sudo apt-get install cmake
+  > sudo apt-get install libsdl1.2-dev
 \end{verbatim}
-}
 
-\subsection{Environment Arguments}
+To install RL-Glue, in both systems, we recommend the user to go to the RL-Glue 
+webpage\footnote{\url{http://glue.rl-community.org/wiki/Main_Page}} and to follow
+the presented instructions.
 
-\small{
+We are going to assume the ALE was extracted to \verb+ale_0_5+. Then, compiling it
+with CMake is very simple (in both systems):
 \begin{verbatim}
-
-  -max_num_frames ### -- max. total number of frames, or 0 for no maximum 
-      (not in shared library interface)
-    default: 0
-
-  -max_num_frames_per_episode ### -- max. number of frames per episode
-    default: 0
-
-  -frame_skip ### -- frame skipping rate; 1 indicates no frame skip 
-    default: 1
-
-  -restricted_action_set <true|false> -- if true, agents use a smaller set of 
-      actions (RL-Glue interfaces only)
-    default: false
-
-  -color_averaging <true|false> -- if true, enables colour averaging 
-    default: false
-
+  > cd ale_0_5
+  ale_0_5> cmake .
+  ale_0_5> make -j4
 \end{verbatim}
-}
 
-\subsection{FIFO Interface Arguments}
+This compiles the code without SDL and RL-Glue. If one wants to compile ALE with such libraries it 
+is enough to change such flags in the file \verb+ale_0_5/CMakeLists.txt+. More specifically, lines
+3 and/or 4 have to be changed (by replacing the word \verb+OFF+ by \verb+ON+ in the
+correspondent line):
 
-\small{
 \begin{verbatim}
-  -run_length_encoding <true|false> -- if true, encodes data using run-length
-      encoding
-    default: true
+  option(USE_SDL "Use SDL" OFF)
+  option(USE_RLGLUE "Use RL-Glue" OFF)
 \end{verbatim}
-}
 
-\subsection{RL-Glue Interface Arguments}
+Due to different operational systems and installed libraries, some errors mainly related to the SDL 
+paths being wrong have been reported. If you face such issues please look at 
+Section~\ref{sec:troubleshooting}.
 
-\small{
-\begin{verbatim}
-  -send_rgb <true|false> -- if true, RGB values are sent for each pixel
-      instead of the pallette index values
-    default: false
-\end{verbatim}
-}
+\section{Implementing an agent in C++ (with shared libraries)}
 
-\section{Shared Library Interface}\label{sec:shared_library_interface}
-
+If one wants to implement an agent in C++, the best approach is to use the ALE shared library. 
 The shared library interface allows agents to directly access ALE via a class called
-\verb+ALEInterface+, defined in \verb+ale_interface.hpp+. 
+\verb+ALEInterface+, defined in \verb+ale_interface.hpp+. We are going to discuss here, 
+step-by-step how to implement an agent that plays randomly. A code containing an example is
+available at \verb+doc/examples/sharedLibraryInterfaceExample.cpp+.
 
-\subsection{Sample Agent}
-
-Example source code can be found under
+This example is automatically compiled with the ALE when following the steps presented in
+Section~\ref{sec:install}. If one wants to disable such an option it is enough to replace \verb+ON+ 
+by \verb+OFF+ in the line below, present in file \verb+ale_0_5/CMakeLists.txt+:
 
 \begin{verbatim}
-ale_0_4/doc/examples/sharedLibraryInterfaceExample.cpp
+  option(BUILD_EXAMPLES "Build Example Agents" ON)
 \end{verbatim}
 
-Assuming you installed ALE under \verb+/home/marc/ale_0_4+, the shared library agent can be 
-compiled with the following command: 
+To implement an agent, the first step is to include the library \verb+ale_interface.hpp+, either via 
+the relative path \verb+#include ``path/from/your/code/ale_interface.hpp''+, or as a standard 
+header: \verb+#include <ale_interface.hpp>+. If the later is chosen, remember to add the proper 
+path using the flag \verb+-I+ when compiling the code.
+
+To instantiate the Arcade Learning Environment it is enough to do:\\
+
+\verb+ALEInterface ale;+\\
+
+Once the environment is initialized, it is now possible to set its arguments. This is done with the 
+functions \verb+setBool(), setInt(), setFloat()+. The complete list of flags is available in 
+Section~\ref{sec:arguments}. Just as an example, if one wants to set the environment's seed he must 
+do:\\
+
+\verb+ale.setInt("random_seed", 123);+\\
+
+After setting all variables we can now load the game ROM:\\
+
+\verb+ale.loadROM(asterix.bin /*rom name*/);+\\
+
+There are two different sets of actions in the ALE: the ``legal'' action set and the ``minimal'' 
+action set. The legal action set consists of 18 actions regardless of the game, therefore, some 
+actions may not have an effect on that game. On the other hand, the minimal action set contains only 
+the actions that do have some effect on that game. To obtain such list of actions one has to call, for
+example:\\
+
+\verb+ActionVect legal_actions = ale.getLegalActionSet();+\\
+
+Then, to act one can call the function \verb+act()+ passing an object of \verb+Action+ as parameter:\\
+
+\verb+Action a = legal_actions[rand() % legal_actions.size()];+\\
+\indent \verb+float reward = ale.act(a);+\\
+
+Finally, one can check if the game is over using the function \verb+ale.game_over()+. With these 
+functions one can already implement a very simple agent that plays randomly once:
 
 \begin{verbatim}
-g++ -I/home/marc/ale_0_4/src -L/home/marc/ale_0_4 
-  -lale -lz sharedLibraryInterfaceExample.cpp 
+#include <iostream>
+#include <ale_interface.hpp>
+
+using namespace std;
+
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " rom_file" << std::endl;
+        return 1;
+    }
+
+    ALEInterface ale;
+    ale.setInt("random_seed", 123);
+    ale.loadROM(argv[1]);
+
+    ActionVect legal_actions = ale.getLegalActionSet();
+    
+    float totalReward = 0;
+    while (!ale.game_over()) {
+        Action a = legal_actions[rand() % legal_actions.size()];    
+        float reward = ale.act(a);
+            totalReward += reward;
+        }
+        cout << "The episode ended with score: " << totalReward << endl;
+    }
+    return 0;
+}
 \end{verbatim}
 
-or alternatively by appropriately setting paths in \verb+ale_0_4/doc/examples/Makefile.sharedlibrary+ before running 
+Recall this is a very simple example using the ALE. It is also important to remember to use the flag 
+\verb+-L+ to link the ALE library. Also, to run the agent, you may need to add ALE to your library
+path:
 
 \begin{verbatim}
-ale_0_4/doc/examples> make sharedLibraryAgent
-\end{verbatim}
-
-To run the agent, you may need to add ALE to your library path:
-
-\begin{verbatim}
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/marc/ale_0_4
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/ale_0_5
 \end{verbatim}
 
 or under Mac OS X,
 
 \begin{verbatim}
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/home/marc/ale_0_4
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
+\end{verbatim}
+
+As a final remark, a complete list of functions available in the class \verb+ALEInterface+ is 
+presented in Section~\ref{sec:functions}.
+
+\section{Python Interface}\label{sec:python_interface}
+
+To use the Python interface it is necessary to install it after the ALE was compiled. If one has 
+root access to the machine it is enough to run:\\
+
+\verb+pip install .+\\
+
+otherwise, if he does not have root access, the following should work:\\
+
+\verb+pip install --user .+\\
+
+Then, to use it in a Python code it is enough to import it properly, for example, as in the 
+example below (\verb+from ale_python_interface import ALEInterface+). A code containing
+an example is available at \verb+doc/examples/python_example.py+.
+
+All the functions are the same as in the C++ interface. Therefore, it is pointless to discuss all
+functions again. A complete example in Python is below:
+
+\begin{verbatim}
+import sys
+from random import randrange
+from ale_python_interface import ALEInterface
+
+if len(sys.argv) < 2:
+  print 'Usage:', sys.argv[0], 'rom_file'
+  sys.exit()
+
+ale = ALEInterface()
+ale.setInt('random_seed', 123)
+ale.loadROM(sys.argv[1])
+
+# Get the list of legal actions
+legal_actions = ale.getLegalActionSet()
+
+total_reward = 0
+while not ale.game_over():
+  a = legal_actions[randrange(len(legal_actions))]
+  reward = ale.act(a);
+  total_reward += reward
+print 'Episode ended with score:', total_reward
 \end{verbatim}
 
 \section{FIFO Interface}\label{sec:pipes_interface}
@@ -288,7 +345,7 @@ environment require the RL-Glue C/C++ codec. Both of these can be found on the R
 site\footnote{http://glue.rl-community.org}.
 
 In order to use the RL-Glue interface, ALE must be compiled with RL-Glue support. This is achieved
-by setting \verb+USE_RL=1+ in the makefile.
+by setting \verb+option(USE_RLGLUE "Use RL-Glue" ON)+ in the CMakeListst.txt file.
 
 Specifying the command-line argument \verb+-game_controller rlglue+ is sufficient to put ALE in 
 RL-Glue mode. It will then communicate with the RL-Glue core like a regular RL-Glue environment.
@@ -301,7 +358,7 @@ Example source code can be found under
 ale_0_4/doc/examples
 \end{verbatim}
 
-Assuming you installed ALE under \verb+/home/marc/ale_0_4+, the RL-Glue agent and experiment
+Assuming you installed ALE under \verb+/path/to/ale_0_5+, the RL-Glue agent and experiment
 can be compiled with the following command: 
 
 \begin{verbatim}
@@ -497,5 +554,185 @@ ffmpeg version 2.6.1 Copyright (c) 2000-2015 the FFmpeg developers
 
 ale_0_4> open agent.mov
 \end{verbatim}
+
+\section{Troubleshooting / FAQ} \label{sec:troubleshooting}
+
+Where are the ROMS?
+
+We do not provide them due to copyrights.
+
+\section{ALE Interface Specifications}\label{sec:functions}
+
+  \verb+ALEInterface(bool display_screen)+
+
+  // Get the value of a setting.
+  
+  \verb+std::string getString(const std::string& key)+
+  
+  \verb+int getInt(const std::string& key)+
+  
+  \verb+bool getBool(const std::string& key)+
+  
+  \verb+float getFloat(const std::string& key)+
+
+  // Set the value of a setting. loadRom() must be called before the
+  // setting will take effect.
+  
+  \verb+void setString(const std::string& key, const std::string& value)+
+  
+  \verb+void setInt(const std::string& key, const int value)+
+  
+  \verb+void setBool(const std::string& key, const bool value)+
+  
+  \verb+void setFloat(const std::string& key, const float value)+
+
+  // Resets the Atari and loads a game. After this call the game
+  // should be ready to play. This is necessary after changing a
+  // setting for the setting to take effect.
+  
+  \verb+void loadROM(string rom_file);+
+
+  // Applies an action to the game and returns the reward. It is the
+  // user's responsibility to check if the game has ended and reset
+  // when necessary - this method will keep pressing buttons on the
+  // game over screen.
+  
+  \verb+reward_t act(Action action);+
+
+  // Indicates if the game has ended.
+  
+  \verb+bool game_over();+
+
+  // Resets the game, but not the full system.
+  \verb+void reset_game();+
+
+  // Returns the vector of legal actions. This should be called only
+  // after the rom is loaded.
+  
+  /verb+ActionVect getLegalActionSet();+
+
+  // Returns the vector of the minimal set of actions needed to play
+  // the game.
+  
+  /verb+ActionVect getMinimalActionSet();+
+
+  // Returns the frame number since the loading of the ROM
+  
+  \verb+int getFrameNumber();+
+
+  // The remaining number of lives.
+  
+  \verb+const int lives();+
+
+  // Returns the frame number since the start of the current episode
+  
+  \verb+int getEpisodeFrameNumber();+
+
+  // Returns the current game screen
+  \verb+const ALEScreen &getScreen();+
+
+  // Returns the current RAM content
+  
+  \verb+const ALERAM &getRAM();+
+
+  // Saves the state of the system
+  
+  \verb+void saveState();+
+
+  // Loads the state of the system
+  
+  \verb+void loadState();+
+
+  \verb+ALEState cloneState();+
+
+  \verb+void restoreState(const ALEState& state);+
+
+  // Save the current screen as a png file
+  
+  \verb+void saveScreenPNG(const string& filename);+
+
+  // Creates a ScreenExporter object which can be used to save a sequence of frames. Ownership 
+  // said object is passed to the caller. Frames are saved in the directory 'path', which needs
+  // to exists. 
+  
+  \verb+ScreenExporter *createScreenExporter(const std::string &path) const;+
+
+\section{Command-line Arguments}\label{sec:arguments}
+
+Command-line arguments are passed to ALE before the ROM filename. TODO: Provide a different
+example to use the command-line arguments (if any, since we removed the internal agent).
+%: For example, assuming you have the appropriate ROM file saved in the directory 
+%\verb+ale_0_5/roms+, the following runs the internal random agent on Space Invaders:
+
+%\begin{verbatim}
+%ale_0_5> ./ale -game_controller internal -player_agent random_agent  
+%  roms/space_invaders.bin
+%\end{verbatim}
+
+The configuration file \verb+ale_0_5/stellarc+ can also be used to set frequently used
+command-line arguments. 
+
+\subsection{Main Arguments}
+\small{
+\begin{verbatim}
+
+  -help -- prints out help information
+
+  -game_controller <fifo|fifo_named|rlglue> -- selects an ALE interface
+    default: unset
+
+  -random_seed <###|time> -- picks the ALE random seed, or sets it to current time
+    default: time
+
+  -display_screen <true|false> -- if true and SDL is enabled, displays ALE screen
+    default: false
+
+\end{verbatim}
+}
+
+\subsection{Environment Arguments}
+
+\small{
+\begin{verbatim}
+
+  -max_num_frames ### -- max. total number of frames, or 0 for no maximum 
+      (not in shared library interface)
+    default: 0
+
+  -max_num_frames_per_episode ### -- max. number of frames per episode
+    default: 0
+
+  -frame_skip ### -- frame skipping rate; 1 indicates no frame skip 
+    default: 1
+
+  -restricted_action_set <true|false> -- if true, agents use a smaller set of 
+      actions (RL-Glue interfaces only)
+    default: false
+
+  -color_averaging <true|false> -- if true, enables colour averaging 
+    default: false
+
+\end{verbatim}
+}
+
+\subsection{FIFO Interface Arguments}
+
+\small{
+\begin{verbatim}
+  -run_length_encoding <true|false> -- if true, encodes data using run-length
+      encoding
+    default: true
+\end{verbatim}
+}
+
+\subsection{RL-Glue Interface Arguments}
+
+\small{
+\begin{verbatim}
+  -send_rgb <true|false> -- if true, RGB values are sent for each pixel
+      instead of the pallette index values
+    default: false
+\end{verbatim}
+}
 
 \end{document}
