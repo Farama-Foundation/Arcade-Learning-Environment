@@ -55,7 +55,7 @@ void FrostbiteSettings::step(const System& system) {
 
     // update terminal status
     int lives_byte = (readRam(&system, 0xCC) & 0xF);
-    int flag  = readRam(&system, 0xF1);
+    int flag  = readRam(&system, 0xF1) & 0x80;
     m_terminal = (lives_byte == 0 && flag != 0);
 
     m_lives = lives_byte + 1;
