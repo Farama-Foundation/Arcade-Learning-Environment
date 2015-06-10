@@ -563,99 +563,95 @@ We do not provide them due to copyrights.
 
 \section{ALE Interface Specifications}\label{sec:functions}
 
-  \verb+ALEInterface(bool display_screen)+
+Below are listed the functions available in the ALE interface with the description of their 
+behavior. The functions were divided in different sections to make the presentation more
+clear.
 
-  // Get the value of a setting.
-  
-  \verb+std::string getString(const std::string& key)+
-  
-  \verb+int getInt(const std::string& key)+
-  
-  \verb+bool getBool(const std::string& key)+
-  
-  \verb+float getFloat(const std::string& key)+
+  \subsection{Initialization}
 
-  // Set the value of a setting. loadRom() must be called before the
-  // setting will take effect.
+  \indent \indent \verb+ALEInterface(bool display_screen)+: ALE constructor. If the 
+  \verb+display_screen+ parameter is set to \verb+true+, and the ALE was compiled
+  with SDL, the game display will be presented. If set to \verb+false+ one will not see
+  the game being played.
   
-  \verb+void setString(const std::string& key, const std::string& value)+
+  \verb+void loadROM(string rom_file)+: Resets the ALE and then loads a game. After this call
+  the game should be ready to play. If one changes (or sets) a setting (Section~\ref{sec:getSet}), 
+  it is necessary to call this function after the change so it can take effect.
   
-  \verb+void setInt(const std::string& key, const int value)+
+  \subsection{Parameters setting and retrieval}\label{sec:getSet}
   
-  \verb+void setBool(const std::string& key, const bool value)+
+  \indent \indent \verb+string getString(const string& key)+: Get the value of any flag passed
+  as parameter that has a string value; \emph{e.g.}: \verb+getString(``record_sound_filename'')+.
+
+  \verb+int getInt(const string& key)+: Get the value of any flag passed as parameter that has 
+  an integer value; \emph{e.g.}: \verb+getInt(``frame_skip'')+.
+
+  \verb+bool getBool(const string& key)+: Get the value of any flag passed as parameter that has 
+  a boolean value; \emph{e.g.}: \verb+getBool(``restricted_action_set'')+. 
   
-  \verb+void setFloat(const std::string& key, const float value)+
-
-  // Resets the Atari and loads a game. After this call the game
-  // should be ready to play. This is necessary after changing a
-  // setting for the setting to take effect.
+  \verb+float getFloat(const string& key)+: Get the value of any flag passed as parameter that has 
+  a float value; \emph{e.g.}: \verb+getBool(``repeat_action_probability'')+.   
   
-  \verb+void loadROM(string rom_file);+
-
-  // Applies an action to the game and returns the reward. It is the
-  // user's responsibility to check if the game has ended and reset
-  // when necessary - this method will keep pressing buttons on the
-  // game over screen.
+  \verb+void setString(const string& key, const string& value)+: Set the value of any flag
+  that has a string type; \emph{e.g.}: \verb+setString("random_seed", "time")+.
+  \verb+loadRom()+ must be called before the setting will take effect.
   
-  \verb+reward_t act(Action action);+
-
-  // Indicates if the game has ended.
+  \verb+void setInt(const std::string& key, const int value)+: Set the value of any flag
+  that has an integer type; \emph{e.g.}: \verb+setInt("frame_skip", 1)+. \verb+loadRom()+
+  must be called before the setting will take effect.
   
-  \verb+bool game_over();+
-
-  // Resets the game, but not the full system.
-  \verb+void reset_game();+
-
-  // Returns the vector of legal actions. This should be called only
-  // after the rom is loaded.
+  \verb+void setBool(const std::string& key, const bool value)+: Set the value of any flag
+  that has a boolean type; \emph{e.g.}: \verb+setBool("restricted_action_set", false)+.
+  \verb+loadRom()+ must be called before the setting will take effect.
   
-  /verb+ActionVect getLegalActionSet();+
-
-  // Returns the vector of the minimal set of actions needed to play
-  // the game.
+  \verb+void setFloat(const std::string& key, const float value)+: Set the value of any flag
+  that has a float type; \emph{e.g.}: \verb+setFloat("repeat_action_probability", 0.25)+.
+  \verb+loadRom()+ must be called before the setting will take effect.
   
-  /verb+ActionVect getMinimalActionSet();+
-
-  // Returns the frame number since the loading of the ROM
+  \subsection{Acting and Perceiving}
   
-  \verb+int getFrameNumber();+
-
-  // The remaining number of lives.
+  \indent \indent \verb+reward_t act(Action action)+: Applies an action to the game and returns the
+  reward. It is the user's responsibility to check if the game has ended and reset when necessary
+  (this method will keep pressing buttons on the game over screen).
   
-  \verb+const int lives();+
-
-  // Returns the frame number since the start of the current episode
+  \verb+bool game_over()+: Indicates if the game has ended.
   
-  \verb+int getEpisodeFrameNumber();+
-
-  // Returns the current game screen
-  \verb+const ALEScreen &getScreen();+
-
-  // Returns the current RAM content
+  \verb+void reset_game()+: Resets the game, but not the full system (it is not ``equivalent''
+  to  unplug the console from electricity).
   
-  \verb+const ALERAM &getRAM();+
-
-  // Saves the state of the system
+  \verb+ActionVect getLegalActionSet()+: Returns the vector of legal actions (all the 18 actions).
+  This should be called only after the ROM is loaded.
   
-  \verb+void saveState();+
-
-  // Loads the state of the system
+  \verb+ActionVect getMinimalActionSet()+: Returns the vector of the minimal set of actions
+  needed to play the game (all actions that have some effect on the game). This should be
+  called only after the ROM is loaded.
   
-  \verb+void loadState();+
-
-  \verb+ALEState cloneState();+
-
-  \verb+void restoreState(const ALEState& state);+
-
-  // Save the current screen as a png file
+  \verb+int getFrameNumber()+: Returns the current frame number since the loading of the ROM.
   
-  \verb+void saveScreenPNG(const string& filename);+
-
-  // Creates a ScreenExporter object which can be used to save a sequence of frames. Ownership 
-  // said object is passed to the caller. Frames are saved in the directory 'path', which needs
-  // to exists. 
+  \verb+const int lives()+: Returns the agent's remaining number of lives. If the game does not have 
+  the concept of lives (\emph{e.g.} \textsc{Freeway}), this function returns 0.
   
-  \verb+ScreenExporter *createScreenExporter(const std::string &path) const;+
+  \verb+int getEpisodeFrameNumber()+: Returns the current frame number since the start of the
+  current episode.
+  
+  \verb+const ALEScreen &getScreen()+: Returns a matrix containing the current game screen.
+  
+  \verb+const ALERAM &getRAM()+: Returns a vector containing current RAM content (byte-level).
+  
+  \verb+void saveState()+: Saves the current state of the system if one wants to be able to recover 
+  a state in the future; \emph{e.g.} in search algorithms.
+  
+  \verb+void loadState()+: Loads a previous saved state of the system once we have a state saved.
+
+  \subsection{Recording trajectories}
+   
+  \indent \indent \verb+void saveScreenPNG(const string& filename)+: Saves the current screen as
+  a \verb+png+ file.
+  
+  \verb+ScreenExporter *createScreenExporter(const string &path) const+: Creates a 
+  ScreenExporter object which can be used to save a sequence of frames. Frames are saved 
+  in the directory 'path', which needs to exists. This is used to generate movies depicting the behavior
+  of agents.
 
 \section{Command-line Arguments}\label{sec:arguments}
 
