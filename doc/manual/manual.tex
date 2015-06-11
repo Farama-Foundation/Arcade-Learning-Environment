@@ -460,15 +460,28 @@ is preserved.
 
 Many Atari 2600 games display objects on alternating frames (sometimes even less frequently).
 This can be an issue for agents that do not consider the whole screen history. By default, 
-\emph{colour averaging} is enabled: the environment output (as observed by agents) is a weighted
-blend of the last two frames. This behaviour can be turned off using the command-line argument 
-\verb+-disable_colour_averaging+. 
+\emph{colour averaging} is not enabled. If enabled, the environment output (as observed by agents)
+is going to be a weighted blend of the last two frames. This behaviour can be turned on using the
+command-line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
 
 \subsection{Randomness}
 
-The Atari 2600 games, as emulated by Stella, are deterministic. Sometimes it may be of interest
-to add a tiny amount of stochasticity to prevent agents from simply learning a trajectory by
-rote. This is done \textbf{TODO}.
+The Atari 2600 games, as emulated by Stella, are deterministic. However, previous works have shown 
+that it is of interest to add stochasticity to this domain, to avoid the exploration of open loop 
+planning (trajectory optimization), \emph{i.e.} to prevent agents from simply learning a trajectory by
+rote. 
+
+Such stochasticity is implemented in the ALE through the performed actions. With a probability $p$ 
+the previous executed action is going to be executed in the next frame, regardless of the current 
+requested action. $p$ has a default value of $0.25$. The motivation of this implementation is to 
+resemble how humans play games. Humans are not capable of being extremely precise regarding which 
+frame they will take an action. Because of that we thought it would be a reasonable approach to 
+implement stochasticity in such a way.
+
+Also,  it is important to stress that we have added TinyMT as the random number generator. This was 
+made to avoid any sort of problem one could have by overriding the environment's seed with later 
+calls (this can happen with \verb+rand()/srand()+). In practice this has no effect to those using
+the ALE, but it is important to stress such feature.
 
 \subsection{Minimal Action Set}
 
