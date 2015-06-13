@@ -101,7 +101,7 @@ Due to different operational systems and installed libraries, some errors mainly
 paths being wrong have been reported. If you face such issues please look at 
 Section~\ref{sec:troubleshooting}.
 
-\section{Implementing an agent in C++ (with shared libraries)}
+\section{Implementing an agent in C++ (shared libraries)}
 
 If one wants to implement an agent in C++, the best approach is to use the ALE shared library. 
 The shared library interface allows agents to directly access ALE via a class called
@@ -200,7 +200,7 @@ export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
 As a final remark, a complete list of functions available in the class \verb+ALEInterface+ is 
 presented in Section~\ref{sec:functions}.
 
-\section{Python Interface}\label{sec:python_interface}
+\section{Implementing an agent in Python (shared libraries)}\label{sec:python_interface}
 
 To use the Python interface it is necessary to install it after the ALE was compiled. If one has 
 root access to the machine it is enough to run:\\
@@ -491,92 +491,6 @@ accomplished by querying the \verb+RomSettings+ class using the method
 game. Of course, algorithm designers are encouraged to devise algorithms that don't depend 
 on this minimal action set for success.
 
-\section{Miscellaneous}
-
-This section provides additional relevant ALE information.
-
-\subsection{Displaying the Screen}\label{subsec:displaying_screen}
-
-ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
-This requires the following libraries:
-
-\begin{itemize}
-  \item{\textbf{libsdl}}
-  \item{\textbf{libsdl-gfx}}
-  \item{\textbf{libsdl-image}}
-\end{itemize}
-
-To compile with SDL support, you should change the file \verb+CMakeLists.txt+, replacing
-the word \verb+OFF+ by \verb+ON+ in the line \verb+option(USE_SDL "Use SDL" OFF)+.
-Then, screen display can be enabled with the \verb+display_screen+ argument (command line
-or function \verb+setBool+). 
-
-SDL support has been tested under Linux and Mac OS X. 
-
-\subsection{Recording Movies}
-
-ALE now contains support for recording frames and sound via SDL (Section \ref{subsec:displaying_screen}).
-An example C++ program is provided which will record a single episode of play. This program is located at
-
-\begin{center}
-\texttt{doc/examples/videoRecordingExample.cpp}
-\end{center}
-
-Compiling and running this program will create a directory \texttt{record}\footnote{The example program creates this directory, using a system call to \texttt{mkdir}. If this fails on your machine, you will need to manually create this directory.} in which frames will be saved sequentially and named according to their frame numbers. Thus, if the episode lasts 683 frames then the files \verb+record/000000.png+ to \verb+record/000682.png+ are created. Furthermore, sound output is also recorded as \verb+record/sound.wav+. The following flags control recording behaviour:
-
-\small{
-\begin{verbatim}
-  -display_screen <true|false> -- should be set to true for recording
-    default: false
-  -sound <true|false> -- whether to enable sound output
-    default: false
-  -record_screen_dir -- path to record screens; if empty, no recording occurs
-    default: ""
-  -record_sound_filename -- path to single wav file to be recorded; 
-            if empty, no recording occurs
-    default: ""
-\end{verbatim}
-}
-
-Once frames and/or sound have been recorded, they may be joined into a movie file using the external program \texttt{ffmpeg} (installable on Mac OS X and most *nix OSes through a package manager). For your convenience, two example scripts are provided:
-
-\begin{itemize}
-    \item{\texttt{doc/scripts/videoRecordingExampleJoinMacOSX.sh}}
-    \item{\texttt{doc/scripts/videoRecordingExampleJoinUnix.sh}}
-\end{itemize}
-
-These should be run from the same directory that the C++ example was run from. Unfortunately \texttt{ffmpeg} is a complicated beast and taming it may require tweaking specific to your system configuration. Please contact us if you would like to provide an example script for a different configuration.
-
-Here is a full, step-by-step example on Mac OS X (after building the project):
-\begin{verbatim}
-> cd ale_0_4
-ale_0_4> doc/examples/videoRecordingExample space_invaders.bin
-
-A.L.E: Arcade Learning Environment (version 0.4.4)
-[Powered by Stella]
-
-[ usual ALE output ]
-
-Recording screens to directory: record
-
-Recording complete. See manual for instructions on creating a video.
-
-ale_0_4> doc/scripts/videoRecordingExampleJoinMacOSX.sh
-
-ffmpeg version 2.6.1 Copyright (c) 2000-2015 the FFmpeg developers
-  built with Apple clang version 4.1 (tags/Apple/clang-421.11.65) ... 
-
-[ loads of output ]
-
-ale_0_4> open agent.mov
-\end{verbatim}
-
-\section{Troubleshooting / FAQ} \label{sec:troubleshooting}
-
-Where are the ROMS?
-
-We do not provide them due to copyrights.
-
 \section{ALE Interface Specifications}\label{sec:functions}
 
 Below are listed the functions available in the ALE interface with the description of their 
@@ -756,5 +670,115 @@ The parameters that can be set are all listed below.
     default: false    
 \end{verbatim}
 }
+
+\section{Miscellaneous}
+
+This section provides additional relevant ALE information.
+
+\subsection{Displaying the Screen}\label{subsec:displaying_screen}
+
+ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
+This requires the following libraries:
+
+\begin{itemize}
+  \item{\textbf{libsdl}}
+  \item{\textbf{libsdl-gfx}}
+  \item{\textbf{libsdl-image}}
+\end{itemize}
+
+To compile with SDL support, you should change the file \verb+CMakeLists.txt+, replacing
+the word \verb+OFF+ by \verb+ON+ in the line \verb+option(USE_SDL "Use SDL" OFF)+.
+Then, screen display can be enabled with the \verb+display_screen+ argument (command line
+or function \verb+setBool+). 
+
+SDL support has been tested under Linux and Mac OS X. 
+
+\subsection{Recording Movies}
+
+ALE now contains support for recording frames and sound via SDL (Section \ref{subsec:displaying_screen}).
+An example C++ program is provided which will record a single episode of play. This program is located at
+
+\begin{center}
+\texttt{doc/examples/videoRecordingExample.cpp}
+\end{center}
+
+Compiling and running this program will create a directory \texttt{record}\footnote{The example program creates this directory, using a system call to \texttt{mkdir}. If this fails on your machine, you will need to manually create this directory.} in which frames will be saved sequentially and named according to their frame numbers. Thus, if the episode lasts 683 frames then the files \verb+record/000000.png+ to \verb+record/000682.png+ are created. Furthermore, sound output is also recorded as \verb+record/sound.wav+. The following flags control recording behaviour:
+
+\small{
+\begin{verbatim}
+  -display_screen <true|false> -- should be set to true for recording
+    default: false
+  -sound <true|false> -- whether to enable sound output
+    default: false
+  -record_screen_dir -- path to record screens; if empty, no recording occurs
+    default: ""
+  -record_sound_filename -- path to single wav file to be recorded; 
+            if empty, no recording occurs
+    default: ""
+\end{verbatim}
+}
+
+Once frames and/or sound have been recorded, they may be joined into a movie file using the external program \texttt{ffmpeg} (installable on Mac OS X and most *nix OSes through a package manager). For your convenience, two example scripts are provided:
+
+\begin{itemize}
+    \item{\texttt{doc/scripts/videoRecordingExampleJoinMacOSX.sh}}
+    \item{\texttt{doc/scripts/videoRecordingExampleJoinUnix.sh}}
+\end{itemize}
+
+These should be run from the same directory that the C++ example was run from. Unfortunately \texttt{ffmpeg} is a complicated beast and taming it may require tweaking specific to your system configuration. Please contact us if you would like to provide an example script for a different configuration.
+
+Here is a full, step-by-step example on Mac OS X (after building the project):
+\begin{verbatim}
+> cd ale_0_4
+ale_0_4> doc/examples/videoRecordingExample space_invaders.bin
+
+A.L.E: Arcade Learning Environment (version 0.4.4)
+[Powered by Stella]
+
+[ usual ALE output ]
+
+Recording screens to directory: record
+
+Recording complete. See manual for instructions on creating a video.
+
+ale_0_4> doc/scripts/videoRecordingExampleJoinMacOSX.sh
+
+ffmpeg version 2.6.1 Copyright (c) 2000-2015 the FFmpeg developers
+  built with Apple clang version 4.1 (tags/Apple/clang-421.11.65) ... 
+
+[ loads of output ]
+
+ale_0_4> open agent.mov
+\end{verbatim}
+
+\section{Troubleshooting / FAQ} \label{sec:troubleshooting}
+
+\begin{itemize}
+\item Where are the ROMS?
+
+ We do not provide them due to copyrights.
+
+\item unsuported ROM file
+
+the rom file should be specified as the last argument on the command line. also it has to be lower 
+case. Maybe it is too late but it is probably because you are not entering the right name for thebinary file. Each game has to be entered with a specific name which is specified at the header file (hpp) of the game. You can find these header files at games/supported if I am not wrong. Hope this solves the problem.
+
+\item sdl not found.
+
+add the other path.
+
+\item extract lives signal.
+
+now we support it.
+
+\item pixel do not have value greater than 127.
+
+I hope have already solved your problem, but I am going to answer you anyway. When you get the pixel value, it is a byte, but you want 7 bits. You assumed the most significative bit was always zero, but in fact, what is always zero is the least significative bit. Therefore, you have to shift the byte >> 1 to obtain the colour value.
+
+\item usr/bin/ld: cannot find -lrlagent (I manually search inside the libs and includes of rlglue and “lrlagent” it not even there and the directory “ld” doesn’t exist in /usr/bin)
+
+install rl-glue!
+
+\end{itemize}
 
 \end{document}
