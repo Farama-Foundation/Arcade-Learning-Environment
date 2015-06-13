@@ -669,18 +669,15 @@ clear.
   
 \section{Command-line Arguments}\label{sec:arguments}
 
-Command-line arguments are passed to ALE before the ROM filename. TODO: Provide a different
-example to use the command-line arguments (if any, since we removed the internal agent).
-%: For example, assuming you have the appropriate ROM file saved in the directory 
-%\verb+ale_0_5/roms+, the following runs the internal random agent on Space Invaders:
+Command-line arguments are passed to ALE before the ROM filename. The current version removed all 
+the internal agents in the game, therefore, the command-line arguments are mostly useful to start 
+the communication when using FIFO pipes.
 
-%\begin{verbatim}
-%ale_0_5> ./ale -game_controller internal -player_agent random_agent  
-%  roms/space_invaders.bin
-%\end{verbatim}
+However, these parameters can also be set when using the C++ or Python interface, for example. In 
+this case, they are set using those functons discussed in Section~\ref{sec:getSet}. The configuration file 
+\verb+ale_0_5/stellarc+ can also be used to set frequently used command-line arguments.  
 
-The configuration file \verb+ale_0_5/stellarc+ can also be used to set frequently used
-command-line arguments. 
+The parameters that can be set are all listed below.
 
 \subsection{Main Arguments}
 \small{
@@ -696,6 +693,11 @@ command-line arguments.
 
   -display_screen <true|false> -- if true and SDL is enabled, displays ALE screen
     default: false
+    
+  -sound  <true|false> -- if true and SDL is enabled, the game will have game
+    sounds  enabled
+    default: false
+
 
 \end{verbatim}
 }
@@ -706,7 +708,8 @@ command-line arguments.
 \begin{verbatim}
 
   -max_num_frames ### -- max. total number of frames, or 0 for no maximum 
-      (not in shared library interface)
+    (it is not available in the shared library interface, i.e. to be set 
+    by C++  or Python code directly linking to the shared library)
     default: 0
 
   -max_num_frames_per_episode ### -- max. number of frames per episode
@@ -715,13 +718,16 @@ command-line arguments.
   -frame_skip ### -- frame skipping rate; 1 indicates no frame skip 
     default: 1
 
-  -restricted_action_set <true|false> -- if true, agents use a smaller set of 
-      actions (RL-Glue interfaces only)
-    default: false
-
   -color_averaging <true|false> -- if true, enables colour averaging 
     default: false
 
+  -record_screen_dir [save_directory] -- saves game screen images to
+    save_directory
+     
+  -repeat_action_probability -- stochasticity in the environment. It is the
+    probability the previous action will repeated without executing the new
+    one
+    default: 0.25
 \end{verbatim}
 }
 
@@ -730,7 +736,7 @@ command-line arguments.
 \small{
 \begin{verbatim}
   -run_length_encoding <true|false> -- if true, encodes data using run-length
-      encoding
+    encoding
     default: true
 \end{verbatim}
 }
@@ -740,8 +746,12 @@ command-line arguments.
 \small{
 \begin{verbatim}
   -send_rgb <true|false> -- if true, RGB values are sent for each pixel
-      instead of the pallette index values
+    instead of the pallette index values
     default: false
+    
+  -restricted_action_set <true|false> -- if true, agents use a smaller set of 
+    actions (RL-Glue interfaces only)
+    default: false    
 \end{verbatim}
 }
 
