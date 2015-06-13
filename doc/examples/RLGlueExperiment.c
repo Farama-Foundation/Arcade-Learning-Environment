@@ -36,7 +36,6 @@ void runEpisode(int stepLimit) {
 
 int main(int argc, char *argv[]) {
 	const char* task_spec;
-	const char* responseMessage;
 	const reward_observation_action_terminal_t *stepResponse;
 	const observation_action_t *startResponse;
 
@@ -48,6 +47,7 @@ int main(int argc, char *argv[]) {
 
 	// RL_env_message and RL_agent_message may be used to communicate with the environment
     // and agent, respectively. See RL-Glue documentation for details.
+	// const char* responseMessage;
 	// responseMessage=RL_agent_message("what is your name?");
 
 	printf("\n\n----------Running a few episodes----------\n");

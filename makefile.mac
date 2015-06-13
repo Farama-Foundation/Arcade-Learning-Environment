@@ -9,8 +9,8 @@ USE_SDL     := 0
 USE_RLGLUE  := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     :=
-# /opt/local/include for MacPorts
-INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/opt/local/include -Isrc/environment -Isrc/external 
+# /opt/local/include for MacPorts; /usr/local/include for RL-Glue
+INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/opt/local/include -I/usr/local/include -Isrc/environment -Isrc/external 
 LIBS_SDL    := -lSDL -lSDLmain
 LIBS_RLGLUE := -lrlutils -lrlgluenetdev
 LIBS	    := -L/opt/local/lib 

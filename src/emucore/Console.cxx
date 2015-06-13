@@ -380,23 +380,7 @@ void Console::setPalette(const string& type)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::togglePhosphor()
 {
-  const string& phosphor = myProperties.get(Display_Phosphor);
-//ALE   int blend = atoi(myProperties.get(Display_PPBlend).c_str());
-  bool enable;
-  if(phosphor == "YES")
-  {
-    myProperties.set(Display_Phosphor, "No");
-    enable = false;
-    //ALE  myOSystem->frameBuffer().showMessage("Phosphor effect disabled");
-  }
-  else
-  {
-    myProperties.set(Display_Phosphor, "Yes");
-    enable = true;
-    //ALE  myOSystem->frameBuffer().showMessage("Phosphor effect enabled");
-  }
-
-  //ALE  myOSystem->frameBuffer().enablePhosphor(enable, blend);
+  // MGB: This method is deprecated. 
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
