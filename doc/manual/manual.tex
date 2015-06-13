@@ -497,8 +497,8 @@ This section provides additional relevant ALE information.
 
 \subsection{Displaying the Screen}\label{subsec:displaying_screen}
 
-ALE offers screen display capabilities via the Simple DirectMedia Layer (SDL). This requires
-the following libraries:
+ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
+This requires the following libraries:
 
 \begin{itemize}
   \item{\textbf{libsdl}}
@@ -506,8 +506,10 @@ the following libraries:
   \item{\textbf{libsdl-image}}
 \end{itemize}
 
-To compile with SDL support, you should set \verb+USE_SDL=1+ in the ALE makefile. Then, screen
-display can be enabled with the \verb+-display_screen+ command-line argument. 
+To compile with SDL support, you should change the file \verb+CMakeLists.txt+, replacing
+the word \verb+OFF+ by \verb+ON+ in the line \verb+option(USE_SDL "Use SDL" OFF)+.
+Then, screen display can be enabled with the \verb+display_screen+ argument (command line
+or function \verb+setBool+). 
 
 SDL support has been tested under Linux and Mac OS X. 
 
