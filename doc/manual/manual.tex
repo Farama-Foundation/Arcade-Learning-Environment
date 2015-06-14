@@ -26,12 +26,12 @@ We will present the different ways to implement an agent:
   \item \textbf{Shared Library interface} (C++): Loads ALE as a shared library (Section 
   \ref{sec:shared_library_interface}).}
   \item \textbf{CTypes interface} (Python): Uses the ALE as an external Python library, 
-  allowing one to write ALE code by just importing the correspondent library. This is a very
+  allowing one to write ALE code by just importing the corresponding library. This is a very
   fast interface (Section \ref{sec:python_interface}).
+  \item \textbf{FIFO interface} (any language): Communicates with ALE through a text interface 
+  using \verb+stdin/stdout+ (Section \ref{sec:pipes_interface}).}
   \item \textbf{RL-Glue interface} (C/C++, Java, Python, Matlab or Lisp): Communicates
   with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).}
-  \item \textbf{FIFO interface} (any language): Communicates with ALE through a text interface 
-  using \verb+stdin/stdout+ (Section \ref{sec:pipes_interface}).}.
 \end{enumerate}
 
 We also discuss some sensible features of this environment, such as its stochasticity.
@@ -51,13 +51,13 @@ use CMake to generate a Makefile and then to compile the code using such generat
 old Makefiles written for Linux and OS X (files \verb+makefile.mac+ and \verb+makefile.unix+) are
 still available, but we do not support them anymore.
 
-The ALE provides some functionalities that are not activated by default, but if chosen the user is 
+The ALE provides optional functionalities that are not activated by default, but if chosen the user is 
 required to use additional packages:
 \begin{itemize}
   \item \verb+SDL / RL-Glue+
 \end{itemize}
 
-\subsection{Installation/Compilation}
+\subsection{Installation/Compilation}\label{subsec:installation_compilation}
 
 One first has to install the ALE requirements before compiling the ALE itself. Assuming that 
 \verb+g+++ and \verb+make+ are already available to the user, to install CMake and SDL is 
@@ -75,9 +75,7 @@ straightforward, and it can be done through package managers in both OS X and Li
   > sudo apt-get install libsdl1.2-dev
 \end{verbatim}
 
-To install RL-Glue, in both systems, we recommend the user to go to the RL-Glue 
-webpage\footnote{\url{http://glue.rl-community.org/wiki/Main_Page}} and to follow
-the presented instructions.
+For instructions on installing RL-Glue, see Section \ref{sec:rlglue_interface}.
 
 We are going to assume the ALE was extracted to \verb+ale_0_5+. Then, compiling it
 with CMake is very simple (in both systems):
@@ -92,6 +90,8 @@ is enough to change such flags in the file \verb+ale_0_5/CMakeLists.txt+. More s
 3 and/or 4 have to be changed (by replacing the word \verb+OFF+ by \verb+ON+ in the
 correspondent line):
 
+% TODO(mgbellemare): describe -DUSE_SDL, -DUSE_RLGLUE instead.
+
 \begin{verbatim}
   option(USE_SDL "Use SDL" OFF)
   option(USE_RLGLUE "Use RL-Glue" OFF)
@@ -101,7 +101,7 @@ Due to different operational systems and installed libraries, some errors mainly
 paths being wrong have been reported. If you face such issues please look at 
 Section~\ref{sec:troubleshooting}.
 
-\section{Implementing an agent in C++ (shared libraries)}
+\section{Implementing an agent in C++ (shared libraries)} \label{sec:shared_library_interface}
 
 If one wants to implement an agent in C++, the best approach is to use the ALE shared library. 
 The shared library interface allows agents to directly access ALE via a class called
@@ -133,9 +133,10 @@ do:\\
 
 \verb+ale.setInt("random_seed", 123);+\\
 
+% TODO(mgbellemare): pass filename
 After setting all variables we can now load the game ROM:\\
 
-\verb+ale.loadROM(asterix.bin /*rom name*/);+\\
+\verb+ale.loadROM("asterix.bin");+\\
 
 There are two different sets of actions in the ALE: the ``legal'' action set and the ``minimal'' 
 action set. The legal action set consists of 18 actions regardless of the game, therefore, some 
@@ -151,7 +152,7 @@ Then, to act one can call the function \verb+act()+ passing an object of \verb+A
 \indent \verb+float reward = ale.act(a);+\\
 
 Finally, one can check if the game is over using the function \verb+ale.game_over()+. With these 
-functions one can already implement a very simple agent that plays randomly once:
+functions one can already implement a very simple agent that plays randomly for one episode:
 
 \begin{verbatim}
 #include <iostream>
@@ -215,8 +216,7 @@ Then, to use it in a Python code it is enough to import it properly, for example
 example below (\verb+from ale_python_interface import ALEInterface+). A code containing
 an example is available at \verb+doc/examples/python_example.py+.
 
-All the functions are the same as in the C++ interface. Therefore, it is pointless to discuss all
-functions again. A complete example in Python is below:
+Aside from a few minor differences, the Python interface mirrors the C++ interface. A complete example in Python is below:
 
 \begin{verbatim}
 import sys
@@ -340,6 +340,11 @@ ALE will send an end-of-episode signal when one the following is true:
 
 \section{RL-Glue Interface}\label{sec:rlglue_interface}
 
+% TODO(mgbellemare): describe installation instructions
+%To install RL-Glue, in both systems, we recommend the user to go to the RL-Glue 
+%webpage\footnote{\url{http://glue.rl-community.org/wiki/Main_Page}} and to follow
+%the presented instructions.
+
 The RL-Glue interface implements the RL-Glue 3.0 protocol.
 It requires the user to first install the RL-Glue core. Additionally, the example agent and 
 environment require the RL-Glue C/C++ codec. Both of these can be found on the RL-Glue web
@@ -355,6 +360,7 @@ RL-Glue mode. It will then communicate with the RL-Glue core like a regular RL-G
 
 Example source code can be found under
 
+% TODO(mgbellemare): include filenames of examples
 \begin{verbatim}
 ale_0_4/doc/examples
 \end{verbatim}
@@ -471,25 +477,28 @@ that it is of interest to add stochasticity to this domain, to avoid the explora
 planning (trajectory optimization), \emph{i.e.} to prevent agents from simply learning a trajectory by
 rote. 
 
-Such stochasticity is implemented in the ALE through the performed actions. With a probability $p$ 
-the previous executed action is going to be executed in the next frame, regardless of the current 
-requested action. $p$ has a default value of $0.25$. The motivation of this implementation is to 
+Such stochasticity is implemented in the ALE through the performed actions. With probability $p$
+(default: $p = 0.25$) the previous executed action is executed during the next frame, ignoring the 
+agent's actual choice of action. The motivation of this implementation is to 
 resemble how humans play games. Humans are not capable of being extremely precise regarding which 
 frame they will take an action. Because of that we thought it would be a reasonable approach to 
 implement stochasticity in such a way.
+% TODO(mgbellemare): p=0.25 was chosen because it was the highest value for which human play-testers were unable to detect any delay or control lag as a result of the action repeats.
 
+i
 Also,  it is important to stress that we have added TinyMT as the random number generator. This was 
 made to avoid any sort of problem one could have by overriding the environment's seed with later 
 calls (this can happen with \verb+rand()/srand()+). In practice this has no effect to those using
 the ALE, but it is important to stress such feature.
+% TODO(mgbellemare): mention thread safety, or at the very least no conflict with rand/srand
 
 \subsection{Minimal Action Set}
 
 It may sometimes be convenient to restrict the agent to a smaller action set. This can be
 accomplished by querying the \verb+RomSettings+ class using the method 
 \verb+getMinimalActionSet+. This then returns a set of actions judged ``minimal'' to play a given
-game. Of course, algorithm designers are encouraged to devise algorithms that don't depend 
-on this minimal action set for success.
+game. Due to the potentially high impact of this setting on performance, we encourage researchers
+to clearly report on the method used in their experiments. 
 
 \section{ALE Interface Specifications}\label{sec:functions}
 
@@ -678,14 +687,9 @@ This section provides additional relevant ALE information.
 \subsection{Displaying the Screen}\label{subsec:displaying_screen}
 
 ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
-This requires the following libraries:
+Instructions on how to install the SDL library are provided in Section \ref{subsec:installation_compilation}. 
 
-\begin{itemize}
-  \item{\textbf{libsdl}}
-  \item{\textbf{libsdl-gfx}}
-  \item{\textbf{libsdl-image}}
-\end{itemize}
-
+% TODO(mgbellemare): -USE_SDL=ON
 To compile with SDL support, you should change the file \verb+CMakeLists.txt+, replacing
 the word \verb+OFF+ by \verb+ON+ in the line \verb+option(USE_SDL "Use SDL" OFF)+.
 Then, screen display can be enabled with the \verb+display_screen+ argument (command line
