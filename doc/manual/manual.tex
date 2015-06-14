@@ -24,14 +24,14 @@ This document describes how to install the Arcade Learning Environment as well a
 We will present the different ways to implement an agent: 
 \begin{enumerate}
   \item \textbf{Shared Library interface} (C++): Loads ALE as a shared library (Section 
-  \ref{sec:shared_library_interface}).}
+  \ref{sec:shared_library_interface}).
   \item \textbf{CTypes interface} (Python): Uses the ALE as an external Python library, 
   allowing one to write ALE code by just importing the corresponding library. This is a very
   fast interface (Section \ref{sec:python_interface}).
   \item \textbf{FIFO interface} (any language): Communicates with ALE through a text interface 
-  using \verb+stdin/stdout+ (Section \ref{sec:pipes_interface}).}
+  using \verb+stdin/stdout+ (Section \ref{sec:pipes_interface}).
   \item \textbf{RL-Glue interface} (C/C++, Java, Python, Matlab or Lisp): Communicates
-  with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).}
+  with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).
 \end{enumerate}
 
 We also discuss some sensible features of this environment, such as its stochasticity.
