@@ -84,7 +84,7 @@ enabled; default options may be omitted from the command line. Note that SDL and
 don't play well together; please refer to Troubleshooting 
 (Section~\ref{sec:troubleshooting}) if compilation fails, e.g. because of a missing \verb+SDL.h+.
 
-\section{C++ Agent: The Shared Library Interface} \label{sec:shared_library_interface}
+\section{C++ Agent: Shared Library Interface} \label{sec:shared_library_interface}
 
 The shared library interface is the simplest way to implement a C++ agent for ALE.
 This interface allows agents to directly access ALE via a class called
@@ -155,28 +155,26 @@ int main(int argc, char** argv) {
 Compiling with the shared library is done by appending the \verb+-lale+ flag. 
 See the 
 
-\begin{center} \verb+sharedLibraryExample.cpp+\end{center}
+\begin{center} \verb+doc/examples/sharedLibraryExample.cpp+\end{center}
 
 example for more details, including compilation, as
 well as Section \ref{sec:troubleshooting} if errors arise.
 A complete list of functions available in the class \verb+ALEInterface+ is given in Section~\ref{sec:functions}.
 
-\section{Implementing an agent in Python (shared libraries)}\label{sec:python_interface}
+\section{Python Agent: CTypes Interface}\label{sec:python_interface}
 
-To use the Python interface it is necessary to install it after the ALE was compiled. If one has 
-root access to the machine it is enough to run:\\
+To use the Python interface it is necessary to install it after the ALE was compiled. With root/superuser access:
 
 \verb+pip install .+\\
 
-otherwise, if he does not have root access, the following should work:\\
+without root/superuser access:
 
 \verb+pip install --user .+\\
 
-Then, to use it in a Python code it is enough to import it properly, for example, as in the 
-example below (\verb+from ale_python_interface import ALEInterface+). A code containing
-an example is available at \verb+doc/examples/python_example.py+.
+This will install the package \verb+ale_python_interface+ which can be imported as usual (example code is available under 
+\begin{center} \verb+doc/examples/python_example.py+. \end{center}
 
-Aside from a few minor differences, the Python interface mirrors the C++ interface. A complete example in Python is below:
+Aside from a few minor differences, the Python interface mirrors the C++ interface. For example, the following implements a random agent: 
 
 \begin{verbatim}
 import sys
