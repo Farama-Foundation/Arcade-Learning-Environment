@@ -43,7 +43,7 @@ The basic requirements to build and run the ALE are:
 
 Beginning with version 0.5, we highly recommend the use of CMake rather than the custom makefiles.
 
-Additionally, the following options are not activated by default and additional packages:
+Additionally, the following options are not activated by default and require additional packages:
 \begin{itemize}
   \item SDL display and audio support
   \item RL-Glue support
@@ -62,7 +62,7 @@ package managers:
   > brew install sdl
 \end{verbatim}
 
-\subsubsection*{Linux (e.g. Ubuntu):}
+\subsubsection*{Linux (using apt, e.g. Ubuntu):}
 \begin{verbatim}
   > sudo apt-get install cmake
   > sudo apt-get install libsdl1.2-dev
@@ -71,80 +71,55 @@ package managers:
 For instructions on installing RL-Glue, see Section \ref{sec:rlglue_interface}.
 
 We are going to assume the ALE was extracted to \verb+ale_0_5+. Then, compiling it
-with CMake is very simple (in both systems):
+with CMake is very simple (on both systems):
 \begin{verbatim}
   > cd ale_0_5
-  ale_0_5> cmake .
-  ale_0_5> make -j4
+  ale_0_5> cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON .
+  ale_0_5> make -j 4
 \end{verbatim}
 
-This compiles the code without SDL and RL-Glue. If one wants to compile ALE with such libraries it 
-is enough to change such flags in the file \verb+ale_0_5/CMakeLists.txt+. More specifically, lines
-3 and/or 4 have to be changed (by replacing the word \verb+OFF+ by \verb+ON+ in the
-correspondent line):
+This compiles the code with SDL but not RL-Glue, and builds the example C++ agents described
+later in this document. The first two options are disabled by default, while the third is
+enabled; default options may be omitted from the command line. Note that SDL and CMake sometimes 
+don't play well together; please refer to Troubleshooting 
+(Section~\ref{sec:troubleshooting}) if compilation fails, e.g. because of a missing \verb+SDL.h+.
 
-% TODO(mgbellemare): describe -DUSE_SDL, -DUSE_RLGLUE instead.
+\section{C++ Agent: The Shared Library Interface} \label{sec:shared_library_interface}
 
-\begin{verbatim}
-  option(USE_SDL "Use SDL" OFF)
-  option(USE_RLGLUE "Use RL-Glue" OFF)
-\end{verbatim}
-
-Due to different operational systems and installed libraries, some errors mainly related to the SDL 
-paths being wrong have been reported. If you face such issues please look at 
-Section~\ref{sec:troubleshooting}.
-
-\section{Implementing an agent in C++ (shared libraries)} \label{sec:shared_library_interface}
-
-If one wants to implement an agent in C++, the best approach is to use the ALE shared library. 
-The shared library interface allows agents to directly access ALE via a class called
-\verb+ALEInterface+, defined in \verb+ale_interface.hpp+. We are going to discuss here, 
-step-by-step how to implement an agent that plays randomly. A code containing an example is
-available at \verb+doc/examples/sharedLibraryInterfaceExample.cpp+.
-
-This example is automatically compiled with the ALE when following the steps presented in
-Section~\ref{sec:install}. If one wants to disable such an option it is enough to replace \verb+ON+ 
-by \verb+OFF+ in the line below, present in file \verb+ale_0_5/CMakeLists.txt+:
-
-\begin{verbatim}
-  option(BUILD_EXAMPLES "Build Example Agents" ON)
-\end{verbatim}
+The shared library interface is the simplest way to implement a C++ agent for ALE.
+This interface allows agents to directly access ALE via a class called
+\verb+ALEInterface+, defined in \verb+ale_interface.hpp+. Example code detailing a simple random agent is provided under \verb+doc/examples/sharedLibraryInterfaceExample.cpp+.
 
 To implement an agent, the first step is to include the library \verb+ale_interface.hpp+, either via 
-the relative path \verb+#include ``path/from/your/code/ale_interface.hpp''+, or as a standard 
+the relative path \verb+#include "path/from/your/code/ale_interface.hpp"+, or as a standard 
 header: \verb+#include <ale_interface.hpp>+. If the later is chosen, remember to add the proper 
 path using the flag \verb+-I+ when compiling the code.
 
-To instantiate the Arcade Learning Environment it is enough to do:\\
+To instantiate the Arcade Learning Environment it is enough to write:\\
 
 \verb+ALEInterface ale;+\\
 
 Once the environment is initialized, it is now possible to set its arguments. This is done with the 
 functions \verb+setBool(), setInt(), setFloat()+. The complete list of flags is available in 
-Section~\ref{sec:arguments}. Just as an example, if one wants to set the environment's seed he must 
-do:\\
-
+Section~\ref{sec:arguments}. Just as an example, to set the environment's seed we write \\
 \verb+ale.setInt("random_seed", 123);+\\
 
-% TODO(mgbellemare): pass filename
-After setting all variables we can now load the game ROM:\\
+Finally, after setting the desired environment parameters we now load the game ROM by providing its filename to the \verb+loadROM+ method:\\
 
 \verb+ale.loadROM("asterix.bin");+\\
 
-There are two different sets of actions in the ALE: the ``legal'' action set and the ``minimal'' 
-action set. The legal action set consists of 18 actions regardless of the game, therefore, some 
-actions may not have an effect on that game. On the other hand, the minimal action set contains only 
-the actions that do have some effect on that game. To obtain such list of actions one has to call, for
-example:\\
+There are two different action sets provided by ALE: the ``legal'' set and the ``minimal'' 
+set. Save for a few rare exceptions, the legal action set consists of all 18 actions for all games, including duplicates and actions with no effect. On the other hand, the minimal action set for a game contains only 
+the actions that have some effect on that game. The \verb+getLegalActionSet+ and \verb+getMinimalActionSet+ methods provide the desired action sets:\\ 
 
 \verb+ActionVect legal_actions = ale.getLegalActionSet();+\\
 
-Then, to act one can call the function \verb+act()+ passing an object of \verb+Action+ as parameter:\\
+Taking ana ction is done by calling the function \verb+act()+ passing an object of \verb+Action+ as a parameter:\\
 
 \verb+Action a = legal_actions[rand() % legal_actions.size()];+\\
 \indent \verb+float reward = ale.act(a);+\\
 
-Finally, one can check if the game is over using the function \verb+ale.game_over()+. With these 
+Finally, one can check whether the episode has terminated using the function \verb+ale.game_over()+. With these 
 functions one can already implement a very simple agent that plays randomly for one episode:
 
 \begin{verbatim}
@@ -177,22 +152,14 @@ int main(int argc, char** argv) {
 }
 \end{verbatim}
 
-Recall this is a very simple example using the ALE. It is also important to remember to use the flag 
-\verb+-L+ to link the ALE library. Also, to run the agent, you may need to add ALE to your library
-path:
+Compiling with the shared library is done by appending the \verb+-lale+ flag. 
+See the 
 
-\begin{verbatim}
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/ale_0_5
-\end{verbatim}
+\begin{center} \verb+sharedLibraryExample.cpp+\end{center}
 
-or under Mac OS X,
-
-\begin{verbatim}
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
-\end{verbatim}
-
-As a final remark, a complete list of functions available in the class \verb+ALEInterface+ is 
-presented in Section~\ref{sec:functions}.
+example for more details, including compilation, as
+well as Section \ref{sec:troubleshooting} if errors arise.
+A complete list of functions available in the class \verb+ALEInterface+ is given in Section~\ref{sec:functions}.
 
 \section{Implementing an agent in Python (shared libraries)}\label{sec:python_interface}
 
@@ -757,6 +724,23 @@ Do I have to get them somewhere else?
 Yes. We do not have distribution rights over any Atari 2600 ROM. Therefore, they are not in our 
 repository nor in the installation package. There are websites that distribute such files, supposedly
 with the proper copyrights.
+
+\item The C++ examples compile, but when run give the following error: \verb+dyld: Library not loaded: libale.so+. Help!
+
+You may need to add ALE to your library path:
+
+\begin{verbatim}
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/ale_0_5
+\end{verbatim}
+
+or under Mac OS X,
+
+\begin{verbatim}
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
+\end{verbatim}
+
+Alternatively, run the examples from the directory in which \verb+libale.so+ resides.
+
 
 \item I am trying to run the ALE via command line (FIFO interface, or RL-Glue agent) but I keep 
 getting an ``unsupported ROM file'' error. What am I doing wrong?
