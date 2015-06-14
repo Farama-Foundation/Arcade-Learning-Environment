@@ -20,21 +20,15 @@
 
 \section{Overview}
 
-This document describes how to install the Arcade Learning Environment as well as how to use it.
-We will present the different ways to implement an agent: 
+This document is roughly divided into three parts. The first part describes how to install the Arcade Learning Environment. The second part describes the various ALE interfaces currently available: 
 \begin{enumerate}
-  \item \textbf{Shared Library interface} (C++): Loads ALE as a shared library (Section 
+  \item \textbf{Shared Library interface} (C++ only): Loads ALE as a shared library (Section 
   \ref{sec:shared_library_interface}).
-  \item \textbf{CTypes interface} (Python): Uses the ALE as an external Python library, 
-  allowing one to write ALE code by just importing the corresponding library. This is a very
-  fast interface (Section \ref{sec:python_interface}).
-  \item \textbf{FIFO interface} (any language): Communicates with ALE through a text interface 
-  using \verb+stdin/stdout+ (Section \ref{sec:pipes_interface}).
-  \item \textbf{RL-Glue interface} (C/C++, Java, Python, Matlab or Lisp): Communicates
-  with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).
+  \item \textbf{CTypes interface} (Python only): A fast Python interface to ALE, provided as a Python package (Section \ref{sec:python_interface}).
+  \item \textbf{FIFO interface} (all languages): Communicates with ALE through a text interface (Section \ref{sec:pipes_interface}).
+  \item \textbf{RL-Glue interface} (C/C++, Java, Python, Matlab, Lisp, Go): Communicates with ALE via RL-Glue (Section \ref{sec:rlglue_interface}).
 \end{enumerate}
-
-We also discuss some sensible features of this environment, such as its stochasticity.
+The final part of this document discusses the different features of ALE, including the action stochasticity parameter and video recording.
 
 \section{Installing}\label{sec:install}
 
@@ -43,33 +37,32 @@ We also discuss some sensible features of this environment, such as its stochast
 The basic requirements to build and run the ALE are:
 
 \begin{itemize}
-  \item \verb+CMake / make / g+++
+  \item \verb+CMake or make+
+  \item A C++ compiler
 \end{itemize}
-Notice that in the past (previous to version 0.5.0) the recommended method to compile the ALE was
-through Makefiles written by the ALE developers. This has changed and now we suggest everyone to
-use CMake to generate a Makefile and then to compile the code using such generated Makefile. The
-old Makefiles written for Linux and OS X (files \verb+makefile.mac+ and \verb+makefile.unix+) are
-still available, but we do not support them anymore.
 
-The ALE provides optional functionalities that are not activated by default, but if chosen the user is 
-required to use additional packages:
+Beginning with version 0.5, we highly recommend the use of CMake rather than the custom makefiles.
+
+Additionally, the following options are not activated by default and additional packages:
 \begin{itemize}
-  \item \verb+SDL / RL-Glue+
+  \item SDL display and audio support
+  \item RL-Glue support
 \end{itemize}
 
 \subsection{Installation/Compilation}\label{subsec:installation_compilation}
 
-One first has to install the ALE requirements before compiling the ALE itself. Assuming that 
-\verb+g+++ and \verb+make+ are already available to the user, to install CMake and SDL is 
-straightforward, and it can be done through package managers in both OS X and Linux:
+One first has to install the ALE requirements before compiling the ALE itself. 
+We assume that a suitable C++ compiler (one which includes \verb+make+) is already available to 
+the user. Installing CMake (and if desired, SDL) is straightforward, and can be done through 
+package managers: 
 
-\subsubsection*{OS X:}
+\subsubsection*{Mac OS X (using Homebrew\footnote{http://brew.sh}):}
 \begin{verbatim}
   > brew install cmake
   > brew install sdl
 \end{verbatim}
 
-\subsubsection*{Linux (e.g.: Ubuntu):}
+\subsubsection*{Linux (e.g. Ubuntu):}
 \begin{verbatim}
   > sudo apt-get install cmake
   > sudo apt-get install libsdl1.2-dev
