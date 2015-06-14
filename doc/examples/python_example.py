@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# ale_python_example.py
+# python_example.py
 # Author: Ben Goodrich
 #
 # This is a direct port to python of the shared library example from
