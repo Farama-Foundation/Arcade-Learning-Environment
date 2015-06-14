@@ -41,7 +41,7 @@ The basic requirements to build and run the ALE are:
   \item A C++ compiler
 \end{itemize}
 
-Beginning with version 0.5, we highly recommend the use of CMake rather than the custom makefiles.
+Two custom makefiles are provided, \verb+makefile.mac+ (Mac OS X) and \verb+makefile.unix+ (Linux). However, beginning with version 0.5, we highly recommend the use of CMake rather than the custom makefiles.
 
 Additionally, the following options are not activated by default and require additional packages:
 \begin{itemize}
@@ -79,7 +79,7 @@ with CMake is very simple (on both systems):
 \end{verbatim}
 
 This compiles the code with SDL but not RL-Glue, and builds the example C++ agents described
-later in this document. The first two options are disabled by default, while the third is
+in this document. The first two options are disabled by default, while the third is
 enabled; default options may be omitted from the command line. Note that SDL and CMake sometimes 
 don't play well together; please refer to Troubleshooting 
 (Section~\ref{sec:troubleshooting}) if compilation fails, e.g. because of a missing \verb+SDL.h+.
@@ -309,35 +309,37 @@ environment require the RL-Glue C/C++ codec. Both of these can be found on the R
 site\footnote{http://glue.rl-community.org}.
 
 In order to use the RL-Glue interface, ALE must be compiled with RL-Glue support. This is achieved
-by setting \verb+option(USE_RLGLUE "Use RL-Glue" ON)+ in the CMakeListst.txt file.
+by invoking CMake with \verb+-DUSE_RLGLUE=ON+ (see Section \ref{sec:install}) or, if using
+custom makefiles, setting \verb+USE_RLGLUE := 1+. 
 
-Specifying the command-line argument \verb+-game_controller rlglue+ is sufficient to put ALE in 
+Specifying the command-line argument \verb+-game_controller rlglue+ is sufficient to start ALE in 
 RL-Glue mode. It will then communicate with the RL-Glue core like a regular RL-Glue environment.
 
 \subsection{Sample Agent and Experiment}
 
-Example source code can be found under
+Recall that RL-Glue is a combination of four processes: a core, an experiment, an agent, and
+an environment. The core is provided by the RL-Glue library itself, and ALE is the environment
+here. An example experiment and agent are provided in 
 
-% TODO(mgbellemare): include filenames of examples
 \begin{verbatim}
-ale_0_4/doc/examples
+doc/examples/RLGlueExperiment.c
+doc/examples/RLGlueAgent.c
 \end{verbatim}
 
-Assuming you installed ALE under \verb+/path/to/ale_0_5+, the RL-Glue agent and experiment
+Assuming you installed ALE under \verb+ale_0_5+, the RL-Glue agent and experiment
 can be compiled with the following command: 
 
 \begin{verbatim}
-make rlglueAgent 
+ale_0_5/doc/examples> make 
 \end{verbatim}
 
-As with any RL-Glue application, you will need to start the following processes to run the
-sample RL-Glue agent in ALE:
+You will then need to start the following processes to run the sample RL-Glue agent in ALE:
 
 \begin{itemize}
-  \item{\verb+rl_glue+} 
-  \item{\verb+RLGlueAgent+}
-  \item{\verb+RLGlueExperiment+}
-  \item{\verb+ale+ (with command-line argument \verb+-game_controller rlglue+)}
+  \item{\verb+> rl_glue+} 
+  \item{\verb+ale_0_5> doc/examples/RLGlueAgent+}
+  \item{\verb+ale_0_5> doc/examples/RLGlueExperiment+}
+  \item{\verb+ale_0_5> ./ale -game_controller rlglue+)}
 \end{itemize}
 
 Please refer to the RL-Glue documentation for more details. 
