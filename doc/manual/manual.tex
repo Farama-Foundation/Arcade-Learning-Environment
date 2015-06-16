@@ -350,14 +350,14 @@ Please refer to the RL-Glue documentation for more details.
 The action space consists of both Player A and Player B's actions (see Section 
 \ref{sec:available_actions}
 for details). In general, Player B's action may safely be set to noop (18) but it should be left out
-altogether if the \verb+-restricted_action_set+ command--line argument was set to true. 
+altogether if the \verb+-restricted_action_set+ command--line argument is set to true. 
 
 The observation space depends on whether the \verb+-send_rgb+ argument was passed to ALE. If it was
 not passed,  or it was set to false, the observation space consists of 33,728 integers: first the
 128 bytes of RAM (taking values in 0-- 255), then the 33,600 screen pixels (taking value in 0--127).
 The screen is provided in row-order, i.e. beginning with the 160 pixels that compose the first row.
 
- If \verb+-send_rgb+ was set to true on the command-line, the observation space consists of 100,928 
+ If \verb+-send_rgb+ is set to true, the observation space consists of 100,928 
  integers: first the same 128 bytes of RAM, followed by 100,800 bytes describing the screen.
  Each pixel is described by three bytes, taking values from 0--255, specifying the pixel's 
  red, green and blue components in that order. The pixel order is the same as in the default
@@ -372,6 +372,7 @@ This section provides additional information regarding the environment implement
 The following regular actions are defined in \verb+common/Constants.h+ and interpreted by ALE:
 
 \begin{center}
+\small{
 \begin{tabular}{|r|r|r|r|r|}
 \hline
 noop (0) & fire (1) & up (2) & right (3) & left (4) \\
@@ -383,6 +384,7 @@ up-fire (10) & right-fire (11) & left-fire (12) & down-fire (13) & up-right-fire
 up-left-fire (15) & down-right-fire (16) & down-left-fire (17) & reset* (40) & \\
 \hline
 \end{tabular}
+}
 \end{center}
 
 Note that the \verb+reset+ (40) action toggles the Atari 2600 switch, rather than reset the 
@@ -428,7 +430,7 @@ Many Atari 2600 games display objects on alternating frames (sometimes even less
 This can be an issue for agents that do not consider the whole screen history. By default, 
 \emph{colour averaging} is not enabled. If enabled, the environment output (as observed by agents)
 is going to be a weighted blend of the last two frames. This behaviour can be turned on using the
-command-line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
+command--line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
 
 \subsection{Randomness}
 
@@ -445,7 +447,6 @@ frame they will take an action. Because of that we thought it would be a reasona
 implement stochasticity in such a way.
 % TODO(mgbellemare): p=0.25 was chosen because it was the highest value for which human play-testers were unable to detect any delay or control lag as a result of the action repeats.
 
-i
 Also,  it is important to stress that we have added TinyMT as the random number generator. This was 
 made to avoid any sort of problem one could have by overriding the environment's seed with later 
 calls (this can happen with \verb+rand()/srand()+). In practice this has no effect to those using
@@ -459,6 +460,152 @@ accomplished by querying the \verb+RomSettings+ class using the method
 \verb+getMinimalActionSet+. This then returns a set of actions judged ``minimal'' to play a given
 game. Due to the potentially high impact of this setting on performance, we encourage researchers
 to clearly report on the method used in their experiments. 
+
+
+\section{Miscellaneous}
+
+This section provides additional relevant ALE information.
+
+\subsection{Displaying the Screen}\label{subsec:displaying_screen}
+
+ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
+Instructions on how to install the SDL library are provided in Section \ref{subsec:installation_compilation}. 
+
+% TODO(mgbellemare): -USE_SDL=ON
+To compile with SDL support, you should change the file \verb+CMakeLists.txt+, replacing
+the word \verb+OFF+ by \verb+ON+ in the line \verb+option(USE_SDL "Use SDL" OFF)+.
+Then, screen display can be enabled with the \verb+display_screen+ argument (command line
+or function \verb+setBool+). 
+
+SDL support has been tested under Linux and Mac OS X. 
+
+\subsection{Recording Movies}
+
+ALE now contains support for recording frames and sound via SDL (Section \ref{subsec:displaying_screen}).
+An example C++ program is provided which will record a single episode of play. This program is located at
+
+\begin{center}
+\texttt{doc/examples/videoRecordingExample.cpp}
+\end{center}
+
+Compiling and running this program will create a directory \texttt{record}\footnote{The example program creates this directory, using a system call to \texttt{mkdir}. If this fails on your machine, you will need to manually create this directory.} in which frames will be saved sequentially and named according to their frame numbers. Thus, if the episode lasts 683 frames then the files \verb+record/000000.png+ to \verb+record/000682.png+ are created. Furthermore, sound output is also recorded as \verb+record/sound.wav+. The following flags control recording behaviour:
+
+\small{
+\begin{verbatim}
+  -display_screen <true|false> -- should be set to true for recording
+    default: false
+  -sound <true|false> -- whether to enable sound output
+    default: false
+  -record_screen_dir -- path to record screens; if empty, no recording occurs
+    default: ""
+  -record_sound_filename -- path to single wav file to be recorded; 
+            if empty, no recording occurs
+    default: ""
+\end{verbatim}
+}
+
+Once frames and/or sound have been recorded, they may be joined into a movie file using the external program \texttt{ffmpeg} (installable on Mac OS X and most *nix OSes through a package manager). For your convenience, two example scripts are provided:
+
+\begin{itemize}
+    \item{\texttt{doc/scripts/videoRecordingExampleJoinMacOSX.sh}}
+    \item{\texttt{doc/scripts/videoRecordingExampleJoinUnix.sh}}
+\end{itemize}
+
+These should be run from the same directory that the C++ example was run from. Unfortunately \texttt{ffmpeg} is a complicated beast and taming it may require tweaking specific to your system configuration. Please contact us if you would like to provide an example script for a different configuration.
+
+Here is a full, step-by-step example on Mac OS X (after building the project):
+\begin{verbatim}
+> cd ale_0_4
+ale_0_4> doc/examples/videoRecordingExample space_invaders.bin
+
+A.L.E: Arcade Learning Environment (version 0.4.4)
+[Powered by Stella]
+
+[ usual ALE output ]
+
+Recording screens to directory: record
+
+Recording complete. See manual for instructions on creating a video.
+
+ale_0_4> doc/scripts/videoRecordingExampleJoinMacOSX.sh
+
+ffmpeg version 2.6.1 Copyright (c) 2000-2015 the FFmpeg developers
+  built with Apple clang version 4.1 (tags/Apple/clang-421.11.65) ... 
+
+[ loads of output ]
+
+ale_0_4> open agent.mov
+\end{verbatim}
+
+\section{Troubleshooting / FAQ} \label{sec:troubleshooting}
+
+\begin{itemize}
+\item I downloaded the ALE and I installed it successfully but I cannot find any ROM file at \verb+roms/+.
+Do I have to get them somewhere else?
+
+Yes. We do not have distribution rights over any Atari 2600 ROM. Therefore, they are not in our 
+repository nor in the installation package. There are websites that distribute such files, supposedly
+with the proper copyrights.
+
+\item The C++ examples compile, but when run give the following error: \verb+dyld: Library not loaded: libale.so+. Help!
+
+You may need to add ALE to your library path:
+
+\begin{verbatim}
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/ale_0_5
+\end{verbatim}
+
+or under Mac OS X,
+
+\begin{verbatim}
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
+\end{verbatim}
+
+Alternatively, run the examples from the directory in which \verb+libale.so+ resides.
+
+
+\item I am trying to run the ALE via command line (FIFO interface, or RL-Glue agent) but I keep 
+getting an ``unsupported ROM file'' error. What am I doing wrong?
+
+These errors are generally hard to be solved in every possible way, but our experience has shown 
+several people forgetting to specify the ROM file as the last argument on the command line, in lower 
+case. Moreover, each game is supposed to have a proper name for the binary file. This is specified 
+in the header file (hpp) of the game. Finally, it is also important to check whether the ROM you are 
+trying to load is supported by  the current  version of the ALE.
+
+\item I am having problems when compiling with the option \verb+USE_SDL ON+ in the Mac OS.
+The compiler complains it was not able to find the proper SDL files. What should I do?
+
+We spent a considerable amount of time trying to make sure CMake would properly find the correct 
+path in different situations. Something we realized is that sometimes, if the user has two 
+installations (generally one via \verb+brew+ and another via \verb+dmg+ package), conflicts may 
+arise. Generally it is enough to set the variable \verb+SDL_LIBRARY+ as below (the most common
+path where SDL is installed is used here):
+\vspace{-0.3cm}
+\begin{verbatim}
+SDL_LIBRARY:STRING=/usr/local/lib/libSDLmain.a;/usr/local/lib/libSDL.dylib;
+-framework Cocoa
+\end{verbatim}
+
+\item I want to be able to extract from the game the number of lives my agent still has. How can I do it?
+
+Previous versions of the ALE did not support this. We started to support such feature since version 
+0.5.0, through the use of the function \verb+lives()+.
+
+\item When extracting the screen I realized that I never see a pixel with an odd value. However,
+the pixel is represented as a byte. Shouldn't it be up to 255 with odd an even values?
+
+No, the Atari 2600 console only had 128 colours. Therefore, even though the colours are represented 
+in a byte, in fact only 7 bits are used. The least significative bit is always zero, consequently you have
+to shift the byte \verb+>> 1+ to obtain the correct colour value.
+
+\item When trying to run the ALE I get a linking error stating \verb+-lrlagent+ could not be found.  
+What should I do?
+
+The \verb+rlragent+ is generated by the library RL-Glue. Therefore, we recommend you to verify your 
+installation of RL-Glue and to make sure it is being properly found when compiling the ALE code.
+
+\end{itemize}
 
 \section{ALE Interface Specifications}\label{sec:functions}
 
@@ -639,150 +786,5 @@ The parameters that can be set are all listed below.
     default: false    
 \end{verbatim}
 }
-
-\section{Miscellaneous}
-
-This section provides additional relevant ALE information.
-
-\subsection{Displaying the Screen}\label{subsec:displaying_screen}
-
-ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
-Instructions on how to install the SDL library are provided in Section \ref{subsec:installation_compilation}. 
-
-% TODO(mgbellemare): -USE_SDL=ON
-To compile with SDL support, you should change the file \verb+CMakeLists.txt+, replacing
-the word \verb+OFF+ by \verb+ON+ in the line \verb+option(USE_SDL "Use SDL" OFF)+.
-Then, screen display can be enabled with the \verb+display_screen+ argument (command line
-or function \verb+setBool+). 
-
-SDL support has been tested under Linux and Mac OS X. 
-
-\subsection{Recording Movies}
-
-ALE now contains support for recording frames and sound via SDL (Section \ref{subsec:displaying_screen}).
-An example C++ program is provided which will record a single episode of play. This program is located at
-
-\begin{center}
-\texttt{doc/examples/videoRecordingExample.cpp}
-\end{center}
-
-Compiling and running this program will create a directory \texttt{record}\footnote{The example program creates this directory, using a system call to \texttt{mkdir}. If this fails on your machine, you will need to manually create this directory.} in which frames will be saved sequentially and named according to their frame numbers. Thus, if the episode lasts 683 frames then the files \verb+record/000000.png+ to \verb+record/000682.png+ are created. Furthermore, sound output is also recorded as \verb+record/sound.wav+. The following flags control recording behaviour:
-
-\small{
-\begin{verbatim}
-  -display_screen <true|false> -- should be set to true for recording
-    default: false
-  -sound <true|false> -- whether to enable sound output
-    default: false
-  -record_screen_dir -- path to record screens; if empty, no recording occurs
-    default: ""
-  -record_sound_filename -- path to single wav file to be recorded; 
-            if empty, no recording occurs
-    default: ""
-\end{verbatim}
-}
-
-Once frames and/or sound have been recorded, they may be joined into a movie file using the external program \texttt{ffmpeg} (installable on Mac OS X and most *nix OSes through a package manager). For your convenience, two example scripts are provided:
-
-\begin{itemize}
-    \item{\texttt{doc/scripts/videoRecordingExampleJoinMacOSX.sh}}
-    \item{\texttt{doc/scripts/videoRecordingExampleJoinUnix.sh}}
-\end{itemize}
-
-These should be run from the same directory that the C++ example was run from. Unfortunately \texttt{ffmpeg} is a complicated beast and taming it may require tweaking specific to your system configuration. Please contact us if you would like to provide an example script for a different configuration.
-
-Here is a full, step-by-step example on Mac OS X (after building the project):
-\begin{verbatim}
-> cd ale_0_4
-ale_0_4> doc/examples/videoRecordingExample space_invaders.bin
-
-A.L.E: Arcade Learning Environment (version 0.4.4)
-[Powered by Stella]
-
-[ usual ALE output ]
-
-Recording screens to directory: record
-
-Recording complete. See manual for instructions on creating a video.
-
-ale_0_4> doc/scripts/videoRecordingExampleJoinMacOSX.sh
-
-ffmpeg version 2.6.1 Copyright (c) 2000-2015 the FFmpeg developers
-  built with Apple clang version 4.1 (tags/Apple/clang-421.11.65) ... 
-
-[ loads of output ]
-
-ale_0_4> open agent.mov
-\end{verbatim}
-
-\section{Troubleshooting / FAQ} \label{sec:troubleshooting}
-
-\begin{itemize}
-\item I downloaded the ALE and I installed it successfully but I cannot find any ROM file at \verb+roms/+.
-Do I have to get them somewhere else?
-
-Yes. We do not have distribution rights over any Atari 2600 ROM. Therefore, they are not in our 
-repository nor in the installation package. There are websites that distribute such files, supposedly
-with the proper copyrights.
-
-\item The C++ examples compile, but when run give the following error: \verb+dyld: Library not loaded: libale.so+. Help!
-
-You may need to add ALE to your library path:
-
-\begin{verbatim}
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/ale_0_5
-\end{verbatim}
-
-or under Mac OS X,
-
-\begin{verbatim}
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
-\end{verbatim}
-
-Alternatively, run the examples from the directory in which \verb+libale.so+ resides.
-
-
-\item I am trying to run the ALE via command line (FIFO interface, or RL-Glue agent) but I keep 
-getting an ``unsupported ROM file'' error. What am I doing wrong?
-
-These errors are generally hard to be solved in every possible way, but our experience has shown 
-several people forgetting to specify the ROM file as the last argument on the command line, in lower 
-case. Moreover, each game is supposed to have a proper name for the binary file. This is specified 
-in the header file (hpp) of the game. Finally, it is also important to check whether the ROM you are 
-trying to load is supported by  the current  version of the ALE.
-
-\item I am having problems when compiling with the option \verb+USE_SDL ON+ in the Mac OS.
-The compiler complains it was not able to find the proper SDL files. What should I do?
-
-We spent a considerable amount of time trying to make sure CMake would properly find the correct 
-path in different situations. Something we realized is that sometimes, if the user has two 
-installations (generally one via \verb+brew+ and another via \verb+dmg+ package), conflicts may 
-arise. Generally it is enough to set the variable \verb+SDL_LIBRARY+ as below (the most common
-path where SDL is installed is used here):
-\vspace{-0.3cm}
-\begin{verbatim}
-SDL_LIBRARY:STRING=/usr/local/lib/libSDLmain.a;/usr/local/lib/libSDL.dylib;
--framework Cocoa
-\end{verbatim}
-
-\item I want to be able to extract from the game the number of lives my agent still has. How can I do it?
-
-Previous versions of the ALE did not support this. We started to support such feature since version 
-0.5.0, through the use of the function \verb+lives()+.
-
-\item When extracting the screen I realized that I never see a pixel with an odd value. However,
-the pixel is represented as a byte. Shouldn't it be up to 255 with odd an even values?
-
-No, the Atari 2600 console only had 128 colours. Therefore, even though the colours are represented 
-in a byte, in fact only 7 bits are used. The least significative bit is always zero, consequently you have
-to shift the byte \verb+>> 1+ to obtain the correct colour value.
-
-\item When trying to run the ALE I get a linking error stating \verb+-lrlagent+ could not be found.  
-What should I do?
-
-The \verb+rlragent+ is generated by the library RL-Glue. Therefore, we recommend you to verify your 
-installation of RL-Glue and to make sure it is being properly found when compiling the ALE code.
-
-\end{itemize}
 
 \end{document}
