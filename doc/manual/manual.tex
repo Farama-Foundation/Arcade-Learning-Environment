@@ -34,7 +34,7 @@ The final part of this document discusses the different features of ALE, includi
 
 \subsection{Requirements}
 
-The basic requirements to build and run the ALE are:
+The basic requirements to build and run ALE are:
 
 \begin{itemize}
   \item \verb+CMake or make+
@@ -51,7 +51,7 @@ Additionally, the following options are not activated by default and require add
 
 \subsection{Installation/Compilation}\label{subsec:installation_compilation}
 
-One first has to install the ALE requirements before compiling the ALE itself. 
+One first has to install ALE requirements before compiling ALE itself. 
 We assume that a suitable C++ compiler (one which includes \verb+make+) is already available to 
 the user. Installing CMake (and if desired, SDL) is straightforward, and can be done through 
 package managers: 
@@ -70,7 +70,7 @@ package managers:
 
 For instructions on installing RL-Glue, see Section \ref{sec:rlglue_interface}.
 
-We are going to assume the ALE was extracted to \verb+ale_0_5+. Then, compiling it
+We are going to assume ALE was extracted to \verb+ale_0_5+. Then, compiling it
 with CMake is very simple (on both systems):
 \begin{verbatim}
   > cd ale_0_5
@@ -163,7 +163,7 @@ A complete list of functions available in the class \verb+ALEInterface+ is given
 
 \section{Python Agent: CTypes Interface}\label{sec:python_interface}
 
-To use the Python interface it is necessary to install it after the ALE was compiled. With root/superuser access:
+To use the Python interface it is necessary to install it after ALE was compiled. With root/superuser access:
 
 \verb+pip install .+\\
 
@@ -251,7 +251,7 @@ $i^{th}$ byte of RAM; in total this string is 256 characters long, not including
 
 In ``full'' mode, the screen string is \texttt{www} $\times$ \texttt{hhh} 2-digit hexadecimal numbers, each representing a pixel. Pixels are sent row by row, with \texttt{www} characters for each row. In total this string is 2 $\times$ \texttt{www} $\times$ \texttt{hhh} characters long.
 
-In run-length encoding mode, the screen string consists of a variable number of (colour,length) pairs denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next `length' pixels take on the given colour; run length is thus limited to 255. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour,length) pair, and varies depending on the screen.
+In run-length encoding mode, the screen string consists of a variable number of (colour, length) pairs denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next `length' pixels take on the given colour; run length is thus limited to 255. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour,length) pair, and varies depending on the screen.
 
 In either case, the screen string is terminated by a colon.
 
@@ -330,7 +330,7 @@ Assuming you installed ALE under \verb+ale_0_5+, the RL-Glue agent and experimen
 can be compiled with the following command: 
 
 \begin{verbatim}
-ale_0_5/doc/examples> make 
+ale_0_5/doc/examples> make -f Makefile.rlglue 
 \end{verbatim}
 
 You will then need to start the following processes to run the sample RL-Glue agent in ALE:
@@ -342,6 +342,7 @@ You will then need to start the following processes to run the sample RL-Glue ag
   \item{\verb+ale_0_5> ./ale -game_controller rlglue+)}
 \end{itemize}
 
+Additional options (such as those described below) can also be passed as command-line arguments.
 Please refer to the RL-Glue documentation for more details. 
 
 
@@ -350,18 +351,18 @@ Please refer to the RL-Glue documentation for more details.
 The action space consists of both Player A and Player B's actions (see Section 
 \ref{sec:available_actions}
 for details). In general, Player B's action may safely be set to noop (18) but it should be left out
-altogether if the \verb+-restricted_action_set+ command--line argument is set to true. 
+altogether if the \verb+restricted_action_set+ option is set to true. 
 
-The observation space depends on whether the \verb+-send_rgb+ argument was passed to ALE. If it was
-not passed,  or it was set to false, the observation space consists of 33,728 integers: first the
-128 bytes of RAM (taking values in 0-- 255), then the 33,600 screen pixels (taking value in 0--127).
-The screen is provided in row-order, i.e. beginning with the 160 pixels that compose the first row.
-
- If \verb+-send_rgb+ is set to true, the observation space consists of 100,928 
- integers: first the same 128 bytes of RAM, followed by 100,800 bytes describing the screen.
- Each pixel is described by three bytes, taking values from 0--255, specifying the pixel's 
- red, green and blue components in that order. The pixel order is the same as in the default
- case.
+The observation space depends on whether the \verb+send_rgb+ option is enabled. 
+ When enabled, the observation space consists of 100,928 
+ integers: first the 128 bytes of RAM (taking values in 0--255), followed by 100,800 bytes 
+ describing the screen.
+ Each pixel is described by three bytes, taking values in 0--255, specifying the pixel's 
+ red, green and blue components in that order. The screen is provided in row-order, 
+beginning with the 160 pixels that compose the first row.
+ 
+If \verb+send_rgb+ is disabled (this is the default), the observation space consists of 33,728 integers: first the 128 bytes of RAM, then the 33,600 screen pixels (in NTSC format; values in 0--127).
+These pixels are also provided in row order.
 
 \section{Environment Specifications}\label{sec:environment_specifications}
 
@@ -388,14 +389,12 @@ up-left-fire (15) & down-right-fire (16) & down-left-fire (17) & reset* (40) & \
 \end{center}
 
 Note that the \verb+reset+ (40) action toggles the Atari 2600 switch, rather than reset the 
-environment, and as such is ignored by most interfaces.
-In general it should be replaced by either a call to \verb+StellaEnvironment::reset+ or by
-sending the \verb+system_reset+ command, depending on the interface. 
+environment, and as such is ignored by most interfaces. The Shared library, CTypes, and fifo
+interfaces provide methods for properly resetting the environment. 
 
-Player B's actions are the same as those of Player A, but with 18 added. For example, Player B's
-up action corresponds to the integer 20.
+Player B's actions are defined to be 18 + the equivalent action value for Player A. For example, Player B's up action is \verb+up+ (20). 
 
-In addition to the regular ALE actions, the following actions are also processed by the 
+In addition to the regular ALE actions, the following (somewhat deprecated) actions are also processed by the 
 FIFO interfaces:
 
 \begin{center}
@@ -416,42 +415,42 @@ makes for a cleaner environment interface. With the exception of the RL-Glue int
 automatically resets the environment, the interfaces described here all provide a system reset
 command or method.
 
-\subsection{Saving and Loading States}
+\subsection{Saving and Loading} 
 
 State saving and loading operates in a stack-based manner: each call to save stores the current
 environment state onto a stack, and each call to load restores the last saved copy and removes
 it from the stack. The ALE 0.2 save/load mechanism, provided for backward compatibility, instead
 overwrites its saved copy when a save is requested. When loading a state, the currently saved copy
-is preserved.
+is preserved. 
+
+This functionality is provided in the fifo, shared library and CTypes interfaces. The shared
+library interface additionally provides state cloning/restoring capabilities.
 
 \subsection{Colour Averaging}
 
 Many Atari 2600 games display objects on alternating frames (sometimes even less frequently).
 This can be an issue for agents that do not consider the whole screen history. By default, 
 \emph{colour averaging} is not enabled. If enabled, the environment output (as observed by agents)
-is going to be a weighted blend of the last two frames. This behaviour can be turned on using the
+is a weighted blend of the last two frames. This behaviour can be turned on using the
 command--line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
 
-\subsection{Randomness}
+\subsection{Action Repeat Stochasticity}
 
-The Atari 2600 games, as emulated by Stella, are deterministic. However, previous works have shown 
-that it is of interest to add stochasticity to this domain, to avoid the exploration of open loop 
-planning (trajectory optimization), \emph{i.e.} to prevent agents from simply learning a trajectory by
-rote. 
+Beginning with ALE 0.5.0, there is now an option (enabled by default) to add 
+\emph{action repeat stochasticity} to the environment. With probability $p$ (default: $p = 0.25$),
+the previously executed action is executed again during the next frame, ignoring the agent's
+actual choice. The default value was chosen as the highest value for which human play-testers
+were unable to detect any delay or control lag.
 
-Such stochasticity is implemented in the ALE through the performed actions. With probability $p$
-(default: $p = 0.25$) the previous executed action is executed during the next frame, ignoring the 
-agent's actual choice of action. The motivation of this implementation is to 
-resemble how humans play games. Humans are not capable of being extremely precise regarding which 
-frame they will take an action. Because of that we thought it would be a reasonable approach to 
-implement stochasticity in such a way.
-% TODO(mgbellemare): p=0.25 was chosen because it was the highest value for which human play-testers were unable to detect any delay or control lag as a result of the action repeats.
+The motivation for introducing action repeat stochasticity was to help separate \emph{trajectory
+optimization} research from \emph{robust controller optimization}, the latter often being the 
+desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use 
+the default stochasticity level their agents, and clearly report on the setting used. More 
+details on the effects of action repeat stochasticity will be made available in future 
+publications.
 
-Also,  it is important to stress that we have added TinyMT as the random number generator. This was 
-made to avoid any sort of problem one could have by overriding the environment's seed with later 
-calls (this can happen with \verb+rand()/srand()+). In practice this has no effect to those using
-the ALE, but it is important to stress such feature.
-% TODO(mgbellemare): mention thread safety, or at the very least no conflict with rand/srand
+Note that, beginning with ALE 0.5.0, we have also removed the use of \verb+rand()/srand()+ from
+ALE. Agents' own randomization should therefore not affect the action repeat stochasticity.
 
 \subsection{Minimal Action Set}
 
@@ -466,45 +465,38 @@ to clearly report on the method used in their experiments.
 
 This section provides additional relevant ALE information.
 
-\subsection{Displaying the Screen}\label{subsec:displaying_screen}
+\subsection{Audio and Visual (Screen) Output}\label{subsec:displaying_screen}
 
 ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
-Instructions on how to install the SDL library are provided in Section \ref{subsec:installation_compilation}. 
-
-% TODO(mgbellemare): -USE_SDL=ON
-To compile with SDL support, you should change the file \verb+CMakeLists.txt+, replacing
-the word \verb+OFF+ by \verb+ON+ in the line \verb+option(USE_SDL "Use SDL" OFF)+.
-Then, screen display can be enabled with the \verb+display_screen+ argument (command line
-or function \verb+setBool+). 
-
+Instructions on how to install the SDL library, as well as enabling SDL support within ALE, are provided in Section \ref{subsec:installation_compilation}. 
+Screen display can be enabled using the \verb+display_screen+ option (default: \verb+false+), 
+and sound playback using the \verb+sound+ option (default: \verb+false+).
 SDL support has been tested under Linux and Mac OS X. 
 
 \subsection{Recording Movies}
 
-ALE now contains support for recording frames and sound via SDL (Section \ref{subsec:displaying_screen}).
-An example C++ program is provided which will record a single episode of play. This program is located at
+ALE now provides support for recording frames; if sound is enabled (Section \ref{subsec:displaying_screen}), it is also possible to record audio output.
+An example C++ program is provided which will record both visual and audio output for a single episode of play. This program is located at
 
 \begin{center}
 \texttt{doc/examples/videoRecordingExample.cpp}
 \end{center}
 
-Compiling and running this program will create a directory \texttt{record}\footnote{The example program creates this directory, using a system call to \texttt{mkdir}. If this fails on your machine, you will need to manually create this directory.} in which frames will be saved sequentially and named according to their frame numbers. Thus, if the episode lasts 683 frames then the files \verb+record/000000.png+ to \verb+record/000682.png+ are created. Furthermore, sound output is also recorded as \verb+record/sound.wav+. The following flags control recording behaviour:
+Compiling and running this program will create a directory \texttt{record}\footnote{The example program creates this directory, using a system call to \texttt{mkdir}. If this fails on your machine, you will need to manually create this directory.} in which frames will be saved sequentially and named according to their frame numbers. Thus, if the episode lasts 683 frames then the files \verb+record/000000.png+ to \verb+record/000682.png+ are created. Furthermore, sound output is also recorded as \verb+record/sound.wav+. The following options control recording behaviour:
 
 \small{
 \begin{verbatim}
-  -display_screen <true|false> -- should be set to true for recording
+  sound <true|false> -- whether to enable sound output (set to true for recording)
     default: false
-  -sound <true|false> -- whether to enable sound output
-    default: false
-  -record_screen_dir -- path to record screens; if empty, no recording occurs
+  record_screen_dir -- path to record screens; if empty, no recording occurs
     default: ""
-  -record_sound_filename -- path to single wav file to be recorded; 
+  record_sound_filename -- path to single wav file to be recorded; 
             if empty, no recording occurs
     default: ""
 \end{verbatim}
 }
 
-Once frames and/or sound have been recorded, they may be joined into a movie file using the external program \texttt{ffmpeg} (installable on Mac OS X and most *nix OSes through a package manager). For your convenience, two example scripts are provided:
+Once frames and/or sound have been recorded, they may be joined into a movie file using the external program \texttt{ffmpeg} (installable on Mac OS X and most *nix systems through a package manager). For your convenience, two example scripts are provided:
 
 \begin{itemize}
     \item{\texttt{doc/scripts/videoRecordingExampleJoinMacOSX.sh}}
@@ -515,10 +507,10 @@ These should be run from the same directory that the C++ example was run from. U
 
 Here is a full, step-by-step example on Mac OS X (after building the project):
 \begin{verbatim}
-> cd ale_0_4
-ale_0_4> doc/examples/videoRecordingExample space_invaders.bin
+> cd ale_0_5
+ale_0_5> doc/examples/videoRecordingExample space_invaders.bin
 
-A.L.E: Arcade Learning Environment (version 0.4.4)
+A.L.E: Arcade Learning Environment (version 0.5.0)
 [Powered by Stella]
 
 [ usual ALE output ]
@@ -527,35 +519,35 @@ Recording screens to directory: record
 
 Recording complete. See manual for instructions on creating a video.
 
-ale_0_4> doc/scripts/videoRecordingExampleJoinMacOSX.sh
+ale_0_5> doc/scripts/videoRecordingExampleJoinMacOSX.sh
 
 ffmpeg version 2.6.1 Copyright (c) 2000-2015 the FFmpeg developers
   built with Apple clang version 4.1 (tags/Apple/clang-421.11.65) ... 
 
 [ loads of output ]
 
-ale_0_4> open agent.mov
+ale_0_5> open agent.mov
 \end{verbatim}
 
 \section{Troubleshooting / FAQ} \label{sec:troubleshooting}
 
 \begin{itemize}
-\item I downloaded the ALE and I installed it successfully but I cannot find any ROM file at \verb+roms/+.
+\item I downloaded ALE and I installed it successfully but I cannot find any ROM file at \verb+roms/+.
 Do I have to get them somewhere else?
 
-Yes. We do not have distribution rights over any Atari 2600 ROM. Therefore, they are not in our 
-repository nor in the installation package. There are websites that distribute such files, supposedly
-with the proper copyrights.
+Yes. We do not distribute Atari 2600 ROMs. 
 
-\item The C++ examples compile, but when run give the following error: \verb+dyld: Library not loaded: libale.so+. Help!
-
+\item The C++ examples compile, but when run give the following error: 
+\begin{center}
+\verb+dyld: Library not loaded: libale.so+ .
+\end{center} 
 You may need to add ALE to your library path:
 
 \begin{verbatim}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/ale_0_5
 \end{verbatim}
 
-or under Mac OS X,
+or, under Mac OS X,
 
 \begin{verbatim}
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
@@ -564,16 +556,15 @@ export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/path/to/ale_0_5
 Alternatively, run the examples from the directory in which \verb+libale.so+ resides.
 
 
-\item I am trying to run the ALE via command line (FIFO interface, or RL-Glue agent) but I keep 
+\item I am trying to run ALE via command line (FIFO interface, or RL-Glue agent) but I keep 
 getting an ``unsupported ROM file'' error. What am I doing wrong?
 
 These errors are generally hard to be solved in every possible way, but our experience has shown 
 several people forgetting to specify the ROM file as the last argument on the command line, in lower 
-case. Moreover, each game is supposed to have a proper name for the binary file. This is specified 
-in the header file (hpp) of the game. Finally, it is also important to check whether the ROM you are 
-trying to load is supported by  the current  version of the ALE.
+case. Moreover, each game is tied to an internal parser which relies on a specific filename (e.g. \verb+pong.bin+ for \textsc{Pong}). This is specified in the header file (hpp) for the corresponding parser (e.g. \verb+src/games/supported/Pong.hpp+). You may want to check whether the ROM you are 
+trying to load is supported by the current version of ALE.
 
-\item I am having problems when compiling with the option \verb+USE_SDL ON+ in the Mac OS.
+\item I am having problems when compiling with the option \verb+USE_SDL=ON+ on Mac OS X.
 The compiler complains it was not able to find the proper SDL files. What should I do?
 
 We spent a considerable amount of time trying to make sure CMake would properly find the correct 
@@ -589,68 +580,70 @@ SDL_LIBRARY:STRING=/usr/local/lib/libSDLmain.a;/usr/local/lib/libSDL.dylib;
 
 \item I want to be able to extract from the game the number of lives my agent still has. How can I do it?
 
-Previous versions of the ALE did not support this. We started to support such feature since version 
+Previous versions of ALE did not support this. We started to support such feature since version 
 0.5.0, through the use of the function \verb+lives()+.
 
 \item When extracting the screen I realized that I never see a pixel with an odd value. However,
 the pixel is represented as a byte. Shouldn't it be up to 255 with odd an even values?
 
-No, the Atari 2600 console only had 128 colours. Therefore, even though the colours are represented 
-in a byte, in fact only 7 bits are used. The least significative bit is always zero, consequently you have
-to shift the byte \verb+>> 1+ to obtain the correct colour value.
+No, the Atari 2600 console (NTSC format) only supports 128 colours. Therefore, even though the colours are represented 
+in a byte, in fact only the seven most significant bits are used. Consequently you have
+to right-shift the colour byte by 1 bit to produce consecutively numbered colour values.
 
-\item When trying to run the ALE I get a linking error stating \verb+-lrlagent+ could not be found.  
+\item When trying to run ALE I get a linking error stating \verb+-lrlagent+ could not be found.  
 What should I do?
 
 The \verb+rlragent+ is generated by the library RL-Glue. Therefore, we recommend you to verify your 
-installation of RL-Glue and to make sure it is being properly found when compiling the ALE code.
+installation of RL-Glue and to make sure it is being properly found when compiling ALE code. If
+RL-Glue support is not needed, consider running cmake with \verb+USE_RLGLUE=OFF+ (or disabling
+it in the makefile).
 
 \end{itemize}
 
 \section{ALE Interface Specifications}\label{sec:functions}
 
-Below are listed the functions available in the ALE interface with the description of their 
-behavior. The functions were divided in different sections to make the presentation more
+Below are listed the functions available in ALE interface with the description of their 
+behaviour. The functions were divided in different sections to make the presentation more
 clear.
 
   \subsection{Initialization}
 
   \indent \indent \verb+ALEInterface(bool display_screen)+: ALE constructor. If the 
-  \verb+display_screen+ parameter is set to \verb+true+, and the ALE was compiled
+  \verb+display_screen+ parameter is set to \verb+true+, and ALE was compiled
   with SDL, the game display will be presented. If set to \verb+false+ one will not see
   the game being played.
   
-  \verb+void loadROM(string rom_file)+: Resets the ALE and then loads a game. After this call
+  \verb+void loadROM(string rom_file)+: Resets ALE and then loads a game. After this call
   the game should be ready to play. If one changes (or sets) a setting (Section~\ref{sec:getSet}), 
   it is necessary to call this function after the change so it can take effect.
   
   \subsection{Parameters setting and retrieval}\label{sec:getSet}
   
-  \indent \indent \verb+string getString(const string& key)+: Get the value of any flag passed
+  \indent \indent \verb+string getString(const string& key)+: Gets the value of any flag passed
   as parameter that has a string value; \emph{e.g.}: \verb+getString(``record_sound_filename'')+.
 
-  \verb+int getInt(const string& key)+: Get the value of any flag passed as parameter that has 
+  \verb+int getInt(const string& key)+: Gets the value of any flag passed as parameter that has 
   an integer value; \emph{e.g.}: \verb+getInt(``frame_skip'')+.
 
-  \verb+bool getBool(const string& key)+: Get the value of any flag passed as parameter that has 
+  \verb+bool getBool(const string& key)+: Gets the value of any flag passed as parameter that has 
   a boolean value; \emph{e.g.}: \verb+getBool(``restricted_action_set'')+. 
   
-  \verb+float getFloat(const string& key)+: Get the value of any flag passed as parameter that has 
+  \verb+float getFloat(const string& key)+: Gets the value of any flag passed as parameter that has 
   a float value; \emph{e.g.}: \verb+getBool(``repeat_action_probability'')+.   
   
-  \verb+void setString(const string& key, const string& value)+: Set the value of any flag
+  \verb+void setString(const string& key, const string& value)+: Sets the value of any flag
   that has a string type; \emph{e.g.}: \verb+setString("random_seed", "time")+.
   \verb+loadRom()+ must be called before the setting will take effect.
   
-  \verb+void setInt(const std::string& key, const int value)+: Set the value of any flag
+  \verb+void setInt(const std::string& key, const int value)+: Sets the value of any flag
   that has an integer type; \emph{e.g.}: \verb+setInt("frame_skip", 1)+. \verb+loadRom()+
   must be called before the setting will take effect.
   
-  \verb+void setBool(const std::string& key, const bool value)+: Set the value of any flag
+  \verb+void setBool(const std::string& key, const bool value)+: Sets the value of any flag
   that has a boolean type; \emph{e.g.}: \verb+setBool("restricted_action_set", false)+.
   \verb+loadRom()+ must be called before the setting will take effect.
   
-  \verb+void setFloat(const std::string& key, const float value)+: Set the value of any flag
+  \verb+void setFloat(const std::string& key, const float value)+: Sets the value of any flag
   that has a float type; \emph{e.g.}: \verb+setFloat("repeat_action_probability", 0.25)+.
   \verb+loadRom()+ must be called before the setting will take effect.
   
@@ -701,15 +694,12 @@ clear.
   
 \section{Command-line Arguments}\label{sec:arguments}
 
-Command-line arguments are passed to ALE before the ROM filename. The current version removed all 
-the internal agents in the game, therefore, the command-line arguments are mostly useful to start 
-the communication when using FIFO pipes.
-
-However, these parameters can also be set when using the C++ or Python interface, for example. In 
-this case, they are set using those functons discussed in Section~\ref{sec:getSet}. The configuration file 
-\verb+ale_0_5/stellarc+ can also be used to set frequently used command-line arguments.  
-
-The parameters that can be set are all listed below.
+Command-line arguments are passed to ALE before the ROM filename. These are converted into
+options (minus the prefix hyphen ('\verb+-+') within ALE. Currently, 
+setting options from the command-line is only relevant to the fifo and RL-Glue interfaces.
+When using the C++ or Python interface, one should instead directly invoke the relevant setter
+functions (e.g. \verb+setInt()+; see Section~\ref{sec:getSet}). The configuration file 
+\verb+ale_0_5/stellarc+ can also be used to set frequently used options. 
 
 \subsection{Main Arguments}
 \small{
