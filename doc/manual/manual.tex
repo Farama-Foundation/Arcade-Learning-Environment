@@ -41,7 +41,7 @@ The basic requirements to build and run ALE are:
   \item A C++ compiler
 \end{itemize}
 
-Two custom makefiles are provided, \verb+makefile.mac+ (Mac OS X) and \verb+makefile.unix+ (Linux). However, beginning with version 0.5, we highly recommend the use of CMake rather than the custom makefiles.
+Two custom makefiles are provided, \verb+makefile.mac+ (Mac OS X) and \verb+makefile.unix+ (Linux). However, beginning with version 0.5.0, we highly recommend the use of CMake rather than the custom makefiles.
 
 Additionally, the following options are not activated by default and require additional packages:
 \begin{itemize}
@@ -114,7 +114,7 @@ the actions that have some effect on that game. The \verb+getLegalActionSet+ and
 
 \verb+ActionVect legal_actions = ale.getLegalActionSet();+\\
 
-Taking ana ction is done by calling the function \verb+act()+ passing an object of \verb+Action+ as a parameter:\\
+Taking an action is done by calling the function \verb+act()+ passing an object of \verb+Action+ as a parameter:\\
 
 \verb+Action a = legal_actions[rand() % legal_actions.size()];+\\
 \indent \verb+float reward = ale.act(a);+\\
@@ -530,6 +530,11 @@ ale_0_5> open agent.mov
 \end{verbatim}
 
 \section{Troubleshooting / FAQ} \label{sec:troubleshooting}
+
+More questions and answers may be found on the ALE-users mailing list:
+\begin{center}
+\url{https://groups.google.com/forum/#!forum/arcade-learning-environment}
+\end{center}
 
 \begin{itemize}
 \item I downloaded ALE and I installed it successfully but I cannot find any ROM file at \verb+roms/+.
