@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
 
     ActionVect legal_actions = ale.getLegalActionSet();
     
-    float totalReward = 0;
+    float totalReward = 0.0;
     while (!ale.game_over()) {
         Action a = legal_actions[rand() % legal_actions.size()];    
         float reward = ale.act(a);
