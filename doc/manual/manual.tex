@@ -123,7 +123,6 @@ Finally, one can check whether the episode has terminated using the function \ve
 functions one can already implement a very simple agent that plays randomly for one episode:
 
 \begin{verbatim}
-#include <iostream>
 #include <ale_interface.hpp>
 
 using namespace std;
@@ -146,7 +145,7 @@ int main(int argc, char** argv) {
         float reward = ale.act(a);
             totalReward += reward;
         }
-        cout << "The episode ended with score: " << totalReward << endl;
+        std::cout << "The episode ended with score: " << totalReward << std::endl;
     }
     return 0;
 }
