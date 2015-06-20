@@ -28,7 +28,7 @@ namespace RandomStatic {
 
   typedef tinymt32_t randgen_t;
   // Random number generator 
-  static randgen_t rndGenerator;
+  randgen_t rndGenerator;
 }
 
 
