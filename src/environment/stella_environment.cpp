@@ -141,9 +141,8 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   for (size_t i = 0; i < m_frame_skip; i++) {
     
     // Stochastically drop actions, according to m_repeat_action_probability
-    if (m_rand_gen.nextDouble() >= m_repeat_action_probability){
+    if (m_rand_gen.nextDouble() >= m_repeat_action_probability)
       m_player_a_action = player_a_action;
-    }
     // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
     if (m_rand_gen.nextDouble() >= m_repeat_action_probability)
       m_player_b_action = player_b_action;
