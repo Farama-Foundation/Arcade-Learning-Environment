@@ -19,6 +19,19 @@
 #include <time.h>
 #include "Random.hxx"
 
+// TODO(mgb): bring this include in once we switch to C++11.
+// #include <random>
+#include "TinyMT/tinymt32.h"
+
+// The random number generator is defined here to avoid having to expose tinymt32.h. 
+namespace RandomStatic {
+
+  typedef tinymt32_t randgen_t;
+  // Random number generator 
+  static randgen_t rndGenerator;
+}
+
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Random::seed(uInt32 value)
 {
@@ -27,7 +40,7 @@ void Random::seed(uInt32 value)
   // TODO(mgb): this is the C++11 variant. 
   // rndGenerator.seed(ourSeed);
 
-  tinymt32_init(&rndGenerator, ourSeed);
+  tinymt32_init(&RandomStatic::rndGenerator, ourSeed);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -43,7 +56,7 @@ uInt32 Random::next()
 {
   // TODO(mgb): C++11
   // return rndGenerator();
-  return static_cast<uInt32>(tinymt32_generate_uint32(&rndGenerator));
+  return static_cast<uInt32>(tinymt32_generate_uint32(&RandomStatic::rndGenerator));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,7 +64,7 @@ double Random::nextDouble()
 {
   // TODO(mgb): C++11
   // return rndGenerator() / double(rndGenerator.max() + 1.0);
-  return tinymt32_generate_32double(&rndGenerator);
+  return tinymt32_generate_32double(&RandomStatic::rndGenerator);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,8 +72,5 @@ uInt32 Random::ourSeed = 0;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Random::ourSeeded = false;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Random::randgen_t Random::rndGenerator;
 
 

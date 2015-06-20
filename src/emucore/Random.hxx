@@ -21,10 +21,6 @@
 
 #include "m6502/src/bspf/src/bspf.hxx"
 
-// TODO(mgb): bring this include in once we switch to C++11.
-// #include <random>
-#include "TinyMT/tinymt32.h"
-
 /**
   This is a quick-and-dirty random number generator.  It is based on 
   information in Chapter 7 of "Numerical Recipes in C".  It's a simple 
@@ -37,8 +33,6 @@ class Random
 {
   public:
     
-    typedef tinymt32_t randgen_t;
-
     /**
       Class method which allows you to set the seed that'll be used
       for created new instances of this class
@@ -68,9 +62,6 @@ class Random
 
   private:
     
-    // Mersenne Twister object to randomization
-    static randgen_t rndGenerator;
-
     // Seed to use for creating new random number generators
     static uInt32 ourSeed;
 
