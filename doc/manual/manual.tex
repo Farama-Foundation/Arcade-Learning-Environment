@@ -439,7 +439,8 @@ command--line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
 Beginning with ALE 0.5.0, there is now an option (enabled by default) to add 
 \emph{action repeat stochasticity} to the environment. With probability $p$ (default: $p = 0.25$),
 the previously executed action is executed again during the next frame, ignoring the agent's
-actual choice. The default value was chosen as the highest value for which human play-testers
+actual choice. This value can be modified using the option \verb+action_repeat_probability+.
+The default value was chosen as the highest value for which human play-testers
 were unable to detect any delay or control lag.
 
 The motivation for introducing action repeat stochasticity was to help separate \emph{trajectory
