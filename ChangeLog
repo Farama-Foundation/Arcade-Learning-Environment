@@ -1,4 +1,17 @@
-February 15th, 2015. ALE 1.0.0
+June 22nd, 2015. ALE 0.5.0.
+  * Added action_repeat_stochasticity.
+  * Added sound playback, visualization.
+  * Added screen/sound recording ability.
+  * CMake now available.
+  * Incorporated Benjamin Goodrich's Python interface.
+  * Some game fixes.
+  * Added examples for shared library, Python, fifo, RL-Glue interfaces.
+  * Incorporated Java agent into main repository.
+  * Removed internal controller, now superseded by shared library interface.
+  * Better ALEInterface.
+  * Many other changes.
+
+February 15th, 2015. ALE 0.5dev.
   * Removed the following command-line flags: 'output_file', 'system_reset_steps', 'use_environment_distribution', 'backward_compatible_save', internal agent flags
   * The flag 'use_starting_actions' was removed and internally its value is always 'true'.
   * The flag 'disable_color_averaging' was renamed to 'color_averaging' and FALSE is its default value.
