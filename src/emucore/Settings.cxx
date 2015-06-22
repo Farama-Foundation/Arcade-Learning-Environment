@@ -20,12 +20,12 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <string>
 
 #include "OSystem.hxx"
 #include "Version.hxx"
 #include "bspf.hxx"
 #include "Settings.hxx"
-#include "GuiUtils.hxx"  //ALE 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
@@ -259,99 +259,68 @@ void Settings::validate()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::usage() {
 
-    cerr << "\n" 
-       " ***************************************************************************\n"         
-       " * Welcome to A.L.E (Arcade Learning Environment)\n"                                
+    cerr << "\n"
+       " ***************************************************************************\n"
+       " * Welcome to A.L.E (Arcade Learning Environment)\n"
        " * (Powered by Stella)\n"
-       " ***************************************************************************\n"       
+       " ***************************************************************************\n"
        "\n"
-       " Usage: ale [options ...] romfile"
-       "\n"
-       " Example Usage: ./ale -player_agent random_agent roms/asterix.bin\n" 
+       " Usage: ale [options ...] romfile\n"
        "\n"
        " Main arguments:\n"
-       "   -help -- prints out help information\n\n"
-       "   -game_controller [internal|fifo|fifo_named"
+       "   -help -- prints out help information\n"
+       "   -game_controller [fifo|fifo_named"
 #ifdef __USE_RLGLUE
        "|rlglue"
 #endif
-       "]\n"
-       "      Defines how Stella communicates with the player agent:\n"                  
-       "            - 'internal':   (default) an instance of the PlayerAgent\n"       
-       "                            subclass controls the game\n"   
+       "] (default: unset)\n"
+       "      Defines how Stella communicates with the player agent:\n"
        "            - 'fifo':       Control occurs through FIFO pipes\n"
        "            - 'fifo_named': Control occurs through named FIFO pipes\n"
 #ifdef __USE_RLGLUE
        "            - 'rlglue':     External control via RL-Glue\n"
 #endif
-       "\n"
-       "   -random_seed  [time]/[n]\n"
-       "     Sets the seed used for random number generation.\n"
-       "     'time' will use the the current time.\n"
-       "\n"
+       "   -random_seed [n|time] (default: time)\n"
+       "     Sets the seed used for random number generation\n"
 #ifdef __USE_SDL
-       "   -display_screen [true]/[false]\n"
-       "     Displays the game screen.\n"
-       "\n"
+       "   -display_screen [true|false] (default: false)\n"
+       "     Displays the game screen\n"
 #endif
-       "   -output_file [filename] -- if true and SDL is enabled, displays ALE screen\n"
-       "     default: not set\n\n"
+#ifdef SOUND_SUPPORT
+       "   -sound [true|false] (default: false)\n"
+       "     Enable game sounds\n"
+#endif
        "\n"
        " Environment arguments:\n"
-       "   -max_num_episodes n\n"
-       "     The program will quit after this number of episodes. 0 means never.\n"
-       "    default: 10\n"
-       "   -max_num_frames m\n"  
+       "   -max_num_frames m (default: 0)\n"
        "     The program will quit after this number of frames. 0 means never.\n"
-       "    default: 0\n"
-       "   -max_num_frames_per_episode m\n"
+       "   -max_num_frames_per_episode m (default: 0)\n"
        "     Ends each episode after this number of frames. 0 means never.\n"
-       "    default: 0\n"
-       "   -system_reset_steps ### -- how many frames to hold reset button for\n" 
-       "      Should be >= 2.\n"
-       "    default: 4\n\n"
-       "   -use_environment_distribution [true|false]  -- if true, the environment start\n" 
-       "      state is drawn from a distribution of states\n"
-       "    default: false\n\n"
-       "   -use_starting_actions [true|false] -- if true, a game-specific sequence\n"
-       "      of actions is applied after each reset\n"
-       "    default: false\n\n"
-       "   -restricted_action_set [true|false] -- if true, agents use a smaller set of\n" 
-       "      actions (internal and RL-Glue interfaces only)\n"
-       "    default: false\n\n"
-       "   -backward_compatible_save [true|false] -- if true, uses ALE 0.2's\n" 
-       "      save/load state mechanism\n"
-       "    default: false\n\n"
-       "   -disable_color_averaging [true|false] -- if true, disables color averaging\n" 
-       "    default: false\n\n"
+       "   -color_averaging [true|false] (default: false)\n"
+       "     Phosphor blends screens to reduce flicker\n"
+       "   -record_screen_dir [save_directory]\n"
+       "     Saves game screen images to save_directory\n"
+       "   -repeat_action_probability (default: 0.25)\n"
+       "     Stochasticity in the environment. It is the probability the previous "
+                "action will repeated without executing the new one.\n"
        "\n"
-       " FIFO arguments:\n"
-       "   -run_length_encoding [true|false] -- if true, encodes data using run-length encoding\n"
-       "    default: true\n\n"
+       " FIFO Controller arguments:\n"
+       "   -run_length_encoding [true|false] (default: true)\n"
+       "     Encodes data using run-length encoding\n"
        "\n"
-       " Internal Controller arguments:\n"
-       "   -player_agent [random_agent|single_action_agent"
-#ifdef __USE_SDL
-       "|keyboard_agent" 
-#endif
-       "]\n"                                                                   
-       "     Specifies which PlayerAgent to run from the internal controller.\n\n"
-       "   -record_trajectory <true|false> -- if true, records the agent's trajectory\n"
-       "    default: false\n\n"
-       "   -agent_epsilon ### -- probability of a random action in single_action_agent\n"
-       "    default: unset\n\n"
-       "\n"
+#ifdef __USE_RLGLUE
        " RL-Glue Controller arguments:\n"
-       "   -send_rgb [true|false] -- if true, RGB values are sent for each pixel\n"
-       "      instead of the pallette index values\n"
-       "    default: false\n\n"       
-       "\n"       
-       " Misc. arguments:\n"
-       "   -ld [A/B]\n"
-       "     Left player difficulty. B (default) means easy.\n"
+       "   -send_rgb [true|false] (default: false)\n"
+       "     Sends RGB values for each pixel instead of the pallette index values\n"
+       "   -restricted_action_set [true|false] (default: false)\n"
+       "     Agents use a smaller set of actions (RL-Glue interfaces only)\n"
        "\n"
-       "   -rd [A/B]\n"
-       "     Right player difficulty. B (default) means easy.\n"
+#endif
+       " Misc. arguments:\n"
+       "   -ld [A/B] (default: B)\n"
+       "     Left player difficulty. B means easy.\n"
+       "   -rd [A/B] (default: B)\n"
+       "     Right player difficulty. B means easy.\n"
        "\n"
     ; // Closing the std::cerr statement
 }
@@ -549,7 +518,8 @@ const string& Settings::getString(const string& key, bool strict) const {
             cerr << "Make sure all the settings files are loaded." << endl;
             exit(-1);
         } else {
-            return EmptyString;
+            static std::string EmptyString("");
+            return EmptyString; 
         }
     }
 }

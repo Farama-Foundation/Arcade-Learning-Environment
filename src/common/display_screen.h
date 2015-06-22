@@ -21,91 +21,57 @@
 #include <stdlib.h>
 
 #include "Constants.h"
-#include "export_screen.h"
+#include "ColourPalette.hpp"
 #include "../emucore/MediaSrc.hxx"
 
 #ifdef __USE_SDL
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
-#include "SDL/SDL_rotozoom.h"
-#include "SDL/SDL_gfxPrimitives.h"
+#include "SDL.h"
 
-class SDLEventHandler {
+class DisplayScreen {
 public:
-    // Returns true if it handles this SDL Event. False if not and the event
-    // will be passed to other handlers.
-    virtual bool handleSDLEvent(const SDL_Event& event) = 0;
-
-    // This gives the handler a chance to draw on or modify the screen that
-    // will be displayed. This is done by modifying the screen_matrix.
-    virtual void display_screen(IntMatrix& screen_matrix, int screen_width, int screen_height) = 0;
-
-    // Print the usage information about this handler
-    virtual void usage() = 0;
-};
-
-class DisplayScreen : public SDLEventHandler {
-public:
-    DisplayScreen(ExportScreen* export_screen, int screen_width, int screen_height);
+    DisplayScreen(MediaSource* mediaSource, Sound* sound, ColourPalette &palette); 
     virtual ~DisplayScreen();
 
-    // Displays the current frame buffer directly from the mediasource
-    void display_screen(const MediaSource& mediaSrc);
+    // Displays the current frame buffer from the mediasource.
+    void display_screen();
 
-    // Displays a screen_matrix. This is called after all other handlers
-    // draw on the screen.
-    void display_screen(IntMatrix& screen_matrix, int image_width, int image_height);
+    // Has the user engaged manual control mode?
+    bool manual_control_engaged() { return manual_control_active; }
 
-    // Draws a png image to the screen from a file
-    void display_png(const string& filename);
-
-    // Registers a handler for keyboard and mouse events
-    void registerEventHandler(SDLEventHandler* handler);
-
-    // Allows other methods to set the paused/unpaused game status
-    void setPaused(bool _paused) { paused = _paused; }
-
-    // Implements pause functionality
-    bool handleSDLEvent(const SDL_Event& event);
-
-    void usage();
-
-
-public:
-    // Dimensions of the SDL window
-    int window_height, window_width;
-
-    // Maintains the paused/unpaused state of the game
-    bool paused;
-
+    // Captures the keypress of a user in manual control mode.
+    Action getUserAction();
 
 protected:
-    // Checks for SDL events such as keypresses.
-    // TODO: Run in a different thread?
+    // Checks for SDL events.
     void poll();
 
-    SDL_Surface *screen, *image;
-    ExportScreen* export_screen;
+    // Handle the SDL_Event.
+    void handleSDLEvent(const SDL_Event& event);
 
-    // Matrix representation of the screen
-    IntMatrix screen_matrix;
+protected:
+    // Dimensions of the SDL window (4:3 aspect ratio)
+    static const int window_height = 321;
+    static const int window_width = 428;
+    // Maintains the paused/unpaused state of the game
+    bool manual_control_active;
+    MediaSource* media_source;
+    Sound* my_sound;
+    ColourPalette &colour_palette;
     int screen_height, screen_width;
-
-    // Handlers for SDL Events
-    std::vector<SDLEventHandler*> handlers;
+    SDL_Surface *screen, *image;
+    float yratio, xratio;
+    Uint32 delay_msec;
+    // Used to calibrate delay between frames
+    Uint32 last_frame_time;
 };
 #else
 /** A dummy class that simply ignores display events. */
 class DisplayScreen {
   public:
-    DisplayScreen(ExportScreen* export_screen, int screen_width, int screen_height) {}
-
-    // Displays the current frame buffer directly from the mediasource
-    void display_screen(const MediaSource& mediaSrc) {}
-
-    // Displays a screen_matrix. This is called after all other handlers
-    // draw on the screen.
-    void display_screen(IntMatrix& screen_matrix, int image_width, int image_height) {}
+    DisplayScreen(MediaSource* mediaSource, Sound* sound, ColourPalette &palette) {}
+    void display_screen() {}
+    bool manual_control_engaged() { return false; }
+    Action getUserAction() { return UNDEFINED; }
 };
 #endif // __USE_SDL
 

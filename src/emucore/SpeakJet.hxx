@@ -82,7 +82,7 @@
 
 #include "m6502/src/bspf/src/bspf.hxx"
 
-#include <SDL.h>
+#include "SDL.h"
 #include <SDL_thread.h>
 #include "rsynth/rsynth.h"
 

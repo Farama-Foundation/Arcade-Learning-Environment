@@ -106,7 +106,6 @@ void FIFOController::handshake() {
   m_send_ram = atoi(token);
   token = strtok (NULL,",\n");
   // Used to be frame skip; now obsolete
-  atoi(token);
   token = strtok(NULL, ",\n");
   m_send_rl = atoi(token);
 }

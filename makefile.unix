@@ -3,14 +3,14 @@
 ##============================================================================
 
 srcdir      ?= .
-# Set this to 1 to enable SDL and display_screen
+# Set this to 1 to enable SDL, display_screen, and sound support
 USE_SDL     := 0
 # Set this to 1 to enable the RLGlue interface
 USE_RLGLUE  := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     := 
-INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -Isrc/environment 
-LIBS_SDL    := -lSDL -lSDL_gfx -lSDL_image 
+# /usr/local/include for RL-Glue
+INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/usr/local/include -Isrc/environment -Isrc/external 
 LIBS_RLGLUE := -lrlutils -lrlgluenetdev
 LIBS        :=
 OBJS	    :=
@@ -52,14 +52,15 @@ PROFILE :=
 HAVE_GCC3 = 1
 HAVE_NASM = 1
 
-INCLUDES += -Isrc/games -Isrc/emucore -Isrc/emucore/m6502/src -Isrc/emucore/m6502/src/bspf/src -Isrc/common -Isrc/controllers -Isrc/agents -Isrc/environment  
+INCLUDES += -Isrc/games -Isrc/emucore -Isrc/emucore/m6502/src -Isrc/emucore/m6502/src/bspf/src -Isrc/common -Isrc/controllers -Isrc/environment  
 OBJS += 
 DEFINES +=  -DUNIX -DHAS_ALTIVEC -DUSE_NASM -DBSPF_UNIX -DHAVE_INTTYPES -DWINDOWED_SUPPORT  -DHAVE_GETTIMEOFDAY -DSNAPSHOT_SUPPORT 
 LDFLAGS += 
 
 ifeq ($(strip $(USE_SDL)), 1)
-  DEFINES +=  -D__USE_SDL
-  LIBS += $(LIBS_SDL)
+  CXXFLAGS+=$(shell sdl-config --cflags)
+  LIBS+=$(shell sdl-config --libs)
+  DEFINES +=  -D__USE_SDL -DSOUND_SUPPORT
 endif
 
 ifeq ($(strip $(USE_RLGLUE)), 1)
@@ -71,7 +72,7 @@ endif
 # Uncomment this for stricter compile time code verification
 # CXXFLAGS+= -Werror
 
-CXXFLAGS += -Wall -Wno-multichar -Wunused -fno-rtti -fPIC
+CXXFLAGS += -Wall -Wunused -fPIC
 
 ifeq ($(strip $(DEBUG)), 1)
   CXXFLAGS += -g -O0
@@ -123,9 +124,9 @@ MODULES += \
 	src/common \
 	src/controllers \
 	src/os_dependent \
-	src/agents \
   src/games \
-  src/environment
+  src/environment \
+  src/external
 
 
 ######################################################################

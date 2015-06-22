@@ -32,6 +32,7 @@
 class Random
 {
   public:
+    
     /**
       Class method which allows you to set the seed that'll be used
       for created new instances of this class
@@ -40,13 +41,11 @@ class Random
     */
     static void seed(uInt32 value);
 
-  public:
     /**
       Create a new random number generator
     */
     Random();
     
-  public:
     /**
       Answer the next random number from the random number generator
 
@@ -54,11 +53,15 @@ class Random
     */
     uInt32 next();
 
-  private:
-    // Indicates the next random number
-    uInt32 myValue;
+    /**
+      Answer the next random number between 0 and 1 from the random number generator
+
+      @return A random number between 0 and 1
+    */
+    double nextDouble();
 
   private:
+    
     // Seed to use for creating new random number generators
     static uInt32 ourSeed;
 

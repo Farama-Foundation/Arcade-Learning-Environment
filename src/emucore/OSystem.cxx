@@ -47,6 +47,7 @@
 //ALE   #include "StellaFont.hxx"
 //ALE   #include "ConsoleFont.hxx"
 #include "OSystem.hxx"
+#include "SoundSDL.hxx"
 //ALE   #include "Widget.hxx"   
 #define MAX_ROM_SIZE  512 * 1024
 
@@ -67,7 +68,6 @@ OSystem::OSystem()
     mySkipEmulation(false),
     myRomFile(""),
     myFeatures(""),
-    p_export_screen(NULL),
     p_display_screen(NULL)
 {
     #ifdef DISPLAY_OPENGL
@@ -122,10 +122,7 @@ OSystem::~OSystem()
     delete myPropSet;
   //ALE  delete myEventHandler;
   if (myEvent != NULL)
-    delete myEvent;           //ALE 
-  if (p_export_screen != NULL) {
-      delete p_export_screen;
-  }
+    delete myEvent; 
   if (p_display_screen != NULL) {
       delete p_display_screen;
   }
@@ -184,13 +181,6 @@ bool OSystem::create()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::setConfigPaths()
 {
-  myStateDir = mySettings->getString("statedir");
-  if(myStateDir == "")
-    myStateDir = myBaseDir + BSPF_PATH_SEPARATOR + "state";
-  if(!FilesystemNode::dirExists(myStateDir))
-    FilesystemNode::makeDir(myStateDir);
-  mySettings->setString("statedir", myStateDir);
-
   myGameListCacheFile = myBaseDir + BSPF_PATH_SEPARATOR + "stella.cache";
 
   myCheatFile = mySettings->getString("cheatfile");
@@ -331,13 +321,23 @@ ALE */
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::createSound()
 {
-  if (mySound != NULL)
+  if (mySound != NULL) {
     delete mySound;
+  }
+  mySound = NULL;
 
-  //ALE  mySound = MediaFactory::createAudio(this);
-   mySound = new SoundNull(this); //ALE 
-#ifndef SOUND_SUPPORT
+#ifdef SOUND_SUPPORT
+  // If requested (& supported), enable sound
+  if (mySettings->getBool("sound") == true) {
+      mySound = new SoundSDL(this);
+      mySound->initialize();
+  }
+  else {
+      mySound = new SoundNull(this);
+  }
+#else
   mySettings->setBool("sound", false);
+  mySound = new SoundNull(this);
 #endif
 }
 
@@ -348,12 +348,11 @@ bool OSystem::createConsole(const string& romfile)
   // Do a little error checking; it shouldn't be necessary
   if(myConsole) deleteConsole();
 
-  bool retval = false, showmessage = false;
+  bool retval = false; 
 
   // If a blank ROM has been given, we reload the current one (assuming one exists)
   if(romfile == "")
   {
-    showmessage = true;  // we show a message if a ROM is being reloaded
     if(myRomFile == "")
     {
       cerr << "ERROR: Rom file not specified ..." << endl;
@@ -387,8 +386,6 @@ bool OSystem::createConsole(const string& romfile)
       myDebugger->initialize();
     #endif
 
-      //ALE  if(showmessage)
-        //ALE  myFrameBuffer->showMessage("New console created");
       if(mySettings->getBool("showinfo") || 1)
         cerr << "Game console created:" << endl
              << "  ROM file:  " << myRomFile << endl
@@ -416,8 +413,6 @@ bool OSystem::createConsole(const string& romfile)
   if(size != -1) {
     delete[] image;
   }
-  p_export_screen = new ExportScreen(this); //ALE 
-
   if (mySettings->getBool("display_screen", true)) {
 #ifndef __USE_SDL
     std::cerr << "Screen display requires directive __USE_SDL to be defined."
@@ -426,10 +421,8 @@ bool OSystem::createConsole(const string& romfile)
               << std::endl;
     exit(1);
 #endif
-    int screen_width = myConsole->mediaSource().width();
-    int screen_height = myConsole->mediaSource().height();
-    p_display_screen = new DisplayScreen(p_export_screen, screen_width,
-                                         screen_height);
+    p_display_screen = new DisplayScreen(&myConsole->mediaSource(),
+                                         mySound, m_colour_palette); 
   }
 
   return retval;
@@ -457,10 +450,6 @@ void OSystem::deleteConsole()
     delete myConsole;  
     myConsole = NULL;
   }
-  if (p_export_screen) {        //ALE 
-    delete p_export_screen;     //ALE 
-    p_export_screen = NULL;     //ALE 
-  }                             //ALE 
   if (p_display_screen) {       //ALE
     delete p_display_screen;    //ALE
     p_display_screen = NULL;    //ALE 

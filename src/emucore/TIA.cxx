@@ -30,7 +30,6 @@
 #include "Deserializer.hxx"
 #include "Settings.hxx"
 #include "Sound.hxx"
-#include "GuiUtils.hxx"
 
 #define HBLANK 68
 

@@ -46,16 +46,16 @@ void PhosphorBlend::process(ALEScreen& screen) {
   }
 }
 void PhosphorBlend::makeAveragePalette() {
-  // MGB: This is taken from fifo_controller; and before then from somewhere else
-  ExportScreen* es = m_osystem->p_export_screen;
+  
+  ColourPalette &palette = m_osystem->colourPalette();
 
   // Precompute the average RGB values for phosphor-averaged colors c1 and c2
   for (int c1 = 0; c1 < 256; c1++) {
     for (int c2 = 0; c2 < 256; c2++) {
       int r1, g1, b1;
       int r2, g2, b2;
-      es->get_rgb_from_palette(c1, r1, g1, b1);
-      es->get_rgb_from_palette(c2, r2, g2, b2);
+      palette.getRGB(c1, r1, g1, b1);
+      palette.getRGB(c2, r2, g2, b2);
 
       uInt8 r = getPhosphor(r1, r2);
       uInt8 g = getPhosphor(g1, g2);
@@ -75,7 +75,7 @@ void PhosphorBlend::makeAveragePalette() {
         for (int c1 = 0; c1 < 256; c1++) {
           // Get the RGB corresponding to c1
           int r1, g1, b1;
-          es->get_rgb_from_palette(c1, r1, g1, b1);
+          palette.getRGB(c1, r1, g1, b1);
 
           int dist = abs(r1 - r) + abs(g1 - g) + abs(b1 - b);
           if (dist < minDist) {

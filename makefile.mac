@@ -9,9 +9,9 @@ USE_SDL     := 0
 USE_RLGLUE  := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     :=
-# /opt/local/include for MacPorts
-INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/opt/local/include -Isrc/environment  
-LIBS_SDL := -lSDL -lSDLmain -lSDL_gfx -lSDL_image
+# /opt/local/include for MacPorts; /usr/local/include for RL-Glue
+INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/opt/local/include -I/usr/local/include -Isrc/environment -Isrc/external 
+LIBS_SDL    := -lSDL -lSDLmain
 LIBS_RLGLUE := -lrlutils -lrlgluenetdev
 LIBS	    := -L/opt/local/lib 
 OBJS	    :=
@@ -55,14 +55,15 @@ PROFILE :=
 HAVE_GCC3 = 1
 HAVE_NASM = 1
 
-INCLUDES += -Isrc/games -Isrc/emucore -Isrc/emucore/m6502/src -Isrc/emucore/m6502/src/bspf/src -Isrc/common -Isrc/controllers -Isrc/agents -Isrc/environment  
+INCLUDES += -Isrc/games -Isrc/emucore -Isrc/emucore/m6502/src -Isrc/emucore/m6502/src/bspf/src -Isrc/common -Isrc/controllers -Isrc/environment  
 OBJS += 
 DEFINES +=  -DUNIX -DHAS_ALTIVEC -DUSE_NASM -DBSPF_UNIX -DHAVE_INTTYPES -DWINDOWED_SUPPORT  -DHAVE_GETTIMEOFDAY -DSNAPSHOT_SUPPORT 
 LDFLAGS += 
 
 ifeq ("$(USE_SDL)", "1")
-  DEFINES +=  -D__USE_SDL
-  LIBS += $(LIBS_SDL)
+  CXXFLAGS+=$(shell sdl-config --cflags)
+  LDFLAGS+=$(shell sdl-config --libs)
+  DEFINES +=  -D__USE_SDL -DSOUND_SUPPORT
 endif
 
 ifeq ("$(USE_RLGLUE)", "1")
@@ -73,7 +74,7 @@ endif
 # Uncomment this for stricter compile time code verification
 # CXXFLAGS+= -Werror
 
-CXXFLAGS += -Wall -Wno-multichar -Wunused -fPIC
+CXXFLAGS += -Wall -Wunused -fPIC
 
 ifeq ("$(DEBUG)", "1")
   CXXFLAGS += -g -O0
@@ -125,9 +126,9 @@ MODULES += \
 	src/common \
 	src/controllers \
 	src/os_dependent \
-	src/agents \
   src/games \
-  src/environment
+  src/environment \
+  src/external
 
 
 ######################################################################
@@ -150,7 +151,7 @@ $(EXECUTABLE):  $(OBJS)
 	$(LD) $(LDFLAGS) $(PRE_OBJS_FLAGS) $+ $(POST_OBJS_FLAGS) $(LIBS) $(PROF) -o $@
 
 $(LIBRARY): $(OBJS)
-	$(LD) $(LDFLAGS) -shared -o $(LIBRARY) $(LIBS) $(OBJS)        
+	$(LD) $(LDFLAGS) -shared -o $(LIBRARY) $(OBJS) $(LIBS)
 
 distclean: clean
 	$(RM_REC) $(DEPDIRS)

@@ -1,4 +1,20 @@
 /* *****************************************************************************
+ * The lines 71, 73, 126, 127, 135, 136, 144 and 145 are based on Xitari's code, 
+ * from Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
@@ -48,8 +64,14 @@ void StarGunnerSettings::step(const System& system) {
     m_score = score;
 
     // update terminal status
-    int lives = readRam(&system, 0x87); 
-    m_terminal = lives == 0; 
+    int lives_byte = readRam(&system, 0x87);
+    m_terminal = lives_byte == 0;
+
+    // We record when the game starts, which is needed to deal with the lives == 6 starting
+    // situation
+    m_game_started |= lives_byte == 0x05;
+
+    m_lives = m_game_started ? (lives_byte & 0xF) : 5;
 }
 
 
@@ -102,6 +124,8 @@ void StarGunnerSettings::reset() {
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
+    m_lives    = 5;
+    m_game_started = false;    
 }
         
 /* saves the state of the rom settings */
@@ -109,6 +133,8 @@ void StarGunnerSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
+  ser.putInt(m_lives);
+  ser.putBool(m_game_started);
 }
 
 // loads the state of the rom settings
@@ -116,5 +142,7 @@ void StarGunnerSettings::loadState(Deserializer & ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
+  m_lives = ser.getInt();
+  m_game_started = ser.getBool();  
 }
 

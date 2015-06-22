@@ -17,13 +17,16 @@
 
 #include "stella_environment.hpp"
 #include "../emucore/m6502/src/System.hxx"
+#include <sstream>
 
 StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_osystem(osystem),
   m_settings(settings),
   m_phosphor_blend(osystem),  
   m_screen(m_osystem->console().mediaSource().height(),
-        m_osystem->console().mediaSource().width()) {
+        m_osystem->console().mediaSource().width()),
+  m_player_a_action(PLAYER_A_NOOP),
+  m_player_b_action(PLAYER_B_NOOP) {
 
   // Determine whether this is a paddle-based game
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
@@ -33,30 +36,32 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   } else {
     m_use_paddles = false;
   }
-
+  m_num_reset_steps = 4;
   m_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
   
-  m_num_reset_steps = atoi(m_osystem->settings().getString("system_reset_steps").c_str());
-  m_use_starting_actions = m_osystem->settings().getBool("use_starting_actions");
-  
   m_max_num_frames_per_episode = m_osystem->settings().getInt("max_num_frames_per_episode");
-  m_colour_averaging = !m_osystem->settings().getBool("disable_color_averaging");
+  m_colour_averaging = m_osystem->settings().getBool("color_averaging");
 
-  m_backward_compatible_save = m_osystem->settings().getBool("backward_compatible_save");
-  m_stochastic_start = m_osystem->settings().getBool("use_environment_distribution");
+  m_repeat_action_probability = m_osystem->settings().getFloat("repeat_action_probability");
   
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
-    fprintf (stderr, "Warning: frame skip set to < 1. Setting to 1.\n");
+    std::cerr << "Warning: frame skip set to < 1. Setting to 1." << std::endl;
     m_frame_skip = 1;
+  }
+
+  // If so desired, we record all emulated frames to a given directory 
+  std::string recordDir = m_osystem->settings().getString("record_screen_dir");
+  if (!recordDir.empty()) {
+    std::cerr << "Recording screens to directory: " << recordDir << std::endl;
+    
+    // Create the screen exporter
+    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
   }
 }
 
 /** Resets the system to its start state. */
 void StellaEnvironment::reset() {
-  // RNG for generating environments
-  Random randGen;
-  
   m_state.resetEpisodeFrameNumber();
   // Reset the paddles
   m_state.resetPaddles(m_osystem->event());
@@ -66,10 +71,7 @@ void StellaEnvironment::reset() {
 
   // NOOP for 60 steps in the deterministic environment setting, or some random amount otherwise 
   int noopSteps;
-  if (m_stochastic_start)
-    noopSteps = 60 + rand() % NUM_RANDOM_ENVIRONMENTS;
-  else
-    noopSteps = 60;
+  noopSteps = 60;
 
   emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, noopSteps);
   // reset for n steps
@@ -79,10 +81,9 @@ void StellaEnvironment::reset() {
   m_settings->reset();
   
   // Apply necessary actions specified by the rom itself
-  if (m_use_starting_actions) {
-    ActionVect startingActions = m_settings->getStartingActions();
-    for (size_t i = 0; i < startingActions.size(); i++)
-      emulate(startingActions[i], PLAYER_B_NOOP);
+  ActionVect startingActions = m_settings->getStartingActions();
+  for (size_t i = 0; i < startingActions.size(); i++){
+    emulate(startingActions[i], PLAYER_B_NOOP);
   }
 }
 
@@ -90,15 +91,7 @@ void StellaEnvironment::reset() {
 void StellaEnvironment::save() {
   // Store the current state into a new object
   ALEState new_state = cloneState();
-
-  if (m_backward_compatible_save) { // 0.2, 0.3: overwrite on save
-    while (!m_saved_states.empty())
-      m_saved_states.pop();
-    m_saved_states.push(new_state);
-  }
-  else { // 0.4 and above: put it on the stack
-    m_saved_states.push(new_state);
-  }
+  m_saved_states.push(new_state);
 }
 
 void StellaEnvironment::load() {
@@ -107,12 +100,7 @@ void StellaEnvironment::load() {
  
   // Deserialize it into 'm_state'
   restoreState(target_state);
-
-  if (m_backward_compatible_save) { // 0.2, 0.3: persistent save 
-  }
-  else { // 0.4 and above: take it off the stack
-    m_saved_states.pop();
-  }
+  m_saved_states.pop();
 }
 
 /** Returns a copy of the current emulator state. */
@@ -144,14 +132,31 @@ void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & pl
 }
 
 reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) {
+  
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
   // Apply the same action for a given number of times... note that act() will refuse to emulate 
   //  past the terminal state
   for (size_t i = 0; i < m_frame_skip; i++) {
-    sum_rewards += oneStepAct(player_a_action, player_b_action);
+    
+    // Stochastically drop actions, according to m_repeat_action_probability
+    if (m_rand_gen.nextDouble() >= m_repeat_action_probability)
+      m_player_a_action = player_a_action;
+    // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
+    if (m_rand_gen.nextDouble() >= m_repeat_action_probability)
+      m_player_b_action = player_b_action;
+
+    // If so desired, request one frame's worth of sound (this does nothing if recording
+    // is not enabled)
+    m_osystem->sound().recordNextFrame();
+
+    // Use the stored actions, which may or may not have changed this frame
+    sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }
+
+  if (m_screen_exporter.get() != NULL)
+    m_screen_exporter->saveNext(m_screen);
 
   return sum_rewards;
 }
@@ -221,14 +226,14 @@ const ALEState& StellaEnvironment::getState() const {
 }
 
 void StellaEnvironment::processScreen() {
-  if (!m_colour_averaging) {
+  if (m_colour_averaging) {
+    // Perform phosphor averaging; the blender stores its result in the given screen
+    m_phosphor_blend.process(m_screen);
+  }
+  else {
     // Copy screen over and we're done! 
     memcpy(m_screen.getArray(), 
       m_osystem->console().mediaSource().currentFrameBuffer(), m_screen.arraySize());
-  }
-  else {
-    // Perform phosphor averaging; the blender stores its result in the given screen
-    m_phosphor_blend.process(m_screen);
   }
 }
 

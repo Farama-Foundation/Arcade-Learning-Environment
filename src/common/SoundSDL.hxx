@@ -23,12 +23,16 @@
 
 class OSystem;
 
-#include <SDL/SDL.h>
+#include "SDL.h"
 
 #include "../emucore/Sound.hxx"
 #include "../emucore/m6502/src/bspf/src/bspf.hxx"
 #include "MediaSrc.hxx"
 #include "TIASnd.hxx"
+
+// If desired, we save sound to disk
+#include "SoundExporter.hpp"
+#include <memory>
 
 /**
   This class implements the sound API for SDL.
@@ -137,6 +141,11 @@ class SoundSDL : public Sound
           amount based on the direction (1 = increase, -1 = decrease)
     */
     void adjustVolume(Int8 direction);
+
+    /**
+      * Tells the sound engine to record one frame's worth of sound.
+      */
+    void recordNextFrame(); 
 
   public:
     /**
@@ -276,6 +285,11 @@ class SoundSDL : public Sound
   private:
     // Callback function invoked by the SDL Audio library when it needs data
     static void callback(void* udata, uInt8* stream, int len);
+
+    // Keeps track of how many samples we still need to record
+    int myNumRecordSamplesNeeded; 
+
+    std::auto_ptr<ale::sound::SoundExporter> mySoundExporter; 
 };
 
 #endif  // SOUND_SUPPORT

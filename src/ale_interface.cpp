@@ -1,8 +1,22 @@
 /* *****************************************************************************
+ * The lines 201 - 204 are based on Xitari's code, from Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare,
- *  Matthew Hausknecht, and the Reinforcement Learning and Artificial Intelligence 
- *  Laboratory
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ *   the Reinforcement Learning and Artificial Intelligence Laboratory
  * Released under the GNU General Public License; see License.txt for details. 
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
@@ -50,7 +64,7 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
 }
 
 void ALEInterface::loadSettings(const string& romfile,
-                         std::auto_ptr<OSystem> &theOSystem) {
+                                std::auto_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
   string configFile = theOSystem->settings().getString("config", false);
@@ -60,12 +74,6 @@ void ALEInterface::loadSettings(const string& romfile,
 
   theOSystem->settings().validate();
   theOSystem->create();
-
-  string outputFile = theOSystem->settings().getString("output_file", false);
-  if (!outputFile.empty()) {
-    cerr << "Redirecting ... " << outputFile << endl;
-    FILE* fp = freopen(outputFile.c_str(), "w", stdout);
-  }
 
   // Attempt to load the ROM
   if (romfile == "" || !FilesystemNode::fileExists(romfile)) {
@@ -82,14 +90,12 @@ void ALEInterface::loadSettings(const string& romfile,
   // Seed random number generator
   if (theOSystem->settings().getString("random_seed") == "time") {
     cerr << "Random Seed: Time" << endl;
-    srand((unsigned)time(0));
-    //srand48((unsigned)time(0));
+    Random::seed((uInt32)time(NULL));
   } else {
     int seed = theOSystem->settings().getInt("random_seed");
     assert(seed >= 0);
     cerr << "Random Seed: " << seed << endl;
-    srand((unsigned)seed);
-    //srand48((unsigned)seed);
+    Random::seed((uInt32)seed);
   }
 
   theOSystem->console().setPalette("standard");
@@ -99,6 +105,13 @@ ALEInterface::ALEInterface() {
   disableBufferedIO();
   std::cerr << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
+}
+
+ALEInterface::ALEInterface(bool display_screen) {
+  disableBufferedIO();
+  std::cerr << welcomeMessage() << std::endl;
+  createOSystem(theOSystem, theSettings);
+  this->setBool("display_screen", display_screen);
 }
 
 ALEInterface::~ALEInterface() {}
@@ -146,25 +159,25 @@ float ALEInterface::getFloat(const std::string& key) {
 }
 
 // Set the value of a setting.
-void ALEInterface::set(const string& key, const string& value) {
+void ALEInterface::setString(const string& key, const string& value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setString(key, value);
   theSettings->validate();
 }
-void ALEInterface::set(const string& key, const int& value) {
+void ALEInterface::setInt(const string& key, const int value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setInt(key, value);
   theSettings->validate();
 }
-void ALEInterface::set(const string& key, const bool& value) {
+void ALEInterface::setBool(const string& key, const bool value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setBool(key, value);
   theSettings->validate();
 }
-void ALEInterface::set(const string& key, const float& value) {
+void ALEInterface::setFloat(const string& key, const float value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setFloat(key, value);
@@ -183,6 +196,11 @@ bool ALEInterface::game_over() {
           (max_num_frames > 0 && getEpisodeFrameNumber() >= max_num_frames));
 }
 
+// The remaining number of lives.
+const int ALEInterface::lives() {
+    return romSettings->lives();
+}
+
 // Applies an action to the game and returns the reward. It is the
 // user's responsibility to check if the game has ended and reset
 // when necessary - this method will keep pressing buttons on the
@@ -190,8 +208,12 @@ bool ALEInterface::game_over() {
 reward_t ALEInterface::act(Action action) {
   reward_t reward = environment->act(action, PLAYER_B_NOOP);
   if (theOSystem->p_display_screen != NULL) {
-    theOSystem->p_display_screen->display_screen(
-        theOSystem->console().mediaSource());
+    theOSystem->p_display_screen->display_screen();
+    while (theOSystem->p_display_screen->manual_control_engaged()) {
+      Action user_action = theOSystem->p_display_screen->getUserAction();
+      reward += environment->act(user_action, PLAYER_B_NOOP);
+      theOSystem->p_display_screen->display_screen();
+    }
   }
   return reward;
 }
@@ -244,4 +266,14 @@ ALEState ALEInterface::cloneState() {
 
 void ALEInterface::restoreState(const ALEState& state) {
   return environment->restoreState(state);
+}
+
+void ALEInterface::saveScreenPNG(const string& filename) {
+  
+  ScreenExporter exporter(theOSystem->colourPalette());
+  exporter.save(environment->getScreen(), filename);
+}
+
+ScreenExporter *ALEInterface::createScreenExporter(const std::string &filename) const {
+    return new ScreenExporter(theOSystem->colourPalette(), filename); 
 }

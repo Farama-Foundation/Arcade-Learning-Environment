@@ -25,6 +25,7 @@
 #include "../emucore/OSystem.hxx"
 #include "../emucore/Event.hxx"
 #include "../games/RomSettings.hpp"
+#include "../common/ScreenExporter.hpp"
 
 #include <stack>
 
@@ -86,8 +87,8 @@ class StellaEnvironment {
     void processRAM();
 
   private:
-    OSystem * m_osystem;
-    RomSettings * m_settings;
+    OSystem *m_osystem;
+    RomSettings *m_settings;
     PhosphorBlend m_phosphor_blend; // For performing phosphor colour averaging, if so desired
     std::string m_cartridge_md5; // Necessary for saving and loading emulator state
 
@@ -100,14 +101,16 @@ class StellaEnvironment {
     bool m_use_paddles;  // Whether this game uses paddles
     
     /** Parameters loaded from Settings. */
-    bool m_use_starting_actions; // Whether we run a set of starting actions after reset 
     int m_num_reset_steps; // Number of RESET frames per reset
     bool m_colour_averaging; // Whether to average frames
-    bool m_stochastic_start; // Whether to "draw" the environment from a random distribution
     int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
     size_t m_frame_skip; // How many frames to emulate per act()
+    float m_repeat_action_probability; // Stochasticity of the environment
+    std::auto_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
+    Random m_rand_gen;
 
-    bool m_backward_compatible_save; // Enable the save/load mechanism from ALE 0.2 (no stack)
+    // The last actions taken by our players
+    Action m_player_a_action, m_player_b_action;
 };
 
 #endif // __STELLA_ENVIRONMENT_HPP__

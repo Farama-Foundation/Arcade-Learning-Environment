@@ -19,8 +19,8 @@
 #include <cctype>
 #include <algorithm>
 #include <sstream>
+#include <string>
 
-#include "GuiUtils.hxx"
 #include "Props.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -45,8 +45,10 @@ const string& Properties::get(PropertyType key) const
 {
   if(key >= 0 && key < LastPropType)
     return myProperties[key];
-  else
+  else {
+    static std::string EmptyString("");
     return EmptyString;
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

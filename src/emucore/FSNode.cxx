@@ -21,7 +21,6 @@
 
 #include "FSNode.hxx"
 #include "bspf.hxx"
-//ALE  #include "GuiUtils.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void FSList::sort()

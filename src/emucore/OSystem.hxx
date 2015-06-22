@@ -37,8 +37,9 @@ class VideoDialog;
 #include "Event.hxx"  //ALE 
 //ALE  #include "Font.hxx"
 #include "m6502/src/bspf/src/bspf.hxx"
-#include "../common/export_screen.h" //ALE
-#include "../common/display_screen.h" //MHAUSKN
+#include "../common/display_screen.h" 
+#include "../common/ColourPalette.hpp"
+#include "../common/ScreenExporter.hpp"
 
 struct Resolution {
   uInt32 width;
@@ -235,11 +236,6 @@ class OSystem
       Return the default directory for storing data.
     */
     const string& baseDir() const { return myBaseDir; }
-
-    /**
-      Return the directory for storing state files.
-    */
-    const string& stateDir() const { return myStateDir; }
 
     /**
       This method should be called to get the full path of the gamelist
@@ -478,7 +474,6 @@ class OSystem
   private:
     enum { kNumUIPalettes = 2 };
     string myBaseDir;
-    string myStateDir;
 
     string myCheatFile;
     string myConfigFile;
@@ -513,13 +508,17 @@ class OSystem
     };
     TimingInfo myTimingInfo;
 
+    ColourPalette &colourPalette() { return m_colour_palette; }
+
     // Table of RGB values for GUI elements
     //ALE  static uInt32 ourGUIColors[kNumUIPalettes][kNumColors-256];
   public:
-    ExportScreen* p_export_screen;  //ALE
     DisplayScreen* p_display_screen; //MHAUSKN
   
   private:
+
+    ColourPalette m_colour_palette;
+
     /**
       Creates the various framebuffers/renderers available in this system
       (for now, that means either 'software' or 'opengl').

@@ -1,4 +1,4 @@
-This is the 0.4 release of the Arcade Learning Environment (ALE), a platform 
+This is the 0.5 release of the Arcade Learning Environment (ALE), a platform 
 designed for AI research. ALE is based on Stella, an Atari 2600 VCS emulator. 
 More information and ALE-related publications can be found at
 
@@ -23,32 +23,19 @@ available at http://www.arcadelearningenvironment.org.
 
 -random_seed [n] -- sets the random seed; defaults to the current time
 
--game_controller [fifo|fifo_named|internal] -- specifies how agents interact
+-game_controller [fifo|fifo_named] -- specifies how agents interact
   with ALE; see Java agent documentation for details
 
 -config [file] -- specifies a configuration file, from which additional 
   parameters are read
 
--output_file [file] -- if set, standard output is redirected to the given file.
-  Do not use in conjunction with -game_controller fifo_named
-
 -run_length_encoding [false|true] -- determine whether run-length encoding is
-  used to send data over pipes; irrelevant when -game_controller internal is 
-  set
+  used to send data over pipes; irrelevant when an internal agent is 
+  being used
 
 -max_num_frames_per_episode [n] -- sets the maximum number of frames per
   episode. Once this number is reached, a new episode will start. Currently
-  implemented on a per-agent basis with internal agents, or for all
-  agents when using pipes (fifo/fifo_named) 
-
-=====================================
-Sample agents command-line parameters
-=====================================
-
-These parameters are only relevant when using one of the sample agents under
-src/agents.
-
--max_num_episodes [n] -- sets the maximum number of episodes 
+  implemented for all agents when using pipes (fifo/fifo_named) 
 
 -max_num_frames [n] -- sets the maximum number of frames (independent of how 
   many episodes are played)

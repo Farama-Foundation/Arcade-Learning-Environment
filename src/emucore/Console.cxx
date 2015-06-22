@@ -39,7 +39,7 @@
 #include "Props.hxx"
 #include "PropsSet.hxx"
 #include "Settings.hxx" 
-//ALE #include "Sound.hxx"
+#include "Sound.hxx"
 #include "Switches.hxx"
 #include "System.hxx"
 #include "TIA.hxx"
@@ -71,9 +71,9 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   
   std::string seedStr = myOSystem->settings().getString("random_seed").c_str();
   if (seedStr == "time")
-    Random::seed(time(NULL));
+    Random::seed((uInt32)time(NULL));
   else
-    Random::seed(atoi(seedStr.c_str()));
+    Random::seed((uInt32)atoi(seedStr.c_str()));
 
   // Attach the event subsystem to the current console
   //ALE  myEvent = myOSystem->eventHandler().event();
@@ -374,29 +374,13 @@ void Console::setPalette(const string& type)
      palettes[paletteNum][0];
 
   //ALE  myOSystem->frameBuffer().setTIAPalette(palette);
-  myOSystem->p_export_screen->set_palette(palette);
+  myOSystem->colourPalette().setPalette(palette);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::togglePhosphor()
 {
-  const string& phosphor = myProperties.get(Display_Phosphor);
-//ALE   int blend = atoi(myProperties.get(Display_PPBlend).c_str());
-  bool enable;
-  if(phosphor == "YES")
-  {
-    myProperties.set(Display_Phosphor, "No");
-    enable = false;
-    //ALE  myOSystem->frameBuffer().showMessage("Phosphor effect disabled");
-  }
-  else
-  {
-    myProperties.set(Display_Phosphor, "Yes");
-    enable = true;
-    //ALE  myOSystem->frameBuffer().showMessage("Phosphor effect enabled");
-  }
-
-  //ALE  myOSystem->frameBuffer().enablePhosphor(enable, blend);
+  // MGB: This method is deprecated. 
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -463,8 +447,8 @@ void Console::initializeAudio()
 */
 void Console::fry() const
 {
-  for (int ZPmem=0; ZPmem<0x100; ZPmem += rand() % 4)
-    mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uInt8)rand() % 256);
+  for (int ZPmem=0; ZPmem<0x100; ZPmem += randNumGen.next() % 4)
+    mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uInt8)randNumGen.next() % 256);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

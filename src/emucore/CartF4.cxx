@@ -18,7 +18,6 @@
 
 #include <cassert>
 
-#include "Random.hxx"
 #include "System.hxx"
 #include "Serializer.hxx"
 #include "Deserializer.hxx"

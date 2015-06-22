@@ -3,7 +3,6 @@ MODULE := src/controllers
 MODULE_OBJS := \
 	src/controllers/ale_controller.o \
 	src/controllers/fifo_controller.o \
-	src/controllers/internal_controller.o \
 	src/controllers/rlglue_controller.o \
 	
 MODULE_DIRS += \

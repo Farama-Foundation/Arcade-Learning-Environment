@@ -277,6 +277,9 @@ class Console
     // A RIOT of my own! (...with apologies to The Clash...)
     M6532 *myRiot;
 
+    //Random number generator
+    mutable Random randNumGen;
+
 #ifdef ATARIVOX_SUPPORT
     AtariVox *vox;
 #endif

@@ -9,13 +9,18 @@
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  ale_interface.hpp
+ *  sharedLibraryInterfaceExample.cpp 
  *
- *  The shared library interface.
+ *  Sample code for running an agent with the shared library interface. 
  **************************************************************************** */
 
 #include <iostream>
 #include <ale_interface.hpp>
+
+#ifdef __USE_SDL
+  #include <SDL.h>
+#endif
+
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -27,8 +32,14 @@ int main(int argc, char** argv) {
     ALEInterface ale;
 
     // Get & Set the desired settings
-    int max_frames_per_episode = ale.getInt("max_num_frames_per_episode");
-    ale.set("random_seed", 123);
+    ale.setInt("random_seed", 123);
+    //The default is already 0.25, this is just an example
+    ale.setFloat("repeat_action_probability", 0.25);
+
+#ifdef __USE_SDL
+    ale.setBool("display_screen", true);
+    ale.setBool("sound", true);
+#endif
 
     // Load the ROM file. (Also resets the system for new settings to
     // take effect.)
@@ -49,4 +60,6 @@ int main(int argc, char** argv) {
         cout << "Episode " << episode << " ended with score: " << totalReward << endl;
         ale.reset_game();
     }
-};
+
+    return 0;
+}
