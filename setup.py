@@ -1,4 +1,11 @@
 from distutils.core import setup, Extension
+import os.path, sys
+
+ale_c_lib = 'ale_python_interface/libale_c.so'
+if not os.path.isfile(ale_c_lib):
+  print 'ERROR: Unable to find required library: %s. Please ensure you\'ve '\
+    'built ALE using CMake.'%(ale_c_lib)
+  sys.exit()
 
 module1 = Extension('ale_python_interface.ale_c_wrapper',
                     libraries = ['ale_c'],
