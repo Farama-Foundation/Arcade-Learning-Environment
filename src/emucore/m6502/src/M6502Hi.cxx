@@ -23,6 +23,7 @@
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
+using namespace std;
 
 #define debugStream cerr
 

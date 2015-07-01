@@ -128,7 +128,7 @@ class Console
     /**
       Query some information about this console.
     */
-    const string& about() const { return myAboutString; }
+    const std::string& about() const { return myAboutString; }
 
   public:
     /**
@@ -148,7 +148,7 @@ class Console
     /**
       Query the currently selected display format (NTSC/PAL/PAL60).
     */
-    string getFormat() const { return myDisplayFormat; }
+    std::string getFormat() const { return myDisplayFormat; }
 
     /**
       Toggle between the available palettes.
@@ -160,7 +160,7 @@ class Console
 
       @param palette  The palette to switch to.
     */
-    void setPalette(const string& palette);
+    void setPalette(const std::string& palette);
 
     /**
       Toggles phosphor effect.
@@ -222,7 +222,7 @@ class Console
 #endif
 
   private:
-    void toggleTIABit(TIA::TIABit bit, const string& bitname, bool show = true) const;
+    void toggleTIABit(TIA::TIABit bit, const std::string& bitname, bool show = true) const;
 
     /**
       Loads a user-defined palette file (from OSystem::paletteFile), filling the
@@ -285,14 +285,14 @@ class Console
 #endif
 
     // The currently defined display format (NTSC/PAL/PAL60)
-    string myDisplayFormat;
+    std::string myDisplayFormat;
 
     // Indicates whether an external palette was found and
     // successfully loaded
     bool myUserPaletteDefined;
 
     // Contains info about this console in string format
-    string myAboutString;
+    std::string myAboutString;
 
     // Table of RGB values for NTSC, PAL and SECAM
     static uInt32 ourNTSCPalette[256];

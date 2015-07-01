@@ -23,6 +23,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartF8SC.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF8SC::CartridgeF8SC(const uInt8* image)

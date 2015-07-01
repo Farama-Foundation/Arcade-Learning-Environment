@@ -23,6 +23,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartMC.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeMC::CartridgeMC(const uInt8* image, uInt32 size)

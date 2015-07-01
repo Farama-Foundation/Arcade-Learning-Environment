@@ -48,7 +48,7 @@
 #include "MD5.hxx"
 #include "Props.hxx"
 #include "Settings.hxx"
-
+using namespace std;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
     const Properties& properties, const Settings& settings)

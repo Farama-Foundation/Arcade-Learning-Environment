@@ -123,7 +123,7 @@ class System
 
       @return  False on any errors, else true
     */
-    bool saveState(const string& md5sum, Serializer& out);
+    bool saveState(const std::string& md5sum, Serializer& out);
 
     /**
       Loads the current state of Stella from the given file.  Calls
@@ -134,7 +134,7 @@ class System
 
       @return  False on any errors, else true
     */
-    bool loadState(const string& md5sum, Deserializer& in);
+    bool loadState(const std::string& md5sum, Deserializer& in);
 
   public:
     /**

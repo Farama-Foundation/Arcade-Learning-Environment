@@ -161,7 +161,7 @@ ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path):
 void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) const {
 
     // Open file for writing 
-    std::ofstream out(filename.c_str(), ios_base::binary);
+    std::ofstream out(filename.c_str(), std::ios_base::binary);
     if (!out.good()) {
         
         // @todo exception

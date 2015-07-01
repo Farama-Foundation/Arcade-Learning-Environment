@@ -33,6 +33,7 @@
 #include <unistd.h>
 
 #include <sstream>
+using namespace std;
 
 /*
  * Implementation of the Stella file system API based on POSIX (for Linux and OSX)

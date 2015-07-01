@@ -16,7 +16,7 @@
 #include "Constants.h"
 
 std::string action_to_string(Action a) {
-    static string tmp_action_to_string[] = {
+    static std::string tmp_action_to_string[] = {
         "PLAYER_A_NOOP"          
         ,"PLAYER_A_FIRE"          
         ,"PLAYER_A_UP"            

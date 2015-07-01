@@ -22,6 +22,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartMB.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeMB::CartridgeMB(const uInt8* image)

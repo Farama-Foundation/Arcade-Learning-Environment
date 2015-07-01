@@ -13,6 +13,7 @@
 #include "../emucore/m6502/src/System.hxx"
 #include "../emucore/Event.hxx"
 #include "../common/Constants.h"
+using namespace std;
 
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():

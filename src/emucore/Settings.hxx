@@ -64,7 +64,7 @@ class Settings
 
       @return Name of the ROM to load, otherwise empty string
     */
-    string loadCommandLine(int argc, char** argv);
+    std::string loadCommandLine(int argc, char** argv);
 
     /**
       This method should be called *after* settings have been read,
@@ -84,7 +84,7 @@ class Settings
       @param key The key of the setting to lookup
       @return The integer value of the setting
     */
-    int getInt(const string& key, bool strict = false) const;
+    int getInt(const std::string& key, bool strict = false) const;
 
     /**
       Get the value assigned to the specified key.  If the key does
@@ -93,7 +93,7 @@ class Settings
       @param key The key of the setting to lookup
       @return The floating point value of the setting
     */
-    float getFloat(const string& key, bool strict = false) const;
+    float getFloat(const std::string& key, bool strict = false) const;
 
     /**
       Get the value assigned to the specified key.  If the key does
@@ -102,7 +102,7 @@ class Settings
       @param key The key of the setting to lookup
       @return The boolean value of the setting
     */
-    bool getBool(const string& key, bool strict = false) const;
+    bool getBool(const std::string& key, bool strict = false) const;
 
     /**
       Get the value assigned to the specified key.  If the key does
@@ -111,7 +111,7 @@ class Settings
       @param key The key of the setting to lookup
       @return The string value of the setting
     */
-    const string& getString(const string& key, bool strict = false) const;
+    const std::string& getString(const std::string& key, bool strict = false) const;
 
     /**
       Get the x*y size assigned to the specified key.  If the key does
@@ -120,7 +120,7 @@ class Settings
       @param key The key of the setting to lookup
       @return The x and y values encoded in the key
     */
-    void getSize(const string& key, int& x, int& y) const;
+    void getSize(const std::string& key, int& x, int& y) const;
 
     /**
       Set the value associated with key to the given value.
@@ -128,7 +128,7 @@ class Settings
       @param key   The key of the setting
       @param value The value to assign to the setting
     */
-    void setInt(const string& key, const int value);
+    void setInt(const std::string& key, const int value);
 
     /**
       Set the value associated with key to the given value.
@@ -136,7 +136,7 @@ class Settings
       @param key   The key of the setting
       @param value The value to assign to the setting
     */
-    void setFloat(const string& key, const float value);
+    void setFloat(const std::string& key, const float value);
 
     /**
       Set the value associated with key to the given value.
@@ -144,7 +144,7 @@ class Settings
       @param key   The key of the setting
       @param value The value to assign to the setting
     */
-    void setBool(const string& key, const bool value);
+    void setBool(const std::string& key, const bool value);
 
     /**
       Set the value associated with key to the given value.
@@ -152,7 +152,7 @@ class Settings
       @param key   The key of the setting
       @param value The value to assign to the setting
     */
-    void setString(const string& key, const string& value);
+    void setString(const std::string& key, const std::string& value);
 
     /**
       Set the value associated with key to the given value.
@@ -160,7 +160,7 @@ class Settings
       @param key   The key of the setting
       @param value The value to assign to the setting
     */
-    void setSize(const string& key, const int value1, const int value2);
+    void setSize(const std::string& key, const int value1, const int value2);
 
   private:
     // Copy constructor isn't supported by this class so make it private
@@ -170,10 +170,10 @@ class Settings
     Settings& operator = (const Settings&);
 
     // Trim leading and following whitespace from a string
-    static string trim(string& str)
+    static std::string trim(std::string& str)
     {
-      string::size_type first = str.find_first_not_of(' ');
-      return (first == string::npos) ? string() :
+      std::string::size_type first = str.find_first_not_of(' ');
+      return (first == std::string::npos) ? std::string() :
               str.substr(first, str.find_last_not_of(' ')-first+1);
     }
 
@@ -184,9 +184,9 @@ class Settings
     // Structure used for storing settings
     struct Setting
     {
-      string key;
-      string value;
-      string initialValue;
+      std::string key;
+      std::string value;
+      std::string initialValue;
     };
     typedef Common::Array<Setting> SettingsArray;
 
@@ -196,13 +196,13 @@ class Settings
       { return myExternalSettings; }
 
     /** Get position in specified array of 'key' */
-    int getInternalPos(const string& key) const;
-    int getExternalPos(const string& key) const;
+    int getInternalPos(const std::string& key) const;
+    int getExternalPos(const std::string& key) const;
 
     /** Add key,value pair to specified array at specified position */
-    int setInternal(const string& key, const string& value,
+    int setInternal(const std::string& key, const std::string& value,
                     int pos = -1, bool useAsInitial = false);
-    int setExternal(const string& key, const string& value,
+    int setExternal(const std::string& key, const std::string& value,
                     int pos = -1, bool useAsInitial = false);
 
   private:

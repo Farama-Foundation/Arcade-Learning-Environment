@@ -187,7 +187,7 @@ class M6502
       @param out The stream to output the addressing mode to
       @param mode The addressing mode to output
     */
-    friend ostream& operator<<(ostream& out, const AddressingMode& mode);
+    friend std::ostream& operator<<(std::ostream& out, const AddressingMode& mode);
 
   public:
 #ifdef DEBUGGER_SUPPORT

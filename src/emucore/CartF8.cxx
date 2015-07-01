@@ -22,6 +22,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartF8.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF8::CartridgeF8(const uInt8* image, bool swapbanks)

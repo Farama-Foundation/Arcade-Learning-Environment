@@ -22,6 +22,7 @@
 #include "System.hxx"
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeDPC::CartridgeDPC(const uInt8* image, uInt32 size)

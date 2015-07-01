@@ -21,6 +21,7 @@
 #ifdef DEBUGGER_SUPPORT
   #include "Expression.hxx"
 #endif
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6502::M6502(uInt32 systemCyclesPerProcessorCycle)

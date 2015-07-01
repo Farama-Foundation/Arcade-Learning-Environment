@@ -23,6 +23,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartCV.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeCV::CartridgeCV(const uInt8* image, uInt32 size)

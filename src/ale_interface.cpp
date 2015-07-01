@@ -28,7 +28,7 @@
  *  The shared library interface.
  **************************************************************************** */
 #include "ale_interface.hpp"
-
+using namespace std;
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;

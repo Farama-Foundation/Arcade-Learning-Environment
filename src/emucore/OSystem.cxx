@@ -22,6 +22,7 @@
 #include <iostream>
 #include <zlib.h>
 #include <string.h>
+using namespace std;
 
 //ALE  #include "MediaFactory.hxx"
 

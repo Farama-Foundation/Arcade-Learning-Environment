@@ -90,7 +90,7 @@ class AbstractFilesystemNode
 
       @return the display name
      */
-    virtual string displayName() const = 0;
+    virtual std::string displayName() const = 0;
 
     /**
       Is this node valid (i.e. referring to an actual FS object)?
@@ -105,7 +105,7 @@ class AbstractFilesystemNode
     /**
       A path representation suitable for use with fopen()
      */
-    virtual string path() const = 0;
+    virtual std::string path() const = 0;
 
     /**
       List the content of this directory node.
@@ -118,8 +118,8 @@ class AbstractFilesystemNode
      */
     virtual bool operator< (const AbstractFilesystemNode& node) const
     {
-      string first = displayName();
-      string second = node.displayName();
+      std::string first = displayName();
+      std::string second = node.displayName();
       transform(first.begin(), first.end(), first.begin(), (int(*)(int)) tolower);
       transform(second.begin(), second.end(), second.begin(), (int(*)(int)) tolower);
       return first < second;
@@ -128,17 +128,17 @@ class AbstractFilesystemNode
     /**
       Test whether given path exists as a file.
      */
-    static bool fileExists(const string& path);
+    static bool fileExists(const std::string& path);
 
     /**
       Test whether given path exists as a directory.
      */
-    static bool dirExists(const string& path);
+    static bool dirExists(const std::string& path);
 
     /**
       Create a directory from the given path.
      */
-    static bool makeDir(const string& path);
+    static bool makeDir(const std::string& path);
 
     /* TODO:
     bool isReadable();
@@ -173,7 +173,7 @@ class FilesystemNode : public AbstractFilesystemNode
   public:
     FilesystemNode();
     FilesystemNode(const FilesystemNode& node);
-    FilesystemNode(const string& path);
+    FilesystemNode(const std::string& path);
     ~FilesystemNode();
 
     FilesystemNode &operator  =(const FilesystemNode &node);
@@ -181,10 +181,10 @@ class FilesystemNode : public AbstractFilesystemNode
     FilesystemNode getParent() const;
     bool hasParent() const;
 
-    virtual string displayName() const { return _realNode->displayName(); }
+    virtual std::string displayName() const { return _realNode->displayName(); }
     virtual bool isValid() const { return _realNode->isValid(); }
     virtual bool isDirectory() const { return _realNode->isDirectory(); }
-    virtual string path() const { return _realNode->path(); }
+    virtual std::string path() const { return _realNode->path(); }
 
     virtual FSList listDir(ListMode mode = kListDirectoriesOnly) const
       { return _realNode->listDir(mode); }
@@ -212,7 +212,7 @@ class FilesystemNode : public AbstractFilesystemNode
      *
      * I.e. getNodeForPath(oldNode.path()) should create a new node identical to oldNode.
      */
-    static AbstractFilesystemNode* getNodeForPath(const string& path);
+    static AbstractFilesystemNode* getNodeForPath(const std::string& path);
 };
 
 #endif

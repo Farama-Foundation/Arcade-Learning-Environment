@@ -69,12 +69,12 @@ int main(int argc, char* argv[]) {
 
   ALEInterface::disableBufferedIO();
 
-  std::cerr << ALEInterface::welcomeMessage() << endl;
+  std::cerr << ALEInterface::welcomeMessage() << std::endl;
 
   ALEInterface::createOSystem(theOSystem, theSettings);
   // Process commandline arguments, which over-ride all possible
   // config file settings
-  string romfile = theOSystem->settings().loadCommandLine(argc, argv);
+  std::string romfile = theOSystem->settings().loadCommandLine(argc, argv);
   ALEInterface::loadSettings(romfile, theOSystem);
 
   // Create the game controller

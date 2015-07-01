@@ -24,6 +24,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include <iostream>
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6532::M6532(const Console& console)

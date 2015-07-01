@@ -24,6 +24,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "Cart3E.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge3E::Cartridge3E(const uInt8* image, uInt32 size)
