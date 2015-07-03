@@ -43,7 +43,7 @@ class Deserializer {
         /**
          Creates a new Deserializer device.
          */
-        Deserializer(const string stream_str);
+        Deserializer(const std::string stream_str);
         
         void close(void);
 
@@ -59,7 +59,7 @@ class Deserializer {
          
          @result The string which has been read from the stream.
          */
-        string getString(void);
+        std::string getString(void);
         
         /**
          Reads a boolean value from the current input stream.
@@ -71,7 +71,7 @@ class Deserializer {
         bool isOpen(void) {return true;}
     private:
         // The stream to get the deserialized data from.
-        stringstream myStream;
+        std::stringstream myStream;
         
         enum {
             TruePattern  = 0xfab1fab2,

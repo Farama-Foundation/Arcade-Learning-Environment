@@ -88,7 +88,7 @@ class Properties
       @param key  The key of the property to lookup
       @return     The value of the property 
     */
-    const string& get(PropertyType key) const;
+    const std::string& get(PropertyType key) const;
 
     /**
       Set the value associated with key to the given value.
@@ -96,21 +96,21 @@ class Properties
       @param key      The key of the property to set
       @param value    The value to assign to the property
     */
-    void set(PropertyType key, const string& value);
+    void set(PropertyType key, const std::string& value);
 
     /**
       Load properties from the specified input stream
 
       @param in The input stream to use
     */
-    void load(istream& in);
+    void load(std::istream& in);
  
     /**
       Save properties to the specified output stream
 
       @param out The output stream to use
     */
-    void save(ostream& out) const;
+    void save(std::ostream& out) const;
 
     /**
       Print the attributes of this properties object
@@ -148,7 +148,7 @@ class Properties
       @param in The input stream to use
       @return The string inside the quotes
     */ 
-    static string readQuotedString(istream& in);
+    static std::string readQuotedString(std::istream& in);
      
     /**
       Write the specified string to the given output stream as a 
@@ -157,18 +157,18 @@ class Properties
       @param out The output stream to use
       @param s The string to output
     */ 
-    static void writeQuotedString(ostream& out, const string& s);
+    static void writeQuotedString(std::ostream& out, const std::string& s);
 
     /**
       Get the property type associated with the named property
 
       @param name  The PropertyType key associated with the given string
     */ 
-    static PropertyType getPropertyType(const string& name);
+    static PropertyType getPropertyType(const std::string& name);
 
   private:
     // The array of properties
-    string myProperties[LastPropType];
+    std::string myProperties[LastPropType];
 
     // List of default properties to use when none have been provided
     static const char* ourDefaultProperties[LastPropType];

@@ -55,6 +55,8 @@
 #ifdef CHEATCODE_SUPPORT
   #include "CheatManager.hxx"
 #endif
+using namespace std;
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)

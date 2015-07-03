@@ -44,7 +44,7 @@ class VideoDialog;
 struct Resolution {
   uInt32 width;
   uInt32 height;
-  string name;
+  std::string name;
 };
 typedef Common::Array<Resolution> ResolutionList;
 
@@ -235,7 +235,7 @@ class OSystem
     /**
       Return the default directory for storing data.
     */
-    const string& baseDir() const { return myBaseDir; }
+    const std::string& baseDir() const { return myBaseDir; }
 
     /**
       This method should be called to get the full path of the gamelist
@@ -243,21 +243,21 @@ class OSystem
 
       @return String representing the full path of the gamelist cache file.
     */
-    const string& cacheFile() const { return myGameListCacheFile; }
+    const std::string& cacheFile() const { return myGameListCacheFile; }
 
     /**
       This method should be called to get the full path of the cheat file.
 
       @return String representing the full path of the cheat filename.
     */
-    const string& cheatFile() const { return myCheatFile; }
+    const std::string& cheatFile() const { return myCheatFile; }
 
     /**
       This method should be called to get the full path of the config file.
 
       @return String representing the full path of the config filename.
     */
-    const string& configFile() const { return myConfigFile; }
+    const std::string& configFile() const { return myConfigFile; }
 
     /**
       This method should be called to get the full path of the
@@ -265,7 +265,7 @@ class OSystem
 
       @return String representing the full path of the properties filename.
     */
-    const string& paletteFile() const { return myPaletteFile; }
+    const std::string& paletteFile() const { return myPaletteFile; }
 
     /**
       This method should be called to get the full path of the
@@ -273,7 +273,7 @@ class OSystem
 
       @return String representing the full path of the properties filename.
     */
-    const string& propertiesFile() const { return myPropertiesFile; }
+    const std::string& propertiesFile() const { return myPropertiesFile; }
 
     /**
       This method should be called to get the full path of the currently
@@ -281,7 +281,7 @@ class OSystem
 
       @return String representing the full path of the ROM file.
     */
-    const string& romFile() const { return myRomFile; }
+    const std::string& romFile() const { return myRomFile; }
 
     /**
       Switches between software and OpenGL framebuffer modes.
@@ -294,7 +294,7 @@ class OSystem
       @param romfile  The full pathname of the ROM to use
       @return  True on successful creation, otherwise false
     */
-    bool createConsole(const string& romfile = "");
+    bool createConsole(const std::string& romfile = "");
 
     /**
       Deletes the currently defined console, if it exists.
@@ -314,14 +314,14 @@ class OSystem
       @param romfile  The full pathname of the ROM to use
       @return  Some information about this ROM
     */
-    string getROMInfo(const string& romfile);
+    std::string getROMInfo(const std::string& romfile);
 
     /**
       The features which are conditionally compiled into Stella.
 
       @return  The supported features
     */
-    const string& features() const { return myFeatures; }
+    const std::string& features() const { return myFeatures; }
 
     /**
       Open the given ROM and return an array containing its contents.
@@ -333,7 +333,7 @@ class OSystem
       @param size   The amount of data read into the image array
       @return  False on any errors, else true
     */
-    bool openROM(const string& rom, string& md5, uInt8** image, int* size);
+    bool openROM(const std::string& rom, std::string& md5, uInt8** image, int* size);
 
     /**
       Issue a quit event to the OSystem.
@@ -400,17 +400,17 @@ class OSystem
       Set the base directory for all Stella files (these files may be
       located in other places through settings).
     */
-    void setBaseDir(const string& basedir);
+    void setBaseDir(const std::string& basedir);
 
     /**
       Set the location of the gamelist cache file
     */
-    void setCacheFile(const string& cachefile) { myGameListCacheFile = cachefile; }
+    void setCacheFile(const std::string& cachefile) { myGameListCacheFile = cachefile; }
 
     /**
       Set the locations of config file
     */
-    void setConfigFile(const string& file) { myConfigFile = file; }
+    void setConfigFile(const std::string& file) { myConfigFile = file; }
 
 
     
@@ -473,17 +473,17 @@ class OSystem
 
   private:
     enum { kNumUIPalettes = 2 };
-    string myBaseDir;
+    std::string myBaseDir;
 
-    string myCheatFile;
-    string myConfigFile;
-    string myPaletteFile;
-    string myPropertiesFile;
+    std::string myCheatFile;
+    std::string myConfigFile;
+    std::string myPaletteFile;
+    std::string myPropertiesFile;
 
-    string myGameListCacheFile;
-    string myRomFile;
+    std::string myGameListCacheFile;
+    std::string myRomFile;
 
-    string myFeatures;
+    std::string myFeatures;
 
     // The font object to use for the normal in-game GUI
     //ALE  GUI::Font* myFont;
@@ -538,7 +538,7 @@ class OSystem
 
       @return Success or failure for a valid console
     */
-    bool queryConsoleInfo(const uInt8* image, uInt32 size, const string& md5,
+    bool queryConsoleInfo(const uInt8* image, uInt32 size, const std::string& md5,
                           Cartridge** cart, Properties& props);
 
     /**

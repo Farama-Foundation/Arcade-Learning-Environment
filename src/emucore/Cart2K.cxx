@@ -22,7 +22,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "Cart2K.hxx"
-
+using namespace std;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge2K::Cartridge2K(const uInt8* image)
 {

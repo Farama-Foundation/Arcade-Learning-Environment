@@ -30,6 +30,7 @@
 #include "Deserializer.hxx"
 #include "Settings.hxx"
 #include "Sound.hxx"
+using namespace std;
 
 #define HBLANK 68
 

@@ -94,7 +94,7 @@ class ALEState {
     int m_frame_number; // How many frames since the start
     int m_episode_frame_number; // How many frames since the beginning of this episode
 
-    string m_serialized_state; // The stored environment state, if this is a saved state
+    std::string m_serialized_state; // The stored environment state, if this is a saved state
 
 };
 

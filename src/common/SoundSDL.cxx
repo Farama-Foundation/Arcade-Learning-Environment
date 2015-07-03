@@ -33,6 +33,7 @@
 
 #include "SoundSDL.hxx"
 
+using namespace std;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundSDL::SoundSDL(OSystem* osystem)
   : Sound(osystem),

@@ -26,6 +26,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartAR.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeAR::CartridgeAR(const uInt8* image, uInt32 size, bool fastbios)

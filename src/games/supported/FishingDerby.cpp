@@ -12,6 +12,7 @@
 #include "FishingDerby.hpp"
 
 #include "../RomUtils.hpp"
+using namespace std;
 
 
 FishingDerbySettings::FishingDerbySettings() {

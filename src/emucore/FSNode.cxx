@@ -21,6 +21,7 @@
 
 #include "FSNode.hxx"
 #include "bspf.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void FSList::sort()

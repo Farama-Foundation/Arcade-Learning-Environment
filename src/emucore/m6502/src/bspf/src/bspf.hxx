@@ -49,7 +49,6 @@ typedef unsigned int uInt32;
   #include <iostream>
   #include <iomanip>
   #include <string>
-  using namespace std;
 #endif
 	
 #ifdef HAVE_INTTYPES

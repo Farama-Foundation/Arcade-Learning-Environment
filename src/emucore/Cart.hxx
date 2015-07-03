@@ -64,14 +64,14 @@ class Cartridge : public Device
     /**
       Query some information about this cartridge.
     */
-    static const string& about() { return myAboutString; }
+    static const std::string& about() { return myAboutString; }
 
     /**
       Save the internal (patched) ROM image.
 
       @param out  The output file stream to save the image
     */
-    bool save(ofstream& out);
+    bool save(std::ofstream& out);
 
     /** MGB: Added to drop warning on overloaded save() method. */  
     virtual bool save(Serializer& out) = 0; 
@@ -134,7 +134,7 @@ class Cartridge : public Device
       @param size   The size of the ROM image 
       @return The "best guess" for the cartridge type
     */
-    static string autodetectType(const uInt8* image, uInt32 size);
+    static std::string autodetectType(const uInt8* image, uInt32 size);
 
     /**
       Search the image for the specified byte signature
@@ -193,7 +193,7 @@ class Cartridge : public Device
 
   private:
     // Contains info about this cartridge in string format
-    static string myAboutString;
+    static std::string myAboutString;
 
     // Copy constructor isn't supported by cartridges so make it private
     Cartridge(const Cartridge&);
