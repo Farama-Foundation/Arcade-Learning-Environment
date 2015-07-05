@@ -49,10 +49,13 @@ void SpaceInvadersSettings::step(const System& system) {
 
     // update the reward
     int score = getDecimalScore(0xE8, 0xE6, &system);
-    //reward cannot get negative in this game. When it does, it means that the score has looped (overflow)
+    // reward cannot get negative in this game. When it does, it means that the score has looped 
+    // (overflow)
     m_reward = score - m_score;
-    if(m_reward < 0){
-        m_reward = (10000-m_score) + score; //10000 is the highest possible score
+    if(m_reward < 0) {
+        // 10000 is the highest possible score
+        const int maximumScore = 10000;
+        m_reward = (maximumScore - m_score) + score; 
     }
     m_score = score;
     m_lives = readRam(&system, 0xC9);
