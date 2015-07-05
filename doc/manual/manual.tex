@@ -617,6 +617,9 @@ ld: symbol(s) not found for architecture x86_64
 
 Make sure your code contains \verb+#include <SDL.h>+ and that \verb+__USE_SDL+ is defined. Also, compiling under Mac OS X requires the inclusion of the flag \verb+-framework Cocoa+. See the shared library example for a working example. 
 
+\item The Python interface isn't working! It can't find \verb+libale_c.so+.
+
+Make sure to compile ALE using CMake. This will build the library required by the Python interface. 
 
 \end{itemize}
 
