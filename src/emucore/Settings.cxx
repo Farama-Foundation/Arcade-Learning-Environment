@@ -107,8 +107,8 @@ void Settings::loadConfig(const char* config_file){
 
     ifstream in(config_file);
     if(!in || !in.is_open()) {
-    cerr << "Warning: couldn't load settings file: " << config_file << "\n";
-    return;
+        // Fail silently here, since we don't *require* a config file
+        return;
     }
 
     while(getline(in, line)) {
