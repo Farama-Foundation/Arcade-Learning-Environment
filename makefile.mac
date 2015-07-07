@@ -13,7 +13,10 @@ LDFLAGS     :=
 INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/opt/local/include -I/usr/local/include -Isrc/environment -Isrc/external 
 LIBS_SDL    := -lSDL -lSDLmain
 LIBS_RLGLUE := -lrlutils -lrlgluenetdev
-LIBS	    := -L/opt/local/lib 
+# Some package managers (e.g. MacPorts) install libraries in /opt/local/lib. If necessary, replace
+# the LIBS definition below by the following: 
+# LIBS	    := -L/opt/local/lib 
+LIBS	    := 
 OBJS	    :=
 PROF        :=
 MODULES     :=
