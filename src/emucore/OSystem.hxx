@@ -342,6 +342,16 @@ class OSystem
 
     void skipEmulation() { mySkipEmulation = true; }
 
+    /**
+      Returns the random number generator for this emulator.
+    */
+    Random& rng() { return myRandGen; }
+
+    /**
+      Resets the seed for our random number generator.
+    */
+    void resetRNGSeed();
+
   public:
     //////////////////////////////////////////////////////////////////////
     // The following methods are system-specific and must be implemented
@@ -435,7 +445,8 @@ class OSystem
     // Pointer to the (currently defined) Console object
     Console* myConsole;
     
-
+    // Random number generator shared across the emulator's components
+    Random myRandGen; 
     
     // Pointer to the Menu object
     //ALE  Menu* myMenu;
