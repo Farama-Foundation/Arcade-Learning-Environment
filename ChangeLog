@@ -1,3 +1,6 @@
+July 7th, 2015. ALE 0.5dev.
+  * Set the default value of the color_averaging flag to be true. It was true by default in previous versions but it was changed in the new version. I'm making it backward compatible.
+
 June 22nd, 2015. ALE 0.5.0.
   * Added action_repeat_stochasticity.
   * Added sound playback, visualization.

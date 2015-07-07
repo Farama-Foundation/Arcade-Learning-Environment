@@ -29,7 +29,7 @@ void setDefaultSettings(Settings &settings) {
     // Environment customization settings
     settings.setBool("restricted_action_set", false);
     settings.setString("random_seed", "time");
-    settings.setBool("color_averaging", false);
+    settings.setBool("color_averaging", true);
     settings.setBool("send_rgb", false);
     settings.setInt("frame_skip", 1);
     settings.setFloat("repeat_action_probability", 0.25);
