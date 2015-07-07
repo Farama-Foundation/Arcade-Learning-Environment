@@ -151,12 +151,13 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
     // is not enabled)
     m_osystem->sound().recordNextFrame();
 
+    // Similarly record screen as needed
+    if (m_screen_exporter.get() != NULL)
+        m_screen_exporter->saveNext(m_screen);
+
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }
-
-  if (m_screen_exporter.get() != NULL)
-    m_screen_exporter->saveNext(m_screen);
 
   return sum_rewards;
 }
