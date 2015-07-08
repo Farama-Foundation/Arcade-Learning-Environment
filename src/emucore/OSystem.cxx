@@ -387,10 +387,14 @@ bool OSystem::createConsole(const string& romfile)
       myDebugger->initialize();
     #endif
 
-      if(mySettings->getBool("showinfo") || 1)
+      if(mySettings->getBool("showinfo"))
         cerr << "Game console created:" << endl
              << "  ROM file:  " << myRomFile << endl
              << myConsole->about() << endl;
+      else
+        LOG( "Game console created:" << endl
+             << "  ROM file:  " << myRomFile << endl
+             << myConsole->about() << endl);
 
       // Update the timing info for a new console run
       resetLoopTiming();
