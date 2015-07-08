@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project(ale)
 
 option(USE_SDL "Use SDL" OFF)
-option(VEROBSE "Enable log message" ON)
+option(VERBOSE "Enable log message" ON)
 option(USE_RLGLUE "Use RL-Glue" OFF)
 option(BUILD_EXAMPLES "Build Example Agents" ON)
 
