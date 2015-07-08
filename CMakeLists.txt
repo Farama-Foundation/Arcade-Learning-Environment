@@ -2,12 +2,17 @@ cmake_minimum_required (VERSION 2.6)
 project(ale)
 
 option(USE_SDL "Use SDL" OFF)
+option(VEROBSE "Enable log message" ON)
 option(USE_RLGLUE "Use RL-Glue" OFF)
 option(BUILD_EXAMPLES "Build Example Agents" ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
 add_definitions(-DHAVE_INTTYPES)
 set(LINK_LIBS z)
+
+if(VERBOSE)
+  add_definitions(-DVERBOSE)
+endif()
 
 if(USE_RLGLUE)
   add_definitions(-D__USE_RLGLUE)
