@@ -352,6 +352,16 @@ class OSystem
     */
     void resetRNGSeed();
 
+    /** 
+      Serializes the OSystem state.
+    */
+    bool saveState(Serializer& out);
+
+    /** 
+      Deserializes the OSystem state.
+    */
+    bool loadState(Deserializer& in);
+
   public:
     //////////////////////////////////////////////////////////////////////
     // The following methods are system-specific and must be implemented

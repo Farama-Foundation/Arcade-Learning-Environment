@@ -36,8 +36,9 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, co
   
   // Deserialize the stored string into the emulator state
   Deserializer deser(rhs.m_serialized_state);
-  
+ 
   osystem->console().system().loadState(md5, deser);
+  osystem->loadState(deser);
   settings->loadState(deser);
  
   // Copy over other member variables
@@ -52,6 +53,7 @@ ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::string md5
   Serializer ser; 
   
   osystem->console().system().saveState(md5, ser);
+  osystem->saveState(ser);
   settings->saveState(ser);
 
   // Now make a copy of this state, also storing the emulator serialization

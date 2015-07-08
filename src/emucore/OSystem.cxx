@@ -192,6 +192,15 @@ void OSystem::resetRNGSeed() {
   }
 }
 
+bool OSystem::saveState(Serializer& out) {
+
+    // Here we serialize the RNG state.
+    return myRandGen.saveState(out);
+}
+
+bool OSystem::loadState(Deserializer& in) {
+    return myRandGen.loadState(in);
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::setConfigPaths()

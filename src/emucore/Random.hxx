@@ -21,6 +21,9 @@
 
 #include "m6502/src/bspf/src/bspf.hxx"
 
+class Serializer;
+class Deserializer;
+
 /**
   This Random class uses a Mersenne Twister to provide pseudorandom numbers.
   The class itself is derived from the original 'Random' class by Bradford W. Mott.
@@ -62,7 +65,17 @@ class Random
     // code for the various cartridges. 
     static Random& getInstance();
 
-  private:
+    /**
+      Serializes the RNG state.
+    */
+    bool saveState(Serializer& out);
+
+    /** 
+      Deserializes the RNG state.
+    */
+    bool loadState(Deserializer& in);
+
+    private:
     
     // Actual rng (implementation hidden away from the header to avoid depending on
     // tinymt).

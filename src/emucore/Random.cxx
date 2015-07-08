@@ -18,6 +18,8 @@
 
 #include <time.h>
 #include "Random.hxx"
+#include "Serializer.hxx"
+#include "Deserializer.hxx"
 
 // TODO(mgb): bring this include in once we switch to C++11.
 // #include <random>
@@ -41,7 +43,9 @@ class Random::Impl {
     double nextDouble();
 
   private:
-    
+   
+    friend class Random;
+
     // Seed to use for creating new random number generators
     uInt32 m_seed;
 
@@ -116,3 +120,27 @@ Random& Random::getInstance() {
   return s_random;
 }
 
+bool Random::saveState(Serializer& ser) {
+
+  // Serialize the TinyMT state
+  for (int i = 0; i < 4; i++)
+    ser.putInt(m_pimpl->m_randgen.status[i]);
+  // These aren't really needed, but we serialize them anyway 
+  ser.putInt(m_pimpl->m_randgen.mat1);
+  ser.putInt(m_pimpl->m_randgen.mat2);
+  ser.putInt(m_pimpl->m_randgen.tmat);
+
+  return true;
+}
+
+bool Random::loadState(Deserializer& deser) {
+
+  // Deserialize the TinyMT state
+  for (int i = 0; i < 4; i++)
+    m_pimpl->m_randgen.status[i] = deser.getInt();
+  m_pimpl->m_randgen.mat1 = deser.getInt();
+  m_pimpl->m_randgen.mat2 = deser.getInt();
+  m_pimpl->m_randgen.tmat = deser.getInt();
+
+  return true;
+}
