@@ -26,6 +26,7 @@
 #include "../emucore/Event.hxx"
 #include "../games/RomSettings.hpp"
 #include "../common/ScreenExporter.hpp"
+#include "../common/Log.hxx"
 
 #include <stack>
 

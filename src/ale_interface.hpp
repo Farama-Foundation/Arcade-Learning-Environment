@@ -41,6 +41,7 @@
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
 #include "common/ScreenExporter.hpp"
+#include "common/Log.hxx"
 
 static const std::string Version = "0.5.0";
 

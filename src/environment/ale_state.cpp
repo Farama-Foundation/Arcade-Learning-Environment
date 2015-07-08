@@ -408,7 +408,7 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
           break; 
       case RESET:
           event->set(Event::ConsoleReset, 1);
-          cerr << "Sending Reset..." << endl;
+          LOG( "Sending Reset..." << endl);
           break;
       default: 
           cerr << "Invalid Player B Action: " << player_b_action << endl;
