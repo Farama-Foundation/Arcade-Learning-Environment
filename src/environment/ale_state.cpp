@@ -19,7 +19,7 @@ ALEState::ALEState():
   m_left_paddle(PADDLE_DEFAULT_VALUE),
   m_right_paddle(PADDLE_DEFAULT_VALUE),
   m_frame_number(0),
-  m_episode_frame_number(0){
+  m_episode_frame_number(0) {
 }
 
 ALEState::ALEState(const ALEState &rhs, std::string serialized):
@@ -49,7 +49,7 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, co
 
 ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::string md5) {
   // Use the emulator's built-in serialization to save the state
-  Serializer ser;  
+  Serializer ser; 
   
   osystem->console().system().saveState(md5, ser);
   settings->saveState(ser);
@@ -59,13 +59,13 @@ ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::string md5
 }
 
 void ALEState::incrementFrame(int steps /* = 1 */) {
-    m_frame_number+=steps;
-    m_episode_frame_number+=steps;
+    m_frame_number += steps;
+    m_episode_frame_number += steps;
 }
 
-void ALEState::resetEpisodeFrameNumber(){
-        m_episode_frame_number = 0;
-    }
+void ALEState::resetEpisodeFrameNumber() {
+    m_episode_frame_number = 0;
+}
 
 
 
@@ -442,6 +442,6 @@ bool ALEState::equals(ALEState &rhs) {
   return (rhs.m_serialized_state == this->m_serialized_state &&
     rhs.m_left_paddle == this->m_left_paddle &&
     rhs.m_right_paddle == this->m_right_paddle &&
-    rhs.m_frame_number == this->m_frame_number) &&
-  rhs.m_episode_frame_number == this->m_episode_frame_number;
+    rhs.m_frame_number == this->m_frame_number &&
+    rhs.m_episode_frame_number == this->m_episode_frame_number);
 }
