@@ -51,12 +51,20 @@ extern "C" {
   int getRAMSize(ALEInterface *ale){return ale->getRAM().size();}
   int getScreenWidth(ALEInterface *ale){return ale->getScreen().width();}
   int getScreenHeight(ALEInterface *ale){return ale->getScreen().height();}
-  void getScreenRGB(ALEInterface *ale,int *screen_data){
+  void getScreenRGB(ALEInterface *ale, unsigned char *screen_data){
     int w = ale->getScreen().width();
     int h = ale->getScreen().height();
+    int index = 0;
+    int r, g, b;
     pixel_t *ale_screen_data = (pixel_t *)ale->getScreen().getArray();
     for(int i = 0;i < w*h;i++){
-      screen_data[i] = rgb_palette[ale_screen_data[i]];
+      r = (rgb_palette[ale_screen_data[i]] >> 16) & 0xFF;
+      g = (rgb_palette[ale_screen_data[i]] >>  8) & 0xFF;
+      b = (rgb_palette[ale_screen_data[i]] >>  0) & 0xFF;
+      screen_data[index++] = r;
+      screen_data[index++] = g;
+      screen_data[index++] = b;
+
     }
   }
   void saveState(ALEInterface *ale){ale->saveState();}
