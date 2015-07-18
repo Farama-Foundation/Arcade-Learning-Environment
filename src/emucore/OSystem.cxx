@@ -85,7 +85,6 @@ OSystem::OSystem()
     #ifdef CHEATCODE_SUPPORT
       myFeatures += "Cheats";
 #endif
-
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -173,9 +172,34 @@ bool OSystem::create()
   // that only have a single sound device (no hardware mixing)
   createSound();
   
-  //ALE  aiBase = new AIBase(this);
+  // Seed RNG. This will likely get re-called, e.g. by the ALEInterface, but is needed
+  // by other interfaces.
+  resetRNGSeed();
 
   return true;
+}
+
+void OSystem::resetRNGSeed() {
+
+  // We seed the random number generator. The 'time' seed is somewhat redundant, since the
+  // rng defaults to time. But we'll do it anyway.
+  if (mySettings->getString("random_seed") == "time") {
+    myRandGen.seed((uInt32)time(NULL));
+  } else {
+    int seed = mySettings->getInt("random_seed");
+    assert(seed >= 0);
+    myRandGen.seed((uInt32)seed);
+  }
+}
+
+bool OSystem::saveState(Serializer& out) {
+
+    // Here we serialize the RNG state.
+    return myRandGen.saveState(out);
+}
+
+bool OSystem::loadState(Deserializer& in) {
+    return myRandGen.loadState(in);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

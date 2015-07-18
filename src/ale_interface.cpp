@@ -87,16 +87,10 @@ void ALEInterface::loadSettings(const string& romfile,
     exit(1);
   }
 
-  // Seed random number generator
-  if (theOSystem->settings().getString("random_seed") == "time") {
-    cerr << "Random Seed: Time" << endl;
-    Random::seed((uInt32)time(NULL));
-  } else {
-    int seed = theOSystem->settings().getInt("random_seed");
-    assert(seed >= 0);
-    cerr << "Random Seed: " << seed << endl;
-    Random::seed((uInt32)seed);
-  }
+  // Must force the resetting of the OSystem's random seed, which is set before we change
+  // choose our random seed.
+  std::cerr << "Random seed is " << theOSystem->settings().getString("random_seed") << std::endl; 
+  theOSystem->resetRNGSeed();
 
   theOSystem->console().setPalette("standard");
 }
