@@ -28,7 +28,7 @@
  *  The shared library interface.
  **************************************************************************** */
 #include "ale_interface.hpp"
-
+using namespace std;
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;
@@ -198,7 +198,8 @@ bool ALEInterface::game_over() {
 
 // The remaining number of lives.
 const int ALEInterface::lives() {
-    return romSettings->lives();
+  if (!romSettings.get()){printf("ROM not set\n");exit(1);}
+  return romSettings->lives();
 }
 
 // Applies an action to the game and returns the reward. It is the
@@ -221,12 +222,14 @@ reward_t ALEInterface::act(Action action) {
 // Returns the vector of legal actions. This should be called only
 // after the rom is loaded.
 ActionVect ALEInterface::getLegalActionSet() {
+  if (!romSettings.get()){printf("ROM not set\n");exit(1);}
   return romSettings->getAllActions();
 }
 
 // Returns the vector of the minimal set of actions needed to play
 // the game.
 ActionVect ALEInterface::getMinimalActionSet() {
+  if (!romSettings.get()){printf("ROM not set\n");exit(1);}
   return romSettings->getMinimalActionSet();
 }
 
