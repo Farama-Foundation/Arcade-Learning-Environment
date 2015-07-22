@@ -106,7 +106,7 @@ class StellaEnvironment {
     int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
     size_t m_frame_skip; // How many frames to emulate per act()
     float m_repeat_action_probability; // Stochasticity of the environment
-    std::auto_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
+    std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
     Random m_rand_gen;
 
     // The last actions taken by our players

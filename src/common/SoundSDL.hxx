@@ -289,7 +289,7 @@ class SoundSDL : public Sound
     // Keeps track of how many samples we still need to record
     int myNumRecordSamplesNeeded; 
 
-    std::auto_ptr<ale::sound::SoundExporter> mySoundExporter; 
+    std::unique_ptr<ale::sound::SoundExporter> mySoundExporter; 
 };
 
 #endif  // SOUND_SUPPORT

@@ -38,8 +38,8 @@
 #include "common/Constants.h"
 #include "ale_interface.hpp"
 
-static std::auto_ptr<OSystem> theOSystem(NULL);
-static std::auto_ptr<Settings> theSettings(NULL);
+static std::unique_ptr<OSystem> theOSystem(NULL);
+static std::unique_ptr<Settings> theSettings(NULL);
 
 static ALEController* createController(OSystem* osystem, std::string type) {
   if(type.empty()){
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 
   // Create the game controller
   std::string controller_type = theOSystem->settings().getString("game_controller");
-  std::auto_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
+  std::unique_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
 
   controller->run();
 

@@ -48,8 +48,8 @@ void ALEInterface::disableBufferedIO() {
   cout.sync_with_stdio();
 }
 
-void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
-                          std::auto_ptr<Settings> &theSettings) {
+void ALEInterface::createOSystem(std::unique_ptr<OSystem> &theOSystem,
+                          std::unique_ptr<Settings> &theSettings) {
 #ifdef WIN32
   theOSystem.reset(new OSystemWin32());
   theSettings.reset(new SettingsWin32(theOSystem.get()));
@@ -64,7 +64,7 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
 }
 
 void ALEInterface::loadSettings(const string& romfile,
-                                std::auto_ptr<OSystem> &theOSystem) {
+                                std::unique_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
   string configFile = theOSystem->settings().getString("config", false);
