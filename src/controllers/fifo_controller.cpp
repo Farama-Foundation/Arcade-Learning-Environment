@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <cassert>
+#include "../common/Log.hxx"
 
 #define MAX_RUN_LENGTH (0xFF)
 
@@ -113,14 +114,14 @@ void FIFOController::handshake() {
 void FIFOController::openNamedPipes() {
   m_fout = fopen("ale_fifo_out", "w");
   if (m_fout == NULL) {
-    std::cerr << "Missing output pipe: ale_fifo_out" << std::endl;
+    ale::Logger::Error << "Missing output pipe: ale_fifo_out" << std::endl;
     exit(1);
   }
 
   m_fin = fopen("ale_fifo_in", "r");
 
   if (m_fin == NULL) {
-    std::cerr << "Missing output pipe: ale_fifo_out" << std::endl;
+    ale::Logger::Error << "Missing output pipe: ale_fifo_out" << std::endl;
     exit(1);
   }
 }

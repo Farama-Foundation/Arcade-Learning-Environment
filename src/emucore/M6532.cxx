@@ -24,6 +24,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include <iostream>
+#include "../common/Log.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6532::M6532(const Console& console)
@@ -211,7 +212,7 @@ uInt8 M6532::peek(uInt16 addr)
     default:
     {    
 #ifdef DEBUG_ACCESSES
-      cerr << "BAD M6532 Peek: " << hex << addr << endl;
+      ale::Logger::Error << "BAD M6532 Peek: " << hex << addr << endl;
 #endif
       return 0;
     }
@@ -305,17 +306,17 @@ void M6532::poke(uInt16 addr, uInt8 value)
   else if((addr & 0x14) == 0x04)    // Write Edge Detect Control
   {
 #ifdef DEBUG_ACCESSES
-    cerr << "M6532 Poke (Write Edge Detect): "
-        << ((addr & 0x02) ? "PA7 enabled" : "PA7 disabled")
-        << ", "
-        << ((addr & 0x01) ? "Positive edge" : "Negative edge")
-        << endl;
+    ale::Logger::Error << "M6532 Poke (Write Edge Detect): "
+                       << ((addr & 0x02) ? "PA7 enabled" : "PA7 disabled")
+                       << ", "
+                       << ((addr & 0x01) ? "Positive edge" : "Negative edge")
+                       << endl;
 #endif
   }
   else
   {
 #ifdef DEBUG_ACCESSES
-    cerr << "BAD M6532 Poke: " << hex << addr << endl;
+    ale::Logger::Error << "BAD M6532 Poke: " << hex << addr << endl;
 #endif
   }
 }
@@ -344,12 +345,12 @@ bool M6532::save(Serializer& out)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << device << endl;
+    ale::Logger::Error << "Unknown error in save state for " << device << endl;
     return false;
   }
 
@@ -382,12 +383,12 @@ bool M6532::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << device << endl;
+    ale::Logger::Error << "Unknown error in load state for " << device << endl;
     return false;
   }
 

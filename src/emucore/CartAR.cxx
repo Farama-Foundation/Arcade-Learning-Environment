@@ -390,7 +390,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
       // Verify the load's header 
       if(checksum(myHeader, 8) != 0x55)
       {
-        cerr << "WARNING: The Supercharger header checksum is invalid...\n";
+        ale::Logger::Error << "WARNING: The Supercharger header checksum is invalid...\n";
       }
 
       // Load all of the pages from the load
@@ -404,7 +404,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
 
         if(!invalidPageChecksumSeen && (sum != 0x55))
         {
-          cerr << "WARNING: Some Supercharger page checksums are invalid...\n";
+          ale::Logger::Error << "WARNING: Some Supercharger page checksums are invalid...\n";
           invalidPageChecksumSeen = true;
         }
 
@@ -427,7 +427,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
 
   // TODO: Should probably switch to an internal ROM routine to display
   // this message to the user...
-  cerr << "ERROR: Supercharger load is missing from ROM image...\n";
+  ale::Logger::Error << "ERROR: Supercharger load is missing from ROM image...\n";
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -485,12 +485,12 @@ bool CartridgeAR::save(Serializer& out)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in save state for " << cart << endl;
     return false;
   }
 
@@ -553,12 +553,12 @@ bool CartridgeAR::load(Deserializer& in)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in load state for " << cart << endl;
     return false;
   }
 
