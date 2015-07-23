@@ -46,14 +46,14 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
-    LOG( "Warning: frame skip set to < 1. Setting to 1." << std::endl);
+    ale::Logger::Warning << "Warning: frame skip set to < 1. Setting to 1." << std::endl;
     m_frame_skip = 1;
   }
 
   // If so desired, we record all emulated frames to a given directory 
   std::string recordDir = m_osystem->settings().getString("record_screen_dir");
   if (!recordDir.empty()) {
-    LOG("Recording screens to directory: " << recordDir << std::endl);
+    ale::Logger::Info << "Recording screens to directory: " << recordDir << std::endl;
     
     // Create the screen exporter
     m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
