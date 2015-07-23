@@ -198,7 +198,10 @@ bool ALEInterface::game_over() {
 
 // The remaining number of lives.
 const int ALEInterface::lives() {
-    return romSettings->lives();
+  if (!romSettings.get()){
+    throw std::runtime_error("ROM not set");
+  }
+  return romSettings->lives();
 }
 
 // Applies an action to the game and returns the reward. It is the
@@ -221,12 +224,18 @@ reward_t ALEInterface::act(Action action) {
 // Returns the vector of legal actions. This should be called only
 // after the rom is loaded.
 ActionVect ALEInterface::getLegalActionSet() {
+  if (!romSettings.get()){
+    throw std::runtime_error("ROM not set");
+  }
   return romSettings->getAllActions();
 }
 
 // Returns the vector of the minimal set of actions needed to play
 // the game.
 ActionVect ALEInterface::getMinimalActionSet() {
+  if (!romSettings.get()){
+    throw std::runtime_error("ROM not set");
+  }
   return romSettings->getMinimalActionSet();
 }
 
