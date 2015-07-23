@@ -29,6 +29,7 @@
  **************************************************************************** */
 #include "ale_interface.hpp"
 using namespace std;
+using namespace ale;
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;
