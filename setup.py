@@ -1,11 +1,20 @@
 from distutils.core import setup, Extension
-
-module1 = Extension('ale_python_interface.ale_c_wrapper',
-                    libraries = ['ale_c'],
-                    include_dirs = ['src'],
-                    library_dirs = ['ale_python_interface'],
-                    extra_compile_args=['-D__STDC_CONSTANT_MACROS'],
-                    sources=['ale_python_interface/ale_c_wrapper.cpp'])
+import sys
+if sys.platform == 'darwin':
+    module1 = Extension('ale_python_interface.ale_c_wrapper',
+                        libraries = ['ale_c'],
+                        include_dirs = ['src','/usr/local/include/SDL'],
+                        library_dirs = ['ale_python_interface'],
+                        extra_compile_args=['-D__STDC_CONSTANT_MACROS','-D__USE_SDL'],
+                        extra_link_args=['-framework','Cocoa'],
+                        sources=['ale_python_interface/ale_c_wrapper.cpp'])
+else:
+    module1 = Extension('ale_python_interface.ale_c_wrapper',
+                        libraries = ['ale_c'],
+                        include_dirs = ['src'],
+                        library_dirs = ['ale_python_interface'],
+                        extra_compile_args=['-D__STDC_CONSTANT_MACROS'],
+                        sources=['ale_python_interface/ale_c_wrapper.cpp'])
 setup(name = 'ale_python_interface',
       description = 'Arcade Learning Environment Python Interface',
       url='https://github.com/bbitmaster/ale_python_interface',
