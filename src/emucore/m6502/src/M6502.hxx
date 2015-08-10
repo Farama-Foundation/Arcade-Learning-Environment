@@ -34,6 +34,8 @@ class PackedBitArray;
 #ifdef DEBUGGER_SUPPORT
 #include "StringList.hxx"
 #endif
+#include "Random.hxx"
+
 
 typedef Common::Array<Expression*> ExpressionList;
 
@@ -308,6 +310,9 @@ class M6502
     static const char* ourInstructionMnemonicTable[256];
 
     int myTotalInstructionCount;
+
+  private:
+    mutable Random randNumGen;
 };
 
 #endif
