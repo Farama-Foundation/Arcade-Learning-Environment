@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mgbellemare/Arcade-Learning-Environment.svg?branch=master)](https://travis-ci.org/mgbellemare/Arcade-Learning-Environment)
 <img align="right" src="doc/manual/figures/ale.gif" width=50>
 
 # Arcade-Learning-Environment
