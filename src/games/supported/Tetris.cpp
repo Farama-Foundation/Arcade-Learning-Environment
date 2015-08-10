@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 61, 101, 113 and 122 are based on Xitari's code, from Google Inc.
+ * ALE support for Tetris26 BIN https://github.com/udibr/tetris26
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
