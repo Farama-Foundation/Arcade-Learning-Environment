@@ -52,7 +52,7 @@ void TetrisSettings::step(const System& system) {
     int y = readRam(&system, 114);
     reward_t score = 1 * (x & 0x000F) + 10 * ((x & 0x00F0) >> 4) + 100 * (y & 0x000F);
     if (score > m_score) {
-        cerr << "Score=" << score << endl;
+        std::cerr << "Score=" << score << std::endl;
         m_reward = score - m_score;
     } else {
         m_reward = 0;
