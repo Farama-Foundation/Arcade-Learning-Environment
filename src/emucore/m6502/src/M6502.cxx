@@ -16,6 +16,7 @@
 // $Id: M6502.cxx,v 1.21 2007/01/01 18:04:50 stephena Exp $
 //============================================================================
 
+#include <cstdlib>
 #include "M6502.hxx"
 
 #ifdef DEBUGGER_SUPPORT
