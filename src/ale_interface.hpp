@@ -30,6 +30,7 @@
 #ifndef __ALE_INTERFACE_HPP__
 #define __ALE_INTERFACE_HPP__
 
+#include <stdexcept>
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
 #include "os_dependent/SettingsWin32.hxx"
