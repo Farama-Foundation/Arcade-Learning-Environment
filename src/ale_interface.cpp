@@ -28,6 +28,8 @@
  *  The shared library interface.
  **************************************************************************** */
 #include "ale_interface.hpp"
+#include <stdexcept>
+
 using namespace std;
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {

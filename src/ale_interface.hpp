@@ -30,7 +30,6 @@
 #ifndef __ALE_INTERFACE_HPP__
 #define __ALE_INTERFACE_HPP__
 
-#include <stdexcept>
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
 #include "os_dependent/SettingsWin32.hxx"
@@ -42,6 +41,9 @@
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
 #include "common/ScreenExporter.hpp"
+
+#include <string>
+#include <memory>
 
 static const std::string Version = "0.5.0";
 
