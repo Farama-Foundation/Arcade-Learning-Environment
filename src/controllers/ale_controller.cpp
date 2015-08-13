@@ -20,6 +20,7 @@
 #include "../games/Roms.hpp"
 
 #include "../common/display_screen.h"
+#include "../common/Log.hxx"
 
 ALEController::ALEController(OSystem* osystem):
   m_osystem(osystem),
@@ -27,7 +28,7 @@ ALEController::ALEController(OSystem* osystem):
   m_environment(m_osystem, m_settings.get()) {
 
   if (m_settings.get() == NULL) {
-    std::cerr << "Unsupported ROM file: " << std::endl;
+    ale::Logger::Warning << "Unsupported ROM file: " << std::endl;
     exit(1);
   }
   else {

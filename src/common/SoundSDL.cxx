@@ -32,8 +32,10 @@
 #include "OSystem.hxx"
 
 #include "SoundSDL.hxx"
+#include "Log.hxx"
 
 using namespace std;
+using namespace ale;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundSDL::SoundSDL(OSystem* osystem)
   : Sound(osystem),
@@ -93,8 +95,8 @@ void SoundSDL::initialize()
 
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
-      cerr << "WARNING: Couldn't initialize SDL audio system! " << endl;
-      cerr << "         " << SDL_GetError() << endl;
+      Logger::Warning << "WARNING: Couldn't initialize SDL audio system! " << endl;
+      Logger::Warning << "         " << SDL_GetError() << endl;
       return;
     }
     else
@@ -117,8 +119,8 @@ void SoundSDL::initialize()
 
       if(SDL_OpenAudio(&desired, &myHardwareSpec) < 0)
       {
-        cerr << "WARNING: Couldn't open SDL audio system! " << endl;
-        cerr << "         " << SDL_GetError() << endl;
+        Logger::Warning << "WARNING: Couldn't open SDL audio system! " << endl;
+        Logger::Warning << "         " << SDL_GetError() << endl;
         return;
       }
 
@@ -126,9 +128,9 @@ void SoundSDL::initialize()
       // will not work so we'll need to disable the audio support)
       if(((float)myHardwareSpec.samples / (float)myHardwareSpec.freq) >= 0.25)
       {
-        cerr << "WARNING: Sound device doesn't support realtime audio! Make ";
-        cerr << "sure a sound" << endl;
-        cerr << "         server isn't running.  Audio is disabled." << endl;
+        Logger::Warning << "WARNING: Sound device doesn't support realtime audio! Make ";
+        Logger::Warning << "sure a sound" << endl;
+        Logger::Warning << "         server isn't running.  Audio is disabled." << endl;
 
         SDL_CloseAudio();
         return;
@@ -421,7 +423,7 @@ void SoundSDL::callback(void* udata, uInt8* stream, int len)
   SoundSDL* sound = (SoundSDL*)udata;
   sound->processFragment(stream, (Int32)len);
 #ifdef ATARIVOX_SUPPORT
-  cerr << "SoundSDL::callback(): len==" << len << endl;
+  Logger::Info << "SoundSDL::callback(): len==" << len << endl;
 
   // See if we need sound from the AtariVox
   AtariVox *vox = sound->myOSystem->console().atariVox();
@@ -479,12 +481,12 @@ bool SoundSDL::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << device << endl;
+    Logger::Error << "Unknown error in load state for " << device << endl;
     return false;
   }
 
@@ -524,12 +526,12 @@ bool SoundSDL::save(Serializer& out)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << device << endl;
+    Logger::Error << "Unknown error in save state for " << device << endl;
     return false;
   }
 

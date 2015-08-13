@@ -56,7 +56,7 @@
   #include "CheatManager.hxx"
 #endif
 using namespace std;
-
+#include "../common/Log.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
@@ -562,7 +562,7 @@ void Console::loadUserPalette()
   if(length < 128 * 3 * 2 + 8 * 3)
   {
     in.close();
-    cerr << "ERROR: invalid palette file " << palette << endl;
+    ale::Logger::Error << "ERROR: invalid palette file " << palette << endl;
     return;
   }
 

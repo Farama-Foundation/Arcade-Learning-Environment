@@ -108,7 +108,7 @@ void Settings::loadConfig(const char* config_file){
 
     ifstream in(config_file);
     if(!in || !in.is_open()) {
-    cerr << "Warning: couldn't load settings file: " << config_file << "\n";
+    ale::Logger::Warning << "Warning: couldn't load settings file: " << config_file << "\n";
     return;
     }
 
@@ -179,7 +179,7 @@ string Settings::loadCommandLine(int argc, char** argv)
 
       if(++i >= argc)
       {
-        cerr << "Missing argument for '" << key << "'" << endl;
+        ale::Logger::Error << "Missing argument for '" << key << "'" << endl;
         return "";
       }
       string value = argv[i];
@@ -347,7 +347,7 @@ void Settings::saveConfig()
   ofstream out(myOSystem->configFile().c_str());
   if(!out || !out.is_open())
   {
-    cerr << "Error: Couldn't save settings file\n";
+    ale::Logger::Error << "Error: Couldn't save settings file\n";
     return;
   }
 
@@ -442,8 +442,8 @@ int Settings::getInt(const string& key, bool strict) const {
             return (int) atoi(myExternalSettings[idx].value.c_str());
         } else {
             if (strict) {
-                cerr << "No value found for key: " << key << ". ";
-                cerr << "Make sure all the settings files are loaded." << endl;
+                ale::Logger::Error << "No value found for key: " << key << ". ";
+                ale::Logger::Error << "Make sure all the settings files are loaded." << endl;
                 exit(-1);
             } else {
                 return -1;
@@ -463,8 +463,8 @@ float Settings::getFloat(const string& key, bool strict) const {
             return (float) atof(myExternalSettings[idx].value.c_str());
         } else {
             if (strict) {
-                cerr << "No value found for key: " << key << ". ";
-                cerr << "Make sure all the settings files are loaded." << endl;
+                ale::Logger::Error << "No value found for key: " << key << ". ";
+                ale::Logger::Error << "Make sure all the settings files are loaded." << endl;
                 exit(-1);
             } else {
                 return -1.0;
@@ -496,8 +496,8 @@ bool Settings::getBool(const string& key, bool strict) const {
             return false;
     } else {
         if (strict) {
-            cerr << "No value found for key: " << key << ". ";
-            cerr << "Make sure all the settings files are loaded." << endl;
+            ale::Logger::Error << "No value found for key: " << key << ". ";
+            ale::Logger::Error << "Make sure all the settings files are loaded." << endl;
             exit(-1);
         } else {
             return false;
@@ -515,8 +515,8 @@ const string& Settings::getString(const string& key, bool strict) const {
         return myExternalSettings[idx].value;
     } else {
         if (strict) {
-            cerr << "No value found for key: " << key << ". ";
-            cerr << "Make sure all the settings files are loaded." << endl;
+            ale::Logger::Error << "No value found for key: " << key << ". ";
+            ale::Logger::Error << "Make sure all the settings files are loaded." << endl;
             exit(-1);
         } else {
             static std::string EmptyString("");

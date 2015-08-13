@@ -388,12 +388,12 @@ bool TIA::save(Serializer& out)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << device << endl;
+    ale::Logger::Error << "Unknown error in save state for " << device << endl;
     return false;
   }
 
@@ -488,12 +488,12 @@ bool TIA::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << device << endl;
+    ale::Logger::Error << "Unknown error in load state for " << device << endl;
     return false;
   }
 
@@ -2902,7 +2902,7 @@ void TIA::poke(uInt16 addr, uInt8 value)
     default:
     {
 #ifdef DEBUG_ACCESSES
-      cerr << "BAD TIA Poke: " << hex << addr << endl;
+      ale::Logger::Info << "BAD TIA Poke: " << hex << addr << endl;
 #endif
       break;
     }

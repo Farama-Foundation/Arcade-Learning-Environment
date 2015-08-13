@@ -31,6 +31,7 @@
 #include <stdexcept>
 
 using namespace std;
+using namespace ale;
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;
@@ -79,11 +80,11 @@ void ALEInterface::loadSettings(const string& romfile,
 
   // Attempt to load the ROM
   if (romfile == "" || !FilesystemNode::fileExists(romfile)) {
-    std::cerr << "No ROM File specified or the ROM file was not found."
+    Logger::Error << "No ROM File specified or the ROM file was not found."
               << std::endl;
     exit(1);
   } else if (theOSystem->createConsole(romfile))  {
-    std::cerr << "Running ROM file..." << std::endl;
+    Logger::Info << "Running ROM file..." << std::endl;
     theOSystem->settings().setString("rom_file", romfile);
   } else {
     exit(1);
@@ -91,12 +92,12 @@ void ALEInterface::loadSettings(const string& romfile,
 
   // Seed random number generator
   if (theOSystem->settings().getString("random_seed") == "time") {
-    cerr << "Random Seed: Time" << endl;
+    Logger::Info << "Random Seed: Time" << endl;
     Random::seed((uInt32)time(NULL));
   } else {
     int seed = theOSystem->settings().getInt("random_seed");
     assert(seed >= 0);
-    cerr << "Random Seed: " << seed << endl;
+    Logger::Info << "Random Seed: " << seed << endl;
     Random::seed((uInt32)seed);
   }
 
@@ -105,13 +106,13 @@ void ALEInterface::loadSettings(const string& romfile,
 
 ALEInterface::ALEInterface() {
   disableBufferedIO();
-  std::cerr << welcomeMessage() << std::endl;
+  Logger::Info << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
 }
 
 ALEInterface::ALEInterface(bool display_screen) {
   disableBufferedIO();
-  std::cerr << welcomeMessage() << std::endl;
+  Logger::Info << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
   this->setBool("display_screen", display_screen);
 }
@@ -134,9 +135,9 @@ void ALEInterface::loadROM(string rom_file = "") {
   environment->reset();
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
-    cerr << "Screen display requires directive __USE_SDL to be defined." << endl;
-    cerr << "Please recompile this code with flag '-D__USE_SDL'." << endl;
-    cerr << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)." << endl;
+    Logger::Error << "Screen display requires directive __USE_SDL to be defined." << endl;
+    Logger::Error << "Please recompile this code with flag '-D__USE_SDL'." << endl;
+    Logger::Error << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)." << endl;
     exit(1);
   }
 #endif

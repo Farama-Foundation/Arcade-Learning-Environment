@@ -21,6 +21,7 @@
 #include "Event.hxx"
 #include "AtariVox.hxx"
 #include "SpeakJet.hxx"
+#include "../common/Log.hxx"
 
 #define DEBUG_ATARIVOX 0
 
@@ -74,20 +75,20 @@ void AtariVox::clockDataIn(bool value)
 
   uInt32 cycle = mySystem->cycles();
   if(DEBUG_ATARIVOX)
-    cerr << "AtariVox: value "
-         << value
-         << " written to DATA line at "
-         << mySystem->cycles()
-         << " (-"
-         << myLastDataWriteCycle
-         << "=="
-         << (mySystem->cycles() - myLastDataWriteCycle)
-         << ")"
-         << endl;
+    ale::Logger::Info << "AtariVox: value "
+                      << value
+                      << " written to DATA line at "
+                      << mySystem->cycles()
+                      << " (-"
+                      << myLastDataWriteCycle
+                      << "=="
+                      << (mySystem->cycles() - myLastDataWriteCycle)
+                      << ")"
+                      << endl;
 
   if(value && (myShiftCount == 0)) {
     if(DEBUG_ATARIVOX)
-      cerr << "value && (myShiftCount == 0), returning" << endl;
+      ale::Logger::Info << "value && (myShiftCount == 0), returning" << endl;
     return;
   }
 
@@ -102,7 +103,7 @@ void AtariVox::clockDataIn(bool value)
     // If this is the first write this frame, or if it's been 62 cycles
     // since the last write, shift this bit into the current byte.
     if(DEBUG_ATARIVOX)
-      cerr << "cycle >= myLastDataWriteCycle + 62, shiftIn("
+      ale::Logger::Info << "cycle >= myLastDataWriteCycle + 62, shiftIn("
            << value << ")" << endl;
     shiftIn(value);
   }
@@ -119,13 +120,13 @@ void AtariVox::shiftIn(bool value)
     myShiftCount = 0;
     myShiftRegister >>= 6;
     if(!(myShiftRegister & (1<<9)))
-      cerr << "AtariVox: bad start bit" << endl;
+      ale::Logger::Warning << "AtariVox: bad start bit" << endl;
     else if((myShiftRegister & 1))
-      cerr << "AtariVox: bad stop bit" << endl;
+      ale::Logger::Warning << "AtariVox: bad stop bit" << endl;
     else
     {
       uInt8 data = ((myShiftRegister >> 1) & 0xff);
-      cerr << "AtariVox: output byte " << ((int)(data)) << endl;
+      ale::Logger::Warning << "AtariVox: output byte " << ((int)(data)) << endl;
       mySpeakJet->write(data);
     }
     myShiftRegister = 0;
@@ -136,7 +137,7 @@ void AtariVox::shiftIn(bool value)
 void AtariVox::write(DigitalPin pin, bool value)
 {
   if(DEBUG_ATARIVOX)
-    cerr << "AtariVox: write to SWCHA" << endl;
+    ale::Logger::Info << "AtariVox: write to SWCHA" << endl;
 
   // Change the pin state based on value
   switch(pin)
@@ -152,11 +153,11 @@ void AtariVox::write(DigitalPin pin, bool value)
     // I'm not even trying to emulate this right now :(
     case Two:
       if(DEBUG_ATARIVOX)
-        cerr << "AtariVox: value "
-             << value
-             << " written to SDA line at cycle "
-             << mySystem->cycles()
-             << endl;
+        ale::Logger::Info << "AtariVox: value "
+                          << value
+                          << " written to SDA line at cycle "
+                          << mySystem->cycles()
+                          << endl;
       break;
 
     // Pin 2 is the SCLK line, used to output clock data to the 24LC256
@@ -164,11 +165,11 @@ void AtariVox::write(DigitalPin pin, bool value)
     // I'm not even trying to emulate this right now :(
     case Three:
       if(DEBUG_ATARIVOX)
-        cerr << "AtariVox: value "
-             << value
-             << " written to SCLK line at cycle "
-             << mySystem->cycles()
-             << endl;
+        ale::Logger::Info << "AtariVox: value "
+                          << value
+                          << " written to SCLK line at cycle "
+                          << mySystem->cycles()
+                          << endl;
       break;
 
     case Four:

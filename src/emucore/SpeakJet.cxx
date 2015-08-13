@@ -19,6 +19,7 @@
 #ifdef ATARIVOX_SUPPORT
 
 #include "SpeakJet.hxx"
+#include "../common/Log.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SpeakJet::SpeakJet()
@@ -66,15 +67,15 @@ void SpeakJet::spawnThread()
 {
   ourInputSemaphore = SDL_CreateSemaphore(1); // 1==unlocked
   uInt32 sem = SDL_SemValue(ourInputSemaphore);
-  cerr << "before SDL_CreateThread(), sem==" << sem << endl;
+  ale::Logger::Info << "before SDL_CreateThread(), sem==" << sem << endl;
   ourThread = SDL_CreateThread(thread, 0);
   sem = SDL_SemValue(ourInputSemaphore);
-  cerr << "after SDL_CreateThread(), sem==" << sem << endl;
+  ale::Logger::Info << "after SDL_CreateThread(), sem==" << sem << endl;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 int SpeakJet::thread(void *data) {
-  cerr << "rsynth thread spawned" << endl;
+  ale::Logger::Info  << "rsynth thread spawned" << endl;
   while(1) {
     speak();
     usleep(10);
@@ -87,23 +88,23 @@ void SpeakJet::write(uInt8 code)
 {
   // TODO: clean up this mess.
   const char *rsynthPhones = xlatePhoneme(code);
-  cerr << "rsynth: \"" << rsynthPhones << "\"" << endl;
+  ale::Logger::Info << "rsynth: \"" << rsynthPhones << "\"" << endl;
   int len = strlen(rsynthPhones);
 
   if(ourInputCount + len + 1 >= INPUT_BUFFER_SIZE) {
-    cerr << "phonemeBuffer is full, dropping" << endl;
+    ale::Logger::Info << "phonemeBuffer is full, dropping" << endl;
     return;
   }
 
   uInt32 sem = SDL_SemValue(ourInputSemaphore);
-  cerr << "write() waiting on semaphore (value " << sem << ")" << endl;
+  ale::Logger::Info << "write() waiting on semaphore (value " << sem << ")" << endl;
   SDL_SemWait(ourInputSemaphore);
-  cerr << "write() got semaphore" << endl;
+  ale::Logger::Info << "write() got semaphore" << endl;
   for(int i=0; i<len; i++)
     phonemeBuffer[ourInputCount++] = rsynthPhones[i];
   phonemeBuffer[ourInputCount] = '\0';
-  cerr << "phonemeBuffer contains \"" << phonemeBuffer << "\"" << endl;
-  cerr << "write() releasing semaphore" << endl;
+  ale::Logger::Info << "phonemeBuffer contains \"" << phonemeBuffer << "\"" << endl;
+  ale::Logger::Info << "write() releasing semaphore" << endl;
   SDL_SemPost(ourInputSemaphore);
 }
 
@@ -117,9 +118,9 @@ void SpeakJet::speak()
     return;
 
   uInt32 sem = SDL_SemValue(ourInputSemaphore);
-  cerr << "speak() waiting on semaphore (value " << sem << ")" << endl;
+  ale::Logger::Info << "speak() waiting on semaphore (value " << sem << ")" << endl;
   SDL_SemWait(ourInputSemaphore);
-  cerr << "speak() got semaphore" << endl;
+  ale::Logger::Info << "speak() got semaphore" << endl;
 
   // begin locked section
 
@@ -135,7 +136,7 @@ void SpeakJet::speak()
     ourInputCount = 0;
 
   // end locked section
-  cerr << "speak() releasing semaphore" << endl;
+  ale::Logger::Info << "speak() releasing semaphore" << endl;
   SDL_SemPost(ourInputSemaphore);
 
   if(foundSpace)
@@ -197,7 +198,7 @@ void *SpeakJet::save_sample(void *user_data,
   // output = (uInt8)( (((float)shortSamp) + 32768.0) / 256.0 );
   double d = shortSamp + 32768.0;
   output = (uInt8)(d/256.0);
-  cerr << "Output sample: " << ((int)(output)) << endl;
+  ale::Logger::Info << "Output sample: " << ((int)(output)) << endl;
 
   // Put in buffer
   ourCurrentWriteBuffer->contents[ourCurrentWritePosition++] = output;

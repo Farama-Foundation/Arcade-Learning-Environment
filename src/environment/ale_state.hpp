@@ -22,6 +22,7 @@
 #include "../emucore/Event.hxx"
 #include <string>
 #include "../games/RomSettings.hpp"
+#include "../common/Log.hxx"
 
 #define PADDLE_DELTA 23000
 // MGB Values taken from Paddles.cxx (Stella 3.3) - 1400000 * [5,235] / 255

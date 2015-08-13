@@ -41,6 +41,7 @@
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
 #include "common/ScreenExporter.hpp"
+#include "common/Log.hxx"
 
 #include <string>
 #include <memory>
