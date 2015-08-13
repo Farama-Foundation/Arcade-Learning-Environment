@@ -1,5 +1,5 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef __LOG_HPP__
+#define __LOG_HPP__
 #include <iostream>
 namespace ale
 {
@@ -11,8 +11,16 @@ namespace ale
             Warning = 1,
             Error = 2
         };
+        /** @brief Allow to change the level of verbosity 
+         * @param m Info will print all the messages, Warning only the important ones 
+         * and Error the critical ones
+         */
         static void setMode(mode m);
+    private:
         static mode current_mode;
+        friend mode operator<<(mode,std::ostream&(*manip)(std::ostream &));
+        template<typename T>
+        friend mode operator<<(mode, const T&);
     };
 
 
