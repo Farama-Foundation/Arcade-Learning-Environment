@@ -420,7 +420,7 @@ bool OSystem::createConsole(const string& romfile)
   }
   if (mySettings->getBool("display_screen", true)) {
 #ifndef __USE_SDL
-    std::ale::Logger::Error << "Screen display requires directive __USE_SDL to be defined."
+    ale::Logger::Error << "Screen display requires directive __USE_SDL to be defined."
                             << " Please recompile with flag '-D__USE_SDL'."
                             << " See makefile for more information."
                             << std::endl;
