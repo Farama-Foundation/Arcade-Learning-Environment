@@ -65,12 +65,6 @@ ale_lib.getScreenHeight.argtypes = [c_void_p]
 ale_lib.getScreenHeight.restype = c_int
 ale_lib.getScreenRGB.argtypes = [c_void_p, c_void_p]
 ale_lib.getScreenRGB.restype = None
-ale_lib.getPaletteRGB.argtype = [c_void_p, c_void_p]
-ale_lib.getPaletteRGB.restype = None
-ale_lib.getScreenPalette8Bits.argtype = [c_void_p, c_void_p, c_void_p]
-ale_lib.getScreenPalette8Bits.restype = None
-ale_lib.getScreenPalette24Bits.argtype = [c_void_p, c_void_p, c_void_p]
-ale_lib.getScreenPalette24Bits.restype = None
 ale_lib.saveState.argtypes = [c_void_p]
 ale_lib.saveState.restype = None
 ale_lib.loadState.argtypes = [c_void_p]
@@ -167,52 +161,6 @@ class ALEInterface(object):
             height = ale_lib.getScreenHeight(self.obj)
             screen_data = np.empty((height, width,3), dtype=np.uint8)
         ale_lib.getScreenRGB(self.obj, as_ctypes(screen_data[:]))
-        return screen_data
-
-    def getPaletteRGB(self):
-        palette = np.ones(256, dtype=np.intc)
-        ale_lib.getPaletteRGB(self.obj, as_ctypes(palette[:]))
-        return palette
-
-    def getScreenPalette24Bits(self, screen_data, palette):
-        """This function fills screen_data with the data and applies a 24bits palette
-        screen_data MUST be a numpy array of uint8. This can be initialized like so:
-        screen_data = np.empty((height,width,3), dtype=np.uint8)
-        If it is None,  then this function will initialize it.
-
-        palette MUST be a numpy array of intc  and should be provided.
-        This can be initialized like so:
-        palette = np.empty(256, dtype=np.intc)
-        """
-        if(screen_data is None):
-            width = ale_lib.getScreenWidth(self.obj)
-            height = ale_lib.getScreenHeight(self.obj)
-            screen_data = np.empty((height, width,3), dtype=np.uint8)
-        if palette is None:
-            raise Exception("A palette must be provided")
-
-        ale_lib.getScreenPalette24Bits(self.obj, as_ctypes(screen_data[:]), as_ctypes(palette[:]))
-        return screen_data
-
-    def getScreenPalette8Bits(self, screen_data, palette):
-        """This function fills screen_data with the data and applies an 8bits palette
-        screen_data MUST be a numpy array of uint8. This can be initialized like so:
-        screen_data = np.empty((height,width,3), dtype=np.uint8)
-        If it is None,  then this function will initialize it.
-
-        palette MUST be a numpy array of uint8 and should be provided.
-        This can be initialized like so:
-        palette = np.empty(256, dtype=np.uint8)
-        """
-        if(screen_data is None):
-            width = ale_lib.getScreenWidth(self.obj)
-            height = ale_lib.getScreenHeight(self.obj)
-            screen_data = np.empty((height, width,3), dtype=np.uint8)
-
-        if palette is None:
-            raise Exception("A palette must be provided")
-
-        ale_lib.getScreenPalette8Bits(self.obj, as_ctypes(screen_data[:]), as_ctypes(palette[:]))
         return screen_data
 
     def getRAMSize(self):
