@@ -32,7 +32,7 @@
 #include "OSystem.hxx"
 
 #include "SoundSDL.hxx"
-#include "Log.hxx"
+#include "Log.hpp"
 
 using namespace std;
 using namespace ale;

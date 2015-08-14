@@ -20,7 +20,7 @@
 #include "../games/Roms.hpp"
 
 #include "../common/display_screen.h"
-#include "../common/Log.hxx"
+#include "../common/Log.hpp"
 
 ALEController::ALEController(OSystem* osystem):
   m_osystem(osystem),

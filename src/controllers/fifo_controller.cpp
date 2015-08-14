@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <cassert>
-#include "../common/Log.hxx"
+#include "../common/Log.hpp"
 
 #define MAX_RUN_LENGTH (0xFF)
 

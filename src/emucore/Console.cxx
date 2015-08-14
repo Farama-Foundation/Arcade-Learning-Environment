@@ -56,7 +56,7 @@
   #include "CheatManager.hxx"
 #endif
 using namespace std;
-#include "../common/Log.hxx"
+#include "../common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)

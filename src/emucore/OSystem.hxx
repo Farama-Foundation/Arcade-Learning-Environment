@@ -40,7 +40,7 @@ class VideoDialog;
 #include "../common/display_screen.h" 
 #include "../common/ColourPalette.hpp"
 #include "../common/ScreenExporter.hpp"
-#include "../common/Log.hxx"
+#include "../common/Log.hpp"
 
 struct Resolution {
   uInt32 width;

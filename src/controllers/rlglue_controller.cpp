@@ -25,7 +25,7 @@
 #include "../environment/ale_ram.hpp"
 #include <rlglue/utils/C/RLStruct_util.h>
 
-#include "../common/Log.hxx"
+#include "../common/Log.hpp"
 
 RLGlueController::RLGlueController(OSystem* _osystem) :
   ALEController(_osystem) {

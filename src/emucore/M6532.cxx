@@ -25,7 +25,7 @@
 #include "Deserializer.hxx"
 #include <iostream>
 using namespace std;
-#include "../common/Log.hxx"
+#include "../common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6532::M6532(const Console& console)

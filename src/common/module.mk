@@ -9,6 +9,7 @@ MODULE_OBJS := \
 	src/common/ScreenExporter.o \
 	src/common/Constants.o \
 	src/common/Defaults.o \
+    src/common/Log.o
 
 MODULE_DIRS += \
 	src/common
