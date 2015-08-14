@@ -142,6 +142,9 @@ void ALEInterface::loadROM(string rom_file = "") {
     exit(1);
   }
 #endif
+
+  // Get a copy of the palette
+  theOSystem->colourPalette().getPaletteCopy(current_palette);
 }
 
 // Get the value of a setting.

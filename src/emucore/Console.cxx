@@ -235,6 +235,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
 //ALE  myOSystem->eventHandler().allowAllDirections(allow);
 
   myAboutString = buf.str();
+  setColorLossPalette(true);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -633,12 +634,10 @@ void Console::setColorLossPalette(bool loss)
       uInt32 pixel = palette[i][(j<<1)];
       if(loss)
       {
-        uInt8 r = (pixel >> 16) & 0xff;
-        uInt8 g = (pixel >> 8)  & 0xff;
-        uInt8 b = (pixel >> 0)  & 0xff;
-        uInt8 sum = (uInt8) (((float)r * 0.2989) +
-                             ((float)g * 0.5870) +
-                             ((float)b * 0.1140));
+        double r = (pixel >> 16) & 0xff;
+        double g = (pixel >> 8)  & 0xff;
+        double b = (pixel >> 0)  & 0xff;
+        uInt8 sum = (uInt8) round((r * 0.2989 + g * 0.5870) + b * 0.1140 );
         pixel = (sum << 16) + (sum << 8) + sum;
       }
       palette[i][(j<<1)+1] = pixel;
