@@ -16,6 +16,7 @@
 #include "ColourPalette.hpp"
 #include <cassert>
 #include <string.h>
+#include <stdio.h>
 
 ColourPalette::ColourPalette():
     m_palette(NULL) {
@@ -39,9 +40,9 @@ uInt32 ColourPalette::getRGB(int val) const {
     return m_palette[val];
 }
 
-void ColourPalette::getPaletteCopy(int palette_copy[256])
+const uInt32 *ColourPalette::getPalette()
 {
-    memcpy(palette_copy, m_palette, 256*sizeof(int));
+    return m_palette;
 }
 
 void ColourPalette::setPalette(const uInt32 *palette) {

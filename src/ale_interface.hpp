@@ -135,7 +135,6 @@ public:
   std::auto_ptr<RomSettings> romSettings;
   std::auto_ptr<StellaEnvironment> environment;
   int max_num_frames; // Maximum number of frames for each episode
-  int current_palette[256];
 
  public:
   // Display ALE welcome message

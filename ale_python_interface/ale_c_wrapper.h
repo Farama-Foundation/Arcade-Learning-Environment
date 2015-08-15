@@ -56,12 +56,13 @@ extern "C" {
     size_t h = ale->getScreen().height();
     size_t screen_size = w*h;
 
+    const uInt32 *current_palette = ale->theOSystem->colourPalette().getPalette();
     pixel_t *ale_screen_data = ale->getScreen().getArray();
     pixel_t *p = ale_screen_data;
     pixel_t *q = screen_data;
 
     for(size_t i = 0; i < screen_size; i++, p++){
-      int rgb = ale->current_palette[*p];
+      int rgb = current_palette[*p];
       *q = (unsigned char) ((rgb >> 16));  q++;    // r
       *q = (unsigned char) ((rgb >>  8));  q++;    // g
       *q = (unsigned char) ((rgb >>  0));  q++;    // b
@@ -73,12 +74,13 @@ extern "C" {
     size_t h = ale->getScreen().height();
     size_t screen_size = w*h;
 
+    const uInt32 *current_palette = ale->theOSystem->colourPalette().getPalette();
     pixel_t *ale_screen_data = ale->getScreen().getArray();
     pixel_t *p = ale_screen_data;
     pixel_t *q = screen_data;
 
     for(size_t i = 0; i < screen_size; i++, p++, q++){
-      *q = (unsigned char) (ale->current_palette[*p+1] & 0xFF);
+      *q = (unsigned char) (current_palette[*p+1] & 0xFF);
     }
   }
 

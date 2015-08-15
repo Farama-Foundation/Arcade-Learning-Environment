@@ -31,8 +31,8 @@ class ColourPalette {
         /** Converts a given palette value into packed RGB (format 0x00RRGGBB). */
         uInt32 getRGB(int val) const;
 
-        /** makes a copy of the palette array */
-        void getPaletteCopy(int palette[256]);
+        /** returns a pointer to the palette array (256 elements) */
+        const uInt32 *getPalette();
 
     private:
 
