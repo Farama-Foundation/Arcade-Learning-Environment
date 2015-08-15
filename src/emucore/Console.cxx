@@ -637,7 +637,7 @@ void Console::setColorLossPalette(bool loss)
         double r = (pixel >> 16) & 0xff;
         double g = (pixel >> 8)  & 0xff;
         double b = (pixel >> 0)  & 0xff;
-        uInt8 sum = (uInt8) round((r * 0.2989 + g * 0.5870) + b * 0.1140 );
+        uInt8 sum = (uInt8) round(r * 0.2989 + g * 0.5870 + b * 0.1140 );
         pixel = (sum << 16) + (sum << 8) + sum;
       }
       palette[i][(j<<1)+1] = pixel;
