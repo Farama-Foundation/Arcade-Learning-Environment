@@ -57,6 +57,7 @@ MODULE_OBJS := \
 	src/games/supported/SpaceInvaders.o \
 	src/games/supported/StarGunner.o \
 	src/games/supported/Tennis.o \
+	src/games/supported/Tetris.o \
 	src/games/supported/TimePilot.o \
 	src/games/supported/Tutankham.o \
 	src/games/supported/UpNDown.o \
