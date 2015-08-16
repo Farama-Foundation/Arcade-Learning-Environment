@@ -19,6 +19,8 @@
 // Include obscure header file for uInt32 definition
 #include "../emucore/m6502/src/bspf/src/bspf.hxx"
 
+using namespace std;
+
 class ColourPalette {
 
     public:
@@ -34,15 +36,50 @@ class ColourPalette {
         /** returns a pointer to the palette array (256 elements) */
         const uInt32 *getPalette();
 
-    private:
+        /**
+          Loads all defined palettes with PAL color-loss data depending
+          on 'state'.
+          Sets the palette according to the given palette name.
 
-        friend class Console; 
+          @param type  The palette type = {standard, z26, user}
+          @param displayFormat The display format = { NTSC, PAL, SECAM }
+        */
+        void setPalette(const string& type,
+                        const string& displayFormat);
 
-        /** Sets the palette (provided by Console). */
-        void setPalette(const uInt32 *palette);
+        /**
+            Loads a user-defined palette file (from OSystem::paletteFile), filling the
+            appropriate user-defined palette arrays.
+        */
+        void loadUserPalette(const string& paletteFile);
 
-        /** We don't own this array; it is owned by OSystem. */
-        const uInt32 *m_palette;
+private:
+
+        /**
+         *  Calculates grayscale values for all palettes
+         */
+        void calculateGrayscaleValues();
+
+        uInt32 *m_palette;
+
+        bool myUserPaletteDefined;
+
+        // Table of RGB values for NTSC, PAL and SECAM
+        static uInt32 NTSCPalette[256];
+        static uInt32 PALPalette[256];
+        static uInt32 SECAMPalette[256];
+
+        // Table of RGB values for NTSC, PAL and SECAM - Z26 version
+        static uInt32 NTSCPaletteZ26[256];
+        static uInt32 PALPaletteZ26[256];
+        static uInt32 SECAMPaletteZ26[256];
+
+        // Table of RGB values for NTSC, PAL and SECAM - user-defined
+        static uInt32 UserNTSCPalette[256];
+        static uInt32 UserPALPalette[256];
+        static uInt32 UserSECAMPalette[256];
+
+        static uInt32* availablePalettes[3][3];
 };
 
 #endif // __COLOUR_PALETTE_HPP__ 
