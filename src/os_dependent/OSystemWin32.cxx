@@ -24,6 +24,8 @@
 #include "OSystem.hxx"
 #include "OSystemWin32.hxx"
 
+using namespace std;
+
 /**
   Each derived class is responsible for calling the following methods
   in its constructor:
