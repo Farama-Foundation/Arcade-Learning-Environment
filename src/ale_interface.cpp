@@ -103,7 +103,7 @@ void ALEInterface::loadSettings(const string& romfile,
   }
 
   string currentDisplayFormat = theOSystem->console().getFormat();
-  theOSystem->colourPalette().setPalette("standard", currentDisplayFormat );
+  theOSystem->colourPalette().setPalette("standard", currentDisplayFormat);
 }
 
 ALEInterface::ALEInterface() {
