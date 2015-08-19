@@ -221,11 +221,11 @@ class ALEInterface(object):
         serialization. This includes pseudorandomness and so is *not*
         suitable for planning purposes.
         """
-        return ale_lib.cloneState(self.obj)
+        return ale_lib.cloneSystemState(self.obj)
 
     def restoreSystemState(self, state):
         """Reverse operation of cloneSystemState."""
-        ale_lib.restoreState(self.obj, state)
+        ale_lib.restoreSystemState(self.obj, state)
 
     def deleteState(self, state):
         """ Deallocates the ALEState """
