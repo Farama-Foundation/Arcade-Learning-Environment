@@ -16,10 +16,9 @@
 #ifndef __COLOUR_PALETTE_HPP__
 #define __COLOUR_PALETTE_HPP__ 
 
+#include <string>
 // Include obscure header file for uInt32 definition
 #include "../emucore/m6502/src/bspf/src/bspf.hxx"
-
-using namespace std;
 
 class ColourPalette {
 
@@ -44,14 +43,14 @@ class ColourPalette {
           @param type  The palette type = {standard, z26, user}
           @param displayFormat The display format = { NTSC, PAL, SECAM }
         */
-        void setPalette(const string& type,
-                        const string& displayFormat);
+        void setPalette(const std::string& type,
+                        const std::string& displayFormat);
 
         /**
             Loads a user-defined palette file (from OSystem::paletteFile), filling the
             appropriate user-defined palette arrays.
         */
-        void loadUserPalette(const string& paletteFile);
+        void loadUserPalette(const std::string& paletteFile);
 
 private:
 
