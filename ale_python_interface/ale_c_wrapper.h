@@ -51,37 +51,22 @@ extern "C" {
   int getScreenWidth(ALEInterface *ale){return ale->getScreen().width();}
   int getScreenHeight(ALEInterface *ale){return ale->getScreen().height();}
 
-  void getScreenRGB(ALEInterface *ale, unsigned char *screen_data){
+  void getScreenRGB(ALEInterface *ale, unsigned char *output_buffer){
     size_t w = ale->getScreen().width();
     size_t h = ale->getScreen().height();
     size_t screen_size = w*h;
-
-    const uInt32 *current_palette = ale->theOSystem->colourPalette().getPalette();
     pixel_t *ale_screen_data = ale->getScreen().getArray();
-    pixel_t *p = ale_screen_data;
-    pixel_t *q = screen_data;
 
-    for(size_t i = 0; i < screen_size; i++, p++){
-      int rgb = current_palette[*p];
-      *q = (unsigned char) ((rgb >> 16));  q++;    // r
-      *q = (unsigned char) ((rgb >>  8));  q++;    // g
-      *q = (unsigned char) ((rgb >>  0));  q++;    // b
-    }
+    ale->theOSystem->colourPalette().applyPaletteRGB(output_buffer, ale_screen_data, screen_size );
   }
 
-  void getScreenGrayscale(ALEInterface *ale, unsigned char *screen_data){
+  void getScreenGrayscale(ALEInterface *ale, unsigned char *output_buffer){
     size_t w = ale->getScreen().width();
     size_t h = ale->getScreen().height();
     size_t screen_size = w*h;
-
-    const uInt32 *current_palette = ale->theOSystem->colourPalette().getPalette();
     pixel_t *ale_screen_data = ale->getScreen().getArray();
-    pixel_t *p = ale_screen_data;
-    pixel_t *q = screen_data;
 
-    for(size_t i = 0; i < screen_size; i++, p++, q++){
-      *q = (unsigned char) (current_palette[*p+1] & 0xFF);
-    }
+    ale->theOSystem->colourPalette().applyPaletteGrayscale(output_buffer, ale_screen_data, screen_size);
   }
 
   void saveState(ALEInterface *ale){ale->saveState();}

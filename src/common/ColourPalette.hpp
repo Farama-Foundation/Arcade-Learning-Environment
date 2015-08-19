@@ -32,8 +32,19 @@ class ColourPalette {
         /** Converts a given palette value into packed RGB (format 0x00RRGGBB). */
         uInt32 getRGB(int val) const;
 
-        /** returns a pointer to the palette array (256 elements) */
-        const uInt32 *getPalette();
+        /**
+            Applies the current RGB palette to the src_buffer and returns the results in dst_buffer
+            For each byte in src_buffer, three bytes are returned in dst_buffer
+            8 bits => 24 bits
+         */
+        void applyPaletteRGB(uInt8* dst_buffer, uInt8 *src_buffer, size_t src_size);
+
+        /**
+            Applies the current grayscale palette to the src_buffer and returns the results in dst_buffer
+            For each byte in src_buffer, a single byte is returned in dst_buffer
+            8 bits => 8 bits
+         */
+        void applyPaletteGrayscale(uInt8* dst_buffer, uInt8 *src_buffer, size_t src_size);
 
         /**
           Loads all defined palettes with PAL color-loss data depending
@@ -53,32 +64,14 @@ class ColourPalette {
         void loadUserPalette(const std::string& paletteFile);
 
 private:
-
-        /**
-         *  Calculates grayscale values for all palettes
-         */
-        void calculateGrayscaleValues();
-
         uInt32 *m_palette;
 
         bool myUserPaletteDefined;
 
-        // Table of RGB values for NTSC, PAL and SECAM
-        static uInt32 NTSCPalette[256];
-        static uInt32 PALPalette[256];
-        static uInt32 SECAMPalette[256];
-
-        // Table of RGB values for NTSC, PAL and SECAM - Z26 version
-        static uInt32 NTSCPaletteZ26[256];
-        static uInt32 PALPaletteZ26[256];
-        static uInt32 SECAMPaletteZ26[256];
-
         // Table of RGB values for NTSC, PAL and SECAM - user-defined
-        static uInt32 UserNTSCPalette[256];
-        static uInt32 UserPALPalette[256];
-        static uInt32 UserSECAMPalette[256];
-
-        static uInt32* availablePalettes[3][3];
+        uInt32 m_userNTSCPalette[256];
+        uInt32 m_userPALPalette[256];
+        uInt32 m_userSECAMPalette[256];
 };
 
 #endif // __COLOUR_PALETTE_HPP__ 
