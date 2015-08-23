@@ -376,6 +376,8 @@ bool OSystem::createConsole(const string& romfile)
     {
       // Create an instance of the 2600 game console
       myConsole = new Console(this, cart, props);
+      m_colour_palette.loadUserPalette(paletteFile());
+
     #ifdef CHEATCODE_SUPPORT
       myCheatManager->loadCheats(md5);
     #endif

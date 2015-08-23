@@ -156,21 +156,9 @@ class Console
     void togglePalette();
 
     /**
-      Sets the palette according to the given palette name.
-
-      @param palette  The palette to switch to.
-    */
-    void setPalette(const std::string& palette);
-
-    /**
       Toggles phosphor effect.
     */
     void togglePhosphor();
-
-    /**
-      Toggles the PAL color-loss effect.
-    */
-    void toggleColorLoss();
 
     /**
       Initialize the video subsystem wrt this class.
@@ -225,24 +213,6 @@ class Console
     void toggleTIABit(TIA::TIABit bit, const std::string& bitname, bool show = true) const;
 
     /**
-      Loads a user-defined palette file (from OSystem::paletteFile), filling the
-      appropriate user-defined palette arrays.
-    */
-    void loadUserPalette();
-
-    /**
-      Loads all defined palettes with PAL color-loss data depending
-      on 'state'.
-    */
-    void setColorLossPalette(bool state);
-
-    /**
-      Returns a pointer to the palette data for the palette currently defined
-      by the ROM properties.
-    */
-    const uInt32* getPalette(int direction) const;
-
-    /**
       Returns the framerate based on a number of factors
       (whether 'framerate' is set, what display format is in use, etc)
     */
@@ -294,20 +264,6 @@ class Console
     // Contains info about this console in string format
     std::string myAboutString;
 
-    // Table of RGB values for NTSC, PAL and SECAM
-    static uInt32 ourNTSCPalette[256];
-    static uInt32 ourPALPalette[256];
-    static uInt32 ourSECAMPalette[256];
-
-    // Table of RGB values for NTSC, PAL and SECAM - Z26 version
-    static uInt32 ourNTSCPaletteZ26[256];
-    static uInt32 ourPALPaletteZ26[256];
-    static uInt32 ourSECAMPaletteZ26[256];
-
-    // Table of RGB values for NTSC, PAL and SECAM - user-defined
-    static uInt32 ourUserNTSCPalette[256];
-    static uInt32 ourUserPALPalette[256];
-    static uInt32 ourUserSECAMPalette[256];
 };
 
 #endif
