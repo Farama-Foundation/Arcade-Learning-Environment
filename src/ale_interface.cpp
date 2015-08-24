@@ -262,6 +262,14 @@ void ALEInterface::restoreState(const ALEState& state) {
   return environment->restoreState(state);
 }
 
+ALEState ALEInterface::cloneSystemState() {
+  return environment->cloneSystemState();
+}
+
+void ALEInterface::restoreSystemState(const ALEState& state) {
+  return environment->restoreSystemState(state);
+}
+
 void ALEInterface::saveScreenPNG(const string& filename) {
   
   ScreenExporter exporter(theOSystem->colourPalette());

@@ -113,9 +113,21 @@ public:
   // Loads the state of the system
   void loadState();
 
+  // This makes a copy of the environment state. This copy does *not* include pseudorandomness,
+  // making it suitable for planning purposes. By contrast, see cloneSystemState.
   ALEState cloneState();
 
+  // Reverse operation of cloneState(). This does not restore pseudorandomness, so that repeated
+  // calls to restoreState() in the stochastic controls setting will not lead to the same outcomes.
+  // By contrast, see restoreSystemState.
   void restoreState(const ALEState& state);
+
+  // This makes a copy of the system & environment state, suitable for serialization. This includes
+  // pseudorandomness and so is *not* suitable for planning purposes.
+  ALEState cloneSystemState();
+
+  // Reverse operation of cloneSystemState.
+  void restoreSystemState(const ALEState& state);
 
   // Save the current screen as a png file
   void saveScreenPNG(const string& filename);
