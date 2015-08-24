@@ -67,6 +67,7 @@
 #include "supported/SpaceInvaders.hpp"
 #include "supported/StarGunner.hpp"
 #include "supported/Tennis.hpp"
+#include "supported/Tetris.hpp"
 #include "supported/TimePilot.hpp"
 #include "supported/Tutankham.hpp"
 #include "supported/UpNDown.hpp"
@@ -132,6 +133,7 @@ static const RomSettings *roms[]  = {
     new SpaceInvadersSettings(),
     new StarGunnerSettings(),
     new TennisSettings(),
+    new TetrisSettings(),
     new TimePilotSettings(),
     new TutankhamSettings(),
     new UpNDownSettings(),
