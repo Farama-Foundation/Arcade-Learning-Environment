@@ -46,7 +46,7 @@ ColourPalette::ColourPalette(): m_palette(NULL) {
 void ColourPalette::getRGB(int val, int &r, int &g, int &b) const
 {
     assert (m_palette != NULL);
-    assert(val < 256);
+    assert(val >= 0 && val <= 0xFF);
     
     // Set the RGB components accordingly
     r = (m_palette[val] >> 16) & 0xFF;
@@ -54,6 +54,14 @@ void ColourPalette::getRGB(int val, int &r, int &g, int &b) const
     b = (m_palette[val] >>  0) & 0xFF;
 }
 
+uInt8 ColourPalette::getGrayscale(int val) const
+{
+    assert (m_palette != NULL);
+    assert(val >= 0 && val < 0xFF);
+    
+    // Set the RGB components accordingly
+    return (m_palette[val+1] >> 0) & 0xFF;
+}
 
 uInt32 ColourPalette::getRGB(int val) const
 {
