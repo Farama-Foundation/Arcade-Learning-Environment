@@ -84,8 +84,6 @@ bool BreakoutSettings::isMinimal(const Action &a) const {
         case PLAYER_A_FIRE:
         case PLAYER_A_RIGHT:
         case PLAYER_A_LEFT:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
             return true;
         default:
             return false;
