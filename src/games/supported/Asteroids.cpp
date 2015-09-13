@@ -48,13 +48,19 @@ RomSettings* AsteroidsSettings::clone() const {
 void AsteroidsSettings::step(const System& system) {
 
     // update the reward
-    reward_t score = getDecimalScore(62, 61, &system);
+    reward_t score = getDecimalScore(0xBE, 0xBD, &system);
     score *= 10;
     m_reward = score - m_score;
+    // Deal with score wrapping. In truth this should be done for all games and in a more
+    // uniform fashion.
+    if (m_reward < 0) {
+        const int WRAP_SCORE = 100000;
+        m_reward += WRAP_SCORE; 
+    }
     m_score = score;
 
     // update terminal status
-    int byte = readRam(&system, 0x3C);
+    int byte = readRam(&system, 0xBC);
     m_lives = (byte - (byte & 15)) >> 4;
     m_terminal = (m_lives == 0);
 }
