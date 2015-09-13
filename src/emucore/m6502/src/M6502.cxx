@@ -16,6 +16,7 @@
 // $Id: M6502.cxx,v 1.21 2007/01/01 18:04:50 stephena Exp $
 //============================================================================
 
+#include <cstdlib>
 #include "M6502.hxx"
 
 #ifdef DEBUGGER_SUPPORT
@@ -80,6 +81,16 @@ void M6502::reset()
   A = X = Y = 0;
   SP = 0xff;
   PS(0x20);
+
+    if (getenv("ALE_RANDOMIZE_CPU")) {
+        for (int ZPmem = 0x00; ZPmem < 0x100; ZPmem++) {
+            mySystem->poke(ZPmem, (uInt8) randNumGen.next());
+        }
+        A = (uInt8) randNumGen.next();
+        X = (uInt8) randNumGen.next();
+        Y = (uInt8) randNumGen.next();
+        cerr << "Randomizing Memory and Registers A=" << static_cast<int>(A) << " X=" << static_cast<int>(X) << " Y=" << static_cast<int>(Y) << endl;
+    }
 
   // Reset access flag
   myLastAccessWasRead = true;
