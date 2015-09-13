@@ -48,14 +48,14 @@ RomSettings* WizardOfWorSettings::clone() const {
 void WizardOfWorSettings::step(const System& system) {
 
     // update the reward
-    reward_t score = getDecimalScore(6, 8, &system);
+    reward_t score = getDecimalScore(0x86, 0x88, &system);
     if (score >= 8000) score -= 8000; // MGB score does not go beyond 999
     score *= 100;
     m_reward = score - m_score;
     m_score = score;
 
     // update terminal status
-    int newLives = readRam(&system, 0x0D) & 15;
+    int newLives = readRam(&system, 0x8D) & 15;
     int byte1 = readRam(&system, 0xF4);
     
     bool isWaiting = (readRam(&system, 0xD7) & 0x1) == 0;
