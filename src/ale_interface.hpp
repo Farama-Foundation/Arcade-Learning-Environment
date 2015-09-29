@@ -37,7 +37,6 @@
 #include "os_dependent/SettingsUNIX.hxx"
 #include "os_dependent/OSystemUNIX.hxx"
 #include "games/Roms.hpp"
-#include "common/Defaults.hpp"
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
 #include "common/ScreenExporter.hpp"

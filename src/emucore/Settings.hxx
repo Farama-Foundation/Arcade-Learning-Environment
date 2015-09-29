@@ -162,6 +162,9 @@ class Settings
     */
     void setSize(const string& key, const int value1, const int value2);
 
+    /** Sets all of the ALE-specific default settings */
+    void setDefaultSettings();
+
   private:
     // Copy constructor isn't supported by this class so make it private
     Settings(const Settings&);

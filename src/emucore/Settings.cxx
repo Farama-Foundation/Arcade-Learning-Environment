@@ -672,3 +672,29 @@ Settings& Settings::operator = (const Settings&)
 
   return *this;
 }
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Settings::setDefaultSettings() {
+    // Stella settings
+    this->setString("cpu", "low"); // Reduce CPU emulation fidelity for speed 
+
+    // Controller settings
+    this->setInt("max_num_frames", 0);
+    this->setInt("max_num_frames_per_episode", 0);
+
+    // FIFO controller settings
+    this->setBool("run_length_encoding", true);
+
+    // Environment customization settings
+    this->setBool("restricted_action_set", false);
+    this->setString("random_seed", "time");
+    this->setBool("color_averaging", true);
+    this->setBool("send_rgb", false);
+    this->setInt("frame_skip", 1);
+    this->setFloat("repeat_action_probability", 0.25);
+
+    // Display Settings
+    this->setBool("display_screen", false);
+
+    // Record settings
+    this->setString("record_sound_filename", "");
+}
