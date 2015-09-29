@@ -32,6 +32,27 @@ ALEState::ALEState(const ALEState &rhs, std::string serialized):
   m_serialized_state(serialized) {
 }
 
+ALEState::ALEState(std::string serialized) {
+  std::stringstream ss(serialized);
+  std::string item;
+
+  std::getline(ss, item);
+  // Using atoi because unfortunately stoi doesn't work
+  // on mingw
+  this->m_left_paddle = atoi(item.c_str());
+
+  std::getline(ss,item);
+  this->m_right_paddle = atoi(item.c_str());
+
+  std::getline(ss,item);
+  this->m_frame_number = atoi(item.c_str());
+
+  std::getline(ss,item);
+  this->m_episode_frame_number = atoi(item.c_str());
+
+  std::getline(ss,this->m_serialized_state);
+}
+
 /** Restores ALE to the given previously saved state. */ 
 void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs,
     bool load_system) {
@@ -82,6 +103,15 @@ void ALEState::incrementFrame(int steps /* = 1 */) {
 
 void ALEState::resetEpisodeFrameNumber() {
     m_episode_frame_number = 0;
+}
+
+std::string ALEState::encode() {
+  std::stringstream out;
+  out << this->m_left_paddle << '\n' << this->m_right_paddle << '\n' 
+      << this->m_frame_number << '\n' << this->m_episode_frame_number << '\n' 
+      << this->m_serialized_state;
+
+  return out.str();
 }
 
 
