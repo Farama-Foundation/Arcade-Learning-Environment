@@ -2,12 +2,15 @@
 #include<string>
 #include<cstring>
 
-const char *encodeState(ALEState *state) {
+const char *encodeState(ALEState *state, char *buf) {
 	std::string s = state->encode();
-	char *buf = new char[s.length() + 1];
 	std::strcpy(buf,s.c_str());
 
 	return buf;
+}
+
+int encodeStateLen(ALEState *state) {
+	return state->encode().length();
 }
 
 ALEState *decodeState(const char *serialized) {
