@@ -17,7 +17,7 @@
 
 #include "Constants.h"
 
-#ifndef WIN32
++#if (defined(WIN32) || defined(__MINGW32__))
 #include <sys/time.h>
 #endif
 
@@ -54,20 +54,21 @@ inline void bound(int& x, int lower_bound, int upper_bound) {
 /* *****************************************************************************
     Return time in milliseconds. 
  **************************************************************************** */
-#ifndef WIN32
-
-inline long timeMillis() {
-
-    struct timeval ts; 
-  gettimeofday(&ts, NULL);
-  return ts.tv_sec * 1000 + ts.tv_usec/1000;
-}
-
-#else
+#if (defined(WIN32) || defined(__MINGW32__))
 
 #include <windows.h>
 inline long timeMillis() {
     return GetTickCount();
+}
+
+
+#else
+
+inline long timeMillis() {
+
+struct timeval ts; 
+  gettimeofday(&ts, NULL);
+  return ts.tv_sec * 1000 + ts.tv_usec/1000;
 }
 
 #endif
