@@ -72,7 +72,7 @@ extern "C" {
   void encodeState(ALEState *state, char *buf);
   // Returns the size of the buffer (not the len of the C-String containing it)
   int encodeStateLen(ALEState *state);
-  ALEState *decodeState(const char* serialized, size_t len);
+  ALEState *decodeState(const char* serialized, int len);
 }
 
 #endif

@@ -11,7 +11,7 @@ int encodeStateLen(ALEState *state) {
 	return state->encode().size();
 }
 
-ALEState *decodeState(const char *serialized, size_t len) {
+ALEState *decodeState(const char *serialized, int len) {
 	std::vector<char> buf;
 	buf.resize(len);
 
