@@ -106,7 +106,7 @@ void ALEState::resetEpisodeFrameNumber() {
 
 template<typename T>
 void encodeAndIncrement(char **buf, T field) {
-  memcpy(buf, &field, sizeof(T));
+  memcpy(*buf, &field, sizeof(T));
   (*buf) += sizeof(T);
 }
 
