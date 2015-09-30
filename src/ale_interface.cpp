@@ -28,6 +28,7 @@
  *  The shared library interface.
  **************************************************************************** */
 #include "ale_interface.hpp"
+#include <ctime>
 
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
@@ -50,7 +51,7 @@ void ALEInterface::disableBufferedIO() {
 
 void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
                           std::auto_ptr<Settings> &theSettings) {
-#ifdef WIN32
+#if (defined(WIN32) || defined(__MINGW32__))
   theOSystem.reset(new OSystemWin32());
   theSettings.reset(new SettingsWin32(theOSystem.get()));
 #else

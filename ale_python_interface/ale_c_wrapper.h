@@ -67,6 +67,12 @@ extern "C" {
   void restoreSystemState(ALEInterface *ale, ALEState* state){ale->restoreSystemState(*state);}
   void deleteState(ALEState* state){delete state;}
   void saveScreenPNG(ALEInterface *ale,const char *filename){ale->saveScreenPNG(filename);}
+  // This returns a raw byte stream encoding the state. This is NOT to be interpreted as a C String
+  // and may in fact contain several 0 bytes (null terminators).
+  void encodeState(ALEState *state, char *buf);
+  // Returns the size of the buffer (not the len of the C-String containing it)
+  int encodeStateLen(ALEState *state);
+  ALEState *decodeState(const char* serialized, int len);
 }
 
 #endif

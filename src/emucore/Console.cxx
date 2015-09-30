@@ -20,6 +20,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <ctime>
 
 #include "AtariVox.hxx"
 #include "Booster.hxx"

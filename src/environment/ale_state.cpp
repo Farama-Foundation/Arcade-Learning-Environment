@@ -15,6 +15,7 @@
 #include "../common/Constants.h"
 
 #include <stdexcept>
+#include <cstring>
 
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():
@@ -30,6 +31,25 @@ ALEState::ALEState(const ALEState &rhs, std::string serialized):
   m_frame_number(rhs.m_frame_number),
   m_episode_frame_number(rhs.m_episode_frame_number),
   m_serialized_state(serialized) {
+}
+
+template<typename T>
+size_t decodeAndIncrement(char **buf, T *field) {
+  memcpy(field, *buf, sizeof(T));
+  (*buf) += sizeof(T);
+  return sizeof(T);
+}
+
+ALEState::ALEState(std::vector<char> serialized) {
+  char *buf = serialized.data();
+  size_t total_size = 0;
+
+  total_size += decodeAndIncrement(&buf, &this->m_left_paddle);
+  total_size += decodeAndIncrement(&buf, &this->m_right_paddle);
+  total_size += decodeAndIncrement(&buf, &this->m_frame_number);
+  total_size += decodeAndIncrement(&buf, &this->m_episode_frame_number); 
+
+  this->m_serialized_state = std::string(buf, serialized.size() - total_size);
 }
 
 /** Restores ALE to the given previously saved state. */ 
@@ -82,6 +102,32 @@ void ALEState::incrementFrame(int steps /* = 1 */) {
 
 void ALEState::resetEpisodeFrameNumber() {
     m_episode_frame_number = 0;
+}
+
+template<typename T>
+void encodeAndIncrement(char **buf, T field) {
+  memcpy(*buf, &field, sizeof(T));
+  (*buf) += sizeof(T);
+}
+
+std::vector<char> ALEState::encode() {
+  std::vector<char> serialized;
+  size_t buf_size = sizeof(this->m_left_paddle) + sizeof(this->m_right_paddle)
+            + sizeof(this->m_frame_number) + sizeof(this->m_episode_frame_number)
+            + this->m_serialized_state.length();
+  
+  serialized.resize(buf_size);
+
+  char *buf = serialized.data();
+
+  encodeAndIncrement(&buf, this->m_left_paddle);
+  encodeAndIncrement(&buf, this->m_right_paddle);
+  encodeAndIncrement(&buf, this->m_frame_number);
+  encodeAndIncrement(&buf, this->m_episode_frame_number);
+
+  memcpy(buf, this->m_serialized_state.data(), this->m_serialized_state.length());
+
+  return serialized;
 }
 
 
