@@ -21,6 +21,7 @@
 #include "../emucore/OSystem.hxx"
 #include "../emucore/Event.hxx"
 #include <string>
+#include <vector>
 #include "../games/RomSettings.hpp"
 
 #define PADDLE_DELTA 23000
@@ -37,7 +38,7 @@ class ALEState {
     // Makes a copy of this state, also storing emulator information provided as a string
     ALEState(const ALEState &rhs, std::string serialized);
     // Deserializes an ALE state from a raw string built via encode.
-    ALEState(std::string serialized);
+    ALEState(std::vector<char> serialized);
 
     /** Resets the system to its start state. numResetSteps 'RESET' actions are taken after the
       *  start. */
@@ -64,8 +65,8 @@ class ALEState {
     //Get the number of frames executed this episode.
     const int getEpisodeFrameNumber() const { return m_episode_frame_number; }
 
-    // Serializes everything, including paddle info, to a string.
-    std::string encode();
+    // Serializes everything, including paddle info, to a byte vector.
+    std::vector<char> encode();
 
 
   protected:

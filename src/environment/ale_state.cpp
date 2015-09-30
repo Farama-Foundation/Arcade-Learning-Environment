@@ -15,6 +15,7 @@
 #include "../common/Constants.h"
 
 #include <stdexcept>
+#include <cstring>
 
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():
@@ -32,25 +33,23 @@ ALEState::ALEState(const ALEState &rhs, std::string serialized):
   m_serialized_state(serialized) {
 }
 
-ALEState::ALEState(std::string serialized) {
-  std::stringstream ss(serialized);
-  std::string item;
+template<typename T>
+size_t decodeAndIncrement(char **buf, T *field) {
+  memcpy(field, *buf, sizeof(T));
+  (*buf) += sizeof(T);
+  return sizeof(T);
+}
 
-  std::getline(ss, item);
-  // Using atoi because unfortunately stoi doesn't work
-  // on mingw
-  this->m_left_paddle = atoi(item.c_str());
+ALEState::ALEState(std::vector<char> serialized) {
+  char *buf = serialized.data();
+  size_t total_size = 0;
 
-  std::getline(ss,item);
-  this->m_right_paddle = atoi(item.c_str());
+  total_size += decodeAndIncrement(&buf, &this->m_left_paddle);
+  total_size += decodeAndIncrement(&buf, &this->m_right_paddle);
+  total_size += decodeAndIncrement(&buf, &this->m_frame_number);
+  total_size += decodeAndIncrement(&buf, &this->m_episode_frame_number); 
 
-  std::getline(ss,item);
-  this->m_frame_number = atoi(item.c_str());
-
-  std::getline(ss,item);
-  this->m_episode_frame_number = atoi(item.c_str());
-
-  std::getline(ss,this->m_serialized_state);
+  this->m_serialized_state = std::string(buf, serialized.size() - total_size);
 }
 
 /** Restores ALE to the given previously saved state. */ 
@@ -105,13 +104,30 @@ void ALEState::resetEpisodeFrameNumber() {
     m_episode_frame_number = 0;
 }
 
-std::string ALEState::encode() {
-  std::stringstream out;
-  out << this->m_left_paddle << '\n' << this->m_right_paddle << '\n' 
-      << this->m_frame_number << '\n' << this->m_episode_frame_number << '\n' 
-      << this->m_serialized_state;
+template<typename T>
+void encodeAndIncrement(char **buf, T field) {
+  memcpy(buf, &field, sizeof(T));
+  (*buf) += sizeof(T);
+}
 
-  return out.str();
+std::vector<char> ALEState::encode() {
+  std::vector<char> serialized;
+  size_t buf_size = sizeof(this->m_left_paddle) + sizeof(this->m_right_paddle)
+            + sizeof(this->m_frame_number) + sizeof(this->m_episode_frame_number)
+            + this->m_serialized_state.length();
+  
+  serialized.resize(buf_size);
+
+  char *buf = serialized.data();
+
+  encodeAndIncrement(&buf, this->m_left_paddle);
+  encodeAndIncrement(&buf, this->m_right_paddle);
+  encodeAndIncrement(&buf, this->m_frame_number);
+  encodeAndIncrement(&buf, this->m_episode_frame_number);
+
+  memcpy(buf, this->m_serialized_state.data(), this->m_serialized_state.length());
+
+  return serialized;
 }
 
 

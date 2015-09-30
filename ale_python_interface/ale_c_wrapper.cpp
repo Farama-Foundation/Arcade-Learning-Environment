@@ -1,19 +1,20 @@
 #include "ale_c_wrapper.h"
-#include<string>
+#include<vector>
 #include<cstring>
 
-const char *encodeState(ALEState *state, char *buf) {
-	std::string s = state->encode();
-	std::strcpy(buf,s.c_str());
-
-	return buf;
+void encodeState(ALEState *state, char *buf) {
+	std::vector<char> vec = state->encode();
+	memcpy(buf,vec.data(),vec.size());
 }
 
 int encodeStateLen(ALEState *state) {
-	return state->encode().length();
+	return state->encode().size();
 }
 
-ALEState *decodeState(const char *serialized) {
-	std::string s(serialized);
-	return new ALEState(s);
+ALEState *decodeState(const char *serialized, size_t len) {
+	std::vector<char> buf;
+	buf.resize(len);
+
+	memcpy(buf.data(), serialized, len);
+	return new ALEState(buf);
 }
