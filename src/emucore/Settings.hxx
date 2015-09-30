@@ -21,6 +21,8 @@
 
 class OSystem;
 
+#include <map>
+
 #include "../common/Array.hxx"
 #include "m6502/src/bspf/src/bspf.hxx"
 
@@ -209,6 +211,13 @@ class Settings
                     int pos = -1, bool useAsInitial = false);
 
   private:
+    //Maps containing all external settings an user can
+    //define and their respectives default values.
+    std::map<std::string,int> intSettings;
+    std::map<std::string,bool> boolSettings;
+    std::map<std::string,float> floatSettings;
+    std::map<std::string,std::string> stringSettings;
+
     // Holds key,value pairs that are necessary for Stella to
     // function and must be saved on each program exit.
     SettingsArray myInternalSettings;

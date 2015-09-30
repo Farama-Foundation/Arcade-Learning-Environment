@@ -27,6 +27,8 @@
 #include "bspf.hxx"
 #include "Settings.hxx"
 
+using namespace std;
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     // Add this settings object to the OSystem
@@ -674,27 +676,41 @@ Settings& Settings::operator = (const Settings&)
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setDefaultSettings() {
+
     // Stella settings
-    this->setString("cpu", "low"); // Reduce CPU emulation fidelity for speed 
+    stringSettings.insert(pair<string, string>("cpu", "low")); // Reduce CPU emulation fidelity for speed
 
     // Controller settings
-    this->setInt("max_num_frames", 0);
-    this->setInt("max_num_frames_per_episode", 0);
+    intSettings.insert(pair<string, int>("max_num_frames", 0));
+    intSettings.insert(pair<string, int>("max_num_frames_per_episode", 0));
 
     // FIFO controller settings
-    this->setBool("run_length_encoding", true);
+    boolSettings.insert(pair<string, bool>("run_length_encoding", true));
 
     // Environment customization settings
-    this->setBool("restricted_action_set", false);
-    this->setString("random_seed", "time");
-    this->setBool("color_averaging", true);
-    this->setBool("send_rgb", false);
-    this->setInt("frame_skip", 1);
-    this->setFloat("repeat_action_probability", 0.25);
+    boolSettings.insert(pair<string, bool>("restricted_action_set", false));
+    intSettings.insert(pair<string, int>("random_seed", -1));
+    boolSettings.insert(pair<string, bool>("color_averaging", true));
+    boolSettings.insert(pair<string, bool>("send_rgb", false));
+    intSettings.insert(pair<string, int>("frame_skip", 1));
+    floatSettings.insert(pair<string, float>("repeat_action_probability", 0.25));
 
     // Display Settings
-    this->setBool("display_screen", false);
+    boolSettings.insert(pair<string, bool>("display_screen", false));
 
-    // Record settings
-    this->setString("record_sound_filename", "");
+    for(map<string, string>::iterator it = stringSettings.begin(); it != stringSettings.end(); it++) {
+      this->setString(it->first, it->second);
+    }
+
+    for(map<string, float>::iterator it = floatSettings.begin(); it != floatSettings.end(); it++) {
+      this->setFloat(it->first, it->second);
+    }
+
+    for(map<string, bool>::iterator it = boolSettings.begin(); it != boolSettings.end(); it++) {
+      this->setBool(it->first, it->second);
+    }
+
+    for(map<string, int>::iterator it = intSettings.begin(); it != intSettings.end(); it++) {
+      this->setInt(it->first, it->second);
+    }
 }
