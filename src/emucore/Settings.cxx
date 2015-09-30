@@ -383,10 +383,13 @@ void Settings::setInt(const string& key, const int value)
   ostringstream stream;
   stream << value;
 
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, stream.str(), idx);
-  else
+  }
+  else{
+    verifyVariableExistence(intSettings, key);
     setExternal(key, stream.str());
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -395,10 +398,13 @@ void Settings::setFloat(const string& key, const float value)
   ostringstream stream;
   stream << value;
 
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, stream.str(), idx);
-  else
+  }
+  else{
+    verifyVariableExistence(floatSettings, key);
     setExternal(key, stream.str());
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -407,19 +413,25 @@ void Settings::setBool(const string& key, const bool value)
   ostringstream stream;
   stream << value;
 
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, stream.str(), idx);
-  else
+  }
+  else{
+    verifyVariableExistence(boolSettings, key);
     setExternal(key, stream.str());
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setString(const string& key, const string& value)
 {
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, value, idx);
-  else
+  }
+  else{
+    verifyVariableExistence(stringSettings, key);
     setExternal(key, value);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -694,6 +706,7 @@ void Settings::setDefaultSettings() {
     boolSettings.insert(pair<string, bool>("send_rgb", false));
     intSettings.insert(pair<string, int>("frame_skip", 1));
     floatSettings.insert(pair<string, float>("repeat_action_probability", 0.25));
+    stringSettings.insert(pair<string, string>("rom_file", ""));
 
     // Display Settings
     boolSettings.insert(pair<string, bool>("display_screen", false));
@@ -712,5 +725,13 @@ void Settings::setDefaultSettings() {
 
     for(map<string, int>::iterator it = intSettings.begin(); it != intSettings.end(); it++) {
       this->setInt(it->first, it->second);
+    }
+}
+
+template<typename TYPE>
+void Settings::verifyVariableExistence(map<string, TYPE> dict, string key){
+    if(dict.find(key) == dict.end()){
+      cerr << "The key " << key << " you are trying to set does not exist." << endl;
+      exit(-1);
     }
 }

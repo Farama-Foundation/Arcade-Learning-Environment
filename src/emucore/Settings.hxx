@@ -217,6 +217,8 @@ class Settings
     std::map<std::string,bool> boolSettings;
     std::map<std::string,float> floatSettings;
     std::map<std::string,std::string> stringSettings;
+    template<typename TYPE>
+    void verifyVariableExistence(std::map<std::string, TYPE> dict, std::string key);
 
     // Holds key,value pairs that are necessary for Stella to
     // function and must be saved on each program exit.
