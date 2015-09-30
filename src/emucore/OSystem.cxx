@@ -183,7 +183,7 @@ void OSystem::resetRNGSeed() {
 
   // We seed the random number generator. The 'time' seed is somewhat redundant, since the
   // rng defaults to time. But we'll do it anyway.
-  if (mySettings->getString("random_seed") == "time") {
+  if (mySettings->getInt("random_seed") == -1) {
     myRandGen.seed((uInt32)time(NULL));
   } else {
     int seed = mySettings->getInt("random_seed");
