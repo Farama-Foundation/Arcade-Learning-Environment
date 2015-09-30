@@ -58,8 +58,6 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
   theSettings.reset(new SettingsUNIX(theOSystem.get()));
 #endif
 
-  theOSystem->settings().setDefaultSettings();
-
   theOSystem->settings().loadConfig();
 }
 

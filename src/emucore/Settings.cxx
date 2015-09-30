@@ -94,6 +94,8 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("uipalette", "0");
     setInternal("mwheel", "4");
     setInternal("autoslot", "false");
+
+    this->setDefaultSettings();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -686,6 +688,7 @@ Settings& Settings::operator = (const Settings&)
 
   return *this;
 }
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setDefaultSettings() {
 
@@ -728,6 +731,7 @@ void Settings::setDefaultSettings() {
     }
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 template<typename TYPE>
 void Settings::verifyVariableExistence(map<string, TYPE> dict, string key){
     if(dict.find(key) == dict.end()){
