@@ -10,7 +10,7 @@ USE_RLGLUE  := 0
 DEFINES     := -DRLGENV_NOMAINLOOP
 LDFLAGS     := 
 # /usr/local/include for RL-Glue
-INCLUDES    := -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/usr/local/include -Isrc/environment -Isrc/external 
+INCLUDES    := -Isrc -Isrc/controllers -Isrc/os_dependent -I/usr/include -I/usr/local/include -Isrc/environment -Isrc/external 
 LIBS_RLGLUE := -lrlutils -lrlgluenetdev
 LIBS        :=
 OBJS	    :=

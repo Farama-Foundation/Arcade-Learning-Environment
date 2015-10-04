@@ -8,7 +8,6 @@ MODULE_OBJS := \
 	src/common/ColourPalette.o \
 	src/common/ScreenExporter.o \
 	src/common/Constants.o \
-	src/common/Defaults.o \
     src/common/Log.o
 
 MODULE_DIRS += \
