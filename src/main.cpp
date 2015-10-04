@@ -22,8 +22,6 @@
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
 
-#include "common/Defaults.hpp"
-
 #ifdef WIN32
 #   include "os_dependent/SettingsWin32.hxx"
 #   include "os_dependent/OSystemWin32.hxx"
