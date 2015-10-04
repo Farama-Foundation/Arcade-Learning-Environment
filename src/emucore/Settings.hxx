@@ -164,8 +164,6 @@ class Settings
     */
     void setSize(const string& key, const int value1, const int value2);
 
-    /** Sets all of the ALE-specific default settings */
-    void setDefaultSettings();
 
   private:
     // Copy constructor isn't supported by this class so make it private
@@ -181,6 +179,9 @@ class Settings
       return (first == string::npos) ? string() :
               str.substr(first, str.find_last_not_of(' ')-first+1);
     }
+
+    // Sets all of the ALE-specific default settings
+    void setDefaultSettings();
 
   protected:
     // The parent OSystem object
@@ -217,8 +218,8 @@ class Settings
     std::map<std::string,bool> boolSettings;
     std::map<std::string,float> floatSettings;
     std::map<std::string,std::string> stringSettings;
-    template<typename TYPE>
-    void verifyVariableExistence(std::map<std::string, TYPE> dict, std::string key);
+    template<typename ValueType>
+    void verifyVariableExistence(std::map<std::string, ValueType> dict, std::string key);
 
     // Holds key,value pairs that are necessary for Stella to
     // function and must be saved on each program exit.

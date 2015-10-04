@@ -27,8 +27,6 @@
 #include "bspf.hxx"
 #include "Settings.hxx"
 
-using namespace std;
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     // Add this settings object to the OSystem
@@ -95,7 +93,7 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("mwheel", "4");
     setInternal("autoslot", "false");
 
-    this->setDefaultSettings();
+    setDefaultSettings();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -382,7 +380,7 @@ void Settings::saveConfig()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setInt(const string& key, const int value)
 {
-  ostringstream stream;
+  std::ostringstream stream;
   stream << value;
 
   if(int idx = getInternalPos(key) != -1){
@@ -397,7 +395,7 @@ void Settings::setInt(const string& key, const int value)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setFloat(const string& key, const float value)
 {
-  ostringstream stream;
+  std::ostringstream stream;
   stream << value;
 
   if(int idx = getInternalPos(key) != -1){
@@ -412,7 +410,7 @@ void Settings::setFloat(const string& key, const float value)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setBool(const string& key, const bool value)
 {
-  ostringstream stream;
+  std::ostringstream stream;
   stream << value;
 
   if(int idx = getInternalPos(key) != -1){
@@ -543,7 +541,7 @@ const string& Settings::getString(const string& key, bool strict) const {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setSize(const string& key, const int value1, const int value2)
 {
-  ostringstream buf;
+  std::ostringstream buf;
   buf << value1 << "x" << value2;
   setString(key, buf.str());
 }
@@ -704,7 +702,7 @@ void Settings::setDefaultSettings() {
 
     // Environment customization settings
     boolSettings.insert(pair<string, bool>("restricted_action_set", false));
-    intSettings.insert(pair<string, int>("random_seed", -1));
+    intSettings.insert(pair<string, int>("random_seed", 0));
     boolSettings.insert(pair<string, bool>("color_averaging", true));
     boolSettings.insert(pair<string, bool>("send_rgb", false));
     intSettings.insert(pair<string, int>("frame_skip", 1));
@@ -737,10 +735,9 @@ void Settings::setDefaultSettings() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-template<typename TYPE>
-void Settings::verifyVariableExistence(map<string, TYPE> dict, string key){
+template<typename ValueType>
+void Settings::verifyVariableExistence(map<string, ValueType> dict, string key){
     if(dict.find(key) == dict.end()){
-      cerr << "The key " << key << " you are trying to set does not exist." << endl;
-      exit(-1);
+      throw std::runtime_error("The key " + key + " you are trying to set does not exist.\n");
     }
 }
