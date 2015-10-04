@@ -19,6 +19,7 @@
 #include "NullDev.hxx"
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullDevice::NullDevice()

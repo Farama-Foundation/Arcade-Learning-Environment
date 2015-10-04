@@ -135,7 +135,7 @@ class Console
     /**
       Query some information about this console.
     */
-    const string& about() const { return myAboutString; }
+    const std::string& about() const { return myAboutString; }
 
   public:
     /**
@@ -155,7 +155,7 @@ class Console
     /**
       Query the currently selected display format (NTSC/PAL/PAL60).
     */
-    string getFormat() const { return myDisplayFormat; }
+    std::string getFormat() const { return myDisplayFormat; }
 
     /**
       Toggle between the available palettes.
@@ -163,21 +163,9 @@ class Console
     void togglePalette();
 
     /**
-      Sets the palette according to the given palette name.
-
-      @param palette  The palette to switch to.
-    */
-    void setPalette(const string& palette);
-
-    /**
       Toggles phosphor effect.
     */
     void togglePhosphor();
-
-    /**
-      Toggles the PAL color-loss effect.
-    */
-    void toggleColorLoss();
 
     /**
       Initialize the video subsystem wrt this class.
@@ -229,25 +217,7 @@ class Console
 #endif
 
   private:
-    void toggleTIABit(TIA::TIABit bit, const string& bitname, bool show = true) const;
-
-    /**
-      Loads a user-defined palette file (from OSystem::paletteFile), filling the
-      appropriate user-defined palette arrays.
-    */
-    void loadUserPalette();
-
-    /**
-      Loads all defined palettes with PAL color-loss data depending
-      on 'state'.
-    */
-    void setColorLossPalette(bool state);
-
-    /**
-      Returns a pointer to the palette data for the palette currently defined
-      by the ROM properties.
-    */
-    const uInt32* getPalette(int direction) const;
+    void toggleTIABit(TIA::TIABit bit, const std::string& bitname, bool show = true) const;
 
     /**
       Returns the framerate based on a number of factors
@@ -289,29 +259,15 @@ class Console
 #endif
 
     // The currently defined display format (NTSC/PAL/PAL60)
-    string myDisplayFormat;
+    std::string myDisplayFormat;
 
     // Indicates whether an external palette was found and
     // successfully loaded
     bool myUserPaletteDefined;
 
     // Contains info about this console in string format
-    string myAboutString;
+    std::string myAboutString;
 
-    // Table of RGB values for NTSC, PAL and SECAM
-    static uInt32 ourNTSCPalette[256];
-    static uInt32 ourPALPalette[256];
-    static uInt32 ourSECAMPalette[256];
-
-    // Table of RGB values for NTSC, PAL and SECAM - Z26 version
-    static uInt32 ourNTSCPaletteZ26[256];
-    static uInt32 ourPALPaletteZ26[256];
-    static uInt32 ourSECAMPaletteZ26[256];
-
-    // Table of RGB values for NTSC, PAL and SECAM - user-defined
-    static uInt32 ourUserNTSCPalette[256];
-    static uInt32 ourUserPALPalette[256];
-    static uInt32 ourUserSECAMPalette[256];
 };
 
 #endif

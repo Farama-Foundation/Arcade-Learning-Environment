@@ -18,6 +18,7 @@
 #include <zlib.h>
 #include <sstream>
 #include <fstream>
+#include "Log.hpp"
 
 // MGB: These methods originally belonged to ExportScreen. Possibly these should be returned to 
 // their own class, rather than be static methods. They are here to avoid exposing the gritty 
@@ -128,7 +129,7 @@ static void writePNGData(std::ofstream &out, const ALEScreen &screen, const Colo
     if((compress(&compmem[0], &compmemsize, &buffer[0], height * (width * 3 + 1)) != Z_OK)) {
 
         // @todo -- throw a proper exception
-        std::cerr << "Error: Couldn't compress PNG" << std::endl;
+        ale::Logger::Error << "Error: Couldn't compress PNG" << std::endl;
         return;
     }
 
@@ -161,11 +162,11 @@ ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path):
 void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) const {
 
     // Open file for writing 
-    std::ofstream out(filename.c_str(), ios_base::binary);
+    std::ofstream out(filename.c_str(), std::ios_base::binary);
     if (!out.good()) {
         
         // @todo exception
-        std::cerr << "Could not open " << filename << " for writing" << std::endl;
+        ale::Logger::Error << "Could not open " << filename << " for writing" << std::endl;
         return;
     }
 

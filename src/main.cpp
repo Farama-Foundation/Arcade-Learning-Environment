@@ -22,7 +22,7 @@
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
 
-#ifdef WIN32
+#if (defined(WIN32) || defined(__MINGW32__))
 #   include "os_dependent/SettingsWin32.hxx"
 #   include "os_dependent/OSystemWin32.hxx"
 #else
@@ -67,12 +67,12 @@ int main(int argc, char* argv[]) {
 
   ALEInterface::disableBufferedIO();
 
-  std::cerr << ALEInterface::welcomeMessage() << endl;
+  std::cerr << ALEInterface::welcomeMessage() << std::endl;
 
   ALEInterface::createOSystem(theOSystem, theSettings);
   // Process commandline arguments, which over-ride all possible
   // config file settings
-  string romfile = theOSystem->settings().loadCommandLine(argc, argv);
+  std::string romfile = theOSystem->settings().loadCommandLine(argc, argv);
   ALEInterface::loadSettings(romfile, theOSystem);
 
   // Create the game controller

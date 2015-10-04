@@ -65,6 +65,8 @@ ale_lib.getScreenHeight.argtypes = [c_void_p]
 ale_lib.getScreenHeight.restype = c_int
 ale_lib.getScreenRGB.argtypes = [c_void_p, c_void_p]
 ale_lib.getScreenRGB.restype = None
+ale_lib.getScreenGrayscale.argtypes = [c_void_p, c_void_p]
+ale_lib.getScreenGrayscale.restype = None
 ale_lib.saveState.argtypes = [c_void_p]
 ale_lib.saveState.restype = None
 ale_lib.loadState.argtypes = [c_void_p]
@@ -147,7 +149,7 @@ class ALEInterface(object):
     def getScreen(self, screen_data=None):
         """This function fills screen_data with the RAW Pixel data
         screen_data MUST be a numpy array of uint8/int8. This could be initialized like so:
-        screen_data = np.array(w*h, dtype=np.uint8)
+        screen_data = np.empty(w*h, dtype=np.uint8)
         Notice,  it must be width*height in size also
         If it is None,  then this function will initialize it
         Note: This is the raw pixel values from the atari,  before any RGB palette transformation takes place
@@ -160,17 +162,29 @@ class ALEInterface(object):
         return screen_data
 
     def getScreenRGB(self, screen_data=None):
-        """This function fills screen_data with the data
-        screen_data MUST be a numpy array of uint/int. This can be initialized like so:
-        screen_data = np.array(w*h, dtype=np.intc)
-        Notice,  it must be width*height in size also
-        If it is None,  then this function will initialize it
+        """This function fills screen_data with the data in RGB format
+        screen_data MUST be a numpy array of uint8. This can be initialized like so:
+        screen_data = np.empty((height,width,3), dtype=np.uint8)
+        If it is None,  then this function will initialize it.
         """
         if(screen_data is None):
             width = ale_lib.getScreenWidth(self.obj)
             height = ale_lib.getScreenHeight(self.obj)
-            screen_data = np.zeros(width*height, dtype=np.intc)
-        ale_lib.getScreenRGB(self.obj, as_ctypes(screen_data))
+            screen_data = np.empty((height, width,3), dtype=np.uint8)
+        ale_lib.getScreenRGB(self.obj, as_ctypes(screen_data[:]))
+        return screen_data
+
+    def getScreenGrayscale(self, screen_data=None):
+        """This function fills screen_data with the data in grayscale
+        screen_data MUST be a numpy array of uint8. This can be initialized like so:
+        screen_data = np.empty((height,width,1), dtype=np.uint8)
+        If it is None,  then this function will initialize it.
+        """
+        if(screen_data is None):
+            width = ale_lib.getScreenWidth(self.obj)
+            height = ale_lib.getScreenHeight(self.obj)
+            screen_data = np.empty((height, width,1), dtype=np.uint8)
+        ale_lib.getScreenGrayscale(self.obj, as_ctypes(screen_data[:]))
         return screen_data
 
     def getRAMSize(self):

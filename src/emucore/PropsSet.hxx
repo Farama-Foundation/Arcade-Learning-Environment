@@ -59,7 +59,7 @@ class PropertiesSet
                          properties if not found
       @param defaults    Use the built-in defaults, ignoring any external properties
     */
-    void getMD5(const string& md5, Properties& properties,
+    void getMD5(const std::string& md5, Properties& properties,
                 bool useDefaults = false) const;
 
     /** 
@@ -70,7 +70,7 @@ class PropertiesSet
       @param save      Indicates whether to set the 'save' tag for
                        these properties
     */
-    void load(const string& filename, bool save);
+    void load(const std::string& filename, bool save);
 
     /**
       Save properties to the specified file.
@@ -80,7 +80,7 @@ class PropertiesSet
       @return  True on success, false on failure
                Failure occurs if file couldn't be opened for writing
     */
-    bool save(const string& filename) const;
+    bool save(const std::string& filename) const;
 
     /**
       Insert the properties into the set.  If a duplicate is inserted
@@ -97,7 +97,7 @@ class PropertiesSet
 
       @param md5  The md5 of the property to remove
     */
-    void removeMD5(const string& md5);
+    void removeMD5(const std::string& md5);
 
     /**
       Get the number of properties in the collection.
@@ -143,7 +143,7 @@ class PropertiesSet
       @param out   The output stream to use
       @param node  The current subroot of the tree
     */
-    void saveNode(ostream& out, TreeNode* node) const;
+    void saveNode(std::ostream& out, TreeNode* node) const;
 
     /**
       Prints the current node properties

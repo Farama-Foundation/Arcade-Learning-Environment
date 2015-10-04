@@ -52,11 +52,20 @@ void AtlantisSettings::step(const System& system) {
     reward_t score = getDecimalScore(0xA2, 0xA3, 0xA1, &system); 
     score *= 100;
     m_reward = score - m_score;
+    reward_t old_score = m_score;
     m_score = score;
 
     // update terminal status
     m_lives = readRam(&system, 0xF1);
     m_terminal = (m_lives == 0xFF);
+
+    //when the game terminates, some garbage gets written on a1, screwing up the score computation
+    //since it is not possible to score on the very last frame, we can safely set the reward to 0.
+    if(m_terminal){
+        m_reward = 0;
+        m_score = old_score;
+    }
+    
   
     // MGB: Also d4-da contain the 'building' status; 05 indicates a destroyed
     //      building, 00 a live building

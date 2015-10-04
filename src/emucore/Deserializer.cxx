@@ -18,6 +18,7 @@
 
 #include "Deserializer.hxx"
 #include <sstream>
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Deserializer::Deserializer(const string stream_str):

@@ -25,6 +25,7 @@
 #include "System.hxx"
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 System::System(uInt16 n, uInt16 m)

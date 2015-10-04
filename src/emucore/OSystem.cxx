@@ -22,6 +22,7 @@
 #include <iostream>
 #include <zlib.h>
 #include <string.h>
+using namespace std;
 
 //ALE  #include "MediaFactory.hxx"
 
@@ -379,7 +380,7 @@ bool OSystem::createConsole(const string& romfile)
   {
     if(myRomFile == "")
     {
-      cerr << "ERROR: Rom file not specified ..." << endl;
+      ale::Logger::Error << "ERROR: Rom file not specified ..." << endl;
       return false;
     }
   }
@@ -399,6 +400,8 @@ bool OSystem::createConsole(const string& romfile)
     {
       // Create an instance of the 2600 game console
       myConsole = new Console(this, cart, props);
+      m_colour_palette.loadUserPalette(paletteFile());
+
     #ifdef CHEATCODE_SUPPORT
       myCheatManager->loadCheats(md5);
     #endif
@@ -410,8 +413,12 @@ bool OSystem::createConsole(const string& romfile)
       myDebugger->initialize();
     #endif
 
-      if(mySettings->getBool("showinfo") || 1)
+      if(mySettings->getBool("showinfo"))
         cerr << "Game console created:" << endl
+             << "  ROM file:  " << myRomFile << endl
+             << myConsole->about() << endl;
+      else
+        ale::Logger::Info << "Game console created:" << endl
              << "  ROM file:  " << myRomFile << endl
              << myConsole->about() << endl;
 
@@ -423,13 +430,13 @@ bool OSystem::createConsole(const string& romfile)
     }
     else
     {
-      cerr << "ERROR: Couldn't create console for " << myRomFile << " ..." << endl;
+      ale::Logger::Error << "ERROR: Couldn't create console for " << myRomFile << " ..." << endl;
       retval = false;
     }
   }
   else
   {
-    cerr << "ERROR: Couldn't open " << myRomFile << " ..." << endl;
+    ale::Logger::Error << "ERROR: Couldn't open " << myRomFile << " ..." << endl;
     retval = false;
   }
 
@@ -439,10 +446,10 @@ bool OSystem::createConsole(const string& romfile)
   }
   if (mySettings->getBool("display_screen", true)) {
 #ifndef __USE_SDL
-    std::cerr << "Screen display requires directive __USE_SDL to be defined."
-              << " Please recompile with flag '-D__USE_SDL'."
-              << " See makefile for more information."
-              << std::endl;
+    ale::Logger::Error << "Screen display requires directive __USE_SDL to be defined."
+                            << " Please recompile with flag '-D__USE_SDL'."
+                            << " See makefile for more information."
+                            << std::endl;
     exit(1);
 #endif
     p_display_screen = new DisplayScreen(&myConsole->mediaSource(),
@@ -641,7 +648,7 @@ bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
     if(s != "") props.set(Cartridge_Sound, s);
     s = mySettings->getString("ld");
     if (s == "A") {
-        cerr << "Setting Left Player's Difficulty to mode: A" << endl;
+        ale::Logger::Info << "Setting Left Player's Difficulty to mode: A" << endl;
     }
     if(s != "") props.set(Console_LeftDifficulty, s);
     s = mySettings->getString("rd");

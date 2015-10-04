@@ -22,6 +22,7 @@
 #include "../emucore/Event.hxx"
 #include <string>
 #include "../games/RomSettings.hpp"
+#include "../common/Log.hpp"
 
 #define PADDLE_DELTA 23000
 // MGB Values taken from Paddles.cxx (Stella 3.3) - 1400000 * [5,235] / 255
@@ -96,7 +97,7 @@ class ALEState {
     int m_frame_number; // How many frames since the start
     int m_episode_frame_number; // How many frames since the beginning of this episode
 
-    string m_serialized_state; // The stored environment state, if this is a saved state
+    std::string m_serialized_state; // The stored environment state, if this is a saved state
 
 };
 

@@ -655,7 +655,7 @@ clear.
   a float value; \emph{e.g.}: \verb+getBool(``repeat_action_probability'')+.   
   
   \verb+void setString(const string& key, const string& value)+: Sets the value of any flag
-  that has a string type; \emph{e.g.}: \verb+setString("random_seed", "time")+.
+  that has a string type; \emph{e.g.}: \verb+setString("record_screen_dir", "record")+.
   \verb+loadRom()+ must be called before the setting will take effect.
   
   \verb+void setInt(const std::string& key, const int value)+: Sets the value of any flag
@@ -733,14 +733,15 @@ functions (e.g. \verb+setInt()+; see Section~\ref{sec:getSet}). The configuratio
   -game_controller <fifo|fifo_named|rlglue> -- selects an ALE interface
     default: unset
 
-  -random_seed <###|time> -- picks the ALE random seed, or sets it to current time
-    default: time
+  -random_seed <###> -- picks the ALE random seed; if set to 0, sets to current 
+    time instead 
+    default: 0 
 
   -display_screen <true|false> -- if true and SDL is enabled, displays ALE screen
     default: false
     
   -sound  <true|false> -- if true and SDL is enabled, the game will have game
-    sounds  enabled
+    sounds enabled
     default: false
 
 

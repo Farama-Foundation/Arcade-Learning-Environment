@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
+using namespace std;
 
 #include "Props.hxx"
 

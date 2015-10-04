@@ -13,6 +13,7 @@
 #include "../emucore/m6502/src/System.hxx"
 #include "../emucore/Event.hxx"
 #include "../common/Constants.h"
+using namespace std;
 
 #include <stdexcept>
 
@@ -331,7 +332,7 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
           event->set(Event::ConsoleReset, 1);
           break;
       default: 
-          cerr << "Invalid Player A Action: " << player_a_action;
+          ale::Logger::Error << "Invalid Player A Action: " << player_a_action;
           exit(-1); 
       
   }
@@ -425,10 +426,10 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
           break; 
       case RESET:
           event->set(Event::ConsoleReset, 1);
-          cerr << "Sending Reset..." << endl;
+          ale::Logger::Info << "Sending Reset..." << endl;
           break;
       default: 
-          cerr << "Invalid Player B Action: " << player_b_action << endl;
+          ale::Logger::Error << "Invalid Player B Action: " << player_b_action << endl;
           exit(-1); 
   }
 }

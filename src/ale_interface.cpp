@@ -28,7 +28,11 @@
  *  The shared library interface.
  **************************************************************************** */
 #include "ale_interface.hpp"
+#include <stdexcept>
+#include <ctime>
 
+using namespace std;
+using namespace ale;
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;
@@ -50,7 +54,7 @@ void ALEInterface::disableBufferedIO() {
 
 void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
                           std::auto_ptr<Settings> &theSettings) {
-#ifdef WIN32
+#if (defined(WIN32) || defined(__MINGW32__))
   theOSystem.reset(new OSystemWin32());
   theSettings.reset(new SettingsWin32(theOSystem.get()));
 #else
@@ -75,11 +79,11 @@ void ALEInterface::loadSettings(const string& romfile,
 
   // Attempt to load the ROM
   if (romfile == "" || !FilesystemNode::fileExists(romfile)) {
-    std::cerr << "No ROM File specified or the ROM file was not found."
+    Logger::Error << "No ROM File specified or the ROM file was not found."
               << std::endl;
     exit(1);
   } else if (theOSystem->createConsole(romfile))  {
-    std::cerr << "Running ROM file..." << std::endl;
+    Logger::Info << "Running ROM file..." << std::endl;
     theOSystem->settings().setString("rom_file", romfile);
   } else {
     exit(1);
@@ -87,21 +91,22 @@ void ALEInterface::loadSettings(const string& romfile,
 
   // Must force the resetting of the OSystem's random seed, which is set before we change
   // choose our random seed.
-  std::cerr << "Random seed is " << theOSystem->settings().getString("random_seed") << std::endl; 
+  Logger::Info << "Random seed is " << theOSystem->settings().getInt("random_seed") << std::endl; 
   theOSystem->resetRNGSeed();
 
-  theOSystem->console().setPalette("standard");
+  string currentDisplayFormat = theOSystem->console().getFormat();
+  theOSystem->colourPalette().setPalette("standard", currentDisplayFormat);
 }
 
 ALEInterface::ALEInterface() {
   disableBufferedIO();
-  std::cerr << welcomeMessage() << std::endl;
+  Logger::Info << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
 }
 
 ALEInterface::ALEInterface(bool display_screen) {
   disableBufferedIO();
-  std::cerr << welcomeMessage() << std::endl;
+  Logger::Info << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
   this->setBool("display_screen", display_screen);
 }
@@ -124,9 +129,9 @@ void ALEInterface::loadROM(string rom_file = "") {
   environment->reset();
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
-    cerr << "Screen display requires directive __USE_SDL to be defined." << endl;
-    cerr << "Please recompile this code with flag '-D__USE_SDL'." << endl;
-    cerr << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)." << endl;
+    Logger::Error << "Screen display requires directive __USE_SDL to be defined." << endl;
+    Logger::Error << "Please recompile this code with flag '-D__USE_SDL'." << endl;
+    Logger::Error << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)." << endl;
     exit(1);
   }
 #endif
@@ -190,7 +195,10 @@ bool ALEInterface::game_over() {
 
 // The remaining number of lives.
 const int ALEInterface::lives() {
-    return romSettings->lives();
+  if (!romSettings.get()){
+    throw std::runtime_error("ROM not set");
+  }
+  return romSettings->lives();
 }
 
 // Applies an action to the game and returns the reward. It is the
@@ -213,12 +221,18 @@ reward_t ALEInterface::act(Action action) {
 // Returns the vector of legal actions. This should be called only
 // after the rom is loaded.
 ActionVect ALEInterface::getLegalActionSet() {
+  if (!romSettings.get()){
+    throw std::runtime_error("ROM not set");
+  }
   return romSettings->getAllActions();
 }
 
 // Returns the vector of the minimal set of actions needed to play
 // the game.
 ActionVect ALEInterface::getMinimalActionSet() {
+  if (!romSettings.get()){
+    throw std::runtime_error("ROM not set");
+  }
   return romSettings->getMinimalActionSet();
 }
 

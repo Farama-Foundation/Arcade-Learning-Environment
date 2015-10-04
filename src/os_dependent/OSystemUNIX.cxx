@@ -27,6 +27,7 @@
 #include "bspf.hxx"
 #include "OSystem.hxx"
 #include "OSystemUNIX.hxx"
+using namespace std;
 
 //ALE  #ifdef HAVE_GETTIMEOFDAY
 #include <time.h>
