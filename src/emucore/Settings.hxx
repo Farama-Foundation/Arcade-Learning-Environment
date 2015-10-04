@@ -22,6 +22,7 @@
 class OSystem;
 
 #include <map>
+#include <stdexcept>
 
 #include "../common/Array.hxx"
 #include "m6502/src/bspf/src/bspf.hxx"
