@@ -38,6 +38,9 @@ class ALEState {
     // Makes a copy of this state, also storing emulator information provided as a string
     ALEState(const ALEState &rhs, std::string serialized);
 
+    // Restores a serialized ALEState
+    ALEState(std::string serialized);
+
     /** Resets the system to its start state. numResetSteps 'RESET' actions are taken after the
       *  start. */
     void reset(int numResetSteps = 1);
@@ -62,6 +65,8 @@ class ALEState {
 
     //Get the number of frames executed this episode.
     const int getEpisodeFrameNumber() const { return m_episode_frame_number; }
+
+    std::string serialize();
 
 
   protected:
