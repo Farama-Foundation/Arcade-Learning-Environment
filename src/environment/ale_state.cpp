@@ -33,7 +33,7 @@ ALEState::ALEState(const ALEState &rhs, std::string serialized):
   m_serialized_state(serialized) {
 }
 
-ALEState::ALEState(std::string serialized) {
+ALEState::ALEState(const std::string &serialized) {
   Deserializer des(serialized);
   this->m_left_paddle = des.getInt();
   this->m_right_paddle = des.getInt();

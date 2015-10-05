@@ -39,7 +39,7 @@ class ALEState {
     ALEState(const ALEState &rhs, std::string serialized);
 
     // Restores a serialized ALEState
-    ALEState(std::string serialized);
+    ALEState(const std::string &serialized);
 
     /** Resets the system to its start state. numResetSteps 'RESET' actions are taken after the
       *  start. */
