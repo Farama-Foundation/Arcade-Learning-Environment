@@ -77,6 +77,10 @@ extern "C" {
   void restoreSystemState(ALEInterface *ale, ALEState* state){ale->restoreSystemState(*state);}
   void deleteState(ALEState* state){delete state;}
   void saveScreenPNG(ALEInterface *ale,const char *filename){ale->saveScreenPNG(filename);}
+
+  void encodeState(ALEState *state, char *buf);
+  int encodeStateLen(ALEState *state);
+  ALEState *decodeState(const char *serialized, int len);
 }
 
 #endif
