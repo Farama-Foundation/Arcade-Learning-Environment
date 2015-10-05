@@ -96,7 +96,7 @@ void ALEState::resetEpisodeFrameNumber() {
 }
 
 std::string ALEState::serialize() {
-  Serialier ser;
+  Serializer ser;
 
   ser.putInt(this->m_left_paddle);
   ser.putInt(this->m_right_paddle);
