@@ -83,7 +83,7 @@ ale_lib.deleteState.argtypes = [c_void_p]
 ale_lib.deleteState.restype = None
 ale_lib.saveScreenPNG.argtypes = [c_void_p, c_char_p]
 ale_lib.saveScreenPNG.restype = None
-ale_lib.encodeState.argtypes = [c_void_p, c_void_p]
+ale_lib.encodeState.argtypes = [c_void_p, c_void_p, c_int]
 ale_lib.encodeState.restype = None
 ale_lib.encodeStateLen.argtypes = [c_void_p]
 ale_lib.encodeStateLen.restype = c_int
@@ -258,7 +258,7 @@ class ALEInterface(object):
         if buf == None:
             length = ale_lib.encodeStateLen(state)
             buf = np.zeros(length, dtype=np.uint8)
-        ale_lib.encodeState(state, as_ctypes(buf))
+        ale_lib.encodeState(state, as_ctypes(buf), c_int(len(buf)))
         return buf
 
     def decodeState(self, serialized):
