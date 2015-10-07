@@ -259,6 +259,31 @@ const ALEScreen& ALEInterface::getScreen() {
   return environment->getScreen();
 }
 
+//This method should receive an array of length width x height
+//(generally 160 x 210 = 33,600) and then it will fill this array
+//with the grayscale colours
+void ALEInterface::getScreenGrayscale(pixel_t *grayscale_output_buffer){
+  size_t w = environment->getScreen().width();
+  size_t h = environment->getScreen().height();
+  size_t screen_size = w*h;
+  pixel_t *ale_screen_data = environment->getScreen().getArray();
+
+  theOSystem->colourPalette().applyPaletteGrayscale(grayscale_output_buffer, ale_screen_data, screen_size);
+}
+
+//This method should receive an array of length 3 x width x height
+//(generally 3 x 160 x 210 = 100,800) and then it will fill this
+//array with the RGB colours. The first positions contain the red
+//colours, followed by the green colours and then the blue colours
+void ALEInterface::getScreenRGB(pixel_t *output_rgb_buffer){
+  size_t w = environment->getScreen().width();
+  size_t h = environment->getScreen().height();
+  size_t screen_size = w*h;
+  pixel_t *ale_screen_data = environment->getScreen().getArray();
+
+  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size);
+}
+
 // Returns the current RAM content
 const ALERAM& ALEInterface::getRAM() {
   return environment->getRAM();
