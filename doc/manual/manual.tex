@@ -697,11 +697,11 @@ clear.
   
   \verb+const ALEScreen &getScreen()+: Returns a matrix containing the current game screen.
   
-  \verb+unsigned char *grayscaleScreen getScreenGrayscale()+: Returns an array of length 
+  \verb+pixel_t* getScreenGrayscale()+: Returns an array of length 
   $\mbox{width} \times \mbox{height}$ (generally $160 \times 210 = 33,600$) where each position
   consists of a grayscale pixel.
   
-  \verb+unsigned char *rgbScreen getScreenRGB()+: Returns an array of length $3 \times x$
+  \verb+pixel_t* getScreenRGB()+: Returns an array of length $3 \times x$
   where $x = \mbox{width} \times \mbox{height}$ (generally the whole array has size 
   $3 \times 160 \times 210 = 100,800$). The first $x$ positions contain the red colours, followed by the
   green colours and then the blue colours.
