@@ -46,7 +46,7 @@
 #include <string>
 #include <memory>
 
-static const std::string Version = "0.5.0";
+static const std::string Version = "0.5.1";
 
 /**
    This class interfaces ALE with external code for controlling agents.
