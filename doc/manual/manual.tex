@@ -697,6 +697,15 @@ clear.
   
   \verb+const ALEScreen &getScreen()+: Returns a matrix containing the current game screen.
   
+  \verb+unsigned char *grayscaleScreen getScreenGrayscale()+: Returns an array of length 
+  $\mbox{width} \times \mbox{height}$ (generally $160 \times 210 = 33,600$) where each position
+  consists of a grayscale pixel.
+  
+  \verb+unsigned char *rgbScreen getScreenRGB()+: Returns an array of length $3 \times x$
+  where $x = \mbox{width} \times \mbox{height}$ (generally the whole array has size 
+  $3 \times 160 \times 210 = 100,800$). The first $x$ positions contain the red colours, followed by the
+  green colours and then the blue colours.
+  
   \verb+const ALERAM &getRAM()+: Returns a vector containing current RAM content (byte-level).
   
   \verb+void saveState()+: Saves the current state of the system if one wants to be able to recover 
@@ -704,6 +713,18 @@ clear.
   
   \verb+void loadState()+: Loads a previous saved state of the system once we have a state saved.
 
+  \verb+ALEState cloneState()+: Makes a copy of the environment state. This copy does \textbf{not}
+  include pseudo-randomness, making it suitable for planning purposes.
+
+  \verb+ALEState cloneSystemState()+:  This makes a copy of the system and environment state,
+  suitable for serialization. This includes pseudo-randomness and so is \textbf{not} suitable for planning
+  purposes.
+
+  \verb+void restoreState(const ALEState& state)+:  Reverse operation of \verb+cloneState()+. This does not
+  restore pseudo-randomness, so that repeated calls to \verb+restoreState()+ in the stochastic controls setting
+  will not lead to the same outcomes. By contrast, see \verb+restoreSystemState+.
+
+  \verb+void restoreSystemState(const ALEState& state)+: Reverse operation of \verb+cloneSystemState+.
   \subsection{Recording trajectories}
    
   \indent \indent \verb+void saveScreenPNG(const string& filename)+: Saves the current screen as
