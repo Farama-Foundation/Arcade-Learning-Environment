@@ -23,7 +23,7 @@ ale_lib.getBool.argtypes = [c_void_p, c_char_p]
 ale_lib.getBool.restype = c_bool
 ale_lib.getFloat.argtypes = [c_void_p, c_char_p]
 ale_lib.getFloat.restype = c_float
-ale_lib.setString.argtypes = [c_void_p, c_char_p, c_int]
+ale_lib.setString.argtypes = [c_void_p, c_char_p, c_char_p]
 ale_lib.setString.restype = None
 ale_lib.setInt.argtypes = [c_void_p, c_char_p, c_int]
 ale_lib.setInt.restype = None
@@ -71,8 +71,24 @@ ale_lib.saveState.argtypes = [c_void_p]
 ale_lib.saveState.restype = None
 ale_lib.loadState.argtypes = [c_void_p]
 ale_lib.loadState.restype = None
+ale_lib.cloneState.argtypes = [c_void_p]
+ale_lib.cloneState.restype = c_void_p
+ale_lib.restoreState.argtypes = [c_void_p, c_void_p]
+ale_lib.restoreState.restype = None
+ale_lib.cloneSystemState.argtypes = [c_void_p]
+ale_lib.cloneSystemState.restype = c_void_p
+ale_lib.restoreSystemState.argtypes = [c_void_p, c_void_p]
+ale_lib.restoreSystemState.restype = None
+ale_lib.deleteState.argtypes = [c_void_p]
+ale_lib.deleteState.restype = None
 ale_lib.saveScreenPNG.argtypes = [c_void_p, c_char_p]
 ale_lib.saveScreenPNG.restype = None
+ale_lib.encodeState.argtypes = [c_void_p, c_void_p, c_int]
+ale_lib.encodeState.restype = None
+ale_lib.encodeStateLen.argtypes = [c_void_p]
+ale_lib.encodeStateLen.restype = c_int
+ale_lib.decodeState.argtypes = [c_void_p, c_int]
+ale_lib.decodeState.restype = c_void_p
 
 class ALEInterface(object):
     def __init__(self):
@@ -136,7 +152,6 @@ class ALEInterface(object):
         height = ale_lib.getScreenHeight(self.obj)
         return (width, height)
 
-
     def getScreen(self, screen_data=None):
         """This function fills screen_data with the RAW Pixel data
         screen_data MUST be a numpy array of uint8/int8. This could be initialized like so:
@@ -195,13 +210,59 @@ class ALEInterface(object):
         return ram
 
     def saveScreenPNG(self, filename):
+        """Save the current screen as a png file"""
         return ale_lib.saveScreenPNG(self.obj, filename)
 
     def saveState(self):
+        """Saves the state of the system"""
         return ale_lib.saveState(self.obj)
 
     def loadState(self):
+        """Loads the state of the system"""
         return ale_lib.loadState(self.obj)
+
+    def cloneState(self):
+        """This makes a copy of the environment state. This copy does *not*
+        include pseudorandomness, making it suitable for planning
+        purposes. By contrast, see cloneSystemState.
+        """
+        return ale_lib.cloneState(self.obj)
+
+    def restoreState(self, state):
+        """Reverse operation of cloneState(). This does not restore
+        pseudorandomness, so that repeated calls to restoreState() in
+        the stochastic controls setting will not lead to the same
+        outcomes.  By contrast, see restoreSystemState.
+        """
+        ale_lib.restoreState(self.obj, state)
+
+    def cloneSystemState(self):
+        """This makes a copy of the system & environment state, suitable for
+        serialization. This includes pseudorandomness and so is *not*
+        suitable for planning purposes.
+        """
+        return ale_lib.cloneSystemState(self.obj)
+
+    def restoreSystemState(self, state):
+        """Reverse operation of cloneSystemState."""
+        ale_lib.restoreSystemState(self.obj, state)
+
+    def deleteState(self, state):
+        """ Deallocates the ALEState """
+        ale_lib.deleteState(state)
+
+    def encodeStateLen(self, state):
+        return ale_lib.encodeStateLen(state)
+
+    def encodeState(self, state, buf=None):
+        if buf == None:
+            length = ale_lib.encodeStateLen(state)
+            buf = np.zeros(length, dtype=np.uint8)
+        ale_lib.encodeState(state, as_ctypes(buf), c_int(len(buf)))
+        return buf
+
+    def decodeState(self, serialized):
+        return ale_lib.decodeState(as_ctypes(serialized), len(serialized))
 
     def __del__(self):
         ale_lib.ALE_del(self.obj)

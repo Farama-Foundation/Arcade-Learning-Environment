@@ -1,3 +1,15 @@
+October 4th, 2015. ALE 0.5dev_b.
+  * Enforce flags existence (@mcmachado).
+  * Fix RNG issues introduced in 0.5.0.
+  * Routines for ALEState serialization (@Jragonmiris). 
+  * Additional bug fixes.
+
+July 7th, 2015. ALE 0.5dev.
+  * Refactored Python getScreenRGB to return unpacked RGB values (@spragunr).
+  * Sets the default value of the color_averaging flag to be true. It was true by default in previous versions but was changed in 0.5.0. Reverted for backward compatibility.
+  * Added RNG serialization capability.
+  * Bug fixes from ALE 0.5.0.
+
 June 22nd, 2015. ALE 0.5.0.
   * Added action_repeat_stochasticity.
   * Added sound playback, visualization.

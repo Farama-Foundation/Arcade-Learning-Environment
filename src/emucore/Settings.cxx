@@ -93,6 +93,8 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("uipalette", "0");
     setInternal("mwheel", "4");
     setInternal("autoslot", "false");
+
+    setDefaultSettings();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -108,8 +110,8 @@ void Settings::loadConfig(const char* config_file){
 
     ifstream in(config_file);
     if(!in || !in.is_open()) {
-    ale::Logger::Warning << "Warning: couldn't load settings file: " << config_file << "\n";
-    return;
+        ale::Logger::Warning << "Warning: couldn't load settings file: " << config_file << std::endl; 
+        return;
     }
 
     while(getline(in, line)) {
@@ -379,46 +381,58 @@ void Settings::saveConfig()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setInt(const string& key, const int value)
 {
-  ostringstream stream;
+  std::ostringstream stream;
   stream << value;
 
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, stream.str(), idx);
-  else
+  }
+  else{
+    verifyVariableExistence(intSettings, key);
     setExternal(key, stream.str());
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setFloat(const string& key, const float value)
 {
-  ostringstream stream;
+  std::ostringstream stream;
   stream << value;
 
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, stream.str(), idx);
-  else
+  }
+  else{
+    verifyVariableExistence(floatSettings, key);
     setExternal(key, stream.str());
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setBool(const string& key, const bool value)
 {
-  ostringstream stream;
+  std::ostringstream stream;
   stream << value;
 
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, stream.str(), idx);
-  else
+  }
+  else{
+    verifyVariableExistence(boolSettings, key);
     setExternal(key, stream.str());
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setString(const string& key, const string& value)
 {
-  if(int idx = getInternalPos(key) != -1)
+  if(int idx = getInternalPos(key) != -1){
     setInternal(key, value, idx);
-  else
+  }
+  else{
+    verifyVariableExistence(stringSettings, key);
     setExternal(key, value);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -528,7 +542,7 @@ const string& Settings::getString(const string& key, bool strict) const {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setSize(const string& key, const int value1, const int value2)
 {
-  ostringstream buf;
+  std::ostringstream buf;
   buf << value1 << "x" << value2;
   setString(key, buf.str());
 }
@@ -672,4 +686,59 @@ Settings& Settings::operator = (const Settings&)
   assert(false);
 
   return *this;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Settings::setDefaultSettings() {
+
+    // Stella settings
+    stringSettings.insert(pair<string, string>("cpu", "low")); // Reduce CPU emulation fidelity for speed
+
+    // Controller settings
+    intSettings.insert(pair<string, int>("max_num_frames", 0));
+    intSettings.insert(pair<string, int>("max_num_frames_per_episode", 0));
+
+    // FIFO controller settings
+    boolSettings.insert(pair<string, bool>("run_length_encoding", true));
+
+    // Environment customization settings
+    boolSettings.insert(pair<string, bool>("restricted_action_set", false));
+    intSettings.insert(pair<string, int>("random_seed", 0));
+    boolSettings.insert(pair<string, bool>("color_averaging", true));
+    boolSettings.insert(pair<string, bool>("send_rgb", false));
+    intSettings.insert(pair<string, int>("frame_skip", 1));
+    floatSettings.insert(pair<string, float>("repeat_action_probability", 0.25));
+    stringSettings.insert(pair<string, string>("rom_file", ""));
+
+    // Record settings
+    intSettings.insert(pair<string, int>("fragsize", 64)); // fragsize to 64 ensures proper sound sync
+    stringSettings.insert(pair<string, string>("record_screen_dir", ""));
+    stringSettings.insert(pair<string, string>("record_sound_filename", ""));
+
+    // Display Settings
+    boolSettings.insert(pair<string, bool>("display_screen", false));
+
+    for(map<string, string>::iterator it = stringSettings.begin(); it != stringSettings.end(); it++) {
+      this->setString(it->first, it->second);
+    }
+
+    for(map<string, float>::iterator it = floatSettings.begin(); it != floatSettings.end(); it++) {
+      this->setFloat(it->first, it->second);
+    }
+
+    for(map<string, bool>::iterator it = boolSettings.begin(); it != boolSettings.end(); it++) {
+      this->setBool(it->first, it->second);
+    }
+
+    for(map<string, int>::iterator it = intSettings.begin(); it != intSettings.end(); it++) {
+      this->setInt(it->first, it->second);
+    }
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+template<typename ValueType>
+void Settings::verifyVariableExistence(map<string, ValueType> dict, string key){
+    if(dict.find(key) == dict.end()){
+      throw std::runtime_error("The key " + key + " you are trying to set does not exist.\n");
+    }
 }

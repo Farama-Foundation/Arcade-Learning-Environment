@@ -38,6 +38,9 @@ class ALEState {
     // Makes a copy of this state, also storing emulator information provided as a string
     ALEState(const ALEState &rhs, std::string serialized);
 
+    // Restores a serialized ALEState
+    ALEState(const std::string &serialized);
+
     /** Resets the system to its start state. numResetSteps 'RESET' actions are taken after the
       *  start. */
     void reset(int numResetSteps = 1);
@@ -63,18 +66,22 @@ class ALEState {
     //Get the number of frames executed this episode.
     const int getEpisodeFrameNumber() const { return m_episode_frame_number; }
 
+    std::string serialize();
+
 
   protected:
     // Let StellaEnvironment access these methods: they are needed for emulation purposes
     friend class StellaEnvironment;
 
     // The two methods below are meant to be used by StellaEnvironment.
-    /** Restores the environment to a previously saved state. */ 
-    void load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs);
+    /** Restores the environment to a previously saved state. If load_system == true, we also
+        restore system-specific information (such as the RNG state). */ 
+    void load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs,
+              bool load_system);
 
     /** Returns a "copy" of the current state, including the information necessary to restore
-      *  the emulator. */
-    ALEState save(OSystem* osystem, RomSettings* settings, std::string md5);
+      *  the emulator. If save_system == true, this includes the RNG state. */
+    ALEState save(OSystem* osystem, RomSettings* settings, std::string md5, bool save_system);
 
     /** Reset key presses */
     void resetKeys(Event* event_obj);

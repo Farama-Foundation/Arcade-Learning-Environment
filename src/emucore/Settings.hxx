@@ -21,6 +21,9 @@
 
 class OSystem;
 
+#include <map>
+#include <stdexcept>
+
 #include "../common/Array.hxx"
 #include "m6502/src/bspf/src/bspf.hxx"
 
@@ -162,6 +165,7 @@ class Settings
     */
     void setSize(const std::string& key, const int value1, const int value2);
 
+
   private:
     // Copy constructor isn't supported by this class so make it private
     Settings(const Settings&);
@@ -176,6 +180,9 @@ class Settings
       return (first == std::string::npos) ? std::string() :
               str.substr(first, str.find_last_not_of(' ')-first+1);
     }
+
+    // Sets all of the ALE-specific default settings
+    void setDefaultSettings();
 
   protected:
     // The parent OSystem object
@@ -206,6 +213,15 @@ class Settings
                     int pos = -1, bool useAsInitial = false);
 
   private:
+    //Maps containing all external settings an user can
+    //define and their respectives default values.
+    std::map<std::string,int> intSettings;
+    std::map<std::string,bool> boolSettings;
+    std::map<std::string,float> floatSettings;
+    std::map<std::string,std::string> stringSettings;
+    template<typename ValueType>
+    void verifyVariableExistence(std::map<std::string, ValueType> dict, std::string key);
+
     // Holds key,value pairs that are necessary for Stella to
     // function and must be saved on each program exit.
     SettingsArray myInternalSettings;

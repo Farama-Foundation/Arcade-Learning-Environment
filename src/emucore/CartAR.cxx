@@ -40,7 +40,8 @@ CartridgeAR::CartridgeAR(const uInt8* image, uInt32 size, bool fastbios)
   memcpy(myLoadImages, image, size);
 
   // Initialize RAM with random values
-  class Random random;
+  class Random& random = Random::getInstance();
+
   for(i = 0; i < 6 * 1024; ++i)
   {
     myImage[i] = random.next();

@@ -23,6 +23,7 @@
 #include "System.hxx"
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
+#include "OSystem.hxx"
 #include <iostream>
 using namespace std;
 #include "../common/Log.hpp"
@@ -31,13 +32,11 @@ using namespace std;
 M6532::M6532(const Console& console)
     : myConsole(console)
 {
-  class Random random;
-
   // Randomize the 128 bytes of memory
 
   for(uInt32 t = 0; t < 128; ++t)
   {
-    myRAM[t] = random.next();
+    myRAM[t] = myConsole.osystem().rng().next();
   }
 
   // Initialize other data members
@@ -58,9 +57,7 @@ const char* M6532::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void M6532::reset()
 {
-  class Random random;
-
-  myTimer = 25 + (random.next() % 75);
+  myTimer = 25 + (myConsole.osystem().rng().next() % 75);
   myIntervalShift = 6;
   myCyclesWhenTimerSet = 0;
   myCyclesWhenInterruptReset = 0;

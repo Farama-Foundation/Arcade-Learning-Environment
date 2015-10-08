@@ -38,7 +38,8 @@ CartridgeMC::CartridgeMC(const uInt8* image, uInt32 size)
   myRAM = new uInt8[32 * 1024];
 
   // Initialize RAM with random values
-  class Random random;
+  class Random& random = Random::getInstance();
+
   for(i = 0; i < 32 * 1024; ++i)
   {
     myRAM[i] = random.next();

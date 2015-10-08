@@ -21,13 +21,12 @@
 
 #include "m6502/src/bspf/src/bspf.hxx"
 
-/**
-  This is a quick-and-dirty random number generator.  It is based on 
-  information in Chapter 7 of "Numerical Recipes in C".  It's a simple 
-  linear congruential generator.
+class Serializer;
+class Deserializer;
 
-  @author  Bradford W. Mott
-  @version $Id: Random.hxx,v 1.4 2007/01/01 18:04:49 stephena Exp $
+/**
+  This Random class uses a Mersenne Twister to provide pseudorandom numbers.
+  The class itself is derived from the original 'Random' class by Bradford W. Mott.
 */
 class Random
 {
@@ -39,13 +38,15 @@ class Random
 
       @param value The value to seed the random number generator with
     */
-    static void seed(uInt32 value);
+    void seed(uInt32 value);
 
     /**
       Create a new random number generator
     */
     Random();
-    
+   
+    ~Random();
+
     /**
       Answer the next random number from the random number generator
 
@@ -60,13 +61,29 @@ class Random
     */
     double nextDouble();
 
-  private:
-    
-    // Seed to use for creating new random number generators
-    static uInt32 ourSeed;
+    // Returns a static Random object. DO NOT USE THIS. This is mostly meant for use by the
+    // code for the various cartridges. 
+    static Random& getInstance();
 
-    // Indicates if seed has been set or not
-    static bool ourSeeded;
+    /**
+      Serializes the RNG state.
+    */
+    bool saveState(Serializer& out);
+
+    /** 
+      Deserializes the RNG state.
+    */
+    bool loadState(Deserializer& in);
+
+    private:
+    
+    // Actual rng (implementation hidden away from the header to avoid depending on
+    // tinymt).
+    class Impl;
+    Impl *m_pimpl;
+
+    // A static Random object. Don't use this.
+    static Random s_random;
 };
 #endif
 

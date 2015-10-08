@@ -35,7 +35,8 @@ CartridgeE7::CartridgeE7(const uInt8* image)
   }
 
   // Initialize RAM with random values
-  class Random random;
+  class Random& random = Random::getInstance();
+
   for(uInt32 i = 0; i < 2048; ++i)
   {
     myRAM[i] = random.next();

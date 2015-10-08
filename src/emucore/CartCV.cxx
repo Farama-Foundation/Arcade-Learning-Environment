@@ -38,7 +38,8 @@ CartridgeCV::CartridgeCV(const uInt8* image, uInt32 size)
     }
 
     // Initialize RAM with random values
-    class Random random;
+  class Random& random = Random::getInstance();
+
     for(uInt32 i = 0; i < 1024; ++i)
     {
       myRAM[i] = random.next();

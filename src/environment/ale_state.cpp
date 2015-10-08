@@ -15,12 +15,14 @@
 #include "../common/Constants.h"
 using namespace std;
 
+#include <stdexcept>
+
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():
   m_left_paddle(PADDLE_DEFAULT_VALUE),
   m_right_paddle(PADDLE_DEFAULT_VALUE),
   m_frame_number(0),
-  m_episode_frame_number(0){
+  m_episode_frame_number(0) {
 }
 
 ALEState::ALEState(const ALEState &rhs, std::string serialized):
@@ -31,14 +33,33 @@ ALEState::ALEState(const ALEState &rhs, std::string serialized):
   m_serialized_state(serialized) {
 }
 
+ALEState::ALEState(const std::string &serialized) {
+  Deserializer des(serialized);
+  this->m_left_paddle = des.getInt();
+  this->m_right_paddle = des.getInt();
+  this->m_frame_number = des.getInt();
+  this->m_episode_frame_number = des.getInt();
+  this->m_serialized_state = des.getString();
+}
+
+
 /** Restores ALE to the given previously saved state. */ 
-void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs) {
+void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs,
+    bool load_system) {
   assert(rhs.m_serialized_state.length() > 0);
   
   // Deserialize the stored string into the emulator state
   Deserializer deser(rhs.m_serialized_state);
-  
+
+  // A primitive check to produce a meaningful error if this state does not contain osystem info. 
+  if (deser.getBool() != load_system)
+    throw new std::runtime_error("Attempting to load an ALEState which does not contain "
+        "system information.");
+
   osystem->console().system().loadState(md5, deser);
+  // If we have osystem data, load it as well
+  if (load_system)
+    osystem->loadState(deser);
   settings->loadState(deser);
  
   // Copy over other member variables
@@ -48,11 +69,17 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, co
   m_frame_number = rhs.m_frame_number; 
 }
 
-ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::string md5) {
+ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::string md5, 
+    bool save_system) {
   // Use the emulator's built-in serialization to save the state
-  Serializer ser;  
+  Serializer ser; 
   
+  // We use 'save_system' as a check at load time. 
+  ser.putBool(save_system);
+
   osystem->console().system().saveState(md5, ser);
+  if (save_system)
+    osystem->saveState(ser);
   settings->saveState(ser);
 
   // Now make a copy of this state, also storing the emulator serialization
@@ -60,13 +87,25 @@ ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::string md5
 }
 
 void ALEState::incrementFrame(int steps /* = 1 */) {
-    m_frame_number+=steps;
-    m_episode_frame_number+=steps;
+    m_frame_number += steps;
+    m_episode_frame_number += steps;
 }
 
-void ALEState::resetEpisodeFrameNumber(){
-        m_episode_frame_number = 0;
-    }
+void ALEState::resetEpisodeFrameNumber() {
+    m_episode_frame_number = 0;
+}
+
+std::string ALEState::serialize() {
+  Serializer ser;
+
+  ser.putInt(this->m_left_paddle);
+  ser.putInt(this->m_right_paddle);
+  ser.putInt(this->m_frame_number);
+  ser.putInt(this->m_episode_frame_number);
+  ser.putString(this->m_serialized_state);
+
+  return ser.get_str();
+}
 
 
 
@@ -443,6 +482,6 @@ bool ALEState::equals(ALEState &rhs) {
   return (rhs.m_serialized_state == this->m_serialized_state &&
     rhs.m_left_paddle == this->m_left_paddle &&
     rhs.m_right_paddle == this->m_right_paddle &&
-    rhs.m_frame_number == this->m_frame_number) &&
-  rhs.m_episode_frame_number == this->m_episode_frame_number;
+    rhs.m_frame_number == this->m_frame_number &&
+    rhs.m_episode_frame_number == this->m_episode_frame_number);
 }

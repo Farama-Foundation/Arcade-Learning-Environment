@@ -40,7 +40,7 @@ Cartridge3E::Cartridge3E(const uInt8* image, uInt32 size)
   }
 
   // Initialize RAM with random values
-  class Random random;
+  class Random& random = Random::getInstance();
   for(uInt32 i = 0; i < 32768; ++i)
   {
     myRam[i] = random.next();
