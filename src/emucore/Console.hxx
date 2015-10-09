@@ -105,6 +105,13 @@ class Console
     System& system() const { return *mySystem; }
 
     /**
+      Returns the OSystem for this emulator.
+      
+      @return The OSystem. 
+    */
+    OSystem& osystem() const { return *myOSystem; }
+
+    /**
       Get the cartridge used by the console which contains the ROM code
 
       @return The cartridge for this console
@@ -246,9 +253,6 @@ class Console
     // Pointer to the 6532 (aka RIOT) (the debugger needs it)
     // A RIOT of my own! (...with apologies to The Clash...)
     M6532 *myRiot;
-
-    //Random number generator
-    mutable Random randNumGen;
 
 #ifdef ATARIVOX_SUPPORT
     AtariVox *vox;

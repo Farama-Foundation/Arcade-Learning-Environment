@@ -51,7 +51,7 @@ OSystemUNIX::OSystemUNIX()
   //ALE  const string& basedir = string(getenv("HOME")) + "/.stella";
   string basedir = string(".");  //ALE 
   setBaseDir(basedir);
-  setConfigFile(basedir + "/stellarc");
+  setConfigFile(basedir + "/ale.cfg");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

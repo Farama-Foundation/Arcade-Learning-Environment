@@ -5,7 +5,7 @@
 \usepackage{hyperref}
 \usepackage{fullpage}
 
-\title{Arcade Learning Environment\\ Technical Manual (v.0.5.0)}
+\title{Arcade Learning Environment\\ Technical Manual (v.0.5.1)}
 \author{Marlos C. Machado, Matthew Hausknecht, Marc G. Bellemare}
 
 \begin{document}
@@ -20,7 +20,7 @@
 
 \section{Overview}
 
-This document is roughly divided into three parts. The first part describes how to install the Arcade Learning Environment. The second part describes the various ALE interfaces currently available: 
+This document is roughly divided into three parts. The first part describes how to install the Arcade Learning Environment (ALE). The second part describes the various ALE interfaces currently available: 
 \begin{enumerate}
   \item \textbf{Shared Library interface} (C++ only): Loads ALE as a shared library (Section 
   \ref{sec:shared_library_interface}).
@@ -103,7 +103,8 @@ To instantiate the Arcade Learning Environment it is enough to write:\\
 
 Once the environment is initialized, it is now possible to set its arguments. This is done with the 
 functions \verb+setBool(), setInt(), setFloat()+. The complete list of flags is available in 
-Section~\ref{sec:arguments}. Just as an example, to set the environment's seed we write \\
+Section~\ref{sec:arguments}. Just as an example, to set the environment's seed we write:\\
+
 \verb+ale.setInt("random_seed", 123);+\\
 
 Finally, after setting the desired environment parameters we now load the game ROM by providing its filename to the \verb+loadROM+ method:\\
@@ -159,7 +160,7 @@ See the
 
 \begin{center} \verb+doc/examples/sharedLibraryExample.cpp+\end{center}
 
-example for more details, including compilation, as
+\noindent example for more details, including compilation, as
 well as Section \ref{sec:troubleshooting} if errors arise.
 A complete list of functions available in the class \verb+ALEInterface+ is given in Section~\ref{sec:functions}.
 
@@ -169,7 +170,7 @@ To use the Python interface it is necessary to install it after ALE was compiled
 
 \verb+pip install .+\\
 
-without root/superuser access:
+\noindent without root/superuser access:
 
 \verb+pip install --user .+\\
 
@@ -216,15 +217,13 @@ ALE first sends the width and height of its screen matrix as a hyphen-separated 
 www-hhh\n
 \end{verbatim}
 
-where \verb+www+ and \verb+hhh+ are both integers.
-
-The agent then responds with a comma-separated string:
+\noindent where \verb+www+ and \verb+hhh+ are both integers. The agent then responds with a comma-separated string:
 
 \begin{verbatim}
 s,r,k,R\n
 \end{verbatim}
 
-where \verb+s+, \verb+r+, \verb+R+ are 1 or 0 to indicate that ALE should or should not send, at every time step, screen, RAM and episode-related information (see below for details). The third argument, \verb+k+, is deprecated and currently ignored.
+\noindent where \verb+s+, \verb+r+, \verb+R+ are 1 or 0 to indicate that ALE should or should not send, at every time step, screen, RAM and episode-related information (see below for details). The third argument, \verb+k+, is deprecated and currently ignored.
 
 \subsection{Main Loop -- ALE}
 
@@ -253,7 +252,7 @@ $i^{th}$ byte of RAM; in total this string is 256 characters long, not including
 
 In ``full'' mode, the screen string is \texttt{www} $\times$ \texttt{hhh} 2-digit hexadecimal numbers, each representing a pixel. Pixels are sent row by row, with \texttt{www} characters for each row. In total this string is 2 $\times$ \texttt{www} $\times$ \texttt{hhh} characters long.
 
-In run-length encoding mode, the screen string consists of a variable number of (colour, length) pairs denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next `length' pixels take on the given colour; run length is thus limited to 255. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour,length) pair, and varies depending on the screen.
+In run-length encoding mode, the screen string consists of a variable number of (colour, length) pairs denoting a run-length encoding of the screen, also row by row. Both colour and length are described using 2-digit hexadecimal numbers. Each pair indicates that the next `length' pixels take on the given colour; run length is thus limited to 255. Runs may wrap around onto the next row. The encoding terminates when the last pixel (i.e. the bottom-right pixel) is encoded. The length of this string is 4 characters per (colour, length) pair, and varies depending on the screen.
 
 In either case, the screen string is terminated by a colon.
 
@@ -280,7 +279,7 @@ These are sent as a pair of comma-separated integers on a single line, e.g.:
 2,18\n
 \end{verbatim}
 
-where the first integer is player A's action (here, \textsc{fire}) and the second integer, player B's action (here, \textsc{noop}). Emulator control (reset, save/load state) is also handled by sending a special action value as player A's action. See Section \ref{sec:available_actions} for the list of available actions.
+\noindent where the first integer is player A's action (here, \textsc{fire}) and the second integer, player B's action (here, \textsc{noop}). Emulator control (reset, save/load state) is also handled by sending a special action value as player A's action. See Section \ref{sec:available_actions} for the list of available actions.
 
 \subsection{Termination}\label{subsec:termination_conditions}
 
@@ -288,14 +287,14 @@ ALE will terminate (and potentially send a \verb+DIE+ message to the agent) whe 
 
 \begin{itemize}
   \item{\texttt{stdin} is closed, indicating that the agent is no longer sending data, or}
-  \item{The maximum number of frames (user-specified, with no maximum by default) has been reached.}
+  \item{the maximum number of frames (user-specified, with no maximum by default) has been reached.}
 \end{itemize}
 
 ALE will send an end-of-episode signal when one the following is true:
 
 \begin{itemize}
   \item{The maximum number of frames for this episode (user-specified, with no maximum by default) has been reached, or}
-  \item{The game has ended, usually when player A loses their last life.}
+  \item{the game has ended, usually when player A loses their last life.}
 \end{itemize}
 
 \section{RL-Glue Interface}\label{sec:rlglue_interface}
@@ -332,12 +331,12 @@ ale_0_5/doc/examples> make -f Makefile.rlglue
 
 You will then need to start the following processes to run the sample RL-Glue agent in ALE:
 
-\begin{itemize}
-  \item{\verb+> rl_glue+} 
-  \item{\verb+ale_0_5> doc/examples/RLGlueAgent+}
-  \item{\verb+ale_0_5> doc/examples/RLGlueExperiment+}
-  \item{\verb+ale_0_5> ./ale -game_controller rlglue+}
-\end{itemize}
+\begin{verbatim}
+ale_0_5> rl_glue
+ale_0_5> doc/examples/RLGlueAgent
+ale_0_5> doc/examples/RLGlueExperiment
+ale_0_5> ./ale -game_controller rlglue
+\end{verbatim}
 
 Additional options (such as those described below) can also be passed as command-line arguments.
 Please refer to the RL-Glue documentation for more details. 
@@ -386,7 +385,7 @@ up-left-fire (15) & down-right-fire (16) & down-left-fire (17) & reset* (40) & \
 \end{center}
 
 Note that the \verb+reset+ (40) action toggles the Atari 2600 switch, rather than reset the 
-environment, and as such is ignored by most interfaces. The Shared library, CTypes, and fifo
+environment, and as such is ignored by most interfaces. The shared library, CTypes, and fifo
 interfaces provide methods for properly resetting the environment. 
 
 Player B's actions are defined to be 18 + the equivalent action value for Player A. For example, Player B's up action is \verb+up+ (20). 
@@ -443,7 +442,7 @@ were unable to detect any delay or control lag.
 The motivation for introducing action repeat stochasticity was to help separate \emph{trajectory
 optimization} research from \emph{robust controller optimization}, the latter often being the 
 desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use 
-the default stochasticity level their agents, and clearly report on the setting used. More 
+the default stochasticity level in their agents, and clearly report the setting used. More 
 details on the effects of action repeat stochasticity will be made available in future 
 publications.
 
@@ -456,7 +455,7 @@ It may sometimes be convenient to restrict the agent to a smaller action set. Th
 accomplished by querying the \verb+RomSettings+ class using the method 
 \verb+getMinimalActionSet+. This then returns a set of actions judged ``minimal'' to play a given
 game. Due to the potentially high impact of this setting on performance, we encourage researchers
-to clearly report on the method used in their experiments. 
+to clearly report the method used in their experiments. 
 
 
 \section{Miscellaneous}
@@ -617,6 +616,9 @@ ld: symbol(s) not found for architecture x86_64
 
 Make sure your code contains \verb+#include <SDL.h>+ and that \verb+__USE_SDL+ is defined. Also, compiling under Mac OS X requires the inclusion of the flag \verb+-framework Cocoa+. See the shared library example for a working example. 
 
+\item The Python interface isn't working! It can't find \verb+libale_c.so+.
+
+Make sure to compile ALE using CMake. This will build the library required by the Python interface. 
 
 \end{itemize}
 
@@ -652,7 +654,7 @@ clear.
   a float value; \emph{e.g.}: \verb+getBool(``repeat_action_probability'')+.   
   
   \verb+void setString(const string& key, const string& value)+: Sets the value of any flag
-  that has a string type; \emph{e.g.}: \verb+setString("random_seed", "time")+.
+  that has a string type; \emph{e.g.}: \verb+setString("record_screen_dir", "record")+.
   \verb+loadRom()+ must be called before the setting will take effect.
   
   \verb+void setInt(const std::string& key, const int value)+: Sets the value of any flag
@@ -695,6 +697,15 @@ clear.
   
   \verb+const ALEScreen &getScreen()+: Returns a matrix containing the current game screen.
   
+  \verb+void getScreenGrayscale(pixel_t *grayscale_output_buffer)+: This method should receive an
+  array of length width $\times$ height (generally $160 \times 210 = 33,600$) and then it will fill this array
+  with the grayscale colours
+  
+  \verb+void getScreenRGB(pixel_t *output_rgb_buffer)+: This method should receive an array of length 
+  $3 \times$ width $\times$ height (generally $3 \times 160 \times 210 = 100,800$) and then it will fill this
+  array with the RGB colours. The first positions contain the red colours, followed by the green colours
+  and then the blue colours
+ 
   \verb+const ALERAM &getRAM()+: Returns a vector containing current RAM content (byte-level).
   
   \verb+void saveState()+: Saves the current state of the system if one wants to be able to recover 
@@ -702,6 +713,18 @@ clear.
   
   \verb+void loadState()+: Loads a previous saved state of the system once we have a state saved.
 
+  \verb+ALEState cloneState()+: Makes a copy of the environment state. This copy does \textbf{not}
+  include pseudo-randomness, making it suitable for planning purposes.
+
+  \verb+ALEState cloneSystemState()+:  This makes a copy of the system and environment state,
+  suitable for serialization. This includes pseudo-randomness and so is \textbf{not} suitable for planning
+  purposes.
+
+  \verb+void restoreState(const ALEState& state)+:  Reverse operation of \verb+cloneState()+. This does not
+  restore pseudo-randomness, so that repeated calls to \verb+restoreState()+ in the stochastic controls setting
+  will not lead to the same outcomes. By contrast, see \verb+restoreSystemState+.
+
+  \verb+void restoreSystemState(const ALEState& state)+: Reverse operation of \verb+cloneSystemState+.
   \subsection{Recording trajectories}
    
   \indent \indent \verb+void saveScreenPNG(const string& filename)+: Saves the current screen as
@@ -730,14 +753,15 @@ functions (e.g. \verb+setInt()+; see Section~\ref{sec:getSet}). The configuratio
   -game_controller <fifo|fifo_named|rlglue> -- selects an ALE interface
     default: unset
 
-  -random_seed <###|time> -- picks the ALE random seed, or sets it to current time
-    default: time
+  -random_seed <###> -- picks the ALE random seed; if set to 0, sets to current 
+    time instead 
+    default: 0 
 
   -display_screen <true|false> -- if true and SDL is enabled, displays ALE screen
     default: false
     
   -sound  <true|false> -- if true and SDL is enabled, the game will have game
-    sounds  enabled
+    sounds enabled
     default: false
 
 

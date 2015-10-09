@@ -71,7 +71,19 @@ extern "C" {
 
   void saveState(ALEInterface *ale){ale->saveState();}
   void loadState(ALEInterface *ale){ale->loadState();}
+  ALEState* cloneState(ALEInterface *ale){return new ALEState(ale->cloneState());}
+  void restoreState(ALEInterface *ale, ALEState* state){ale->restoreState(*state);}
+  ALEState* cloneSystemState(ALEInterface *ale){return new ALEState(ale->cloneSystemState());}
+  void restoreSystemState(ALEInterface *ale, ALEState* state){ale->restoreSystemState(*state);}
+  void deleteState(ALEState* state){delete state;}
   void saveScreenPNG(ALEInterface *ale,const char *filename){ale->saveScreenPNG(filename);}
+
+  // Encodes the state as a raw bytestream. This may have multiple '\0' characters
+  // and thus should not be treated as a C string. Use encodeStateLen to find the length
+  // of the buffer to pass in, or it will be overrun as this simply memcpys bytes into the buffer.
+  void encodeState(ALEState *state, char *buf, int buf_len);
+  int encodeStateLen(ALEState *state);
+  ALEState *decodeState(const char *serialized, int len);
 }
 
 #endif

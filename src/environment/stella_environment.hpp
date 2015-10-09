@@ -44,10 +44,17 @@ class StellaEnvironment {
     void save();
     void load();
 
-    /** Returns a copy of the current emulator state. */
+    /** Returns a copy of the current emulator state. Note that this doesn't include
+        pseudorandomness, so that clone/restoreState are suitable for planning. */
     ALEState cloneState();
     /** Restores a previously saved copy of the state. */
     void restoreState(const ALEState&);
+
+    /** Returns a copy of the current emulator state. This includes RNG state information, and
+        more generally should lead to exactly reproducibility. */
+    ALEState cloneSystemState();
+    /** Restores a previously saved copy of the state, including RNG state information. */
+    void restoreSystemState(const ALEState&);
 
     /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
       *  and performs one simulation step in Stella. Returns the resultant reward. When 
@@ -108,7 +115,6 @@ class StellaEnvironment {
     size_t m_frame_skip; // How many frames to emulate per act()
     float m_repeat_action_probability; // Stochasticity of the environment
     std::auto_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
-    Random m_rand_gen;
 
     // The last actions taken by our players
     Action m_player_a_action, m_player_b_action;

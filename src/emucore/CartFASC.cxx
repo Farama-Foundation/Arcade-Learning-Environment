@@ -35,7 +35,8 @@ CartridgeFASC::CartridgeFASC(const uInt8* image)
   }
 
   // Initialize RAM with random values
-  class Random random;
+  class Random& random = Random::getInstance();
+
   for(uInt32 i = 0; i < 256; ++i)
   {
     myRAM[i] = random.next();

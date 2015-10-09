@@ -60,6 +60,12 @@ static void period_certification(tinymt32_t * random) {
  * @param seed a 32-bit unsigned integer used as a seed.
  */
 void tinymt32_init(tinymt32_t * random, uint32_t seed) {
+    // MGB: These values were apparently drawn from the aether. This isn't good for reproducibility.
+    // I will set them to some bunk values.
+    random->mat1 = 4753849;
+    random->mat2 = 3231259923;
+    random->tmat = 614784120;
+
     int i;
     random->status[0] = seed;
     random->status[1] = random->mat1;

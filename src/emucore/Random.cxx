@@ -18,59 +18,129 @@
 
 #include <time.h>
 #include "Random.hxx"
+#include "Serializer.hxx"
+#include "Deserializer.hxx"
 
 // TODO(mgb): bring this include in once we switch to C++11.
 // #include <random>
 #include "TinyMT/tinymt32.h"
 
-// The random number generator is defined here to avoid having to expose tinymt32.h. 
-namespace RandomStatic {
+// A static Random object for compatibility purposes. Don't use this.
+Random Random::s_random;
 
+// Implementation of Random's random number generator wrapper. 
+class Random::Impl {
+  
   typedef tinymt32_t randgen_t;
-  // Random number generator 
-  randgen_t rndGenerator;
+
+  public:
+    
+    Impl();
+
+    // Implementations of the methods defined in Random.hpp.
+    void seed(uInt32 value);
+    uInt32 next();
+    double nextDouble();
+
+  private:
+   
+    friend class Random;
+
+    // Seed to use for creating new random number generators
+    uInt32 m_seed;
+
+    // Random number generator 
+    randgen_t m_randgen; 
+};
+
+Random::Impl::Impl()
+{
+    // Initialize seed to time
+    //seed((uInt32) time(NULL));
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Random::Impl::seed(uInt32 value)
+{
+  m_seed = value;
+  // TODO(mgb): this is the C++11 variant. 
+  // rndGenerator.seed(ourSeed);
+  tinymt32_init(&m_randgen, m_seed);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+uInt32 Random::Impl::next() 
+{
+  // TODO(mgb): C++11
+  // return rndGenerator();
+  return static_cast<uInt32>(tinymt32_generate_uint32(&m_randgen));
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+double Random::Impl::nextDouble()
+{
+  // TODO(mgb): C++11
+  // return rndGenerator() / double(rndGenerator.max() + 1.0);
+  return tinymt32_generate_32double(&m_randgen);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Random::Random() :
+    m_pimpl(new Random::Impl()) 
+{
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Random::~Random() {
+  if (m_pimpl != NULL) {
+    delete m_pimpl;
+    m_pimpl = NULL;
+  }
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Random::seed(uInt32 value)
 {
-  ourSeed = value;
-  ourSeeded = true;
-  // TODO(mgb): this is the C++11 variant. 
-  // rndGenerator.seed(ourSeed);
-
-  tinymt32_init(&RandomStatic::rndGenerator, ourSeed);
+  m_pimpl->seed(value);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Random::Random()
-{
-  // If we haven't been seeded then seed ourself
-  if(!ourSeeded)
-    seed((uInt32) time(NULL));
-}
- 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt32 Random::next()
 {
-  // TODO(mgb): C++11
-  // return rndGenerator();
-  return static_cast<uInt32>(tinymt32_generate_uint32(&RandomStatic::rndGenerator));
+  return m_pimpl->next();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 double Random::nextDouble()
 {
-  // TODO(mgb): C++11
-  // return rndGenerator() / double(rndGenerator.max() + 1.0);
-  return tinymt32_generate_32double(&RandomStatic::rndGenerator);
+  return m_pimpl->nextDouble();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt32 Random::ourSeed = 0;
+Random& Random::getInstance() {
+  return s_random;
+}
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool Random::ourSeeded = false;
+bool Random::saveState(Serializer& ser) {
 
+  // Serialize the TinyMT state
+  for (int i = 0; i < 4; i++)
+    ser.putInt(m_pimpl->m_randgen.status[i]);
+  // These aren't really needed, but we serialize them anyway 
+  ser.putInt(m_pimpl->m_randgen.mat1);
+  ser.putInt(m_pimpl->m_randgen.mat2);
+  ser.putInt(m_pimpl->m_randgen.tmat);
 
+  return true;
+}
+
+bool Random::loadState(Deserializer& deser) {
+
+  // Deserialize the TinyMT state
+  for (int i = 0; i < 4; i++)
+    m_pimpl->m_randgen.status[i] = deser.getInt();
+  m_pimpl->m_randgen.mat1 = deser.getInt();
+  m_pimpl->m_randgen.mat2 = deser.getInt();
+  m_pimpl->m_randgen.tmat = deser.getInt();
+
+  return true;
+}

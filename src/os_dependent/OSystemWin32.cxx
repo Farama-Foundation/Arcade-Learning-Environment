@@ -47,7 +47,7 @@ OSystemWin32::OSystemWin32()
   // For now, we just put it in the same directory as the executable.
   const string& basedir = ".";
   setBaseDir(basedir);
-  setConfigFile(basedir + "\\stellarc");
+  setConfigFile(basedir + "\\ale.cfg");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

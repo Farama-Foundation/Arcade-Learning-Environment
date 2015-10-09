@@ -62,8 +62,6 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
   theSettings.reset(new SettingsUNIX(theOSystem.get()));
 #endif
 
-  setDefaultSettings(theOSystem->settings());
-
   theOSystem->settings().loadConfig();
 }
 
@@ -91,16 +89,10 @@ void ALEInterface::loadSettings(const string& romfile,
     exit(1);
   }
 
-  // Seed random number generator
-  if (theOSystem->settings().getString("random_seed") == "time") {
-    Logger::Info << "Random Seed: Time" << endl;
-    Random::seed((uInt32)time(NULL));
-  } else {
-    int seed = theOSystem->settings().getInt("random_seed");
-    assert(seed >= 0);
-    Logger::Info << "Random Seed: " << seed << endl;
-    Random::seed((uInt32)seed);
-  }
+  // Must force the resetting of the OSystem's random seed, which is set before we change
+  // choose our random seed.
+  Logger::Info << "Random seed is " << theOSystem->settings().getInt("random_seed") << std::endl; 
+  theOSystem->resetRNGSeed();
 
   string currentDisplayFormat = theOSystem->console().getFormat();
   theOSystem->colourPalette().setPalette("standard", currentDisplayFormat);
@@ -305,6 +297,14 @@ ALEState ALEInterface::cloneState() {
 
 void ALEInterface::restoreState(const ALEState& state) {
   return environment->restoreState(state);
+}
+
+ALEState ALEInterface::cloneSystemState() {
+  return environment->cloneSystemState();
+}
+
+void ALEInterface::restoreSystemState(const ALEState& state) {
+  return environment->restoreSystemState(state);
 }
 
 void ALEInterface::saveScreenPNG(const string& filename) {
