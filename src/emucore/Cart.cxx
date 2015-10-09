@@ -48,7 +48,7 @@
 #include "MD5.hxx"
 #include "Props.hxx"
 #include "Settings.hxx"
-
+using namespace std;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
     const Properties& properties, const Settings& settings)
@@ -136,7 +136,7 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
   else if(type == "0840")
     cartridge = new Cartridge0840(image);
   else
-    cerr << "ERROR: Invalid cartridge type " << type << " ..." << endl;
+    ale::Logger::Error << "ERROR: Invalid cartridge type " << type << " ..." << endl;
 
   return cartridge;
 }
@@ -160,7 +160,7 @@ bool Cartridge::save(ofstream& out)
   uInt8* image = getImage(size);
   if(image == 0 || size <= 0)
   {
-    cerr << "save not supported" << endl;
+    ale::Logger::Error << "save not supported" << endl;
     return false;
   }
 

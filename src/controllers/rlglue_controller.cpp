@@ -25,6 +25,8 @@
 #include "../environment/ale_ram.hpp"
 #include <rlglue/utils/C/RLStruct_util.h>
 
+#include "../common/Log.hpp"
+
 RLGlueController::RLGlueController(OSystem* _osystem) :
   ALEController(_osystem) {
   m_max_num_frames = m_osystem->settings().getInt("max_num_frames");
@@ -56,7 +58,7 @@ bool RLGlueController::isDone() {
 }
 
 void RLGlueController::initRLGlue() {
-  std::cerr << "Initializing ALE RL-Glue ..." << std::endl;
+  ale::Logger::Info << "Initializing ALE RL-Glue ..." << std::endl;
 
   // Taken from setup_rlglue_network
   const char* host = kLocalHost;
@@ -121,7 +123,7 @@ void RLGlueController::rlGlueLoop() {
         break;
 
       default:
-        std::cerr << "Unknown RL-Glue command: " << envState << std::endl;
+        ale::Logger::Error << "Unknown RL-Glue command: " << envState << std::endl;
         error = true;
         break;
     };
@@ -230,7 +232,7 @@ void RLGlueController::envMessage() {
     // Null terminate the string :(
     message[messageLength] = 0;
 
-    std::cerr << "Message from RL-Glue: " << message << std::endl;
+    ale::Logger::Error << "Message from RL-Glue: " << message << std::endl;
 
     delete[] message;
   }
@@ -292,7 +294,7 @@ RLGlueController::RLGlueController(OSystem* system):
 }
 
 void RLGlueController::run() {
-  std::cerr << "RL-Glue interface unavailable. Please recompile with RL-Glue support." << 
+  ale::Logger::Error << "RL-Glue interface unavailable. Please recompile with RL-Glue support." << 
     std::endl;
 
   // We should return and terminate gracefully, since we can.

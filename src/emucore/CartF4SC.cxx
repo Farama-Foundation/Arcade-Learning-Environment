@@ -23,6 +23,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartF4SC.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF4SC::CartridgeF4SC(const uInt8* image)
@@ -151,12 +152,12 @@ bool CartridgeF4SC::save(Serializer& out)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in save state for " << cart << endl;
     return false;
   }
 
@@ -181,12 +182,12 @@ bool CartridgeF4SC::load(Deserializer& in)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in load state for " << cart << endl;
     return false;
   }
 

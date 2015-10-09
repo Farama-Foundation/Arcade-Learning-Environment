@@ -31,7 +31,7 @@ SoundNull::SoundNull(OSystem* osystem)
 {
   // Show some info
   if(myOSystem->settings().getBool("showinfo"))
-    cerr << "Sound disabled." << endl << endl;
+    std::cerr << "Sound disabled." << std::endl << std::endl;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,7 +42,7 @@ SoundNull::~SoundNull()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool SoundNull::load(Deserializer& in)
 {
-  string soundDevice = "TIASound";
+  std::string soundDevice = "TIASound";
   if(in.getString() != soundDevice)
     return false;
 

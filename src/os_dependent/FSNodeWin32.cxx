@@ -29,6 +29,8 @@
 
 #include "FSNode.hxx"
 
+using namespace std;
+
 /*
  * Implementation of the Stella file system API based on Windows API.
  */

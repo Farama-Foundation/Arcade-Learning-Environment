@@ -48,7 +48,7 @@ RomSettings* KangarooSettings::clone() const {
 void KangarooSettings::step(const System& system) {
 
     // update the reward
-    int score = getDecimalScore(40, 39, &system); 
+    int score = getDecimalScore(0xA8, 0xA7, &system); 
     score *= 100;
     int reward = score - m_score;
     m_reward = reward;

@@ -13,6 +13,7 @@
 #include "../emucore/m6502/src/System.hxx"
 #include "../emucore/Event.hxx"
 #include "../common/Constants.h"
+using namespace std;
 
 #include <stdexcept>
 
@@ -31,6 +32,16 @@ ALEState::ALEState(const ALEState &rhs, std::string serialized):
   m_episode_frame_number(rhs.m_episode_frame_number),
   m_serialized_state(serialized) {
 }
+
+ALEState::ALEState(const std::string &serialized) {
+  Deserializer des(serialized);
+  this->m_left_paddle = des.getInt();
+  this->m_right_paddle = des.getInt();
+  this->m_frame_number = des.getInt();
+  this->m_episode_frame_number = des.getInt();
+  this->m_serialized_state = des.getString();
+}
+
 
 /** Restores ALE to the given previously saved state. */ 
 void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, const ALEState &rhs,
@@ -82,6 +93,18 @@ void ALEState::incrementFrame(int steps /* = 1 */) {
 
 void ALEState::resetEpisodeFrameNumber() {
     m_episode_frame_number = 0;
+}
+
+std::string ALEState::serialize() {
+  Serializer ser;
+
+  ser.putInt(this->m_left_paddle);
+  ser.putInt(this->m_right_paddle);
+  ser.putInt(this->m_frame_number);
+  ser.putInt(this->m_episode_frame_number);
+  ser.putString(this->m_serialized_state);
+
+  return ser.get_str();
 }
 
 
@@ -331,7 +354,7 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
           event->set(Event::ConsoleReset, 1);
           break;
       default: 
-          cerr << "Invalid Player A Action: " << player_a_action;
+          ale::Logger::Error << "Invalid Player A Action: " << player_a_action;
           exit(-1); 
       
   }
@@ -425,10 +448,10 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
           break; 
       case RESET:
           event->set(Event::ConsoleReset, 1);
-          cerr << "Sending Reset..." << endl;
+          ale::Logger::Info << "Sending Reset..." << endl;
           break;
       default: 
-          cerr << "Invalid Player B Action: " << player_b_action << endl;
+          ale::Logger::Error << "Invalid Player B Action: " << player_b_action << endl;
           exit(-1); 
   }
 }

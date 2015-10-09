@@ -23,8 +23,11 @@
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
+using namespace std;
 
-#define debugStream cerr
+#include "../../../common/Log.hpp"
+
+#define debugStream ale::Logger::Info
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6502High::M6502High(uInt32 systemCyclesPerProcessorCycle)
@@ -265,12 +268,12 @@ bool M6502High::save(Serializer& out)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << CPU << endl;
+    ale::Logger::Error << "Unknown error in save state for " << CPU << endl;
     return false;
   }
 
@@ -311,12 +314,12 @@ bool M6502High::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << CPU << endl;
+    ale::Logger::Error << "Unknown error in load state for " << CPU << endl;
     return false;
   }
 

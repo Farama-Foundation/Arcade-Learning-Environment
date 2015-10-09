@@ -22,6 +22,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "CartUA.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeUA::CartridgeUA(const uInt8* image)
@@ -150,12 +151,12 @@ bool CartridgeUA::save(Serializer& out)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in save state for " << cart << endl;
     return false;
   }
 
@@ -176,12 +177,12 @@ bool CartridgeUA::load(Deserializer& in)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in load state for " << cart << endl;
     return false;
   }
 

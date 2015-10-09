@@ -71,7 +71,7 @@ class Serializer
 
       @param str The string to write to the output stream.
     */
-    void putString(const string& str);
+    void putString(const std::string& str);
 
     /**
       Writes a boolean value to the current output stream.
@@ -82,12 +82,12 @@ class Serializer
 
     // Accessor for myStream
     // TODO: don't copy the whole streams. 
-    string get_str(void) const {
+    std::string get_str(void) const {
         return myStream.str();
     }
   private:
     // The stream to send the serialized data to.
-    stringstream myStream;
+    std::stringstream myStream;
 
     enum {
       TruePattern  = 0xfab1fab2,

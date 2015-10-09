@@ -22,7 +22,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 #include "Cart2K.hxx"
-
+using namespace std;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge2K::Cartridge2K(const uInt8* image)
 {
@@ -94,12 +94,12 @@ bool Cartridge2K::save(Serializer& out)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in save state for " << cart << endl;
     return false;
   }
 
@@ -118,12 +118,12 @@ bool Cartridge2K::load(Deserializer& in)
   }
   catch(const char* msg)
   {
-    cerr << msg << endl;
+    ale::Logger::Error << msg << endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in load state for " << cart << endl;
     return false;
   }
 

@@ -1,4 +1,8 @@
-??, 2015. ALE 0.5.1.
+October 4th, 2015. ALE 0.5dev_b.
+  * Enforce flags existence (@mcmachado).
+  * Fix RNG issues introduced in 0.5.0.
+  * Routines for ALEState serialization (@Jragonmiris). 
+  * Additional bug fixes.
 
 July 7th, 2015. ALE 0.5dev.
   * Refactored Python getScreenRGB to return unpacked RGB values (@spragunr).

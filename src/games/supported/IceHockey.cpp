@@ -12,6 +12,7 @@
 #include "IceHockey.hpp"
 
 #include "../RomUtils.hpp"
+using namespace std;
 
 
 IceHockeySettings::IceHockeySettings() {

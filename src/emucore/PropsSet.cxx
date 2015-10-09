@@ -24,6 +24,7 @@
 #include "Props.hxx"
 #include "PropsSet.hxx"
 #include "bspf.hxx"
+using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 PropertiesSet::PropertiesSet(OSystem* osystem)
