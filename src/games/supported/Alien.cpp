@@ -142,3 +142,42 @@ void AlienSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+//Returns a list of mode that the game can be played in.
+ModeVect AlienSettings::getAvailableModes(){
+    ModeVect modes(4);
+    for(unsigned i = 0; i < 4; i++){
+        modes[i]=i;
+    }
+    return modes;
+}
+
+//Set the mode of the game. The given mode must be one returned by the previous function. 
+void AlienSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m >= 0 && m < 4){
+        m_mode = m;
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system,0x81);
+        //press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(1);
+            mode = readRam(&system, 0x81);
+        }
+        //update the number of lives
+        int byte = readRam(&system, 0xC0);
+        byte = byte & 15;
+        m_lives = byte;
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect AlienSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    diff.push_back(2);
+    diff.push_back(3);
+    return diff;
+}

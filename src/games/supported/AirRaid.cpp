@@ -15,8 +15,10 @@
 
 
 AirRaidSettings::AirRaidSettings() {
-
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_mode = 1;
 }
 
 
@@ -75,11 +77,12 @@ bool AirRaidSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void AirRaidSettings::reset() {
+void AirRaidSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
+    setMode(m_mode, system, environment);
 }
         
 /* saves the state of the rom settings */
@@ -100,4 +103,34 @@ ActionVect AirRaidSettings::getStartingActions() {
     ActionVect startingActions;
     startingActions.push_back(PLAYER_A_FIRE);
     return startingActions;
+}
+
+// returns a list of mode that the game can be played in.
+ModeVect AirRaidSettings::getAvailableModes(){
+    ModeVect modes(8);
+    for(unsigned i = 0; i < 8; i++){
+        modes[i]=i+1;
+    }
+    return modes;
+}
+
+//Set the mode of the game. The given mode must be one returned by the previous function. 
+void AirRaidSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m >= 1 && m <= 8){
+        m_mode = m;
+        //open the mode selection panel
+        environment.pressSelect(10);
+        environment.pressSelect(10);
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system,0xAA);
+        //press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(10);
+            mode = readRam(&system,0xAA);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
 }

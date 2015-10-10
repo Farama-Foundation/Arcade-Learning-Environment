@@ -30,8 +30,10 @@
 
 
 AmidarSettings::AmidarSettings() {
-
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
 }
 
 
@@ -98,7 +100,7 @@ bool AmidarSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void AmidarSettings::reset() {
+void AmidarSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
@@ -123,3 +125,9 @@ void AmidarSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+DifficultyVect AmidarSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(3);
+    return diff;
+}
