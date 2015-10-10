@@ -26,7 +26,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_screen(m_osystem->console().mediaSource().height(),
         m_osystem->console().mediaSource().width()),
   m_player_a_action(PLAYER_A_NOOP),
-  m_player_b_action(PLAYER_B_NOOP) {
+  m_player_b_action(PLAYER_B_NOOP),
+  m_difficulty(0) {
 
   // Determine whether this is a paddle-based game
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
@@ -78,13 +79,15 @@ void StellaEnvironment::reset() {
   emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
 
   // reset the rom (after emulating, in case the NOOPs led to reward)
-  m_settings->reset();
+  m_settings->reset(m_osystem->console().system(), *(this));
   
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
   for (size_t i = 0; i < startingActions.size(); i++){
     emulate(startingActions[i], PLAYER_B_NOOP);
   }
+  setDifficulty(m_difficulty);
+
 }
 
 /** Save/restore the environment state. */
@@ -169,6 +172,12 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   return sum_rewards;
 }
 
+/** This functions emulates a push on the reset button of the console */
+void StellaEnvironment::soft_reset(){
+  emulate(RESET,PLAYER_B_NOOP);
+  m_state.incrementFrame();
+}
+
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
   *  and performs one simulation step in Stella. */
 reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_action) {
@@ -193,6 +202,26 @@ bool StellaEnvironment::isTerminal() {
   return (m_settings->isTerminal() || 
     (m_max_num_frames_per_episode > 0 && 
      m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));
+}
+
+void StellaEnvironment::pressSelect(size_t num_steps){
+  Event* event = m_osystem->event();
+  m_state.pressSelect(event);
+  for (size_t t = 0; t < num_steps; t++) {
+    m_osystem->console().mediaSource().update();
+  }
+  processScreen();
+  processRAM();
+  emulate(PLAYER_A_NOOP,PLAYER_B_NOOP);
+}
+
+void StellaEnvironment::setDifficulty(difficulty_t mask){
+  Event* event = m_osystem->event();
+  m_state.setDifficulty(event,mask);
+  m_osystem->console().mediaSource().update();
+  processScreen();
+  processRAM();
+  m_difficulty = mask;
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {
