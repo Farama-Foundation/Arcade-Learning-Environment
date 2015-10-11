@@ -38,7 +38,7 @@ class BowlingSettings : public RomSettings {
         BowlingSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -65,7 +65,21 @@ class BowlingSettings : public RomSettings {
         void loadState(Deserializer & ser);
 
         // No lives in bowling!
-        virtual const int lives() { return 0; }
+        virtual const int lives() {
+            return 0;
+        }
+
+        // returns a list of mode that the game can be played in
+        // in this game, there are 3 available modes
+        ModeVect getAvailableModes();
+
+        // set the mode of the game
+        // the given mode must be one returned by the previous function
+        void setMode(game_mode_t, System &system, StellaEnvironment& environment);
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 2 available difficulties
+        DifficultyVect getAvailableDifficulties();
 
     private:
 
@@ -75,4 +89,3 @@ class BowlingSettings : public RomSettings {
 };
 
 #endif // __BOWLING_HPP__
-

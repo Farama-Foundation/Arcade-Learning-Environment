@@ -31,7 +31,11 @@
 
 BerzerkSettings::BerzerkSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
+    m_mode = 1;
 }
 
 
@@ -104,12 +108,13 @@ bool BerzerkSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void BerzerkSettings::reset() {
+void BerzerkSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    setMode(m_mode, system, environment);
 }
 
 
@@ -130,3 +135,42 @@ void BerzerkSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in.
+ModeVect BerzerkSettings::getAvailableModes(){
+    ModeVect modes(9);
+    for(unsigned i = 0; i < 9; i++){
+        modes[i] = i+1;
+    }
+    modes.push_back(16);
+    modes.push_back(17);
+    modes.push_back(18);
+    return modes;
+}
+
+// set the mode of the game. The given mode must be one returned by the previous function. 
+void BerzerkSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m >= 1 && (m <= 9 || m == 16 || m == 17 || m == 18)){
+        m_mode = m;
+
+        // we wait that the game is ready to change mode
+        for(unsigned i = 0; i < 20; i++)
+            environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0);
+        // press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system,0);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+ActionVect BerzerkSettings::getStartingActions() {
+    ActionVect startingActions;
+    // startingActions.push_back(PLAYER_A_NOOP);
+    return startingActions;
+}

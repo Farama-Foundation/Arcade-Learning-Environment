@@ -31,7 +31,10 @@
 
 BeamRiderSettings::BeamRiderSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
 }
 
 
@@ -105,7 +108,7 @@ bool BeamRiderSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void BeamRiderSettings::reset() {
+void BeamRiderSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
@@ -136,3 +139,9 @@ ActionVect BeamRiderSettings::getStartingActions() {
     return startingActions;
 }
 
+DifficultyVect BeamRiderSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}
