@@ -38,7 +38,7 @@ class JourneyEscapeSettings : public RomSettings {
         JourneyEscapeSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -67,7 +67,13 @@ class JourneyEscapeSettings : public RomSettings {
         // Journey Escape requires the fire action to start the game
         ActionVect getStartingActions();
 
-        virtual const int lives() { return 0; }
+        virtual const int lives() {
+            return 0;
+        }
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 2 available difficulties
+        DifficultyVect getAvailableDifficulties();
 
     private:
 
