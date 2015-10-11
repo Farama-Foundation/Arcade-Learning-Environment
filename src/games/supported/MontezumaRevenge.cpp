@@ -31,7 +31,10 @@
 
 MontezumaRevengeSettings::MontezumaRevengeSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 6;
 }
 
 
@@ -107,7 +110,7 @@ bool MontezumaRevengeSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void MontezumaRevengeSettings::reset() {
+void MontezumaRevengeSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
