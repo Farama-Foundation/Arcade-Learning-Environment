@@ -16,7 +16,9 @@
 
 EnduroSettings::EnduroSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
 }
 
 
@@ -95,7 +97,7 @@ bool EnduroSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void EnduroSettings::reset() {
+void EnduroSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
