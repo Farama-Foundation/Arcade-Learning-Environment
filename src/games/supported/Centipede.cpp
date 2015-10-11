@@ -31,7 +31,11 @@
 
 CentipedeSettings::CentipedeSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
+    m_mode     = 0x16;
 }
 
 
@@ -108,12 +112,13 @@ bool CentipedeSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void CentipedeSettings::reset() {
+void CentipedeSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    setMode(m_mode, system, environment);
 }
 
 
@@ -134,3 +139,28 @@ void CentipedeSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in.
+ModeVect CentipedeSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0x16);
+    modes.push_back(0x56);
+    return modes;
+}
+
+// set the mode of the game. The given mode must be one returned by the previous function. 
+void CentipedeSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m == 0x16 || m == 0x56){
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xA7);
+        // press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0xA7);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
