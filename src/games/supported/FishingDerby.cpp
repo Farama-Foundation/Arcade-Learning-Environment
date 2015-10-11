@@ -17,7 +17,9 @@ using namespace std;
 
 FishingDerbySettings::FishingDerbySettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
 }
 
 
@@ -92,7 +94,7 @@ bool FishingDerbySettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void FishingDerbySettings::reset() {
+void FishingDerbySettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
@@ -114,3 +116,11 @@ void FishingDerbySettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
 }
 
+DifficultyVect FishingDerbySettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    diff.push_back(2);
+    diff.push_back(3);
+    return diff;
+}
