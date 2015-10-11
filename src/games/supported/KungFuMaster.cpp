@@ -31,7 +31,10 @@
 
 KungFuMasterSettings::KungFuMasterSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 4;
 }
 
 
@@ -100,7 +103,7 @@ bool KungFuMasterSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void KungFuMasterSettings::reset() {
+void KungFuMasterSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
