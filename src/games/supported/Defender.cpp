@@ -31,7 +31,11 @@
 
 DefenderSettings::DefenderSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
+    m_mode     = 1;
 }
 
 
@@ -109,12 +113,13 @@ bool DefenderSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void DefenderSettings::reset() {
+void DefenderSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    setMode(m_mode, system, environment);
 }
 
         
@@ -134,3 +139,38 @@ void DefenderSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect DefenderSettings::getAvailableModes(){
+    ModeVect modes(9);
+    for(unsigned i=0;i<9;i++){
+        modes[i]=i+1;
+    }
+    modes.push_back(16); //easy mode
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void DefenderSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m >= 1 && (m <= 9 || m == 16)){
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x9B);
+        // press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0x9B);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect DefenderSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}
