@@ -151,7 +151,7 @@ ModeVect YarsRevengeSettings::getAvailableModes(){
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
-+void YarsRevengeSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+void YarsRevengeSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
     if(m == 0 || m == 0x20 || m == 0x40 || m == 0x60 ){
         m_mode = m;
         // enter in mode selection screen
