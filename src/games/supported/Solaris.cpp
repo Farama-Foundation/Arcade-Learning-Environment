@@ -31,7 +31,10 @@
 
 SolarisSettings::SolarisSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
 }
 
 
@@ -108,7 +111,7 @@ bool SolarisSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void SolarisSettings::reset() {
+void SolarisSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
