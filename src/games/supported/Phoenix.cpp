@@ -31,7 +31,10 @@
 
 PhoenixSettings::PhoenixSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 5;
 }
 
 
@@ -97,7 +100,7 @@ bool PhoenixSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void PhoenixSettings::reset() {
+void PhoenixSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
