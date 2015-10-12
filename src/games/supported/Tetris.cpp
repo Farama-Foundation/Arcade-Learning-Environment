@@ -31,7 +31,11 @@
 
 TetrisSettings::TetrisSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_lives    = 0;
+    m_terminal = false;
+    m_started  = false;
 }
 
 
@@ -100,7 +104,7 @@ bool TetrisSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void TetrisSettings::reset() {
+void TetrisSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
