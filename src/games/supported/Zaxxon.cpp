@@ -148,7 +148,7 @@ ModeVect ZaxxonSettings::getAvailableModes(){
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
-void ZaxxonSettings::setMode(mode_t m,System &system, StellaEnvironment& environment){
+void ZaxxonSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
     if(m == 0 || m == 16 || m == 8 || m == 24 ){
         m_mode = m;
         // read the mode we are currently in
