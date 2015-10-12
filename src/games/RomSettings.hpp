@@ -105,7 +105,7 @@ struct RomSettings {
 
     // Set the mode of the game. The given mode must be
     // one returned by the previous function.
-    virtual void setMode(mode_t, System &system, StellaEnvironment& environment);
+    virtual void setMode(game_mode_t, System &system, StellaEnvironment& environment);
 
     // Returns a list of difficulties that the game can be played in.
     // By default, there is only one available difficulty.

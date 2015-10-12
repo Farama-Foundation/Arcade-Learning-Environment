@@ -47,7 +47,7 @@ ActionVect RomSettings::getStartingActions() {
     return ActionVect();
 }
 
-void RomSettings::setMode(game_mode_game_t m, System&, StellaEnvironment&){
+void RomSettings::setMode(game_mode_t m, System&, StellaEnvironment&){
   //By default, 0 is the only available mode
   if(m!=0){
     throw std::runtime_error("This mode is not currently available for this game");
