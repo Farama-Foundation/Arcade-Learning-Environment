@@ -131,7 +131,7 @@ ModeVect NameThisGameSettings::getAvailableModes(){
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
-void NameThisGameSettings::setMode(mode_t m,System &system, StellaEnvironment& environment){
+void NameThisGameSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
   if(m==0x08 || m==0x18 || m==0x28){
     m_mode = m;
     // open mode change screen
