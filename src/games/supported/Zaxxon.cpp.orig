@@ -58,7 +58,11 @@ void ZaxxonSettings::step(const System& system) {
     m_score = score;
 
     // update terminal status
+<<<<<<< HEAD
+    int lives = readRam(&system, 0xEA) & 0x7;
+=======
     int lives_byte = readRam(&system, 0xEA) & 0x7;
+>>>>>>> 07599b2d64ca277188948eb4002ce75c1593943e
     // Note - this *requires* a reset at load time; lives are set to 0 before
     //  reset is pushed
     m_terminal = (lives_byte == 0);
@@ -117,7 +121,7 @@ void ZaxxonSettings::reset(System& system, StellaEnvironment& environment) {
     m_score    = 0;
     m_terminal = false;
     m_lives    = 5;
-    setMode(m_mode, system, environment);
+    setMode(m_mode,system,environment);
 }
         
 /* saves the state of the rom settings */
@@ -136,7 +140,7 @@ void ZaxxonSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
-// returns a list of mode that the game can be played in
+//Returns a list of mode that the game can be played in.
 ModeVect ZaxxonSettings::getAvailableModes(){
     ModeVect modes;
     modes.push_back(0);
@@ -146,21 +150,21 @@ ModeVect ZaxxonSettings::getAvailableModes(){
     return modes;
 }
 
-// set the mode of the game
-// the given mode must be one returned by the previous function
+//Set the mode of the game. The given mode must be one returned by the previous function. 
 void ZaxxonSettings::setMode(mode_t m,System &system, StellaEnvironment& environment){
-    if(m == 0 || m == 16 || m == 8 || m == 24 ){
+    if(m==0 || m==16 || m==8 || m==24 ){
         m_mode = m;
-        // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0x82);
-        // press select until the correct mode is reached
-        while(mode != m_mode){
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system,0x82);
+        //press select until the correct mode is reached
+        while(mode!=m_mode){
             environment.pressSelect(10);
-            mode = readRam(&system, 0x82);
+            mode = readRam(&system,0x82);
         }
-        // reset the environment to apply changes.
+        //reset the environment to apply changes.
         environment.soft_reset();
     }else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }
+
 }
