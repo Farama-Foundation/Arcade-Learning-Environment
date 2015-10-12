@@ -126,16 +126,15 @@ void TutankhamSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
-+
-+//Returns a list of mode that the game can be played in.
-+ModeVect TutankhamSettings::getAvailableModes(){
-+    ModeVect modes;
-+    modes.push_back(0);
-+    modes.push_back(4);
-+    modes.push_back(8);
-+    modes.push_back(12);
-+    return modes;
-+}
+// returns a list of mode that the game can be played in.
+ModeVect TutankhamSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0);
+    modes.push_back(4);
+    modes.push_back(8);
+    modes.push_back(12);
+    return modes;
+}
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
