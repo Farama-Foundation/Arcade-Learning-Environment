@@ -227,7 +227,7 @@ ModeVect ALEInterface::getAvailableModes(){
 // Sets the mode of the game.
 // The mode must be an available mode.
 // This should be called only after the rom is loaded.
-void ALEInterface::setMode(mode_t m){
+void ALEInterface::setMode(game_mode_t m){
   romSettings->setMode(m,theOSystem->console().system(),*(environment.get()));
 }
 
@@ -241,6 +241,12 @@ void ALEInterface::setDifficulty(difficulty_t m){
     } else {
       throw std::runtime_error("This difficulty doesn't currently exist for this game");
     }
+}
+
+//Returns the vector of difficulties available for the current game.
+//This should be called only after the rom is loaded.
+ModeVect ALEInterface::getAvailableDifficulties(){
+    return romSettings->getAvailableDifficulties();
 }
 
 // Returns the vector of legal actions. This should be called only
