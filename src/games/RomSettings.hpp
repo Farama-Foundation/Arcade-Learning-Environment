@@ -46,8 +46,9 @@ class RomSettings;
 class StellaEnvironment;
 
 // rom support interface
-struct RomSettings {
+class RomSettings{
 
+public:
     RomSettings();
 
     virtual ~RomSettings() {}
