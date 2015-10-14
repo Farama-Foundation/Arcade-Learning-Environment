@@ -157,7 +157,7 @@ ModeVect AlienSettings::getAvailableModes(){
 
 //Set the mode of the game. The given mode must be one returned by the previous function. 
 void AlienSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
-    if(m >= 0 && m < 4){
+    if(m < 4){ /*m >= 0 is implicit, since m is an unsigned int*/
         m_mode = m;
         //Read the mode we are currently in
         unsigned char mode = readRam(&system,0x81);

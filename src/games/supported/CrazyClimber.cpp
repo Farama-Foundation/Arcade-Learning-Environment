@@ -140,7 +140,7 @@ ModeVect CrazyClimberSettings::getAvailableModes(){
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void CrazyClimberSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
-    if(m >= 0 && m < 4){
+    if(m < 4){ /*m >= 0 is implicit, since m is an unsigned int*/
         m_mode = m;
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0);
