@@ -31,7 +31,11 @@
 
 NameThisGameSettings::NameThisGameSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
+    m_mode     = 0x08;
 }
 
 
@@ -91,12 +95,13 @@ bool NameThisGameSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void NameThisGameSettings::reset() {
+void NameThisGameSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    setMode(m_mode, system, environment);
 }
         
 /* saves the state of the rom settings */
@@ -115,3 +120,39 @@ void NameThisGameSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect NameThisGameSettings::getAvailableModes(){
+  ModeVect modes;
+  modes.push_back(0x08);
+  modes.push_back(0x18);
+  modes.push_back(0x28);
+  return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void NameThisGameSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
+  if(m==0x08 || m==0x18 || m==0x28){
+    m_mode = m;
+    // open mode change screen
+    environment.soft_reset();
+    // read the mode we are currently in
+    unsigned char mode = readRam(&system, 0xDE);
+    // press select until the correct mode is reached
+    while(mode != m_mode){
+      environment.pressSelect(2);
+      mode = readRam(&system, 0xDE);
+    }
+    // reset the environment to apply changes.
+    environment.soft_reset();
+  } else{
+    throw std::runtime_error("This mode doesn't currently exist for this game");
+  }
+}
+
+DifficultyVect NameThisGameSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}

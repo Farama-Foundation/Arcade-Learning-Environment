@@ -31,7 +31,10 @@
 
 VideoPinballSettings::VideoPinballSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
 }
 
 
@@ -101,12 +104,13 @@ bool VideoPinballSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void VideoPinballSettings::reset() {
+void VideoPinballSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    setMode(m_mode, system, environment);
 }
         
 /* saves the state of the rom settings */
@@ -125,3 +129,36 @@ void VideoPinballSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect VideoPinballSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0);
+    modes.push_back(2);
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void VideoPinballSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m == 0 || m == 2){
+        m_mode = m;
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xC1);
+        //press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0xC1);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect VideoPinballSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}

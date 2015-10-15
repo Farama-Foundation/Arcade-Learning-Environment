@@ -30,8 +30,10 @@
 
 
 AtlantisSettings::AtlantisSettings() {
-
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 6;
 }
 
 
@@ -102,12 +104,13 @@ bool AtlantisSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void AtlantisSettings::reset() {
+void AtlantisSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 6;
+    setMode(m_mode, system, environment);
 }
 
 
@@ -128,3 +131,29 @@ void AtlantisSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+//Returns a list of mode that the game can be played in.
+ModeVect AtlantisSettings::getAvailableModes(){
+    ModeVect modes(4);
+    for(unsigned i=0;i<4;i++){
+        modes[i]=i;
+    }
+    return modes;
+}
+
+//Set the mode of the game. The given mode must be one returned by the previous function. 
+void AtlantisSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
+    if(m < 4){ /*m >= 0 is implicit, since m is an unsigned int*/
+        m_mode = m;
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x8D);
+        //press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0x8D);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}

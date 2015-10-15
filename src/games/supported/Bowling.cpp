@@ -16,7 +16,9 @@
 
 BowlingSettings::BowlingSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
 }
 
 
@@ -75,11 +77,12 @@ bool BowlingSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void BowlingSettings::reset() {
+void BowlingSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
+    setMode(m_mode, system, environment);
 }
 
 
@@ -98,3 +101,36 @@ void BowlingSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
 }
 
+// returns a list of mode that the game can be played in.
+ModeVect BowlingSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0);
+    modes.push_back(2);
+    modes.push_back(4);
+    return modes;
+}
+
+// set the mode of the game. The given mode must be one returned by the previous function. 
+void BowlingSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m == 0 || m == 2 || m == 4){
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 2);
+        // press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 2);
+        }
+        // reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect BowlingSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}

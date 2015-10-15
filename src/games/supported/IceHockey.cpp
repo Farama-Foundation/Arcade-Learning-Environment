@@ -17,7 +17,9 @@ using namespace std;
 
 IceHockeySettings::IceHockeySettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
 }
 
 
@@ -93,11 +95,12 @@ bool IceHockeySettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void IceHockeySettings::reset() {
+void IceHockeySettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
+    setMode(m_mode, system, environment);
 }
 
         
@@ -115,3 +118,38 @@ void IceHockeySettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect IceHockeySettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0);
+    modes.push_back(2);    
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void IceHockeySettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
+    if(m==0 || m==2){
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system,0);
+        // press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0);
+        }
+        // reset the environment to apply changes
+        environment.soft_reset();
+    }else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect IceHockeySettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    diff.push_back(2);
+    diff.push_back(3);
+    return diff;
+}

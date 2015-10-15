@@ -30,8 +30,10 @@
 
 
 AsteroidsSettings::AsteroidsSettings() {
-
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 4;
 }
 
 
@@ -105,12 +107,13 @@ bool AsteroidsSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void AsteroidsSettings::reset() {
+void AsteroidsSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 4;
+    setMode(m_mode, system, environment);
 }
 
 
@@ -131,3 +134,37 @@ void AsteroidsSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+//Returns a list of mode that the game can be played in.
+ModeVect AsteroidsSettings::getAvailableModes(){
+    ModeVect modes(32);
+    for(unsigned i = 0; i < 32; i++){
+        modes[i]=i;
+    }
+    modes.push_back(128); //this is the "kids" mode
+    return modes;
+}
+
+//Set the mode of the game. The given mode must be one returned by the previous function. 
+void AsteroidsSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
+    if(m < 32 || m == 128){ /*m >= 0 is implicit, since m is an unsigned int*/
+        m_mode = m;
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system,0);
+        //press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system,0);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    }else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect AsteroidsSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(3);
+    return diff;
+}

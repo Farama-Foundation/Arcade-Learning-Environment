@@ -31,7 +31,12 @@
 
 DemonAttackSettings::DemonAttackSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 4;
+    m_mode     = 1;
+    m_levelChange = false;
 }
 
 
@@ -59,8 +64,10 @@ void DemonAttackSettings::step(const System& system) {
     // update terminal status
     int lives_displayed = readRam(&system, 0xF2);
     int display_flag = readRam(&system, 0xF1);
-    m_terminal = (lives_displayed == 0) && display_flag == 0xBD;
+    // for terminal checking, we must make sure that we do not detect incorrectly a level change as a game-over
+    m_terminal = (lives_displayed == 0) && display_flag == 0xBD && !m_levelChange;
     m_lives = lives_displayed + 1; // Once we reach terminal, lives() will correctly return 0
+    m_levelChange = false;
 }
 
 
@@ -96,12 +103,13 @@ bool DemonAttackSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void DemonAttackSettings::reset() {
+void DemonAttackSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 4;
+    setMode(m_mode, system, environment);
 }
 
         
@@ -121,3 +129,41 @@ void DemonAttackSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect DemonAttackSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(1);
+    modes.push_back(3);
+    modes.push_back(5);
+    modes.push_back(7);
+
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void DemonAttackSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m==1 || m==3 || m==5 || m==7){
+        m_mode = m;
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xEA);
+        //press select until the correct mode is reached
+        while(mode!=m_mode){
+            m_levelChange = true;
+            environment.pressSelect(1);
+            mode = readRam(&system, 0xEA);
+        }
+        m_levelChange= true;
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    }else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect DemonAttackSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}

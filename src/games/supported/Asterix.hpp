@@ -38,7 +38,7 @@ class AsterixSettings : public RomSettings {
         AsterixSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -67,7 +67,9 @@ class AsterixSettings : public RomSettings {
         // Asterix requires the fire action to start the game
         ActionVect getStartingActions();
 
-        virtual const int lives() { return isTerminal() ? 0 : m_lives; }
+        virtual const int lives() {
+            return isTerminal() ? 0 : m_lives;
+        }
 
     private:
 

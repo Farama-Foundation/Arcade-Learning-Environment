@@ -38,7 +38,7 @@ class BreakoutSettings : public RomSettings {
         BreakoutSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;

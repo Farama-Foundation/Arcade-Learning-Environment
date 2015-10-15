@@ -30,8 +30,10 @@
 
 
 BankHeistSettings::BankHeistSettings() {
-
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 5;
 }
 
 
@@ -104,12 +106,13 @@ bool BankHeistSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void BankHeistSettings::reset() {
+void BankHeistSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 5;
+    setMode(m_mode, system, environment);
 }
 
 
@@ -130,3 +133,38 @@ void BankHeistSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+//Returns a list of mode that the game can be played in.
+ModeVect BankHeistSettings::getAvailableModes(){
+    ModeVect modes(8);
+    for(unsigned i=0;i<8;i++){
+        modes[i] = i * 4;
+    }
+    return modes;
+}
+
+//Set the mode of the game. The given mode must be one returned by the previous function. 
+void BankHeistSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+        if(m <= 28 && m % 4==0){ /*m >= 0 is implicit, since m is an unsigned int*/
+        m_mode = m;
+        // Read the mode we are currently in
+        unsigned char mode = readRam(&system,0);
+        // press select until the correct mode is reached
+        while(mode!=m_mode){
+            environment.pressSelect(1);
+            mode = readRam(&system,0);
+        }
+        // reset the environment to apply changes.
+        environment.soft_reset();
+    }else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect BankHeistSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    diff.push_back(2);
+    diff.push_back(3);
+    return diff;
+}

@@ -31,7 +31,10 @@
 
 JamesBondSettings::JamesBondSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 6;
 }
 
 
@@ -109,12 +112,13 @@ bool JamesBondSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void JamesBondSettings::reset() {
+void JamesBondSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 6; // Yes, that's right, 6
+    setMode(m_mode, system, environment);
 }
 
         
@@ -132,5 +136,32 @@ void JamesBondSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+}
+
+// returns a list of mode that the game can be played in.
+ModeVect JamesBondSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0);
+    modes.push_back(1);    
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function. 
+void JamesBondSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m==0 || m==1){
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system,0x8C);
+        // press select until the correct mode is reached
+        while(mode != m_mode && mode != m_mode + 0x48){ //in the welcome screen, the value of the mode is increased by 0x48
+            environment.pressSelect(20);
+            mode = readRam(&system,0x8C);
+        }
+        // reset the environment to apply changes.
+        environment.soft_reset();
+    }else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
 }
 

@@ -31,7 +31,10 @@
 
 CrazyClimberSettings::CrazyClimberSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 5;
 }
 
 
@@ -99,12 +102,13 @@ bool CrazyClimberSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void CrazyClimberSettings::reset() {
+void CrazyClimberSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 5;
+    setMode(m_mode, system, environment);
 }
 
         
@@ -124,3 +128,37 @@ void CrazyClimberSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect CrazyClimberSettings::getAvailableModes(){
+    ModeVect modes(4);
+    for(unsigned i = 0; i < 4; i++){
+        modes[i]=i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void CrazyClimberSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m < 4){ /*m >= 0 is implicit, since m is an unsigned int*/
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0);
+        // press select until the correct mode is reached
+        while(mode!=m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0);
+        }
+        // reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect CrazyClimberSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}

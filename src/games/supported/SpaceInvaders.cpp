@@ -31,7 +31,11 @@
 ActionVect SpaceInvadersSettings::actions;
 
 SpaceInvadersSettings::SpaceInvadersSettings() {
-    reset();
+
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
 }
 
 
@@ -99,12 +103,13 @@ bool SpaceInvadersSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void SpaceInvadersSettings::reset() {
+void SpaceInvadersSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3; 
+    setMode(m_mode, system, environment);
 }
 
         
@@ -124,3 +129,37 @@ void SpaceInvadersSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect SpaceInvadersSettings::getAvailableModes(){
+    ModeVect modes(16);
+    for(unsigned i = 0 ; i < 16; i++){
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void SpaceInvadersSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m < 16){ /*m >= 0 is implicit, since m is an unsigned int*/
+        m_mode = m;
+        //Read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xDC);
+        //press select until the correct mode is reached
+        while(mode!=m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0xDC);
+        }
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    }else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect SpaceInvadersSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}

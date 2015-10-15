@@ -31,7 +31,10 @@
 
 GravitarSettings::GravitarSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 6;
 }
 
 
@@ -108,12 +111,13 @@ bool GravitarSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void GravitarSettings::reset() {
+void GravitarSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 6;
+    setMode(m_mode, system, environment);
 }
 
         
@@ -139,3 +143,48 @@ ActionVect GravitarSettings::getStartingActions() {
         startingActions.push_back(PLAYER_A_FIRE);
     return startingActions;
 }
+
+// returns a list of mode that the game can be played in
+ModeVect GravitarSettings::getAvailableModes(){
+    ModeVect modes(5);
+    for(unsigned i = 0; i < 5; i++){
+        modes[i]=i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void GravitarSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m < 5){ /*m >= 0 is implicit, since m is an unsigned int*/
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0);
+        // press select until the correct mode is reached
+        while(mode != m_mode){
+            environment.pressSelect(10);
+            mode = readRam(&system, 0);
+        }
+
+        //update the number of lives
+        switch(m_mode){
+            case 0:
+            case 2:
+                m_lives = 6;
+                break;
+            case 1:
+                m_lives = 15;
+                break;
+            case 3:
+                m_lives = 100;
+            case 4:
+                m_lives = 25;
+        }
+
+        //reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+

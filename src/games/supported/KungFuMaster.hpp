@@ -38,7 +38,7 @@ class KungFuMasterSettings : public RomSettings {
         KungFuMasterSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;

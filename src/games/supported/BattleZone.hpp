@@ -38,7 +38,7 @@ class BattleZoneSettings : public RomSettings {
         BattleZoneSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -64,7 +64,15 @@ class BattleZoneSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return isTerminal() ? 0 : m_lives; }
+        virtual const int lives() {
+            return isTerminal() ? 0 : m_lives;
+        }
+
+        // returns a list of mode that the game can be played in. In this game, there are 3 available modes.
+        ModeVect getAvailableModes();
+
+        // set the mode of the game. The given mode must be one returned by the previous function. 
+        void setMode(game_mode_t, System &system, StellaEnvironment& environment);
 
     private:
 

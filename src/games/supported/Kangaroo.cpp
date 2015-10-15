@@ -31,7 +31,10 @@
 
 KangarooSettings::KangarooSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
 }
 
 
@@ -105,12 +108,13 @@ bool KangarooSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void KangarooSettings::reset() {
+void KangarooSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    setMode(m_mode, system, environment);
 }
 
 
@@ -131,3 +135,29 @@ void KangarooSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect KangarooSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0);
+    modes.push_back(1);    
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void KangarooSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
+    if(m==0 || m==1){
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xBA);
+        // press select until the correct mode is reached
+        while(mode != m_mode && mode != m_mode + 0x80){ //in the welcome screen, the value of the mode is increased by 0x80
+            environment.pressSelect(2);
+            mode = readRam(&system, 0xBA);
+        }
+        // reset the environment to apply changes.
+        environment.soft_reset();
+    } else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}

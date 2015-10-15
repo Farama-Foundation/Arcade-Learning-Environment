@@ -16,7 +16,10 @@
 
 TennisSettings::TennisSettings() {
 
-    reset();
+    m_reward               = 0;
+    m_prev_delta_points    = 0;
+    m_prev_delta_score     = 0;
+    m_terminal             = false;
 }
 
 
@@ -103,12 +106,13 @@ bool TennisSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void TennisSettings::reset() {
+void TennisSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward               = 0;
     m_prev_delta_points    = 0;
     m_prev_delta_score     = 0;
     m_terminal             = false;
+    setMode(m_mode, system, environment);
 }
         
 /* saves the state of the rom settings */
@@ -129,3 +133,38 @@ void TennisSettings::loadState(Deserializer & ser) {
   m_prev_delta_score = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect TennisSettings::getAvailableModes(){
+    ModeVect modes;
+    modes.push_back(0);
+    modes.push_back(2);
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void TennisSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment){
+    if(m == 0 || m == 2){
+        m_mode = m;
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0);
+        // press select until the correct mode is reached
+        while(mode!=m_mode){
+            environment.pressSelect(2);
+            mode = readRam(&system, 0);
+        }
+        // reset the environment to apply changes.
+        environment.soft_reset();
+    }else{
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+DifficultyVect TennisSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    diff.push_back(2);
+    diff.push_back(3);
+    return diff;
+}

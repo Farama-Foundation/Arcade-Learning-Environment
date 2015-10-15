@@ -31,7 +31,10 @@
 
 TimePilotSettings::TimePilotSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 5;
 }
 
 
@@ -101,7 +104,7 @@ bool TimePilotSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void TimePilotSettings::reset() {
+void TimePilotSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
@@ -125,3 +128,10 @@ void TimePilotSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+DifficultyVect TimePilotSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    diff.push_back(2);
+    return diff;
+}

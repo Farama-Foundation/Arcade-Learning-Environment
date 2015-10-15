@@ -38,7 +38,7 @@ class PhoenixSettings : public RomSettings {
         PhoenixSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;

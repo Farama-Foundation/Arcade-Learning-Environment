@@ -39,6 +39,18 @@ ale_lib.game_over.argtypes = [c_void_p]
 ale_lib.game_over.restype = c_bool
 ale_lib.reset_game.argtypes = [c_void_p]
 ale_lib.reset_game.restype = None
+ale_lib.getAvailableModes.argtypes = [c_void_p, c_void_p]
+ale_lib.getAvailableModes.restype = None
+ale_lib.getAvailableModesSize.argtypes = [c_void_p]
+ale_lib.getAvailableModesSize.restype = c_int
+ale_lib.setMode.argtypes = [c_void_p, c_int]
+ale_lib.setMode.restype = None
+ale_lib.getAvailableDifficulties.argtypes = [c_void_p, c_void_p]
+ale_lib.getAvailableDifficulties.restype = None
+ale_lib.getAvailableDifficultiesSize.argtypes = [c_void_p]
+ale_lib.getAvailableDifficultiesSize.restype = c_int
+ale_lib.setDifficulty.argtypes = [c_void_p, c_int]
+ale_lib.setDifficulty.restype = None
 ale_lib.getLegalActionSet.argtypes = [c_void_p, c_void_p]
 ale_lib.getLegalActionSet.restype = None
 ale_lib.getLegalActionSize.argtypes = [c_void_p]
@@ -123,6 +135,24 @@ class ALEInterface(object):
 
     def reset_game(self):
         ale_lib.reset_game(self.obj)
+
+    def getAvailableModes(self):
+        modes_size = ale_lib.getAvailableModesSize(self.obj)
+        modes = np.zeros((modes_size), dtype=np.intc)
+        ale_lib.getAvailableModes(self.obj, as_ctypes(modes))
+        return modes
+
+    def setMode(self, mode):
+        ale_lib.setMode(self.obj, mode)
+
+    def getAvailableDifficulties(self):
+        difficulties_size = ale_lib.getAvailableDifficultiesSize(self.obj)
+        difficulties = np.zeros((difficulties_size), dtype=np.intc)
+        ale_lib.getAvailableDifficulties(self.obj, as_ctypes(difficulties))
+        return difficulties
+
+    def setDifficulty(self, difficulty):
+        ale_lib.setDifficulty(self.obj, difficulty)
 
     def getLegalActionSet(self):
         act_size = ale_lib.getLegalActionSize(self.obj)

@@ -31,7 +31,11 @@
 
 PooyanSettings::PooyanSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 3;
+    m_mode     = 0x0A;
 }
 
 
@@ -94,12 +98,13 @@ bool PooyanSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void PooyanSettings::reset() {
+void PooyanSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    setMode(m_mode, system, environment);
 }
         
 /* saves the state of the rom settings */
@@ -118,3 +123,33 @@ void PooyanSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect PooyanSettings::getAvailableModes(){
+  ModeVect modes;
+  modes.push_back(0x0A);
+  modes.push_back(0x1E);
+  modes.push_back(0x32);
+  modes.push_back(0x46);
+  return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void PooyanSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
+  if(m == 0x0A || m == 0x1E || m == 0x32 || m == 0x46){
+    m_mode = m;
+    // open mode change screen
+    environment.pressSelect(2);
+    // read the mode we are currently in
+    unsigned char mode = readRam(&system, 0xBD);
+    // press select until the correct mode is reached
+    while(mode != m_mode){
+      environment.pressSelect(2);
+      mode = readRam(&system, 0xBD);
+    }
+    //reset the environment to apply changes.
+    environment.soft_reset();
+    } else{
+      throw std::runtime_error("This mode doesn't currently exist for this game");
+  }
+}
