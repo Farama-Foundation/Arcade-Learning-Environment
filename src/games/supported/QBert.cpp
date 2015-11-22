@@ -57,7 +57,7 @@ void QBertSettings::step(const System& system) {
     int livesAsChar = static_cast<char>(lives_value);
 
     if (m_last_lives - 1 == livesAsChar) m_lives--;
-    m_last_lives = lives_value;
+    m_last_lives = livesAsChar;
 
     // update the reward
     // Ignore reward if reset the game via the fire button; otherwise the agent 
