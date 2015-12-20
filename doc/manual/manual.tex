@@ -697,14 +697,16 @@ clear.
   
   \verb+const ALEScreen &getScreen()+: Returns a matrix containing the current game screen.
   
-  \verb+void getScreenGrayscale(pixel_t *grayscale_output_buffer)+: This method should receive an
-  array of length width $\times$ height (generally $160 \times 210 = 33,600$) and then it will fill this array
-  with the grayscale colours
+  \verb+void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer)+: \\
+  This method receives a vector of size width $\times$ height (generally $160 \times 210
+  = 33,600$) and then it will replace the current vector values by the grayscale colours. 
+  \textbf{If the screen size is different from the vector size an error will occur}.
   
-  \verb+void getScreenRGB(pixel_t *output_rgb_buffer)+: This method should receive an array of length 
-  $3 \times$ width $\times$ height (generally $3 \times 160 \times 210 = 100,800$) and then it will fill this
-  array with the RGB colours. The first positions contain the red colours, followed by the green colours
-  and then the blue colours
+  \verb+void getScreenRGB(std::vector<std::vector<unsigned char> >& output_rgb_buffer)+:\\ 
+  This method receives a vector of size 3 and each one of the three positions must have a
+  vector of size width $\times$ height (generally $160 \times 210 = 100,800$). The first positions
+  contain the red colours, followed by the green colours and then the blue colours. \textbf{If the
+  screen size is different from the vector size an error will occur}.
  
   \verb+const ALERAM &getRAM()+: Returns a vector containing current RAM content (byte-level).
   
