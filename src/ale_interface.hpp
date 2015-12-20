@@ -107,16 +107,14 @@ public:
   // Returns the current game screen
   const ALEScreen &getScreen();
 
-  //This method should receive an array of length width x height
-  //(generally 160 x 210 = 33,600) and then it will fill this array
-  //with the grayscale colours
-  void getScreenGrayscale(pixel_t *grayscale_output_buffer);
+  //This method should receive an empty vector to fill it with
+  //the grayscale colours
+  void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer);
 
-  //This method should receive an array of length 3 x width x height
-  //(generally 3 x 160 x 210 = 100,800) and then it will fill this
-  //array with the RGB colours. The first positions contain the red
-  //colours, followed by the green colours and then the blue colours
-  void getScreenRGB(pixel_t *output_rgb_buffer);
+  //This method should receive an empty vector to fill it with
+  //the RGB colours. The first positions contain the red colours,
+  //followed by the green colours and then the blue colours
+  void getScreenRGB(std::vector<std::vector<unsigned char> >& output_rgb_buffer);
 
   // Returns the current RAM content
   const ALERAM &getRAM();
