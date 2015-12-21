@@ -703,10 +703,9 @@ clear.
   \textbf{If the screen size is different from the vector size an error will occur}.
   
   \verb+void getScreenRGB(std::vector<std::vector<unsigned char> >& output_rgb_buffer)+:\\ 
-  This method receives a vector of size 3 and each one of the three positions must have a
-  vector of size width $\times$ height (generally $160 \times 210 = 100,800$). The first positions
-  contain the red colours, followed by the green colours and then the blue colours. \textbf{If the
-  screen size is different from the vector size an error will occur}.
+  This method receives a vector of size width $\times$ height (generally $160 \times 210
+  = 33,600$) where each position is a vector of size 3 (for the channels R, G and B, respectively).
+   \textbf{If the screen size is different from the vector size an error will occur}.
  
   \verb+const ALERAM &getRAM()+: Returns a vector containing current RAM content (byte-level).
   
