@@ -87,9 +87,9 @@ void ColourPalette::applyPaletteRGB(std::vector<std::vector<unsigned char> >& ds
 
     for(size_t i = 0; i < src_size; i++, p++){
         int rgb = m_palette[*p];
-        dst_buffer[0][i] = (unsigned char) ((rgb >> 16));    // r
-        dst_buffer[1][i] = (unsigned char) ((rgb >>  8));    // g
-        dst_buffer[2][i] = (unsigned char) ((rgb >>  0));    // b
+        dst_buffer[i][0] = (unsigned char) ((rgb >> 16));    // r
+        dst_buffer[i][1] = (unsigned char) ((rgb >>  8));    // g
+        dst_buffer[i][2] = (unsigned char) ((rgb >>  0));    // b
     }
 }
 

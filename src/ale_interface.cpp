@@ -272,11 +272,9 @@ void ALEInterface::getScreenRGB(std::vector<std::vector<unsigned char> >& output
   size_t h = environment->getScreen().height();
   size_t screen_size = w*h;
 
-  assert(output_rgb_buffer.size() == 3);
-
-  for(int i = 0; i < 3; i++){
-    assert(output_rgb_buffer[i].size() == screen_size);
-  }
+  assert(output_rgb_buffer.size() == screen_size);
+  //I'm being lazy for efficiency. If the first is right I hope everything is right:
+  assert(output_rgb_buffer[0].size() == 3); 
 
   pixel_t *ale_screen_data = environment->getScreen().getArray();
 
