@@ -111,7 +111,7 @@ public:
   //the grayscale colours
   void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer);
 
-  //This method should receive an empty vector to fill it with
+  //This method should receive a vector to fill it with
   //the RGB colours. The first positions contain the red colours,
   //followed by the green colours and then the blue colours
   void getScreenRGB(std::vector<std::vector<unsigned char> >& output_rgb_buffer);
