@@ -37,6 +37,7 @@ MODULE_OBJS := \
 	src/games/supported/JamesBond.o \
 	src/games/supported/JourneyEscape.o \
 	src/games/supported/Kangaroo.o \
+	src/games/supported/Koolaid.o \
 	src/games/supported/Krull.o \
 	src/games/supported/KungFuMaster.o \
 	src/games/supported/MontezumaRevenge.o \
