@@ -118,3 +118,9 @@ void MrDoSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+ActionVect MrDoSettings::getStartingActions() {
+    ActionVect startingActions;
+    startingActions.push_back(PLAYER_A_FIRE);
+    return startingActions;
+}
+

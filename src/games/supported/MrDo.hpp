@@ -64,6 +64,9 @@ class MrDoSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
+        // Mr. Do requires the fire action to start the game
+        ActionVect getStartingActions();
+
         virtual const int lives() { return isTerminal() ? 0 : m_lives; }
 
     private:
