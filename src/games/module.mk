@@ -24,6 +24,7 @@ MODULE_OBJS := \
 	src/games/supported/CrazyClimber.o \
 	src/games/supported/Defender.o \
 	src/games/supported/DemonAttack.o \
+	src/games/supported/DonkeyKong.o \
 	src/games/supported/DoubleDunk.o \
 	src/games/supported/ElevatorAction.o \
 	src/games/supported/Enduro.o \
