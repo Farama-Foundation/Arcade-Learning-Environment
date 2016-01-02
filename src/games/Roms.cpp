@@ -39,6 +39,7 @@
 #include "supported/Enduro.hpp"
 #include "supported/FishingDerby.hpp"
 #include "supported/Freeway.hpp"
+#include "supported/Frogger.hpp"
 #include "supported/Frostbite.hpp"
 #include "supported/Gopher.hpp"
 #include "supported/Gravitar.hpp"
@@ -105,6 +106,7 @@ static const RomSettings *roms[]  = {
     new EnduroSettings(),
     new FishingDerbySettings(),
     new FreewaySettings(),
+    new FroggerSettings(),
     new FrostbiteSettings(),
     new GopherSettings(),
     new GravitarSettings(),
