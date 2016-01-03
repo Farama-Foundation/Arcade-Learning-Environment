@@ -49,6 +49,7 @@
 #include "supported/Kangaroo.hpp"
 #include "supported/Krull.hpp"
 #include "supported/KungFuMaster.hpp"
+#include "supported/LostLuggage.hpp"
 #include "supported/MontezumaRevenge.hpp"
 #include "supported/MsPacman.hpp"
 #include "supported/NameThisGame.hpp"
@@ -115,6 +116,7 @@ static const RomSettings *roms[]  = {
     new KangarooSettings(),
     new KrullSettings(),
     new KungFuMasterSettings(),
+    new LostLuggageSettings(),
     new MontezumaRevengeSettings(),
     new MsPacmanSettings(),
     new NameThisGameSettings(),
