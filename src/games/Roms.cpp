@@ -51,6 +51,7 @@
 #include "supported/Kangaroo.hpp"
 #include "supported/Koolaid.hpp"
 #include "supported/KeystoneKapers.hpp"
+#include "supported/Kingkong.hpp"
 #include "supported/Krull.hpp"
 #include "supported/KungFuMaster.hpp"
 #include "supported/MontezumaRevenge.hpp"
@@ -124,6 +125,7 @@ static const RomSettings *roms[]  = {
     new KangarooSettings(),
     new KoolaidSettings(),
     new KeystoneKapersSettings(),
+    new KingkongSettings(),
     new KrullSettings(),
     new KungFuMasterSettings(),
     new MontezumaRevengeSettings(),
