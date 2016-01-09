@@ -32,7 +32,7 @@ class MrDoSettings : public RomSettings {
         reward_t getReward() const;
 
         // the rom-name
-        const char* rom() const { return "mrdo"; }
+        const char* rom() const { return "mr_do"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
