@@ -9,18 +9,17 @@
  *
  * *****************************************************************************
  */
-#ifndef __DONKEYKONG_HPP__
-#define __DONKEYKONG_HPP__
+#ifndef __KEYSTONEKAPERS_HPP__
+#define __KEYSTONEKAPERS_HPP__
 
 #include "../RomSettings.hpp"
 
 
-/* RL wrapper for DonkeyKong */
-class DonkeyKongSettings : public RomSettings {
+/* RL wrapper for KeystoneKapers */
+class KeystoneKapersSettings : public RomSettings {
 
     public:
-
-        DonkeyKongSettings();
+        KeystoneKapersSettings();
 
         // reset
         void reset();
@@ -32,8 +31,8 @@ class DonkeyKongSettings : public RomSettings {
         reward_t getReward() const;
 
         // the rom-name
-		// MD5 36b20c427975760cb9cf4a47e41369e4
-        const char* rom() const { return "donkey_kong"; }
+		// MD5 be929419902e21bd7830a7a7d746195d
+        const char* rom() const { return "keystonekapers"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
@@ -50,6 +49,9 @@ class DonkeyKongSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
+        // Keystone Kapers requires the reset button to start the game
+        ActionVect getStartingActions();
+
         virtual const int lives() { return isTerminal() ? 0 : m_lives; }
 
     private:
@@ -59,5 +61,5 @@ class DonkeyKongSettings : public RomSettings {
         int m_lives;
 };
 
-#endif // __DONKEYKONG_HPP__
+#endif // __KEYSTONEKAPERS_HPP__
 
