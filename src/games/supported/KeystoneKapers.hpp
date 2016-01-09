@@ -32,7 +32,7 @@ class KeystoneKapersSettings : public RomSettings {
 
         // the rom-name
 		// MD5 be929419902e21bd7830a7a7d746195d
-        const char* rom() const { return "keystonekapers"; }
+        const char* rom() const { return "keystone_kapers"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
