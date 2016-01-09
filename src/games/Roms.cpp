@@ -34,7 +34,6 @@
 #include "supported/CrazyClimber.hpp"
 #include "supported/Defender.hpp"
 #include "supported/DemonAttack.hpp"
-#include "supported/DonkeyKong.hpp"
 #include "supported/DoubleDunk.hpp"
 #include "supported/ElevatorAction.hpp"
 #include "supported/Enduro.hpp"
@@ -105,7 +104,6 @@ static const RomSettings *roms[]  = {
     new CrazyClimberSettings(),
     new DefenderSettings(),
     new DemonAttackSettings(),
-    new DonkeyKongSettings(),
     new DoubleDunkSettings(),
     new ElevatorActionSettings(),
     new EnduroSettings(),
