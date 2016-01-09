@@ -54,6 +54,7 @@
 #include "supported/Kingkong.hpp"
 #include "supported/Krull.hpp"
 #include "supported/KungFuMaster.hpp"
+#include "supported/LaserGates.hpp"
 #include "supported/MontezumaRevenge.hpp"
 #include "supported/MrDo.hpp"
 #include "supported/MsPacman.hpp"
@@ -128,6 +129,7 @@ static const RomSettings *roms[]  = {
     new KingkongSettings(),
     new KrullSettings(),
     new KungFuMasterSettings(),
+    new LaserGatesSettings(),
     new MontezumaRevengeSettings(),
     new MrDoSettings(),
     new MsPacmanSettings(),
