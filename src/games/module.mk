@@ -30,6 +30,7 @@ MODULE_OBJS := \
 	src/games/supported/Enduro.o \
 	src/games/supported/FishingDerby.o \
 	src/games/supported/Freeway.o \
+	src/games/supported/Frogger.o \
 	src/games/supported/Frostbite.o \
 	src/games/supported/Gopher.o \
 	src/games/supported/Gravitar.o \
