@@ -31,7 +31,7 @@ class LaserGatesSettings : public RomSettings {
 
         // the rom-name
 		// MD5 1fa58679d4a39052bd9db059e8cda4ad
-        const char* rom() const { return "lasergates"; }
+        const char* rom() const { return "laser_gates"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
