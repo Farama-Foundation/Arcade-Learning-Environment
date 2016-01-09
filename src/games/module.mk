@@ -59,6 +59,7 @@ MODULE_OBJS := \
 	src/games/supported/RoadRunner.o \
 	src/games/supported/RoboTank.o \
 	src/games/supported/Seaquest.o \
+	src/games/supported/SirLancelot.o \
 	src/games/supported/Skiing.o \
 	src/games/supported/Solaris.o \
 	src/games/supported/SpaceInvaders.o \

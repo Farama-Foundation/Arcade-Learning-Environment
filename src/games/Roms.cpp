@@ -69,6 +69,7 @@
 #include "supported/RoadRunner.hpp"
 #include "supported/RoboTank.hpp"
 #include "supported/Seaquest.hpp"
+#include "supported/SirLancelot.hpp"
 #include "supported/Skiing.hpp"
 #include "supported/Solaris.hpp"
 #include "supported/SpaceInvaders.hpp"
@@ -144,6 +145,7 @@ static const RomSettings *roms[]  = {
     new RoadRunnerSettings(),
     new RoboTankSettings(),
     new SeaquestSettings(),
+    new SirLancelotSettings(),
     new SkiingSettings(),
     new SolarisSettings(),
     new SpaceInvadersSettings(),
