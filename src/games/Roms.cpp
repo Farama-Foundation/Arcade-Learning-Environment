@@ -70,11 +70,8 @@
 #include "supported/Tennis.hpp"
 #include "supported/Tetris.hpp"
 #include "supported/TimePilot.hpp"
-<<<<<<< HEAD
 #include "supported/Turmoil.hpp"
-=======
 #include "supported/Trondead.hpp"
->>>>>>> 66667ebe4b07d5d6c5b5a5b4f9b12e469e4e1c60
 #include "supported/Tutankham.hpp"
 #include "supported/UpNDown.hpp"
 #include "supported/Venture.hpp"
