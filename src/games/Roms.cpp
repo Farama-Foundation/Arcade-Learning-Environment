@@ -51,6 +51,7 @@
 #include "supported/Krull.hpp"
 #include "supported/KungFuMaster.hpp"
 #include "supported/MontezumaRevenge.hpp"
+#include "supported/MrDo.hpp"
 #include "supported/MsPacman.hpp"
 #include "supported/NameThisGame.hpp"
 #include "supported/Phoenix.hpp"
@@ -120,6 +121,7 @@ static const RomSettings *roms[]  = {
     new KrullSettings(),
     new KungFuMasterSettings(),
     new MontezumaRevengeSettings(),
+    new MrDoSettings(),
     new MsPacmanSettings(),
     new NameThisGameSettings(),
     new PhoenixSettings(),
