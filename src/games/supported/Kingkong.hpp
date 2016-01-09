@@ -44,7 +44,7 @@ class KingkongSettings : public RomSettings {
         reward_t getReward() const;
 
         // the rom-name
-        const char* rom() const { return "kingkong"; }
+        const char* rom() const { return "king_kong"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
