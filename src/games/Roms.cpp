@@ -69,6 +69,7 @@
 #include "supported/Tennis.hpp"
 #include "supported/Tetris.hpp"
 #include "supported/TimePilot.hpp"
+#include "supported/Turmoil.hpp"
 #include "supported/Tutankham.hpp"
 #include "supported/UpNDown.hpp"
 #include "supported/Venture.hpp"
@@ -135,6 +136,7 @@ static const RomSettings *roms[]  = {
     new TennisSettings(),
     new TetrisSettings(),
     new TimePilotSettings(),
+    new TurmoilSettings(),
     new TutankhamSettings(),
     new UpNDownSettings(),
     new VentureSettings(),
