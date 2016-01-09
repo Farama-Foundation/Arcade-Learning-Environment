@@ -1,0 +1,15 @@
+sudo: false
+language: cpp
+
+#before_install:
+#    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+#    - sudo apt-get update
+#
+# Disabling SDL for the time being
+#install:
+#    - sudo apt-get install libsdl1.2-dev
+
+script:
+#    - cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON
+    - cmake -DUSE_SDL=OFF -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=OFF
+    - make -j 4
