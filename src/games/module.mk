@@ -45,6 +45,7 @@ MODULE_OBJS := \
 	src/games/supported/Krull.o \
 	src/games/supported/KungFuMaster.o \
 	src/games/supported/LaserGates.o \
+	src/games/supported/LostLuggage.o \
 	src/games/supported/MontezumaRevenge.o \
 	src/games/supported/MrDo.o \
 	src/games/supported/MsPacman.o \
