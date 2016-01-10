@@ -38,6 +38,9 @@ class LostLuggageSettings : public RomSettings {
         // is an action part of the minimal set?
         bool isMinimal(const Action& a) const;
 
+		// FIRE resets the game, prevent this
+        bool isLegal(const Action& a) const;
+
         // process the latest information from ALE
         void step(const System& system);
 
