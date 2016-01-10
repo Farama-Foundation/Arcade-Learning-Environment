@@ -38,7 +38,9 @@ void DonkeyKongSettings::step(const System& system) {
 
     // update lives and terminal status
     m_lives = readRam(&system, 0xA3);
-    m_terminal = readRam(&system, 0x8F) == 0x03;
+    m_terminal = (m_lives == 0)
+		&& readRam(&system, 0x8F) == 0x03
+		&& readRam(&system, 0x8B) == 0x1F;
 }
 
 /* is end of game */
