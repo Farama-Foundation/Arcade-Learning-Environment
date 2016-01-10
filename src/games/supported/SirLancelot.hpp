@@ -31,7 +31,7 @@ class SirLancelotSettings : public RomSettings {
 
         // the rom-name
 		// MD5 7ead257e8b5a44cac538f5f54c7a0023
-        const char* rom() const { return "sirlancelot"; }
+        const char* rom() const { return "sir_lancelot"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
