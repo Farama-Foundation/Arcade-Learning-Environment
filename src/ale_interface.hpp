@@ -45,7 +45,7 @@
 #include <string>
 #include <memory>
 
-static const std::string Version = "0.5.0";
+static const std::string Version = "0.5.1";
 
 /**
    This class interfaces ALE with external code for controlling agents.
@@ -106,6 +106,15 @@ public:
 
   // Returns the current game screen
   const ALEScreen &getScreen();
+
+  //This method should receive an empty vector to fill it with
+  //the grayscale colours
+  void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer);
+
+  //This method should receive a vector to fill it with
+  //the RGB colours. The first positions contain the red colours,
+  //followed by the green colours and then the blue colours
+  void getScreenRGB(std::vector<std::vector<unsigned char> >& output_rgb_buffer);
 
   // Returns the current RAM content
   const ALERAM &getRAM();
