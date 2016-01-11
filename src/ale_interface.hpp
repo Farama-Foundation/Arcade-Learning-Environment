@@ -114,7 +114,7 @@ public:
   //This method should receive a vector to fill it with
   //the RGB colours. The first positions contain the red colours,
   //followed by the green colours and then the blue colours
-  void getScreenRGB(std::vector<std::vector<unsigned char> >& output_rgb_buffer);
+  void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer);
 
   // Returns the current RAM content
   const ALERAM &getRAM();

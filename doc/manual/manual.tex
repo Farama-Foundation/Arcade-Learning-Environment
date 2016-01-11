@@ -698,19 +698,19 @@ clear.
   \verb+const ALEScreen &getScreen()+: Returns a matrix containing the current game screen.
   
   \verb+void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer)+: \\
-  This method receives a vector of size width $\times$ height (generally $160 \times 210
-  = 33,600$) and then it will replace the current vector values by the grayscale colours. 
-  The input vector can be empty or allocated, since a \verb+resize+ is performed. For efficiency
-  it is recommended one initializes the vector beforehand, to make sure an allocation is not
-  going to be performed at each time step.
+  This method fills the given vector with a grayscale version of the current screen, provided
+  in row-major order (typically yielding $210 \times 160 = 33,600$ entries). The vector is
+  resized as needed. For efficiency it is recommended to initialize the vector beforehand, to 
+  make sure an allocation is not performed at each time step. Note that the grayscale value
+  corresponds to the pixel's \emph{luminance}; for more details, consult the web.
   
-  \verb+void getScreenRGB(std::vector<std::vector<unsigned char> >& output_rgb_buffer)+:\\ 
-  This method receives a vector of size width $\times$ height (generally $160 \times 210
-  = 33,600$) where each position is a vector of size 3 (for the channels R, G and B, respectively).
-  The input vector can be empty or allocated, since a \verb+resize+ is performed. For efficiency
-  it is recommended one initializes the vector beforehand, to make sure an allocation is not
-  going to be performed at each time step.
- 
+  \verb+void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer)+:\\ 
+  This method fills the given vector with a RGB version of the current screen, provided
+  in row, column, then colour channel order (typically yielding $210 \times 160 \times 3 = 
+  100,800$ entries). The colour channels themselves are, in order: R, G, B. For example, \verb#output_rgb_buffer[(160 * 3) * 1 + 52 * 3 + 1]# corresponds to the 2nd row, 53rd column pixel's green
+  value. The vector is resized as needed. Still, for efficiency it is recommended to initialize
+  the vector beforehand, to make sure an allocation is not performed at each time step.
+  
   \verb+const ALERAM &getRAM()+: Returns a vector containing current RAM content (byte-level).
   
   \verb+void saveState()+: Saves the current state of the system if one wants to be able to recover 
