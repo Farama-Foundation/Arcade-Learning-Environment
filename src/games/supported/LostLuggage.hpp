@@ -30,7 +30,7 @@ class LostLuggageSettings : public RomSettings {
 
         // the rom-name
 		// MD5 7c00e7a205d3fda98eb20da7c9c50a55
-        const char* rom() const { return "lostluggage"; }
+        const char* rom() const { return "lost_luggage"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
