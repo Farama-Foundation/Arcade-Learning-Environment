@@ -15,6 +15,23 @@ Enjoy,
 The ALE team
 
 ===============================
+Quick start
+===============================
+
+Compilation:
+
+$ cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON .
+$ make -j 4
+
+To install python module:
+
+$ pip install .
+or
+$ pip install --user .
+
+More instructions in the manual under doc/manual
+
+===============================
 List of command-line parameters
 ===============================
 
