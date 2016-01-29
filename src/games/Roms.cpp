@@ -42,6 +42,7 @@
 #include "supported/Freeway.hpp"
 #include "supported/Frogger.hpp"
 #include "supported/Frostbite.hpp"
+#include "supported/Galaxian.hpp"
 #include "supported/Gopher.hpp"
 #include "supported/Gravitar.hpp"
 #include "supported/Hero.hpp"
