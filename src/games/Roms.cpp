@@ -120,6 +120,7 @@ static const RomSettings *roms[]  = {
     new FreewaySettings(),
     new FroggerSettings(),
     new FrostbiteSettings(),
+    new GalaxianSettings(),
     new GopherSettings(),
     new GravitarSettings(),
     new HeroSettings(),

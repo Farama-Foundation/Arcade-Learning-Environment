@@ -48,22 +48,26 @@ RomSettings* GalaxianSettings::clone() const {
 void GalaxianSettings::step(const System& system) {
 
     // update the reward
-    //int score = getDecimalScore(0xE8, 0xE6, &system);
+    int score = getDecimalScore(0xAE, 0xAD, 0xAC, &system);
     // reward cannot get negative in this game. When it does, it means that the score has looped 
     // (overflow)
-    //m_reward = score - m_score;
-    //if(m_reward < 0) {
-        // 10000 is the highest possible score
-    //    const int maximumScore = 10000;
-    //    m_reward = (maximumScore - m_score) + score; 
-    //}
-    //m_score = score;
-    //m_lives = readRam(&system, 0xC9);
+    m_reward = score - m_score;
+    if(m_reward < 0) {
+        // 1000000 is the highest possible score
+        const int maximumScore = 1000000;
+        m_reward = (maximumScore - m_score) + score; 
+    }
+    m_score = score;
+    m_lives = readRam(&system, 0xB9) + 1;  // 0xB9 keeps the number of lives shown below the screen
 
     // update terminal status
     // If bit 0x80 is on, then game is over 
-    //int some_byte = readRam(&system, 0x98); 
-    //m_terminal = (some_byte & 0x80) || m_lives == 0;
+    int some_byte = readRam(&system, 0xBF); 
+    m_terminal = (some_byte & 0x80);
+    if (m_terminal) {
+        // Force lives to zero when the game is over
+        m_lives = 0;
+    }
 }
 
 
