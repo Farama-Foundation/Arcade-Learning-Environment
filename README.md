@@ -6,6 +6,23 @@
 
 The Arcade Learning Environment (ALE) -- a platform for AI research.
 
+## Quick start
+
+### To compile:
+
+```
+$ cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON .
+$ make -j 4
+```
+
+### To install python module:
+
+```
+$ pip install .
+or
+$ pip install --user .
+```
+
 For more details and installation instructions, see the [website](http://www.arcadelearningenvironment.org) and [manual](doc/manual/manual.pdf). To ask questions and discuss, please join the [ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
 
 ## Citing ALE
