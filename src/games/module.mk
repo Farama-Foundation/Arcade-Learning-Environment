@@ -32,6 +32,7 @@ MODULE_OBJS := \
 	src/games/supported/Freeway.o \
 	src/games/supported/Frogger.o \
 	src/games/supported/Frostbite.o \
+	src/games/supported/Galaxian.o \
 	src/games/supported/Gopher.o \
 	src/games/supported/Gravitar.o \
 	src/games/supported/Hero.o \
