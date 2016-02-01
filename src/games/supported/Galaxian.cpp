@@ -1,5 +1,4 @@
 /* *****************************************************************************
- * The lines 54 - 59, 100, 109 and 117 are based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -36,8 +35,7 @@ GalaxianSettings::GalaxianSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* GalaxianSettings::clone() const { 
-    
+RomSettings* GalaxianSettings::clone() const {     
     RomSettings* rval = new GalaxianSettings();
     *rval = *this;
     return rval;
@@ -46,7 +44,6 @@ RomSettings* GalaxianSettings::clone() const {
 
 /* process the latest information from ALE */
 void GalaxianSettings::step(const System& system) {
-
     // update the reward
     int score = getDecimalScore(0xAE, 0xAD, 0xAC, &system);
     // reward cannot get negative in this game. When it does, it means that the score has looped 
@@ -58,36 +55,34 @@ void GalaxianSettings::step(const System& system) {
         m_reward = (maximumScore - m_score) + score; 
     }
     m_score = score;
-    m_lives = readRam(&system, 0xB9) + 1;  // 0xB9 keeps the number of lives shown below the screen
-
-    // update terminal status
+    
+    // update terminal and lives
     // If bit 0x80 is on, then game is over 
     int some_byte = readRam(&system, 0xBF); 
     m_terminal = (some_byte & 0x80);
     if (m_terminal) {
-        // Force lives to zero when the game is over
+        // Force lives to zero when the game is over since otherwise it would be left as 1
         m_lives = 0;
+    } else {
+        m_lives = readRam(&system, 0xB9) + 1;  // 0xB9 keeps the number of lives shown below the screen    
     }
 }
 
 
 /* is end of game */
 bool GalaxianSettings::isTerminal() const {
-
     return m_terminal;
 };
 
 
 /* get the most recently observed reward */
 reward_t GalaxianSettings::getReward() const { 
-
     return m_reward; 
 }
 
 
 /* is an action part of the minimal set? */
 bool GalaxianSettings::isMinimal(const Action &a) const {
-
     switch (a) {
         case PLAYER_A_NOOP:
         case PLAYER_A_LEFT:
@@ -104,7 +99,6 @@ bool GalaxianSettings::isMinimal(const Action &a) const {
 
 /* reset the state of the game */
 void GalaxianSettings::reset() {
-    
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
