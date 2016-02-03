@@ -232,8 +232,14 @@ void FIFOController::sendRL() {
 void FIFOController::readAction(Action& action_a, Action& action_b) {
   // Read the new action from the pipe, as a comma-separated pair
   char in_buffer[2048];
-  fgets (in_buffer, sizeof(in_buffer), m_fin);
- 
+  if (fgets (in_buffer, sizeof(in_buffer), m_fin) == NULL) {
+    // If fgets returns NULL, we set the two actions to NOOP here. This is probably because the
+    // other side has hung up. We'll let the process terminate as usual.
+    action_a = PLAYER_A_NOOP;
+    action_b = PLAYER_B_NOOP;
+    return;
+  }
+
   char * token = strtok (in_buffer,",\n");
   action_a = (Action)atoi(token);
 
