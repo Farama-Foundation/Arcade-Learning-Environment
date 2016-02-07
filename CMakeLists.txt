@@ -86,6 +86,7 @@ target_link_libraries(ale-bin ${LINK_LIBS})
 target_link_libraries(ale-c-lib ${LINK_LIBS})
 
 if(BUILD_EXAMPLES)
+  # Shared library example.
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
@@ -93,6 +94,15 @@ if(BUILD_EXAMPLES)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
   
+  # Fifo interface example. 
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  add_executable(fifoInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/fifoInterfaceExample.cpp)
+  set_target_properties(fifoInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  target_link_libraries(fifoInterfaceExample ale)
+  target_link_libraries(fifoInterfaceExample ${LINK_LIBS})
+  add_dependencies(fifoInterfaceExample ale-lib)
+
+  # Example showing how to record an Atari 2600 video.
   if (USE_SDL)
     add_executable(videoRecordingExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/videoRecordingExample.cpp)
     set_target_properties(videoRecordingExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
