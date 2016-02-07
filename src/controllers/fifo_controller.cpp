@@ -98,7 +98,10 @@ void FIFOController::handshake() {
 
   // Read in agent's response
   char in_buffer [1024];
-  fgets (in_buffer, sizeof(in_buffer), m_fin);
+  if (fgets (in_buffer, sizeof(in_buffer), m_fin) == NULL) {
+    // If The agent hung up, stop the handshake.
+    return;
+  }
 
   // Parse response: send_screen, send_ram, <obsolete>, send_RL
   char * token = strtok (in_buffer,",\n");
