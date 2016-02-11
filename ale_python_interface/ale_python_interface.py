@@ -93,6 +93,10 @@ ale_lib.decodeState.restype = c_void_p
 class ALEInterface(object):
     def __init__(self):
         self.obj = ale_lib.ALE_new()
+        self.props_setters = {float:self.setFloat,
+                int:self.setInt,
+                bool:self.setBool,
+                str:self.setString}
 
     def getString(self, key):
         return ale_lib.getString(self.obj, key)
@@ -111,6 +115,11 @@ class ALEInterface(object):
       ale_lib.setBool(self.obj, key, value)
     def setFloat(self, key, value):
       ale_lib.setFloat(self.obj, key, value)
+
+    def __setitem__(self, key, value):
+        if type(value) not in self.props_setters:
+            raise TypeError
+        self.props_setters[type(value)](key, value)
 
     def loadROM(self, rom_file):
         ale_lib.loadROM(self.obj, rom_file)
