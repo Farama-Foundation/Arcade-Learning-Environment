@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
 project(ale)
 
+set(ALEVERSION "0.5dev_b")
+set(PACKAGE_NAME "Arcade Learning Environment")
+
 option(USE_SDL "Use SDL" OFF)
 option(USE_RLGLUE "Use RL-Glue" OFF)
 option(BUILD_EXAMPLES "Build Example Agents" ON)
@@ -93,8 +96,8 @@ if(BUILD_EXAMPLES)
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
-  
-  # Fifo interface example. 
+
+  # Fifo interface example.
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(fifoInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/fifoInterfaceExample.cpp)
   set_target_properties(fifoInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
@@ -124,3 +127,7 @@ if(USE_RLGLUE)
   target_link_libraries(RLGlueExperiment rlexperiment)
   target_link_libraries(RLGlueExperiment rlgluenetdev)
 endif()
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/libale.pc.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/libale.pc @ONLY)

@@ -1,0 +1,6 @@
+Name: @PACKAGE_NAME@
+Description: The Arcade Learning Environment (ALE) - a platform for AI research.
+URL: http://www.arcadelearningenvironment.org/
+Version: @ALEVERSION@
+Libs: -L@CMAKE_CURRENT_SOURCE_DIR@ -lale -lz -lm
+Cflags: -I@SOURCE_DIR@
