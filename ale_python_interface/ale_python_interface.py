@@ -7,6 +7,12 @@ from ctypes import *
 import numpy as np
 from numpy.ctypeslib import as_ctypes
 import os
+import sys
+
+if sys.version_info < (3,):
+     tobytes = lambda s: s
+else:
+     tobytes = lambda s: bytes(s, 'UTF-8')
 
 ale_lib = cdll.LoadLibrary(os.path.join(os.path.dirname(__file__),
                                         'libale_c.so'))
@@ -95,22 +101,22 @@ class ALEInterface(object):
         self.obj = ale_lib.ALE_new()
 
     def getString(self, key):
-        return ale_lib.getString(self.obj, key)
+        return ale_lib.getString(self.obj, tobytes(key))
     def getInt(self, key):
-        return ale_lib.getInt(self.obj, key)
+        return ale_lib.getInt(self.obj, tobytes(key))
     def getBool(self, key):
-        return ale_lib.getBool(self.obj, key)
+        return ale_lib.getBool(self.obj, tobytes(key))
     def getFloat(self, key):
-        return ale_lib.getFloat(self.obj, key)
+        return ale_lib.getFloat(self.obj, tobytes(key))
 
     def setString(self, key, value):
-      ale_lib.setString(self.obj, key, value)
+      ale_lib.setString(self.obj, tobytes(key), tobytes(value))
     def setInt(self, key, value):
-      ale_lib.setInt(self.obj, key, value)
+      ale_lib.setInt(self.obj, tobytes(key), value)
     def setBool(self, key, value):
-      ale_lib.setBool(self.obj, key, value)
+      ale_lib.setBool(self.obj, tobytes(key), value)
     def setFloat(self, key, value):
-      ale_lib.setFloat(self.obj, key, value)
+      ale_lib.setFloat(self.obj, tobytes(key), value)
 
     def loadROM(self, rom_file):
         ale_lib.loadROM(self.obj, rom_file)
