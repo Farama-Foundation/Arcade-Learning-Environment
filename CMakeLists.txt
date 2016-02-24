@@ -54,7 +54,31 @@ if(WINDOWS OR MINGW)
   list(APPEND SOURCES ${SOURCE_DIR}/os_dependent/SettingsWin32.cxx ${SOURCE_DIR}/os_dependent/OSystemWin32.cxx ${SOURCE_DIR}/os_dependent/FSNodeWin32.cxx)
 else()
   list(APPEND SOURCES ${SOURCE_DIR}/os_dependent/SettingsUNIX.cxx ${SOURCE_DIR}/os_dependent/OSystemUNIX.cxx ${SOURCE_DIR}/os_dependent/FSNodePOSIX.cxx)
+  SET(BIN_INSTALL_DIR "bin")
+  SET(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
+  SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Library directory name")  
+  SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Headers directory name")
+
 endif()
+
+# List and set the install targets for the headers
+if(UNIX)
+  foreach(module ${MODULES})
+    file(GLOB module_headers ${SOURCE_DIR}/${module}/*.h)
+    foreach(header ${module_headers})
+         get_filename_component(header_filename ${header} NAME_WE)
+         INSTALL(FILES ${header} DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}/${module}/${header_filename})
+    endforeach(header ${HEADERS})
+
+    file(GLOB module_headers ${SOURCE_DIR}/${module}/*.h?[xp])
+    foreach(header ${module_headers})
+         get_filename_component(header_filename ${header} NAME_WE)
+         INSTALL(FILES ${header} DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}/${module}/${header_filename})
+    endforeach(header ${HEADERS})
+  endforeach(module ${MODULES})
+endif(UNIX)
+#MESSAGE("HEaders : ${HEADERS}")
+
 
 include_directories(
   ${SOURCE_DIR}
@@ -74,12 +98,26 @@ include_directories(
 add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
 set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+if(UNIX)
+	install(TARGETS ale-lib 
+		DESTINATION ${LIB_INSTALL_DIR})
+endif()
+
 add_executable(ale-bin ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
 set_target_properties(ale-bin PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+if(UNIX)
+	install(TARGETS ale-bin
+		DESTINATION ${BIN_INSTALL_DIR})
+endif()
+
 add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
 set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface)
+if(UNIX)
+	install(TARGETS ale-c-lib
+		DESTINATION ${LIB_INSTALL_DIR})
+endif()
 
 target_link_libraries(ale-lib ${LINK_LIBS})
 target_link_libraries(ale-bin ${LINK_LIBS})
@@ -90,37 +128,62 @@ if(BUILD_EXAMPLES)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  set_target_properties(sharedLibraryInterfaceExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-sharedLibraryInterfaceExample)
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
-  
+  if(UNIX)
+  	install(TARGETS  sharedLibraryInterfaceExample
+          	DESTINATION ${BIN_INSTALL_DIR})
+  endif()
+
   # Fifo interface example. 
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(fifoInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/fifoInterfaceExample.cpp)
   set_target_properties(fifoInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  set_target_properties(fifoInterfaceExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-fifoInterfaceExample)
   target_link_libraries(fifoInterfaceExample ale)
   target_link_libraries(fifoInterfaceExample ${LINK_LIBS})
   add_dependencies(fifoInterfaceExample ale-lib)
-
+  if(UNIX)
+  install(TARGETS  fifoInterfaceExample 
+          DESTINATION ${BIN_INSTALL_DIR})
+  endif()
   # Example showing how to record an Atari 2600 video.
   if (USE_SDL)
     add_executable(videoRecordingExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/videoRecordingExample.cpp)
     set_target_properties(videoRecordingExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+    set_target_properties(videoRecordingExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-videoRecordingExample)
     target_link_libraries(videoRecordingExample ale)
     target_link_libraries(videoRecordingExample ${LINK_LIBS})
     add_dependencies(videoRecordingExample ale-lib)
-  endif()
+    if(UNIX)
+    	install(TARGETS  videoRecordingExample 
+           	DESTINATION ${BIN_INSTALL_DIR})
+    endif()
+ endif()
 endif()
 
 if(USE_RLGLUE)
   add_executable(RLGlueAgent ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/RLGlueAgent.c)
   set_target_properties(RLGlueAgent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  set_target_properties(RLGlueAgent PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-RLGlueAgent)
   target_link_libraries(RLGlueAgent rlutils)
   target_link_libraries(RLGlueAgent rlagent)
   target_link_libraries(RLGlueAgent rlgluenetdev)
+  if(UNIX)
+  	install(TARGETS  RLGlueAgent
+        	DESTINATION ${BIN_INSTALL_DIR})
+  endif()
   add_executable(RLGlueExperiment ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/RLGlueExperiment.c)
   set_target_properties(RLGlueExperiment PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  set_target_properties(RLGlueExperiment PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-RLGlueExperiment)
   target_link_libraries(RLGlueExperiment rlutils)
   target_link_libraries(RLGlueExperiment rlexperiment)
   target_link_libraries(RLGlueExperiment rlgluenetdev)
+  if(UNIX)
+	install(TARGETS  RLGlueExperiment
+        	DESTINATION ${BIN_INSTALL_DIR})
+  endif()
+
 endif()
