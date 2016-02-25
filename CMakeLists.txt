@@ -63,6 +63,8 @@ endif()
 
 # List and set the install targets for the headers
 if(UNIX)
+  
+  INSTALL(FILES ${SOURCE_DIR}/os_dependent/SettingsUNIX.hxx ${SOURCE_DIR}/os_dependent/SettingsWin32.hxx ${SOURCE_DIR}/os_dependent/OSystemUNIX.hxx ${SOURCE_DIR}/os_dependent/OSystemWin32.hxx DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}/os_dependent)
   file(GLOB module_headers ${SOURCE_DIR}/*.h?[xp])
   foreach(header ${module_headers})
          INSTALL(FILES ${header} DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME})
