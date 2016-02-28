@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project(ale)
+set(ALEVERSION "0.5dev_b")
+
 
 option(USE_SDL "Use SDL" OFF)
 option(USE_RLGLUE "Use RL-Glue" OFF)
@@ -58,10 +60,11 @@ else()
   SET(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
   SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Library directory name")  
   SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Headers directory name")
+  SET(PKGCONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig/" CACHE STRING "Base directory for pkgconfig files")
 
 endif()
 
-# List and set the install targets for the headers
+# List and set the install targets for the headers, generate and install the pkgconfig file
 if(UNIX)
   
   INSTALL(FILES ${SOURCE_DIR}/os_dependent/SettingsUNIX.hxx ${SOURCE_DIR}/os_dependent/SettingsWin32.hxx ${SOURCE_DIR}/os_dependent/OSystemUNIX.hxx ${SOURCE_DIR}/os_dependent/OSystemWin32.hxx DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}/os_dependent)
@@ -81,9 +84,28 @@ if(UNIX)
          INSTALL(FILES ${header} DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}/${module}/)
     endforeach(header ${HEADERS})
   endforeach(module ${MODULES})
-endif(UNIX)
-#MESSAGE("HEaders : ${HEADERS}")
 
+  ###################################
+  # Pkg-config stuff
+  ###################################
+
+  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+"
+Name: ${PROJECT_NAME}
+Description: The Arcade Learning Environment (ALE) - a platform for AI research.
+URL: http://www.arcadelearningenvironment.org/
+Version: ${ALEVERSION}
+Requires: 
+Libs: -L${LIB_INSTALL_DIR} -lale
+Cflags: -I${INCLUDE_INSTALL_DIR}
+"
+)
+
+
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    	DESTINATION ${PKGCONFIG_INSTALL_DIR})
+
+endif(UNIX)
 
 include_directories(
   ${SOURCE_DIR}
