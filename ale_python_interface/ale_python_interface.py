@@ -2,6 +2,7 @@
 # Author: Ben Goodrich
 # This directly implements a python version of the arcade learning
 # environment interface.
+__all__ = ['ALEInterface']
 
 from ctypes import *
 import numpy as np
