@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project(ale)
-set(ALEVERSION "0.5dev_b")
+set(ALEVERSION "0.5")
 
 
 option(USE_SDL "Use SDL" OFF)
@@ -159,10 +159,6 @@ if(BUILD_EXAMPLES)
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
-  if(UNIX)
-  	install(TARGETS  sharedLibraryInterfaceExample
-          	DESTINATION ${BIN_INSTALL_DIR})
-  endif()
 
   # Fifo interface example. 
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -172,10 +168,7 @@ if(BUILD_EXAMPLES)
   target_link_libraries(fifoInterfaceExample ale)
   target_link_libraries(fifoInterfaceExample ${LINK_LIBS})
   add_dependencies(fifoInterfaceExample ale-lib)
-  if(UNIX)
-  install(TARGETS  fifoInterfaceExample 
-          DESTINATION ${BIN_INSTALL_DIR})
-  endif()
+
   # Example showing how to record an Atari 2600 video.
   if (USE_SDL)
     add_executable(videoRecordingExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/videoRecordingExample.cpp)
@@ -184,11 +177,7 @@ if(BUILD_EXAMPLES)
     target_link_libraries(videoRecordingExample ale)
     target_link_libraries(videoRecordingExample ${LINK_LIBS})
     add_dependencies(videoRecordingExample ale-lib)
-    if(UNIX)
-    	install(TARGETS  videoRecordingExample 
-           	DESTINATION ${BIN_INSTALL_DIR})
-    endif()
- endif()
+  endif()
 endif()
 
 if(USE_RLGLUE)
@@ -198,19 +187,45 @@ if(USE_RLGLUE)
   target_link_libraries(RLGlueAgent rlutils)
   target_link_libraries(RLGlueAgent rlagent)
   target_link_libraries(RLGlueAgent rlgluenetdev)
-  if(UNIX)
-  	install(TARGETS  RLGlueAgent
-        	DESTINATION ${BIN_INSTALL_DIR})
-  endif()
+
   add_executable(RLGlueExperiment ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/RLGlueExperiment.c)
   set_target_properties(RLGlueExperiment PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
   set_target_properties(RLGlueExperiment PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-RLGlueExperiment)
   target_link_libraries(RLGlueExperiment rlutils)
   target_link_libraries(RLGlueExperiment rlexperiment)
   target_link_libraries(RLGlueExperiment rlgluenetdev)
-  if(UNIX)
-	install(TARGETS  RLGlueExperiment
-        	DESTINATION ${BIN_INSTALL_DIR})
-  endif()
 
 endif()
+
+
+########### Add uninstall target ###############
+  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+"
+IF(NOT EXISTS \"@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt\")
+  MESSAGE(FATAL_ERROR \"Cannot find install manifest: @CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt\")
+ENDIF(NOT EXISTS \"@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt\")
+
+FILE(READ \"@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt\" files)
+STRING(REGEX REPLACE \"\\n\" \";\" files \"\${files}\")
+FOREACH(file \${files})
+  MESSAGE(STATUS \"Uninstalling \"\$ENV{DESTDIR}\${file}\"\")
+  IF(EXISTS \"\$ENV{DESTDIR}\${file}\")
+    EXEC_PROGRAM(
+      \"@CMAKE_COMMAND@\" ARGS \"-E remove \"\$ENV{DESTDIR}\${file}\"\"
+      OUTPUT_VARIABLE rm_out
+      RETURN_VALUE rm_retval
+      )
+    IF(NOT \"\${rm_retval}\" STREQUAL 0)
+      MESSAGE(FATAL_ERROR \"Problem when removing \"\$ENV{DESTDIR}\${file}\"\")
+    ENDIF(NOT \"\${rm_retval}\" STREQUAL 0)
+  ELSE(EXISTS \"\$ENV{DESTDIR}\${file}\")
+    MESSAGE(STATUS \"File \"\$ENV{DESTDIR}\${file}\" does not exist.\")
+  ENDIF(EXISTS \"\$ENV{DESTDIR}\${file}\")
+ENDFOREACH(file)
+")
+
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  COMMAND rm -rf ${INCLUDE_INSTALL_DIR}/ale) 
+
+
