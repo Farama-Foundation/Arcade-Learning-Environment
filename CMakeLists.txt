@@ -125,6 +125,9 @@ include_directories(
 add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
 set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+# MGB: These don't seem to be needed. Uncomment if CMake gives you grief re: C++1. 
+#set_target_properties(ale-lib PROPERTIES CXX_STANDARD 11) 
+#set_target_properties(ale-lib PROPERTIES CXX_STANDARD_REQUIRED ON)
 if(UNIX)
 	install(TARGETS ale-lib 
 		DESTINATION ${LIB_INSTALL_DIR})
@@ -156,6 +159,7 @@ if(BUILD_EXAMPLES)
   add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-sharedLibraryInterfaceExample)
+
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
