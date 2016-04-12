@@ -58,6 +58,8 @@ void BreakoutSuperSettings::step(const System& system) {
     m_reward = score - m_score;
     m_score = score;
 
+    std::cout << "reward" << m_reward << std::endl;
+
     // update terminal status
     int byte_val = readRam(&system, 97);
     if (!m_started && byte_val == 1) m_started = true;
@@ -97,7 +99,7 @@ bool BreakoutSuperSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void BreakoutSuperSettings::reset() {
+void BreakoutSuperSettings::reset(System& system, StellaEnvironment& environment) {
 
     m_reward   = 0;
     m_score    = 0;
@@ -127,16 +129,18 @@ void BreakoutSuperSettings::loadState(Deserializer & ser) {
 }
 
 // list of available game modes
-ModeVect AirRaidSettings::getAvailableModes() {
-    ModeVect modes(9);
-    for(unsigned i = 0; i < 9; i++){
-        modes[i]=i+1;
+ModeVect BreakoutSuperSettings::getAvailableModes() {
+    ModeVect modes(5);
+    int modes_tmp[] = {1, 3, 5, 7, 8};
+    for (int i = 0; i < 5; ++i)
+    {
+      modes[i] = modes_tmp[i];
     }
     return modes;
 }
 
 // set game mode. mode must be within the  outputs of the previous function
-void AirRaidSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment) {
+void BreakoutSuperSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment) {
     if(m >= 1 && m <= 9){
         m_mode = m;
         // open the mode selection panel
