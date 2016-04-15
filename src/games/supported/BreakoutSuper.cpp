@@ -52,13 +52,12 @@ void BreakoutSuperSettings::step(const System& system) {
     // update the reward
     int x = readRam(&system, 93);
     int y = readRam(&system, 92);
-    reward_t score =   1 * ( x & 0x000F) +
-                      10 * ((x & 0x00F0) >> 4) +
-                     100 * ( y & 0x000F);
+    reward_t score =    1 * ( x & 0x000F) +
+                       10 * ((x & 0x00F0) >> 4) +
+                      100 * ( y & 0x000F) +
+                     1000 * ((y & 0x00F0) >> 4);
     m_reward = score - m_score;
     m_score = score;
-
-    std::cout << "reward" << m_reward << std::endl;
 
     // update terminal status
     int byte_val = readRam(&system, 97);
@@ -144,17 +143,34 @@ void BreakoutSuperSettings::setMode(game_mode_t m, System &system, StellaEnviron
     if(m >= 1 && m <= 9){
         m_mode = m;
         // open the mode selection panel
-        environment.pressSelect(10);
-        environment.pressSelect(10);
+        environment.pressSelect(1);
         // read the mode we are currently in
         int mode = readRam(&system, 64);
         // press select until the correct mode is reached
         while(mode != m_mode) {
-            environment.pressSelect(10);
+            environment.pressSelect(1);
             mode = readRam(&system, 64);
         }
         // reset the environment to apply changes.
         environment.soft_reset();
+
+    // wait until the score is reset to 0
+    int x = readRam(&system, 93), y = readRam(&system, 92);
+    reward_t score =    1 * ( x & 0x000F) +
+                       10 * ((x & 0x00F0) >> 4) +
+                      100 * ( y & 0x000F) +
+                     1000 * ((y & 0x00F0) >> 4);
+    while (score != 0)
+    {
+        environment.wait();
+        x = readRam(&system, 93), y = readRam(&system, 92);
+        score =    1 * ( x & 0x000F) +
+                  10 * ((x & 0x00F0) >> 4) +
+                 100 * ( y & 0x000F) +
+                1000 * ((y & 0x00F0) >> 4);
+    }
+
+
     } else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }
