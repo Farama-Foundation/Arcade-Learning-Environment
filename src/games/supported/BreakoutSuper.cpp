@@ -154,22 +154,22 @@ void BreakoutSuperSettings::setMode(game_mode_t m, System &system, StellaEnviron
         // reset the environment to apply changes.
         environment.soft_reset();
 
-    // wait until the score is reset to 0
-    int x = readRam(&system, 93), y = readRam(&system, 92);
-    reward_t score =    1 * ( x & 0x000F) +
-                       10 * ((x & 0x00F0) >> 4) +
-                      100 * ( y & 0x000F) +
-                     1000 * ((y & 0x00F0) >> 4);
-    while (score != 0)
-    {
-        environment.wait();
-        x = readRam(&system, 93), y = readRam(&system, 92);
-        score =    1 * ( x & 0x000F) +
-                  10 * ((x & 0x00F0) >> 4) +
-                 100 * ( y & 0x000F) +
-                1000 * ((y & 0x00F0) >> 4);
-    }
-
+        // wait until the score is 0 (score is 9999, 9998, 9997 and then 0)
+        int x = readRam(&system, 93), y = readRam(&system, 92);
+        reward_t score =    1 * ( x & 0x000F) +
+                           10 * ((x & 0x00F0) >> 4) +
+                          100 * ( y & 0x000F) +
+                         1000 * ((y & 0x00F0) >> 4);
+    
+        while (score != 0)
+        {
+            environment.wait();
+            x = readRam(&system, 93), y = readRam(&system, 92);
+            score =    1 * ( x & 0x000F) +
+                      10 * ((x & 0x00F0) >> 4) +
+                     100 * ( y & 0x000F) +
+                    1000 * ((y & 0x00F0) >> 4);
+        }
 
     } else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
