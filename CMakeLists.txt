@@ -7,7 +7,7 @@ option(USE_SDL "Use SDL" OFF)
 option(USE_RLGLUE "Use RL-Glue" OFF)
 option(BUILD_EXAMPLES "Build Example Agents" ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wunused -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
 add_definitions(-DHAVE_INTTYPES)
 set(LINK_LIBS z)
 
@@ -125,9 +125,6 @@ include_directories(
 add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
 set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
 set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-# MGB: These don't seem to be needed. Uncomment if CMake gives you grief re: C++1. 
-#set_target_properties(ale-lib PROPERTIES CXX_STANDARD 11) 
-#set_target_properties(ale-lib PROPERTIES CXX_STANDARD_REQUIRED ON)
 if(UNIX)
 	install(TARGETS ale-lib 
 		DESTINATION ${LIB_INSTALL_DIR})
