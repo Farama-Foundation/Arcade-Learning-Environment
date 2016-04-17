@@ -23,6 +23,7 @@
 
 // This uses C++11.
 #include <random>
+#include <sstream>
 
 // A static Random object for compatibility purposes. Don't use this.
 Random Random::s_random;
@@ -62,7 +63,7 @@ Random::Impl::Impl()
 void Random::Impl::seed(uInt32 value)
 {
   m_seed = value;
-  m_randgen.seed(ourSeed);
+  m_randgen.seed(m_seed);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -114,29 +115,20 @@ Random& Random::getInstance() {
 }
 
 bool Random::saveState(Serializer& ser) {
+  // The mt19937 object's serialization of choice is into a string. 
+  std::ostringstream oss;
+  oss << m_pimpl->m_randgen;
 
-  /* TODO(MGB) 
-  // Serialize the TinyMT state
-  for (int i = 0; i < 4; i++)
-    ser.putInt(m_pimpl->m_randgen.status[i]);
-  // These aren't really needed, but we serialize them anyway 
-  ser.putInt(m_pimpl->m_randgen.mat1);
-  ser.putInt(m_pimpl->m_randgen.mat2);
-  ser.putInt(m_pimpl->m_randgen.tmat);
-    */
+  ser.putString(oss.str());
 
   return true;
 }
 
 bool Random::loadState(Deserializer& deser) {
-  /*
-  // Deserialize the TinyMT state
-  for (int i = 0; i < 4; i++)
-    m_pimpl->m_randgen.status[i] = deser.getInt();
-  m_pimpl->m_randgen.mat1 = deser.getInt();
-  m_pimpl->m_randgen.mat2 = deser.getInt();
-  m_pimpl->m_randgen.tmat = deser.getInt();
-  */
+  // Deserialize into a string.
+  std::istringstream iss(deser.getString());
+
+  iss >> m_pimpl->m_randgen;
 
   return true;
 }
