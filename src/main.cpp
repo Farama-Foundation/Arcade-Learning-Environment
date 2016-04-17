@@ -36,8 +36,9 @@
 #include "common/Constants.h"
 #include "ale_interface.hpp"
 
-static std::unique_ptr<OSystem> theOSystem(NULL);
-static std::unique_ptr<Settings> theSettings(NULL);
+// TODO(mgbellemare): Why are these static? 
+static std::unique_ptr<OSystem> theOSystem;
+static std::unique_ptr<Settings> theSettings;
 
 static ALEController* createController(OSystem* osystem, std::string type) {
   if(type.empty()){
