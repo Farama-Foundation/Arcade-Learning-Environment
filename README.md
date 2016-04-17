@@ -47,7 +47,8 @@ or
 $ pip install --user .
 ```
 
-More instructions in the manual under doc/manual
+-For more details and installation instructions, see the [website](http://www.arcadelearningenvironment.org) and [manual](doc/manual/manual.pdf). To ask questions and discuss, please join the [ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
+
 
 ===============================
 List of command-line parameters
