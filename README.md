@@ -47,7 +47,9 @@ or
 $ pip install --user .
 ```
 
--For more details and installation instructions, see the [website](http://www.arcadelearningenvironment.org) and [manual](doc/manual/manual.pdf). To ask questions and discuss, please join the [ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
+Getting the ALE to work on Visual Studio requires a bit of extra wrangling. You may wish to use IslandMan93's [Visual Studio port of the ALE.](https://github.com/Islandman93/Arcade-Learning-Environment)
+
+For more details and installation instructions, see the [website](http://www.arcadelearningenvironment.org) and [manual](doc/manual/manual.pdf). To ask questions and discuss, please join the [ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
 
 
 ===============================
