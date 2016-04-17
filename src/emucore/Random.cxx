@@ -21,9 +21,8 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 
-// TODO(mgb): bring this include in once we switch to C++11.
-// #include <random>
-#include "TinyMT/tinymt32.h"
+// This uses C++11.
+#include <random>
 
 // A static Random object for compatibility purposes. Don't use this.
 Random Random::s_random;
@@ -31,7 +30,8 @@ Random Random::s_random;
 // Implementation of Random's random number generator wrapper. 
 class Random::Impl {
   
-  typedef tinymt32_t randgen_t;
+  // @clean typedef tinymt32_t randgen_t;
+  typedef std::mt19937 randgen_t;
 
   public:
     
@@ -56,32 +56,25 @@ class Random::Impl {
 Random::Impl::Impl()
 {
     // Initialize seed to time
-    //seed((uInt32) time(NULL));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Random::Impl::seed(uInt32 value)
 {
   m_seed = value;
-  // TODO(mgb): this is the C++11 variant. 
-  // rndGenerator.seed(ourSeed);
-  tinymt32_init(&m_randgen, m_seed);
+  m_randgen.seed(ourSeed);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt32 Random::Impl::next() 
 {
-  // TODO(mgb): C++11
-  // return rndGenerator();
-  return static_cast<uInt32>(tinymt32_generate_uint32(&m_randgen));
+  return m_randgen();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 double Random::Impl::nextDouble()
 {
-  // TODO(mgb): C++11
-  // return rndGenerator() / double(rndGenerator.max() + 1.0);
-  return tinymt32_generate_32double(&m_randgen);
+  return m_randgen() / double(m_randgen.max() + 1.0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -122,6 +115,7 @@ Random& Random::getInstance() {
 
 bool Random::saveState(Serializer& ser) {
 
+  /* TODO(MGB) 
   // Serialize the TinyMT state
   for (int i = 0; i < 4; i++)
     ser.putInt(m_pimpl->m_randgen.status[i]);
@@ -129,18 +123,20 @@ bool Random::saveState(Serializer& ser) {
   ser.putInt(m_pimpl->m_randgen.mat1);
   ser.putInt(m_pimpl->m_randgen.mat2);
   ser.putInt(m_pimpl->m_randgen.tmat);
+    */
 
   return true;
 }
 
 bool Random::loadState(Deserializer& deser) {
-
+  /*
   // Deserialize the TinyMT state
   for (int i = 0; i < 4; i++)
     m_pimpl->m_randgen.status[i] = deser.getInt();
   m_pimpl->m_randgen.mat1 = deser.getInt();
   m_pimpl->m_randgen.mat2 = deser.getInt();
   m_pimpl->m_randgen.tmat = deser.getInt();
+  */
 
   return true;
 }
