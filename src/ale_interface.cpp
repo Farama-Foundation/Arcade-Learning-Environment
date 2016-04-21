@@ -259,7 +259,7 @@ void ALEInterface::getScreenGrayscale(std::vector<unsigned char>& grayscale_outp
   size_t screen_size = w*h;
   
   pixel_t *ale_screen_data = environment->getScreen().getArray();
-  theOSystem->colourPalette().applyPaletteGrayscale(grayscale_output_buffer, ale_screen_data, screen_size);
+  theOSystem->colourPalette().applyPaletteGrayscale(grayscale_output_buffer, ale_screen_data, screen_size*3);
 }
 
 //This method should receive a vector to fill it with
@@ -272,7 +272,7 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer){
 
   pixel_t *ale_screen_data = environment->getScreen().getArray();
 
-  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size);
+  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size*3);
 }
 
 // Returns the current RAM content
