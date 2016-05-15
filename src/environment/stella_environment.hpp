@@ -65,7 +65,7 @@ class StellaEnvironment {
     reward_t act(Action player_a_action, Action player_b_action);
 
     /** Returns true once we reach a terminal state */
-    bool isTerminal();
+    bool isTerminal() const;
 
     /** Accessor methods for the environment state. */
     void setState(const ALEState & state);
