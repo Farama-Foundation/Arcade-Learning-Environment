@@ -1,3 +1,6 @@
+Inter-release notes:
+  * color_averaging is now off by default so that environment observations correspond to emulator frames unless requested otherwise.
+
 October 4th, 2015. ALE 0.5dev_b.
   * Enforce flags existence (@mcmachado).
   * Fix RNG issues introduced in 0.5.0.
