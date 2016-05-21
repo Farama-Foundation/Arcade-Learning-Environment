@@ -704,7 +704,7 @@ void Settings::setDefaultSettings() {
     // Environment customization settings
     boolSettings.insert(pair<string, bool>("restricted_action_set", false));
     intSettings.insert(pair<string, int>("random_seed", 0));
-    boolSettings.insert(pair<string, bool>("color_averaging", true));
+    boolSettings.insert(pair<string, bool>("color_averaging", false));
     boolSettings.insert(pair<string, bool>("send_rgb", false));
     intSettings.insert(pair<string, int>("frame_skip", 1));
     floatSettings.insert(pair<string, float>("repeat_action_probability", 0.25));
