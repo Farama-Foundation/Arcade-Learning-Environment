@@ -422,13 +422,13 @@ is preserved.
 This functionality is provided in the fifo, shared library and CTypes interfaces. The shared
 library interface additionally provides state cloning/restoring capabilities.
 
-\subsection{Colour Averaging}
+\subsection{Color Averaging}
 
 Many Atari 2600 games display objects on alternating frames (sometimes even less frequently).
-This can be an issue for agents that do not consider the whole screen history. By default, 
-\emph{colour averaging} is not enabled. If enabled, the environment output (as observed by agents)
-is a weighted blend of the last two frames. This behaviour can be turned on using the
-command--line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
+This can be an issue for agents that do not consider the whole screen history.
+By default, \emph{color averaging} is not enabled, that is, the environment output is the actual frame from the emulator.
+If enabled, the environment output (as observed by agents) is a weighted blend of the last two frames.
+This behaviour can be turned on using the command--line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
 
 \subsection{Action Repeat Stochasticity}
 
