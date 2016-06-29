@@ -32,6 +32,7 @@ ALEController::ALEController(OSystem* osystem):
     exit(1);
   }
   else {
+    applyRomSettings(m_settings.get(), m_osystem);
     m_environment.reset();
   }
 }

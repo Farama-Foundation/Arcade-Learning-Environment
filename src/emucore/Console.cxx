@@ -238,6 +238,13 @@ Console::~Console()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Console::toggleSwapPorts() {
+
+  // Swaps the left and right ports
+  std::swap(myControllers[0], myControllers[1]);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::toggleFormat()
 {
   int framerate = 60;

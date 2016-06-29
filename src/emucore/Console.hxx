@@ -168,6 +168,11 @@ class Console
     void togglePhosphor();
 
     /**
+      Swap ports (or un-swaps them if they were swapped). 
+    */
+    void toggleSwapPorts();
+
+    /**
       Initialize the video subsystem wrt this class.
       This is required for changing window size, title, etc.
 

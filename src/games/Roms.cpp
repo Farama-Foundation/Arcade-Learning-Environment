@@ -76,6 +76,7 @@
 #include "supported/Solaris.hpp"
 #include "supported/SpaceInvaders.hpp"
 #include "supported/StarGunner.hpp"
+#include "supported/Surround.hpp"
 #include "supported/Tennis.hpp"
 #include "supported/Tetris.hpp"
 #include "supported/TimePilot.hpp"
@@ -154,6 +155,7 @@ static const RomSettings *roms[]  = {
     new SolarisSettings(),
     new SpaceInvadersSettings(),
     new StarGunnerSettings(),
+    new SurroundSettings(),
     new TennisSettings(),
     new TetrisSettings(),
     new TimePilotSettings(),
@@ -170,7 +172,7 @@ static const RomSettings *roms[]  = {
 
 
 /* looks for the RL wrapper corresponding to a particular rom title */
-RomSettings *buildRomRLWrapper(const std::string &rom) {
+RomSettings *buildRomRLWrapper(const std::string& rom) {
 
     size_t slash_ind = rom.find_last_of("/\\");
     std::string rom_str = rom.substr(slash_ind + 1);
@@ -185,3 +187,11 @@ RomSettings *buildRomRLWrapper(const std::string &rom) {
     return NULL;
 }
 
+// Taken from Xitari.
+void applyRomSettings(RomSettings* settings, OSystem* osystem) {
+
+    assert(settings != NULL && osystem != NULL);
+
+    if (settings->swapPorts())
+        osystem->console().toggleSwapPorts();
+}

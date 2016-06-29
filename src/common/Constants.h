@@ -68,6 +68,7 @@ enum Action {
     SAVE_STATE              = 43,
     LOAD_STATE              = 44,
     SYSTEM_RESET            = 45,
+    SELECT                  = 46,
     LAST_ACTION_INDEX       = 50
 };
 

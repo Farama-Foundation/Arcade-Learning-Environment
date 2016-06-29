@@ -127,6 +127,8 @@ void ALEInterface::loadROM(string rom_file = "") {
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
   environment->reset();
+  applyRomSettings(romSettings.get(), theOSystem.get());
+
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
     Logger::Error << "Screen display requires directive __USE_SDL to be defined." << endl;

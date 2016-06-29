@@ -77,6 +77,8 @@ struct RomSettings {
     // Remaining lives.
     virtual const int lives() { return isTerminal() ? 0 : 1; }
 
+    virtual bool swapPorts() const { return false; }
+
     // Returns a restricted (minimal) set of actions. If not overriden, this is all actions.
     virtual ActionVect getMinimalActionSet();
 
