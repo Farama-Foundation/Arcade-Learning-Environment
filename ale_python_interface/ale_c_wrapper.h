@@ -84,6 +84,9 @@ extern "C" {
   void encodeState(ALEState *state, char *buf, int buf_len);
   int encodeStateLen(ALEState *state);
   ALEState *decodeState(const char *serialized, int len);
+
+  // 0: Info, 1: Warning, 2: Error
+  void setLoggerMode(int mode) { ale::Logger::setMode(ale::Logger::mode(mode)); }
 }
 
 #endif
