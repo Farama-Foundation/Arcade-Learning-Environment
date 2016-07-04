@@ -11,7 +11,7 @@
  *  ale_screen.hpp
  *
  *  A class that encapsulates an Atari 2600 screen. Code is provided inline for
- *   efficiency reasonss.
+ *   efficiency reasons.
  *  
  **************************************************************************** */
 

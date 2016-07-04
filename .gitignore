@@ -1,3 +1,11 @@
+## ALE
+
+ale
+build
+doc/examples/*Example
+
+## Generic
+
 # Emacs temp files
 *~
 .*

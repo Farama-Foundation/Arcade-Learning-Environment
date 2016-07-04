@@ -82,7 +82,7 @@ public:
   reward_t act(Action action);
 
   // Indicates if the game has ended.
-  bool game_over();
+  bool game_over() const;
 
   // Resets the game, but not the full system.
   void reset_game();
@@ -102,7 +102,7 @@ public:
   const int lives();
 
   // Returns the frame number since the start of the current episode
-  int getEpisodeFrameNumber();
+  int getEpisodeFrameNumber() const;
 
   // Returns the current game screen
   const ALEScreen &getScreen();

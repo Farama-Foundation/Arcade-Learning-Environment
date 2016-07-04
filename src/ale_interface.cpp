@@ -188,9 +188,8 @@ void ALEInterface::reset_game() {
 }
 
 // Indicates if the game has ended.
-bool ALEInterface::game_over() {
-  return (environment->isTerminal() ||
-          (max_num_frames > 0 && getEpisodeFrameNumber() >= max_num_frames));
+bool ALEInterface::game_over() const {
+  return environment->isTerminal();
 }
 
 // The remaining number of lives.
@@ -242,7 +241,7 @@ int ALEInterface::getFrameNumber() {
 }
 
 // Returns the frame number since the start of the current episode
-int ALEInterface::getEpisodeFrameNumber() {
+int ALEInterface::getEpisodeFrameNumber() const {
   return environment->getEpisodeFrameNumber();
 }
 
@@ -272,7 +271,7 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer){
 
   pixel_t *ale_screen_data = environment->getScreen().getArray();
 
-  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size);
+  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size * 3);
 }
 
 // Returns the current RAM content

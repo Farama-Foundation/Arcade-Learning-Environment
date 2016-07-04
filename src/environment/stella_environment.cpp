@@ -189,7 +189,7 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
   return m_settings->getReward();
 }
 
-bool StellaEnvironment::isTerminal() {
+bool StellaEnvironment::isTerminal() const {
   return (m_settings->isTerminal() || 
     (m_max_num_frames_per_episode > 0 && 
      m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));

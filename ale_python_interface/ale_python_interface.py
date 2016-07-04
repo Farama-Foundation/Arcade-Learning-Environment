@@ -90,8 +90,17 @@ ale_lib.encodeStateLen.argtypes = [c_void_p]
 ale_lib.encodeStateLen.restype = c_int
 ale_lib.decodeState.argtypes = [c_void_p, c_int]
 ale_lib.decodeState.restype = c_void_p
+ale_lib.setLoggerMode.argtypes = [c_int]
+ale_lib.setLoggerMode.restype = None
 
 class ALEInterface(object):
+    # Logger enum
+    class Logger:
+        Info = 0
+        Warning = 1
+        Error = 2
+
+
     def __init__(self):
         self.obj = ale_lib.ALE_new()
 
@@ -267,3 +276,10 @@ class ALEInterface(object):
 
     def __del__(self):
         ale_lib.ALE_del(self.obj)
+
+    @staticmethod
+    def setLoggerMode(mode):
+        dic = {'info': 0, 'warning': 1, 'error': 2}
+        mode = dic.get(mode, mode)
+        assert mode in [0, 1, 2], "Invalid Mode! Mode must be one of 0: info, 1: warning, 2: error"
+        ale_lib.setLoggerMode(mode)
