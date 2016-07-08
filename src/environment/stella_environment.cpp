@@ -178,12 +178,6 @@ void StellaEnvironment::soft_reset(){
   m_state.incrementFrame();
 }
 
-/** Emulates a NOOP action for both players */
-void StellaEnvironment::wait()
-{
-  emulate(PLAYER_A_NOOP,PLAYER_B_NOOP);
-}
-
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
   *  and performs one simulation step in Stella. */
 reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_action) {

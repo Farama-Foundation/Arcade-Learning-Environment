@@ -18,7 +18,6 @@ MODULE_OBJS := \
 	src/games/supported/Bowling.o \
 	src/games/supported/Boxing.o \
 	src/games/supported/Breakout.o \
-	src/games/supported/BreakoutSuper.o \
 	src/games/supported/Carnival.o \
 	src/games/supported/Centipede.o \
 	src/games/supported/ChopperCommand.o \
@@ -57,6 +56,7 @@ MODULE_OBJS := \
 	src/games/supported/Solaris.o \
 	src/games/supported/SpaceInvaders.o \
 	src/games/supported/StarGunner.o \
+	src/games/supported/SuperBreakout.o \
 	src/games/supported/Tennis.o \
 	src/games/supported/Tetris.o \
 	src/games/supported/TimePilot.o \

@@ -22,12 +22,12 @@
  *
  * *****************************************************************************
  */
-#include "BreakoutSuper.hpp"
+#include "SuperBreakout.hpp"
 
 #include "../RomUtils.hpp"
 
 
-BreakoutSuperSettings::BreakoutSuperSettings() {
+SuperBreakoutSettings::SuperBreakoutSettings() {
 
     m_reward   = 0;
     m_score    = 0;
@@ -39,16 +39,16 @@ BreakoutSuperSettings::BreakoutSuperSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* BreakoutSuperSettings::clone() const {
+RomSettings* SuperBreakoutSettings::clone() const {
 
-    RomSettings* rval = new BreakoutSuperSettings();
+    RomSettings* rval = new SuperBreakoutSettings();
     *rval = *this;
     return rval;
 }
 
 
 /* process the latest information from ALE */
-void BreakoutSuperSettings::step(const System& system) {
+void SuperBreakoutSettings::step(const System& system) {
     // update the reward
     int x = readRam(&system, 93);
     int y = readRam(&system, 92);
@@ -64,26 +64,26 @@ void BreakoutSuperSettings::step(const System& system) {
     if (!m_started && byte_val == 1) m_started = true;
     int byte_end = readRam(&system, 121);
     m_terminal = byte_end == 247;
-    m_lives = 6 - byte_val;
+    m_lives = byte_val;
 }
 
 
 /* is end of game */
-bool BreakoutSuperSettings::isTerminal() const {
+bool SuperBreakoutSettings::isTerminal() const {
 
     return m_terminal;
 };
 
 
 /* get the most recently observed reward */
-reward_t BreakoutSuperSettings::getReward() const {
+reward_t SuperBreakoutSettings::getReward() const {
 
     return m_reward;
 }
 
 
 /* is an action part of the minimal set? */
-bool BreakoutSuperSettings::isMinimal(const Action &a) const {
+bool SuperBreakoutSettings::isMinimal(const Action &a) const {
 
     switch (a) {
         case PLAYER_A_NOOP:
@@ -98,7 +98,7 @@ bool BreakoutSuperSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void BreakoutSuperSettings::reset(System& system, StellaEnvironment& environment) {
+void SuperBreakoutSettings::reset(System& system, StellaEnvironment& environment) {
 
     m_reward   = 0;
     m_score    = 0;
@@ -110,7 +110,7 @@ void BreakoutSuperSettings::reset(System& system, StellaEnvironment& environment
 
 
 /* saves the state of the rom settings */
-void BreakoutSuperSettings::saveState(Serializer & ser) {
+void SuperBreakoutSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -119,7 +119,7 @@ void BreakoutSuperSettings::saveState(Serializer & ser) {
 }
 
 /* loads the state of the rom settings */
-void BreakoutSuperSettings::loadState(Deserializer & ser) {
+void SuperBreakoutSettings::loadState(Deserializer & ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -128,7 +128,7 @@ void BreakoutSuperSettings::loadState(Deserializer & ser) {
 }
 
 // list of available game modes
-ModeVect BreakoutSuperSettings::getAvailableModes() {
+ModeVect SuperBreakoutSettings::getAvailableModes() {
     ModeVect modes(5);
     int modes_tmp[] = {1, 3, 5, 7, 8};
     for (int i = 0; i < 5; ++i)
@@ -139,8 +139,8 @@ ModeVect BreakoutSuperSettings::getAvailableModes() {
 }
 
 // set game mode. mode must be within the  outputs of the previous function
-void BreakoutSuperSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment) {
-    if(m >= 1 && m <= 9){
+void SuperBreakoutSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment) {
+    if(m == 1 || m == 3 || m == 5 || m == 7 || m == 9){
         m_mode = m;
         // open the mode selection panel
         environment.pressSelect(1);
@@ -163,7 +163,7 @@ void BreakoutSuperSettings::setMode(game_mode_t m, System &system, StellaEnviron
     
         while (score != 0)
         {
-            environment.wait();
+            environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
             x = readRam(&system, 93), y = readRam(&system, 92);
             score =    1 * ( x & 0x000F) +
                       10 * ((x & 0x00F0) >> 4) +

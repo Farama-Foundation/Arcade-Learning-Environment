@@ -1,6 +1,4 @@
 /* *****************************************************************************
- * The lines 68 and 76 are based on Xitari's code, from Google Inc.
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
  * as published by the Free Software Foundation.
@@ -24,18 +22,18 @@
  *
  * *****************************************************************************
  */
-#ifndef __BREAKOUTSUPER_HPP__
-#define __BREAKOUTSUPER_HPP__
+#ifndef __SUPERBREAKOUT_HPP__
+#define __SUPERBREAKOUT_HPP__
 
 #include "../RomSettings.hpp"
 
 
-/* RL wrapper for BreakoutSuper */
-class BreakoutSuperSettings : public RomSettings {
+/* RL wrapper for SuperBreakout */
+class SuperBreakoutSettings : public RomSettings {
 
     public:
 
-        BreakoutSuperSettings();
+        SuperBreakoutSettings();
 
         // reset
         void reset(System& system, StellaEnvironment& environment);
@@ -47,7 +45,7 @@ class BreakoutSuperSettings : public RomSettings {
         reward_t getReward() const;
 
         // the rom-name
-        const char* rom() const { return "breakout_super"; }
+        const char* rom() const { return "super_breakout"; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
@@ -83,5 +81,5 @@ class BreakoutSuperSettings : public RomSettings {
         int m_lives;
 };
 
-#endif // __BREAKOUTSUPER_HPP__
+#endif // __SuperBreakout_HPP__
 
