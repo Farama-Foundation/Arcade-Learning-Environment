@@ -69,9 +69,6 @@ class StellaEnvironment {
     /** This functions emulates a push on the reset button of the console */
     void soft_reset();
     
-    /** Emulate a NOOP action for both players */
-    void wait();
-
     /** Keep pressing the console select button for a given amount of time*/
     void pressSelect(size_t num_steps = 1);
 
