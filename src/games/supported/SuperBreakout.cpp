@@ -140,7 +140,7 @@ ModeVect SuperBreakoutSettings::getAvailableModes() {
 
 // set game mode. mode must be within the  outputs of the previous function
 void SuperBreakoutSettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment) {
-    if(m == 1 || m == 3 || m == 5 || m == 7 || m == 9){
+    if(m == 1 || m == 3 || m == 5 || m == 7 || m == 8){
         m_mode = m;
         // open the mode selection panel
         environment.pressSelect(1);
