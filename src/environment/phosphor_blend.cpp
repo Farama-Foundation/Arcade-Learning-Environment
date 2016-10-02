@@ -49,9 +49,9 @@ void PhosphorBlend::makeAveragePalette() {
   
   ColourPalette &palette = m_osystem->colourPalette();
 
-  // Precompute the average RGB values for phosphor-averaged colors c1 and c2
-  for (int c1 = 0; c1 < 256; c1++) {
-    for (int c2 = 0; c2 < 256; c2++) {
+  // Precompute the average RGB values for phosphor-averaged colors c1 and c2.
+  for (int c1 = 0; c1 < 256; c1 += 2) {
+    for (int c2 = 0; c2 < 256; c2 += 2) {
       int r1, g1, b1;
       int r2, g2, b2;
       palette.getRGB(c1, r1, g1, b1);
@@ -64,7 +64,8 @@ void PhosphorBlend::makeAveragePalette() {
     }
   }
   
-  // Also make a RGB to NTSC color map
+  // Also make a RGB to NTSC color map. We drop the lowest two bits to speed
+  // the initialization a little. TODO(mgbellemare): Find a better solution.
   for (int r = 0; r < 256; r += 4) {
     for (int g = 0; g < 256; g += 4) {  
       for (int b = 0; b < 256; b += 4) {
@@ -72,7 +73,9 @@ void PhosphorBlend::makeAveragePalette() {
         int minDist = 256 * 3 + 1;
         int minIndex = -1;
 
-        for (int c1 = 0; c1 < 256; c1++) {
+        // Look for the closest NTSC value matching (r,g,b). Odd palette
+        // entries correspond to grayscale values and are ignored.
+        for (int c1 = 0; c1 < 256; c1 += 2) {
           // Get the RGB corresponding to c1
           int r1, g1, b1;
           palette.getRGB(c1, r1, g1, b1);
