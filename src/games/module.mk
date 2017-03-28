@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	src/games/Roms.o \
 	src/games/RomSettings.o \
 	src/games/RomUtils.o \
+	src/games/supported/Adventure.o \
 	src/games/supported/AirRaid.o \
 	src/games/supported/Alien.o \
 	src/games/supported/Amidar.o \
