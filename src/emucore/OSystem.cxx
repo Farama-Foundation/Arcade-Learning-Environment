@@ -24,8 +24,6 @@
 #include <string.h>
 using namespace std;
 
-//ALE  #include "MediaFactory.hxx"
-
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
@@ -35,21 +33,13 @@ using namespace std;
 #endif
 
 #include "FSNode.hxx"
-#include "unzip.h"
 #include "MD5.hxx"
 #include "Settings.hxx"
 #include "PropsSet.hxx"
-//ALE   #include "EventHandler.hxx"
-#include "Event.hxx"            //ALE 
-//ALE   #include "Menu.hxx"
-//ALE   #include "CommandMenu.hxx"
-//ALE   #include "Launcher.hxx"
-//ALE   #include "Font.hxx"
-//ALE   #include "StellaFont.hxx"
-//ALE   #include "ConsoleFont.hxx"
+#include "Event.hxx"
 #include "OSystem.hxx"
 #include "SoundSDL.hxx"
-//ALE   #include "Widget.hxx"   
+
 #define MAX_ROM_SIZE  512 * 1024
 
 #include <time.h>
@@ -60,7 +50,7 @@ using namespace std;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem()
   : 
-    myEvent(NULL),          //ALE 
+    myEvent(NULL),
     mySound(NULL),
     mySettings(NULL),
     myPropSet(NULL),
@@ -91,18 +81,11 @@ OSystem::OSystem()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::~OSystem()
 {
-  //ALE  delete myMenu;
-  //ALE  delete myCommandMenu;
-  //ALE  delete myLauncher;
-  //ALE  delete myFont;
-  //ALE  delete myConsoleFont;
-  
   // Remove any game console that is currently attached
   deleteConsole();
 
   // OSystem takes responsibility for framebuffer and sound,
   // since it created them
-  //ALE  delete myFrameBuffer;
   if (mySound != NULL)
     delete mySound;
 
@@ -120,14 +103,11 @@ OSystem::~OSystem()
 
   if (myPropSet != NULL)
     delete myPropSet;
-  //ALE  delete myEventHandler;
   if (myEvent != NULL)
     delete myEvent; 
   if (p_display_screen != NULL) {
       delete p_display_screen;
   }
-    
-  //ALE  delete aiBase; 
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -505,72 +485,14 @@ ALE */
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
 {
-  // Try to open the file as a zipped archive
-  // If that fails, we assume it's just a gzipped or normal data file
-  unzFile tz;
-  if((tz = unzOpen(rom.c_str())) != NULL)
-  {
-    if(unzGoToFirstFile(tz) == UNZ_OK)
-    {
-      unz_file_info ufo;
+  // Assume the file is either gzip'ed or not compressed at all
+  gzFile f = gzopen(rom.c_str(), "rb");
+  if(!f)
+    return false;
 
-      for(;;)  // Loop through all files for valid 2600 images
-      {
-        // Longer filenames might be possible, but I don't
-        // think people would name files that long in zip files...
-        char filename[1024];
-
-        unzGetCurrentFileInfo(tz, &ufo, filename, 1024, 0, 0, 0, 0);
-        filename[1023] = '\0';
-
-        if(strlen(filename) >= 4)
-        {
-          // Grab 3-character extension
-          char* ext = filename + strlen(filename) - 4;
-
-          if(!BSPF_strcasecmp(ext, ".bin") || !BSPF_strcasecmp(ext, ".a26"))
-            break;
-        }
-
-        // Scan the next file in the zip
-        if(unzGoToNextFile(tz) != UNZ_OK)
-          break;
-      }
-
-      // Now see if we got a valid image
-      if(ufo.uncompressed_size <= 0)
-      {
-        unzClose(tz);
-        return false;
-      }
-      *size  = ufo.uncompressed_size;
-      *image = new uInt8[*size];
-
-      // We don't have to check for any return errors from these functions,
-      // since if there are, 'image' will not contain a valid ROM and the
-      // calling method can take of it
-      unzOpenCurrentFile(tz);
-      unzReadCurrentFile(tz, *image, *size);
-      unzCloseCurrentFile(tz);
-      unzClose(tz);
-    }
-    else
-    {
-      unzClose(tz);
-      return false;
-    }
-  }
-  else
-  {
-    // Assume the file is either gzip'ed or not compressed at all
-    gzFile f = gzopen(rom.c_str(), "rb");
-    if(!f)
-      return false;
-
-    *image = new uInt8[MAX_ROM_SIZE];
-    *size = gzread(f, *image, MAX_ROM_SIZE);
-    gzclose(f);
-  }
+  *image = new uInt8[MAX_ROM_SIZE];
+  *size = gzread(f, *image, MAX_ROM_SIZE);
+  gzclose(f);
 
   // If we get to this point, we know we have a valid file to open
   // Now we make sure that the file has a valid properties entry
