@@ -24,12 +24,15 @@ MODULE_OBJS := \
 	src/games/supported/CrazyClimber.o \
 	src/games/supported/Defender.o \
 	src/games/supported/DemonAttack.o \
+	src/games/supported/DonkeyKong.o \
 	src/games/supported/DoubleDunk.o \
 	src/games/supported/ElevatorAction.o \
 	src/games/supported/Enduro.o \
 	src/games/supported/FishingDerby.o \
 	src/games/supported/Freeway.o \
+	src/games/supported/Frogger.o \
 	src/games/supported/Frostbite.o \
+	src/games/supported/Galaxian.o \
 	src/games/supported/Gopher.o \
 	src/games/supported/Gravitar.o \
 	src/games/supported/Hero.o \
@@ -37,9 +40,15 @@ MODULE_OBJS := \
 	src/games/supported/JamesBond.o \
 	src/games/supported/JourneyEscape.o \
 	src/games/supported/Kangaroo.o \
+	src/games/supported/Koolaid.o \
+	src/games/supported/KeystoneKapers.o \
+	src/games/supported/Kingkong.o \
 	src/games/supported/Krull.o \
 	src/games/supported/KungFuMaster.o \
+	src/games/supported/LaserGates.o \
+	src/games/supported/LostLuggage.o \
 	src/games/supported/MontezumaRevenge.o \
+	src/games/supported/MrDo.o \
 	src/games/supported/MsPacman.o \
 	src/games/supported/NameThisGame.o \
 	src/games/supported/Phoenix.o \
@@ -52,6 +61,7 @@ MODULE_OBJS := \
 	src/games/supported/RoadRunner.o \
 	src/games/supported/RoboTank.o \
 	src/games/supported/Seaquest.o \
+	src/games/supported/SirLancelot.o \
 	src/games/supported/Skiing.o \
 	src/games/supported/Solaris.o \
 	src/games/supported/SpaceInvaders.o \
@@ -60,7 +70,9 @@ MODULE_OBJS := \
 	src/games/supported/Tennis.o \
 	src/games/supported/Tetris.o \
 	src/games/supported/TimePilot.o \
+	src/games/supported/Turmoil.o \
 	src/games/supported/Tutankham.o \
+	src/games/supported/Trondead.o \
 	src/games/supported/UpNDown.o \
 	src/games/supported/Venture.o \
 	src/games/supported/VideoPinball.o \

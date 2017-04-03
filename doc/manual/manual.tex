@@ -5,7 +5,7 @@
 \usepackage{hyperref}
 \usepackage{fullpage}
 
-\title{Arcade Learning Environment\\ Technical Manual (v.0.6.0)}
+\title{Arcade Learning Environment\\ Technical Manual (v.0.5.1)}
 \author{Marlos C. Machado, Matthew Hausknecht, Marc G. Bellemare}
 
 \begin{document}
@@ -422,13 +422,13 @@ is preserved.
 This functionality is provided in the fifo, shared library and CTypes interfaces. The shared
 library interface additionally provides state cloning/restoring capabilities.
 
-\subsection{Colour Averaging}
+\subsection{Color Averaging}
 
 Many Atari 2600 games display objects on alternating frames (sometimes even less frequently).
-This can be an issue for agents that do not consider the whole screen history. By default, 
-\emph{colour averaging} is not enabled. If enabled, the environment output (as observed by agents)
-is a weighted blend of the last two frames. This behaviour can be turned on using the
-command--line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
+This can be an issue for agents that do not consider the whole screen history.
+By default, \emph{color averaging} is not enabled, that is, the environment output is the actual frame from the emulator.
+If enabled, the environment output (as observed by agents) is a weighted blend of the last two frames.
+This behaviour can be turned on using the command--line argument \verb+-color_averaging+ (or the \verb+setBool+ function).
 
 \subsection{Action Repeat Stochasticity}
 
@@ -624,86 +624,130 @@ Make sure to compile ALE using CMake. This will build the library required by th
 
 \section{ALE Interface Specifications}\label{sec:functions}
 
-Below are listed the functions available in ALE interface with the description of their behaviour. The functions were divided in different sections to make the presentation more clear.
+Below are listed the functions available in ALE interface with the description of their 
+behaviour. The functions were divided in different sections to make the presentation more
+clear.
 
   \subsection{Initialization}
 
-  \indent \indent \verb+ALEInterface(bool display_screen)+: ALE constructor. If the \verb+display_screen+ parameter is set to \verb+true+, and ALE was compiled with SDL, the game display will be presented. If set to \verb+false+ one will not see the game being played.
+  \indent \indent \verb+ALEInterface(bool display_screen)+: ALE constructor. If the 
+  \verb+display_screen+ parameter is set to \verb+true+, and ALE was compiled
+  with SDL, the game display will be presented. If set to \verb+false+ one will not see
+  the game being played.
   
-  \verb+void loadROM(string rom_file)+: Resets ALE and then loads a game. After this call the game should be ready to play. If one changes (or sets) a setting (Section~\ref{sec:getSet}), it is necessary to call this function after the change so it can take effect.
+  \verb+void loadROM(string rom_file)+: Resets ALE and then loads a game. After this call
+  the game should be ready to play. If one changes (or sets) a setting (Section~\ref{sec:getSet}), 
+  it is necessary to call this function after the change so it can take effect.
   
   \subsection{Parameters setting and retrieval}\label{sec:getSet}
   
-  \indent \indent \verb+string getString(const string& key)+: Gets the value of any flag passed as parameter that has a string value; \emph{e.g.}: \verb+getString(``record_sound_filename'')+.
+  \indent \indent \verb+string getString(const string& key)+: Gets the value of any flag passed
+  as parameter that has a string value; \emph{e.g.}: \verb+getString(``record_sound_filename'')+.
 
-  \verb+int getInt(const string& key)+: Gets the value of any flag passed as parameter that has an integer value; \emph{e.g.}: \verb+getInt(``frame_skip'')+.
+  \verb+int getInt(const string& key)+: Gets the value of any flag passed as parameter that has 
+  an integer value; \emph{e.g.}: \verb+getInt(``frame_skip'')+.
 
-  \verb+bool getBool(const string& key)+: Gets the value of any flag passed as parameter that has a boolean value; \emph{e.g.}: \verb+getBool(``restricted_action_set'')+. 
+  \verb+bool getBool(const string& key)+: Gets the value of any flag passed as parameter that has 
+  a boolean value; \emph{e.g.}: \verb+getBool(``restricted_action_set'')+. 
   
-  \verb+float getFloat(const string& key)+: Gets the value of any flag passed as parameter that has a float value; \emph{e.g.}: \verb+getBool(``repeat_action_probability'')+.   
+  \verb+float getFloat(const string& key)+: Gets the value of any flag passed as parameter that has 
+  a float value; \emph{e.g.}: \verb+getBool(``repeat_action_probability'')+.   
   
-  \verb+void setString(const string& key, const string& value)+: Sets the value of any flag that has a string type; \emph{e.g.}: \verb+setString("record_screen_dir", "record")+. \verb+loadRom()+ must be called before the setting will take effect.
+  \verb+void setString(const string& key, const string& value)+: Sets the value of any flag
+  that has a string type; \emph{e.g.}: \verb+setString("record_screen_dir", "record")+.
+  \verb+loadRom()+ must be called before the setting will take effect.
   
-  \verb+void setInt(const std::string& key, const int value)+: Sets the value of any flag that has an integer type; \emph{e.g.}: \verb+setInt("frame_skip", 1)+. \verb+loadRom()+ must be called before the setting will take effect.
+  \verb+void setInt(const std::string& key, const int value)+: Sets the value of any flag
+  that has an integer type; \emph{e.g.}: \verb+setInt("frame_skip", 1)+. \verb+loadRom()+
+  must be called before the setting will take effect.
   
-  \verb+void setBool(const std::string& key, const bool value)+: Sets the value of any flag that has a boolean type; \emph{e.g.}: \verb+setBool("restricted_action_set", false)+. \verb+loadRom()+ must be called before the setting will take effect.
+  \verb+void setBool(const std::string& key, const bool value)+: Sets the value of any flag
+  that has a boolean type; \emph{e.g.}: \verb+setBool("restricted_action_set", false)+.
+  \verb+loadRom()+ must be called before the setting will take effect.
   
-  \verb+void setFloat(const std::string& key, const float value)+: Sets the value of any flag that has a float type; \emph{e.g.}: \verb+setFloat("repeat_action_probability", 0.25)+. \verb+loadRom()+ must be called before the setting will take effect.
+  \verb+void setFloat(const std::string& key, const float value)+: Sets the value of any flag
+  that has a float type; \emph{e.g.}: \verb+setFloat("repeat_action_probability", 0.25)+.
+  \verb+loadRom()+ must be called before the setting will take effect.
   
   \subsection{Acting and Perceiving}
   
-  \indent \indent \verb+reward_t act(Action action)+: Applies an action to the game and returns the reward. It is the user's responsibility to check if the game has ended and reset when necessary (this method will keep pressing buttons on the game over screen).
+  \indent \indent \verb+reward_t act(Action action)+: Applies an action to the game and returns the
+  reward. It is the user's responsibility to check if the game has ended and reset when necessary
+  (this method will keep pressing buttons on the game over screen).
   
   \verb+bool game_over()+: Indicates if the game has ended.
   
-  \verb+void reset_game()+: Resets the game, but not the full system (it is not ``equivalent'' to  unplug the console from electricity).
+  \verb+void reset_game()+: Resets the game, but not the full system (it is not ``equivalent''
+  to  unplug the console from electricity).
   
-  \verb+ModeVect getAvailableModes()+: Returns the vector of modes available for the current game. This should be called only after the ROM is loaded.
-
-  \verb+void setMode(game_mode_t m)+: Sets the mode of the game. The mode must be an available mode (otherwise it throws an exception). This should be called only after the ROM is loaded.
-
-  \verb+DifficultyVect getAvailableDifficulties()+: Returns the vector of difficulties available for the current game. This should be called only after the ROM is loaded.
-
-  \verb+void setDifficulty(difficulty_t m)+: Sets the difficulty of the game. The difficulty must be an available mode (otherwise it throws an exception). This should be called only after the ROM is loaded.
- 
-  \verb+ActionVect getLegalActionSet()+: Returns the vector of legal actions (all the 18 actions). This should be called only after the ROM is loaded.
+  \verb+ActionVect getLegalActionSet()+: Returns the vector of legal actions (all the 18 actions).
+  This should be called only after the ROM is loaded.
   
-  \verb+ActionVect getMinimalActionSet()+: Returns the vector of the minimal set of actions needed to play the game (all actions that have some effect on the game). This should be called only after the ROM is loaded.
+  \verb+ActionVect getMinimalActionSet()+: Returns the vector of the minimal set of actions
+  needed to play the game (all actions that have some effect on the game). This should be
+  called only after the ROM is loaded.
   
   \verb+int getFrameNumber()+: Returns the current frame number since the loading of the ROM.
   
-  \verb+const int lives()+: Returns the agent's remaining number of lives. If the game does not have the concept of lives (\emph{e.g.} \textsc{Freeway}), this function returns 0.
+  \verb+const int lives()+: Returns the agent's remaining number of lives. If the game does not have 
+  the concept of lives (\emph{e.g.} \textsc{Freeway}), this function returns 0.
   
-  \verb+int getEpisodeFrameNumber()+: Returns the current frame number since the start of the current episode.
+  \verb+int getEpisodeFrameNumber()+: Returns the current frame number since the start of the
+  current episode.
   
   \verb+const ALEScreen &getScreen()+: Returns a matrix containing the current game screen.
   
-  \verb+void getScreenGrayscale(pixel_t *grayscale_output_buffer)+: This method should receive an array of length width $\times$ height (generally $160 \times 210 = 33,600$) and then it will fill this array with the grayscale colours
+  \verb+void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer)+: \\
+  This method fills the given vector with a grayscale version of the current screen, provided
+  in row-major order (typically yielding $210 \times 160 = 33,600$ entries). The vector is
+  resized as needed. For efficiency it is recommended to initialize the vector beforehand, to 
+  make sure an allocation is not performed at each time step. Note that the grayscale value
+  corresponds to the pixel's \emph{luminance}; for more details, consult the web.
   
-  \verb+void getScreenRGB(pixel_t *output_rgb_buffer)+: This method should receive an array of length $3 \times$ width $\times$ height (generally $3 \times 160 \times 210 = 100,800$) and then it will fill this array with the RGB colours. The first positions contain the red colours, followed by the green colours and then the blue colours
- 
+  \verb+void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer)+:\\ 
+  This method fills the given vector with a RGB version of the current screen, provided
+  in row, column, then colour channel order (typically yielding $210 \times 160 \times 3 = 
+  100,800$ entries). The colour channels themselves are, in order: R, G, B. For example, \verb#output_rgb_buffer[(160 * 3) * 1 + 52 * 3 + 1]# corresponds to the 2nd row, 53rd column pixel's green
+  value. The vector is resized as needed. Still, for efficiency it is recommended to initialize
+  the vector beforehand, to make sure an allocation is not performed at each time step.
+  
   \verb+const ALERAM &getRAM()+: Returns a vector containing current RAM content (byte-level).
   
-  \verb+void saveState()+: Saves the current state of the system if one wants to be able to recover a state in the future; \emph{e.g.} in search algorithms.
+  \verb+void saveState()+: Saves the current state of the system if one wants to be able to recover 
+  a state in the future; \emph{e.g.} in search algorithms.
   
   \verb+void loadState()+: Loads a previous saved state of the system once we have a state saved.
 
-  \verb+ALEState cloneState()+: Makes a copy of the environment state. This copy does \textbf{not} include pseudo-randomness, making it suitable for planning purposes.
+  \verb+ALEState cloneState()+: Makes a copy of the environment state. This copy does \textbf{not}
+  include pseudo-randomness, making it suitable for planning purposes.
 
-  \verb+ALEState cloneSystemState()+:  This makes a copy of the system and environment state, suitable for serialization. This includes pseudo-randomness and so is \textbf{not} suitable for planning purposes.
+  \verb+ALEState cloneSystemState()+:  This makes a copy of the system and environment state,
+  suitable for serialization. This includes pseudo-randomness and so is \textbf{not} suitable for planning
+  purposes.
 
-  \verb+void restoreState(const ALEState& state)+:  Reverse operation of \verb+cloneState()+. This does not restore pseudo-randomness, so that repeated calls to \verb+restoreState()+ in the stochastic controls setting will not lead to the same outcomes. By contrast, see \verb+restoreSystemState+.
+  \verb+void restoreState(const ALEState& state)+:  Reverse operation of \verb+cloneState()+. This does not
+  restore pseudo-randomness, so that repeated calls to \verb+restoreState()+ in the stochastic controls setting
+  will not lead to the same outcomes. By contrast, see \verb+restoreSystemState+.
 
   \verb+void restoreSystemState(const ALEState& state)+: Reverse operation of \verb+cloneSystemState+.
   \subsection{Recording trajectories}
    
-  \indent \indent \verb+void saveScreenPNG(const string& filename)+: Saves the current screen as a \verb+png+ file.
+  \indent \indent \verb+void saveScreenPNG(const string& filename)+: Saves the current screen as
+  a \verb+png+ file.
   
-  \verb+ScreenExporter *createScreenExporter(const string &path) const+: Creates a ScreenExporter object which can be used to save a sequence of frames. Frames are saved in the directory 'path', which needs to exists. This is used to generate movies depicting the behavior of agents.
+  \verb+ScreenExporter *createScreenExporter(const string &path) const+: Creates a 
+  ScreenExporter object which can be used to save a sequence of frames. Frames are saved 
+  in the directory 'path', which needs to exists. This is used to generate movies depicting the behavior
+  of agents.
   
 \section{Command-line Arguments}\label{sec:arguments}
 
-Command-line arguments are passed to ALE before the ROM filename. These are converted into options (minus the prefix hyphen ('\verb+-+') within ALE. Currently, setting options from the command-line is only relevant to the fifo and RL-Glue interfaces. When using the C++ or Python interface, one should instead directly invoke the relevant setter functions (e.g. \verb+setInt()+; see Section~\ref{sec:getSet}). The configuration file \verb+ale_0_5/stellarc+ can also be used to set frequently used options. 
+Command-line arguments are passed to ALE before the ROM filename. These are converted into
+options (minus the prefix hyphen ('\verb+-+') within ALE. Currently, 
+setting options from the command-line is only relevant to the fifo and RL-Glue interfaces.
+When using the C++ or Python interface, one should instead directly invoke the relevant setter
+functions (e.g. \verb+setInt()+; see Section~\ref{sec:getSet}). The configuration file 
+\verb+ale_0_5/stellarc+ can also be used to set frequently used options. 
 
 \subsection{Main Arguments}
 \small{

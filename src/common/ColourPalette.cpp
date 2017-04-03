@@ -81,6 +81,21 @@ void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8 *src_buffer, size_t
     }
 }
 
+void ColourPalette::applyPaletteRGB(std::vector<unsigned char>& dst_buffer, uInt8 *src_buffer, size_t src_size)
+{
+    dst_buffer.resize(3 * src_size);
+    assert(dst_buffer.size() == 3 * src_size);
+
+    uInt8 *p = src_buffer;
+
+    for(size_t i = 0; i < src_size * 3; i += 3, p++){
+        int rgb = m_palette[*p];
+        dst_buffer[i+0] = (unsigned char) ((rgb >> 16));    // r
+        dst_buffer[i+1] = (unsigned char) ((rgb >>  8));    // g
+        dst_buffer[i+2] = (unsigned char) ((rgb >>  0));    // b
+    }
+}
+
 void ColourPalette::applyPaletteGrayscale(uInt8* dst_buffer, uInt8 *src_buffer, size_t src_size)
 {
     uInt8 *p = src_buffer;
@@ -88,6 +103,18 @@ void ColourPalette::applyPaletteGrayscale(uInt8* dst_buffer, uInt8 *src_buffer, 
 
     for(size_t i = 0; i < src_size; i++, p++, q++){
         *q = (unsigned char) (m_palette[*p+1] & 0xFF);
+    }
+}
+
+void ColourPalette::applyPaletteGrayscale(std::vector<unsigned char>& dst_buffer, uInt8 *src_buffer, size_t src_size)
+{
+    dst_buffer.resize(src_size);
+    assert(dst_buffer.size() == src_size);
+
+    uInt8 *p = src_buffer;
+
+    for(size_t i = 0; i < src_size; i++, p++){
+        dst_buffer[i] = (unsigned char) (m_palette[*p+1] & 0xFF);
     }
 }
 

@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 57, 59, 115, 124 and 133 are based on Xitari's code, from Google Inc.
+ * The lines 61, 102, 110 and 118 are based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -24,78 +24,48 @@
  *
  * *****************************************************************************
  */
-#include "QBert.hpp"
+#include "Kingkong.hpp"
 
 #include "../RomUtils.hpp"
 
-
-QBertSettings::QBertSettings() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    // Anything non-0xFF
-    m_last_lives = 2;
-    m_lives      = 4;
+KingkongSettings::KingkongSettings() {
+    reset();
 }
 
-
 /* create a new instance of the rom */
-RomSettings* QBertSettings::clone() const { 
-    
-    RomSettings* rval = new QBertSettings();
+RomSettings* KingkongSettings::clone() const { 
+    RomSettings* rval = new KingkongSettings();
     *rval = *this;
     return rval;
 }
 
-
 /* process the latest information from ALE */
-void QBertSettings::step(const System& system) {
-    // update terminal status
-    int lives_value = readRam(&system, 0x88);
-    // Lives start at 2 (4 lives, 3 displayed) and go down to 0xFE (death)
-    // Alternatively we can die and reset within one frame; we catch this case
-    m_terminal = (lives_value == 0xFE) ||
-      (lives_value == 0x02 && m_last_lives == -1);
-   
-    // Convert char into a signed integer
-    int livesAsChar = static_cast<char>(lives_value);
-
-    if (m_last_lives - 1 == livesAsChar) m_lives--;
-    m_last_lives = livesAsChar;
-
+void KingkongSettings::step(const System& system) {
     // update the reward
-    // Ignore reward if reset the game via the fire button; otherwise the agent 
-    //  gets a big negative reward on its last step 
-    if (!m_terminal) {
-      int score = getDecimalScore(0xDB, 0xDA, 0xD9, &system);
-      int reward = score - m_score;
-      m_reward = reward;
-      m_score = score;
-    }
-    else {
-      m_reward = 0;
-    }
+    int score = getDecimalScore(0x83, 0x82, &system);
+    int reward = score - m_score;
+    m_reward = reward;
+    m_score = score;
+
+    // update terminal status
+    m_lives = readRam(&system, 0xEE);
+    m_terminal = (m_lives == 0);
 }
 
-
 /* is end of game */
-bool QBertSettings::isTerminal() const {
-
+bool KingkongSettings::isTerminal() const {
     return m_terminal;
 };
 
 
 /* get the most recently observed reward */
-reward_t QBertSettings::getReward() const { 
-
+reward_t KingkongSettings::getReward() const { 
     return m_reward; 
 }
 
 
 /* is an action part of the minimal set? */
-bool QBertSettings::isMinimal(const Action &a) const {
-
+bool KingkongSettings::isMinimal(const Action &a) const {
     switch (a) {
         case PLAYER_A_NOOP:
         case PLAYER_A_FIRE:
@@ -111,36 +81,33 @@ bool QBertSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void QBertSettings::reset(System& system, StellaEnvironment& environment) {
+void KingkongSettings::reset() {
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
-    // Anything non-0xFF
-    m_last_lives = 2;
-    m_lives    = 4;
+    m_lives    = 3;
 }
         
 /* saves the state of the rom settings */
-void QBertSettings::saveState(Serializer & ser) {
+void KingkongSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
-  ser.putInt(m_last_lives);
   ser.putInt(m_lives);
 }
 
 // loads the state of the rom settings
-void QBertSettings::loadState(Deserializer & ser) {
+void KingkongSettings::loadState(Deserializer & ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
-  m_last_lives = ser.getInt();
   m_lives = ser.getInt();
 }
 
-DifficultyVect QBertSettings::getAvailableDifficulties(){
-  DifficultyVect diff;
-  diff.push_back(0);
-  diff.push_back(1);
-  return diff;
+ActionVect KingkongSettings::getStartingActions() {
+    ActionVect startingActions;
+    startingActions.push_back(RESET);
+    return startingActions;
 }
+
+
