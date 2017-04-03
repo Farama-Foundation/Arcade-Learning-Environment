@@ -54,7 +54,12 @@ public:
     virtual ~RomSettings() {}
 
     // reset
-    virtual void reset(System& system, StellaEnvironment& environment) = 0;
+     virtual void reset(System& system, StellaEnvironment& environment) {
+       //ignore parameters by default
+       reset();
+     }
+    // reset
+    virtual void reset(){};
 
     // is end of game
     virtual bool isTerminal() const = 0;
