@@ -58,7 +58,7 @@ else()
   list(APPEND SOURCES ${SOURCE_DIR}/os_dependent/SettingsUNIX.cxx ${SOURCE_DIR}/os_dependent/OSystemUNIX.cxx ${SOURCE_DIR}/os_dependent/FSNodePOSIX.cxx)
   SET(BIN_INSTALL_DIR "bin")
   SET(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
-  SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Library directory name")  
+  SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Library directory name")
   SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Headers directory name")
   SET(PKGCONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig/" CACHE STRING "Base directory for pkgconfig files")
 
@@ -66,7 +66,7 @@ endif()
 
 # List and set the install targets for the headers, generate and install the pkgconfig file
 if(UNIX)
-  
+
   INSTALL(FILES ${SOURCE_DIR}/os_dependent/SettingsUNIX.hxx ${SOURCE_DIR}/os_dependent/SettingsWin32.hxx ${SOURCE_DIR}/os_dependent/OSystemUNIX.hxx ${SOURCE_DIR}/os_dependent/OSystemWin32.hxx DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}/os_dependent)
   file(GLOB module_headers ${SOURCE_DIR}/*.h?[xp])
   foreach(header ${module_headers})
@@ -95,7 +95,7 @@ Name: ${PROJECT_NAME}
 Description: The Arcade Learning Environment (ALE) - a platform for AI research.
 URL: http://www.arcadelearningenvironment.org/
 Version: ${ALEVERSION}
-Requires: 
+Requires:
 Libs: -L${LIB_INSTALL_DIR} -lale
 Cflags: -I${INCLUDE_INSTALL_DIR}
 "
@@ -103,7 +103,7 @@ Cflags: -I${INCLUDE_INSTALL_DIR}
 
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
-    	DESTINATION ${PKGCONFIG_INSTALL_DIR})
+      DESTINATION ${PKGCONFIG_INSTALL_DIR})
 
 endif(UNIX)
 
@@ -160,7 +160,7 @@ if(BUILD_EXAMPLES)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
 
-  # Fifo interface example. 
+  # Fifo interface example.
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(fifoInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/fifoInterfaceExample.cpp)
   set_target_properties(fifoInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
@@ -226,6 +226,6 @@ ENDFOREACH(file)
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  COMMAND rm -rf ${INCLUDE_INSTALL_DIR}/ale) 
+  COMMAND rm -rf ${INCLUDE_INSTALL_DIR}/ale)
 
 
