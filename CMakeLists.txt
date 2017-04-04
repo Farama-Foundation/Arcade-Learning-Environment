@@ -6,6 +6,9 @@ set(ALEVERSION "0.5")
 option(USE_SDL "Use SDL" OFF)
 option(USE_RLGLUE "Use RL-Glue" OFF)
 option(BUILD_EXAMPLES "Build Example Agents" ON)
+option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
+option(BUILD_CLI "Build ALE Command Line Interface" ON)
+option(BUILD_C_LIB "Build ALE C Library (needed for Python interface)" ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
 add_definitions(-DHAVE_INTTYPES)
@@ -122,33 +125,38 @@ include_directories(
   ${SOURCE_DIR}/external/TinyMT
 )
 
-add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
-set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
-set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-if(UNIX)
-	install(TARGETS ale-lib 
-		DESTINATION ${LIB_INSTALL_DIR})
+if(BUILD_CPP_LIB)
+  add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
+  set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if(UNIX)
+    install(TARGETS ale-lib
+      DESTINATION ${LIB_INSTALL_DIR})
+  endif()
+  target_link_libraries(ale-lib ${LINK_LIBS})
 endif()
 
-add_executable(ale-bin ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
-set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
-set_target_properties(ale-bin PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-if(UNIX)
-	install(TARGETS ale-bin
-		DESTINATION ${BIN_INSTALL_DIR})
+if(BUILD_CLI)
+  add_executable(ale-bin ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
+  set_target_properties(ale-bin PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if(UNIX)
+    install(TARGETS ale-bin
+      DESTINATION ${BIN_INSTALL_DIR})
+  endif()
+  target_link_libraries(ale-bin ${LINK_LIBS})
 endif()
 
-add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
-set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
-set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface)
-if(UNIX)
-	install(TARGETS ale-c-lib
-		DESTINATION ${LIB_INSTALL_DIR})
+if(BUILD_C_LIB)
+  add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
+  set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface)
+  if(UNIX)
+    install(TARGETS ale-c-lib
+      DESTINATION ${LIB_INSTALL_DIR})
+  endif()
+  target_link_libraries(ale-c-lib ${LINK_LIBS})
 endif()
-
-target_link_libraries(ale-lib ${LINK_LIBS})
-target_link_libraries(ale-bin ${LINK_LIBS})
-target_link_libraries(ale-c-lib ${LINK_LIBS})
 
 if(BUILD_EXAMPLES)
   # Shared library example.
