@@ -164,6 +164,9 @@ public:
                             std::auto_ptr<Settings> &theSettings);
   static void loadSettings(const std::string& romfile,
                            std::auto_ptr<OSystem> &theOSystem);
+
+private:
+  static std::string find_rom(const std::string& md5);
 };
 
 #endif
