@@ -31,7 +31,9 @@
 #include "ale_interface.hpp"
 
 #include <stddef.h>
+#include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -39,8 +41,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
-#include <string>
-#include <algorithm>
 
 #include "common/ColourPalette.hpp"
 #include "common/Constants.h"
@@ -109,7 +109,7 @@ void ALEInterface::loadSettings(const string& romfile,
 		Logger::Info << "Cartridge_MD5: " << md5 << std::endl;
 		string rom_candidate = find_rom(md5);
 		if (rom_candidate == "") {
-			Logger::Info << "Warning. Possibly unsupported ROM." << std::endl;
+			Logger::Warning << "Warning. Possibly unsupported ROM." << std::endl;
 		}
 		Logger::Info << "Running ROM file..." << std::endl;
 		theOSystem->settings().setString("rom_file", romfile);
@@ -149,11 +149,28 @@ bool is_illegal(char c) {
 }
 
 string ALEInterface::find_rom(const string& md5) {
+	// TODO these values should either come from an external text file or be part of the RomSettings subclasses
+	// TODO building a dictionary would be more elegant, but overkill for so few strings
+	string supported_roms = ""
+			 "60e0ea3cbe0913d39803477945e9e5ec pong\n"
+			 "89a68746eff7f266bbf08de2483abe55 asterix\n"
+
+			"";
+
+
+	// TODO this can be done much more elegantly with C++11
+	std::stringstream ss(supported_roms);
+	std::string item;
 	string rom_candidate = "";
-	if (md5 == "60e0ea3cbe0913d39803477945e9e5ec") {
-		rom_candidate = "pong";
-	} else if (md5 == "89a68746eff7f266bbf08de2483abe55") {
-		rom_candidate = "asterix";
+	while (std::getline(ss, item)){
+		//Logger::Info << "Checking..." << item << std::endl;
+		if (!item.compare(0,md5.size(), md5)){
+			rom_candidate = item.substr(md5.size()+1);
+			//Logger::Info << "found: " << rom_candidate << std::endl;
+
+			return rom_candidate;
+		}
+
 	}
 	return rom_candidate;
 }
