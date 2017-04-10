@@ -151,15 +151,8 @@ bool is_illegal(char c) {
 string ALEInterface::find_rom(const string& md5) {
 	// TODO these values should either come from an external text file or be part of the RomSettings subclasses
 	// TODO building a dictionary would be more elegant, but overkill for so few strings
-	string supported_roms = ""
-			 "60e0ea3cbe0913d39803477945e9e5ec pong\n"
-			 "89a68746eff7f266bbf08de2483abe55 asterix\n"
-
-			"";
-
-
 	// TODO this can be done much more elegantly with C++11
-	std::stringstream ss(supported_roms);
+	std::ifstream ss("md5.txt");
 	std::string item;
 	string rom_candidate = "";
 	while (std::getline(ss, item)){
