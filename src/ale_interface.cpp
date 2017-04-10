@@ -148,13 +148,21 @@ void ALEInterface::loadROM(string rom_file = "") {
   if (romRlWrapper == NULL) {
     Logger::Info << "Unable to map rom '" << rom_file
         << "'. Trying alternative method..." << std::endl;
+
     const Properties properties = theOSystem->console().properties();
     const std::__cxx11::string name = properties.get(Cartridge_Name);
+    const std::__cxx11::string md5 = properties.get(Cartridge_MD5);
     Logger::Info << "Cartridge_name: " << name << std::endl;
+    Logger::Info << "Cartridge_MD5: " << md5 << std::endl;
     std::string s = "Unknown";
     std::string s1 = s.substr(0, s.find("("));
     s1.erase(std::remove_if(s1.begin(), s1.end(),is_illegal), s1.end());
     std::cout << s1 << std::endl;
+
+    if (md5 == "60e0ea3cbe0913d39803477945e9e5ec"){
+      s1 = "pong";
+    }
+
     Logger::Info << "Retrying with '" << s1 << "'" << std::endl;
     romRlWrapper = buildRomRLWrapper(s1);
     if (romRlWrapper == NULL) {
