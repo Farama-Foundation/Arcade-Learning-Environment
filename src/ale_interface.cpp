@@ -27,33 +27,49 @@
  *
  *  The shared library interface.
  **************************************************************************** */
+
 #include "ale_interface.hpp"
+
+#include <stddef.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <iterator>
+#include <sstream>
 #include <stdexcept>
-#include <ctime>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+#include "common/ColourPalette.hpp"
+#include "common/Constants.h"
+#include "emucore/Console.hxx"
+#include "emucore/Props.hxx"
+#include "environment/ale_screen.hpp"
+#include "games/RomSettings.hpp"
 
 using namespace std;
 using namespace ale;
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;
-  oss << "A.L.E: Arcade Learning Environment (version "
-      << Version << ")\n"
-      << "[Powered by Stella]\n"
-      << "Use -help for help screen.";
+  oss << "A.L.E: Arcade Learning Environment (version " << Version << ")\n"
+      << "[Powered by Stella]\n" << "Use -help for help screen.";
   return oss.str();
 }
 
 void ALEInterface::disableBufferedIO() {
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stdin, NULL, _IONBF, 0);
-  cin.rdbuf()->pubsetbuf(0,0);
-  cout.rdbuf()->pubsetbuf(0,0);
+  cin.rdbuf()->pubsetbuf(0, 0);
+  cout.rdbuf()->pubsetbuf(0, 0);
   cin.sync_with_stdio();
   cout.sync_with_stdio();
 }
 
 void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
-                          std::auto_ptr<Settings> &theSettings) {
+    std::auto_ptr<Settings> &theSettings) {
 #if (defined(WIN32) || defined(__MINGW32__))
   theOSystem.reset(new OSystemWin32());
   theSettings.reset(new SettingsWin32(theOSystem.get()));
@@ -66,7 +82,7 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
 }
 
 void ALEInterface::loadSettings(const string& romfile,
-                                std::auto_ptr<OSystem> &theOSystem) {
+    std::auto_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
   string configFile = theOSystem->settings().getString("config", false);
@@ -80,18 +96,19 @@ void ALEInterface::loadSettings(const string& romfile,
   // Attempt to load the ROM
   if (romfile == "" || !FilesystemNode::fileExists(romfile)) {
     Logger::Error << "No ROM File specified or the ROM file was not found."
-              << std::endl;
+        << std::endl;
     exit(1);
-  } else if (theOSystem->createConsole(romfile))  {
+  } else if (theOSystem->createConsole(romfile)) {
     Logger::Info << "Running ROM file..." << std::endl;
     theOSystem->settings().setString("rom_file", romfile);
   } else {
     exit(1);
   }
 
-  // Must force the resetting of the OSystem's random seed, which is set before we change
-  // choose our random seed.
-  Logger::Info << "Random seed is " << theOSystem->settings().getInt("random_seed") << std::endl; 
+// Must force the resetting of the OSystem's random seed, which is set before we change
+// choose our random seed.
+  Logger::Info << "Random seed is "
+      << theOSystem->settings().getInt("random_seed") << std::endl;
   theOSystem->resetRNGSeed();
 
   string currentDisplayFormat = theOSystem->console().getFormat();
@@ -111,8 +128,12 @@ ALEInterface::ALEInterface(bool display_screen) {
   this->setBool("display_screen", display_screen);
 }
 
-ALEInterface::~ALEInterface() {}
+ALEInterface::~ALEInterface() {
+}
 
+bool is_illegal(char c){
+   return !(std::isalnum(c) || c== '_');
+}
 // Loads and initializes a game. After this call the game should be
 // ready to play. Resets the OSystem/Console/Environment/etc. This is
 // necessary after changing a setting. Optionally specify a new rom to
@@ -123,15 +144,38 @@ void ALEInterface::loadROM(string rom_file = "") {
     rom_file = theOSystem->romFile();
   }
   loadSettings(rom_file, theOSystem);
-  romSettings.reset(buildRomRLWrapper(rom_file));
+  RomSettings* romRlWrapper = buildRomRLWrapper(rom_file);
+  if (romRlWrapper == NULL) {
+    Logger::Info << "Unable to map rom '" << rom_file
+        << "'. Trying alternative method..." << std::endl;
+    const Properties properties = theOSystem->console().properties();
+    const std::__cxx11::string name = properties.get(Cartridge_Name);
+    Logger::Info << "Cartridge_name: " << name << std::endl;
+    std::string s = "Unknown";
+    std::string s1 = s.substr(0, s.find("("));
+    s1.erase(std::remove_if(s1.begin(), s1.end(),is_illegal), s1.end());
+    std::cout << s1 << std::endl;
+    Logger::Info << "Retrying with '" << s1 << "'" << std::endl;
+    romRlWrapper = buildRomRLWrapper(s1);
+    if (romRlWrapper == NULL) {
+      Logger::Info << "giving up." << std::endl;
+      exit(1);
+    }
+
+  }
+  romSettings.reset(romRlWrapper);
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
   environment->reset();
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
-    Logger::Error << "Screen display requires directive __USE_SDL to be defined." << endl;
-    Logger::Error << "Please recompile this code with flag '-D__USE_SDL'." << endl;
-    Logger::Error << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)." << endl;
+    Logger::Error
+        << "Screen display requires directive __USE_SDL to be defined." << endl;
+    Logger::Error << "Please recompile this code with flag '-D__USE_SDL'."
+        << endl;
+    Logger::Error
+        << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)."
+        << endl;
     exit(1);
   }
 #endif
@@ -181,7 +225,6 @@ void ALEInterface::setFloat(const string& key, const float value) {
   theSettings->validate();
 }
 
-
 // Resets the game, but not the full system.
 void ALEInterface::reset_game() {
   environment->reset();
@@ -194,7 +237,7 @@ bool ALEInterface::game_over() const {
 
 // The remaining number of lives.
 const int ALEInterface::lives() {
-  if (!romSettings.get()){
+  if (!romSettings.get()) {
     throw std::runtime_error("ROM not set");
   }
   return romSettings->lives();
@@ -220,7 +263,7 @@ reward_t ALEInterface::act(Action action) {
 // Returns the vector of legal actions. This should be called only
 // after the rom is loaded.
 ActionVect ALEInterface::getLegalActionSet() {
-  if (!romSettings.get()){
+  if (!romSettings.get()) {
     throw std::runtime_error("ROM not set");
   }
   return romSettings->getAllActions();
@@ -229,7 +272,7 @@ ActionVect ALEInterface::getLegalActionSet() {
 // Returns the vector of the minimal set of actions needed to play
 // the game.
 ActionVect ALEInterface::getMinimalActionSet() {
-  if (!romSettings.get()){
+  if (!romSettings.get()) {
     throw std::runtime_error("ROM not set");
   }
   return romSettings->getMinimalActionSet();
@@ -252,26 +295,29 @@ const ALEScreen& ALEInterface::getScreen() {
 
 //This method should receive an empty vector to fill it with
 //the grayscale colours
-void ALEInterface::getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer){
+void ALEInterface::getScreenGrayscale(
+    std::vector<unsigned char>& grayscale_output_buffer) {
   size_t w = environment->getScreen().width();
   size_t h = environment->getScreen().height();
-  size_t screen_size = w*h;
-  
+  size_t screen_size = w * h;
+
   pixel_t *ale_screen_data = environment->getScreen().getArray();
-  theOSystem->colourPalette().applyPaletteGrayscale(grayscale_output_buffer, ale_screen_data, screen_size);
+  theOSystem->colourPalette().applyPaletteGrayscale(grayscale_output_buffer,
+      ale_screen_data, screen_size);
 }
 
 //This method should receive a vector to fill it with
 //the RGB colours. The first positions contain the red colours,
 //followed by the green colours and then the blue colours
-void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer){
+void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
   size_t w = environment->getScreen().width();
   size_t h = environment->getScreen().height();
-  size_t screen_size = w*h;
+  size_t screen_size = w * h;
 
   pixel_t *ale_screen_data = environment->getScreen().getArray();
 
-  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size * 3);
+  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer,
+      ale_screen_data, screen_size * 3);
 }
 
 // Returns the current RAM content
@@ -306,11 +352,12 @@ void ALEInterface::restoreSystemState(const ALEState& state) {
 }
 
 void ALEInterface::saveScreenPNG(const string& filename) {
-  
+
   ScreenExporter exporter(theOSystem->colourPalette());
   exporter.save(environment->getScreen(), filename);
 }
 
-ScreenExporter *ALEInterface::createScreenExporter(const std::string &filename) const {
-    return new ScreenExporter(theOSystem->colourPalette(), filename); 
+ScreenExporter *ALEInterface::createScreenExporter(
+    const std::string &filename) const {
+  return new ScreenExporter(theOSystem->colourPalette(), filename);
 }
