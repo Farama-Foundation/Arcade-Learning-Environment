@@ -53,10 +53,6 @@ void AdventureSettings::step(const System& system) {
   int player_status = readRam(&system, 0xE0);
   bool player_eaten = player_status == 2;
 
-  if (player_eaten) {
-    m_reward = -1;
-  }
-
   m_terminal = player_eaten || chalice_in_yellow_castle;
 }
 
@@ -65,7 +61,6 @@ bool AdventureSettings::isTerminal() const {
 
   return m_terminal;
 }
-;
 
 /* get the most recently observed reward */
 reward_t AdventureSettings::getReward() const {

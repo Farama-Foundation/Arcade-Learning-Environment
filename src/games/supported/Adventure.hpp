@@ -24,7 +24,7 @@
  * *****************************************************************************
  */
 #ifndef __ADVENTURE_HPP__
-#define ____ADVENTURE_HPP___HPP__
+#define ____ADVENTURE_HPP__
 
 #include "../RomSettings.hpp"
 
