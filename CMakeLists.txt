@@ -125,6 +125,11 @@ include_directories(
   ${SOURCE_DIR}/external/TinyMT
 )
 
+if(NOT BUILD_CPP_LIB AND BUILD_EXAMPLES)
+  set(BUILD_CPP_LIB ON)
+  MESSAGE("Enabling C++ library to support examples.")
+endif()
+
 if(BUILD_CPP_LIB)
   add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
   set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
