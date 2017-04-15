@@ -42,7 +42,6 @@
 #include "../environment/stella_environment.hpp"
 
 class System;
-class RomSettings;
 class StellaEnvironment;
 
 // rom support interface

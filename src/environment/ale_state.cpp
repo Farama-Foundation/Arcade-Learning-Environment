@@ -19,9 +19,10 @@
 #include "../games/RomSettings.hpp"
 
 
-using namespace std;
-
+#include <sstream>
 #include <stdexcept>
+
+using namespace std;
 
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():
