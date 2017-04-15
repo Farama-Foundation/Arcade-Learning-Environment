@@ -137,6 +137,7 @@ void ChopperCommandSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect ChopperCommandSettings::getAvailableModes(){
+    //modes 1 and 3 for 2 players
     ModeVect modes;
     modes.push_back(0);
     modes.push_back(2);
