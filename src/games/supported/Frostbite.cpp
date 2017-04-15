@@ -151,11 +151,11 @@ void FrostbiteSettings::setMode(game_mode_t m, System &system, StellaEnvironment
     if(m == 0 || m == 2){
         m_mode = m;
         // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0);
+        unsigned char mode = readRam(&system, 0x80);
         // press select until the correct mode is reached
         while(mode != m_mode){
             environment.pressSelect(1);
-            mode = readRam(&system, 0);
+            mode = readRam(&system, 0x80);
         }
         environment.softReset();
     } else{

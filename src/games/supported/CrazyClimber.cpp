@@ -143,11 +143,11 @@ void CrazyClimberSettings::setMode(game_mode_t m, System &system, StellaEnvironm
     if(m < 4){ /*m >= 0 is implicit, since m is an unsigned int*/
         m_mode = m;
         // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0);
+        unsigned char mode = readRam(&system, 0x80);
         // press select until the correct mode is reached
         while(mode!=m_mode){
             environment.pressSelect(2);
-            mode = readRam(&system, 0);
+            mode = readRam(&system, 0x80);
         }
         // reset the environment to apply changes.
         environment.softReset();

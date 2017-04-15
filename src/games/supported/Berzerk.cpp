@@ -157,7 +157,7 @@ void BerzerkSettings::setMode(game_mode_t m, System &system, StellaEnvironment& 
         for(unsigned i = 0; i < 20; i++)
             environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
         // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0);
+        unsigned char mode = readRam(&system, 0x80);
         // press select until the correct mode is reached
         while(mode != m_mode){
             environment.pressSelect(2);

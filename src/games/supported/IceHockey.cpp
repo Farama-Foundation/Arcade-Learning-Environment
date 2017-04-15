@@ -136,7 +136,7 @@ void IceHockeySettings::setMode(game_mode_t m,System &system, StellaEnvironment&
         // press select until the correct mode is reached
         while(mode != m_mode){
             environment.pressSelect(2);
-            mode = readRam(&system, 0);
+            mode = readRam(&system, 0x80);
         }
         // reset the environment to apply changes
         environment.softReset();
