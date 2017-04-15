@@ -140,13 +140,13 @@ ModeVect AsteroidsSettings::getAvailableModes(){
     for(unsigned i = 0; i < 32; i++){
         modes[i]=i;
     }
-    modes.push_back(128); //this is the "kids" mode
+    modes.push_back(0x80); //this is the "kids" mode
     return modes;
 }
 
 //Set the mode of the game. The given mode must be one returned by the previous function. 
 void AsteroidsSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
-    if(m < 32 || m == 128){ /*m >= 0 is implicit, since m is an unsigned int*/
+    if(m < 32 || m == 0x80){ /*m >= 0 is implicit, since m is an unsigned int*/
         m_mode = m;
         //Read the mode we are currently in
         unsigned char mode = readRam(&system,0);
