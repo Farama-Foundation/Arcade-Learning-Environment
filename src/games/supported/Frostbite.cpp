@@ -157,7 +157,7 @@ void FrostbiteSettings::setMode(game_mode_t m, System &system, StellaEnvironment
             environment.pressSelect(1);
             mode = readRam(&system, 0);
         }
-        environment.soft_reset();
+        environment.softReset();
     } else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }

@@ -67,7 +67,7 @@ class StellaEnvironment {
     reward_t act(Action player_a_action, Action player_b_action);
 
     /** This functions emulates a push on the reset button of the console */
-    void soft_reset();
+    void softReset();
     
     /** Keep pressing the console select button for a given amount of time*/
     void pressSelect(size_t num_steps = 1);

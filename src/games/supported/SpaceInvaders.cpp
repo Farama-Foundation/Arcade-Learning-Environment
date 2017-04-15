@@ -151,7 +151,7 @@ void SpaceInvadersSettings::setMode(game_mode_t m, System &system, StellaEnviron
             mode = readRam(&system, 0xDC);
         }
         //reset the environment to apply changes.
-        environment.soft_reset();
+        environment.softReset();
     }else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }

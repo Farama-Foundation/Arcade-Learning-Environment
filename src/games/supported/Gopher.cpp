@@ -145,7 +145,7 @@ ModeVect GopherSettings::getAvailableModes(){
 void GopherSettings::setMode(game_mode_t m,System &system, StellaEnvironment& environment){
     if(m==0 || m==2){
         m_mode = m;
-        environment.soft_reset();
+        environment.softReset();
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xD3);
         // press select until the correct mode is reached
@@ -154,7 +154,7 @@ void GopherSettings::setMode(game_mode_t m,System &system, StellaEnvironment& en
             mode = readRam(&system, 0xD3);
         }
         //reset the environment to apply changes
-        environment.soft_reset();
+        environment.softReset();
     }else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }

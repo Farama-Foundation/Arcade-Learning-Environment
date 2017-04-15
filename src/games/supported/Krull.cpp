@@ -160,7 +160,7 @@ void KrullSettings::setMode(game_mode_t m,System &system, StellaEnvironment& env
             mode = readRam(&system, 0x9E);
         }
         // reset the environment to apply changes.
-        environment.soft_reset();
+        environment.softReset();
     }else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }

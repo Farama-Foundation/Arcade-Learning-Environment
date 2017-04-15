@@ -173,7 +173,7 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
 }
 
 /** This functions emulates a push on the reset button of the console */
-void StellaEnvironment::soft_reset(){
+void StellaEnvironment::softReset(){
   emulate(RESET,PLAYER_B_NOOP);
   m_state.incrementFrame();
 }

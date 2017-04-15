@@ -135,7 +135,7 @@ void NameThisGameSettings::setMode(game_mode_t m,System &system, StellaEnvironme
   if(m==0x08 || m==0x18 || m==0x28){
     m_mode = m;
     // open mode change screen
-    environment.soft_reset();
+    environment.softReset();
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0xDE);
     // press select until the correct mode is reached
@@ -144,7 +144,7 @@ void NameThisGameSettings::setMode(game_mode_t m,System &system, StellaEnvironme
       mode = readRam(&system, 0xDE);
     }
     // reset the environment to apply changes.
-    environment.soft_reset();
+    environment.softReset();
   } else{
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }

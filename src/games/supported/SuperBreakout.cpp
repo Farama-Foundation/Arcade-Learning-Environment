@@ -152,7 +152,7 @@ void SuperBreakoutSettings::setMode(game_mode_t m, System &system, StellaEnviron
             mode = readRam(&system, 64);
         }
         // reset the environment to apply changes.
-        environment.soft_reset();
+        environment.softReset();
 
         // wait until the score is 0 (score is 9999, 9998, 9997 and then 0)
         int x = readRam(&system, 93), y = readRam(&system, 92);

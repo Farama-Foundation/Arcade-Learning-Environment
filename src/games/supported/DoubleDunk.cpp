@@ -156,7 +156,7 @@ void DoubleDunkSettings::setMode(game_mode_t m, System &system, StellaEnvironmen
             environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
         }
         //reset the environment to apply changes.
-        environment.soft_reset();
+        environment.softReset();
         //apply starting action
         environment.act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
         environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);

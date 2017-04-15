@@ -164,7 +164,7 @@ void YarsRevengeSettings::setMode(game_mode_t m, System &system, StellaEnvironme
             mode = readRam(&system, 0xE3);
         }
         // reset the environment to apply changes.
-        environment.soft_reset();
+        environment.softReset();
     }else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }

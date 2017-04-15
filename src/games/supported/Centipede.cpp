@@ -159,7 +159,7 @@ void CentipedeSettings::setMode(game_mode_t m, System &system, StellaEnvironment
             mode = readRam(&system, 0xA7);
         }
         //reset the environment to apply changes.
-        environment.soft_reset();
+        environment.softReset();
     } else{
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }
