@@ -116,7 +116,5 @@ class ALEState {
 
 };
 
-#include "../games/RomSettings.hpp"
-
 #endif // __ALE_STATE_HPP__
 
