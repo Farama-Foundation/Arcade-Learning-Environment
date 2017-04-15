@@ -138,12 +138,13 @@ void BerzerkSettings::loadState(Deserializer & ser) {
 // returns a list of mode that the game can be played in.
 ModeVect BerzerkSettings::getAvailableModes(){
     ModeVect modes(9);
+    //this is 1-12 in Atari-decimal (0x01 ... 0x09 0x10 0x11 0x12)
     for(unsigned i = 0; i < 9; i++){
         modes[i] = i+1;
     }
-    modes.push_back(16);
-    modes.push_back(17);
-    modes.push_back(18);
+    modes.push_back(0x10);
+    modes.push_back(0x11);
+    modes.push_back(0x12);
     return modes;
 }
 
