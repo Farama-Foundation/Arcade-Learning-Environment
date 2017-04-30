@@ -6,6 +6,9 @@ set(ALEVERSION "0.5")
 option(USE_SDL "Use SDL" OFF)
 option(USE_RLGLUE "Use RL-Glue" OFF)
 option(BUILD_EXAMPLES "Build Example Agents" ON)
+option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
+option(BUILD_CLI "Build ALE Command Line Interface" ON)
+option(BUILD_C_LIB "Build ALE C Library (needed for Python interface)" ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
 add_definitions(-DHAVE_INTTYPES)
@@ -58,7 +61,7 @@ else()
   list(APPEND SOURCES ${SOURCE_DIR}/os_dependent/SettingsUNIX.cxx ${SOURCE_DIR}/os_dependent/OSystemUNIX.cxx ${SOURCE_DIR}/os_dependent/FSNodePOSIX.cxx)
   SET(BIN_INSTALL_DIR "bin")
   SET(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
-  SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Library directory name")  
+  SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Library directory name")
   SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Headers directory name")
   SET(PKGCONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig/" CACHE STRING "Base directory for pkgconfig files")
 
@@ -66,7 +69,7 @@ endif()
 
 # List and set the install targets for the headers, generate and install the pkgconfig file
 if(UNIX)
-  
+
   INSTALL(FILES ${SOURCE_DIR}/os_dependent/SettingsUNIX.hxx ${SOURCE_DIR}/os_dependent/SettingsWin32.hxx ${SOURCE_DIR}/os_dependent/OSystemUNIX.hxx ${SOURCE_DIR}/os_dependent/OSystemWin32.hxx DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}/os_dependent)
   file(GLOB module_headers ${SOURCE_DIR}/*.h?[xp])
   foreach(header ${module_headers})
@@ -95,7 +98,7 @@ Name: ${PROJECT_NAME}
 Description: The Arcade Learning Environment (ALE) - a platform for AI research.
 URL: http://www.arcadelearningenvironment.org/
 Version: ${ALEVERSION}
-Requires: 
+Requires:
 Libs: -L${LIB_INSTALL_DIR} -lale
 Cflags: -I${INCLUDE_INSTALL_DIR}
 "
@@ -103,7 +106,7 @@ Cflags: -I${INCLUDE_INSTALL_DIR}
 
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
-    	DESTINATION ${PKGCONFIG_INSTALL_DIR})
+      DESTINATION ${PKGCONFIG_INSTALL_DIR})
 
 endif(UNIX)
 
@@ -122,33 +125,43 @@ include_directories(
   ${SOURCE_DIR}/external/TinyMT
 )
 
-add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
-set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
-set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-if(UNIX)
-	install(TARGETS ale-lib 
-		DESTINATION ${LIB_INSTALL_DIR})
+if(NOT BUILD_CPP_LIB AND BUILD_EXAMPLES)
+  set(BUILD_CPP_LIB ON)
+  MESSAGE("Enabling C++ library to support examples.")
 endif()
 
-add_executable(ale-bin ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
-set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
-set_target_properties(ale-bin PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-if(UNIX)
-	install(TARGETS ale-bin
-		DESTINATION ${BIN_INSTALL_DIR})
+if(BUILD_CPP_LIB)
+  add_library(ale-lib SHARED ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
+  set_target_properties(ale-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if(UNIX)
+    install(TARGETS ale-lib
+      DESTINATION ${LIB_INSTALL_DIR})
+  endif()
+  target_link_libraries(ale-lib ${LINK_LIBS})
 endif()
 
-add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
-set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
-set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface)
-if(UNIX)
-	install(TARGETS ale-c-lib
-		DESTINATION ${LIB_INSTALL_DIR})
+if(BUILD_CLI)
+  add_executable(ale-bin ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  set_target_properties(ale-bin PROPERTIES OUTPUT_NAME ale)
+  set_target_properties(ale-bin PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if(UNIX)
+    install(TARGETS ale-bin
+      DESTINATION ${BIN_INSTALL_DIR})
+  endif()
+  target_link_libraries(ale-bin ${LINK_LIBS})
 endif()
 
-target_link_libraries(ale-lib ${LINK_LIBS})
-target_link_libraries(ale-bin ${LINK_LIBS})
-target_link_libraries(ale-c-lib ${LINK_LIBS})
+if(BUILD_C_LIB)
+  add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
+  set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface)
+  if(UNIX)
+    install(TARGETS ale-c-lib
+      DESTINATION ${LIB_INSTALL_DIR})
+  endif()
+  target_link_libraries(ale-c-lib ${LINK_LIBS})
+endif()
 
 if(BUILD_EXAMPLES)
   # Shared library example.
@@ -160,7 +173,7 @@ if(BUILD_EXAMPLES)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
 
-  # Fifo interface example. 
+  # Fifo interface example.
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(fifoInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/fifoInterfaceExample.cpp)
   set_target_properties(fifoInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
@@ -226,6 +239,6 @@ ENDFOREACH(file)
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  COMMAND rm -rf ${INCLUDE_INSTALL_DIR}/ale) 
+  COMMAND rm -rf ${INCLUDE_INSTALL_DIR}/ale)
 
 
