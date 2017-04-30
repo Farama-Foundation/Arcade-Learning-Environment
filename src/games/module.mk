@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	src/games/Roms.o \
 	src/games/RomSettings.o \
 	src/games/RomUtils.o \
+	src/games/supported/Adventure.o \
 	src/games/supported/AirRaid.o \
 	src/games/supported/Alien.o \
 	src/games/supported/Amidar.o \
@@ -39,6 +40,7 @@ MODULE_OBJS := \
 	src/games/supported/IceHockey.o \
 	src/games/supported/JamesBond.o \
 	src/games/supported/JourneyEscape.o \
+	src/games/supported/Kaboom.o \
 	src/games/supported/Kangaroo.o \
 	src/games/supported/Koolaid.o \
 	src/games/supported/KeystoneKapers.o \

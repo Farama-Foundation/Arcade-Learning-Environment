@@ -14,6 +14,7 @@
 #include "RomUtils.hpp"
 
 // include the game implementations
+#include "supported/Adventure.hpp"
 #include "supported/AirRaid.hpp"
 #include "supported/Alien.hpp"
 #include "supported/Amidar.hpp"
@@ -49,6 +50,7 @@
 #include "supported/IceHockey.hpp"
 #include "supported/JamesBond.hpp"
 #include "supported/JourneyEscape.hpp"
+#include "supported/Kaboom.hpp"
 #include "supported/Kangaroo.hpp"
 #include "supported/Koolaid.hpp"
 #include "supported/KeystoneKapers.hpp"
@@ -92,6 +94,7 @@
 
 /* list of supported games */
 static const RomSettings *roms[]  = {
+    new AdventureSettings(),
     new AirRaidSettings(),
     new AlienSettings(),
     new AmidarSettings(),
@@ -127,6 +130,7 @@ static const RomSettings *roms[]  = {
     new IceHockeySettings(),
     new JamesBondSettings(),
     new JourneyEscapeSettings(),
+    new KaboomSettings(),
     new KangarooSettings(),
     new KoolaidSettings(),
     new KeystoneKapersSettings(),
