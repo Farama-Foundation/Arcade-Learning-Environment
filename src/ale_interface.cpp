@@ -66,11 +66,10 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
 }
 
 
-void checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem) {
+void ALEInterface::checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem) {
   const Properties properties = theOSystem->console().properties();
   const std::string md5 = properties.get(Cartridge_MD5);
   bool found = false;
-  std::string rom_candidate = "";
   std::ifstream ss("md5.txt");
   std::string item;
   while (!found && std::getline(ss, item)) {
