@@ -49,8 +49,8 @@
 #include "environment/ale_screen.hpp"
 #include "games/RomSettings.hpp"
 
-using namespace std;
 using namespace ale;
+
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;
@@ -62,10 +62,10 @@ std::string ALEInterface::welcomeMessage() {
 void ALEInterface::disableBufferedIO() {
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stdin, NULL, _IONBF, 0);
-  cin.rdbuf()->pubsetbuf(0, 0);
-  cout.rdbuf()->pubsetbuf(0, 0);
-  cin.sync_with_stdio();
-  cout.sync_with_stdio();
+  std::cin.rdbuf()->pubsetbuf(0, 0);
+  std::cout.rdbuf()->pubsetbuf(0, 0);
+  std::cin.sync_with_stdio();
+  std::cout.sync_with_stdio();
 }
 
 void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
@@ -81,11 +81,11 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-void ALEInterface::loadSettings(const string& romfile,
+void ALEInterface::loadSettings(const std::string& romfile,
     std::auto_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
-  string configFile = theOSystem->settings().getString("config", false);
+  std::string configFile = theOSystem->settings().getString("config", false);
 
   if (!configFile.empty()) {
     theOSystem->settings().loadConfig(configFile.c_str());
@@ -107,7 +107,7 @@ void ALEInterface::loadSettings(const string& romfile,
     const std::string md5 = properties.get(Cartridge_MD5);
     Logger::Info << "Cartridge_name: " << name << std::endl;
     Logger::Info << "Cartridge_MD5: " << md5 << std::endl;
-    string rom_candidate = find_rom(md5);
+    std::string rom_candidate = find_rom(md5);
     if (rom_candidate == "") {
       Logger::Warning << "Warning. Possibly unsupported ROM." << std::endl;
     }
@@ -124,7 +124,7 @@ void ALEInterface::loadSettings(const string& romfile,
       << theOSystem->settings().getInt("random_seed") << std::endl;
   theOSystem->resetRNGSeed();
 
-  string currentDisplayFormat = theOSystem->console().getFormat();
+  std::string currentDisplayFormat = theOSystem->console().getFormat();
   theOSystem->colourPalette().setPalette("standard", currentDisplayFormat);
 }
 
@@ -148,13 +148,13 @@ bool is_illegal(char c) {
   return !(std::isalnum(c) || c == '_');
 }
 
-string ALEInterface::find_rom(const string& md5) {
+std::string ALEInterface::find_rom(const std::string& md5) {
   // TODO these values should either come from an external text file or be part of the RomSettings subclasses
   // TODO building a dictionary would be more elegant, but overkill for so few strings
   // TODO this can be done much more elegantly with C++11
   std::ifstream ss("md5.txt");
   std::string item;
-  string rom_candidate = "";
+  std::string rom_candidate = "";
   while (std::getline(ss, item)) {
     //Logger::Info << "Checking..." << item << std::endl;
     if (!item.compare(0, md5.size(), md5)) {
@@ -172,7 +172,7 @@ string ALEInterface::find_rom(const string& md5) {
 // ready to play. Resets the OSystem/Console/Environment/etc. This is
 // necessary after changing a setting. Optionally specify a new rom to
 // load.
-void ALEInterface::loadROM(string rom_file = "") {
+void ALEInterface::loadROM(std::string rom_file = "") {
   assert(theOSystem.get());
   if (rom_file.empty()) {
     rom_file = theOSystem->romFile();
@@ -191,7 +191,7 @@ void ALEInterface::loadROM(string rom_file = "") {
 
     const Properties properties = theOSystem->console().properties();
     const std::string md5 = properties.get(Cartridge_MD5); //TODO there shouldn't be a need to do this twice
-    string rom_candidate = find_rom(md5);
+    const std::string rom_candidate = find_rom(md5);
     if (rom_candidate != "") {
       s1 = rom_candidate;
     }
@@ -210,12 +210,12 @@ void ALEInterface::loadROM(string rom_file = "") {
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
     Logger::Error
-        << "Screen display requires directive __USE_SDL to be defined." << endl;
+        << "Screen display requires directive __USE_SDL to be defined." << std::endl;
     Logger::Error << "Please recompile this code with flag '-D__USE_SDL'."
-        << endl;
+        << std::endl;
     Logger::Error
         << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)."
-        << endl;
+        << std::endl;
     exit(1);
   }
 #endif
@@ -240,25 +240,25 @@ float ALEInterface::getFloat(const std::string& key) {
 }
 
 // Set the value of a setting.
-void ALEInterface::setString(const string& key, const string& value) {
+void ALEInterface::setString(const std::string& key, const std::string& value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setString(key, value);
   theSettings->validate();
 }
-void ALEInterface::setInt(const string& key, const int value) {
+void ALEInterface::setInt(const std::string& key, const int value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setInt(key, value);
   theSettings->validate();
 }
-void ALEInterface::setBool(const string& key, const bool value) {
+void ALEInterface::setBool(const std::string& key, const bool value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setBool(key, value);
   theSettings->validate();
 }
-void ALEInterface::setFloat(const string& key, const float value) {
+void ALEInterface::setFloat(const std::string& key, const float value) {
   assert(theSettings.get());
   assert(theOSystem.get());
   theSettings->setFloat(key, value);
@@ -391,7 +391,7 @@ void ALEInterface::restoreSystemState(const ALEState& state) {
   return environment->restoreSystemState(state);
 }
 
-void ALEInterface::saveScreenPNG(const string& filename) {
+void ALEInterface::saveScreenPNG(const std::string& filename) {
 
   ScreenExporter exporter(theOSystem->colourPalette());
   exporter.save(environment->getScreen(), filename);
