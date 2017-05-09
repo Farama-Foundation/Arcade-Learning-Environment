@@ -432,18 +432,16 @@ This behaviour can be turned on using the command--line argument \verb+-color_av
 
 \subsection{Action Repeat Stochasticity}
 
-Beginning with ALE 0.5.0, there is now an option (enabled by default) to add 
-\emph{action repeat stochasticity} to the environment. With probability $p$ (default: $p = 0.25$),
-the previously executed action is executed again during the next frame, ignoring the agent's
-actual choice. This value can be modified using the option \verb+action_repeat_probability+.
-The default value was chosen as the highest value for which human play-testers
-were unable to detect any delay or control lag.
+Beginning with ALE 0.5.0, there is now an option (disabled by default) to add \emph{action repeat stochasticity} to the environment.
+With probability $p$ (default: $p = 0$), the previously executed action is executed again during the next frame, ignoring the agent's actual choice.
+This value can be modified using the option \verb+action_repeat_probability+.
+If action repeat stochasticity is desired, a value of $0.25$ is suggested; this was chosen as the highest value for which human play-testers were unable to detect any delay or control lag.
 
 The motivation for introducing action repeat stochasticity was to help separate \emph{trajectory
-optimization} research from \emph{robust controller optimization}, the latter often being the 
-desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use 
-the default stochasticity level in their agents, and clearly report the setting used. More 
-details on the effects of action repeat stochasticity will be made available in future 
+optimization} research from \emph{robust controller optimization}, the latter often being the
+desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use
+the $0.25$ stochasticity level in their agents, and clearly report the setting used. More
+details on the effects of action repeat stochasticity will be made available in future
 publications.
 
 Note that, beginning with ALE 0.5.0, we have also removed the use of \verb+rand()/srand()+ from

@@ -707,7 +707,7 @@ void Settings::setDefaultSettings() {
     boolSettings.insert(pair<string, bool>("color_averaging", false));
     boolSettings.insert(pair<string, bool>("send_rgb", false));
     intSettings.insert(pair<string, int>("frame_skip", 1));
-    floatSettings.insert(pair<string, float>("repeat_action_probability", 0.25));
+    floatSettings.insert(pair<string, float>("repeat_action_probability", 0));
     stringSettings.insert(pair<string, string>("rom_file", ""));
 
     // Record settings
