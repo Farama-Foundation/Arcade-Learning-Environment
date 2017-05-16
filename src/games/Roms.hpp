@@ -13,6 +13,7 @@
 #define __ROMS_HPP__
 
 #include <string>
+#include <OSystem.hxx>
 
 struct RomSettings;
 
@@ -20,6 +21,8 @@ struct RomSettings;
 // looks for the RL wrapper corresponding to a particular rom title 
 extern RomSettings *buildRomRLWrapper(const std::string &rom);
 
+// applies emulator-relevant settings (from Xitari)
+extern void applyRomSettings(RomSettings *, OSystem *);
 
 #endif // __ROMS_HPP__
 
