@@ -271,7 +271,7 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer){
 
   pixel_t *ale_screen_data = environment->getScreen().getArray();
 
-  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size * 3);
+  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size);
 }
 
 // Returns the current RAM content
