@@ -65,7 +65,7 @@ class BowlingSettings : public RomSettings {
         void loadState(Deserializer & ser);
 
         // No lives in bowling!
-        virtual const int lives() { return 0; }
+        virtual int lives() { return 0; }
 
     private:
 

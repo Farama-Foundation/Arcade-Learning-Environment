@@ -67,7 +67,7 @@ class JourneyEscapeSettings : public RomSettings {
         // Journey Escape requires the fire action to start the game
         ActionVect getStartingActions();
 
-        virtual const int lives() { return 0; }
+        virtual int lives() { return 0; }
 
     private:
 

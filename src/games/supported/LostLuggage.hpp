@@ -53,7 +53,7 @@ class LostLuggageSettings : public RomSettings {
         // LostLuggage requires the fire action to start the game
         ActionVect getStartingActions();
 
-        virtual const int lives() { return isTerminal() ? 0 : m_lives; }
+        virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
     private:
         bool m_terminal;

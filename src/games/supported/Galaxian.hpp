@@ -63,7 +63,7 @@ class GalaxianSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return isTerminal() ? 0 : m_lives; }
+        virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
     private:
 

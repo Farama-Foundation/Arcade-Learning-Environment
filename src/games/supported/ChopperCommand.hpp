@@ -64,7 +64,7 @@ class ChopperCommandSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return m_lives; }
+        virtual int lives() { return m_lives; }
 
     private:
 

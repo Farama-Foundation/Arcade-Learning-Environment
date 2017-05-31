@@ -193,7 +193,7 @@ bool ALEInterface::game_over() const {
 }
 
 // The remaining number of lives.
-const int ALEInterface::lives() {
+int ALEInterface::lives() {
   if (!romSettings.get()){
     throw std::runtime_error("ROM not set");
   }
@@ -256,7 +256,7 @@ void ALEInterface::getScreenGrayscale(std::vector<unsigned char>& grayscale_outp
   size_t w = environment->getScreen().width();
   size_t h = environment->getScreen().height();
   size_t screen_size = w*h;
-  
+
   pixel_t *ale_screen_data = environment->getScreen().getArray();
   theOSystem->colourPalette().applyPaletteGrayscale(grayscale_output_buffer, ale_screen_data, screen_size);
 }
@@ -306,7 +306,7 @@ void ALEInterface::restoreSystemState(const ALEState& state) {
 }
 
 void ALEInterface::saveScreenPNG(const string& filename) {
-  
+
   ScreenExporter exporter(theOSystem->colourPalette());
   exporter.save(environment->getScreen(), filename);
 }
