@@ -118,8 +118,8 @@ void PhosphorBlend::makeMaxPalette() {
   ColourPalette &palette = m_osystem->colourPalette();
 
   // Precompute the max RGB values for colors c1 and c2.
-  for (int c1 = 0; c1 < 256; c1 += 1) {
-    for (int c2 = 0; c2 < 256; c2 += 1) {
+  for (int c1 = 0; c1 < 256; c1 += 2) {
+    for (int c2 = 0; c2 < 256; c2 += 2) {
       int r1, g1, b1;
       int r2, g2, b2;
       palette.getRGB(c1, r1, g1, b1);
