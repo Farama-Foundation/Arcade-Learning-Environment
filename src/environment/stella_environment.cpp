@@ -41,11 +41,6 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   
   m_max_num_frames_per_episode = m_osystem->settings().getInt("max_num_frames_per_episode");
   m_colour_averaging = m_osystem->settings().getBool("color_averaging");
-  m_colour_maxpooling = m_osystem->settings().getBool("color_maxpooling");
-  if (m_colour_averaging && m_colour_maxpooling) {
-    ale::Logger::Error << "Error: colour averaging and color max pooling"
-                          "cannot be set to true at the same time." << std::endl;
-  }
 
   m_repeat_action_probability = m_osystem->settings().getFloat("repeat_action_probability");
   
@@ -241,10 +236,7 @@ const ALEState& StellaEnvironment::getState() const {
 void StellaEnvironment::processScreen() {
   if (m_colour_averaging) {
     // Perform phosphor averaging; the blender stores its result in the given screen
-    m_phosphor_blend.avg_process(m_screen);
-  }
-  else if (m_colour_maxpooling) {
-    m_phosphor_blend.maxpool_process(m_screen);
+    m_phosphor_blend.process(m_screen);
   }
   else {
     // Copy screen over and we're done! 

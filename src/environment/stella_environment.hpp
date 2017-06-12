@@ -111,7 +111,6 @@ class StellaEnvironment {
     /** Parameters loaded from Settings. */
     int m_num_reset_steps; // Number of RESET frames per reset
     bool m_colour_averaging; // Whether to average frames
-    bool m_colour_maxpooling; // Whether to max-pool frames
     int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
     size_t m_frame_skip; // How many frames to emulate per act()
     float m_repeat_action_probability; // Stochasticity of the environment

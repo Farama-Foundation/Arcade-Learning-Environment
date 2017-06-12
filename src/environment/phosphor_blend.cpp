@@ -24,10 +24,9 @@ PhosphorBlend::PhosphorBlend(OSystem * osystem):
   m_phosphor_blend_ratio = 77;
 
   makeAveragePalette();
-  makeMaxPalette();
 }
 
-void PhosphorBlend::avg_process(ALEScreen& screen) {
+void PhosphorBlend::process(ALEScreen& screen) {
   Console& console = m_osystem->console();
 
   // Fetch current and previous frame buffers from the emulator
@@ -94,44 +93,6 @@ void PhosphorBlend::makeAveragePalette() {
   }
 }
 
-void PhosphorBlend::maxpool_process(ALEScreen& screen) {
-  Console& console = m_osystem->console();
-
-  // Fetch current and previous frame buffers from the emulator
-  uInt8 * current_buffer  = console.mediaSource().currentFrameBuffer();
-  uInt8 * previous_buffer = console.mediaSource().previousFrameBuffer();
-
-  // Process each pixel in turn
-  for (size_t i = 0; i < screen.arraySize(); i++) { 
-    int cv = current_buffer[i];
-    int pv = previous_buffer[i];
-    
-    // Find out the corresponding rgb color 
-    uInt32 rgb = m_max_palette[cv][pv];
-
-    // Set the corresponding pixel in the array
-    screen.getArray()[i] = rgbToNTSC(rgb);
-  }
-}
-void PhosphorBlend::makeMaxPalette() {
-  
-  ColourPalette &palette = m_osystem->colourPalette();
-
-  // Precompute the max RGB values for colors c1 and c2.
-  for (int c1 = 0; c1 < 256; c1 += 2) {
-    for (int c2 = 0; c2 < 256; c2 += 2) {
-      int r1, g1, b1;
-      int r2, g2, b2;
-      palette.getRGB(c1, r1, g1, b1);
-      palette.getRGB(c2, r2, g2, b2);
-
-      uInt8 r = std::max(r1, r2);
-      uInt8 g = std::max(g1, g2);
-      uInt8 b = std::max(b1, b2);
-      m_max_palette[c1][c2] = makeRGB(r, g, b);
-    }
-  }
-}
 uInt8 PhosphorBlend::getPhosphor(uInt8 v1, uInt8 v2) {
   if (v1 < v2) {
     int tmp = v1;
