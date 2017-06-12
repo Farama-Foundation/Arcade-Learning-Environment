@@ -24,10 +24,12 @@ class PhosphorBlend {
   public:
     PhosphorBlend(OSystem *);
 
-    void process(ALEScreen& screen);
+    void avg_process(ALEScreen& screen);
+    void maxpool_process(ALEScreen& screen);
 
   private:
     void makeAveragePalette();
+    void makeMaxPalette();
     uInt8 getPhosphor(uInt8 v1, uInt8 v2);
     uInt32 makeRGB(uInt8 r, uInt8 g, uInt8 b);
     /** Converts a RGB value to an 8-bit format */
@@ -39,6 +41,7 @@ class PhosphorBlend {
     uInt8 m_rgb_ntsc[64][64][64];
 
     uInt32 m_avg_palette[256][256];
+    uInt32 m_max_palette[256][256];
     uInt8 m_phosphor_blend_ratio;
 };
 

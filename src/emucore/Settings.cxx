@@ -301,6 +301,8 @@ void Settings::usage() {
        "     Ends each episode after this number of frames. 0 means never.\n"
        "   -color_averaging [true|false] (default: false)\n"
        "     Phosphor blends screens to reduce flicker\n"
+       "   -color_maxpooling [true|false] (default: false)\n"
+       "     Max pool screensd\n"
        "   -record_screen_dir [save_directory]\n"
        "     Saves game screen images to save_directory\n"
        "   -repeat_action_probability (default: 0.25)\n"
@@ -705,6 +707,7 @@ void Settings::setDefaultSettings() {
     boolSettings.insert(pair<string, bool>("restricted_action_set", false));
     intSettings.insert(pair<string, int>("random_seed", 0));
     boolSettings.insert(pair<string, bool>("color_averaging", false));
+    boolSettings.insert(pair<string, bool>("color_maxpooling", false));
     boolSettings.insert(pair<string, bool>("send_rgb", false));
     intSettings.insert(pair<string, int>("frame_skip", 1));
     floatSettings.insert(pair<string, float>("repeat_action_probability", 0.25));
