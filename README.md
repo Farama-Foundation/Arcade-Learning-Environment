@@ -78,7 +78,7 @@ available at http://www.arcadelearningenvironment.org.
 ```
 
 
-##Citing The Arcade Learning Environment
+## Citing The Arcade Learning Environment
 
 
 If you use ALE in your research, we ask that you please cite the following.
