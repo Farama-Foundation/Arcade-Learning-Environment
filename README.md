@@ -49,7 +49,9 @@ Getting the ALE to work on Visual Studio requires a bit of extra wrangling. You 
 
 For more details and installation instructions, see the [manual](doc/manual/manual.pdf). To ask questions and discuss, please join the [ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
 
+## ALE releases
 
+Releases before v.0.5 are available for download in our previous [website](http://www.arcadelearningenvironment.org/). For the latest releases, please check our releases [page](https://github.com/mgbellemare/Arcade-Learning-Environment/releases) page.
 
 ## List of command-line parameters
 
