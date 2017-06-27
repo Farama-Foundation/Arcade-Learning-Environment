@@ -4,9 +4,9 @@
 
 # The Arcade Learning Environment
 
-The Arcade Learning Environment (ALE) is a simple object-oriented framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games. It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io/) and separates the details of emulation from agent design. This [video](https://www.youtube.com/watch?v=nzUiEkasXZI) depicts over 50 games currently supported in ALE.
+The Arcade Learning Environment (ALE) is a simple object-oriented framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games. It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io/) and separates the details of emulation from agent design. This [video](https://www.youtube.com/watch?v=nzUiEkasXZI) depicts over 50 games currently supported in the ALE.
 
-For an overview of our goals for ALE read [The Arcade Learning Environment: An Evaluation Platform for General Agents](http://www.jair.org/papers/paper3912.html). If you use ALE in your research, we ask that you please cite this paper in reference to the environment (BibTeX entry at the end of this document). Also, if you have any questions or comments about the ALE, please contact us through our [mailing list](https://groups.google.com/forum/#!forum/arcade-learning-environment).
+For an overview of our goals for the ALE read [The Arcade Learning Environment: An Evaluation Platform for General Agents](http://www.jair.org/papers/paper3912.html). If you use ALE in your research, we ask that you please cite this paper in reference to the environment (BibTeX entry at the end of this document). Also, if you have any questions or comments about the ALE, please contact us through our [mailing list](https://groups.google.com/forum/#!forum/arcade-learning-environment).
 
 
 Feedback and suggestions are welcome and may be addressed to any active member of the ALE team.
@@ -18,7 +18,7 @@ Feedback and suggestions are welcome and may be addressed to any active member o
 - Multi-platform code (compiled and tested under OS X and several Linux distributions, with Cygwin support).
 - Communication between agents and emulation core can be accomplished through pipes, allowing for cross-language development (sample Java code included).
 - Python development is supported through ctypes.
-- Agents programmed in C++ have access to all ALE features.
+- Agents programmed in C++ have access to all features in the ALE.
 - Visualization tools.
 
 ## Quick start
@@ -49,7 +49,7 @@ Getting the ALE to work on Visual Studio requires a bit of extra wrangling. You 
 
 For more details and installation instructions, see the [manual](doc/manual/manual.pdf). To ask questions and discuss, please join the [ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
 
-## ALE releases
+## The ALE releases
 
 Releases before v.0.5 are available for download in our previous [website](http://www.arcadelearningenvironment.org/). For the latest releases, please check our releases [page](https://github.com/mgbellemare/Arcade-Learning-Environment/releases).
 
@@ -62,7 +62,7 @@ available at http://www.arcadelearningenvironment.org.
 -random_seed [n] -- sets the random seed; defaults to the current time
 
 -game_controller [fifo|fifo_named] -- specifies how agents interact
-  with ALE; see Java agent documentation for details
+  with the ALE; see Java agent documentation for details
 
 -config [file] -- specifies a configuration file, from which additional 
   parameters are read
@@ -83,7 +83,7 @@ available at http://www.arcadelearningenvironment.org.
 ## Citing The Arcade Learning Environment
 
 
-If you use ALE in your research, we ask that you please cite the following.
+If you use the ALE in your research, we ask that you please cite the following.
 
 *M. G. Bellemare, Y. Naddaf, J. Veness and M. Bowling. The Arcade Learning Environment: An Evaluation Platform for General Agents, Journal of Artificial Intelligence Research, Volume 47, pages 253-279, 2013.*
 
