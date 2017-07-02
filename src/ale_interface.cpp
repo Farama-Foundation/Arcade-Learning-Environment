@@ -104,7 +104,7 @@ void ALEInterface::checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem) {
   }
 }
 
-void ALEInterface::loadSettings(const string& romfile,
+void ALEInterface::loadSettings(const std::string& romfile,
                                 std::auto_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
@@ -159,30 +159,6 @@ ALEInterface::ALEInterface(bool display_screen) {
 ALEInterface::~ALEInterface() {
 }
 
-bool is_illegal(char c) {
-  return !(std::isalnum(c) || c == '_');
-}
-
-std::string ALEInterface::find_rom(const std::string& md5) {
-  // TODO these values should either come from an external text file or be part of the RomSettings subclasses
-  // TODO building a dictionary would be more elegant, but overkill for so few strings
-  // TODO this can be done much more elegantly with C++11
-  std::ifstream ss("md5.txt");
-  std::string item;
-  std::string rom_candidate = "";
-  while (std::getline(ss, item)) {
-    //Logger::Info << "Checking..." << item << std::endl;
-    if (!item.compare(0, md5.size(), md5)) {
-      rom_candidate = item.substr(md5.size() + 1);
-      //Logger::Info << "found: " << rom_candidate << std::endl;
-
-      return rom_candidate;
-    }
-
-  }
-  return rom_candidate;
-}
-
 // Loads and initializes a game. After this call the game should be
 // ready to play. Resets the OSystem/Console/Environment/etc. This is
 // necessary after changing a setting. Optionally specify a new rom to
@@ -193,32 +169,7 @@ void ALEInterface::loadROM(std::string rom_file = "") {
     rom_file = theOSystem->romFile();
   }
   loadSettings(rom_file, theOSystem);
-
-  RomSettings* romRlWrapper = buildRomRLWrapper(rom_file);
-  if (romRlWrapper == NULL) {
-    Logger::Info << "Unable to map rom '" << rom_file
-        << "'. Trying alternative method..." << std::endl;
-
-    std::string s = "Unknown";
-    std::string s1 = s.substr(0, s.find("("));
-    s1.erase(std::remove_if(s1.begin(), s1.end(), is_illegal), s1.end());
-    std::cout << s1 << std::endl;
-
-    const Properties properties = theOSystem->console().properties();
-    const std::string md5 = properties.get(Cartridge_MD5); //TODO there shouldn't be a need to do this twice
-    const std::string rom_candidate = find_rom(md5);
-    if (rom_candidate != "") {
-      s1 = rom_candidate;
-    }
-    Logger::Info << "Retrying with '" << s1 << "'" << std::endl;
-    romRlWrapper = buildRomRLWrapper(s1);
-    if (romRlWrapper == NULL) {
-      Logger::Info << "giving up." << std::endl;
-      exit(1);
-    }
-
-  }
-  romSettings.reset(romRlWrapper);
+  romSettings.reset(buildRomRLWrapper(rom_file));
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
   environment->reset();
