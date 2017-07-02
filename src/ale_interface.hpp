@@ -164,6 +164,9 @@ public:
                             std::auto_ptr<Settings> &theSettings);
   static void loadSettings(const std::string& romfile,
                            std::auto_ptr<OSystem> &theOSystem);
+
+ private:
+  static void checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem);
 };
 
 #endif
