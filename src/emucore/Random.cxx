@@ -31,7 +31,6 @@ Random Random::s_random;
 // Implementation of Random's random number generator wrapper. 
 class Random::Impl {
   
-  // @clean typedef tinymt32_t randgen_t;
   typedef std::mt19937 randgen_t;
 
   public:
