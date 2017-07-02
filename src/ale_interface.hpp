@@ -165,8 +165,8 @@ public:
   static void loadSettings(const std::string& romfile,
                            std::auto_ptr<OSystem> &theOSystem);
 
-private:
-  static std::string find_rom(const std::string& md5);
+ private:
+  static void checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem);
 };
 
 #endif
