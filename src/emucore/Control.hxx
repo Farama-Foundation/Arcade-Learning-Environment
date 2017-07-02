@@ -87,7 +87,7 @@ class Controller
       @param type  The type for this controller
     */
     Controller(Jack jack, const Event& event, Type type);
- 
+
     /**
       Destructor
     */
@@ -96,7 +96,7 @@ class Controller
     /**
       Returns the type of this controller.
     */
-    const Type type();
+    Type type();
 
     /**
       Inform this controller about the current System.

@@ -64,7 +64,7 @@ class CarnivalSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return 0; }
+        virtual int lives() { return 0; }
 
     private:
 

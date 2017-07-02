@@ -99,7 +99,7 @@ public:
   int getFrameNumber();
 
   // The remaining number of lives.
-  const int lives();
+  int lives();
 
   // Returns the frame number since the start of the current episode
   int getEpisodeFrameNumber() const;

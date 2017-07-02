@@ -65,7 +65,7 @@ class RiverRaidSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return isTerminal() ? 0 : numericLives(); } 
+        virtual int lives() { return isTerminal() ? 0 : numericLives(); } 
 
     private:
 

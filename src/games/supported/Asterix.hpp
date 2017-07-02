@@ -60,14 +60,14 @@ class AsterixSettings : public RomSettings {
 
         // saves the state of the rom settings
         void saveState(Serializer & ser);
-    
+
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
         // Asterix requires the fire action to start the game
         ActionVect getStartingActions();
 
-        virtual const int lives() { return isTerminal() ? 0 : m_lives; }
+        virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
     private:
 
