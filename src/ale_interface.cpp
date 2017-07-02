@@ -65,6 +65,30 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
   theOSystem->settings().loadConfig();
 }
 
+
+void ALEInterface::checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem) {
+  const Properties properties = theOSystem->console().properties();
+  const std::string md5 = properties.get(Cartridge_MD5);
+  bool found = false;
+  std::ifstream ss("md5.txt");
+  std::string item;
+  while (!found && std::getline(ss, item)) {
+    if (!item.compare(0, md5.size(), md5)) {
+      const std::string rom_candidate = item.substr(md5.size() + 1);
+      found = true;
+    }
+  }
+  if (!found) {
+    // If the md5 doesn't match our master list, warn the user. 
+    Logger::Warning << std::endl;
+    Logger::Warning << "WARNING: Possibly unsupported ROM: mismatched MD5." << std::endl;
+    Logger::Warning << "Cartridge_MD5: " << md5 << std::endl;
+    const std::string name = properties.get(Cartridge_Name);
+    Logger::Warning << "Cartridge_name: " << name << std::endl;
+    Logger::Warning << std::endl;
+  }
+}
+
 void ALEInterface::loadSettings(const string& romfile,
                                 std::auto_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
@@ -83,6 +107,7 @@ void ALEInterface::loadSettings(const string& romfile,
               << std::endl;
     exit(1);
   } else if (theOSystem->createConsole(romfile))  {
+    checkForUnsupportedRom(theOSystem);
     Logger::Info << "Running ROM file..." << std::endl;
     theOSystem->settings().setString("rom_file", romfile);
   } else {
