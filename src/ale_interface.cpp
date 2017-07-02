@@ -242,7 +242,7 @@ bool ALEInterface::game_over() const {
 }
 
 // The remaining number of lives.
-const int ALEInterface::lives() {
+int ALEInterface::lives() {
   if (!romSettings.get()) {
     throw std::runtime_error("ROM not set");
   }
