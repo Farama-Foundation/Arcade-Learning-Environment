@@ -14,7 +14,7 @@
 
 #include <string>
 
-struct RomSettings;
+class RomSettings;
 
 
 // looks for the RL wrapper corresponding to a particular rom title 

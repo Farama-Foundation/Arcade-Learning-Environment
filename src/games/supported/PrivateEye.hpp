@@ -38,7 +38,7 @@ class PrivateEyeSettings : public RomSettings {
         PrivateEyeSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -66,7 +66,17 @@ class PrivateEyeSettings : public RomSettings {
 
         ActionVect getStartingActions();
 
-        virtual const int lives() { return 0; }
+        virtual const int lives() {
+            return 0;
+        }
+
+        // returns a list of mode that the game can be played in
+        // in this game, there are 5 available modes
+        ModeVect getAvailableModes();
+
+        // set the mode of the game
+        // the given mode must be one returned by the previous function
+        void setMode(game_mode_t, System &system, StellaEnvironment& environment);
 
     private:
 

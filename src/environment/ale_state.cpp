@@ -12,10 +12,17 @@
 #include "ale_state.hpp"
 #include "../emucore/m6502/src/System.hxx"
 #include "../emucore/Event.hxx"
+#include "../emucore/Deserializer.hxx"
+#include "../emucore/Serializer.hxx"
 #include "../common/Constants.h"
-using namespace std;
 
+#include "../games/RomSettings.hpp"
+
+
+#include <sstream>
 #include <stdexcept>
+
+using namespace std;
 
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():
@@ -259,6 +266,19 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action, int player_
   }
 }
 
+void ALEState::pressSelect(Event* event){
+  resetKeys(event);
+  event->set(Event::ConsoleSelect,1);
+}
+
+void ALEState::setDifficulty(Event* event,unsigned mask){
+  resetKeys(event);
+  event->set(Event::ConsoleLeftDifficultyA, mask&1);
+  event->set(Event::ConsoleLeftDifficultyB, !(mask&1));
+  event->set(Event::ConsoleRightDifficultyA, (mask&2)>>1);
+  event->set(Event::ConsoleRightDifficultyB, !((mask&2)>>1));
+}
+
 void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_b_action) {
   // Reset keys
   resetKeys(event);
@@ -462,6 +482,7 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
  * ***************************************************************************/
 void ALEState::resetKeys(Event* event) {
     event->set(Event::ConsoleReset, 0);
+    event->set(Event::ConsoleSelect,0);
     event->set(Event::JoystickZeroFire, 0);
     event->set(Event::JoystickZeroUp, 0);
     event->set(Event::JoystickZeroDown, 0);

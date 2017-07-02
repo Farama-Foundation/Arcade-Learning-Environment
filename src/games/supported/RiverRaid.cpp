@@ -42,7 +42,11 @@ RiverRaidSettings::RiverRaidSettings() {
     m_ram_vals_to_digits[64] = 8;
     m_ram_vals_to_digits[72] = 9;
 
-    reset();
+    m_lives                  = 0;
+    m_reward                 = 0;
+    m_score                  = 0;
+    m_terminal               = false;
+    m_lives_byte             = 0x58;
 }
 
 
@@ -134,7 +138,7 @@ bool RiverRaidSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void RiverRaidSettings::reset() {
+void RiverRaidSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_lives      = 0;
     m_reward     = 0;
@@ -158,4 +162,11 @@ void RiverRaidSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives_byte = ser.getInt();
+}
+
+DifficultyVect RiverRaidSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
 }

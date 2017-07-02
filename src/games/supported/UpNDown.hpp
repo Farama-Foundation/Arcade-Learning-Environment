@@ -38,7 +38,7 @@ class UpNDownSettings : public RomSettings {
         UpNDownSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -67,7 +67,13 @@ class UpNDownSettings : public RomSettings {
         // UpNDown requires the fire action to start the game
         ActionVect getStartingActions();
 
-        virtual const int lives() { return isTerminal() ? 0 : m_lives; }
+        virtual const int lives() {
+            return isTerminal() ? 0 : m_lives;
+        }
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 4 available difficulties
+        DifficultyVect getAvailableDifficulties();
 
     private:
 

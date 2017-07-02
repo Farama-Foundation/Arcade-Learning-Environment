@@ -79,6 +79,14 @@ std::string action_to_string(Action a);
 //  Define datatypes
 typedef std::vector<Action> ActionVect;
 
+// Define types for the modes
+typedef unsigned game_mode_t;
+typedef std::vector<game_mode_t> ModeVect;
+
+// Define types for the difficulties
+typedef unsigned difficulty_t;
+typedef std::vector<difficulty_t> DifficultyVect;
+
 // reward type for RL interface
 typedef int reward_t;
 

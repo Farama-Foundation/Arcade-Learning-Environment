@@ -217,6 +217,37 @@ reward_t ALEInterface::act(Action action) {
   return reward;
 }
 
+// Returns the vector of modes available for the current game.
+// This should be called only after the rom is loaded.
+ModeVect ALEInterface::getAvailableModes(){
+  return romSettings->getAvailableModes();
+}
+
+// Sets the mode of the game.
+// The mode must be an available mode.
+// This should be called only after the rom is loaded.
+void ALEInterface::setMode(game_mode_t m){
+  romSettings->setMode(m,theOSystem->console().system(),*(environment.get()));
+}
+
+// Sets the difficulty of the game.
+// The difficulty must be an available mode.
+// This should be called only after the rom is loaded.
+void ALEInterface::setDifficulty(difficulty_t m){
+  DifficultyVect available = romSettings->getAvailableDifficulties();
+  if(find(available.begin(), available.end(), m) != available.end()){
+    environment->setDifficulty(m);
+    } else {
+      throw std::runtime_error("This difficulty doesn't currently exist for this game");
+    }
+}
+
+//Returns the vector of difficulties available for the current game.
+//This should be called only after the rom is loaded.
+ModeVect ALEInterface::getAvailableDifficulties(){
+    return romSettings->getAvailableDifficulties();
+}
+
 // Returns the vector of legal actions. This should be called only
 // after the rom is loaded.
 ActionVect ALEInterface::getLegalActionSet() {

@@ -38,7 +38,7 @@ class RoboTankSettings : public RomSettings {
         RoboTankSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;

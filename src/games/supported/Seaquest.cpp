@@ -31,7 +31,10 @@
 
 SeaquestSettings::SeaquestSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 4;
 }
 
 
@@ -102,7 +105,7 @@ bool SeaquestSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void SeaquestSettings::reset() {
+void SeaquestSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
@@ -127,3 +130,9 @@ void SeaquestSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+DifficultyVect SeaquestSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    return diff;
+}

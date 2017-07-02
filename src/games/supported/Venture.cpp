@@ -31,7 +31,10 @@
 
 VentureSettings::VentureSettings() {
 
-    reset();
+    m_reward   = 0;
+    m_score    = 0;
+    m_terminal = false;
+    m_lives    = 4;
 }
 
 
@@ -108,7 +111,7 @@ bool VentureSettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void VentureSettings::reset() {
+void VentureSettings::reset(System& system, StellaEnvironment& environment) {
     
     m_reward   = 0;
     m_score    = 0;
@@ -132,3 +135,11 @@ void VentureSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+DifficultyVect VentureSettings::getAvailableDifficulties(){
+    DifficultyVect diff;
+    diff.push_back(0);
+    diff.push_back(1);
+    diff.push_back(2);
+    diff.push_back(3);
+    return diff;
+}

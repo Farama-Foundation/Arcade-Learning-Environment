@@ -38,7 +38,7 @@ class QBertSettings : public RomSettings {
         QBertSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -64,7 +64,13 @@ class QBertSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return isTerminal() ? 0 : m_lives; } 
+        virtual const int lives() {
+            return isTerminal() ? 0 : m_lives;
+        }
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 2 available difficulties
+        DifficultyVect getAvailableDifficulties();
 
     private:
 

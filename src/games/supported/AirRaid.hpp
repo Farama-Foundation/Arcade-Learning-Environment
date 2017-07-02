@@ -23,7 +23,7 @@ class AirRaidSettings : public RomSettings {
         AirRaidSettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -49,7 +49,13 @@ class AirRaidSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        ActionVect getStartingActions();    
+        ActionVect getStartingActions();
+
+        //Returns a list of mode that the game can be played in. In this game, there are 8 available modes.
+        ModeVect getAvailableModes();
+
+        //Set the mode of the game. The given mode must be one returned by the previous function. 
+        void setMode(game_mode_t, System &system, StellaEnvironment& environment);
 
      private:
 

@@ -38,7 +38,7 @@ class FishingDerbySettings : public RomSettings {
         FishingDerbySettings();
 
         // reset
-        void reset();
+        void reset(System& system, StellaEnvironment& environment);
 
         // is end of game
         bool isTerminal() const;
@@ -64,7 +64,13 @@ class FishingDerbySettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return 0; }
+        virtual const int lives() {
+            return 0;
+        }
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 4 available difficulties
+        DifficultyVect getAvailableDifficulties();
 
     private:
 

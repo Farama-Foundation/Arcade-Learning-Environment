@@ -31,6 +31,8 @@
 #include <stack>
 #include <memory>
 
+class StellaEnvironment;
+
 // This defines the number of "random" environments
 #define NUM_RANDOM_ENVIRONMENTS (500)
 
@@ -64,6 +66,18 @@ class StellaEnvironment {
       *  number plus the frame skip.
       */
     reward_t act(Action player_a_action, Action player_b_action);
+
+    /** This functions emulates a push on the reset button of the console */
+    void softReset();
+    
+    /** Keep pressing the console select button for a given amount of time*/
+    void pressSelect(size_t num_steps = 1);
+
+    /** Set the difficulty according to the mask.
+      * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
+      * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
+      */
+      void setDifficulty(difficulty_t mask);
 
     /** Returns true once we reach a terminal state */
     bool isTerminal() const;
@@ -119,6 +133,9 @@ class StellaEnvironment {
 
     // The last actions taken by our players
     Action m_player_a_action, m_player_b_action;
+
+    //The current difficulty we are in
+    difficulty_t m_difficulty;
 };
 
 #endif // __STELLA_ENVIRONMENT_HPP__
