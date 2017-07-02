@@ -167,7 +167,6 @@ public:
 
  private:
   static void checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem);
-
 };
 
 #endif
