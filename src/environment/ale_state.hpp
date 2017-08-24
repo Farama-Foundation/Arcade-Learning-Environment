@@ -57,14 +57,14 @@ class ALEState {
     void setActionJoysticks(Event* event_obj, int player_a_action, int player_b_action);
 
     void incrementFrame(int steps = 1);
-    
+
     void resetEpisodeFrameNumber();
-    
+
     //Get the frames executed so far
-    const int getFrameNumber() const { return m_frame_number;   }
+    int getFrameNumber() const { return m_frame_number;   }
 
     //Get the number of frames executed this episode.
-    const int getEpisodeFrameNumber() const { return m_episode_frame_number; }
+    int getEpisodeFrameNumber() const { return m_episode_frame_number; }
 
     std::string serialize();
 
@@ -94,7 +94,7 @@ class ALEState {
 
     /** Calculates the Paddle resistance, based on the given x val */
     int calcPaddleResistance(int x_val);
-  
+
   private:
     int m_left_paddle;   // Current value for the left-paddle
     int m_right_paddle;  // Current value for the right-paddle

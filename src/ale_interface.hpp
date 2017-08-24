@@ -99,7 +99,7 @@ public:
   int getFrameNumber();
 
   // The remaining number of lives.
-  const int lives();
+  int lives();
 
   // Returns the frame number since the start of the current episode
   int getEpisodeFrameNumber() const;
@@ -164,6 +164,9 @@ public:
                             std::unique_ptr<Settings> &theSettings);
   static void loadSettings(const std::string& romfile,
                            std::unique_ptr<OSystem> &theOSystem);
+
+ private:
+  static void checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem);
 };
 
 #endif

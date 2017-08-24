@@ -26,14 +26,14 @@ Controller::Controller(Jack jack, const Event& event, Type type)
     myType(type)
 {
 }
- 
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Controller::~Controller()
 {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const Controller::Type Controller::type()
+Controller::Type Controller::type()
 {
   return myType;
 }

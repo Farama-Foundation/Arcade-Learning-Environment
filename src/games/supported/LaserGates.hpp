@@ -51,7 +51,7 @@ class LaserGatesSettings : public RomSettings {
         // LaserGates requires the fire action to start the game
         ActionVect getStartingActions();
 
-        virtual const int lives() { return 0; }
+        virtual int lives() { return 0; }
 
     private:
         bool m_terminal;

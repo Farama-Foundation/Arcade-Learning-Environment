@@ -41,7 +41,7 @@ class SoundNull : public Sound
       using the object.
     */
     SoundNull(OSystem* osystem);
- 
+
     /**
       Destructor
     */
@@ -54,7 +54,7 @@ class SoundNull : public Sound
       @param enable  Either true or false, to enable or disable the sound system
       @return        Whether the sound system was enabled or disabled
     */
-    void setEnabled(bool enable) { }
+    void setEnabled(bool) { }
 
     /**
       The system cycle counter is being adjusting by the specified amount.  Any
@@ -62,14 +62,14 @@ class SoundNull : public Sound
 
       @param amount The amount the cycle counter is being adjusted by
     */
-    void adjustCycleCounter(Int32 amount) { }
+    void adjustCycleCounter(Int32) { }
 
     /**
       Sets the number of channels (mono or stereo sound).
 
       @param channels The number of channels
     */
-    void setChannels(uInt32 channels) { }
+    void setChannels(uInt32) { }
 
     /**
       Sets the display framerate.  Sound generation for NTSC and PAL games
@@ -77,7 +77,7 @@ class SoundNull : public Sound
 
       @param framerate The base framerate depending on NTSC or PAL ROM
     */
-    void setFrameRate(uInt32 framerate) { }
+    void setFrameRate(uInt32) { }
 
     /**
       Initializes the sound device.  This must be called before any
@@ -103,7 +103,7 @@ class SoundNull : public Sound
 
       @param state Mutes sound if true, unmute if false
     */
-    void mute(bool state) { }
+    void mute(bool) { }
 
     /**
       Reset the sound device.
@@ -117,7 +117,7 @@ class SoundNull : public Sound
       @param value The value to save into the register
       @param cycle The system cycle at which the register is being updated
     */
-    void set(uInt16 addr, uInt8 value, Int32 cycle) { }
+    void set(uInt16, uInt8, Int32) { }
 
     /**
       Sets the volume of the sound device to the specified level.  The
@@ -126,7 +126,7 @@ class SoundNull : public Sound
 
       @param percent The new volume percentage level for the sound device
     */
-    void setVolume(Int32 percent) { }
+    void setVolume(Int32) { }
 
     /**
       Adjusts the volume of the sound device based on the given direction.
@@ -134,7 +134,7 @@ class SoundNull : public Sound
       @param direction  Increase or decrease the current volume by a predefined
                         amount based on the direction (1 = increase, -1 =decrease)
     */
-    void adjustVolume(Int8 direction) { }
+    void adjustVolume(Int8) { }
 
     /**
       * Tells the sound engine to record one frame's worth of sound.

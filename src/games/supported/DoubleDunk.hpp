@@ -66,7 +66,7 @@ class DoubleDunkSettings : public RomSettings {
 
         ActionVect getStartingActions();
 
-        virtual const int lives() { return 0; }
+        virtual int lives() { return 0; }
 
     private:
 

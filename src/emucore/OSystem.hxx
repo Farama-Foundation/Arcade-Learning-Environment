@@ -223,8 +223,8 @@ class OSystem
     /**
       Get the maximum dimensions of a window for the video hardware.
     */
-    const uInt32 desktopWidth() const  { return myDesktopWidth; }
-    const uInt32 desktopHeight() const { return myDesktopHeight; }
+    uInt32 desktopWidth() const  { return myDesktopWidth; }
+    uInt32 desktopHeight() const { return myDesktopHeight; }
 
     /**
       Get the supported fullscreen resolutions for the video hardware.
@@ -410,7 +410,7 @@ class OSystem
     */
     //ALE  virtual void stateChanged(EventHandler::State state);
 
-    
+
   protected:
     /**
       Query the OSystem video hardware for resolution information.
@@ -434,7 +434,7 @@ class OSystem
     void setConfigFile(const std::string& file) { myConfigFile = file; }
 
 
-    
+
   protected:
     // Pointer to the EventHandler object
     //ALE  EventHandler* myEventHandler;
@@ -455,10 +455,10 @@ class OSystem
 
     // Pointer to the (currently defined) Console object
     Console* myConsole;
-    
+
     // Random number generator shared across the emulator's components
     Random myRandGen; 
-    
+
     // Pointer to the Menu object
     //ALE  Menu* myMenu;
 
@@ -476,7 +476,7 @@ class OSystem
 
     // Pointer to the AI object
     //ALE  AIBase *aiBase;
-    
+
     // Maximum dimensions of the desktop area
     uInt32 myDesktopWidth, myDesktopHeight;
 
@@ -515,7 +515,7 @@ class OSystem
 
     // The font object to use for the console/debugger 
     //ALE  GUI::Font* myConsoleFont;
-    
+
     public: //ALE 
     // Time per frame for a video update, based on the current framerate
     uInt32 myTimePerFrame;
@@ -536,7 +536,7 @@ class OSystem
     //ALE  static uInt32 ourGUIColors[kNumUIPalettes][kNumColors-256];
   public:
     DisplayScreen* p_display_screen; //MHAUSKN
-  
+
   private:
 
     ColourPalette m_colour_palette;

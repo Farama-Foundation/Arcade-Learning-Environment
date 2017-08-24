@@ -63,7 +63,7 @@ class TetrisSettings : public RomSettings {
         void loadState(Deserializer & ser);
 
         // remaining lives
-        const int lives() { return isTerminal() ? 0 : m_lives; }
+        int lives() { return isTerminal() ? 0 : m_lives; }
 
     private:
 

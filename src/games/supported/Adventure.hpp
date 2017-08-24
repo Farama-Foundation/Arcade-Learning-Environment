@@ -24,7 +24,7 @@
  * *****************************************************************************
  */
 #ifndef __ADVENTURE_HPP__
-#define ____ADVENTURE_HPP__
+#define __ADVENTURE_HPP__
 
 #include "../RomSettings.hpp"
 
@@ -63,7 +63,7 @@ class AdventureSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        virtual const int lives() { return 1; }
+        virtual int lives() { return 1; }
 
     private:
 
