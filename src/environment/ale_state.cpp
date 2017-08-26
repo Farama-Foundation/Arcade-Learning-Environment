@@ -475,7 +475,7 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
  * ***************************************************************************/
 void ALEState::resetKeys(Event* event) {
     event->set(Event::ConsoleReset, 0);
-    event->set(Event::ConsoleSelect,0);
+    event->set(Event::ConsoleSelect, 0);
     event->set(Event::JoystickZeroFire, 0);
     event->set(Event::JoystickZeroUp, 0);
     event->set(Event::JoystickZeroDown, 0);
