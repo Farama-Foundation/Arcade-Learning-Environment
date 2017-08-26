@@ -30,6 +30,12 @@ int readRam(const System* system, int offset) {
 }
 
 
+/* writes a byte at a memory location between 0 and 128 */
+void writeRam(System* system, int offset, unsigned char value) {
+
+    system->poke((offset & 0x7F) + 0x80, value);
+}
+
 /* extracts a decimal value from a byte */
 int getDecimalScore(int index, const System* system) {
     

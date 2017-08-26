@@ -22,6 +22,10 @@ class System;
 // reads a byte at a memory location between 0 and 1023
 extern int readRam(const System* system, int offset);
 
+// writes a byte at a memory location between 0 and 128,
+// this method is required to allow one to set a game mode
+extern void writeRam(System* system, int offset, unsigned char value);
+
 // extracts a decimal value from 1, 2, and 3 bytes respectively
 extern int getDecimalScore(int idx, const System* system);
 extern int getDecimalScore(int lo, int hi, const System* system);
