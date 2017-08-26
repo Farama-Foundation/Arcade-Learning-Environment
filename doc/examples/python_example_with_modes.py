@@ -51,7 +51,7 @@ for mode in avail_modes:
 
     ale.setMode(mode)
     ale.setDifficulty(diff)
-    print 'Mode' , mode, 'difficulty', diff, ':';
+    print 'Mode {0} difficulty {1}:'.format(mode, diff)
 
     total_reward = 0
     while not ale.game_over():

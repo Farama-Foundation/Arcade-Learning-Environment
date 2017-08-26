@@ -19,25 +19,25 @@ extern "C" {
   int act(ALEInterface *ale,int action){return ale->act((Action)action);}
   bool game_over(ALEInterface *ale){return ale->game_over();}
   void reset_game(ALEInterface *ale){ale->reset_game();}
-  void getAvailableModes(ALEInterface *ale,int *availableModes){
+  void getAvailableModes(ALEInterface *ale,int *availableModes) {
     ModeVect modes_vect = ale->getAvailableModes();
-    for(unsigned int i = 0; i < ale->getAvailableModes().size();i++){
+    for(unsigned int i = 0; i < ale->getAvailableModes().size(); i++){
       availableModes[i] = modes_vect[i];
     }
   }
-  int getAvailableModesSize(ALEInterface *ale){return ale->getAvailableModes().size();}
-  void setMode(ALEInterface *ale, int mode){ale->setMode(mode);}
-  void getAvailableDifficulties(ALEInterface *ale,int *availableDifficulties){
+  int getAvailableModesSize(ALEInterface *ale) {return ale->getAvailableModes().size();}
+  void setMode(ALEInterface *ale, int mode) {ale->setMode(mode);}
+  void getAvailableDifficulties(ALEInterface *ale,int *availableDifficulties) {
     DifficultyVect difficulties_vect = ale->getAvailableDifficulties();
-    for(unsigned int i = 0; i < ale->getAvailableDifficulties().size();i++){
+    for(unsigned int i = 0; i < ale->getAvailableDifficulties().size(); i++){
       availableDifficulties[i] = difficulties_vect[i];
     }
   }
-  int getAvailableDifficultiesSize(ALEInterface *ale){return ale->getAvailableDifficulties().size();}
-  void setDifficulty(ALEInterface *ale, int difficulty){ale->setDifficulty(difficulty);}
-  void getLegalActionSet(ALEInterface *ale,int *actions){
+  int getAvailableDifficultiesSize(ALEInterface *ale) {return ale->getAvailableDifficulties().size();}
+  void setDifficulty(ALEInterface *ale, int difficulty) {ale->setDifficulty(difficulty);}
+  void getLegalActionSet(ALEInterface *ale,int *actions) {
     ActionVect action_vect = ale->getLegalActionSet();
-    for(unsigned int i = 0;i < ale->getLegalActionSet().size();i++){
+    for(unsigned int i = 0; i < ale->getLegalActionSet().size(); i++){
       actions[i] = action_vect[i];
     }
   }
