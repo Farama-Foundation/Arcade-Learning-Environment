@@ -264,7 +264,7 @@ void ALEState::pressSelect(Event* event) {
   event->set(Event::ConsoleSelect, 1);
 }
 
-void ALEState::setDifficulty(Event* event, unsigned mask) {
+void ALEState::setDifficulty(Event* event, unsigned int mask) {
   resetKeys(event);
   event->set(Event::ConsoleLeftDifficultyA, mask & 1);
   event->set(Event::ConsoleLeftDifficultyB, !(mask & 1));
