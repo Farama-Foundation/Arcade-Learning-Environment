@@ -14,8 +14,7 @@
 
 #include <string>
 
-struct RomSettings;
-
+class RomSettings;
 
 // looks for the RL wrapper corresponding to a particular rom title 
 extern RomSettings *buildRomRLWrapper(const std::string &rom);
