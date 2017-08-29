@@ -12,10 +12,15 @@
 #include "ale_state.hpp"
 #include "../emucore/m6502/src/System.hxx"
 #include "../emucore/Event.hxx"
+#include "../emucore/Deserializer.hxx"
+#include "../emucore/Serializer.hxx"
 #include "../common/Constants.h"
-using namespace std;
+#include "../games/RomSettings.hpp"
 
+#include <sstream>
 #include <stdexcept>
+
+using namespace std;
 
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():
