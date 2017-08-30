@@ -202,8 +202,7 @@ bool StellaEnvironment::isTerminal() const {
 }
 
 void StellaEnvironment::pressSelect(size_t num_steps) {
-  Event* event = m_osystem->event();
-  m_state.pressSelect(event);
+  m_state.pressSelect(m_osystem->event());
   for (size_t t = 0; t < num_steps; t++) {
     m_osystem->console().mediaSource().update();
   }
