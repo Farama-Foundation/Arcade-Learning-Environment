@@ -114,6 +114,8 @@ class ALEState {
 
     std::string m_serialized_state; // The stored environment state, if this is a saved state
 
+    difficulty_t m_difficulty; //The current difficulty we are in
+
 };
 
 #endif // __ALE_STATE_HPP__

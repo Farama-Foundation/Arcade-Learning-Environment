@@ -25,7 +25,8 @@ ALEState::ALEState():
   m_left_paddle(PADDLE_DEFAULT_VALUE),
   m_right_paddle(PADDLE_DEFAULT_VALUE),
   m_frame_number(0),
-  m_episode_frame_number(0) {
+  m_episode_frame_number(0),
+  m_difficulty(0) {
 }
 
 ALEState::ALEState(const ALEState &rhs, std::string serialized):
@@ -273,6 +274,7 @@ void ALEState::setDifficulty(Event* event, unsigned int mask) {
   event->set(Event::ConsoleLeftDifficultyB, !(mask & 1));
   event->set(Event::ConsoleRightDifficultyA, (mask & 2) >> 1);
   event->set(Event::ConsoleRightDifficultyB, !((mask & 2) >> 1));
+  m_difficulty = mask;
 }
 
 void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_b_action) {

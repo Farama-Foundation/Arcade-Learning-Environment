@@ -26,8 +26,7 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_screen(m_osystem->console().mediaSource().height(),
         m_osystem->console().mediaSource().width()),
   m_player_a_action(PLAYER_A_NOOP),
-  m_player_b_action(PLAYER_B_NOOP),
-  m_difficulty(0) {
+  m_player_b_action(PLAYER_B_NOOP) {
 
   // Determine whether this is a paddle-based game
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
@@ -86,7 +85,6 @@ void StellaEnvironment::reset() {
   for (size_t i = 0; i < startingActions.size(); i++){
     emulate(startingActions[i], PLAYER_B_NOOP);
   }
-  setDifficulty(m_difficulty);
 }
 
 /** Save/restore the environment state. */
@@ -220,7 +218,6 @@ void StellaEnvironment::setDifficulty(difficulty_t mask) {
   m_osystem->console().mediaSource().update();
   processScreen();
   processRAM();
-  m_difficulty = mask;
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {

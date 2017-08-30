@@ -130,9 +130,6 @@ class StellaEnvironment {
 
     // The last actions taken by our players
     Action m_player_a_action, m_player_b_action;
-
-    //The current difficulty we are in
-    difficulty_t m_difficulty;
 };
 
 #endif // __STELLA_ENVIRONMENT_HPP__
