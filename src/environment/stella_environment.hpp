@@ -30,8 +30,6 @@
 
 #include <stack>
 
-class StellaEnvironment;
-
 // This defines the number of "random" environments
 #define NUM_RANDOM_ENVIRONMENTS (500)
 

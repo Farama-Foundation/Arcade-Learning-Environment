@@ -19,6 +19,12 @@
 
 RomSettings::RomSettings() : m_mode(0) {}
 
+
+void RomSettings::reset(System& system, StellaEnvironment& environment) {
+  //ignore parameters by default
+  reset();
+}
+
 bool RomSettings::isLegal(const Action& a) const {
   return true;
 }
@@ -52,4 +58,8 @@ void RomSettings::setMode(game_mode_t m, System&, StellaEnvironment&) {
   if(m != 0) {
     throw std::runtime_error("This mode is not currently available for this game");
   }
- }
+}
+
+DifficultyVect RomSettings::getAvailableDifficulties() {
+  return DifficultyVect(1, 0);
+};

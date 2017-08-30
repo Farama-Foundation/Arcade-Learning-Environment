@@ -290,7 +290,7 @@ DifficultyVect ALEInterface::getAvailableDifficulties() {
 // This should be called only after the rom is loaded.
 void ALEInterface::setDifficulty(difficulty_t m) {
   DifficultyVect available = romSettings->getAvailableDifficulties();
-  if(find(available.begin(), available.end(), m) != available.end()){
+  if(find(available.begin(), available.end(), m) != available.end()) {
     environment->setDifficulty(m);
   } else {
     throw std::runtime_error("This difficulty doesn't currently exist for this game");

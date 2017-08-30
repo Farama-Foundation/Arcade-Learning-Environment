@@ -12,9 +12,9 @@
 #ifndef __ROMS_HPP__
 #define __ROMS_HPP__
 
-#include <string>
+#include "RomSettings.hpp"
 
-class RomSettings;
+#include <string>
 
 // looks for the RL wrapper corresponding to a particular rom title 
 extern RomSettings *buildRomRLWrapper(const std::string &rom);

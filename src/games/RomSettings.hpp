@@ -42,7 +42,6 @@
 #include "../environment/stella_environment.hpp"
 
 class System;
-class RomSettings;
 class StellaEnvironment;
 
 // rom support interface
@@ -54,10 +53,7 @@ public:
     virtual ~RomSettings() {}
 
     // reset
-    virtual void reset(System& system, StellaEnvironment& environment) {
-        //ignore parameters by default
-        reset();
-    }
+    virtual void reset(System& system, StellaEnvironment& environment);
 
     // reset
     virtual void reset(){};
@@ -114,9 +110,7 @@ public:
 
     // Returns a list of difficulties that the game can be played in.
     // By default, there is only one available difficulty.
-    virtual DifficultyVect getAvailableDifficulties() {
-        return DifficultyVect(1, 0);
-    };
+    virtual DifficultyVect getAvailableDifficulties();
 
 protected:
     game_mode_t m_mode;

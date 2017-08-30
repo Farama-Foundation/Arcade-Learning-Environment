@@ -20,8 +20,6 @@
 #include <sstream>
 #include <stdexcept>
 
-using namespace std;
-
 /** Default constructor - loads settings from system */ 
 ALEState::ALEState():
   m_left_paddle(PADDLE_DEFAULT_VALUE),
@@ -466,10 +464,10 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
           break; 
       case RESET:
           event->set(Event::ConsoleReset, 1);
-          ale::Logger::Info << "Sending Reset..." << endl;
+          ale::Logger::Info << "Sending Reset..." << std::endl;
           break;
       default: 
-          ale::Logger::Error << "Invalid Player B Action: " << player_b_action << endl;
+          ale::Logger::Error << "Invalid Player B Action: " << player_b_action << std::endl;
           exit(-1); 
   }
 }
