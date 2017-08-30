@@ -50,8 +50,12 @@ ActionVect RomSettings::getAllActions() {
 }
 
 ActionVect RomSettings::getStartingActions() {
-    return ActionVect();
+  return ActionVect();
 }
+
+ModeVect RomSettings::getAvailableModes() {
+  return ModeVect(1, 0);
+};
 
 void RomSettings::setMode(game_mode_t m, System&, StellaEnvironment&) {
   //By default, 0 is the only available mode

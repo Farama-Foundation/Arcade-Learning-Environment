@@ -100,9 +100,7 @@ public:
 
     // Returns a list of mode that the game can be played in. 
     // By default, there is only one available mode.
-    virtual ModeVect getAvailableModes() {
-        return ModeVect(1, 0);
-    };
+    virtual ModeVect getAvailableModes();
 
     // Set the mode of the game. The given mode must be
     // one returned by the previous function.
