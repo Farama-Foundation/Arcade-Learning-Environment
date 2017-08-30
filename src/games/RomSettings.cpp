@@ -17,7 +17,7 @@
  */
 #include "RomSettings.hpp"
 
-RomSettings::RomSettings() : m_mode(0) {}
+RomSettings::RomSettings() {}
 
 
 void RomSettings::reset(System& system, StellaEnvironment& environment) {

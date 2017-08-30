@@ -109,9 +109,6 @@ public:
     // Returns a list of difficulties that the game can be played in.
     // By default, there is only one available difficulty.
     virtual DifficultyVect getAvailableDifficulties();
-
-protected:
-    game_mode_t m_mode;
 };
 
 

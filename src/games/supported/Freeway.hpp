@@ -82,6 +82,7 @@ class FreewaySettings : public RomSettings {
         bool m_terminal;
         reward_t m_reward;
         reward_t m_score;
+        game_mode_t m_mode;
         static const unsigned int m_num_modes = 8;
 };
 

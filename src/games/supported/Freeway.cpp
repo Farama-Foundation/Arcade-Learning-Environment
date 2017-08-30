@@ -16,6 +16,7 @@
 
 FreewaySettings::FreewaySettings() {
 
+    m_mode      = 0;
     m_reward    = 0;
     m_score     = 0;
     m_terminal  = false;
