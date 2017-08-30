@@ -79,10 +79,10 @@ class FreewaySettings : public RomSettings {
         DifficultyVect getAvailableDifficulties();
 
     private:
-
         bool m_terminal;
         reward_t m_reward;
         reward_t m_score;
+        static const unsigned int m_num_modes = 8;
 };
 
 #endif // __FREEWAY_HPP__
