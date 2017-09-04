@@ -128,9 +128,7 @@ void FreewaySettings::setMode(game_mode_t m, System &system, StellaEnvironment& 
  }
  
 DifficultyVect FreewaySettings::getAvailableDifficulties(){
-    DifficultyVect diff;
-    diff.push_back(0);
-    diff.push_back(1);
+    DifficultyVect diff = {0, 1};
     return diff;
 }
 
