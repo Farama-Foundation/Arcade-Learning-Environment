@@ -9,6 +9,23 @@ language: cpp
 #install:
 #    - sudo apt-get install libsdl1.2-dev
 
+# Need 4.8 for C++11 support. This seems to be the easiest solution according to
+# the internet (mostly from C. Dunn's blog post).
+install:
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - g++-4.8
+            - clang
+
+compiler:
+    - g++
+    - clang
+
 script:
 #    - cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON
     - cmake -DUSE_SDL=OFF -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=OFF

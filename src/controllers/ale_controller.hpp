@@ -22,6 +22,8 @@
 #include "../emucore/m6502/src/System.hxx"
 #include "../environment/stella_environment.hpp"
 
+#include <memory>
+
 class ALEController {
   public:
     ALEController(OSystem * osystem);
@@ -40,7 +42,7 @@ class ALEController {
 
   protected:
     OSystem* m_osystem;
-    std::auto_ptr<RomSettings> m_settings;
+    std::unique_ptr<RomSettings> m_settings;
     StellaEnvironment m_environment;
 };
 

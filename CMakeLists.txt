@@ -169,6 +169,7 @@ if(BUILD_EXAMPLES)
   add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-sharedLibraryInterfaceExample)
+
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
