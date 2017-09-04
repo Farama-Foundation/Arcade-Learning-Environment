@@ -268,13 +268,13 @@ void ALEState::pressSelect(Event* event) {
   event->set(Event::ConsoleSelect, 1);
 }
 
-void ALEState::setDifficulty(Event* event, unsigned int mask) {
+void ALEState::setDifficulty(Event* event, unsigned int value) {
   resetKeys(event);
-  event->set(Event::ConsoleLeftDifficultyA, mask & 1);
-  event->set(Event::ConsoleLeftDifficultyB, !(mask & 1));
-  event->set(Event::ConsoleRightDifficultyA, (mask & 2) >> 1);
-  event->set(Event::ConsoleRightDifficultyB, !((mask & 2) >> 1));
-  m_difficulty = mask;
+  event->set(Event::ConsoleLeftDifficultyA, value & 1);
+  event->set(Event::ConsoleLeftDifficultyB, !(value & 1));
+  event->set(Event::ConsoleRightDifficultyA, (value & 2) >> 1);
+  event->set(Event::ConsoleRightDifficultyB, !((value & 2) >> 1));
+  m_difficulty = value;
 }
 
 void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_b_action) {

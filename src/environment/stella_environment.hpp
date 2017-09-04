@@ -70,11 +70,11 @@ class StellaEnvironment {
     /** Keep pressing the console select button for a given amount of time*/
     void pressSelect(size_t num_steps = 1);
 
-    /** Set the difficulty according to the mask.
+    /** Set the difficulty according to the value.
       * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
       * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
       */
-    void setDifficulty(difficulty_t mask);
+    void setDifficulty(difficulty_t value);
 
     /** Returns true once we reach a terminal state */
     bool isTerminal() const;
