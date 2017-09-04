@@ -209,6 +209,7 @@ void StellaEnvironment::pressSelect(size_t num_steps) {
   processScreen();
   processRAM();
   emulate(PLAYER_A_NOOP, PLAYER_B_NOOP);
+  m_state.incrementFrame();
 }
 
 void StellaEnvironment::setDifficulty(difficulty_t value) {
