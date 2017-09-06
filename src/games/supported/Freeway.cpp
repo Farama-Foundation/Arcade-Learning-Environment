@@ -61,7 +61,6 @@ reward_t FreewaySettings::getReward() const {
     return m_reward; 
 }
 
-
 /* is an action part of the minimal set? */
 bool FreewaySettings::isMinimal(const Action &a) const {
 
@@ -101,7 +100,7 @@ void FreewaySettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect FreewaySettings::getAvailableModes() {
-    ModeVect modes(m_num_modes);
+    ModeVect modes(getNumNodes());
     for (unsigned int i = 0; i < modes.size(); i++) {
         modes[i] = i;
     }
@@ -111,7 +110,7 @@ ModeVect FreewaySettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void FreewaySettings::setMode(game_mode_t m, System &system, StellaEnvironment& environment) {
-    if (m < m_num_modes) { /*m >= 0 is implicit, since m is an unsigned int*/
+    if (m < getNumNodes()) { /*m >= 0 is implicit, since m is an unsigned int*/
         m_mode = m;
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0x80);
@@ -127,7 +126,7 @@ void FreewaySettings::setMode(game_mode_t m, System &system, StellaEnvironment& 
     }
  }
  
-DifficultyVect FreewaySettings::getAvailableDifficulties(){
+DifficultyVect FreewaySettings::getAvailableDifficulties() {
     DifficultyVect diff = {0, 1};
     return diff;
 }

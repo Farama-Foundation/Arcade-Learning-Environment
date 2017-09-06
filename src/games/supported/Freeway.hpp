@@ -49,6 +49,9 @@ class FreewaySettings : public RomSettings {
         // the rom-name
         const char* rom() const { return "freeway"; }
 
+        // get the available number of modes
+        unsigned int getNumNodes() const { return 8; }
+
         // create a new instance of the rom
         RomSettings* clone() const;
 
@@ -83,7 +86,6 @@ class FreewaySettings : public RomSettings {
         reward_t m_reward;
         reward_t m_score;
         game_mode_t m_mode;
-        static const unsigned int m_num_modes = 8;
 };
 
 #endif // __FREEWAY_HPP__
