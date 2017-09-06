@@ -111,7 +111,7 @@ ModeVect FreewaySettings::getAvailableModes() {
 // the given mode must be one returned by the previous function
 void FreewaySettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
-    if (m < m_num_modes) { /*m >= 0 is implicit, since m is an unsigned int*/
+    if (m < getNumNodes()) { /*m >= 0 is implicit, since m is an unsigned int*/
         m_mode = m;
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0x80);
