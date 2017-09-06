@@ -76,12 +76,11 @@ bool FreewaySettings::isMinimal(const Action &a) const {
 
 
 /* reset the state of the game */
-void FreewaySettings::reset(System& system, std::unique_ptr<StellaEnvironmentWrapper> environment) {
+void FreewaySettings::reset() {
     
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
-    setMode(m_mode, system, std::move(environment));
 }
         
 /* saves the state of the rom settings */
@@ -126,7 +125,7 @@ void FreewaySettings::setMode(game_mode_t m, System &system,
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }
  }
- 
+
 DifficultyVect FreewaySettings::getAvailableDifficulties() {
     DifficultyVect diff = {0, 1};
     return diff;

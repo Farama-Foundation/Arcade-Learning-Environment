@@ -20,11 +20,6 @@
 RomSettings::RomSettings() {}
 
 
-void RomSettings::reset(System& system, std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  //ignore parameters by default
-  reset();
-}
-
 bool RomSettings::isLegal(const Action& a) const {
   return true;
 }

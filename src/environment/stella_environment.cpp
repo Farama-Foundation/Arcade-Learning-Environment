@@ -78,8 +78,11 @@ void StellaEnvironment::reset() {
   emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
 
   // reset the rom (after emulating, in case the NOOPs led to reward)
-  m_settings->reset(m_osystem->console().system(), getWrapper());
+  m_settings->reset();
   
+  // set mode that was previously defined
+  m_settings->setMode(m_settings->getCurrentMode(), m_osystem->console().system(), getWrapper());
+
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
   for (size_t i = 0; i < startingActions.size(); i++){
