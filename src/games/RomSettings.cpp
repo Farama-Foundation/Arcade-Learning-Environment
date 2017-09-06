@@ -20,7 +20,7 @@
 RomSettings::RomSettings() {}
 
 
-void RomSettings::reset(System& system, StellaEnvironment& environment) {
+void RomSettings::reset(System& system, std::unique_ptr<StellaEnvironmentWrapper> environment) {
   //ignore parameters by default
   reset();
 }
@@ -57,7 +57,7 @@ ModeVect RomSettings::getAvailableModes() {
   return ModeVect(1, 0);
 };
 
-void RomSettings::setMode(game_mode_t m, System&, StellaEnvironment&) {
+void RomSettings::setMode(game_mode_t m, System&, std::unique_ptr<StellaEnvironmentWrapper>) {
   //By default, 0 is the only available mode
   if(m != 0) {
     throw std::runtime_error("This mode is not currently available for this game");

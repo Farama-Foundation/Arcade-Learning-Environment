@@ -39,10 +39,9 @@
 #include "../common/Constants.h"
 #include "../emucore/Serializer.hxx"
 #include "../emucore/Deserializer.hxx"
-#include "../environment/stella_environment.hpp"
+#include "../environment/stella_environment_wrapper.hpp"
 
 class System;
-class StellaEnvironment;
 
 // rom support interface
 class RomSettings {
@@ -53,7 +52,7 @@ public:
     virtual ~RomSettings() {}
 
     // reset
-    virtual void reset(System& system, StellaEnvironment& environment);
+    virtual void reset(System& system, std::unique_ptr<StellaEnvironmentWrapper> environment);
 
     // reset
     virtual void reset(){};
@@ -104,7 +103,8 @@ public:
 
     // Set the mode of the game. The given mode must be
     // one returned by the previous function.
-    virtual void setMode(game_mode_t, System &system, StellaEnvironment& environment);
+    virtual void setMode(game_mode_t, System &system,
+                         std::unique_ptr<StellaEnvironmentWrapper> environment);
 
     // Returns a list of difficulties that the game can be played in.
     // By default, there is only one available difficulty.
