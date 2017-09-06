@@ -27,6 +27,7 @@
 #ifndef __FREEWAY_HPP__
 #define __FREEWAY_HPP__
 
+#include "stella_environment_wrapper.hpp"
 #include "../RomSettings.hpp"
 
 
@@ -38,7 +39,7 @@ class FreewaySettings : public RomSettings {
         FreewaySettings();
 
         // reset
-        void reset(System& system, StellaEnvironment& environment);
+        void reset(System& system, std::unique_ptr<StellaEnvironmentWrapper> environment);
 
         // is end of game
         bool isTerminal() const;
@@ -75,7 +76,8 @@ class FreewaySettings : public RomSettings {
 
         // set the mode of the game
         // the given mode must be one returned by the previous function
-        void setMode(game_mode_t, System &system, StellaEnvironment& environment);
+        void setMode(game_mode_t, System &system,
+                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
 
         // returns a list of difficulties that the game can be played in
         // in this game, there are 2 available difficulties

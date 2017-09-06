@@ -78,7 +78,7 @@ void StellaEnvironment::reset() {
   emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
 
   // reset the rom (after emulating, in case the NOOPs led to reward)
-  m_settings->reset(m_osystem->console().system(), *(this));
+  m_settings->reset(m_osystem->console().system(), getWrapper());
   
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
@@ -256,6 +256,10 @@ void StellaEnvironment::setState(const ALEState& state) {
 
 const ALEState& StellaEnvironment::getState() const {
   return m_state;
+}
+
+std::unique_ptr<StellaEnvironmentWrapper> StellaEnvironment::getWrapper() {
+    return std::unique_ptr<StellaEnvironmentWrapper>(new StellaEnvironmentWrapper(*this));
 }
 
 void StellaEnvironment::processScreen() {
