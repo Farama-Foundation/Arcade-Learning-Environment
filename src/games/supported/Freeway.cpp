@@ -16,7 +16,6 @@
 
 FreewaySettings::FreewaySettings() {
 
-    m_mode      = 0;
     m_reward    = 0;
     m_score     = 0;
     m_terminal  = false;
@@ -110,20 +109,16 @@ ModeVect FreewaySettings::getAvailableModes() {
 // the given mode must be one returned by the previous function
 void FreewaySettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
-    if (m < getNumNodes()) { /*m >= 0 is implicit, since m is an unsigned int*/
-        m_mode = m;
-        // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0x80);
-        // press select until the correct mode is reached
-        while (mode != m_mode) {
-            environment->pressSelect(1);
-            mode = readRam(&system, 0x80);
-        }
-        //reset the environment to apply changes.
-        environment->softReset();
-    } else {
-        throw std::runtime_error("This mode doesn't currently exist for this game");
+
+    // read the mode we are currently in
+    unsigned char mode = readRam(&system, 0x80);
+    // press select until the correct mode is reached
+    while (mode != m) {
+        environment->pressSelect(1);
+        mode = readRam(&system, 0x80);
     }
+    //reset the environment to apply changes.
+    environment->softReset();
  }
 
 DifficultyVect FreewaySettings::getAvailableDifficulties() {

@@ -276,7 +276,13 @@ ModeVect ALEInterface::getAvailableModes() {
 // The mode must be an available mode.
 // This should be called only after the rom is loaded.
 void ALEInterface::setMode(game_mode_t m) {
-  romSettings->setMode(m, theOSystem->console().system(), environment->getWrapper());
+  //We first need to make sure m is an available mode
+  ModeVect available = romSettings->getAvailableModes();
+  if(find(available.begin(), available.end(), m) != available.end()) {
+    environment->setMode(m);
+  } else {
+    throw std::runtime_error("This mode doesn't currently exist for this game");
+  }
 }
 
 //Returns the vector of difficulties available for the current game.

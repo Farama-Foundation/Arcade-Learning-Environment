@@ -26,7 +26,8 @@ ALEState::ALEState():
   m_right_paddle(PADDLE_DEFAULT_VALUE),
   m_frame_number(0),
   m_episode_frame_number(0),
-  m_difficulty(0) {
+  m_difficulty(0),
+  m_mode(0) {
 }
 
 ALEState::ALEState(const ALEState &rhs, std::string serialized):

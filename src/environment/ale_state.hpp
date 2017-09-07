@@ -76,6 +76,12 @@ class ALEState {
     //Get the number of frames executed this episode.
     int getEpisodeFrameNumber() const { return m_episode_frame_number; }
 
+    //Save the current mode we are supposed to be in.
+    void setCurrentMode(game_mode_t value) { m_mode = value; }
+
+    //Get the current mode we are in.
+    game_mode_t getCurrentMode() const { return m_mode; }
+
     std::string serialize();
 
 
@@ -114,6 +120,7 @@ class ALEState {
 
     std::string m_serialized_state; // The stored environment state, if this is a saved state
 
+    game_mode_t m_mode; //The current mode we are in
     difficulty_t m_difficulty; //The current difficulty we are in
 
 };

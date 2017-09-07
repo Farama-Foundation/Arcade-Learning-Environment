@@ -79,9 +79,6 @@ class FreewaySettings : public RomSettings {
         void setMode(game_mode_t, System &system,
                      std::unique_ptr<StellaEnvironmentWrapper> environment); 
 
-        // get the current game mode
-        virtual game_mode_t getCurrentMode() const { return m_mode; }
-
         // returns a list of difficulties that the game can be played in
         // in this game, there are 2 available difficulties
         DifficultyVect getAvailableDifficulties();
@@ -90,7 +87,6 @@ class FreewaySettings : public RomSettings {
         bool m_terminal;
         reward_t m_reward;
         reward_t m_score;
-        game_mode_t m_mode;
 };
 
 #endif // __FREEWAY_HPP__

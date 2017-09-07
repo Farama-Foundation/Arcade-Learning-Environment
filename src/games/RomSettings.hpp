@@ -103,8 +103,6 @@ public:
     virtual void setMode(game_mode_t, System &system,
                          std::unique_ptr<StellaEnvironmentWrapper> environment);
 
-    virtual game_mode_t getCurrentMode() const { return 0; }
-
     // Returns a list of difficulties that the game can be played in.
     // By default, there is only one available difficulty.
     virtual DifficultyVect getAvailableDifficulties();

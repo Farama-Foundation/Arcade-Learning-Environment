@@ -76,6 +76,9 @@ class StellaEnvironment {
       */
     void setDifficulty(difficulty_t value);
 
+    /** Set the game mode according to the value */
+    void setMode(game_mode_t value);
+
     /** Returns true once we reach a terminal state */
     bool isTerminal() const;
 

@@ -81,7 +81,7 @@ void StellaEnvironment::reset() {
   m_settings->reset();
   
   // set mode that was previously defined
-  m_settings->setMode(m_settings->getCurrentMode(), m_osystem->console().system(), getWrapper());
+  setMode(m_state.getCurrentMode());
 
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
@@ -221,6 +221,11 @@ void StellaEnvironment::setDifficulty(difficulty_t value) {
   m_osystem->console().mediaSource().update();
   processScreen();
   processRAM();
+}
+
+void StellaEnvironment::setMode(game_mode_t value) {
+  m_state.setCurrentMode(value);
+  m_settings->setMode(m_state.getCurrentMode(), m_osystem->console().system(), getWrapper());
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {
