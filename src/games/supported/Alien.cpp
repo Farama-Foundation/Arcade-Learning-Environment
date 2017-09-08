@@ -156,19 +156,24 @@ ModeVect AlienSettings::getAvailableModes() {
 void AlienSettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-    // read the mode we are currently in
-    unsigned char mode = readRam(&system, 0x81);
-    // press select until the correct mode is reached
-    while (mode != m) {
-        environment->pressSelect(1);
-        mode = readRam(&system, 0x81);
+    if(m < getNumModes()) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x81);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(1);
+            mode = readRam(&system, 0x81);
+        }
+        //update the number of lives
+        int byte = readRam(&system, 0xC0);
+        byte = byte & 15;
+        m_lives = byte;
+        //reset the environment to apply changes.
+        environment->softReset();
     }
-    //update the number of lives
-    int byte = readRam(&system, 0xC0);
-    byte = byte & 15;
-    m_lives = byte;
-    //reset the environment to apply changes.
-    environment->softReset();
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
  }
 
 DifficultyVect AlienSettings::getAvailableDifficulties() {

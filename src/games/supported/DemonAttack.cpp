@@ -147,6 +147,9 @@ void DemonAttackSettings::setMode(game_mode_t m, System &system,
         //reset the environment to apply changes.
         environment->softReset();
     }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
  }
 
 DifficultyVect DemonAttackSettings::getAvailableDifficulties() {

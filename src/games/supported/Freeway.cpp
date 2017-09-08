@@ -112,15 +112,20 @@ ModeVect FreewaySettings::getAvailableModes() {
 void FreewaySettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-    // read the mode we are currently in
-    unsigned char mode = readRam(&system, 0x80);
-    // press select until the correct mode is reached
-    while (mode != m) {
-        environment->pressSelect(1);
-        mode = readRam(&system, 0x80);
+    if(m < getNumModes()) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x80);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(1);
+            mode = readRam(&system, 0x80);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
     }
-    //reset the environment to apply changes.
-    environment->softReset();
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
  }
 
 DifficultyVect FreewaySettings::getAvailableDifficulties() {
