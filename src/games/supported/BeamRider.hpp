@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 69 and 76 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -67,6 +67,12 @@ class BeamRiderSettings : public RomSettings {
         ActionVect getStartingActions();
 
         virtual int lives() { return isTerminal() ? 0 : m_lives; }
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 2 available difficulties. The game's
+        // manual says there are three modes but at least from my ROM
+        // I couldn't find them. I found two difficulties.
+        DifficultyVect getAvailableDifficulties();
 
     private:
 

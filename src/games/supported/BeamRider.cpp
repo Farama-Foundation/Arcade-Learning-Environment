@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 54 - 63, 113, 122 and 130 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -134,5 +134,10 @@ ActionVect BeamRiderSettings::getStartingActions() {
     ActionVect startingActions;
     startingActions.push_back(PLAYER_A_RIGHT);
     return startingActions;
+}
+
+DifficultyVect BeamRiderSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
 }
 
