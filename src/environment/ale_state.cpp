@@ -12,9 +12,12 @@
 #include "ale_state.hpp"
 #include "../emucore/m6502/src/System.hxx"
 #include "../emucore/Event.hxx"
+#include "../emucore/Deserializer.hxx"
+#include "../emucore/Serializer.hxx"
 #include "../common/Constants.h"
-using namespace std;
+#include "../games/RomSettings.hpp"
 
+#include <sstream>
 #include <stdexcept>
 
 /** Default constructor - loads settings from system */ 
@@ -22,7 +25,9 @@ ALEState::ALEState():
   m_left_paddle(PADDLE_DEFAULT_VALUE),
   m_right_paddle(PADDLE_DEFAULT_VALUE),
   m_frame_number(0),
-  m_episode_frame_number(0) {
+  m_episode_frame_number(0),
+  m_difficulty(0),
+  m_mode(0) {
 }
 
 ALEState::ALEState(const ALEState &rhs, std::string serialized):
@@ -264,12 +269,13 @@ void ALEState::pressSelect(Event* event) {
   event->set(Event::ConsoleSelect, 1);
 }
 
-void ALEState::setDifficulty(Event* event, unsigned int mask) {
+void ALEState::setDifficulty(Event* event, unsigned int value) {
   resetKeys(event);
-  event->set(Event::ConsoleLeftDifficultyA, mask & 1);
-  event->set(Event::ConsoleLeftDifficultyB, !(mask & 1));
-  event->set(Event::ConsoleRightDifficultyA, (mask & 2) >> 1);
-  event->set(Event::ConsoleRightDifficultyB, !((mask & 2) >> 1));
+  event->set(Event::ConsoleLeftDifficultyA, value & 1);
+  event->set(Event::ConsoleLeftDifficultyB, !(value & 1));
+  event->set(Event::ConsoleRightDifficultyA, (value & 2) >> 1);
+  event->set(Event::ConsoleRightDifficultyB, !((value & 2) >> 1));
+  m_difficulty = value;
 }
 
 void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_b_action) {
@@ -461,10 +467,10 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_
           break; 
       case RESET:
           event->set(Event::ConsoleReset, 1);
-          ale::Logger::Info << "Sending Reset..." << endl;
+          ale::Logger::Info << "Sending Reset..." << std::endl;
           break;
       default: 
-          ale::Logger::Error << "Invalid Player B Action: " << player_b_action << endl;
+          ale::Logger::Error << "Invalid Player B Action: " << player_b_action << std::endl;
           exit(-1); 
   }
 }

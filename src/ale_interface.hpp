@@ -97,7 +97,16 @@ public:
   void setMode(game_mode_t m);
 
   //Returns the vector of difficulties available for the current game.
-  //This should be called only after the rom is loaded.
+  //This should be called only after the rom is loaded. Notice
+  // that there are 2 levers, the right and left switches. They
+  // are not tied to any specific player. In Venture, for example,
+  // we have the following interpretation for the difficulties:
+  // Skill          Switch
+  // Level          Setting
+  //   1         left B/right B
+  //   2         left B/right A
+  //   3         left A/right B
+  //   4         left A/right A
   DifficultyVect getAvailableDifficulties();
 
   // Sets the difficulty of the game.

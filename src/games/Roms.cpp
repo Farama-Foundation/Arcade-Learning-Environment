@@ -10,7 +10,6 @@
  * *****************************************************************************
  */
 #include "Roms.hpp"
-#include "RomSettings.hpp"
 #include "RomUtils.hpp"
 
 // include the game implementations

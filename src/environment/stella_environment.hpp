@@ -18,21 +18,20 @@
 #ifndef __STELLA_ENVIRONMENT_HPP__ 
 #define __STELLA_ENVIRONMENT_HPP__
 
-#include "ale_state.hpp"
-#include "ale_screen.hpp"
 #include "ale_ram.hpp"
+#include "ale_screen.hpp"
+#include "ale_state.hpp"
 #include "phosphor_blend.hpp"
-#include "../emucore/OSystem.hxx"
+#include "stella_environment_wrapper.hpp"
 #include "../emucore/Event.hxx"
+#include "../emucore/OSystem.hxx"
 #include "../games/RomSettings.hpp"
-#include "../common/ScreenExporter.hpp"
+#include "../common/Constants.h"
 #include "../common/Log.hpp"
+#include "../common/ScreenExporter.hpp"
 
 #include <stack>
 #include <memory>
-
-// This defines the number of "random" environments
-#define NUM_RANDOM_ENVIRONMENTS (500)
 
 class StellaEnvironment {
   public:
@@ -65,6 +64,21 @@ class StellaEnvironment {
       */
     reward_t act(Action player_a_action, Action player_b_action);
 
+    /** This functions emulates a push on the reset button of the console */
+    void softReset();
+
+    /** Keep pressing the console select button for a given amount of time*/
+    void pressSelect(size_t num_steps = 1);
+
+    /** Set the difficulty according to the value.
+      * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
+      * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
+      */
+    void setDifficulty(difficulty_t value);
+
+    /** Set the game mode according to the value */
+    void setMode(game_mode_t value);
+
     /** Returns true once we reach a terminal state */
     bool isTerminal() const;
 
@@ -78,6 +92,9 @@ class StellaEnvironment {
 
     int getFrameNumber() const { return m_state.getFrameNumber(); }
     int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
+
+    /** Returns a wrapper providing #include-free access to our methods. */ 
+    std::unique_ptr<StellaEnvironmentWrapper> getWrapper();
 
   private:
     /** This applies an action exactly one time step. Helper function to act(). */
