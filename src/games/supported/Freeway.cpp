@@ -100,7 +100,7 @@ void FreewaySettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect FreewaySettings::getAvailableModes() {
-    ModeVect modes(getNumNodes());
+    ModeVect modes(getNumModes());
     for (unsigned int i = 0; i < modes.size(); i++) {
         modes[i] = i;
     }
