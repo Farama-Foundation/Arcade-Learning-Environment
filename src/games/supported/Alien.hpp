@@ -50,7 +50,7 @@ class AlienSettings : public RomSettings {
         const char* rom() const { return "alien"; }
 
         // get the available number of modes
-        unsigned int getNumNodes() const { return 4; }
+        unsigned int getNumModes() const { return 4; }
 
         // create a new instance of the rom
         RomSettings* clone() const;

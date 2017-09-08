@@ -51,7 +51,7 @@ class FreewaySettings : public RomSettings {
         const char* rom() const { return "freeway"; }
 
         // get the available number of modes
-        unsigned int getNumNodes() const { return 8; }
+        unsigned int getNumModes() const { return 8; }
 
         // create a new instance of the rom
         RomSettings* clone() const;
