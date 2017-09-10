@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -47,8 +47,8 @@
  * And if we ever want to support devices with no FS in the classical sense (Palm...),
  * we can build upon this.
  */
- 
-/* 
+
+/*
  * TODO - Instead of starting with getRoot(), we should rather add a getDefaultDir()
  * call that on Unix might return the current dir or the users home dir...
  * i.e. the root dir is usually not the best starting point for browsing.
@@ -120,8 +120,8 @@ class AbstractFilesystemNode
     {
       std::string first = displayName();
       std::string second = node.displayName();
-      transform(first.begin(), first.end(), first.begin(), (int(*)(int)) tolower);
-      transform(second.begin(), second.end(), second.begin(), (int(*)(int)) tolower);
+      std::transform(first.begin(), first.end(), first.begin(), (int(*)(int)) tolower);
+      std::transform(second.begin(), second.end(), second.begin(), (int(*)(int)) tolower);
       return first < second;
     }
 
@@ -155,7 +155,7 @@ class AbstractFilesystemNode
     virtual AbstractFilesystemNode *parent() const = 0;
 
     /**
-     * This method is a rather ugly hack which is used internally by the 
+     * This method is a rather ugly hack which is used internally by the
      * actual node implementions to wrap up raw nodes inside FilesystemNode
      * objects. We probably want to get rid of this eventually and replace it
      * with a cleaner / more elegant solution, but for now it works.
