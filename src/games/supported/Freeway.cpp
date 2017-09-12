@@ -1,4 +1,6 @@
 /* *****************************************************************************
+ * The method lives() is based on Xitari's code, from Google Inc.
+ *
  * A.L.E (Arcade Learning Environment)
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
@@ -98,7 +100,7 @@ void FreewaySettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect FreewaySettings::getAvailableModes() {
-    ModeVect modes(getNumNodes());
+    ModeVect modes(getNumModes());
     for (unsigned int i = 0; i < modes.size(); i++) {
         modes[i] = i;
     }
@@ -110,15 +112,20 @@ ModeVect FreewaySettings::getAvailableModes() {
 void FreewaySettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-    // read the mode we are currently in
-    unsigned char mode = readRam(&system, 0x80);
-    // press select until the correct mode is reached
-    while (mode != m) {
-        environment->pressSelect(1);
-        mode = readRam(&system, 0x80);
+    if(m < getNumModes()) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x80);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect();
+            mode = readRam(&system, 0x80);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
     }
-    //reset the environment to apply changes.
-    environment->softReset();
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
  }
 
 DifficultyVect FreewaySettings::getAvailableDifficulties() {
