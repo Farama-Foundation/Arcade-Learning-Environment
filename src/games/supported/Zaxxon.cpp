@@ -147,6 +147,7 @@ void ZaxxonSettings::setMode(game_mode_t m, System &system,
     unsigned char mode = readRam(&system, 0x82);
     // press select until the correct mode is reached
     while (mode != m) {
+        // hold select button for 10 frames
         environment->pressSelect(10);
         mode = readRam(&system, 0x82);
     }
