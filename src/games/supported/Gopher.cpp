@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 61, 62, 105, 114 and 122 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -126,4 +126,37 @@ ActionVect GopherSettings::getStartingActions() {
     ActionVect startingActions;
     startingActions.push_back(PLAYER_A_FIRE);
     return startingActions;
+}
+
+// returns a list of mode that the game can be played in
+ModeVect GopherSettings::getAvailableModes() {
+    ModeVect modes = {0, 2};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void GopherSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0 || m == 2) {
+        environment->softReset();
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xD3);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(5);
+            mode = readRam(&system, 0xD3);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect GopherSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
 }
