@@ -69,9 +69,7 @@ class BeamRiderSettings : public RomSettings {
         virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
         // returns a list of difficulties that the game can be played in
-        // in this game, there are 2 available difficulties. The game's
-        // manual says there are three modes but at least from my ROM
-        // I couldn't find them. I found two difficulties.
+        // in this game, there are 2 available difficulties.
         DifficultyVect getAvailableDifficulties();
 
     private:

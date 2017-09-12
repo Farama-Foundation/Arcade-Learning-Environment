@@ -143,7 +143,7 @@ ModeVect ChopperCommandSettings::getAvailableModes() {
 void ChopperCommandSettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-    if(m == 0 || m == 2){
+    if(m == 0 || m == 2) {
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xE0);
         // press select until the correct mode is reached

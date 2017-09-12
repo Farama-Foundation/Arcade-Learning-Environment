@@ -117,7 +117,7 @@ void FreewaySettings::setMode(game_mode_t m, System &system,
         unsigned char mode = readRam(&system, 0x80);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect(1);
+            environment->pressSelect();
             mode = readRam(&system, 0x80);
         }
         //reset the environment to apply changes.

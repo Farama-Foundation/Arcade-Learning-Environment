@@ -153,7 +153,7 @@ void JamesBondSettings::setMode(game_mode_t m, System &system,
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0x8C);
         // press select until the correct mode is reached
-        //in the welcome screen, the value of the mode is increased by 0x48
+        // in the welcome screen, the value of the mode is increased by 0x48
         while (mode != m && mode != m + 0x48) {
             environment->pressSelect(20);
             mode = readRam(&system, 0x8C);

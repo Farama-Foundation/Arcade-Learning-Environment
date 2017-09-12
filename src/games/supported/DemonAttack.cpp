@@ -139,7 +139,6 @@ void DemonAttackSettings::setMode(game_mode_t m, System &system,
         unsigned char mode = readRam(&system, 0xEA);
         // press select until the correct mode is reached
         while (mode != m) {
-            m_level_change = true;
             environment->pressSelect(1);
             mode = readRam(&system, 0xEA);
         }
