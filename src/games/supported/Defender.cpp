@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 117, 126 and 134 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -133,4 +133,44 @@ void DefenderSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+// returns a list of mode that the game can be played in
+ModeVect DefenderSettings::getAvailableModes() {
+    ModeVect modes(getNumModes() - 1);
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i + 1;
+    }
+    modes.push_back(16); //easy mode
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void DefenderSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0) {
+        m = 1; // The default mode (0) is not valid here.
+    }
+    if(m >= 1 && (m <= 9 || m == 16)) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x9B);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(2);
+            mode = readRam(&system, 0x9B);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect DefenderSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
+}
+
 
