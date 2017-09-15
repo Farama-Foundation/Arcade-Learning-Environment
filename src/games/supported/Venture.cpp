@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 63, 116, 124 and 132 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -130,5 +130,11 @@ void VentureSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+}
+
+
+DifficultyVect VentureSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1, 2, 3};
+    return diff;
 }
 
