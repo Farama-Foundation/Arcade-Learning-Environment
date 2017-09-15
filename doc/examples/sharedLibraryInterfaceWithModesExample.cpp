@@ -60,8 +60,8 @@ int main(int argc, char** argv) {
     for (int i = 0; i < modes.size(); i++){
         for (int j = 0; j < difficulties.size(); j++){
             
-            ale.setMode(modes[i]);
             ale.setDifficulty(difficulties[j]);
+            ale.setMode(modes[i]);
             cout << "Mode " << modes[i] << ", difficulty " << difficulties[j] << ":" << endl;
 
             float totalReward = 0;

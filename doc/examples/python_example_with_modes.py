@@ -49,8 +49,8 @@ legal_actions = ale.getLegalActionSet()
 for mode in avail_modes:
   for diff in avail_diff:
 
-    ale.setMode(mode)
     ale.setDifficulty(diff)
+    ale.setMode(mode)
     print 'Mode {0} difficulty {1}:'.format(mode, diff)
 
     total_reward = 0
