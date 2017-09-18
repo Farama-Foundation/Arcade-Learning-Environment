@@ -122,8 +122,7 @@ void AirRaidSettings::setMode(game_mode_t m, System &system,
     }
     if(m >= 1 && m <= getNumModes()) {
         //open the mode selection panel
-        environment->pressSelect(10);
-        environment->pressSelect(10);
+        environment->pressSelect(20);
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xAA);
         // press select until the correct mode is reached
