@@ -144,7 +144,7 @@ ModeVect BankHeistSettings::getAvailableModes() {
 void BankHeistSettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-    if(m <= 28 && m % 4==0) {
+    if(m <= 28 && m % 4 == 0) {
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0x80);
         // press select until the correct mode is reached

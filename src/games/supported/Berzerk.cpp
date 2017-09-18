@@ -151,7 +151,7 @@ void BerzerkSettings::setMode(game_mode_t m, System &system,
     if(m == 0) {
         m = 1; // The mode 0, which is the default, is not available in this game.
     }
-    if(m >= 1 && (m <= 9 || m == 16 || m == 17 || m == 18)) {
+    if(m >= 1 && (m <= 9 || m == 0x10 || m == 0x11 || m == 0x12)) {
         // we wait that the game is ready to change mode
         for(unsigned int i = 0; i < 20; i++) {
             environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);

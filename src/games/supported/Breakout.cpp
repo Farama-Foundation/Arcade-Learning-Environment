@@ -124,7 +124,7 @@ void BreakoutSettings::loadState(Deserializer & ser) {
 ModeVect BreakoutSettings::getAvailableModes() {
     ModeVect modes(getNumModes());
     for (unsigned int i = 0; i < modes.size(); i++) {
-        modes[i] = i*4;
+        modes[i] = i * 4;
     }
     return modes;
 }
