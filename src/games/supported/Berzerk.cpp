@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 44, 97, 107 and 115 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -129,4 +129,46 @@ void BerzerkSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+// returns a list of mode that the game can be played in
+ModeVect BerzerkSettings::getAvailableModes() {
+    ModeVect modes(getNumModes() - 3);
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        //this is 1-12 in Atari-decimal (0x01 ... 0x09 0x10 0x11 0x12)
+        modes[i] = i + 1;
+    }
+    modes.push_back(0x10);
+    modes.push_back(0x11);
+    modes.push_back(0x12);
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void BerzerkSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0) {
+        m = 1; // The mode 0, which is the default, is not available in this game.
+    }
+    if(m >= 1 && (m <= 9 || m == 0x10 || m == 0x11 || m == 0x12)) {
+        // we wait that the game is ready to change mode
+        for(unsigned int i = 0; i < 20; i++) {
+            environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        }
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x80);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(2);
+            mode = readRam(&system, 0x80);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
 

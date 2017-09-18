@@ -116,3 +116,50 @@ ActionVect DoubleDunkSettings::getStartingActions() {
     startingActions.push_back(PLAYER_A_UPFIRE);
     return startingActions;
 }
+
+// returns a list of mode that the game can be played in
+ModeVect DoubleDunkSettings::getAvailableModes() {
+    // this game has a menu that allows to define various yes/no options
+    // setting these options define in a way a different mode
+    // there are 4 relevant options, which makes 2^4=16 available modes
+    ModeVect modes(getNumModes());
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void DoubleDunkSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m < getNumModes()) {
+        environment->pressSelect();
+        //discard the first two entries (irrelevant)
+        environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
+        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
+        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        for(unsigned i = 0; i < 4; i++) {
+            if((m & (1 << i)) != 0) { //test if the ith bit is set
+                environment->act(PLAYER_A_RIGHT, PLAYER_B_NOOP);
+            } else {
+                environment->act(PLAYER_A_LEFT, PLAYER_B_NOOP);
+            }
+            environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+            environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
+            environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+        //apply starting action
+        environment->act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
+        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+

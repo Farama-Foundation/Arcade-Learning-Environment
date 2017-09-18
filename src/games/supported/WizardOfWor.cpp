@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 61, 63, 67, 112, 121 and 129 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -127,5 +127,10 @@ void WizardOfWorSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+}
+
+DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
 }
 

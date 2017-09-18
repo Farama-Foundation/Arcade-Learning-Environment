@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 63, 106, 114 and 122 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -122,3 +122,29 @@ void TutankhamSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect TutankhamSettings::getAvailableModes() {
+    ModeVect modes = {0, 4, 8, 12};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void TutankhamSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0 || m == 4 || m == 8 || m == 12) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xAB);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(2);
+            mode = readRam(&system, 0xAB);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }

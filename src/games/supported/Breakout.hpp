@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 68 and 76 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -49,6 +49,9 @@ class BreakoutSettings : public RomSettings {
         // the rom-name
         const char* rom() const { return "breakout"; }
 
+        // get the available number of modes
+        unsigned int getNumModes() const { return 12; }
+
         // create a new instance of the rom
         RomSettings* clone() const;
 
@@ -66,6 +69,19 @@ class BreakoutSettings : public RomSettings {
 
         // remaining lives
         int lives() { return isTerminal() ? 0 : m_lives; }
+
+        // returns a list of mode that the game can be played in
+        // in this game, there are 8 available modes
+        ModeVect getAvailableModes();
+
+        // set the mode of the game
+        // the given mode must be one returned by the previous function
+        void setMode(game_mode_t, System &system,
+                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 2 available difficulties
+        DifficultyVect getAvailableDifficulties();
 
     private:
 
