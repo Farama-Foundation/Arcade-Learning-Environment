@@ -17,7 +17,7 @@
 #ifndef __STELLA_ENVIRONMENT_WRAPPER_HPP__ 
 #define __STELLA_ENVIRONMENT_WRAPPER_HPP__
 
-#include "Constants.h"
+#include "../common/Constants.h"
 
 class StellaEnvironment;
 
