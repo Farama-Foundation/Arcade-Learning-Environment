@@ -11,7 +11,7 @@ module1 = Extension('ale_python_interface.ale_c_wrapper',
                     libraries = ['ale_c'],
                     include_dirs = ['src'],
                     library_dirs = ['ale_python_interface'],
-                    extra_compile_args=['-D__STDC_CONSTANT_MACROS'],
+                    extra_compile_args=['-D__STDC_CONSTANT_MACROS', '-std=c++11'],
                     sources=['ale_python_interface/ale_c_wrapper.cpp'])
 setup(name = 'ale_python_interface',
       version='0.0.1',
