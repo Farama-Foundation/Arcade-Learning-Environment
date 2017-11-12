@@ -76,7 +76,8 @@ class StellaEnvironment {
       */
     void setDifficulty(difficulty_t value);
 
-    /** Set the game mode according to the value */
+    /** Set the game mode according to the value. The new mode will not take effect until reset() is
+      * called */
     void setMode(game_mode_t value);
 
     /** Returns true once we reach a terminal state */

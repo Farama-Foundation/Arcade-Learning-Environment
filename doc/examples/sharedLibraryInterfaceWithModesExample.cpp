@@ -62,6 +62,8 @@ int main(int argc, char** argv) {
             
             ale.setDifficulty(difficulties[j]);
             ale.setMode(modes[i]);
+            // Reset after choosing difficulty and mode.
+            ale.reset_game();
             cout << "Mode " << modes[i] << ", difficulty " << difficulties[j] << ":" << endl;
 
             float totalReward = 0;

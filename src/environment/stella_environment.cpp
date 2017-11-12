@@ -74,14 +74,15 @@ void StellaEnvironment::reset() {
   noopSteps = 60;
 
   emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, noopSteps);
-  // reset for n steps
-  emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
+  // Reset the emulator
+  softReset();
 
   // reset the rom (after emulating, in case the NOOPs led to reward)
   m_settings->reset();
   
-  // set mode that was previously defined
-  setMode(m_state.getCurrentMode());
+  // Apply mode that was previously defined, then soft reset with this mode
+  m_settings->setMode(m_state.getCurrentMode(), m_osystem->console().system(), getWrapper());
+  softReset();
 
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
@@ -174,8 +175,7 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
 
 /** This functions emulates a push on the reset button of the console */
 void StellaEnvironment::softReset() {
-  emulate(RESET, PLAYER_B_NOOP);
-  m_state.incrementFrame();
+  emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
 }
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
@@ -225,7 +225,6 @@ void StellaEnvironment::setDifficulty(difficulty_t value) {
 
 void StellaEnvironment::setMode(game_mode_t value) {
   m_state.setCurrentMode(value);
-  m_settings->setMode(m_state.getCurrentMode(), m_osystem->console().system(), getWrapper());
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {
