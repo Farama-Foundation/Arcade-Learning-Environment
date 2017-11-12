@@ -73,6 +73,8 @@ class StellaEnvironment {
     /** Set the difficulty according to the value.
       * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
       * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
+      *
+      * This change takes effect at the immediate next time step.
       */
     void setDifficulty(difficulty_t value);
 

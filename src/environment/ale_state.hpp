@@ -54,12 +54,6 @@ class ALEState {
     //Apply the special select action
     void pressSelect(Event* event_obj);
 
-    /** set the difficulty according to the value.
-      * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
-      * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
-      */
-    void setDifficulty(Event* event_obj, unsigned int value);
-
     /** Applies paddle actions. This actually modifies the game state by updating the paddle
       *  resistances. */
     void applyActionPaddles(Event* event_obj, int player_a_action, int player_b_action);
@@ -75,6 +69,15 @@ class ALEState {
 
     //Get the number of frames executed this episode.
     int getEpisodeFrameNumber() const { return m_episode_frame_number; }
+
+    /** set the difficulty according to the value.
+      * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
+      * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
+      */
+    void setDifficulty(unsigned int value) { m_difficulty = value; }
+
+    // Returns the current difficulty setting.
+    unsigned int getDifficulty() const { return m_difficulty; }
 
     //Save the current mode we are supposed to be in.
     void setCurrentMode(game_mode_t value) { m_mode = value; }
@@ -110,6 +113,9 @@ class ALEState {
 
     /** Calculates the Paddle resistance, based on the given x val */
     int calcPaddleResistance(int x_val);
+
+    /** Applies the current difficulty setting, which is effectively part of the action */
+    void setDifficultySwitches(Event* event_obj, unsigned int value);
 
   private:
     int m_left_paddle;   // Current value for the left-paddle

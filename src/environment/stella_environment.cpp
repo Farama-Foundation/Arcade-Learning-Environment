@@ -216,11 +216,7 @@ void StellaEnvironment::pressSelect(size_t num_steps) {
 }
 
 void StellaEnvironment::setDifficulty(difficulty_t value) {
-  Event* event = m_osystem->event();
-  m_state.setDifficulty(event, value);
-  m_osystem->console().mediaSource().update();
-  processScreen();
-  processRAM();
+  m_state.setDifficulty(value);
 }
 
 void StellaEnvironment::setMode(game_mode_t value) {

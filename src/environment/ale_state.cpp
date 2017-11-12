@@ -275,14 +275,13 @@ void ALEState::pressSelect(Event* event) {
   event->set(Event::ConsoleSelect, 1);
 }
 
-void ALEState::setDifficulty(Event* event, unsigned int value) {
+void ALEState::setDifficultySwitches(Event* event, unsigned int value) {
   // The difficulty switches stay in their position from time step to time step.
   // This means we don't call resetKeys() when setting their values.
   event->set(Event::ConsoleLeftDifficultyA, value & 1);
   event->set(Event::ConsoleLeftDifficultyB, !(value & 1));
   event->set(Event::ConsoleRightDifficultyA, (value & 2) >> 1);
   event->set(Event::ConsoleRightDifficultyB, !((value & 2) >> 1));
-  m_difficulty = value;
 }
 
 void ALEState::setActionJoysticks(Event* event, int player_a_action, int player_b_action) {
@@ -503,6 +502,9 @@ void ALEState::resetKeys(Event* event) {
     // also reset paddle fire
     event->set(Event::PaddleZeroFire, 0);
     event->set(Event::PaddleOneFire, 0);
+
+    // Set the difficulty switches accordingly for this time step.
+    setDifficultySwitches(event, m_difficulty);
 }
 
 bool ALEState::equals(ALEState &rhs) {
