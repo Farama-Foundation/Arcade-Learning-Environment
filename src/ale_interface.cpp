@@ -281,7 +281,7 @@ void ALEInterface::setMode(game_mode_t m) {
   if(find(available.begin(), available.end(), m) != available.end()) {
     environment->setMode(m);
   } else {
-    throw std::runtime_error("This mode doesn't currently exist for this game");
+    throw std::runtime_error("Invalid game mode requested");
   }
 }
 
@@ -299,7 +299,7 @@ void ALEInterface::setDifficulty(difficulty_t m) {
   if(find(available.begin(), available.end(), m) != available.end()) {
     environment->setDifficulty(m);
   } else {
-    throw std::runtime_error("This difficulty doesn't currently exist for this game");
+    throw std::runtime_error("Invalid difficulty requested");
   }
 }
 
