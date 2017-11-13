@@ -36,9 +36,12 @@ class PhosphorBlend {
   private:
     OSystem * m_osystem;
 
-    uInt8 m_rgb_ntsc[64][64][64];
+    /**Flattening m_rgb_ntsc 64*64*64  */
+    uInt8 m_rgb_ntsc[262144];
 
-    uInt32 m_avg_palette[256][256];
+    /**Flattening m_avg_palette 256*256  */
+    uInt32 m_avg_palette[65536];
+
     uInt8 m_phosphor_blend_ratio;
 };
 
