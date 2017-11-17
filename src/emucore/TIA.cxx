@@ -75,7 +75,7 @@ TIA::TIA(const Console& console, Settings& settings)
         if((enabled & myPFBit) != 0)
           color = 1;  // NOTE: Playfield has priority so ScoreBit isn't used
 
-        myPriorityEncoder[x][enabled] = color;
+        myPriorityEncoder[x * 256 + enabled] = color;
       }
       else
       {
@@ -90,7 +90,7 @@ TIA::TIA(const Console& console, Settings& settings)
         if((enabled & (myP0Bit | myM0Bit)) != 0)
           color = 2;
 
-        myPriorityEncoder[x][enabled] = color;
+        myPriorityEncoder[x * 256 + enabled] = color;
       }
     }
   }
@@ -1784,8 +1784,7 @@ inline void TIA::updateFrameScanline(uInt32 clocksToUpdate, uInt32 hpos)
             enabled |= myM0Bit;
 
           myCollision |= ourCollisionTable[enabled];
-          *myFramePointer = myColor[myPriorityEncoder[hpos < 80 ? 0 : 1]
-              [enabled | myPlayfieldPriorityAndScore]];
+          *myFramePointer = myColor[myPriorityEncoder[ (hpos < 80 ? 0 : 1)*256 + (enabled | myPlayfieldPriorityAndScore)]];
         }
         break;  
       }

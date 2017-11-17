@@ -392,7 +392,7 @@ class TIA : public Device , public MediaSource
 
     uInt8 myPlayfieldPriorityAndScore;
     uInt32 myColor[4];
-    uInt8 myPriorityEncoder[2][256];
+    uInt8 myPriorityEncoder[512];
 
     uInt32& myCOLUBK;       // Background color register (replicated 4 times)
     uInt32& myCOLUPF;       // Playfield color register (replicated 4 times)
