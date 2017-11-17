@@ -75,7 +75,7 @@ TIA::TIA(const Console& console, Settings& settings)
         if((enabled & myPFBit) != 0)
           color = 1;  // NOTE: Playfield has priority so ScoreBit isn't used
 
-        myPriorityEncoder[enabled * 256 + x] = color;
+        myPriorityEncoder[x * 256 + enabled] = color;
       }
       else
       {
@@ -90,7 +90,7 @@ TIA::TIA(const Console& console, Settings& settings)
         if((enabled & (myP0Bit | myM0Bit)) != 0)
           color = 2;
 
-        myPriorityEncoder[enabled * 256 + x] = color;
+        myPriorityEncoder[x * 256 + enabled] = color;
       }
     }
   }

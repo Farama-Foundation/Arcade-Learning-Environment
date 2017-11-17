@@ -39,7 +39,7 @@ void PhosphorBlend::process(ALEScreen& screen) {
     int pv = previous_buffer[i];
     
     // Find out the corresponding rgb color 
-    uInt32 rgb = m_avg_palette[pv * 256 + cv];
+    uInt32 rgb = m_avg_palette[cv * 256 + pv];
 
     // Set the corresponding pixel in the array
     screen.getArray()[i] = rgbToNTSC(rgb);
@@ -60,7 +60,7 @@ void PhosphorBlend::makeAveragePalette() {
       uInt8 r = getPhosphor(r1, r2);
       uInt8 g = getPhosphor(g1, g2);
       uInt8 b = getPhosphor(b1, b2);
-      m_avg_palette[c2 * 256 + c1] = makeRGB(r, g, b);
+      m_avg_palette[c1 * 256 + c2] = makeRGB(r, g, b);
     }
   }
   
@@ -87,7 +87,7 @@ void PhosphorBlend::makeAveragePalette() {
           }
         }
 
-        m_rgb_ntsc[r >> 2 + 64 * (g >> 2 + 64 * b >> 2)] = minIndex;
+        m_rgb_ntsc[ (r >> 2) + 64 * ( (g >> 2) + 64 * (b >> 2))] = minIndex;
       }
     }
   }
@@ -115,6 +115,6 @@ uInt8 PhosphorBlend::rgbToNTSC(uInt32 rgb) {
   int g = (rgb >> 8) & 0xFF;
   int b = rgb & 0xFF;
 
-  return m_rgb_ntsc[r >> 2 + 64 * (g >> 2 + 64 * g >> 2)];
+  return m_rgb_ntsc[(r >> 2) + 64 * ( (g >> 2) + 64 * (b >> 2))];
 }
 
