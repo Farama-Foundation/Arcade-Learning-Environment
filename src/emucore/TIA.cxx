@@ -1784,7 +1784,7 @@ inline void TIA::updateFrameScanline(uInt32 clocksToUpdate, uInt32 hpos)
             enabled |= myM0Bit;
 
           myCollision |= ourCollisionTable[enabled];
-          *myFramePointer = myColor[myPriorityEncoder[(enabled | myPlayfieldPriorityAndScore) * 256 + hpos < 80 ? 0 : 1]];
+          *myFramePointer = myColor[myPriorityEncoder[ (hpos < 80 ? 0 : 1)*256 + (enabled | myPlayfieldPriorityAndScore)]];
         }
         break;  
       }
