@@ -51,6 +51,7 @@ for mode in avail_modes:
 
     ale.setDifficulty(diff)
     ale.setMode(mode)
+    ale.reset_game()
     print 'Mode {0} difficulty {1}:'.format(mode, diff)
 
     total_reward = 0
@@ -61,4 +62,3 @@ for mode in avail_modes:
       total_reward += reward
 
     print 'Episode ended with score: ', total_reward
-    ale.reset_game()
