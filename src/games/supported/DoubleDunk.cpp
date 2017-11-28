@@ -129,37 +129,79 @@ ModeVect DoubleDunkSettings::getAvailableModes() {
     return modes;
 }
 
+void DoubleDunkSettings::goDown(System &system,
+                            std::unique_ptr<StellaEnvironmentWrapper> &environment) {
+    // this game has a menu that allows to define various yes/no options
+    // this function goes to the next option in the menu
+    unsigned previousSelection = readRam(&system, 0xB0);
+    while(previousSelection == readRam(&system, 0xB0)){
+        environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
+        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    }
+}
+
+void DoubleDunkSettings::activateOption(System &system, unsigned byteOfInterest,
+                                    std::unique_ptr<StellaEnvironmentWrapper> &environment) {
+    // once we are at the proper option in the menu,
+    // if we want to enable it all we have to do is to go right
+    while((readRam(&system, 0x80) & byteOfInterest) != byteOfInterest) {
+        environment->act(PLAYER_A_RIGHT, PLAYER_B_NOOP);
+        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    }
+}
+
+void DoubleDunkSettings::deactivateOption(System &system, unsigned byteOfInterest,
+                                    std::unique_ptr<StellaEnvironmentWrapper> &environment) {
+    // once we are at the proper optio in the menu,
+    // if we want to disable it all we have to do is to go left
+    while((readRam(&system, 0x80) & byteOfInterest) == byteOfInterest) {
+        environment->act(PLAYER_A_LEFT, PLAYER_B_NOOP);
+        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    }
+}
+
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void DoubleDunkSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                                std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
     if(m < getNumModes()) {
         environment->pressSelect();
+
+        bool threePts = m % 2 == 1 ? true : false;
+        bool tenSecs = m % 4 > 1 ? true : false;
+        bool threeSecs = m % 8 > 3 ? true : false;
+        bool foul = m % 16 > 7 ? true : false;
+
         //discard the first two entries (irrelevant)
-        environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
-        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
-        environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
-        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
-        for(unsigned i = 0; i < 4; i++) {
-            if((m & (1 << i)) != 0) { //test if the ith bit is set
-                environment->act(PLAYER_A_RIGHT, PLAYER_B_NOOP);
-            } else {
-                environment->act(PLAYER_A_LEFT, PLAYER_B_NOOP);
-            }
-            environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
-            environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
-            environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
-        }
+        goDown(system, environment);
+        goDown(system, environment);
+
+        //deal with the 3 points option
+        threePts ? activateOption(system, 0x08, environment) : deactivateOption(system, 0x08, environment);
+
+        //deal with the 10 seconds option
+        goDown(system, environment);
+        tenSecs ? activateOption(system, 0x10, environment) : deactivateOption(system, 0x10, environment);
+
+        //deal with the 3 seconds option
+        goDown(system, environment);
+        threeSecs ? activateOption(system, 0x04, environment) : deactivateOption(system, 0x04, environment);
+
+        //deal with the foul option
+        goDown(system, environment);
+        foul ? activateOption(system, 0x20, environment) : deactivateOption(system, 0x20, environment);
+
         //reset the environment to apply changes.
         environment->softReset();
         //apply starting action
         environment->act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
         environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }
+    std::cout << "Byte: " << readRam(&system, 0x80) << std::endl;
  }
-
 

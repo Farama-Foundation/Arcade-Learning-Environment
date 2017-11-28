@@ -86,6 +86,15 @@ class DoubleDunkSettings : public RomSettings {
         bool m_terminal;
         reward_t m_reward;
         reward_t m_score;
+
+        void goDown(System &system,
+            std::unique_ptr<StellaEnvironmentWrapper> &environment);
+
+        void activateOption(System &system, unsigned byteOfInterest,
+            std::unique_ptr<StellaEnvironmentWrapper> &environment);
+
+        void deactivateOption(System &system, unsigned byteOfInterest,
+            std::unique_ptr<StellaEnvironmentWrapper> &environment);
 };
 
 #endif // __DOUBLEDUNK_HPP__
