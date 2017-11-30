@@ -74,8 +74,8 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, co
   // Copy over other member variables
   m_left_paddle = rhs.m_left_paddle; 
   m_right_paddle = rhs.m_right_paddle; 
-  m_episode_frame_number = rhs.m_episode_frame_number;
   m_frame_number = rhs.m_frame_number; 
+  m_episode_frame_number = rhs.m_episode_frame_number;
   m_mode = rhs.m_mode;
   m_difficulty = rhs.m_difficulty;
 }
@@ -113,6 +113,8 @@ std::string ALEState::serialize() {
   ser.putInt(this->m_right_paddle);
   ser.putInt(this->m_frame_number);
   ser.putInt(this->m_episode_frame_number);
+  ser.putInt(this->m_mode);
+  ser.putInt(this->m_difficulty);
   ser.putString(this->m_serialized_state);
 
   return ser.get_str();
