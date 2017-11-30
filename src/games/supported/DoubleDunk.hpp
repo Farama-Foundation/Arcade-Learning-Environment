@@ -87,13 +87,19 @@ class DoubleDunkSettings : public RomSettings {
         reward_t m_reward;
         reward_t m_score;
 
+        // this game has a menu that allows to define various yes/no options
+        // this function goes to the next option in the menu
         void goDown(System &system,
             std::unique_ptr<StellaEnvironmentWrapper> &environment);
 
-        void activateOption(System &system, unsigned byteOfInterest,
+        // once we are at the proper option in the menu,
+        // if we want to enable it all we have to do is to go right
+        void activateOption(System &system, unsigned int bitOfInterest,
             std::unique_ptr<StellaEnvironmentWrapper> &environment);
 
-        void deactivateOption(System &system, unsigned byteOfInterest,
+        // once we are at the proper optio in the menu,
+        // if we want to disable it all we have to do is to go left
+        void deactivateOption(System &system, unsigned int bitOfInterest,
             std::unique_ptr<StellaEnvironmentWrapper> &environment);
 };
 
