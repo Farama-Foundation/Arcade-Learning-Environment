@@ -33,19 +33,26 @@
 #ifndef __ROMSETTINGS_HPP__
 #define __ROMSETTINGS_HPP__
 
+#include <memory>
+#include <stdexcept>
+
 #include "../common/Constants.h"
 #include "../emucore/Serializer.hxx"
 #include "../emucore/Deserializer.hxx"
+#include "../environment/stella_environment_wrapper.hpp"
 
 class System;
 
-
 // rom support interface
-struct RomSettings {
+class RomSettings {
+
+public:
+    RomSettings();
+
     virtual ~RomSettings() {}
 
     // reset
-    virtual void reset() = 0;
+    virtual void reset(){};
 
     // is end of game
     virtual bool isTerminal() const = 0;
@@ -86,6 +93,19 @@ struct RomSettings {
     // Returns a list of actions that are required to start the game.
     // By default this is an empty list.
     virtual ActionVect getStartingActions();
+
+    // Returns a list of mode that the game can be played in. 
+    // By default, there is only one available mode.
+    virtual ModeVect getAvailableModes();
+
+    // Set the mode of the game. The given mode must be
+    // one returned by the previous function.
+    virtual void setMode(game_mode_t, System &system,
+                         std::unique_ptr<StellaEnvironmentWrapper> environment);
+
+    // Returns a list of difficulties that the game can be played in.
+    // By default, there is only one available difficulty.
+    virtual DifficultyVect getAvailableDifficulties();
 };
 
 

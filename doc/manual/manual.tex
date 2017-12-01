@@ -5,7 +5,7 @@
 \usepackage{hyperref}
 \usepackage{fullpage}
 
-\title{Arcade Learning Environment\\ Technical Manual (v.0.5.1)}
+\title{Arcade Learning Environment\\ Technical Manual (v.0.6.0)}
 \author{Marlos C. Machado, Matthew Hausknecht, Marc G. Bellemare}
 
 \begin{document}
@@ -17,6 +17,16 @@
 \tableofcontents
 
 \clearpage
+\setcounter{section}{-1}
+
+\section{Caveat Emptor}
+
+This manual has sadly become a little outdated. If you find anything missing, please raise an issue on the GitHub repository:
+
+
+\url{https://github.com/mgbellemare/Arcade-Learning-Environment}
+
+\begin{flushright}- Marc G. Bellemare, Nov. 30th, 2017\end{flushright}
 
 \section{Overview}
 
@@ -458,6 +468,10 @@ game. Due to the potentially high impact of this setting on performance, we enco
 to clearly report the method used in their experiments. 
 
 
+\subsection{Modes and Difficulties}
+
+ALE 0.6.0 introduces modes and difficulties, which can be set using the relevant methods (Section \ref{subsec:acting_perceiving}). These introduce a whole range of new environments. For more details, see the Machado et al. paper \textit{Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents}.
+
 \section{Miscellaneous}
 
 This section provides additional relevant ALE information.
@@ -635,7 +649,7 @@ clear.
   with SDL, the game display will be presented. If set to \verb+false+ one will not see
   the game being played.
   
-  \verb+void loadROM(string rom_file)+: Resets ALE and then loads a game. After this call
+  \verb+void loadROM(string rom_file)+: Resets the ALE and then loads a game. After this call
   the game should be ready to play. If one changes (or sets) a setting (Section~\ref{sec:getSet}), 
   it is necessary to call this function after the change so it can take effect.
   
@@ -669,17 +683,30 @@ clear.
   that has a float type; \emph{e.g.}: \verb+setFloat("repeat_action_probability", 0.25)+.
   \verb+loadRom()+ must be called before the setting will take effect.
   
-  \subsection{Acting and Perceiving}
+  \subsection{Acting and Perceiving}\label{subsec:acting_perceiving}
   
   \indent \indent \verb+reward_t act(Action action)+: Applies an action to the game and returns the
-  reward. It is the user's responsibility to check if the game has ended and reset when necessary
-  (this method will keep pressing buttons on the game over screen).
+  reward. It is the user's responsibility to check if the game has ended and to reset it when
+  necessary (this method will keep pressing buttons on the game over screen).
   
   \verb+bool game_over()+: Indicates if the game has ended.
   
   \verb+void reset_game()+: Resets the game, but not the full system (it is not ``equivalent''
-  to  unplug the console from electricity).
-  
+  to unplugging the console from electricity).
+
+  \verb+ModeVect getAvailableModes()+: Returns the vector of modes available for the current
+  game. This should be called only after the ROM is loaded.
+
+  \verb+void setMode(game_mode_t m)+: Sets the mode of the game. The mode must be an available
+  mode (otherwise it throws an exception). This should be called only after the ROM is loaded.
+
+  \verb+DifficultyVect getAvailableDifficulties()+: Returns the vector of difficulties available
+  for the current game. This should be called only after the ROM is loaded.
+
+  \verb+void setDifficulty(difficulty_t m)+: Sets the difficulty of the game. The difficulty must
+  be an available mode (otherwise it throws an exception). This should be called only after the
+  ROM is loaded.
+ 
   \verb+ActionVect getLegalActionSet()+: Returns the vector of legal actions (all the 18 actions).
   This should be called only after the ROM is loaded.
   

@@ -29,7 +29,6 @@ int readRam(const System* system, int offset) {
     return sys->peek((offset & 0x7F) + 0x80);
 }
 
-
 /* extracts a decimal value from a byte */
 int getDecimalScore(int index, const System* system) {
     

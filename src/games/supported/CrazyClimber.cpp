@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 117, 126 and 124 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -122,5 +122,40 @@ void CrazyClimberSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+}
+
+// returns a list of mode that the game can be played in
+ModeVect CrazyClimberSettings::getAvailableModes() {
+    ModeVect modes(getNumModes());
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void CrazyClimberSettings::setMode(game_mode_t m, System &system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m < getNumModes()) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x80);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(2);
+            mode = readRam(&system, 0x80);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect CrazyClimberSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
 }
 

@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 63, 64, 117, 126 and 134 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -134,3 +134,34 @@ void JamesBondSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+
+// returns a list of mode that the game can be played in
+ModeVect JamesBondSettings::getAvailableModes() {
+    ModeVect modes(getNumModes());
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void JamesBondSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0 || m == 1) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x8C);
+        // press select until the correct mode is reached
+        // in the welcome screen, the value of the mode is increased by 0x48
+        while (mode != m && mode != m + 0x48) {
+            environment->pressSelect(20);
+            mode = readRam(&system, 0x8C);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }

@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 65, 118, 134 and 142 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -142,3 +142,41 @@ void AlienSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect AlienSettings::getAvailableModes() {
+    ModeVect modes(getNumModes());
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void AlienSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m < getNumModes()) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x81);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect();
+            mode = readRam(&system, 0x81);
+        }
+        //update the number of lives
+        int byte = readRam(&system, 0xC0);
+        byte = byte & 15;
+        m_lives = byte;
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect AlienSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1, 2, 3};
+    return diff;
+}

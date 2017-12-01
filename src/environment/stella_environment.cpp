@@ -74,12 +74,16 @@ void StellaEnvironment::reset() {
   noopSteps = 60;
 
   emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, noopSteps);
-  // reset for n steps
-  emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
+  // Reset the emulator
+  softReset();
 
   // reset the rom (after emulating, in case the NOOPs led to reward)
   m_settings->reset();
   
+  // Apply mode that was previously defined, then soft reset with this mode
+  m_settings->setMode(m_state.getCurrentMode(), m_osystem->console().system(), getWrapper());
+  softReset();
+
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
   for (size_t i = 0; i < startingActions.size(); i++){
@@ -169,6 +173,11 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   return sum_rewards;
 }
 
+/** This functions emulates a push on the reset button of the console */
+void StellaEnvironment::softReset() {
+  emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
+}
+
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
   *  and performs one simulation step in Stella. */
 reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_action) {
@@ -193,6 +202,25 @@ bool StellaEnvironment::isTerminal() const {
   return (m_settings->isTerminal() || 
     (m_max_num_frames_per_episode > 0 && 
      m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));
+}
+
+void StellaEnvironment::pressSelect(size_t num_steps) {
+  m_state.pressSelect(m_osystem->event());
+  for (size_t t = 0; t < num_steps; t++) {
+    m_osystem->console().mediaSource().update();
+  }
+  processScreen();
+  processRAM();
+  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP);
+  m_state.incrementFrame();
+}
+
+void StellaEnvironment::setDifficulty(difficulty_t value) {
+  m_state.setDifficulty(value);
+}
+
+void StellaEnvironment::setMode(game_mode_t value) {
+  m_state.setCurrentMode(value);
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {
@@ -231,6 +259,10 @@ void StellaEnvironment::setState(const ALEState& state) {
 
 const ALEState& StellaEnvironment::getState() const {
   return m_state;
+}
+
+std::unique_ptr<StellaEnvironmentWrapper> StellaEnvironment::getWrapper() {
+    return std::unique_ptr<StellaEnvironmentWrapper>(new StellaEnvironmentWrapper(*this));
 }
 
 void StellaEnvironment::processScreen() {

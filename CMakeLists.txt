@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project(ale)
-set(ALEVERSION "0.5")
+set(ALEVERSION "0.6")
 
 
 option(USE_SDL "Use SDL" OFF)
@@ -10,7 +10,7 @@ option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
 option(BUILD_CLI "Build ALE Command Line Interface" ON)
 option(BUILD_C_LIB "Build ALE C Library (needed for Python interface)" ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wunused -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
 add_definitions(-DHAVE_INTTYPES)
 set(LINK_LIBS z)
 
@@ -169,18 +169,27 @@ if(BUILD_EXAMPLES)
   add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-sharedLibraryInterfaceExample)
+
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})
   add_dependencies(sharedLibraryInterfaceExample ale-lib)
 
   # Fifo interface example.
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
   add_executable(fifoInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/fifoInterfaceExample.cpp)
   set_target_properties(fifoInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
   set_target_properties(fifoInterfaceExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-fifoInterfaceExample)
   target_link_libraries(fifoInterfaceExample ale)
   target_link_libraries(fifoInterfaceExample ${LINK_LIBS})
   add_dependencies(fifoInterfaceExample ale-lib)
+
+  add_executable(sharedLibraryInterfaceWithModesExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceWithModesExample.cpp)
+  set_target_properties(sharedLibraryInterfaceWithModesExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
+  set_target_properties(sharedLibraryInterfaceWithModesExample PROPERTIES OUTPUT_NAME ${PROJECT_NAME}-sharedLibraryInterfaceWithModesExample)
+  target_link_libraries(sharedLibraryInterfaceWithModesExample ale)
+  target_link_libraries(sharedLibraryInterfaceWithModesExample ${LINK_LIBS})
+  add_dependencies(sharedLibraryInterfaceWithModesExample ale-lib)
 
   # Example showing how to record an Atari 2600 video.
   if (USE_SDL)

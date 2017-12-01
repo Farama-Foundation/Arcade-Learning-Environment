@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 62, 106, 116 and 124 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -124,3 +124,50 @@ void MsPacmanSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect MsPacmanSettings::getAvailableModes() {
+    ModeVect modes(getNumModes());
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void MsPacmanSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m < getNumModes()) {
+        if(m == 0) { //this is the standard variation of the game
+            // read the mode we are currently in
+            unsigned char mode = readRam(&system, 0x99);
+            // read the variation
+            unsigned char var = readRam(&system, 0xA1);
+            // press select until the correct mode is reached
+            while(mode != 1 || var != 1) {
+                // hold select button for 10 frames
+                environment->pressSelect(10);
+                mode = readRam(&system, 0x99);
+                var = readRam(&system, 0xA1);
+            }
+        } else {
+            // read the mode we are currently in
+            unsigned char mode = readRam(&system, 0x99);
+            // read the variation
+            unsigned char var = readRam(&system, 0xA1);
+            // press select until the correct mode is reached
+            while(mode != m || var != 0) {
+                // hold select button for 10 frames
+                environment->pressSelect(10);
+                mode = readRam(&system, 0x99);
+                var = readRam(&system, 0xA1);
+            }
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }

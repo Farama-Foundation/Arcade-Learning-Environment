@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 61, 63, 116, 124 and 132 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -131,4 +131,27 @@ void ZaxxonSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+// returns a list of mode that the game can be played in
+ModeVect ZaxxonSettings::getAvailableModes() {
+    ModeVect modes = {0, 8, 16, 24};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void ZaxxonSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    // read the mode we are currently in
+    unsigned char mode = readRam(&system, 0x82);
+    // press select until the correct mode is reached
+    while (mode != m) {
+        // hold select button for 10 frames
+        environment->pressSelect(10);
+        mode = readRam(&system, 0x82);
+    }
+    //reset the environment to apply changes.
+    environment->softReset();
+ }
 

@@ -68,8 +68,8 @@ void ALEInterface::disableBufferedIO() {
   std::cout.sync_with_stdio();
 }
 
-void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
-    std::auto_ptr<Settings> &theSettings) {
+void ALEInterface::createOSystem(std::unique_ptr<OSystem> &theOSystem,
+                          std::unique_ptr<Settings> &theSettings) {
 #if (defined(WIN32) || defined(__MINGW32__))
   theOSystem.reset(new OSystemWin32());
   theSettings.reset(new SettingsWin32(theOSystem.get()));
@@ -81,7 +81,7 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-void ALEInterface::checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem) {
+void ALEInterface::checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem) {
   const Properties properties = theOSystem->console().properties();
   const std::string md5 = properties.get(Cartridge_MD5);
   bool found = false;
@@ -105,7 +105,7 @@ void ALEInterface::checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem) {
 }
 
 void ALEInterface::loadSettings(const std::string& romfile,
-                                std::auto_ptr<OSystem> &theOSystem) {
+                                std::unique_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
   std::string configFile = theOSystem->settings().getString("config", false);
@@ -264,6 +264,43 @@ reward_t ALEInterface::act(Action action) {
     }
   }
   return reward;
+}
+
+// Returns the vector of modes available for the current game.
+// This should be called only after the rom is loaded.
+ModeVect ALEInterface::getAvailableModes() {
+  return romSettings->getAvailableModes();
+}
+
+// Sets the mode of the game.
+// The mode must be an available mode.
+// This should be called only after the rom is loaded.
+void ALEInterface::setMode(game_mode_t m) {
+  //We first need to make sure m is an available mode
+  ModeVect available = romSettings->getAvailableModes();
+  if(find(available.begin(), available.end(), m) != available.end()) {
+    environment->setMode(m);
+  } else {
+    throw std::runtime_error("Invalid game mode requested");
+  }
+}
+
+//Returns the vector of difficulties available for the current game.
+//This should be called only after the rom is loaded.
+DifficultyVect ALEInterface::getAvailableDifficulties() {
+  return romSettings->getAvailableDifficulties();
+}
+
+// Sets the difficulty of the game.
+// The difficulty must be an available mode.
+// This should be called only after the rom is loaded.
+void ALEInterface::setDifficulty(difficulty_t m) {
+  DifficultyVect available = romSettings->getAvailableDifficulties();
+  if(find(available.begin(), available.end(), m) != available.end()) {
+    environment->setDifficulty(m);
+  } else {
+    throw std::runtime_error("Invalid difficulty requested");
+  }
 }
 
 // Returns the vector of legal actions. This should be called only
