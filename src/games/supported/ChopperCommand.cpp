@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 42, 96, 106 and 114 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -56,13 +56,14 @@ void ChopperCommandSettings::step(const System& system) {
     // update terminal status
     m_lives = readRam(&system, 0xE4) & 0xF; 
     m_terminal = (m_lives == 0);
+    m_is_started = (readRam(&system, 0xC2) == 1);
 }
 
 
 /* is end of game */
 bool ChopperCommandSettings::isTerminal() const {
 
-    return m_terminal;
+    return (m_is_started && m_terminal);
 };
 
 
@@ -109,6 +110,7 @@ void ChopperCommandSettings::reset() {
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
+    m_is_started = false;
 }
 
 
@@ -127,5 +129,38 @@ void ChopperCommandSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+}
+
+
+// returns a list of mode that the game can be played in
+ModeVect ChopperCommandSettings::getAvailableModes() {
+    ModeVect modes = {0, 2};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void ChopperCommandSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0 || m == 2) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xE0);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(2);
+            mode = readRam(&system, 0xE0);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect ChopperCommandSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
 }
 

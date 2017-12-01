@@ -34,6 +34,9 @@ class AirRaidSettings : public RomSettings {
         // the rom-name
         const char* rom() const { return "air_raid"; }
 
+        // get the available number of modes
+        unsigned int getNumModes() const { return 8; }
+
         // create a new instance of the rom
         RomSettings* clone() const;
 
@@ -49,7 +52,17 @@ class AirRaidSettings : public RomSettings {
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
-        ActionVect getStartingActions();    
+        ActionVect getStartingActions();
+
+        
+        // returns a list of mode that the game can be played in
+        // in this game, there are 8 available modes
+        ModeVect getAvailableModes();
+
+        // set the mode of the game
+        // the given mode must be one returned by the previous function
+        void setMode(game_mode_t, System &system,
+                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
 
      private:
 

@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 57, 58, 60, 113, 121 and 129 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -133,4 +133,38 @@ ActionVect YarsRevengeSettings::getStartingActions() {
     ActionVect startingActions;
     startingActions.push_back(PLAYER_A_FIRE);
     return startingActions;
+}
+
+// returns a list of mode that the game can be played in
+ModeVect YarsRevengeSettings::getAvailableModes() {
+    ModeVect modes = {0, 0x20, 0x40, 0x60};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void YarsRevengeSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0 || m == 0x20 || m == 0x40 || m == 0x60) {
+        // enter in mode selection screen
+        environment->pressSelect(2);
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xE3);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect();
+            mode = readRam(&system, 0xE3);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect YarsRevengeSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
 }

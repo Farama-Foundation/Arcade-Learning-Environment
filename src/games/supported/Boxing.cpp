@@ -123,3 +123,7 @@ void BoxingSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
 }
 
+DifficultyVect BoxingSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1, 2, 3};
+    return diff;
+}

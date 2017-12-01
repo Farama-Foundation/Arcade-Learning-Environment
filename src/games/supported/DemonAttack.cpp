@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 48, 89, 98 and 106 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -59,8 +59,10 @@ void DemonAttackSettings::step(const System& system) {
     // update terminal status
     int lives_displayed = readRam(&system, 0xF2);
     int display_flag = readRam(&system, 0xF1);
-    m_terminal = (lives_displayed == 0) && display_flag == 0xBD;
+    // for terminal checking, we must make sure that we do not detect incorrectly a level change as a game-over
+    m_terminal = (lives_displayed == 0) && display_flag == 0xBD && !m_level_change;
     m_lives = lives_displayed + 1; // Once we reach terminal, lives() will correctly return 0
+    m_level_change = false;
 }
 
 
@@ -102,6 +104,7 @@ void DemonAttackSettings::reset() {
     m_score    = 0;
     m_terminal = false;
     m_lives    = 4;
+    m_level_change = false;
 }
 
         
@@ -120,4 +123,41 @@ void DemonAttackSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+// returns a list of mode that the game can be played in
+ModeVect DemonAttackSettings::getAvailableModes() {
+    ModeVect modes = {1, 3, 5, 7};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void DemonAttackSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0) {
+	m = 1; // The default mode is not valid here
+    }
+    if(m == 1 || m == 3 || m == 5 || m == 7) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xEA);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(1);
+            mode = readRam(&system, 0xEA);
+        }
+        m_level_change = true;
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect DemonAttackSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
+}
+
 

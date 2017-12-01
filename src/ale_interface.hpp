@@ -45,7 +45,7 @@
 #include <string>
 #include <memory>
 
-static const std::string Version = "0.5.1";
+static const std::string Version = "0.6.0";
 
 /**
    This class interfaces ALE with external code for controlling agents.
@@ -86,6 +86,33 @@ public:
 
   // Resets the game, but not the full system.
   void reset_game();
+
+  // Returns the vector of modes available for the current game.
+  // This should be called only after the rom is loaded.
+  ModeVect getAvailableModes();
+
+  // Sets the mode of the game.
+  // The mode must be an available mode (otherwise it throws an exception).
+  // This should be called only after the rom is loaded.
+  void setMode(game_mode_t m);
+
+  //Returns the vector of difficulties available for the current game.
+  //This should be called only after the rom is loaded. Notice
+  // that there are 2 levers, the right and left switches. They
+  // are not tied to any specific player. In Venture, for example,
+  // we have the following interpretation for the difficulties:
+  // Skill          Switch
+  // Level          Setting
+  //   1         left B/right B
+  //   2         left B/right A
+  //   3         left A/right B
+  //   4         left A/right A
+  DifficultyVect getAvailableDifficulties();
+
+  // Sets the difficulty of the game.
+  // The difficulty must be an available mode (otherwise it throws an exception).
+  // This should be called only after the rom is loaded.
+  void setDifficulty(difficulty_t m);
 
   // Returns the vector of legal actions. This should be called only
   // after the rom is loaded.
@@ -150,23 +177,23 @@ public:
   ScreenExporter *createScreenExporter(const std::string &path) const;
 
  public:
-  std::auto_ptr<OSystem> theOSystem;
-  std::auto_ptr<Settings> theSettings;
-  std::auto_ptr<RomSettings> romSettings;
-  std::auto_ptr<StellaEnvironment> environment;
+  std::unique_ptr<OSystem> theOSystem;
+  std::unique_ptr<Settings> theSettings;
+  std::unique_ptr<RomSettings> romSettings;
+  std::unique_ptr<StellaEnvironment> environment;
   int max_num_frames; // Maximum number of frames for each episode
 
  public:
   // Display ALE welcome message
   static std::string welcomeMessage();
   static void disableBufferedIO();
-  static void createOSystem(std::auto_ptr<OSystem> &theOSystem,
-                            std::auto_ptr<Settings> &theSettings);
+  static void createOSystem(std::unique_ptr<OSystem> &theOSystem,
+                            std::unique_ptr<Settings> &theSettings);
   static void loadSettings(const std::string& romfile,
-                           std::auto_ptr<OSystem> &theOSystem);
+                           std::unique_ptr<OSystem> &theOSystem);
 
  private:
-  static void checkForUnsupportedRom(std::auto_ptr<OSystem>& theOSystem);
+  static void checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem);
 };
 
 #endif

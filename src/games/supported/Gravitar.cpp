@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 63, 116, 125 and 133 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -139,3 +139,49 @@ ActionVect GravitarSettings::getStartingActions() {
         startingActions.push_back(PLAYER_A_FIRE);
     return startingActions;
 }
+
+// returns a list of mode that the game can be played in
+ModeVect GravitarSettings::getAvailableModes() {
+    ModeVect modes(getNumModes());
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void GravitarSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m < getNumModes()) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x80);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            // hold select button for 10 frames
+            environment->pressSelect(10);
+            mode = readRam(&system, 0x80);
+        }
+
+        //update the number of lives
+        switch(m){
+            case 0:
+            case 2:
+                m_lives = 6;
+                break;
+            case 1:
+                m_lives = 15;
+                break;
+            case 3:
+                m_lives = 100;
+            case 4:
+                m_lives = 25;
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }

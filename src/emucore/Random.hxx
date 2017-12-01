@@ -77,8 +77,7 @@ class Random
 
     private:
     
-    // Actual rng (implementation hidden away from the header to avoid depending on
-    // tinymt).
+    // Actual rng (implementation hidden away from the header to avoid depending on rng libraries). 
     class Impl;
     Impl *m_pimpl;
 

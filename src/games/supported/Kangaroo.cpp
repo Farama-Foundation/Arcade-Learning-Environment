@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 60, 113, 123 and 131 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -130,4 +130,32 @@ void KangarooSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+// returns a list of mode that the game can be played in
+ModeVect KangarooSettings::getAvailableModes() {
+    ModeVect modes = {0, 1};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void KangarooSettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if( m == 0 || m == 1){
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xBA);
+        // press select until the correct mode is reached
+        //in the welcome screen, the value of the mode is increased by 0x80
+        while(mode != m && mode != m + 0x80) {
+            environment->pressSelect(2);
+            mode = readRam(&system, 0xBA);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
 

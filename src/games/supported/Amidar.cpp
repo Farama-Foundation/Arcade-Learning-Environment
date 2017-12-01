@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 46, 91, 100 and 108 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -121,5 +121,10 @@ void AmidarSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+}
+
+DifficultyVect AmidarSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 3};
+    return diff;
 }
 

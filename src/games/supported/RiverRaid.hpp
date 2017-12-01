@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 68, 73 and 79 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -66,6 +66,10 @@ class RiverRaidSettings : public RomSettings {
         void loadState(Deserializer & ser);
 
         virtual int lives() { return isTerminal() ? 0 : numericLives(); } 
+
+        // returns a list of difficulties that the game can be played in
+        // in this game, there are 2 available difficulties
+        DifficultyVect getAvailableDifficulties();
 
     private:
 

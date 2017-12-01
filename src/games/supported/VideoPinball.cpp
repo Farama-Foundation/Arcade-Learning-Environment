@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 60 - 65, 109, 117 and 125 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -125,3 +125,34 @@ void VideoPinballSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect VideoPinballSettings::getAvailableModes() {
+    ModeVect modes = {0, 2};
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void VideoPinballSettings::setMode(game_mode_t m, System &system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m == 0 || m == 2) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0xC1);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect(2);
+            mode = readRam(&system, 0xC1);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect VideoPinballSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
+}

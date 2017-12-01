@@ -1,4 +1,6 @@
 /* *****************************************************************************
+ * The method lives() is based on Xitari's code, from Google Inc.
+ *
  * A.L.E (Arcade Learning Environment)
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
@@ -16,7 +18,9 @@
 
 FreewaySettings::FreewaySettings() {
 
-    reset();
+    m_reward    = 0;
+    m_score     = 0;
+    m_terminal  = false;
 }
 
 
@@ -58,7 +62,6 @@ reward_t FreewaySettings::getReward() const {
     return m_reward; 
 }
 
-
 /* is an action part of the minimal set? */
 bool FreewaySettings::isMinimal(const Action &a) const {
 
@@ -93,5 +96,40 @@ void FreewaySettings::loadState(Deserializer & ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
+}
+
+// returns a list of mode that the game can be played in
+ModeVect FreewaySettings::getAvailableModes() {
+    ModeVect modes(getNumModes());
+    for (unsigned int i = 0; i < modes.size(); i++) {
+        modes[i] = i;
+    }
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void FreewaySettings::setMode(game_mode_t m, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if(m < getNumModes()) {
+        // read the mode we are currently in
+        unsigned char mode = readRam(&system, 0x80);
+        // press select until the correct mode is reached
+        while (mode != m) {
+            environment->pressSelect();
+            mode = readRam(&system, 0x80);
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    }
+    else {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+ }
+
+DifficultyVect FreewaySettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1};
+    return diff;
 }
 

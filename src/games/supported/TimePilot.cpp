@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The lines 64, 109, 117 and 125 are based on Xitari's code, from Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -125,3 +125,8 @@ void TimePilotSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+
+DifficultyVect TimePilotSettings::getAvailableDifficulties() {
+    DifficultyVect diff = {0, 1, 2};
+    return diff;
+}

@@ -10,10 +10,10 @@
  * *****************************************************************************
  */
 #include "Roms.hpp"
-#include "RomSettings.hpp"
 #include "RomUtils.hpp"
 
 // include the game implementations
+#include "supported/Adventure.hpp"
 #include "supported/AirRaid.hpp"
 #include "supported/Alien.hpp"
 #include "supported/Amidar.hpp"
@@ -93,6 +93,7 @@
 
 /* list of supported games */
 static const RomSettings *roms[]  = {
+    new AdventureSettings(),
     new AirRaidSettings(),
     new AlienSettings(),
     new AmidarSettings(),
