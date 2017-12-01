@@ -109,7 +109,7 @@ If you use the ALE with sticky actions (flag `repeat_action_probability`), or if
 In BibTex format:
 
 ```
-@Article{bellemare13arcade,
+@Article{machado17arcade,
   author = {Marlos C. Machado and Marc G. Bellemare and Erik Talvitie and Joel Veness and Matthew J. Hausknecht and Michael Bowling},
   title = {Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents},
   journal = {CoRR},
