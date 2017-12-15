@@ -11,16 +11,23 @@ static const unsigned int SampleRate = 60 * SoundExporter::SamplesPerFrame;
 static const unsigned int WriteInterval = SampleRate * 30;
 
 
-SoundExporter::SoundExporter(const std::string &filename, int channels):
+SoundExporter::SoundExporter(const std::string &filename, int channels, bool record_for_user):
     m_filename(filename),
     m_channels(channels),
-    m_samples_since_write(0) {
+    m_samples_since_write(0),
+    m_record_for_user(record_for_user){
+    // Turn on audio file recording if a valid filename specified. 
+    // Otherwise, disable to save processing/mem.
+    if (filename.size() > 0)
+        m_record_to_file = true;
+    else
+        m_record_to_file = false;
 }
 
 
 SoundExporter::~SoundExporter() {
-
-    writeWAVData();
+    if (m_record_to_file)
+        writeWAVData();
 }
 
 
@@ -33,12 +40,25 @@ void SoundExporter::addSamples(SampleType *s, int len) {
         m_data.push_back(s[i]);
 
     // Periodically flush to disk (to avoid cases where the destructor is not called)
-    m_samples_since_write += len;
-    if (m_samples_since_write >= WriteInterval) {
-
-        writeWAVData();
-        m_samples_since_write = 0;
+    if (m_record_to_file){
+        m_samples_since_write += len;
+        if (m_samples_since_write >= WriteInterval) {
+            writeWAVData();
+            m_samples_since_write = 0;
+        }
     }
+}
+
+
+std::vector<SoundExporter::SampleType> &SoundExporter::getSamples(){
+    return m_data;
+}
+
+
+void SoundExporter::resetSamples(){
+    // Only clears for user recording, as file recording happens perpetually
+    if (m_record_for_user)
+        m_data.clear();
 }
 
 

@@ -27,8 +27,9 @@
 #include "../emucore/OSystem.hxx"
 #include "../games/RomSettings.hpp"
 #include "../common/Constants.h"
-#include "../common/Log.hpp"
 #include "../common/ScreenExporter.hpp"
+#include "../common/SoundExporter.hpp"
+#include "../common/Log.hpp"
 
 #include <stack>
 #include <memory>
@@ -93,6 +94,9 @@ class StellaEnvironment {
     const ALEScreen &getScreen() const { return m_screen; }
     const ALERAM &getRAM() const { return m_ram; }
 
+    /** Returns the current audio frame */
+    const std::vector<ale::sound::SoundExporter::SampleType> &getAudio() const;
+
     int getFrameNumber() const { return m_state.getFrameNumber(); }
     int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
@@ -112,6 +116,8 @@ class StellaEnvironment {
 
     /** Processes the current emulator screen and saves it in m_screen */
     void processScreen();
+    /** Processes the current emulator audio and saves it in soundexporter buffer */
+    void processAudio(size_t i_frame);
     /** Processes the emulator RAM and saves it in m_ram */
     void processRAM();
 

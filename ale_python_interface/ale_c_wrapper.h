@@ -85,6 +85,13 @@ extern "C" {
     ale->theOSystem->colourPalette().applyPaletteGrayscale(output_buffer, ale_screen_data, screen_size);
   }
 
+  void getAudio(ALEInterface *ale, unsigned char *output_buffer) {
+	const unsigned char *ale_audio =  ale->getAudio().data();
+	int size = ale->getAudio().size();
+	memcpy(output_buffer,ale_audio,size*sizeof(unsigned char));
+  }
+  int getAudioSize(ALEInterface *ale){return ale->getAudio().size();}
+
   void saveState(ALEInterface *ale){ale->saveState();}
   void loadState(ALEInterface *ale){ale->loadState();}
   ALEState* cloneState(ALEInterface *ale){return new ALEState(ale->cloneState());}

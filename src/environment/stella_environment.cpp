@@ -159,8 +159,8 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
       m_player_b_action = player_b_action;
 
     // If so desired, request one frame's worth of sound (this does nothing if recording
-    // is not enabled)
-    m_osystem->sound().recordNextFrame();
+    // to file and/or internally are not enabled)
+    m_osystem->sound().recordNextFrame(i, m_frame_skip);
 
     // Similarly record screen as needed
     if (m_screen_exporter.get() != NULL)
@@ -168,6 +168,9 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
 
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
+
+    // Postprocess audio (accounts for frame_skip)
+    processAudio(i);
   }
 
   return sum_rewards;
@@ -265,6 +268,14 @@ std::unique_ptr<StellaEnvironmentWrapper> StellaEnvironment::getWrapper() {
     return std::unique_ptr<StellaEnvironmentWrapper>(new StellaEnvironmentWrapper(*this));
 }
 
+const std::vector<ale::sound::SoundExporter::SampleType>& StellaEnvironment::getAudio() const {
+  if (!m_osystem->settings().getBool("sound") || !m_osystem->settings().getBool("record_sound_for_user")) {
+	  // TODO(sos) should we throw/kill? Or is this enough?
+      ale::Logger::Error << "Error: Attempted to call getAudio(), but 'sound' and/or 'record_sound_for_user' setting is false." << std::endl;
+  }
+  return m_osystem->sound().mySoundExporter->getSamples();
+}
+
 void StellaEnvironment::processScreen() {
   if (m_colour_averaging) {
     // Perform phosphor averaging; the blender stores its result in the given screen
@@ -275,6 +286,11 @@ void StellaEnvironment::processScreen() {
     memcpy(m_screen.getArray(), 
       m_osystem->console().mediaSource().currentFrameBuffer(), m_screen.arraySize());
   }
+}
+
+void StellaEnvironment::processAudio(size_t i_frame) {
+    // Processes audio for user queries (takes frame_skip into account)
+    m_osystem->sound().postProcess(i_frame, m_frame_skip);
 }
 
 void StellaEnvironment::processRAM() {

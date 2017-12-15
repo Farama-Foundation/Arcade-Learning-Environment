@@ -139,7 +139,17 @@ class SoundNull : public Sound
     /**
       * Tells the sound engine to record one frame's worth of sound.
       */
-    virtual void recordNextFrame() { }
+    void recordNextFrame(size_t i_frame, size_t frame_skip) { } 
+
+    /**
+      * Tells the sound engine to add user samples for getAudio() queries
+      */
+    virtual void addSamplesForUser() { }
+
+    /**
+      * Postprocesses audio for user queries (applies all reg updates, fills query buffer)
+      */
+    virtual void postProcess(size_t i_frame, size_t frame_skip) { }
 
 public:
     /**
