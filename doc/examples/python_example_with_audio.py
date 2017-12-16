@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 from ale_python_interface import ALEInterface
 
@@ -17,7 +18,7 @@ class Atari:
 
     # NOTE recording audio to file still works. But if both file recording and 
     # record_sound_for_user are enabled, then only the latter is done 
-    #  self.ale.setString("record_sound_filename", "/home/shayegan/shayegan/git_repos/ale-audio/ale_audio_tests/audio_file_recorder.wav")
+    #  self.ale.setString("record_sound_filename", "")
 
     # Get settings
     self.ale.loadROM(rom_dir)
@@ -48,16 +49,15 @@ class Atari:
     return np.reshape(np_data_image, (self.screen_height, self.screen_width, 3)), np.asarray(np_data_audio)
 
 if __name__ == "__main__":
-  dir_games = "/home/shayegan/shayegan/git_repos/Arcade-Learning-Environment/ale_audio_tests/games" # ROMs directory TODO(sos) remove hardcoded path
-  game_names = ['gopher'] # Can also manually define games list 
+  if len(sys.argv) < 2:
+    print('Usage: %s rom_file' % sys.argv[0])
+    sys.exit()
 
-  # Play an episode of all specified games
-  for game_name in game_names:
-      atari = Atari(os.path.join(dir_games, game_name+'.bin'))
+  rom_file = str.encode(sys.argv[1])
+  atari = Atari(rom_file)
 
-      # Run a few hundred frames of each game for verification
-      while not atari.ale.game_over():
-        image, audio = atari.get_image_and_audio()
-        atari.take_action()
-        atari.action_count += 1
-        print '[atari.py] overall game frame count:', atari.action_count*atari.frame_skip
+  while not atari.ale.game_over():
+    image, audio = atari.get_image_and_audio()
+    atari.take_action()
+    atari.action_count += 1
+    print '[atari.py] Overall game frame count:', atari.action_count*atari.frame_skip

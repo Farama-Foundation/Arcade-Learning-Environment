@@ -24,7 +24,7 @@ class Atari:
 
     # NOTE recording audio to file still works. But if both file recording and 
     # record_sound_for_user are enabled, then only the latter is done 
-    #  self.ale.setString("record_sound_filename", "/home/shayegan/shayegan/git_repos/ale-audio/ale_audio_tests/audio_file_recorder.wav")
+    #  self.ale.setString("record_sound_filename", "")
 
     # Get settings
     self.ale.loadROM(rom_dir)
@@ -39,10 +39,11 @@ class Atari:
     # Saving audio/video to disk for verification. 
     self.save_to_file = True # NOTE set to False to test actual screen/audio query speed!
     if self.save_to_file:
-        self.save_dir = './logs_av_seq' # Save png sequence and audio wav file here
+        self.save_dir_av = './logs_av_seq_Example' # Save png sequence and audio wav file here
+        self.save_dir_movies = './log_movies_Example'
         self.save_image_prefix = 'image_frames'
         self.save_audio_filename = 'audio_user_recorder.wav'
-        self.create_save_dir(self.save_dir)
+        self.create_save_dir(self.save_dir_av)
 
   def take_action(self):
     action = self.legal_actions[np.random.randint(self.legal_actions.size)]
@@ -83,35 +84,34 @@ class Atari:
 
   def save_image(self, image):
     number = str(self.action_count).zfill(6)
-    scipy.misc.imsave(os.path.join(self.save_dir, self.save_image_prefix+number+'.png'), image)
+    scipy.misc.imsave(os.path.join(self.save_dir_av, self.save_image_prefix+number+'.png'), image)
 
   def save_audio(self, audio):
-    wavfile.write(os.path.join(self.save_dir, self.save_audio_filename), self.audio_freq, audio)
+    wavfile.write(os.path.join(self.save_dir_av, self.save_audio_filename), self.audio_freq, audio)
 
   def save_movie(self, movie_name):
     # Use ffmpeg to convert the saved img sequences and audio to mp4
-    dir_movies = './log_movies'
 
     # Video recording
     command = [ "ffmpeg",
                 '-y', # overwrite output file if it exists
                 '-r', str(self.framerate), # frames per second
-                '-i', os.path.join(self.save_dir, self.save_image_prefix+'%6d.png') # Video input comes from pngs
+                '-i', os.path.join(self.save_dir_av, self.save_image_prefix+'%6d.png') # Video input comes from pngs
               ]
 
     # Audio if available
     if self.record_sound_for_user:
-        command.extend(['-i', os.path.join(self.save_dir, self.save_audio_filename)]) # Audio input comes from wav
+        command.extend(['-i', os.path.join(self.save_dir_av, self.save_audio_filename)]) # Audio input comes from wav
 
     # Codecs and output
     command.extend(['-c:v', 'libx264', # Video codec
                 '-c:a', 'mp3', # Audio codec
-                os.path.join(dir_movies, movie_name+'.mp4') # Output dir
+                os.path.join(self.save_dir_movies, movie_name+'.mp4') # Output dir
                    ])
 
     # Make movie dir and write the mp4
-    if not os.path.exists(dir_movies):
-        os.makedirs(dir_movies)
+    if not os.path.exists(self.save_dir_movies):
+        os.makedirs(self.save_dir_movies)
     sp.call(command)
   
   def concat_image_audio(self, image, audio_mfcc):
@@ -124,15 +124,18 @@ class Atari:
 
   def plot_mfcc(self, audio_mfcc):
     plt.clf()
-    plt.imshow(audio_mfcc, interpolation='bilinear')#, cmap=plt.get_cmap('viridis'))
+    plt.imshow(audio_mfcc, interpolation='bilinear', cmap=plt.get_cmap('viridis'))
     plt.pause(0.001)
 
 if __name__ == "__main__":
-  dir_games = "/home/shayegan/shayegan/git_repos/Arcade-Learning-Environment/ale_audio_tests/games" # ROMs directory TODO(sos) remove hardcoded path
-  #  game_names = [os.path.splitext(f)[0] for f in os.listdir(dir_games) if f.endswith('.bin')] # Tests all ROMs
-  game_names = ['gopher'] # Can also manually define games list 
+  if len(sys.argv) < 2:
+    print('Usage: %s roms directory' % sys.argv[0])
+    sys.exit()
 
-  # Go through all specified games and record audio/video to file
+  dir_games = str.encode(sys.argv[1])
+  game_names = [os.path.splitext(f)[0] for f in os.listdir(dir_games) if f.endswith('.bin')] # Tests all ROMs
+
+  # Go through all games in dir_games and record audio/video to file
   for game_name in game_names:
       atari = Atari(os.path.join(dir_games, game_name+'.bin'))
 
