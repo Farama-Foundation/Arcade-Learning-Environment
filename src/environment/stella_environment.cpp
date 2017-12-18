@@ -159,7 +159,7 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
       m_player_b_action = player_b_action;
 
     // If so desired, request one frame's worth of sound (this does nothing if recording
-    // to file and/or internally are not enabled)
+    // to file is not enabled)
     m_osystem->sound().recordNextFrame(i, m_frame_skip);
 
     // Similarly record screen as needed
@@ -169,7 +169,7 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
 
-    // Postprocess audio (accounts for frame_skip)
+    // Process audio for user queries (accounts for frame_skip)
     processAudio(i);
   }
 

@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 from ale_python_interface import ALEInterface
+import time
 
 class Atari:
   def __init__(self, rom_dir):
@@ -22,17 +23,28 @@ class Atari:
 
     # Get settings
     self.ale.loadROM(rom_dir)
-    self.action_count = 0
     self.screen_width, self.screen_height = self.ale.getScreenDims()
     self.legal_actions = self.ale.getLegalActionSet()
-    self.framerate = 60 # Should read from ALE settings technically
-    self.samples_per_frame = 512 # Should read from ALE SoundExporter class technically
-    self.audio_freq = self.framerate*self.samples_per_frame
-    self.all_audio = np.zeros((0,),dtype=np.uint8)
+
+    # Action count across all episodes
+    self.action_count = 0
+    self.start_time = time.time()
+
+    self.reset()
+  
+  def reset(self):
+    self.ale.reset_game()
 
   def take_action(self):
     action = self.legal_actions[np.random.randint(self.legal_actions.size)]
-    self.ale.act(action);
+    self.ale.act(action)
+    self.action_count += 1
+
+  def print_fps(self, delta_t = 500):
+    if self.action_count % delta_t == 0:
+        print '[atari.py] Frames/second: %f' % (self.action_count / (time.time() - self.start_time))
+        print '[atari.py] Overall game frame count:', atari.action_count*atari.frame_skip
+        print '---------' 
 
   def get_image_and_audio(self):
     np_data_image = np.zeros(self.screen_width*self.screen_height*3, dtype=np.uint8)
@@ -55,9 +67,13 @@ if __name__ == "__main__":
 
   rom_file = str.encode(sys.argv[1])
   atari = Atari(rom_file)
+  
+  for i_episode in xrange(0,5):
+      while not atari.ale.game_over():
+        image, audio = atari.get_image_and_audio()
+        atari.take_action()
+        atari.print_fps()
+      atari.reset()
 
-  while not atari.ale.game_over():
-    image, audio = atari.get_image_and_audio()
-    atari.take_action()
-    atari.action_count += 1
-    print '[atari.py] Overall game frame count:', atari.action_count*atari.frame_skip
+  # Print overall FPS
+  atari.print_fps(delta_t = 1)
