@@ -299,8 +299,6 @@ void SoundSDL::set(uInt16 addr, uInt8 value, Int32 cycle)
   // the sound to "scale" correctly, we have to know the games real frame 
   // rate (e.g., 50 or 60) and the currently emulated frame rate. We use these
   // values to "scale" the time before the register change occurs.
-  //TODO(sos) Seems myOsystem->framerate is never actually  initialized, so is 0,
-  //meaning delta =  inf. Double check with Marc/Marlos.
   delta = delta * (myDisplayFrameRate / (double)myOSystem->frameRate());
   RegWrite info;
   info.addr = addr;
@@ -392,9 +390,6 @@ void SoundSDL::processFragment(uInt8* stream, Int32 length)
       double duration = remaining / (double)myHardwareSpec.freq;
 
       // Does the register update occur before the end of the fragment?
-      //TODO(sos) As info.delta is always inf (see comment in SoundSDL::set()),
-      // this if statement never triggers. The fix is to actually initialize
-      // osystem->framerate (Perhaps Console.cxx the best place to do it?)
       if(info.delta <= duration)
       {
         // If the register update time hasn't already passed then
