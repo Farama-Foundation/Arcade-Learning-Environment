@@ -92,6 +92,7 @@ class StellaEnvironment {
     /** Returns the current screen after processing (e.g. colour averaging) */
     const ALEScreen &getScreen() const { return m_screen; }
     const ALERAM &getRAM() const { return m_ram; }
+    void setRAM(const ALERAM &ram);
 
     int getFrameNumber() const { return m_state.getFrameNumber(); }
     int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }

@@ -283,3 +283,10 @@ void StellaEnvironment::processRAM() {
     *m_ram.byte(i) = m_osystem->console().system().peek(i + 0x80); 
 }
 
+
+void StellaEnvironment::setRAM(const ALERAM& ram) {
+  for (size_t i = 0; i < ram.size(); i++) {
+    m_osystem->console().system().poke(i + 0x80, ram.get(i));
+  }
+  processRAM();
+}

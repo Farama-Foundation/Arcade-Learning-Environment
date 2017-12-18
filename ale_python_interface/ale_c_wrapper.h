@@ -63,6 +63,11 @@ extern "C" {
     int size = ale->getRAM().size();
     memcpy(ram,ale_ram,size*sizeof(unsigned char));
   }
+  void setRAM(ALEInterface *ale, unsigned char *ram){
+    ALERAM ale_ram = ALERAM();
+    memcpy(ale_ram.array(), ram, RAM_SIZE*sizeof(unsigned char));
+    ale->setRAM(ale_ram);
+  }
   int getRAMSize(ALEInterface *ale){return ale->getRAM().size();}
   int getScreenWidth(ALEInterface *ale){return ale->getScreen().width();}
   int getScreenHeight(ALEInterface *ale){return ale->getScreen().height();}

@@ -72,6 +72,8 @@ ale_lib.getRAM.argtypes = [c_void_p, c_void_p]
 ale_lib.getRAM.restype = None
 ale_lib.getRAMSize.argtypes = [c_void_p]
 ale_lib.getRAMSize.restype = c_int
+ale_lib.setRAM.argtypes = [c_void_p, c_void_p]
+ale_lib.setRAM.restype = None
 ale_lib.getScreenWidth.argtypes = [c_void_p]
 ale_lib.getScreenWidth.restype = c_int
 ale_lib.getScreenHeight.argtypes = [c_void_p]
@@ -260,6 +262,14 @@ class ALEInterface(object):
             ram = np.zeros(ram_size, dtype=np.uint8)
         ale_lib.getRAM(self.obj, as_ctypes(ram))
         return ram
+
+    def setRAM(self, ram):
+        """This function sets the atari RAM.
+        ram MUST be a numpy array of uint8/int8. This can be initialized like so:
+        ram = np.array(ram_size, dtype=uint8)
+        Notice: It must be ram_size where ram_size can be retrieved via the getRAMSize function.
+        """
+        ale_lib.setRAM(self.obj, as_ctypes(ram))
 
     def saveScreenPNG(self, filename):
         """Save the current screen as a png file"""
