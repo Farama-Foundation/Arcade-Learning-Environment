@@ -170,7 +170,7 @@ public:
     */
     virtual bool save(Serializer& out) = 0;
 
-    std::auto_ptr<ale::sound::SoundExporter> mySoundExporter; 
+    std::unique_ptr<ale::sound::SoundExporter> mySoundExporter; 
 
   protected:
     // The OSystem for this sound object

@@ -12,10 +12,10 @@ static const unsigned int WriteInterval = SampleRate * 30;
 
 
 SoundExporter::SoundExporter(const std::string &filename, int channels, bool record_for_user):
+    m_record_for_user(record_for_user),
     m_filename(filename),
     m_channels(channels),
-    m_samples_since_write(0),
-    m_record_for_user(record_for_user){
+    m_samples_since_write(0){
     // Turn on audio file recording if a valid filename specified. 
     // Otherwise, disable to save processing/mem.
     if (filename.size() > 0)
@@ -32,7 +32,6 @@ SoundExporter::~SoundExporter() {
 
 
 void SoundExporter::addSamples(SampleType *s, int len) {
-
     // @todo -- currently we only support mono recording 
     assert(m_channels == 1);
 
@@ -63,7 +62,6 @@ void SoundExporter::resetSamples(){
 
 
 void SoundExporter::writeWAVData() {
-   
     // Taken from http://stackoverflow.com/questions/22226872/two-problems-when-writing-to-wav-c
     // Open file stream 
     std::ofstream stream(m_filename.c_str(), std::ios::binary);                
