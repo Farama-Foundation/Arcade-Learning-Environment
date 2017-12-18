@@ -112,7 +112,7 @@ class Atari:
     # Make movie dir and write the mp4
     if not os.path.exists(self.save_dir_movies):
         os.makedirs(self.save_dir_movies)
-    sp.call(command)
+    sp.call(command) # NOTE: needs ffmpeg! Will throw 'dir doesn't exist err' otherwise.
   
   def concat_image_audio(self, image, audio_mfcc):
     # Concatenates image and audio to test sync'ing in saved .mp4
