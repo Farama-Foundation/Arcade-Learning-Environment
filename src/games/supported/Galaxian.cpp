@@ -133,11 +133,9 @@ ModeVect GalaxianSettings::getAvailableModes() {
 void GalaxianSettings::setMode(game_mode_t mode, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-    std::cout << "called\n";
     if (mode >= 1 && mode <= 9) {
         // press select until the correct mode is reached
         while (mode != static_cast<unsigned>(readRam(&system, 0xB3))) {
-            std::cout << "pressing\n";
             environment->pressSelect();
         }
         //reset the environment to apply changes.
