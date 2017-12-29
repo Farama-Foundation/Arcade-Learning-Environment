@@ -133,6 +133,9 @@ ModeVect GalaxianSettings::getAvailableModes() {
 void GalaxianSettings::setMode(game_mode_t mode, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
+    if (mode == 0)
+        mode = 1;
+
     if (mode >= 1 && mode <= 9) {
         // press select until the correct mode is reached
         while (mode != static_cast<unsigned>(readRam(&system, 0xB3))) {
@@ -140,10 +143,7 @@ void GalaxianSettings::setMode(game_mode_t mode, System &system,
         }
         //reset the environment to apply changes.
         environment->softReset();
-    } 
-    // ignore 0 since that's the default even though it's not a 
-    // valid mode
-    else if (mode != 0) 
+    } else 
     {
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }
