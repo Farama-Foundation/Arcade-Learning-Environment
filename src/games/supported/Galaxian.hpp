@@ -65,6 +65,22 @@ class GalaxianSettings : public RomSettings {
 
         virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
+        // get the available number of modes
+        unsigned int getNumModes() const { return 9; }
+
+        // returns a list of mode that the game can be played in
+        ModeVect getAvailableModes();
+
+        // set the mode of the game
+        // the given mode must be one returned by the previous function
+        void setMode(game_mode_t mode, System &system,
+                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
+
+        // Returns a list of difficulties that the game can be played in.
+        // 2 difficulties: 0 is left B, 1 is left A
+        DifficultyVect getAvailableDifficulties() { return { 0, 1}; }
+
+
     private:
 
         bool m_terminal;

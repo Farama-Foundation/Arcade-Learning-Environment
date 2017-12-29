@@ -122,3 +122,33 @@ void GalaxianSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
 }
 
+// returns a list of mode that the game can be played in
+ModeVect GalaxianSettings::getAvailableModes() {
+    ModeVect modes = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    return modes;
+}
+
+// set the mode of the game
+// the given mode must be one returned by the previous function
+void GalaxianSettings::setMode(game_mode_t mode, System &system,
+                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if (mode == 0)
+        mode = 1;
+
+    if (mode >= 1 && mode <= 9) {
+        // press select until the correct mode is reached
+        while (mode != static_cast<unsigned>(readRam(&system, 0xB3))) {
+            environment->pressSelect();
+        }
+        //reset the environment to apply changes.
+        environment->softReset();
+    } else 
+    {
+        throw std::runtime_error("This mode doesn't currently exist for this game");
+    }
+}
+
+
+
+
