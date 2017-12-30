@@ -129,10 +129,6 @@ ModeVect PooyanSettings::getAvailableModes() {
 void PooyanSettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-
-    if (m == 0) {
-      m = 0x0A; // The default mode (0) is not valid here.
-    }
     if(m == 0x0A || m == 0x1E || m == 0x32 || m == 0x46) {
         environment->pressSelect(2);
         // read the mode we are currently in

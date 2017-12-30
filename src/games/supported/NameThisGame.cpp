@@ -126,9 +126,6 @@ ModeVect NameThisGameSettings::getAvailableModes() {
 void NameThisGameSettings::setMode(game_mode_t m, System &system,
                               std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-    if(m == 0) {
-      m = 0x08; // the default mode is not valid here
-    }
     if(m == 0x08 || m == 0x18 || m == 0x28) {
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xDE);
