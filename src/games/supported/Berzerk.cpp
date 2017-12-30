@@ -127,9 +127,6 @@ ModeVect BerzerkSettings::getAvailableModes() {
 void BerzerkSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0) {
-    m = 1; // The mode 0, which is the default, is not available in this game.
-  }
   if (m >= 1 && (m <= 9 || m == 0x10 || m == 0x11 || m == 0x12)) {
     // we wait that the game is ready to change mode
     for (unsigned int i = 0; i < 20; i++) {
