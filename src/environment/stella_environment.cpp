@@ -46,6 +46,9 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
   m_num_reset_steps = 4;
   m_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
 
+  // Set current mode to the ROM's default mode
+  m_state.setCurrentMode(settings->getDefaultMode());
+
   m_max_num_frames_per_episode =
       m_osystem->settings().getInt("max_num_frames_per_episode");
   m_colour_averaging = m_osystem->settings().getBool("color_averaging");

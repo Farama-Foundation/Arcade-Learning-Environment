@@ -97,9 +97,6 @@ ModeVect AirRaidSettings::getAvailableModes() {
 void AirRaidSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0) {
-    m = 1; // the default mode is not valid in this game
-  }
   if (m >= 1 && m <= getNumModes()) {
     //open the mode selection panel
     environment->pressSelect(20);

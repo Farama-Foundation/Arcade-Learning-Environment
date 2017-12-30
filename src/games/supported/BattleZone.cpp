@@ -139,9 +139,6 @@ ModeVect BattleZoneSettings::getAvailableModes() {
 void BattleZoneSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0) {
-    m = 1; // the default mode is not valid here
-  }
   if (m >= 1 && m <= 3) {
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0xA1);

@@ -63,6 +63,16 @@ void RomSettings::setMode(game_mode_t m, System&, std::unique_ptr<StellaEnvironm
   }
 }
 
+game_mode_t RomSettings::getDefaultMode() {
+  // By default, return the first available mode, or 0 if none are listed
+  ModeVect available_modes = getAvailableModes();
+  if (available_modes.empty()) {
+    return 0;
+  } else {
+    return available_modes[0];
+  }
+}
+
 DifficultyVect RomSettings::getAvailableDifficulties() {
   return DifficultyVect(1, 0);
 }
