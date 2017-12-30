@@ -115,6 +115,9 @@ class RomSettings {
       game_mode_t, System& system,
       std::unique_ptr<StellaEnvironmentWrapper> environment);
 
+  // Return the default mode for the game.
+  virtual game_mode_t getDefaultMode();
+
   // Returns a list of difficulties that the game can be played in.
   // By default, there is only one available difficulty.
   virtual DifficultyVect getAvailableDifficulties();
