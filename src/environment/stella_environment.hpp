@@ -90,8 +90,8 @@ class StellaEnvironment {
     const ALEState &getState() const;
 
     /** Returns the current screen after processing (e.g. colour averaging) */
-    const ALEScreen &getScreen() const { return m_screen; }
-    const ALERAM &getRAM() const { return m_ram; }
+    const ALEScreen &getScreen();
+    const ALERAM &getRAM();
 
     int getFrameNumber() const { return m_state.getFrameNumber(); }
     int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
@@ -126,6 +126,10 @@ class StellaEnvironment {
     ALEState m_state; // Current environment state    
     ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)
     ALERAM m_ram; // The current ALE RAM
+
+    bool m_screen_updated; // Whether the current frame has been copied to m_screen
+    bool m_ram_updated; // Whether the current RAM state has been copied to m_ram
+
 
     bool m_use_paddles;  // Whether this game uses paddles
     

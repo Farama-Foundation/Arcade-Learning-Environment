@@ -25,6 +25,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_phosphor_blend(osystem),  
   m_screen(m_osystem->console().mediaSource().height(),
         m_osystem->console().mediaSource().width()),
+  m_screen_updated(false),
+  m_ram_updated(false),
   m_player_a_action(PLAYER_A_NOOP),
   m_player_b_action(PLAYER_B_NOOP) {
 
@@ -158,14 +160,6 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
     if (rng.nextDouble() >= m_repeat_action_probability)
       m_player_b_action = player_b_action;
 
-    // If so desired, request one frame's worth of sound (this does nothing if recording
-    // is not enabled)
-    m_osystem->sound().recordNextFrame();
-
-    // Similarly record screen as needed
-    if (m_screen_exporter.get() != NULL)
-        m_screen_exporter->saveNext(m_screen);
-
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }
@@ -195,6 +189,14 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
   // Increment the number of frames seen so far
   m_state.incrementFrame();
 
+  // If so desired, request one frame's worth of sound (this does nothing if recording
+  // is not enabled)
+  m_osystem->sound().recordNextFrame();
+
+  // Similarly record screen as needed
+  if (m_screen_exporter.get() != NULL)
+      m_screen_exporter->saveNext(getScreen());
+
   return m_settings->getReward();
 }
 
@@ -209,8 +211,6 @@ void StellaEnvironment::pressSelect(size_t num_steps) {
   for (size_t t = 0; t < num_steps; t++) {
     m_osystem->console().mediaSource().update();
   }
-  processScreen();
-  processRAM();
   emulate(PLAYER_A_NOOP, PLAYER_B_NOOP);
   m_state.incrementFrame();
 }
@@ -246,10 +246,7 @@ void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, 
       m_settings->step(m_osystem->console().system());
     }
   }
-
-  // Parse screen and RAM into their respective data structures
-  processScreen();
-  processRAM();
+  m_screen_updated = m_ram_updated = false;
 }
 
 /** Accessor methods for the environment state. */
@@ -275,11 +272,26 @@ void StellaEnvironment::processScreen() {
     memcpy(m_screen.getArray(), 
       m_osystem->console().mediaSource().currentFrameBuffer(), m_screen.arraySize());
   }
+  m_screen_updated = true;
 }
 
 void StellaEnvironment::processRAM() {
   // Copy RAM over
   for (size_t i = 0; i < m_ram.size(); i++)
     *m_ram.byte(i) = m_osystem->console().system().peek(i + 0x80); 
+  m_ram_updated = true;
 }
 
+const ALEScreen &StellaEnvironment::getScreen() { 
+  if (!m_screen_updated) {
+    processScreen();
+  }
+  return m_screen; 
+}
+
+const ALERAM &StellaEnvironment::getRAM() { 
+  if (!m_ram_updated) {
+    processRAM();
+  }
+  return m_ram; 
+}
