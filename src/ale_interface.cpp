@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -94,7 +94,7 @@ void ALEInterface::checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem) 
     }
   }
   if (!found) {
-    // If the md5 doesn't match our master list, warn the user. 
+    // If the md5 doesn't match our master list, warn the user.
     Logger::Warning << std::endl;
     Logger::Warning << "WARNING: Possibly unsupported ROM: mismatched MD5." << std::endl;
     Logger::Warning << "Cartridge_MD5: " << md5 << std::endl;
@@ -365,6 +365,10 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
 // Returns the current RAM content
 const ALERAM& ALEInterface::getRAM() {
   return environment->getRAM();
+}
+
+void ALEInterface::processBackRAM() {
+  return environment->processBackRAM();
 }
 
 // Saves the state of the system
