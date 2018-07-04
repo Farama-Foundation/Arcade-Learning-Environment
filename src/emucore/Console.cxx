@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -39,7 +39,7 @@
 #include "Paddles.hxx"
 #include "Props.hxx"
 #include "PropsSet.hxx"
-#include "Settings.hxx" 
+#include "Settings.hxx"
 #include "Sound.hxx"
 #include "Switches.hxx"
 #include "System.hxx"
@@ -71,7 +71,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySwitches = 0;
   mySystem = 0;
   myEvent = 0;
-  
+
   // Attach the event subsystem to the current console
   //ALE  myEvent = myOSystem->eventHandler().event();
   myEvent = myOSystem->event();
@@ -115,7 +115,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   {
     myControllers[leftPort] = new Joystick(Controller::Left, *myEvent);
   }
- 
+
   // Construct right controller
   if(right == "BOOSTER-GRIP")
   {
@@ -325,7 +325,7 @@ void Console::togglePalette()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::togglePhosphor()
 {
-  // MGB: This method is deprecated. 
+  // MGB: This method is deprecated.
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -391,8 +391,9 @@ void Console::initializeAudio()
 */
 void Console::fry() const
 {
-  for (int ZPmem=0; ZPmem<0x100; ZPmem += myOSystem->rng().next() % 4)
-    mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uInt8)myOSystem->rng().next() % 256);
+  // for (int ZPmem=0; ZPmem<0x100; ZPmem += myOSystem->rng().next() % 4)
+  //   mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uInt8)myOSystem->rng().next() % 256);
+  ;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
