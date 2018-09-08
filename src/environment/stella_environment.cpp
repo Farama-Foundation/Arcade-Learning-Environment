@@ -176,6 +176,10 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
 /** This functions emulates a push on the reset button of the console */
 void StellaEnvironment::softReset() {
   emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
+
+  // Reset previous actions to NOOP for correct action repeating
+  m_player_a_action = PLAYER_A_NOOP;
+  m_player_b_action = PLAYER_B_NOOP;
 }
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
