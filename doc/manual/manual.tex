@@ -156,8 +156,7 @@ int main(int argc, char** argv) {
     while (!ale.game_over()) {
         Action a = legal_actions[rand() % legal_actions.size()];    
         float reward = ale.act(a);
-            totalReward += reward;
-        }
+        totalReward += reward;
         std::cout << "The episode ended with score: " << totalReward 
             << std::endl;
     }
