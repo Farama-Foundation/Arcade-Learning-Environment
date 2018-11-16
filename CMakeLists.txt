@@ -28,8 +28,9 @@ if(USE_SDL)
     list(APPEND LINK_LIBS ${SDL_LIBRARY} ${SDL_MAIN_LIBRARY})
   else()
     MESSAGE("SDL 1.2 not found: You may need to manually edit CMakeLists.txt or run \"cmake -i\" to specify your SDL path.")
-    # Uncomment below to specify the path to your SDL library. Run "locate libSDL" if unsure.
+    # Uncomment below to specify the path to your SDL library and header file. Run "locate libSDL" and "locate SDL.h" if unsure.
     # link_directories(path_to_your_SDL)
+    # include_directories(path_to_your_SDL_header)
     if(APPLE)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -framework Cocoa")
       list(APPEND LINK_LIBS sdl sdlmain)
