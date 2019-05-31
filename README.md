@@ -104,16 +104,17 @@ In BibTeX format:
 
 If you use the ALE with sticky actions (flag `repeat_action_probability`), or if you use the different game flavours (mode and difficulty switches), we ask you that you also cite the following:
 
-*M. C. Machado, M. G. Bellemare, E. Talvitie, J. Veness, M. J. Hausknecht, M. Bowling. Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents,  CoRR abs/1709.06009, 2017.*
+*M. C. Machado, M. G. Bellemare, E. Talvitie, J. Veness, M. J. Hausknecht, M. Bowling. Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents,  Journal of Artificial Intelligence Research, Volume 61, pages 523-562, 2018.*
 
 In BibTex format:
 
 ```
-@Article{machado17arcade,
+@Article{machado18arcade,
   author = {Marlos C. Machado and Marc G. Bellemare and Erik Talvitie and Joel Veness and Matthew J. Hausknecht and Michael Bowling},
   title = {Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents},
-  journal = {CoRR},
-  volume = {abs/1709.06009},
-  year = {2017}
+  journal = {Journal of Artificial Intelligence Research},
+  volume = {61},
+  pages = {523--562},
+  year = {2018}
 }
 ```
