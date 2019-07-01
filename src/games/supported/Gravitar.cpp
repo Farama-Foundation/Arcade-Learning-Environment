@@ -175,8 +175,10 @@ void GravitarSettings::setMode(game_mode_t m, System &system,
                 break;
             case 3:
                 m_lives = 100;
+                break;
             case 4:
                 m_lives = 25;
+                break;
         }
         //reset the environment to apply changes.
         environment->softReset();
