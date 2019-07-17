@@ -53,13 +53,10 @@ class System
 {
   public:
     /**
-      Create a new system with an addressing space of 2^n bytes and
-      pages of 2^m bytes.
-
-      @param n Log base 2 of the addressing space size
-      @param m Log base 2 of the page size
+      Create a new system with an addressing space of 2^13 bytes and
+      pages of 2^6 bytes.
     */
-    System(uInt16 n, uInt16 m);
+    System();
 
     /**
       Destructor
@@ -187,7 +184,7 @@ class System
     */
     uInt16 pageShift() const
     {
-      return myPageShift;
+      return myPageSize;
     }
 
     /**
@@ -246,17 +243,57 @@ class System
 
       @return The byte at the specified address
     */
-    uInt8 peek(uInt16 address);
+    inline uInt8 peek(uInt16 addr)
+    {
+      PageAccess& access = myPageAccessTable[(addr & myAddressMask) >> myPageSize];
+
+      uInt8 result;
+
+      // See if this page uses direct accessing or not
+      if(access.directPeekBase != 0)
+      {
+        result = *(access.directPeekBase + (addr & myPageMask));
+      }
+      else
+      {
+        result = access.device->peek(addr);
+      }
+
+    #ifdef DEBUGGER_SUPPORT
+      if(!myDataBusLocked)
+    #endif
+        myDataBusState = result;
+
+      return result;
+    }
 
     /**
       Change the byte at the specified address to the given value.
       No masking of the address occurs before it's sent to the device
       mapped at the address.
 
-      @param address The address where the value should be stored
+      @param addr The address where the value should be stored
       @param value The value to be stored at the address
     */
-    void poke(uInt16 address, uInt8 value);
+    inline void poke(uInt16 addr, uInt8 value) {
+      PageAccess& access = myPageAccessTable[
+          (addr & myAddressMask) >> myPageSize];
+
+      // See if this page uses direct accessing or not
+      if(access.directPokeBase != 0)
+      {
+        *(access.directPokeBase + (addr & myPageMask)) = value;
+      }
+      else
+      {
+        access.device->poke(addr, value);
+      }
+
+    #ifdef DEBUGGER_SUPPORT
+      if(!myDataBusLocked)
+    #endif
+        myDataBusState = value;
+    }
 
     /**
       Lock/unlock the data bus. When the bus is locked, peek() and
@@ -316,17 +353,20 @@ class System
     const PageAccess& getPageAccess(uInt16 page);
  
   private:
-    // Mask to apply to an address before accessing memory
-    const uInt16 myAddressMask;
+    // Log base 2 of the addressing space size.
+    static constexpr uInt16 myAddressingSpace = 13;
 
-    // Amount to shift an address by to determine what page it's on
-    const uInt16 myPageShift;
+    // Log base 2 of the page size.
+    static constexpr uInt16 myPageSize = 6;
+
+    // Mask to apply to an address before accessing memory
+    static constexpr uInt16 myAddressMask = (1 << myAddressingSpace) - 1;
 
     // Mask to apply to an address to obtain its page offset
-    const uInt16 myPageMask;
+    static constexpr uInt16 myPageMask = (1 << myPageSize) - 1;
  
     // Number of pages in the system
-    const uInt16 myNumberOfPages;
+    static constexpr uInt16 myNumberOfPages = 1 << (myAddressingSpace - myPageSize);
 
     // Pointer to a dynamically allocated array of PageAccess structures
     PageAccess* myPageAccessTable;

@@ -148,7 +148,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySwitches = new Switches(*myEvent, myProperties);
 
   // Now, we can construct the system and components
-  mySystem = new System(13, 6);
+  mySystem = new System();
 
   // Inform the controllers about the system
   myControllers[0]->setSystem(mySystem);

@@ -28,20 +28,13 @@
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-System::System(uInt16 n, uInt16 m)
-  : myAddressMask((1 << n) - 1),
-    myPageShift(m),
-    myPageMask((1 << m) - 1),
-    myNumberOfPages(1 << (n - m)),
-    myNumberOfDevices(0),
+System::System()
+  : myNumberOfDevices(0),
     myM6502(0),
     myTIA(0),
     myCycles(0),
     myDataBusState(0)
 {
-  // Make sure the arguments are reasonable
-  assert((1 <= m) && (m <= n) && (n <= 16));
-
   // Allocate page table
   myPageAccessTable = new PageAccess[myNumberOfPages];
 
@@ -285,12 +278,7 @@ bool System::loadState(const string& md5sum, Deserializer& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-System::System(const System& s)
-  : myAddressMask(s.myAddressMask),
-    myPageShift(s.myPageShift),
-    myPageMask(s.myPageMask),
-    myNumberOfPages(s.myNumberOfPages)
-{
+System::System(const System& s) {
   assert(false);
 }
 
@@ -300,52 +288,6 @@ System& System::operator = (const System&)
   assert(false);
 
   return *this;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 System::peek(uInt16 addr) 
-{
-  PageAccess& access = myPageAccessTable[(addr & myAddressMask) >> myPageShift];
-
-  uInt8 result;
- 
-  // See if this page uses direct accessing or not 
-  if(access.directPeekBase != 0)
-  {
-    result = *(access.directPeekBase + (addr & myPageMask));
-  }
-  else
-  {
-    result = access.device->peek(addr);
-  }
-
-#ifdef DEBUGGER_SUPPORT
-  if(!myDataBusLocked)
-#endif
-    myDataBusState = result;
-
-  return result;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void System::poke(uInt16 addr, uInt8 value)
-{
-  PageAccess& access = myPageAccessTable[(addr & myAddressMask) >> myPageShift];
-  
-  // See if this page uses direct accessing or not 
-  if(access.directPokeBase != 0)
-  {
-    *(access.directPokeBase + (addr & myPageMask)) = value;
-  }
-  else
-  {
-    access.device->poke(addr, value);
-  }
-
-#ifdef DEBUGGER_SUPPORT
-  if(!myDataBusLocked)
-#endif
-    myDataBusState = value;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
