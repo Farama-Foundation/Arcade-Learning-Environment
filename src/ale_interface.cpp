@@ -362,6 +362,11 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
   theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size);
 }
 
+// Returns the current audio data
+const std::vector<ale::sound::SoundExporter::SampleType>& ALEInterface::getAudio(){
+  return environment->getAudio(); 
+}
+
 // Returns the current RAM content
 const ALERAM& ALEInterface::getRAM() {
   return environment->getRAM();

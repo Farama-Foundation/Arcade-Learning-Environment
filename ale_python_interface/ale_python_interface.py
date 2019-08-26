@@ -80,6 +80,10 @@ ale_lib.getScreenRGB.argtypes = [c_void_p, c_void_p]
 ale_lib.getScreenRGB.restype = None
 ale_lib.getScreenGrayscale.argtypes = [c_void_p, c_void_p]
 ale_lib.getScreenGrayscale.restype = None
+ale_lib.getAudio.argtypes = [c_void_p, c_void_p]
+ale_lib.getAudio.restype = None
+ale_lib.getAudioSize.argtypes = [c_void_p]
+ale_lib.getAudioSize.restype = c_int
 ale_lib.saveState.argtypes = [c_void_p]
 ale_lib.saveState.restype = None
 ale_lib.loadState.argtypes = [c_void_p]
@@ -245,6 +249,45 @@ class ALEInterface(object):
         ale_lib.getScreenGrayscale(self.obj, as_ctypes(screen_data[:]))
         return screen_data
 
+    def getAudioSize(self):
+        return ale_lib.getAudioSize(self.obj)
+
+    def getAudio(self, audio_data=None):
+        """This function fills audio_data with the data 
+        audio_data MUST be a numpy array of uint8. This can be initialized like so:
+        audio_data = np.empty(ale.getAudioSize()), dtype=np.uint8)
+        If it is None,  then this function will initialize it.
+        """
+        if(audio_data is None):
+            audio_buffer_size = ale_lib.getAudioSize(self.obj)
+            audio_data = np.empty(audio_buffer_size, dtype=np.uint8)
+        ale_lib.getAudio(self.obj, as_ctypes(audio_data))
+        return audio_data
+
+    def getScreenRGBAndAudio(self, screen_data=None, audio_data=None):
+        """This function fills screen_data and audio_data with the data 
+        screen_data MUST be a numpy array of uint8/int8. This could be initialized like so:
+        screen_data = np.empty(w*h, dtype=np.uint8)
+        Notice,  it must be width*height in size also
+        Note: This is the raw pixel values from the atari,  before any RGB palette transformation takes place
+        audio_data MUST be a numpy array of uint8. This can be initialized like so:
+        audio_data = np.empty(audio_size,width,1), dtype=np.uint8)
+        If either is None,  then this function will initialize it
+        """
+        if(screen_data is None):
+            width = ale_lib.getScreenWidth(self.obj)
+            height = ale_lib.getScreenHeight(self.obj)
+            screen_data = np.empty((height, width,3), dtype=np.uint8)
+            #  screen_data = np.zeros(width*height, dtype=np.uint8)
+        ale_lib.getScreenRGB(self.obj, as_ctypes(screen_data[:]))
+        #  ale_lib.getScreenRGB(self.obj, as_ctypes(screen_data))
+
+        if(audio_data is None):
+            audio_buffer_size = ale_lib.getAudioSize(self.obj)
+            audio_data = np.empty(audio_buffer_size, dtype=np.uint8)
+        ale_lib.getAudio(self.obj, as_ctypes(audio_data))
+        return screen_data, audio_data
+        
     def getRAMSize(self):
         return ale_lib.getRAMSize(self.obj)
 

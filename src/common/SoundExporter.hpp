@@ -43,11 +43,26 @@ class SoundExporter {
         typedef uInt8 SampleType;
   
         /** Create a new sound exporter which, on program termination, will write out a wav file. */
-        SoundExporter(const std::string &filename, int channels);
+        SoundExporter(const std::string &filename, int channels, bool record_for_user);
         ~SoundExporter();
 
         /** Adds a buffer of samples. */ 
         void addSamples(SampleType *s, int len);
+
+        /** Clears buffer of samples since last user action. */ 
+        void resetSamples();
+
+        /** The sound data from beginning of episode. */
+        std::vector<SampleType> m_data;
+
+        /** Gets the latest audio data for user queries. */
+        std::vector<SampleType> &getSamples();
+
+        /** Flag indicating whether audio writing to file is enabled */
+        bool m_record_to_file;
+
+        /** Flag indicating whether audio buffer for user getAudio queries enabled */
+        bool m_record_for_user;
 
     private:
    
@@ -59,9 +74,6 @@ class SoundExporter {
 
         /** Number of channels. */
         int m_channels;
-
-        /** The sound data. */
-        std::vector<SampleType> m_data;
 
         /** Keep track of how many samples have been written since the last write to disk */
         size_t m_samples_since_write;

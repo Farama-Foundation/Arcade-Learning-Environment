@@ -205,6 +205,7 @@ void Settings::validate()
 {
   string s;
   int i;
+  bool b1, b2;
 
   s = getString("video");
   if(s != "soft" && s != "gl")
@@ -234,6 +235,12 @@ void Settings::validate()
   i = getInt("tiafreq");
   if(i < 0 || i > 48000)
     setInternal("tiafreq", "31400");
+  b1 = !getString("record_sound_filename").empty();
+  b2 = getBool("record_sound_for_user");
+  //TODO(sos) ask mgb/mm: should we throw/warn user that 
+  //simultaneous file recording AND getAudio queries aren't supported?
+  if (b1 && b2)
+      setInternal("record_sound_filename","");
 #endif
 
   i = getInt("zoom_ui");
@@ -717,6 +724,9 @@ void Settings::setDefaultSettings() {
 
     // Display Settings
     boolSettings.insert(pair<string, bool>("display_screen", false));
+
+    // Audio Settings
+    boolSettings.insert(pair<string, bool>("record_sound_for_user", false));
 
     for(map<string, string>::iterator it = stringSettings.begin(); it != stringSettings.end(); it++) {
       this->setString(it->first, it->second);

@@ -30,8 +30,6 @@ class OSystem;
 #include "MediaSrc.hxx"
 #include "TIASnd.hxx"
 
-// If desired, we save sound to disk
-#include "SoundExporter.hpp"
 #include <memory>
 
 /**
@@ -145,7 +143,17 @@ class SoundSDL : public Sound
     /**
       * Tells the sound engine to record one frame's worth of sound.
       */
-    void recordNextFrame(); 
+    void recordNextFrame(size_t i_frame, size_t frame_skip); 
+
+    /**
+      * Tells the sound engine to add user samples for getAudio() queries
+      */
+    void addSamplesForUser(); 
+
+    /**
+      * Postprocesses audio for user queries (applies all reg updates, fills query buffer)
+      */
+    void postProcess(size_t i_frame, size_t frame_skip);
 
   public:
     /**
@@ -230,6 +238,13 @@ class SoundSDL : public Sound
         RegWrite& front();
 
         /**
+          Return the item at the back on the queue.
+
+          @return The item at the back of the queue.
+        */
+        RegWrite& back();
+
+        /**
           Answers the number of items currently in the queue.
 
           @return The number of items in the queue.
@@ -282,14 +297,15 @@ class SoundSDL : public Sound
     // Queue of TIA register writes
     RegWriteQueue myRegWriteQueue;
 
+	// Mutex needed for audio/game thread buffer read/writes
+	SDL_mutex* myDataMutex;
+
   private:
     // Callback function invoked by the SDL Audio library when it needs data
     static void callback(void* udata, uInt8* stream, int len);
 
     // Keeps track of how many samples we still need to record
     int myNumRecordSamplesNeeded; 
-
-    std::auto_ptr<ale::sound::SoundExporter> mySoundExporter; 
 };
 
 #endif  // SOUND_SUPPORT

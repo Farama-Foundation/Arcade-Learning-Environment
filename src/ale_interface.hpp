@@ -143,6 +143,9 @@ public:
   //followed by the green colours and then the blue colours
   void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer);
 
+  //This method should receive an empty vector to fill it with audio data
+  const std::vector<ale::sound::SoundExporter::SampleType> &getAudio();
+
   // Returns the current RAM content
   const ALERAM &getRAM();
 

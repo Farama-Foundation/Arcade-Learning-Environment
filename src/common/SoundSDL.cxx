@@ -22,6 +22,7 @@
 #include <cassert>
 #include <cmath>
 #include "SDL.h"
+#include <SDL_thread.h>
 
 #include "TIASnd.hxx"
 // #include "FrameBuffer.hxx"
@@ -49,11 +50,11 @@ SoundSDL::SoundSDL(OSystem* osystem)
     myVolume(100),
     myNumRecordSamplesNeeded(0)
 {
-
-    if (osystem->settings().getString("record_sound_filename").size() > 0) {
-      
+    // Audio recording (for user queries or file piping) enabled
+    if (osystem->settings().getString("record_sound_filename").size() > 0 || osystem->settings().getBool("record_sound_for_user")) {
         std::string filename = osystem->settings().getString("record_sound_filename");
-        mySoundExporter.reset(new ale::sound::SoundExporter(filename, myNumChannels));
+        mySoundExporter.reset(new ale::sound::SoundExporter(filename, myNumChannels, osystem->settings().getBool("record_sound_for_user")));
+        myDataMutex = SDL_CreateMutex();
     }
 }
 
@@ -177,6 +178,8 @@ void SoundSDL::close()
 {
   if(myIsInitializedFlag)
   {
+    if (myOSystem->settings().getString("record_sound_filename").size() > 0 || myOSystem->settings().getBool("record_sound_for_user")) 
+      SDL_DestroyMutex(myDataMutex);
     SDL_CloseAudio();
     myIsInitializedFlag = false;
   }
@@ -287,7 +290,7 @@ void SoundSDL::set(uInt16 addr, uInt8 value, Int32 cycle)
 {
   SDL_LockAudio();
 
-  // First, calulate how many seconds would have past since the last
+  // First, calculate how many seconds would have past since the last
   // register write on a real 2600
   double delta = (((double)(cycle - myLastRegisterSetCycle)) / 
       (1193191.66666667));
@@ -310,9 +313,33 @@ void SoundSDL::set(uInt16 addr, uInt8 value, Int32 cycle)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SoundSDL::addSamplesForUser()
+{
+  // Set audio registers
+  int regSize = myRegWriteQueue.size();
+  for (int i=0; i<regSize; ++i){
+      RegWrite& info = myRegWriteQueue.front();
+      myTIASound.set(info.addr, info.value);
+      myRegWriteQueue.dequeue();
+  }
+  
+  // Process audio registers
+  uInt8*stream = new uInt8[mySoundExporter->SamplesPerFrame];
+  myTIASound.process(stream, mySoundExporter->SamplesPerFrame);
+  
+  // Record samples
+  mySoundExporter->addSamples(stream, mySoundExporter->SamplesPerFrame);
+  delete[] stream;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SoundSDL::processFragment(uInt8* stream, Int32 length)
 {
   if(!myIsInitializedFlag)
+    return;
+
+  // Avoid double processing audio registers when user queries are enabled
+  if (mySoundExporter.get() != NULL && mySoundExporter->m_record_for_user)
     return;
 
   uInt32 channels = myHardwareSpec.channels;
@@ -399,21 +426,37 @@ void SoundSDL::processFragment(uInt8* stream, Int32 length)
     }
   }
 
-  // If recording sound, do so now
-  if (mySoundExporter.get() != NULL && myNumRecordSamplesNeeded > 0) {
-
-     mySoundExporter->addSamples(stream, length);
-     // Consume this many samples
-     myNumRecordSamplesNeeded -= length; 
+  // If recording sound to file, do so now
+  if (mySoundExporter.get() != NULL && mySoundExporter->m_record_to_file){
+        SDL_LockMutex(myDataMutex);
+        if (myNumRecordSamplesNeeded>0){
+            // Consume this many samples
+            mySoundExporter->addSamples(stream, length);
+            myNumRecordSamplesNeeded -= length; 
+        }
+        SDL_UnlockMutex(myDataMutex);
   }
 }
 
-
-void SoundSDL::recordNextFrame() {
-
-    // Grow the required samples by a frame's worth 
-    if (mySoundExporter.get() != NULL)
+void SoundSDL::recordNextFrame(size_t i_frame, size_t frame_skip) {
+    // Only applies to file recording, which keeps adding samples perpetually
+    if (mySoundExporter.get() != NULL && mySoundExporter->m_record_to_file){
+        SDL_LockMutex(myDataMutex); 
+        // Grow the required samples by a frame's worth 
         myNumRecordSamplesNeeded += ale::sound::SoundExporter::SamplesPerFrame;
+        SDL_UnlockMutex(myDataMutex);
+	}	
+}
+
+void SoundSDL::postProcess(size_t i_frame, size_t frame_skip){
+    // If recording sound for user queries, do so now (waits for final frame of frake_skip batch!)
+    if (mySoundExporter.get() != NULL && mySoundExporter->m_record_for_user 
+            && i_frame+1==frame_skip ){
+        // Clears audio data from previous frame(s) 
+        mySoundExporter->resetSamples();
+        // Process all the audio register updates up to this frame 
+        addSamplesForUser();
+    }
 }
 
 
@@ -602,6 +645,13 @@ SoundSDL::RegWrite& SoundSDL::RegWriteQueue::front()
 {
   assert(mySize != 0);
   return myBuffer[myHead];
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+SoundSDL::RegWrite& SoundSDL::RegWriteQueue::back()
+{
+  assert(mySize != 0);
+  return myBuffer[myTail];
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

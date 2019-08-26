@@ -24,6 +24,10 @@ class Serializer;
 class Deserializer;
 
 #include "m6502/src/bspf/src/bspf.hxx"
+#include <memory>
+
+// If desired, we save sound to disk
+#include "../common/SoundExporter.hpp"
 
 /**
   This class is an abstract base class for the various sound objects.
@@ -137,7 +141,17 @@ class Sound
     /**
       * Tells the sound engine to record one frame's worth of sound.
       */
-    virtual void recordNextFrame() = 0;
+    virtual void recordNextFrame(size_t i_frame, size_t frame_skip) = 0; 
+
+    /**
+      * Tells the sound engine to add user samples for getAudio() queries
+      */
+    virtual void addSamplesForUser() = 0;
+
+    /**
+      * Postprocesses audio for user queries (applies all reg updates, fills query buffer)
+      */
+    virtual void postProcess(size_t i_frame, size_t frame_skip) = 0;
 
 public:
     /**
@@ -155,6 +169,8 @@ public:
       @return The result of the save.  True on success, false on failure.
     */
     virtual bool save(Serializer& out) = 0;
+
+    std::unique_ptr<ale::sound::SoundExporter> mySoundExporter; 
 
   protected:
     // The OSystem for this sound object
