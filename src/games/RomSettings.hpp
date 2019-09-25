@@ -33,6 +33,7 @@
 #ifndef __ROMSETTINGS_HPP__
 #define __ROMSETTINGS_HPP__
 
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 
