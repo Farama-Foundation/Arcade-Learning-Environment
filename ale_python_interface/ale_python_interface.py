@@ -105,6 +105,11 @@ ale_lib.decodeState.restype = c_void_p
 ale_lib.setLoggerMode.argtypes = [c_int]
 ale_lib.setLoggerMode.restype = None
 
+def _encode(s):
+    if hasattr(s, 'encode'):
+        return s.encode('utf8')
+    return s
+
 class ALEInterface(object):
     # Logger enum
     class Logger:
@@ -117,25 +122,25 @@ class ALEInterface(object):
         self.obj = ale_lib.ALE_new()
 
     def getString(self, key):
-        return ale_lib.getString(self.obj, key)
+        return ale_lib.getString(self.obj, _encode(key))
     def getInt(self, key):
-        return ale_lib.getInt(self.obj, key)
+        return ale_lib.getInt(self.obj, _encode(key))
     def getBool(self, key):
-        return ale_lib.getBool(self.obj, key)
+        return ale_lib.getBool(self.obj, _encode(key))
     def getFloat(self, key):
-        return ale_lib.getFloat(self.obj, key)
+        return ale_lib.getFloat(self.obj, _encode(key))
 
     def setString(self, key, value):
-      ale_lib.setString(self.obj, key, value)
+      ale_lib.setString(self.obj, _encode(key), value)
     def setInt(self, key, value):
-      ale_lib.setInt(self.obj, key, value)
+      ale_lib.setInt(self.obj, _encode(key), value)
     def setBool(self, key, value):
       ale_lib.setBool(self.obj, key, value)
     def setFloat(self, key, value):
-      ale_lib.setFloat(self.obj, key, value)
+      ale_lib.setFloat(self.obj, _encode(key), value)
 
     def loadROM(self, rom_file):
-        ale_lib.loadROM(self.obj, rom_file)
+        ale_lib.loadROM(self.obj, _encode(rom_file))
 
     def act(self, action):
         return ale_lib.act(self.obj, int(action))
