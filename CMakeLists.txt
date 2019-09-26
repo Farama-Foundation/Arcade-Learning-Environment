@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project(ale)
-set(ALEVERSION "0.6")
+set(ALEVERSION "0.6.0")
 
 
 option(USE_SDL "Use SDL" OFF)
@@ -163,9 +163,12 @@ if(BUILD_CLI)
 endif()
 
 if(BUILD_C_LIB)
-  add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_py/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
   set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
-  set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_python_interface)
+  set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_py)
+  if(PYTHON_MODULE_EXTENSION)
+    set_target_properties(ale-c-lib PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
+  endif()
   if(UNIX)
     install(TARGETS ale-c-lib
       DESTINATION ${LIB_INSTALL_DIR})

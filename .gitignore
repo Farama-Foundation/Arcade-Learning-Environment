@@ -27,3 +27,6 @@ doc/examples/*Example
 *.lai
 *.la
 *.a
+
+# Python
+*.pyc
