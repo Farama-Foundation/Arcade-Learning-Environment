@@ -1,0 +1,16 @@
+# See also https://help.github.com/en/github/using-git/configuring-git-to-handle-line-endings.
+
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Always normalize these file types.
+*.c text
+*.cc text
+*.cpp text
+*.cxx text
+*.h text
+*.hpp text
+*.hxx text
+*.java text
+*.txt text
+*.md text
