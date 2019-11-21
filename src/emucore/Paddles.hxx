@@ -21,6 +21,7 @@
 
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "Control.hxx"
+#include "Event.hxx"
 
 /**
   The standard Atari 2600 pair of paddle controllers.
