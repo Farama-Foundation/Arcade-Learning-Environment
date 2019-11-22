@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -142,7 +142,7 @@ void RLGlueController::envInit() {
   std::stringstream taskSpec;
   taskSpec << "VERSION RL-Glue-3.0 "
     "PROBLEMTYPE episodic "
-    "DISCOUNTFACTOR 1 " // Goal is to maximize score... avoid unpleasant tradeoffs with 1 
+    "DISCOUNTFACTOR 1 " // Goal is to maximize score... avoid unpleasant tradeoffs with 1
     "OBSERVATIONS INTS (128 0 255)"; //RAM
   if (m_send_rgb) {
     taskSpec << "(100800 0 255) "; // Screen specified as an RGB triple per pixel
@@ -152,7 +152,7 @@ void RLGlueController::envInit() {
     observation_dimensions = 128 + 210 * 160;
   }
   taskSpec << "ACTIONS INTS (0 " << available_actions.size() << ") "
-    "REWARDS (UNSPEC UNSPEC) " // While rewards are technically bounded, this is safer 
+    "REWARDS (UNSPEC UNSPEC) " // While rewards are technically bounded, this is safer
     "EXTRA Name: Arcade Learning Environment ";
   // Allocate...?
   allocateRLStruct(&m_rlglue_action, 1, 0, 0);
@@ -294,7 +294,7 @@ RLGlueController::RLGlueController(OSystem* system):
 }
 
 void RLGlueController::run() {
-  ale::Logger::Error << "RL-Glue interface unavailable. Please recompile with RL-Glue support." << 
+  ale::Logger::Error << "RL-Glue interface unavailable. Please recompile with RL-Glue support." <<
     std::endl;
 
   // We should return and terminate gracefully, since we can.

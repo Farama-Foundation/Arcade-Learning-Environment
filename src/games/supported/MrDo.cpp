@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -21,8 +21,8 @@ MrDoSettings::MrDoSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* MrDoSettings::clone() const { 
-    
+RomSettings* MrDoSettings::clone() const {
+
     RomSettings* rval = new MrDoSettings();
     *rval = *this;
     return rval;
@@ -52,8 +52,8 @@ bool MrDoSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t MrDoSettings::getReward() const { 
-    return m_reward; 
+reward_t MrDoSettings::getReward() const {
+    return m_reward;
 }
 
 
@@ -74,19 +74,19 @@ bool MrDoSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void MrDoSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 4;
 }
-        
+
 /* saves the state of the rom settings */
 void MrDoSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

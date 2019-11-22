@@ -6,7 +6,7 @@ namespace sound {
 
 // Sample rate is 60Hz x SamplesPerFrame bytes
 // TODO(mgb): in reality this should be 31,400 Hz, but currently we are just short of this
-static const unsigned int SampleRate = 60 * SoundExporter::SamplesPerFrame; 
+static const unsigned int SampleRate = 60 * SoundExporter::SamplesPerFrame;
 // Save wav file every 30 seconds
 static const unsigned int WriteInterval = SampleRate * 30;
 
@@ -26,7 +26,7 @@ SoundExporter::~SoundExporter() {
 
 void SoundExporter::addSamples(SampleType *s, int len) {
 
-    // @todo -- currently we only support mono recording 
+    // @todo -- currently we only support mono recording
     assert(m_channels == 1);
 
     for (int i = 0; i < len; i++)
@@ -43,15 +43,15 @@ void SoundExporter::addSamples(SampleType *s, int len) {
 
 
 void SoundExporter::writeWAVData() {
-   
+
     // Taken from http://stackoverflow.com/questions/22226872/two-problems-when-writing-to-wav-c
-    // Open file stream 
-    std::ofstream stream(m_filename.c_str(), std::ios::binary);                
+    // Open file stream
+    std::ofstream stream(m_filename.c_str(), std::ios::binary);
 
     // Cast size into a 32-bit integer
     int bufSize = m_data.size();
 
-    // Header 
+    // Header
     stream.write("RIFF", 4);                                        // sGroupID (RIFF = Resource Interchange File Format)
     write<int>(stream, 36 + bufSize);                               // dwFileLength
     stream.write("WAVE", 4);                                        // sRiffType
@@ -72,6 +72,6 @@ void SoundExporter::writeWAVData() {
     stream.write((const char*)&m_data[0], bufSize);                 // The samples DATA!!!
 }
 
-} // namespace ale::sound 
+} // namespace ale::sound
 } // namespace ale
 

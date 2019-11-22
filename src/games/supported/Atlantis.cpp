@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ AtlantisSettings::AtlantisSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* AtlantisSettings::clone() const { 
-    
+RomSettings* AtlantisSettings::clone() const {
+
     RomSettings* rval = new AtlantisSettings();
     *rval = *this;
     return rval;
@@ -48,8 +48,8 @@ RomSettings* AtlantisSettings::clone() const {
 void AtlantisSettings::step(const System& system) {
 
     // update the reward. Score in Atlantis is a bit funky: when you "roll" the score, it increments
-    // the *lowest* digit. E.g., 999900 -> 000001. 
-    reward_t score = getDecimalScore(0xA2, 0xA3, 0xA1, &system); 
+    // the *lowest* digit. E.g., 999900 -> 000001.
+    reward_t score = getDecimalScore(0xA2, 0xA3, 0xA1, &system);
     score *= 100;
     m_reward = score - m_score;
     reward_t old_score = m_score;
@@ -65,8 +65,8 @@ void AtlantisSettings::step(const System& system) {
         m_reward = 0;
         m_score = old_score;
     }
-    
-  
+
+
     // MGB: Also d4-da contain the 'building' status; 05 indicates a destroyed
     //      building, 00 a live building
 }
@@ -80,9 +80,9 @@ bool AtlantisSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t AtlantisSettings::getReward() const { 
+reward_t AtlantisSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -97,13 +97,13 @@ bool AtlantisSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void AtlantisSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
@@ -111,7 +111,7 @@ void AtlantisSettings::reset() {
 }
 
 
-        
+
 /* saves the state of the rom settings */
 void AtlantisSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

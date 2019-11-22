@@ -14,9 +14,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -35,7 +35,7 @@ GalaxianSettings::GalaxianSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* GalaxianSettings::clone() const {     
+RomSettings* GalaxianSettings::clone() const {
     RomSettings* rval = new GalaxianSettings();
     *rval = *this;
     return rval;
@@ -46,25 +46,25 @@ RomSettings* GalaxianSettings::clone() const {
 void GalaxianSettings::step(const System& system) {
     // update the reward
     int score = getDecimalScore(0xAE, 0xAD, 0xAC, &system);
-    // reward cannot get negative in this game. When it does, it means that the score has looped 
+    // reward cannot get negative in this game. When it does, it means that the score has looped
     // (overflow)
     m_reward = score - m_score;
     if(m_reward < 0) {
         // 1000000 is the highest possible score
         const int maximumScore = 1000000;
-        m_reward = (maximumScore - m_score) + score; 
+        m_reward = (maximumScore - m_score) + score;
     }
     m_score = score;
-    
+
     // update terminal and lives
-    // If bit 0x80 is on, then game is over 
-    int some_byte = readRam(&system, 0xBF); 
+    // If bit 0x80 is on, then game is over
+    int some_byte = readRam(&system, 0xBF);
     m_terminal = (some_byte & 0x80);
     if (m_terminal) {
         // Force lives to zero when the game is over since otherwise it would be left as 1
         m_lives = 0;
     } else {
-        m_lives = readRam(&system, 0xB9) + 1;  // 0xB9 keeps the number of lives shown below the screen    
+        m_lives = readRam(&system, 0xB9) + 1;  // 0xB9 keeps the number of lives shown below the screen
     }
 }
 
@@ -76,8 +76,8 @@ bool GalaxianSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t GalaxianSettings::getReward() const { 
-    return m_reward; 
+reward_t GalaxianSettings::getReward() const {
+    return m_reward;
 }
 
 
@@ -93,7 +93,7 @@ bool GalaxianSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
@@ -102,10 +102,10 @@ void GalaxianSettings::reset() {
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
-    m_lives    = 3; 
+    m_lives    = 3;
 }
 
-        
+
 /* saves the state of the rom settings */
 void GalaxianSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
@@ -143,7 +143,7 @@ void GalaxianSettings::setMode(game_mode_t mode, System &system,
         }
         //reset the environment to apply changes.
         environment->softReset();
-    } else 
+    } else
     {
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }

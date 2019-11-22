@@ -2,9 +2,9 @@
  * The method lives() is based on Xitari's code, from Google Inc.
  *
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -25,8 +25,8 @@ FreewaySettings::FreewaySettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* FreewaySettings::clone() const { 
-    
+RomSettings* FreewaySettings::clone() const {
+
     RomSettings* rval = new FreewaySettings();
     *rval = *this;
     return rval;
@@ -39,7 +39,7 @@ void FreewaySettings::step(const System& system) {
     // update the reward
     int score = getDecimalScore(103, -1, &system);
     int reward = score - m_score;
-    if (reward < 0) reward = 0;      
+    if (reward < 0) reward = 0;
     if (reward > 1) reward = 1;
     m_reward = reward;
     m_score = score;
@@ -57,9 +57,9 @@ bool FreewaySettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t FreewaySettings::getReward() const { 
+reward_t FreewaySettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 /* is an action part of the minimal set? */
@@ -72,18 +72,18 @@ bool FreewaySettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void FreewaySettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
 }
-        
+
 /* saves the state of the rom settings */
 void FreewaySettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

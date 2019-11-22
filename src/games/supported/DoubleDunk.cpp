@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -21,8 +21,8 @@ DoubleDunkSettings::DoubleDunkSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* DoubleDunkSettings::clone() const { 
-    
+RomSettings* DoubleDunkSettings::clone() const {
+
     RomSettings* rval = new DoubleDunkSettings();
     *rval = *this;
     return rval;
@@ -53,9 +53,9 @@ bool DoubleDunkSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t DoubleDunkSettings::getReward() const { 
+reward_t DoubleDunkSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -84,19 +84,19 @@ bool DoubleDunkSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void DoubleDunkSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
 }
 
-        
+
 /* saves the state of the rom settings */
 void DoubleDunkSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
@@ -184,7 +184,7 @@ void DoubleDunkSettings::setMode(game_mode_t m, System &system,
         if(m & 2) {
             activateOption(system, 0x10, environment);
         } else {
-            deactivateOption(system, 0x10, environment);   
+            deactivateOption(system, 0x10, environment);
         }
 
         //deal with the 3 seconds option
@@ -192,7 +192,7 @@ void DoubleDunkSettings::setMode(game_mode_t m, System &system,
         if(m & 4) {
             activateOption(system, 0x04, environment);
         } else {
-            deactivateOption(system, 0x04, environment);   
+            deactivateOption(system, 0x04, environment);
         }
 
         //deal with the foul option
@@ -200,7 +200,7 @@ void DoubleDunkSettings::setMode(game_mode_t m, System &system,
         if(m & 8) {
             activateOption(system, 0x20, environment);
         } else {
-            deactivateOption(system, 0x20, environment);   
+            deactivateOption(system, 0x20, environment);
         }
 
         //reset the environment to apply changes.
@@ -208,7 +208,7 @@ void DoubleDunkSettings::setMode(game_mode_t m, System &system,
         //apply starting action
         environment->act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
         environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
-        
+
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

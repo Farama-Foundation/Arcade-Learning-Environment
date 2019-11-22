@@ -1,14 +1,14 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  ColourPalette.cpp 
+ *  ColourPalette.cpp
  *
  *  Enables conversion from NTSC/SECAM/PAL to RGB via the OSystem's palette.
  **************************************************************************** */
@@ -49,7 +49,7 @@ void ColourPalette::getRGB(int val, int &r, int &g, int &b) const
     assert(val >= 0 && val <= 0xFF);
     // Make sure we are reading from RGB, not grayscale.
     assert((val & 0x01) == 0);
-    
+
     // Set the RGB components accordingly
     r = (m_palette[val] >> 16) & 0xFF;
     g = (m_palette[val] >>  8) & 0xFF;

@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -22,9 +22,9 @@
 
 #define MAX_RUN_LENGTH (0xFF)
 
-static const char hexval[] = { 
-    '0', '1', '2', '3', '4', '5', '6', '7', 
-    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' 
+static const char hexval[] = {
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
 
 /* appends a pixels value to the string buffer, returning the number of characters written */
@@ -52,7 +52,7 @@ void FIFOController::run() {
   handshake();
 
   // Main loop
-  while (!isDone()) { 
+  while (!isDone()) {
     // Send data over to agent
     sendData();
     // Read agent's response & process it
@@ -88,11 +88,11 @@ void FIFOController::handshake() {
 
   // send the width and height of the screen through the pipe
   char out_buffer [1024];
-  
-  snprintf (out_buffer, sizeof(out_buffer), "%d-%d\n", 
+
+  snprintf (out_buffer, sizeof(out_buffer), "%d-%d\n",
     (int)m_environment.getScreen().width(),
     (int)m_environment.getScreen().height());
-  
+
   fputs(out_buffer, m_fout);
   fflush (m_fout);
 
@@ -139,7 +139,7 @@ void FIFOController::sendData() {
 }
 
 void FIFOController::sendScreen() {
-  // Obtain the screen from the environment 
+  // Obtain the screen from the environment
   const ALEScreen& screen = m_environment.getScreen();
 
   char buffer[204800];
