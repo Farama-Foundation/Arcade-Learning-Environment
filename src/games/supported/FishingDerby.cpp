@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -22,8 +22,8 @@ FishingDerbySettings::FishingDerbySettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* FishingDerbySettings::clone() const { 
-    
+RomSettings* FishingDerbySettings::clone() const {
+
     RomSettings* rval = new FishingDerbySettings();
     *rval = *this;
     return rval;
@@ -56,9 +56,9 @@ bool FishingDerbySettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t FishingDerbySettings::getReward() const { 
+reward_t FishingDerbySettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -87,19 +87,19 @@ bool FishingDerbySettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void FishingDerbySettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
 }
 
-        
+
 /* saves the state of the rom settings */
 void FishingDerbySettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

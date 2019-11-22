@@ -1,18 +1,18 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare,
- *  Matthew Hausknecht, and the Reinforcement Learning and Artificial Intelligence 
+ *  Matthew Hausknecht, and the Reinforcement Learning and Artificial Intelligence
  *  Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  videoRecordingExample.cpp 
+ *  videoRecordingExample.cpp
  *
- *  An example on recording video with the ALE. This requires SDL. 
- *  See manual for details. 
+ *  An example on recording video with the ALE. This requires SDL.
+ *  See manual for details.
  **************************************************************************** */
 
 #include <iostream>
@@ -20,7 +20,7 @@
 #include <cstdlib>
 
 #ifndef __USE_SDL
-#error Video recording example is disabled as it requires SDL. Recompile with -DUSE_SDL=ON. 
+#error Video recording example is disabled as it requires SDL. Recompile with -DUSE_SDL=ON.
 #else
 
 #include <SDL.h>
@@ -38,9 +38,9 @@ int main(int argc, char** argv) {
     // Get & Set the desired settings
     ale.setInt("random_seed", 123);
 
-    // We enable both screen and sound, which we will need for recording. 
+    // We enable both screen and sound, which we will need for recording.
     ale.setBool("display_screen", true);
-    // You may leave sound disabled (by setting this flag to false) if so desired. 
+    // You may leave sound disabled (by setting this flag to false) if so desired.
     ale.setBool("sound", true);
 
     std::string recordPath = "record";
@@ -49,12 +49,12 @@ int main(int argc, char** argv) {
     // Set record flags
     ale.setString("record_screen_dir", recordPath.c_str());
     ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
-    // We set fragsize to 64 to ensure proper sound sync 
+    // We set fragsize to 64 to ensure proper sound sync
     ale.setInt("fragsize", 64);
 
     // Not completely portable, but will work in most cases
     std::string cmd = "mkdir ";
-    cmd += recordPath; 
+    cmd += recordPath;
     system(cmd.c_str());
 
     // Load the ROM file. (Also resets the system for new settings to
@@ -64,11 +64,11 @@ int main(int argc, char** argv) {
     // Get the vector of legal actions
     ActionVect legal_actions = ale.getLegalActionSet();
 
-    // Play a single episode, which we record. 
+    // Play a single episode, which we record.
     while (!ale.game_over()) {
-        
+
         Action a = legal_actions[rand() % legal_actions.size()];
-        // Apply the action (discard the resulting reward) 
+        // Apply the action (discard the resulting reward)
         ale.act(a);
     }
 

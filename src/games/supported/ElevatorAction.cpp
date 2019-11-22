@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ ElevatorActionSettings::ElevatorActionSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* ElevatorActionSettings::clone() const { 
-    
+RomSettings* ElevatorActionSettings::clone() const {
+
     RomSettings* rval = new ElevatorActionSettings();
     *rval = *this;
     return rval;
@@ -67,9 +67,9 @@ bool ElevatorActionSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t ElevatorActionSettings::getReward() const { 
+reward_t ElevatorActionSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -98,20 +98,20 @@ bool ElevatorActionSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void ElevatorActionSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 4;
 }
 
-        
+
 /* saves the state of the rom settings */
 void ElevatorActionSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ AlienSettings::AlienSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* AlienSettings::clone() const { 
-    
+RomSettings* AlienSettings::clone() const {
+
     RomSettings* rval = new AlienSettings();
     *rval = *this;
     return rval;
@@ -49,10 +49,10 @@ void AlienSettings::step(const System& system) {
 
     // update the reward
     int b1 = getDigit(system, 0x8B);
-    int b2 = getDigit(system, 0x89); 
-    int b3 = getDigit(system, 0x87); 
-    int b4 = getDigit(system, 0x85); 
-    int b5 = getDigit(system, 0x83); 
+    int b2 = getDigit(system, 0x89);
+    int b3 = getDigit(system, 0x87);
+    int b4 = getDigit(system, 0x85);
+    int b5 = getDigit(system, 0x83);
     reward_t score = b1 + b2 * 10 + b3 * 100 + b4 * 1000 + b5 * 10000;
     score *= 10;
     m_reward = score - m_score;
@@ -74,9 +74,9 @@ bool AlienSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t AlienSettings::getReward() const { 
+reward_t AlienSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -105,13 +105,13 @@ bool AlienSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void AlienSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
@@ -121,11 +121,11 @@ void AlienSettings::reset() {
 
 /* special code to read digits for Alien */
 int AlienSettings::getDigit(const System& system, int address) const {
-  
+
     int byte = readRam(&system, address);
     return byte == 0x80 ? 0 : byte >> 3;
 }
-        
+
 /* saves the state of the rom settings */
 void AlienSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

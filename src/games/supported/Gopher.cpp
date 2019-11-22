@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ GopherSettings::GopherSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* GopherSettings::clone() const { 
-    
+RomSettings* GopherSettings::clone() const {
+
     RomSettings* rval = new GopherSettings();
     *rval = *this;
     return rval;
@@ -48,7 +48,7 @@ RomSettings* GopherSettings::clone() const {
 void GopherSettings::step(const System& system) {
 
     // update the reward
-    int score = getDecimalScore(0xB2, 0xB1, 0xB0, &system); 
+    int score = getDecimalScore(0xB2, 0xB1, 0xB0, &system);
     int reward = score - m_score;
     m_reward = reward;
     m_score = score;
@@ -57,9 +57,9 @@ void GopherSettings::step(const System& system) {
     int carrot_bits = readRam(&system, 0xB4) & 0x7;
     m_terminal = carrot_bits == 0;
 
-    // A very crude popcount 
-    static int livesFromCarrots[] = { 0, 1, 1, 2, 1, 2, 2, 3}; 
-    m_lives = livesFromCarrots[carrot_bits]; 
+    // A very crude popcount
+    static int livesFromCarrots[] = { 0, 1, 1, 2, 1, 2, 2, 3};
+    m_lives = livesFromCarrots[carrot_bits];
 }
 
 
@@ -71,9 +71,9 @@ bool GopherSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t GopherSettings::getReward() const { 
+reward_t GopherSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -92,20 +92,20 @@ bool GopherSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void GopherSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
 }
 
-        
+
 /* saves the state of the rom settings */
 void GopherSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

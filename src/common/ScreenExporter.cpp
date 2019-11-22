@@ -1,14 +1,14 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  ScreenExporter.hpp 
+ *  ScreenExporter.hpp
  *
  *  A class for exporting Atari 2600 frames as PNGs.
  *
@@ -20,9 +20,9 @@
 #include <fstream>
 #include "Log.hpp"
 
-// MGB: These methods originally belonged to ExportScreen. Possibly these should be returned to 
-// their own class, rather than be static methods. They are here to avoid exposing the gritty 
-// details of PNG generation. 
+// MGB: These methods originally belonged to ExportScreen. Possibly these should be returned to
+// their own class, rather than be static methods. They are here to avoid exposing the gritty
+// details of PNG generation.
 static void writePNGChunk(std::ofstream& out, const char* type, uInt8* data, int size) {
 
     // Stuff the length/type into the buffer
@@ -85,10 +85,10 @@ static void writePNGHeader(std::ofstream& out, const ALEScreen &screen, bool dou
 
 static void writePNGData(std::ofstream &out, const ALEScreen &screen, const ColourPalette &palette, bool doubleWidth = true) {
 
-    int dataWidth = screen.width(); 
-    int width = doubleWidth ? dataWidth * 2 : dataWidth; 
+    int dataWidth = screen.width();
+    int width = doubleWidth ? dataWidth * 2 : dataWidth;
     int height = screen.height();
-   
+
     // If so desired, double the width
 
     // Fill the buffer with scanline data
@@ -109,9 +109,9 @@ static void writePNGData(std::ofstream &out, const ALEScreen &screen, const Colo
             buf_ptr[jj * 3 + 0] = r;
             buf_ptr[jj * 3 + 1] = g;
             buf_ptr[jj * 3 + 2] = b;
-            
+
             if (doubleWidth) {
-                
+
                 jj = jj + 1;
 
                 buf_ptr[jj * 3 + 0] = r;
@@ -125,7 +125,7 @@ static void writePNGData(std::ofstream &out, const ALEScreen &screen, const Colo
     // Compress the data with zlib
     uLongf compmemsize = (uLongf)((height * (width + 1) * 3 + 1) + 12);
     std::vector<uInt8> compmem(compmemsize, 0);
-    
+
     if((compress(&compmem[0], &compmemsize, &buffer[0], height * (width * 3 + 1)) != Z_OK)) {
 
         // @todo -- throw a proper exception
@@ -161,10 +161,10 @@ ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path):
 
 void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) const {
 
-    // Open file for writing 
+    // Open file for writing
     std::ofstream out(filename.c_str(), std::ios_base::binary);
     if (!out.good()) {
-        
+
         // @todo exception
         ale::Logger::Error << "Could not open " << filename << " for writing" << std::endl;
         return;
@@ -180,15 +180,15 @@ void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) 
 
 void ScreenExporter::saveNext(const ALEScreen &screen) {
 
-    // Must have specified a directory. 
+    // Must have specified a directory.
     assert(m_path.size() > 0);
 
-    // MGB: It would be nice here to automagically create paths, but the only way I know of 
+    // MGB: It would be nice here to automagically create paths, but the only way I know of
     // doing this cleanly is via boost, which we don't include.
 
     // Construct the filename from basepath & current frame number
     std::ostringstream oss;
-    oss << m_path << "/" << 
+    oss << m_path << "/" <<
         std::setw(m_frame_field_width) << std::setfill('0') << m_frame_number << ".png";
 
     // Save the png

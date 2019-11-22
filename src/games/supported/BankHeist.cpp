@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ BankHeistSettings::BankHeistSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* BankHeistSettings::clone() const { 
-    
+RomSettings* BankHeistSettings::clone() const {
+
     RomSettings* rval = new BankHeistSettings();
     *rval = *this;
     return rval;
@@ -55,7 +55,7 @@ void BankHeistSettings::step(const System& system) {
     // update terminal status
     int death_timer = readRam(&system, 0xCE);
     m_lives = readRam(&system, 0xD5);
-        
+
     m_terminal = (death_timer == 0x01 && m_lives == 0x00);
 }
 
@@ -68,9 +68,9 @@ bool BankHeistSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t BankHeistSettings::getReward() const { 
+reward_t BankHeistSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -99,13 +99,13 @@ bool BankHeistSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void BankHeistSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
@@ -113,7 +113,7 @@ void BankHeistSettings::reset() {
 }
 
 
-        
+
 /* saves the state of the rom settings */
 void BankHeistSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

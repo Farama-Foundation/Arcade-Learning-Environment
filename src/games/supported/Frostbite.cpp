@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ FrostbiteSettings::FrostbiteSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* FrostbiteSettings::clone() const { 
-    
+RomSettings* FrostbiteSettings::clone() const {
+
     RomSettings* rval = new FrostbiteSettings();
     *rval = *this;
     return rval;
@@ -55,7 +55,7 @@ void FrostbiteSettings::step(const System& system) {
 
     // update terminal status
     // MGB: the maximum achievable life is 9. The system will actually let us set the byte to
-    // higher values & properly decrement, but we do not gain lives beyond 9. 
+    // higher values & properly decrement, but we do not gain lives beyond 9.
     int lives_byte = (readRam(&system, 0xCC) & 0xF);
     int flag  = readRam(&system, 0xF1) & 0x80;
     m_terminal = (lives_byte == 0 && flag != 0);
@@ -73,9 +73,9 @@ bool FrostbiteSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t FrostbiteSettings::getReward() const { 
+reward_t FrostbiteSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -104,19 +104,19 @@ bool FrostbiteSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void FrostbiteSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 4;
 }
-        
+
 /* saves the state of the rom settings */
 void FrostbiteSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
