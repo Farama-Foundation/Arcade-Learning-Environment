@@ -27,6 +27,8 @@ compiler:
     - clang
 
 script:
-#    - cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON
+    - ./presubmit.sh || travis_terminate 1
+
+#   - cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON
     - cmake -DUSE_SDL=OFF -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=OFF
     - make -j 4
