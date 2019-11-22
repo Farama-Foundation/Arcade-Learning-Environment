@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,7 +36,7 @@
 #include "common/Constants.h"
 #include "ale_interface.hpp"
 
-// TODO(mgbellemare): Why are these static? 
+// TODO(mgbellemare): Why are these static?
 static std::unique_ptr<OSystem> theOSystem;
 static std::unique_ptr<Settings> theSettings;
 
@@ -48,15 +48,15 @@ static ALEController* createController(OSystem* osystem, std::string type) {
   else if (type == "fifo") {
     std::cerr << "Game will be controlled through FIFO pipes." << std::endl;
     return new FIFOController(osystem, false);
-  } 
+  }
   else if (type == "fifo_named") {
     std::cerr << "Game will be controlled through named FIFO pipes." << std::endl;
     return new FIFOController(osystem, true);
   }
   else if (type == "rlglue") {
     std::cerr << "Game will be controlled through RL-Glue." << std::endl;
-    return new RLGlueController(osystem); 
-  } 
+    return new RLGlueController(osystem);
+  }
   else {
     std::cerr << "Invalid controller type: " << type << " " << std::endl;
     exit(1);

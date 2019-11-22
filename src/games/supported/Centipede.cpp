@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ CentipedeSettings::CentipedeSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* CentipedeSettings::clone() const { 
-    
+RomSettings* CentipedeSettings::clone() const {
+
     RomSettings* rval = new CentipedeSettings();
     *rval = *this;
     return rval;
@@ -54,8 +54,8 @@ void CentipedeSettings::step(const System& system) {
 
     // HACK: the score sometimes gets reset before termination; ignoring for now.
     if (m_reward < 0) m_reward = 0.0;
-    
-    // Maximum of 8 lives 
+
+    // Maximum of 8 lives
     m_lives = ((readRam(&system, 0xED) >> 4) & 0x7) + 1;
 
     // update terminal status
@@ -72,9 +72,9 @@ bool CentipedeSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t CentipedeSettings::getReward() const { 
+reward_t CentipedeSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -103,13 +103,13 @@ bool CentipedeSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void CentipedeSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
@@ -117,7 +117,7 @@ void CentipedeSettings::reset() {
 }
 
 
-        
+
 /* saves the state of the rom settings */
 void CentipedeSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

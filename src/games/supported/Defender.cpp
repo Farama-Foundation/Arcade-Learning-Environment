@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ DefenderSettings::DefenderSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* DefenderSettings::clone() const { 
-    
+RomSettings* DefenderSettings::clone() const {
+
     RomSettings* rval = new DefenderSettings();
     *rval = *this;
     return rval;
@@ -51,7 +51,7 @@ void DefenderSettings::step(const System& system) {
     int mult = 1, score = 0;
     for (int digit = 0; digit < 6; digit++) {
         int v = readRam(&system, 0x9C + digit) & 0xF;
-        // A indicates a 0 which we don't display 
+        // A indicates a 0 which we don't display
         if (v == 0xA) v = 0;
         score += v * mult;
         mult *= 10;
@@ -73,9 +73,9 @@ bool DefenderSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t DefenderSettings::getReward() const { 
+reward_t DefenderSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -104,20 +104,20 @@ bool DefenderSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void DefenderSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
 }
 
-        
+
 /* saves the state of the rom settings */
 void DefenderSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

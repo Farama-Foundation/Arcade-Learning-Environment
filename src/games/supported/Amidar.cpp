@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ AmidarSettings::AmidarSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* AmidarSettings::clone() const { 
-    
+RomSettings* AmidarSettings::clone() const {
+
     RomSettings* rval = new AmidarSettings();
     *rval = *this;
     return rval;
@@ -54,8 +54,8 @@ void AmidarSettings::step(const System& system) {
 
     // update terminal status
     int livesByte = readRam(&system, 0xD6);
-  
-    // MGB it takes one step for the system to reset; this assumes we've 
+
+    // MGB it takes one step for the system to reset; this assumes we've
     //  reset
     m_terminal = (livesByte == 0x80);
     m_lives = (livesByte & 0xF);
@@ -70,9 +70,9 @@ bool AmidarSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t AmidarSettings::getReward() const { 
+reward_t AmidarSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -93,20 +93,20 @@ bool AmidarSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void AmidarSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
     m_lives    = 3;
 }
 
-        
+
 /* saves the state of the rom settings */
 void AmidarSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

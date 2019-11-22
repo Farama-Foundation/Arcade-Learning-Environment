@@ -1,17 +1,17 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  controller.hpp 
+ *  controller.hpp
  *
  *  Superclass defining a variety of controllers -- main loops interfacing with
- *   an agent in a particular way. This superclass handles work common to all 
+ *   an agent in a particular way. This superclass handles work common to all
  *   controllers, e.g. loading ROM settings and constructing the environment
  *   wrapper.
  **************************************************************************** */
@@ -51,7 +51,7 @@ void ALEController::display() {
 
 reward_t ALEController::applyActions(Action player_a, Action player_b) {
   reward_t sum_rewards = 0;
-  // Perform different operations based on the first player's action 
+  // Perform different operations based on the first player's action
   switch (player_a) {
     case LOAD_STATE: // Load system state
       // Note - this does not reset the game screen; so that the subsequent screen

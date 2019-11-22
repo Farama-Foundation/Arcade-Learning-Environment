@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -21,8 +21,8 @@ AirRaidSettings::AirRaidSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* AirRaidSettings::clone() const { 
-    
+RomSettings* AirRaidSettings::clone() const {
+
     RomSettings* rval = new AirRaidSettings();
     *rval = *this;
     return rval;
@@ -51,9 +51,9 @@ bool AirRaidSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t AirRaidSettings::getReward() const { 
+reward_t AirRaidSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -70,18 +70,18 @@ bool AirRaidSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void AirRaidSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
 }
-        
+
 /* saves the state of the rom settings */
 void AirRaidSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);

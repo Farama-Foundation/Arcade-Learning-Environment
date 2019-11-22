@@ -3,13 +3,13 @@
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare,
  *  Matthew Hausknecht, Marlos C. Machado and the Reinforcement Learning
  *  and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  sharedLibraryInterfaceExampleWithModes.cpp 
+ *  sharedLibraryInterfaceExampleWithModes.cpp
  *
  *  Sample code for running an agent with the shared library interface if one
  *   wants to change the game mode or game difficult (available from v.0.6.0)
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
     // Play one episode in each mode and in each difficulty
     for (int i = 0; i < modes.size(); i++){
         for (int j = 0; j < difficulties.size(); j++){
-            
+
             ale.setDifficulty(difficulties[j]);
             ale.setMode(modes[i]);
             // Reset after choosing difficulty and mode.

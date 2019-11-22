@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -36,8 +36,8 @@ AsteroidsSettings::AsteroidsSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* AsteroidsSettings::clone() const { 
-    
+RomSettings* AsteroidsSettings::clone() const {
+
     RomSettings* rval = new AsteroidsSettings();
     *rval = *this;
     return rval;
@@ -55,7 +55,7 @@ void AsteroidsSettings::step(const System& system) {
     // uniform fashion.
     if (m_reward < 0) {
         const int WRAP_SCORE = 100000;
-        m_reward += WRAP_SCORE; 
+        m_reward += WRAP_SCORE;
     }
     m_score = score;
 
@@ -74,9 +74,9 @@ bool AsteroidsSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t AsteroidsSettings::getReward() const { 
+reward_t AsteroidsSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -106,7 +106,7 @@ bool AsteroidsSettings::isMinimal(const Action &a) const {
 
 /* reset the state of the game */
 void AsteroidsSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
@@ -114,7 +114,7 @@ void AsteroidsSettings::reset() {
 }
 
 
-        
+
 /* saves the state of the rom settings */
 void AsteroidsSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
