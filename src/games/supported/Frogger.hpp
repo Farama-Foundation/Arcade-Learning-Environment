@@ -61,4 +61,3 @@ class FroggerSettings : public RomSettings {
 };
 
 #endif // __FROGGER_HPP__
-

@@ -63,4 +63,3 @@ class MrDoSettings : public RomSettings {
 };
 
 #endif // __MRDO_HPP__
-

@@ -60,4 +60,3 @@ class TrondeadSettings : public RomSettings {
 };
 
 #endif // __TRONDEAD_HPP__
-

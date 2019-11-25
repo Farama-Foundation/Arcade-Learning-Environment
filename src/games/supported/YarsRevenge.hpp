@@ -94,4 +94,3 @@ class YarsRevengeSettings : public RomSettings {
 };
 
 #endif // __YARS_REVENGE_HPP__
-

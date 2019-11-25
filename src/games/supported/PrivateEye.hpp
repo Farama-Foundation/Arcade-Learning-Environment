@@ -92,4 +92,3 @@ class PrivateEyeSettings : public RomSettings {
 };
 
 #endif // __PRIVATEEYE_HPP__
-

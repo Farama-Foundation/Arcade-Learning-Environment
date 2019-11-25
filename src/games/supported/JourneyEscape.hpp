@@ -81,4 +81,3 @@ class JourneyEscapeSettings : public RomSettings {
 };
 
 #endif // __JOURNEYESCAPE_HPP__
-

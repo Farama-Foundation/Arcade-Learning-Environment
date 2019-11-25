@@ -127,4 +127,3 @@ void TetrisSettings::loadState(Deserializer & ser) {
   m_started = ser.getBool();
   m_lives = ser.getInt();
 }
-

@@ -99,5 +99,3 @@ ActionVect SirLancelotSettings::getStartingActions() {
     startingActions.push_back(PLAYER_A_LEFT);
     return startingActions;
 }
-
-

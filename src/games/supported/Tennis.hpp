@@ -91,4 +91,3 @@ class TennisSettings : public RomSettings {
 };
 
 #endif // __TENNIS_HPP__
-

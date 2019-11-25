@@ -75,4 +75,3 @@ class KrullSettings : public RomSettings {
 };
 
 #endif // __KRULL_HPP__
-

@@ -74,4 +74,3 @@ class KingkongSettings : public RomSettings {
 };
 
 #endif // __KINGKONG_HPP__
-

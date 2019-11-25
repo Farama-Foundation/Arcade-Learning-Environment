@@ -21,4 +21,3 @@ extern RomSettings *buildRomRLWrapper(const std::string &rom);
 
 
 #endif // __ROMS_HPP__
-

@@ -98,4 +98,3 @@ void KoolaidSettings::loadState(Deserializer & ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
 }
-

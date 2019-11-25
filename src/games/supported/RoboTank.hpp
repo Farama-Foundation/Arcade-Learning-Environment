@@ -75,4 +75,3 @@ class RoboTankSettings : public RomSettings {
 };
 
 #endif // __ROBOTANK_HPP__
-

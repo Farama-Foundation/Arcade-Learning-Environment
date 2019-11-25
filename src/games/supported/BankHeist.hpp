@@ -91,4 +91,3 @@ class BankHeistSettings : public RomSettings {
 };
 
 #endif // __BANKHEIST_HPP__
-

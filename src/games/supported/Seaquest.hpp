@@ -79,4 +79,3 @@ class SeaquestSettings : public RomSettings {
 };
 
 #endif // __SEAQUEST_HPP__
-

@@ -77,4 +77,3 @@ class ElevatorActionSettings : public RomSettings {
 };
 
 #endif // __ELEVATORACTION_HPP__
-

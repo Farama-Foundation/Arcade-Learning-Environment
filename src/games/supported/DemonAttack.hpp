@@ -92,4 +92,3 @@ class DemonAttackSettings : public RomSettings {
 };
 
 #endif // __DEMONATTACK_HPP__
-

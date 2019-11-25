@@ -286,4 +286,3 @@ void StellaEnvironment::processRAM() {
   for (size_t i = 0; i < m_ram.size(); i++)
     *m_ram.byte(i) = m_osystem->console().system().peek(i + 0x80);
 }
-

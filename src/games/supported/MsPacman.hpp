@@ -87,4 +87,3 @@ class MsPacmanSettings : public RomSettings {
 };
 
 #endif // __MSPACMAN_HPP__
-

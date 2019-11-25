@@ -93,4 +93,3 @@ class BreakoutSettings : public RomSettings {
 };
 
 #endif // __BREAKOUT_HPP__
-

@@ -127,4 +127,3 @@ ActionVect AsterixSettings::getStartingActions() {
     startingActions.push_back(PLAYER_A_FIRE);
     return startingActions;
 }
-

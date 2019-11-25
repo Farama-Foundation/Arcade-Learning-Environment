@@ -74,4 +74,3 @@ void SoundExporter::writeWAVData() {
 
 } // namespace ale::sound
 } // namespace ale
-

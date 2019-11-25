@@ -59,5 +59,3 @@ class KoolaidSettings : public RomSettings {
 };
 
 #endif // __KOOLAID_HPP__
-
-

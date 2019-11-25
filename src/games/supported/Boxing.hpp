@@ -78,4 +78,3 @@ class BoxingSettings : public RomSettings {
 };
 
 #endif // __BOXING_HPP__
-

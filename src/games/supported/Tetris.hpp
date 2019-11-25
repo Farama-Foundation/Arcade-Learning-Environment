@@ -75,4 +75,3 @@ class TetrisSettings : public RomSettings {
 };
 
 #endif // __TETRIS_HPP__
-

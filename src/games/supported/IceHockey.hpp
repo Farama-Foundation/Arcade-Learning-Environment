@@ -90,4 +90,3 @@ class IceHockeySettings : public RomSettings {
 };
 
 #endif // __ICEHOCKEY_HPP__
-

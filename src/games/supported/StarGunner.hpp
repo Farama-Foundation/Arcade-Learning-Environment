@@ -88,4 +88,3 @@ class StarGunnerSettings : public RomSettings {
 };
 
 #endif // __STARGUNNER_HPP__
-

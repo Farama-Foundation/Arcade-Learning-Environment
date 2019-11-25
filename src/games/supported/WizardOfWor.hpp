@@ -79,4 +79,3 @@ class WizardOfWorSettings : public RomSettings {
 };
 
 #endif // __WIZARDOFWOR_HPP__
-

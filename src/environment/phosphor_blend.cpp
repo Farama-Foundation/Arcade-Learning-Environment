@@ -117,4 +117,3 @@ uInt8 PhosphorBlend::rgbToNTSC(uInt32 rgb) {
 
   return m_rgb_ntsc[r >> 2][g >> 2][b >> 2];
 }
-

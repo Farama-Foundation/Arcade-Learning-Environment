@@ -74,4 +74,3 @@ class CarnivalSettings : public RomSettings {
 };
 
 #endif // __CARNIVAL_HPP__
-

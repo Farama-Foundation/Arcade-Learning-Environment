@@ -75,4 +75,3 @@ class MontezumaRevengeSettings : public RomSettings {
 };
 
 #endif // __MONTEZUMAREVENGE_HPP__
-

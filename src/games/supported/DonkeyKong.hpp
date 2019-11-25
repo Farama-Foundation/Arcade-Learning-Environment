@@ -60,4 +60,3 @@ class DonkeyKongSettings : public RomSettings {
 };
 
 #endif // __DONKEYKONG_HPP__
-

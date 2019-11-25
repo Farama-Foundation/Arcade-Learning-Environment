@@ -81,5 +81,3 @@ class BeamRiderSettings : public RomSettings {
 };
 
 #endif // __BEAMRIDER_HPP__
-
-

@@ -63,4 +63,3 @@ class LostLuggageSettings : public RomSettings {
 };
 
 #endif // __LOSTLUGGAGE_HPP__
-

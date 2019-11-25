@@ -91,4 +91,3 @@ class BowlingSettings : public RomSettings {
 };
 
 #endif // __BOWLING_HPP__
-

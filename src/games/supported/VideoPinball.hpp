@@ -91,4 +91,3 @@ class VideoPinballSettings : public RomSettings {
 };
 
 #endif // __VIDEOPINBALL_HPP__
-

@@ -28,6 +28,3 @@ extern int getDecimalScore(int lo, int hi, const System* system);
 extern int getDecimalScore(int lo, int mid, int hi, const System* system);
 
 #endif // __ROMUTILS_HPP__
-
-
-

@@ -113,4 +113,3 @@ inline pixel_t* ALEScreen::getRow(int r) const {
 
 
 #endif // __ALE_SCREEN_HPP__
-

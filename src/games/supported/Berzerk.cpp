@@ -170,5 +170,3 @@ void BerzerkSettings::setMode(game_mode_t m, System &system,
         throw std::runtime_error("This mode doesn't currently exist for this game");
     }
  }
-
-

@@ -196,5 +196,3 @@ void ScreenExporter::saveNext(const ALEScreen &screen) {
 
     m_frame_number++;
 }
-
-

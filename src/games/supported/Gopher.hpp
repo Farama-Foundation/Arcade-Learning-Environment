@@ -94,4 +94,3 @@ class GopherSettings : public RomSettings {
 };
 
 #endif // __GOPHER_HPP__
-

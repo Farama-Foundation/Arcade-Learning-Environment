@@ -75,4 +75,3 @@ class RoadRunnerSettings : public RomSettings {
 };
 
 #endif // __ROADRUNNER_HPP__
-

@@ -87,4 +87,3 @@ class AtlantisSettings : public RomSettings {
 };
 
 #endif // __ATLANTIS_HPP__
-

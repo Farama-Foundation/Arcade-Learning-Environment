@@ -81,5 +81,3 @@ private:
 };
 
 #endif // __COLOUR_PALETTE_HPP__
-
-

@@ -72,4 +72,3 @@ class AdventureSettings : public RomSettings {
  };
 
 #endif // __ADVENTURE_HPP__
-

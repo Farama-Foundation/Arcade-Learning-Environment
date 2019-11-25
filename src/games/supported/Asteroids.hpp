@@ -91,4 +91,3 @@ class AsteroidsSettings : public RomSettings {
 };
 
 #endif // __ASTEROIDS_HPP__
-

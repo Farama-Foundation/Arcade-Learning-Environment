@@ -78,4 +78,3 @@ class SkiingSettings : public RomSettings {
 };
 
 #endif // __SKIING_HPP__
-

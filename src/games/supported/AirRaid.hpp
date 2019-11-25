@@ -72,4 +72,3 @@ class AirRaidSettings : public RomSettings {
 };
 
 #endif // __AIRRAID_HPP__
-

@@ -87,4 +87,3 @@ class TutankhamSettings : public RomSettings {
 };
 
 #endif // __TUTANKHAM_HPP__
-

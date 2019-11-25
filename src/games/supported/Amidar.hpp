@@ -79,4 +79,3 @@ class AmidarSettings : public RomSettings {
 };
 
 #endif // __AMIDAR_HPP__
-

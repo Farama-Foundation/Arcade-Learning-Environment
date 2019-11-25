@@ -77,4 +77,3 @@ class PitfallSettings : public RomSettings {
 };
 
 #endif // __PITFALL_HPP__
-

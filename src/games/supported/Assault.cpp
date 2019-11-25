@@ -114,4 +114,3 @@ void AssaultSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
-

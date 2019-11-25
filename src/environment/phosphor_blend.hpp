@@ -43,4 +43,3 @@ class PhosphorBlend {
 };
 
 #endif // __PHOSPHOR_BLEND_HPP__
-

@@ -128,4 +128,3 @@ DifficultyVect UpNDownSettings::getAvailableDifficulties() {
     DifficultyVect diff = {0, 1, 2, 3};
     return diff;
 }
-

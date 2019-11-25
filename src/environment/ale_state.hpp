@@ -132,4 +132,3 @@ class ALEState {
 };
 
 #endif // __ALE_STATE_HPP__
-

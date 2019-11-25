@@ -79,4 +79,3 @@ class VentureSettings : public RomSettings {
 };
 
 #endif // __VENTURE_HPP__
-

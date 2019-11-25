@@ -75,4 +75,3 @@ class KungFuMasterSettings : public RomSettings {
 };
 
 #endif // __KUNGFUMASTER_HPP__
-

@@ -88,4 +88,3 @@ class ZaxxonSettings : public RomSettings {
 };
 
 #endif // __ZAXXON_HPP__
-

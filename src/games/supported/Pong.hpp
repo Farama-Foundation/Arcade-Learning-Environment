@@ -90,4 +90,3 @@ class PongSettings : public RomSettings {
 };
 
 #endif // __PONG_HPP__
-
