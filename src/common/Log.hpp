@@ -11,8 +11,8 @@ namespace ale
             Warning = 1,
             Error = 2
         };
-        /** @brief Allow to change the level of verbosity 
-         * @param m Info will print all the messages, Warning only the important ones 
+        /** @brief Allow to change the level of verbosity
+         * @param m Info will print all the messages, Warning only the important ones
          * and Error the critical ones
          */
         static void setMode(mode m);
@@ -25,7 +25,7 @@ namespace ale
 
 
     Logger::mode operator<<(Logger::mode log, std::ostream & (*manip)(std::ostream &));
-    
+
     template<typename T>
     Logger::mode operator << (Logger::mode log, const T& val){
         if(log>=Logger::current_mode)
