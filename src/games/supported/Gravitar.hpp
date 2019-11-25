@@ -90,4 +90,3 @@ class GravitarSettings : public RomSettings {
 };
 
 #endif // __GRAVITAR_HPP__
-

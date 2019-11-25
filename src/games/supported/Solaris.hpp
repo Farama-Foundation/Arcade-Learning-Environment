@@ -75,4 +75,3 @@ class SolarisSettings : public RomSettings {
 };
 
 #endif // __SOLARIS_HPP__
-

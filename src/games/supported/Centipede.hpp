@@ -87,4 +87,3 @@ class CentipedeSettings : public RomSettings {
 };
 
 #endif // __CENTIPEDE_HPP__
-

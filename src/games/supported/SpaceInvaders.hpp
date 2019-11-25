@@ -94,4 +94,3 @@ class SpaceInvadersSettings : public RomSettings {
 };
 
 #endif // __SPACEINVADERS_HPP__
-

@@ -78,4 +78,3 @@ class FishingDerbySettings : public RomSettings {
 };
 
 #endif // __FISHINGDERBY_HPP__
-

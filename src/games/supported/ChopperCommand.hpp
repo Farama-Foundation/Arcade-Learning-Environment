@@ -92,4 +92,3 @@ class ChopperCommandSettings : public RomSettings {
 };
 
 #endif // __CHOPPERCOMMAND_HPP__
-

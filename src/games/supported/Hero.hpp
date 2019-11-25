@@ -87,4 +87,3 @@ class HeroSettings : public RomSettings {
 };
 
 #endif // __HERO_HPP__
-

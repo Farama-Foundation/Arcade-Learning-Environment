@@ -75,4 +75,3 @@ class AssaultSettings : public RomSettings {
 };
 
 #endif // __ASSAULT_HPP__
-

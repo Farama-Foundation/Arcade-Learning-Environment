@@ -87,4 +87,3 @@ class JamesBondSettings : public RomSettings {
 };
 
 #endif // __JAMESBOND_HPP__
-

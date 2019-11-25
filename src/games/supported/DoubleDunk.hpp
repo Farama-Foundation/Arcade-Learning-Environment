@@ -104,4 +104,3 @@ class DoubleDunkSettings : public RomSettings {
 };
 
 #endif // __DOUBLEDUNK_HPP__
-

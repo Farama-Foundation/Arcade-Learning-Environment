@@ -127,4 +127,3 @@ DifficultyVect AmidarSettings::getAvailableDifficulties() {
     DifficultyVect diff = {0, 3};
     return diff;
 }
-

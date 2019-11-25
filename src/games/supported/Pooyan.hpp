@@ -87,4 +87,3 @@ class PooyanSettings : public RomSettings {
 };
 
 #endif // __POOYAN_HPP__
-

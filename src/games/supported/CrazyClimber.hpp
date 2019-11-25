@@ -91,4 +91,3 @@ class CrazyClimberSettings : public RomSettings {
 };
 
 #endif // __CRAZYCLIMBER_HPP__
-

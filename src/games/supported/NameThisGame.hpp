@@ -91,4 +91,3 @@ class NameThisGameSettings : public RomSettings {
 };
 
 #endif // __NAMETHISGAME_HPP__
-

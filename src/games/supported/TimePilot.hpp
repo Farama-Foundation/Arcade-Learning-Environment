@@ -79,4 +79,3 @@ class TimePilotSettings : public RomSettings {
 };
 
 #endif // __TIMEPILOT_HPP__
-

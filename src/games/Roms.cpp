@@ -187,4 +187,3 @@ RomSettings *buildRomRLWrapper(const std::string &rom) {
 
     return NULL;
 }
-

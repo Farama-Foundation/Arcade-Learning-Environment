@@ -88,4 +88,3 @@ class FrostbiteSettings : public RomSettings {
 };
 
 #endif // __FROSTBITE_HPP__
-

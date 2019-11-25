@@ -154,4 +154,3 @@ void ZaxxonSettings::setMode(game_mode_t m, System &system,
     //reset the environment to apply changes.
     environment->softReset();
  }
-

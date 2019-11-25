@@ -90,4 +90,3 @@ class FreewaySettings : public RomSettings {
 };
 
 #endif // __FREEWAY_HPP__
-

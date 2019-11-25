@@ -35,4 +35,3 @@ class StellaEnvironmentWrapper {
 };
 
 #endif // __STELLA_ENVIRONMENT_WRAPPER_HPP__
-

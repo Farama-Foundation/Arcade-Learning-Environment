@@ -71,4 +71,3 @@ reward_t ALEController::applyActions(Action player_a, Action player_b) {
   }
   return sum_rewards;
 }
-

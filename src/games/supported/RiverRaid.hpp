@@ -85,4 +85,3 @@ class RiverRaidSettings : public RomSettings {
 };
 
 #endif // __RIVERRAID_HPP__
-

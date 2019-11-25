@@ -159,5 +159,3 @@ DifficultyVect DemonAttackSettings::getAvailableDifficulties() {
     DifficultyVect diff = {0, 1};
     return diff;
 }
-
-

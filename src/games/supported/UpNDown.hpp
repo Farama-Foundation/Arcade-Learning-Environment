@@ -82,4 +82,3 @@ class UpNDownSettings : public RomSettings {
 };
 
 #endif // __UPNDOWN_HPP__
-
