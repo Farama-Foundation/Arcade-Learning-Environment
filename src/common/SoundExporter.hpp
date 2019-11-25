@@ -1,26 +1,26 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare,
- *   Matthew Hausknecht and the Reinforcement Learning and Artificial Intelligence 
+ *   Matthew Hausknecht and the Reinforcement Learning and Artificial Intelligence
  *   Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  SoundExporter.hpp 
+ *  SoundExporter.hpp
  *
  *  A class for writing Atari 2600 sound to a WAV file.
  *
- *  Parts of this code were taken from 
+ *  Parts of this code were taken from
  *
  *  http://stackoverflow.com/questions/22226872/two-problems-when-writing-to-wav-c
  *
  **************************************************************************** */
 
 #ifndef __SOUND_EXPORTER_HPP__
-#define __SOUND_EXPORTER_HPP__ 
+#define __SOUND_EXPORTER_HPP__
 
 #include <fstream>
 #include <vector>
@@ -37,20 +37,20 @@ void write(std::ofstream& stream, const T& t) {
 class SoundExporter {
 
     public:
-    
+
         static const int SamplesPerFrame = 512;
 
         typedef uInt8 SampleType;
-  
+
         /** Create a new sound exporter which, on program termination, will write out a wav file. */
         SoundExporter(const std::string &filename, int channels);
         ~SoundExporter();
 
-        /** Adds a buffer of samples. */ 
+        /** Adds a buffer of samples. */
         void addSamples(SampleType *s, int len);
 
     private:
-   
+
         /** Writes the data to disk. */
         void writeWAVData();
 
@@ -67,7 +67,7 @@ class SoundExporter {
         size_t m_samples_since_write;
 };
 
-} // namespace ale::sound 
+} // namespace ale::sound
 } // namespace ale
 
-#endif // __SOUND_EXPORTER_HPP__ 
+#endif // __SOUND_EXPORTER_HPP__

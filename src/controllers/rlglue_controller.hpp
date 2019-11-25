@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -34,22 +34,22 @@ class RLGlueController : public ALEController {
 
   private:
     /** Initializes the RL-Glue business */
-    void initRLGlue(); 
-    /** Closes the RL-Glue connection */ 
+    void initRLGlue();
+    /** Closes the RL-Glue connection */
     void endRLGlue();
-    /** Loops through the RL-Glue statement machine until termination. */ 
+    /** Loops through the RL-Glue statement machine until termination. */
     void rlGlueLoop();
 
     bool isDone();
 
-    /** RL-Glue interface methods. These methods' output mechanism is to fill the RL buffer 
+    /** RL-Glue interface methods. These methods' output mechanism is to fill the RL buffer
       *  with data. */
-     
+
     /** Initializes the environment; sends a 'task spec' */
     void envInit();
     /** Sends the first observation out -- beginning an episode */
     void envStart();
-    /** Reads in an action, returns the next observation-reward-terminal tuple */ 
+    /** Reads in an action, returns the next observation-reward-terminal tuple */
     void envStep();
     /** Performs some RL-Glue related cleanup */
     void envCleanup();

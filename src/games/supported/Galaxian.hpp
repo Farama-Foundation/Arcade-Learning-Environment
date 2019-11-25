@@ -14,9 +14,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -59,7 +59,7 @@ class GalaxianSettings : public RomSettings {
 
         // saves the state of the rom settings
         void saveState(Serializer & ser);
-    
+
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
@@ -74,7 +74,7 @@ class GalaxianSettings : public RomSettings {
         // set the mode of the game
         // the given mode must be one returned by the previous function
         void setMode(game_mode_t mode, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
+                     std::unique_ptr<StellaEnvironmentWrapper> environment);
 
         // Returns a list of difficulties that the game can be played in.
         // 2 difficulties: 0 is left B, 1 is left A
@@ -87,7 +87,7 @@ class GalaxianSettings : public RomSettings {
         reward_t m_reward;
         reward_t m_score;
         int m_lives;
-      
+
         static ActionVect actions;
 };
 

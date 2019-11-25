@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -48,13 +48,13 @@ class AirRaidSettings : public RomSettings {
 
         // saves the state of the rom settings
         void saveState(Serializer & ser);
-    
+
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
         ActionVect getStartingActions();
 
-        
+
         // returns a list of mode that the game can be played in
         // in this game, there are 8 available modes
         ModeVect getAvailableModes();
@@ -62,7 +62,7 @@ class AirRaidSettings : public RomSettings {
         // set the mode of the game
         // the given mode must be one returned by the previous function
         void setMode(game_mode_t, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
+                     std::unique_ptr<StellaEnvironmentWrapper> environment);
 
      private:
 

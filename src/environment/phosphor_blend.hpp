@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -11,7 +11,7 @@
  *  phosphor_blend.hpp
  *
  *  Methods for performing colour averaging over the screen.
- *  
+ *
  **************************************************************************** */
 
 #ifndef __PHOSPHOR_BLEND_HPP__
@@ -32,7 +32,7 @@ class PhosphorBlend {
     uInt32 makeRGB(uInt8 r, uInt8 g, uInt8 b);
     /** Converts a RGB value to an 8-bit format */
     uInt8 rgbToNTSC(uInt32 rgb);
-    
+
   private:
     OSystem * m_osystem;
 

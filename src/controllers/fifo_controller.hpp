@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -49,9 +49,9 @@ class FIFOController : public ALEController {
     bool m_send_screen; // Agent requested screen data
     bool m_send_ram; // Agent requested RAM data
     bool m_send_rl; // Agent requested RL data
-    
-    FILE* m_fout; 
-    FILE* m_fin; 
+
+    FILE* m_fout;
+    FILE* m_fin;
 
     reward_t latest_reward; // Most recent reward
 };
