@@ -71,5 +71,3 @@ int getDecimalScore(int lower_index, int middle_index, int higher_index, const S
     score += ((100000 * higher_left_digit) + 10000 * higher_right_digit);
     return score;
 }
-
-

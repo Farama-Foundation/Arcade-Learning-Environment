@@ -109,5 +109,3 @@ ActionVect KingkongSettings::getStartingActions() {
     startingActions.push_back(RESET);
     return startingActions;
 }
-
-

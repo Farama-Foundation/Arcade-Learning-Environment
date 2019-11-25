@@ -133,4 +133,3 @@ DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
     DifficultyVect diff = {0, 1};
     return diff;
 }
-

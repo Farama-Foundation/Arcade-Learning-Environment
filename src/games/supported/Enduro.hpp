@@ -76,4 +76,3 @@ class EnduroSettings : public RomSettings {
 };
 
 #endif // __ENDURO_HPP__
-

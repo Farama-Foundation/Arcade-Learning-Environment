@@ -62,4 +62,3 @@ class KeystoneKapersSettings : public RomSettings {
 };
 
 #endif // __KEYSTONEKAPERS_HPP__
-

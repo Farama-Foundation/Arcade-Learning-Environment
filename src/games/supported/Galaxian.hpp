@@ -92,4 +92,3 @@ class GalaxianSettings : public RomSettings {
 };
 
 #endif // __GALAXIAN_HPP__
-

@@ -117,4 +117,3 @@ ActionVect LostLuggageSettings::getStartingActions() {
     startingActions.push_back(RESET);
     return startingActions;
 }
-

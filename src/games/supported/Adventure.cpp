@@ -114,4 +114,3 @@ void AdventureSettings::loadState(Deserializer & ser) {
   m_reward = ser.getInt();
   m_terminal = ser.getBool();
 }
-

@@ -61,4 +61,3 @@ class SirLancelotSettings : public RomSettings {
 };
 
 #endif // __SIRLANCELOT_HPP__
-

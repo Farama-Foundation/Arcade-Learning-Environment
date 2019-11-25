@@ -78,4 +78,3 @@ class AsterixSettings : public RomSettings {
 };
 
 #endif // __ASTERIX_HPP__
-

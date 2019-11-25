@@ -87,4 +87,3 @@ class BattleZoneSettings : public RomSettings {
 };
 
 #endif // __BATTLEZONE_HPP__
-

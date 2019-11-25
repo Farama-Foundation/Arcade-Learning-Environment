@@ -65,5 +65,3 @@ class TurmoilSettings : public RomSettings {
 };
 
 #endif // __TURMOIL_HPP__
-
-

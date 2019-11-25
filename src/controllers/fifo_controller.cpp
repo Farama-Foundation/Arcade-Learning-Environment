@@ -249,4 +249,3 @@ void FIFOController::readAction(Action& action_a, Action& action_b) {
   token = strtok (NULL,",\n");
   action_b = (Action)atoi(token);
 }
-

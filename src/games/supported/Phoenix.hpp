@@ -75,4 +75,3 @@ class PhoenixSettings : public RomSettings {
 };
 
 #endif // __PHOENIX_HPP__
-

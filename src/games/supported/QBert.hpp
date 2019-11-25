@@ -80,4 +80,3 @@ class QBertSettings : public RomSettings {
 };
 
 #endif // __QBERT_HPP__
-

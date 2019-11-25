@@ -87,4 +87,3 @@ class KangarooSettings : public RomSettings {
 };
 
 #endif // __KANGAROO_HPP__
-

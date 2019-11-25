@@ -88,4 +88,3 @@ class BerzerkSettings : public RomSettings {
 };
 
 #endif // __BERZERK_HPP__
-

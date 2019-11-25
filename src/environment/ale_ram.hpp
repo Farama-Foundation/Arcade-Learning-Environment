@@ -77,4 +77,3 @@ inline byte_t* ALERAM::byte(unsigned int x) {
 }
 
 #endif // __ALE_RAM_HPP__
-

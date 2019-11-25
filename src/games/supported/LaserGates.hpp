@@ -60,4 +60,3 @@ class LaserGatesSettings : public RomSettings {
 };
 
 #endif // __LASERGATES_HPP__
-

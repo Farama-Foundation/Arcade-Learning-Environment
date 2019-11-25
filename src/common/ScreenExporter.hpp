@@ -53,6 +53,3 @@ class ScreenExporter {
 };
 
 #endif // __SCREEN_EXPORTER_HPP__
-
-
-

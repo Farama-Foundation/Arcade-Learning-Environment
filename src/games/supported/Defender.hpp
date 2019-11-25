@@ -91,4 +91,3 @@ class DefenderSettings : public RomSettings {
 };
 
 #endif // __DEFENDER_HPP__
-

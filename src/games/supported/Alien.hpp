@@ -94,4 +94,3 @@ class AlienSettings : public RomSettings {
 };
 
 #endif // __ALIEN_HPP__
-
