@@ -1,8 +1,8 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -12,10 +12,10 @@
  *
  *  A class that wraps around the Stella core to provide users with a typical
  *  reinforcement learning environment interface.
- *  
+ *
  **************************************************************************** */
 
-#ifndef __STELLA_ENVIRONMENT_HPP__ 
+#ifndef __STELLA_ENVIRONMENT_HPP__
 #define __STELLA_ENVIRONMENT_HPP__
 
 #include "ale_ram.hpp"
@@ -57,7 +57,7 @@ class StellaEnvironment {
     void restoreSystemState(const ALEState&);
 
     /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
-      *  and performs one simulation step in Stella. Returns the resultant reward. When 
+      *  and performs one simulation step in Stella. Returns the resultant reward. When
       *  frame skip is set to > 1, up the corresponding number of simulation steps are performed.
       *  Note that the post-act() frame number might not correspond to the pre-act() frame
       *  number plus the frame skip.
@@ -96,7 +96,7 @@ class StellaEnvironment {
     int getFrameNumber() const { return m_state.getFrameNumber(); }
     int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
-    /** Returns a wrapper providing #include-free access to our methods. */ 
+    /** Returns a wrapper providing #include-free access to our methods. */
     std::unique_ptr<StellaEnvironmentWrapper> getWrapper();
 
   private:
@@ -122,17 +122,17 @@ class StellaEnvironment {
     std::string m_cartridge_md5; // Necessary for saving and loading emulator state
 
     std::stack<ALEState> m_saved_states; // States are saved on a stack
-    
-    ALEState m_state; // Current environment state    
+
+    ALEState m_state; // Current environment state
     ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)
     ALERAM m_ram; // The current ALE RAM
 
     bool m_use_paddles;  // Whether this game uses paddles
-    
+
     /** Parameters loaded from Settings. */
     int m_num_reset_steps; // Number of RESET frames per reset
     bool m_colour_averaging; // Whether to average frames
-    int m_max_num_frames_per_episode; // Maxmimum number of frames per episode 
+    int m_max_num_frames_per_episode; // Maxmimum number of frames per episode
     size_t m_frame_skip; // How many frames to emulate per act()
     float m_repeat_action_probability; // Stochasticity of the environment
     std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
