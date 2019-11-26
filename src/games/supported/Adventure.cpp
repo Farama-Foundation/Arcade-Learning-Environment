@@ -114,3 +114,50 @@ void AdventureSettings::loadState(Deserializer & ser) {
   m_reward = ser.getInt();
   m_terminal = ser.getBool();
 }
+
+// Returns the supported modes for the game.
+ModeVect AdventureSettings::getAvailableModes() {
+    return ModeVect() = {0, 1, 2};
+}
+
+// Set the game mode.
+// The given mode must be one returned by the previous function.
+// According to Wikipedia (https://en.wikipedia.org/wiki/Adventure_(Atari_2600))
+// Adventure has 3 game modes:
+// Level 1 is the easiest, as it uses a simplified room layout and doesn't
+//   include the White Castle, bat, Rhindle the red dragon, nor invisible mazes.
+// Level 2 is the full version of the game, with the various objects appearing
+//   in set positions at the start of the game.
+// Level 3 is similar to Level 2, but the location of the objects is
+//   randomized to provide a more challenging game. The randomiser uses the
+//   low byte of its internal frame counter at RAM address 0xE5 to seed the rng.
+//   Due to the way game modes are set below this will always be the same value
+//   at present so only 1/256 randomised configuration is available.
+void AdventureSettings::setMode(game_mode_t m, System &system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+    if (m < 3) {
+        // Read the mode we are currently in.
+        unsigned char mode = (readRam(&system, 0xDD) >> 1) & 0x03;
+        // Press select until the correct mode is reached.
+        while (mode != m) {
+            environment->pressSelect(2);
+            // Adventure uses a debouncer so need to wait before the select
+            // take effect.
+            environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+            mode = (readRam(&system, 0xDD) >> 1) & 0x03;
+        }
+        // Reset the environment to apply changes.
+        environment->softReset();
+    } else {
+        throw std::runtime_error("This game mode is not supported.");
+    }
+}
+
+// Return the supported difficulty settings for the game.
+// According to Wikipedia (https://en.wikipedia.org/wiki/Adventure_(Atari_2600))
+// one difficulty switch controls controls the dragons' bite speed, and one
+// causes them to flee when the player is wielding the sword.
+DifficultyVect AdventureSettings::getAvailableDifficulties() {
+    return DifficultyVect() = {0, 1, 2, 3};
+}

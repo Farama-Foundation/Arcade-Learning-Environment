@@ -65,6 +65,17 @@ class AdventureSettings : public RomSettings {
 
         virtual int lives() { return 1; }
 
+        // Return the supported game modes.
+        ModeVect getAvailableModes();
+
+        // Set the game mode.
+        // The given mode must be one returned by the previous function.
+        void setMode(game_mode_t, System &system,
+                     std::unique_ptr<StellaEnvironmentWrapper> environment);
+
+        // Return the supported difficulty settings for the game.
+        virtual DifficultyVect getAvailableDifficulties();
+
     private:
 
         bool m_terminal;
