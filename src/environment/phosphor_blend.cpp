@@ -17,9 +17,7 @@
 #include "phosphor_blend.hpp"
 #include "../emucore/Console.hxx"
 
-PhosphorBlend::PhosphorBlend(OSystem * osystem):
-    m_osystem(osystem) {
-
+PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
   // Taken from default Stella settings
   m_phosphor_blend_ratio = 77;
 
@@ -30,8 +28,8 @@ void PhosphorBlend::process(ALEScreen& screen) {
   Console& console = m_osystem->console();
 
   // Fetch current and previous frame buffers from the emulator
-  uInt8 * current_buffer  = console.mediaSource().currentFrameBuffer();
-  uInt8 * previous_buffer = console.mediaSource().previousFrameBuffer();
+  uInt8* current_buffer = console.mediaSource().currentFrameBuffer();
+  uInt8* previous_buffer = console.mediaSource().previousFrameBuffer();
 
   // Process each pixel in turn
   for (size_t i = 0; i < screen.arraySize(); i++) {
@@ -46,8 +44,7 @@ void PhosphorBlend::process(ALEScreen& screen) {
   }
 }
 void PhosphorBlend::makeAveragePalette() {
-
-  ColourPalette &palette = m_osystem->colourPalette();
+  ColourPalette& palette = m_osystem->colourPalette();
 
   // Precompute the average RGB values for phosphor-averaged colors c1 and c2.
   for (int c1 = 0; c1 < 256; c1 += 2) {
@@ -101,8 +98,10 @@ uInt8 PhosphorBlend::getPhosphor(uInt8 v1, uInt8 v2) {
   }
 
   uInt32 blendedValue = ((v1 - v2) * m_phosphor_blend_ratio) / 100 + v2;
-  if (blendedValue > 255) return 255;
-  else return (uInt8) blendedValue;
+  if (blendedValue > 255)
+    return 255;
+  else
+    return (uInt8)blendedValue;
 }
 
 uInt32 PhosphorBlend::makeRGB(uInt8 r, uInt8 g, uInt8 b) {
