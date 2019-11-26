@@ -29,78 +29,73 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Double Dunk settings */
 class DoubleDunkSettings : public RomSettings {
+ public:
+  DoubleDunkSettings();
 
-    public:
+  // reset
+  void reset();
 
-        DoubleDunkSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "double_dunk"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // get the available number of modes
+  unsigned int getNumModes() const { return 16; }
 
-        // the rom-name
-        const char* rom() const { return "double_dunk"; }
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // get the available number of modes
-        unsigned int getNumModes() const { return 16; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  ActionVect getStartingActions();
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  virtual int lives() { return 0; }
 
-        ActionVect getStartingActions();
+  // returns a list of mode that the game can be played in
+  // in this game, there are 16 available modes
+  ModeVect getAvailableModes();
 
-        virtual int lives() { return 0; }
+  // set the mode of the game
+  // the given mode must be one returned by the previous function
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment);
 
-        // returns a list of mode that the game can be played in
-        // in this game, there are 16 available modes
-        ModeVect getAvailableModes();
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
 
-        // set the mode of the game
-        // the given mode must be one returned by the previous function
-        void setMode(game_mode_t, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment);
+  // this game has a menu that allows to define various yes/no options
+  // this function goes to the next option in the menu
+  void goDown(System& system,
+              std::unique_ptr<StellaEnvironmentWrapper>& environment);
 
+  // once we are at the proper option in the menu,
+  // if we want to enable it all we have to do is to go right
+  void activateOption(System& system, unsigned int bitOfInterest,
+                      std::unique_ptr<StellaEnvironmentWrapper>& environment);
 
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-
-        // this game has a menu that allows to define various yes/no options
-        // this function goes to the next option in the menu
-        void goDown(System &system,
-            std::unique_ptr<StellaEnvironmentWrapper> &environment);
-
-        // once we are at the proper option in the menu,
-        // if we want to enable it all we have to do is to go right
-        void activateOption(System &system, unsigned int bitOfInterest,
-            std::unique_ptr<StellaEnvironmentWrapper> &environment);
-
-        // once we are at the proper optio in the menu,
-        // if we want to disable it all we have to do is to go left
-        void deactivateOption(System &system, unsigned int bitOfInterest,
-            std::unique_ptr<StellaEnvironmentWrapper> &environment);
+  // once we are at the proper optio in the menu,
+  // if we want to disable it all we have to do is to go left
+  void deactivateOption(System& system, unsigned int bitOfInterest,
+                        std::unique_ptr<StellaEnvironmentWrapper>& environment);
 };
 
-#endif // __DOUBLEDUNK_HPP__
+#endif  // __DOUBLEDUNK_HPP__

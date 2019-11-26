@@ -28,95 +28,77 @@
 
 #include "../RomUtils.hpp"
 
-
-QBertSettings::QBertSettings() {
-
-    reset();
-}
-
+QBertSettings::QBertSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* QBertSettings::clone() const {
-
-    RomSettings* rval = new QBertSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new QBertSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void QBertSettings::step(const System& system) {
-    // update terminal status
-    int lives_value = readRam(&system, 0x88);
-    // Lives start at 2 (4 lives, 3 displayed) and go down to 0xFE (death)
-    // Alternatively we can die and reset within one frame; we catch this case
-    m_terminal = (lives_value == 0xFE) ||
-      (lives_value == 0x02 && m_last_lives == -1);
+  // update terminal status
+  int lives_value = readRam(&system, 0x88);
+  // Lives start at 2 (4 lives, 3 displayed) and go down to 0xFE (death)
+  // Alternatively we can die and reset within one frame; we catch this case
+  m_terminal =
+      (lives_value == 0xFE) || (lives_value == 0x02 && m_last_lives == -1);
 
-    // Convert char into a signed integer
-    int livesAsChar = static_cast<char>(lives_value);
+  // Convert char into a signed integer
+  int livesAsChar = static_cast<char>(lives_value);
 
-    if (m_last_lives - 1 == livesAsChar) m_lives--;
-    m_last_lives = livesAsChar;
+  if (m_last_lives - 1 == livesAsChar)
+    m_lives--;
+  m_last_lives = livesAsChar;
 
-    // update the reward
-    // Ignore reward if reset the game via the fire button; otherwise the agent
-    //  gets a big negative reward on its last step
-    if (!m_terminal) {
-      int score = getDecimalScore(0xDB, 0xDA, 0xD9, &system);
-      int reward = score - m_score;
-      m_reward = reward;
-      m_score = score;
-    }
-    else {
-      m_reward = 0;
-    }
+  // update the reward
+  // Ignore reward if reset the game via the fire button; otherwise the agent
+  //  gets a big negative reward on its last step
+  if (!m_terminal) {
+    int score = getDecimalScore(0xDB, 0xDA, 0xD9, &system);
+    int reward = score - m_score;
+    m_reward = reward;
+    m_score = score;
+  } else {
+    m_reward = 0;
+  }
 }
-
 
 /* is end of game */
-bool QBertSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool QBertSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t QBertSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t QBertSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool QBertSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-            return true;
-        default:
-            return false;
-    }
+bool QBertSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void QBertSettings::reset() {
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    // Anything non-0xFF
-    m_last_lives = 2;
-    m_lives    = 4;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  // Anything non-0xFF
+  m_last_lives = 2;
+  m_lives = 4;
 }
 
 /* saves the state of the rom settings */
-void QBertSettings::saveState(Serializer & ser) {
+void QBertSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -125,7 +107,7 @@ void QBertSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void QBertSettings::loadState(Deserializer & ser) {
+void QBertSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -134,6 +116,6 @@ void QBertSettings::loadState(Deserializer & ser) {
 }
 
 DifficultyVect QBertSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+  DifficultyVect diff = {0, 1};
+  return diff;
 }

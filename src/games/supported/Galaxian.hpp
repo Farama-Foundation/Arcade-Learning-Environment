@@ -28,67 +28,62 @@
 
 #include "../RomSettings.hpp"
 
-
 // RL wrapper for Galaxian
 class GalaxianSettings : public RomSettings {
+ public:
+  GalaxianSettings();
 
-    public:
+  // reset
+  void reset();
 
-        GalaxianSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "galaxian"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "galaxian"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // get the available number of modes
+  unsigned int getNumModes() const { return 9; }
 
-        virtual int lives() { return isTerminal() ? 0 : m_lives; }
+  // returns a list of mode that the game can be played in
+  ModeVect getAvailableModes();
 
-        // get the available number of modes
-        unsigned int getNumModes() const { return 9; }
+  // set the mode of the game
+  // the given mode must be one returned by the previous function
+  void setMode(game_mode_t mode, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment);
 
-        // returns a list of mode that the game can be played in
-        ModeVect getAvailableModes();
+  // Returns a list of difficulties that the game can be played in.
+  // 2 difficulties: 0 is left B, 1 is left A
+  DifficultyVect getAvailableDifficulties() { return {0, 1}; }
 
-        // set the mode of the game
-        // the given mode must be one returned by the previous function
-        void setMode(game_mode_t mode, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment);
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 
-        // Returns a list of difficulties that the game can be played in.
-        // 2 difficulties: 0 is left B, 1 is left A
-        DifficultyVect getAvailableDifficulties() { return { 0, 1}; }
-
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
-
-        static ActionVect actions;
+  static ActionVect actions;
 };
 
-#endif // __GALAXIAN_HPP__
+#endif  // __GALAXIAN_HPP__

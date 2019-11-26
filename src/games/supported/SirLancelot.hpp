@@ -14,50 +14,49 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Up N Down */
 class SirLancelotSettings : public RomSettings {
-    public:
-        SirLancelotSettings();
+ public:
+  SirLancelotSettings();
 
-        // reset
-        void reset();
+  // reset
+  void reset();
 
-        // is end of game
-        bool isTerminal() const;
+  // is end of game
+  bool isTerminal() const;
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // the rom-name
-		// MD5 7ead257e8b5a44cac538f5f54c7a0023
-        const char* rom() const { return "sir_lancelot"; }
+  // the rom-name
+  // MD5 7ead257e8b5a44cac538f5f54c7a0023
+  const char* rom() const { return "sir_lancelot"; }
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // SirLancelot requires the reset+left action to start the game
-        ActionVect getStartingActions();
+  // SirLancelot requires the reset+left action to start the game
+  ActionVect getStartingActions();
 
-        virtual int lives() { return isTerminal() ? 0 : m_lives; }
+  virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
-    private:
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 };
 
-#endif // __SIRLANCELOT_HPP__
+#endif  // __SIRLANCELOT_HPP__

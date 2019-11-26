@@ -28,89 +28,69 @@
 
 #include "../RomUtils.hpp"
 
-
-TimePilotSettings::TimePilotSettings() {
-
-    reset();
-}
-
+TimePilotSettings::TimePilotSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* TimePilotSettings::clone() const {
-
-    RomSettings* rval = new TimePilotSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new TimePilotSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void TimePilotSettings::step(const System& system) {
+  // update the reward
+  int score = getDecimalScore(0x8D, 0x8F, &system);
+  score *= 100;
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update the reward
-    int score = getDecimalScore(0x8D, 0x8F, &system);
-    score *= 100;
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  int lives_byte = readRam(&system, 0x8B) & 0x7;
 
-    int lives_byte = readRam(&system, 0x8B) & 0x7;
+  int screen_byte = readRam(&system, 0x80) & 0xF;
 
-    int screen_byte = readRam(&system, 0x80) & 0xF;
-
-    // update terminal status
-    m_terminal = readRam(&system, 0xA0);
-    // Only update lives when actually flying; otherwise funny stuff happens
-    m_lives = (screen_byte == 2) ? (lives_byte + 1) : m_lives;
+  // update terminal status
+  m_terminal = readRam(&system, 0xA0);
+  // Only update lives when actually flying; otherwise funny stuff happens
+  m_lives = (screen_byte == 2) ? (lives_byte + 1) : m_lives;
 }
-
 
 /* is end of game */
-bool TimePilotSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool TimePilotSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t TimePilotSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t TimePilotSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool TimePilotSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPFIRE:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_DOWNFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool TimePilotSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_DOWNFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void TimePilotSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 5;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 5;
 }
 
 /* saves the state of the rom settings */
-void TimePilotSettings::saveState(Serializer & ser) {
+void TimePilotSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -118,15 +98,14 @@ void TimePilotSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void TimePilotSettings::loadState(Deserializer & ser) {
+void TimePilotSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
 
-
 DifficultyVect TimePilotSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1, 2};
-    return diff;
+  DifficultyVect diff = {0, 1, 2};
+  return diff;
 }

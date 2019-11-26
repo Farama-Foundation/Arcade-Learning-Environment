@@ -14,61 +14,56 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Air Raid settings */
 class AirRaidSettings : public RomSettings {
+ public:
+  AirRaidSettings();
 
-    public:
+  // reset
+  void reset();
 
-        AirRaidSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "air_raid"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // get the available number of modes
+  unsigned int getNumModes() const { return 8; }
 
-        // the rom-name
-        const char* rom() const { return "air_raid"; }
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // get the available number of modes
-        unsigned int getNumModes() const { return 8; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  ActionVect getStartingActions();
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // returns a list of mode that the game can be played in
+  // in this game, there are 8 available modes
+  ModeVect getAvailableModes();
 
-        ActionVect getStartingActions();
+  // set the mode of the game
+  // the given mode must be one returned by the previous function
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment);
 
-
-        // returns a list of mode that the game can be played in
-        // in this game, there are 8 available modes
-        ModeVect getAvailableModes();
-
-        // set the mode of the game
-        // the given mode must be one returned by the previous function
-        void setMode(game_mode_t, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment);
-
-     private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
 };
 
-#endif // __AIRRAID_HPP__
+#endif  // __AIRRAID_HPP__

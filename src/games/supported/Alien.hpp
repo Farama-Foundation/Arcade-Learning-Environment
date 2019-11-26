@@ -29,68 +29,64 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Alien settings */
 class AlienSettings : public RomSettings {
+ public:
+  AlienSettings();
 
-    public:
+  // reset
+  void reset();
 
-        AlienSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "alien"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // get the available number of modes
+  unsigned int getNumModes() const { return 4; }
 
-        // the rom-name
-        const char* rom() const { return "alien"; }
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // get the available number of modes
-        unsigned int getNumModes() const { return 4; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  virtual int lives() { return m_lives; }
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // list of modes that the game can be played in
+  // in this game, there are 4 available modes
+  ModeVect getAvailableModes();
 
-        virtual int lives() { return m_lives; }
+  // set the mode of the game
+  // the given mode must be one returned by the previous function
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment);
 
-        // list of modes that the game can be played in
-        // in this game, there are 4 available modes
-        ModeVect getAvailableModes();
+  // returns a list of difficulties that the game can be played in
+  // in this game, there are 4 available difficulties
+  DifficultyVect getAvailableDifficulties();
 
-        // set the mode of the game
-        // the given mode must be one returned by the previous function
-        void setMode(game_mode_t, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment);
+ private:
+  // special code to read digits for Alien
+  int getDigit(const System& system, int address) const;
 
-        // returns a list of difficulties that the game can be played in
-        // in this game, there are 4 available difficulties
-        DifficultyVect getAvailableDifficulties();
-
-    private:
-
-        // special code to read digits for Alien
-        int getDigit(const System& system, int address) const;
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 };
 
-#endif // __ALIEN_HPP__
+#endif  // __ALIEN_HPP__

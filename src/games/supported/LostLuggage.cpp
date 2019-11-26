@@ -13,64 +13,54 @@
 
 #include "../RomUtils.hpp"
 
-LostLuggageSettings::LostLuggageSettings() {
-    reset();
-}
+LostLuggageSettings::LostLuggageSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* LostLuggageSettings::clone() const {
-    RomSettings* rval = new LostLuggageSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new LostLuggageSettings();
+  *rval = *this;
+  return rval;
 }
 
 /* process the latest information from ALE */
 void LostLuggageSettings::step(const System& system) {
-    // update the reward
-    int score = getDecimalScore(0x96, 0x95, 0x94, &system);
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  // update the reward
+  int score = getDecimalScore(0x96, 0x95, 0x94, &system);
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update terminal status
-    m_lives = readRam(&system, 0xCA);
-    m_terminal = (m_lives == 0)
-        && readRam(&system, 0xC8) == 0x0A
-        && readRam(&system, 0xA5) == 0x00
-        && readRam(&system, 0xA9) == 0x00;
+  // update terminal status
+  m_lives = readRam(&system, 0xCA);
+  m_terminal = (m_lives == 0) && readRam(&system, 0xC8) == 0x0A &&
+               readRam(&system, 0xA5) == 0x00 && readRam(&system, 0xA9) == 0x00;
 }
 
 /* is end of game */
-bool LostLuggageSettings::isTerminal() const {
-    return m_terminal;
-};
-
+bool LostLuggageSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t LostLuggageSettings::getReward() const {
-    return m_reward;
-}
-
+reward_t LostLuggageSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool LostLuggageSettings::isMinimal(const Action &a) const {
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPRIGHT:
-        case PLAYER_A_UPLEFT:
-        case PLAYER_A_DOWNRIGHT:
-        case PLAYER_A_DOWNLEFT:
-            return true;
-        default:
-            return false;
-    }
+bool LostLuggageSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPRIGHT:
+    case PLAYER_A_UPLEFT:
+    case PLAYER_A_DOWNRIGHT:
+    case PLAYER_A_DOWNLEFT:
+      return true;
+    default:
+      return false;
+  }
 }
 
-bool LostLuggageSettings::isLegal(const Action &a) const {
+bool LostLuggageSettings::isLegal(const Action& a) const {
   switch (a) {
     // Don't allow pressing 'fire'
     case PLAYER_A_FIRE:
@@ -90,14 +80,14 @@ bool LostLuggageSettings::isLegal(const Action &a) const {
 
 /* reset the state of the game */
 void LostLuggageSettings::reset() {
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 3;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 3;
 }
 
 /* saves the state of the rom settings */
-void LostLuggageSettings::saveState(Serializer & ser) {
+void LostLuggageSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -105,7 +95,7 @@ void LostLuggageSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void LostLuggageSettings::loadState(Deserializer & ser) {
+void LostLuggageSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -113,7 +103,7 @@ void LostLuggageSettings::loadState(Deserializer & ser) {
 }
 
 ActionVect LostLuggageSettings::getStartingActions() {
-    ActionVect startingActions;
-    startingActions.push_back(RESET);
-    return startingActions;
+  ActionVect startingActions;
+  startingActions.push_back(RESET);
+  return startingActions;
 }

@@ -28,58 +28,54 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Adventure settings */
 class AdventureSettings : public RomSettings {
+ public:
+  AdventureSettings();
 
-    public:
+  // reset
+  void reset();
 
-        AdventureSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "adventure"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "adventure"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  virtual int lives() { return 1; }
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // Return the supported game modes.
+  ModeVect getAvailableModes();
 
-        virtual int lives() { return 1; }
+  // Set the game mode.
+  // The given mode must be one returned by the previous function.
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment);
 
-        // Return the supported game modes.
-        ModeVect getAvailableModes();
+  // Return the supported difficulty settings for the game.
+  virtual DifficultyVect getAvailableDifficulties();
 
-        // Set the game mode.
-        // The given mode must be one returned by the previous function.
-        void setMode(game_mode_t, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment);
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+};
 
-        // Return the supported difficulty settings for the game.
-        virtual DifficultyVect getAvailableDifficulties();
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
- };
-
-#endif // __ADVENTURE_HPP__
+#endif  // __ADVENTURE_HPP__

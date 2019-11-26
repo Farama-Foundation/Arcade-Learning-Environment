@@ -29,68 +29,64 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Gopher */
 class GopherSettings : public RomSettings {
+ public:
+  GopherSettings();
 
-    public:
+  // reset
+  void reset();
 
-        GopherSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "gopher"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // get the available number of modes
+  unsigned int getNumModes() const { return 2; }
 
-        // the rom-name
-        const char* rom() const { return "gopher"; }
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // get the available number of modes
-        unsigned int getNumModes() const { return 2; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  // Gopher requires the fire action to start the game
+  ActionVect getStartingActions();
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
-        // Gopher requires the fire action to start the game
-        ActionVect getStartingActions();
+  // returns a list of mode that the game can be played in
+  // in this game, there are 8 available modes
+  ModeVect getAvailableModes();
 
-        virtual int lives() { return isTerminal() ? 0 : m_lives; }
+  // set the mode of the game
+  // the given mode must be one returned by the previous function
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment);
 
-        // returns a list of mode that the game can be played in
-        // in this game, there are 8 available modes
-        ModeVect getAvailableModes();
+  // returns a list of difficulties that the game can be played in
+  // in this game, there are 2 available difficulties
+  DifficultyVect getAvailableDifficulties();
 
-        // set the mode of the game
-        // the given mode must be one returned by the previous function
-        void setMode(game_mode_t, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment);
-
-        // returns a list of difficulties that the game can be played in
-        // in this game, there are 2 available difficulties
-        DifficultyVect getAvailableDifficulties();
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 };
 
-#endif // __GOPHER_HPP__
+#endif  // __GOPHER_HPP__

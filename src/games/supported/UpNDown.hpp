@@ -29,56 +29,52 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Up N Down */
 class UpNDownSettings : public RomSettings {
+ public:
+  UpNDownSettings();
 
-    public:
+  // reset
+  void reset();
 
-        UpNDownSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "up_n_down"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "up_n_down"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  // UpNDown requires the fire action to start the game
+  ActionVect getStartingActions();
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
-        // UpNDown requires the fire action to start the game
-        ActionVect getStartingActions();
+  // returns a list of difficulties that the game can be played in
+  // in this game, there are 4 available difficulties
+  DifficultyVect getAvailableDifficulties();
 
-        virtual int lives() { return isTerminal() ? 0 : m_lives; }
-
-        // returns a list of difficulties that the game can be played in
-        // in this game, there are 4 available difficulties
-        DifficultyVect getAvailableDifficulties();
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 };
 
-#endif // __UPNDOWN_HPP__
+#endif  // __UPNDOWN_HPP__

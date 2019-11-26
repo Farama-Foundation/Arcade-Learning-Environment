@@ -28,86 +28,66 @@
 
 #include "../RomUtils.hpp"
 
-
-TutankhamSettings::TutankhamSettings() {
-
-    reset();
-}
-
+TutankhamSettings::TutankhamSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* TutankhamSettings::clone() const {
-
-    RomSettings* rval = new TutankhamSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new TutankhamSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void TutankhamSettings::step(const System& system) {
+  // update the reward
+  int score = getDecimalScore(0x9C, 0x9A, &system);
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update the reward
-    int score = getDecimalScore(0x9C, 0x9A, &system);
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  // update terminal status
+  int lives_byte = readRam(&system, 0x9E);
+  // byte 0x81 is set to 0x84 when the game is loaded, but not reset
+  int some_byte = readRam(&system, 0x81);
 
-    // update terminal status
-    int lives_byte = readRam(&system, 0x9E);
-    // byte 0x81 is set to 0x84 when the game is loaded, but not reset
-    int some_byte = readRam(&system, 0x81);
+  m_terminal = lives_byte == 0 && some_byte != 0x84;
 
-    m_terminal = lives_byte == 0 && some_byte != 0x84;
-
-    m_lives = (lives_byte & 0x3);
+  m_lives = (lives_byte & 0x3);
 }
-
 
 /* is end of game */
-bool TutankhamSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool TutankhamSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t TutankhamSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t TutankhamSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool TutankhamSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPFIRE:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool TutankhamSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void TutankhamSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 3;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 3;
 }
 
 /* saves the state of the rom settings */
-void TutankhamSettings::saveState(Serializer & ser) {
+void TutankhamSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -115,7 +95,7 @@ void TutankhamSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void TutankhamSettings::loadState(Deserializer & ser) {
+void TutankhamSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -124,27 +104,26 @@ void TutankhamSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect TutankhamSettings::getAvailableModes() {
-    ModeVect modes = {0, 4, 8, 12};
-    return modes;
+  ModeVect modes = {0, 4, 8, 12};
+  return modes;
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
-void TutankhamSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
-
-    if(m == 0 || m == 4 || m == 8 || m == 12) {
-        // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0xAB);
-        // press select until the correct mode is reached
-        while (mode != m) {
-            environment->pressSelect(2);
-            mode = readRam(&system, 0xAB);
-        }
-        //reset the environment to apply changes.
-        environment->softReset();
+void TutankhamSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  if (m == 0 || m == 4 || m == 8 || m == 12) {
+    // read the mode we are currently in
+    unsigned char mode = readRam(&system, 0xAB);
+    // press select until the correct mode is reached
+    while (mode != m) {
+      environment->pressSelect(2);
+      mode = readRam(&system, 0xAB);
     }
-    else {
-        throw std::runtime_error("This mode doesn't currently exist for this game");
-    }
- }
+    //reset the environment to apply changes.
+    environment->softReset();
+  } else {
+    throw std::runtime_error("This mode doesn't currently exist for this game");
+  }
+}

@@ -13,89 +13,69 @@
 
 #include "../RomUtils.hpp"
 
-
-TurmoilSettings::TurmoilSettings() {
-
-    reset();
-}
-
+TurmoilSettings::TurmoilSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* TurmoilSettings::clone() const {
-
-    RomSettings* rval = new TurmoilSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new TurmoilSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void TurmoilSettings::step(const System& system) {
+  // update the reward
+  int score = getDecimalScore(0x89, 0x8A, &system);
+  score += readRam(&system, 0xD3);
+  score *= 10;
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update the reward
-    int score = getDecimalScore(0x89, 0x8A, &system);
-	score += readRam(&system, 0xD3);
-    score *= 10;
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  // update terminal status
+  int lives_byte = readRam(&system, 0xB9);
+  m_terminal = (lives_byte == 0) && readRam(&system, 0xC5) == 0x01;
 
-    // update terminal status
-    int lives_byte = readRam(&system, 0xB9);
-    m_terminal = (lives_byte == 0) && readRam(&system, 0xC5) == 0x01;
-
-    m_lives = lives_byte;
+  m_lives = lives_byte;
 }
-
 
 /* is end of game */
-bool TurmoilSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool TurmoilSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t TurmoilSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t TurmoilSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool TurmoilSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPRIGHT:
-        case PLAYER_A_UPLEFT:
-        case PLAYER_A_DOWNRIGHT:
-        case PLAYER_A_DOWNLEFT:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool TurmoilSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPRIGHT:
+    case PLAYER_A_UPLEFT:
+    case PLAYER_A_DOWNRIGHT:
+    case PLAYER_A_DOWNLEFT:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void TurmoilSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 4;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 4;
 }
 
 /* saves the state of the rom settings */
-void TurmoilSettings::saveState(Serializer & ser) {
+void TurmoilSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -103,7 +83,7 @@ void TurmoilSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void TurmoilSettings::loadState(Deserializer & ser) {
+void TurmoilSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -111,7 +91,7 @@ void TurmoilSettings::loadState(Deserializer & ser) {
 }
 
 ActionVect TurmoilSettings::getStartingActions() {
-    ActionVect startingActions;
-    startingActions.push_back(PLAYER_A_FIRE);
-    return startingActions;
+  ActionVect startingActions;
+  startingActions.push_back(PLAYER_A_FIRE);
+  return startingActions;
 }

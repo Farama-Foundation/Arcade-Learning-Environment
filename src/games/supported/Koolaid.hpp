@@ -14,48 +14,44 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Koolaid */
 class KoolaidSettings : public RomSettings {
+ public:
+  KoolaidSettings();
 
-    public:
+  // reset
+  void reset();
 
-        KoolaidSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "koolaid"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "koolaid"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  virtual int lives() { return 0; }
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
-
-        virtual int lives() { return 0; }
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
 };
 
-#endif // __KOOLAID_HPP__
+#endif  // __KOOLAID_HPP__

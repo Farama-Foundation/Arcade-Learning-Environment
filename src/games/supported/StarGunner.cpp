@@ -28,107 +28,92 @@
 
 #include "../RomUtils.hpp"
 
-
-StarGunnerSettings::StarGunnerSettings() {
-
-    reset();
-}
-
+StarGunnerSettings::StarGunnerSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* StarGunnerSettings::clone() const {
-
-    RomSettings* rval = new StarGunnerSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new StarGunnerSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void StarGunnerSettings::step(const System& system) {
+  // update the reward
+  int lower_digit = readRam(&system, 0x83) & 0x0F;
+  if (lower_digit == 10)
+    lower_digit = 0;
+  int middle_digit = readRam(&system, 0x84) & 0x0F;
+  if (middle_digit == 10)
+    middle_digit = 0;
+  int higher_digit = readRam(&system, 0x85) & 0x0F;
+  if (higher_digit == 10)
+    higher_digit = 0;
+  int digit_4 = readRam(&system, 0x86) & 0x0F;
+  if (digit_4 == 10)
+    digit_4 = 0;
+  int score =
+      lower_digit + 10 * middle_digit + 100 * higher_digit + 1000 * digit_4;
+  score *= 100;
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update the reward
-    int lower_digit = readRam(&system, 0x83) & 0x0F;
-    if (lower_digit == 10) lower_digit = 0;
-    int middle_digit = readRam(&system, 0x84) & 0x0F;
-    if (middle_digit == 10) middle_digit = 0;
-    int higher_digit = readRam(&system, 0x85) & 0x0F;
-    if (higher_digit == 10) higher_digit = 0;
-    int digit_4 = readRam(&system, 0x86) & 0x0F;
-    if (digit_4 == 10) digit_4 = 0;
-    int score = lower_digit + 10 * middle_digit + 100 * higher_digit + 1000 * digit_4;
-    score *= 100;
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  // update terminal status
+  int lives_byte = readRam(&system, 0x87);
+  m_terminal = lives_byte == 0;
 
-    // update terminal status
-    int lives_byte = readRam(&system, 0x87);
-    m_terminal = lives_byte == 0;
+  // We record when the game starts, which is needed to deal with the lives == 6 starting
+  // situation
+  m_game_started |= lives_byte == 0x05;
 
-    // We record when the game starts, which is needed to deal with the lives == 6 starting
-    // situation
-    m_game_started |= lives_byte == 0x05;
-
-    m_lives = m_game_started ? (lives_byte & 0xF) : 5;
+  m_lives = m_game_started ? (lives_byte & 0xF) : 5;
 }
-
 
 /* is end of game */
-bool StarGunnerSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool StarGunnerSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t StarGunnerSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t StarGunnerSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool StarGunnerSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPRIGHT:
-        case PLAYER_A_UPLEFT:
-        case PLAYER_A_DOWNRIGHT:
-        case PLAYER_A_DOWNLEFT:
-        case PLAYER_A_UPFIRE:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_DOWNFIRE:
-        case PLAYER_A_UPRIGHTFIRE:
-        case PLAYER_A_UPLEFTFIRE:
-        case PLAYER_A_DOWNRIGHTFIRE:
-        case PLAYER_A_DOWNLEFTFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool StarGunnerSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPRIGHT:
+    case PLAYER_A_UPLEFT:
+    case PLAYER_A_DOWNRIGHT:
+    case PLAYER_A_DOWNLEFT:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_DOWNFIRE:
+    case PLAYER_A_UPRIGHTFIRE:
+    case PLAYER_A_UPLEFTFIRE:
+    case PLAYER_A_DOWNRIGHTFIRE:
+    case PLAYER_A_DOWNLEFTFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void StarGunnerSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 5;
-    m_game_started = false;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 5;
+  m_game_started = false;
 }
 
 /* saves the state of the rom settings */
-void StarGunnerSettings::saveState(Serializer & ser) {
+void StarGunnerSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -137,7 +122,7 @@ void StarGunnerSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void StarGunnerSettings::loadState(Deserializer & ser) {
+void StarGunnerSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -147,30 +132,29 @@ void StarGunnerSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect StarGunnerSettings::getAvailableModes() {
-    ModeVect modes(getNumModes());
-    for (unsigned int i = 0; i < modes.size(); i++) {
-        modes[i] = i;
-    }
-    return modes;
+  ModeVect modes(getNumModes());
+  for (unsigned int i = 0; i < modes.size(); i++) {
+    modes[i] = i;
+  }
+  return modes;
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
-void StarGunnerSettings::setMode(game_mode_t m, System &system,
+void StarGunnerSettings::setMode(
+    game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-
-    if(m < getNumModes()) {
-        // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0xF4);
-        // press select until the correct mode is reached
-        while (mode != m) {
-            environment->pressSelect(15);
-            mode = readRam(&system, 0xF4);
-        }
-        //reset the environment to apply changes.
-        environment->softReset();
+  if (m < getNumModes()) {
+    // read the mode we are currently in
+    unsigned char mode = readRam(&system, 0xF4);
+    // press select until the correct mode is reached
+    while (mode != m) {
+      environment->pressSelect(15);
+      mode = readRam(&system, 0xF4);
     }
-    else {
-        throw std::runtime_error("This mode doesn't currently exist for this game");
-    }
- }
+    //reset the environment to apply changes.
+    environment->softReset();
+  } else {
+    throw std::runtime_error("This mode doesn't currently exist for this game");
+  }
+}
