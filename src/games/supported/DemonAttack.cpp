@@ -28,88 +28,69 @@
 
 #include "../RomUtils.hpp"
 
-
-DemonAttackSettings::DemonAttackSettings() {
-
-    reset();
-}
-
+DemonAttackSettings::DemonAttackSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* DemonAttackSettings::clone() const {
-
-    RomSettings* rval = new DemonAttackSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new DemonAttackSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void DemonAttackSettings::step(const System& system) {
+  // update the reward
+  int score = getDecimalScore(0x85, 0x83, 0x81, &system);
+  // MGB: something funny with the RAM; it is not initialized to 0?
+  if (readRam(&system, 0x81) == 0xAB && readRam(&system, 0x83) == 0xCD &&
+      readRam(&system, 0x85) == 0xEA)
+    score = 0;
+  m_reward = score - m_score;
+  m_score = score;
 
-    // update the reward
-    int score = getDecimalScore(0x85, 0x83, 0x81, &system);
-    // MGB: something funny with the RAM; it is not initialized to 0?
-    if (readRam(&system, 0x81) == 0xAB &&
-        readRam(&system, 0x83) == 0xCD &&
-        readRam(&system, 0x85) == 0xEA) score = 0;
-    m_reward = score - m_score;
-    m_score = score;
-
-    // update terminal status
-    int lives_displayed = readRam(&system, 0xF2);
-    int display_flag = readRam(&system, 0xF1);
-    // for terminal checking, we must make sure that we do not detect incorrectly a level change as a game-over
-    m_terminal = (lives_displayed == 0) && display_flag == 0xBD && !m_level_change;
-    m_lives = lives_displayed + 1; // Once we reach terminal, lives() will correctly return 0
-    m_level_change = false;
+  // update terminal status
+  int lives_displayed = readRam(&system, 0xF2);
+  int display_flag = readRam(&system, 0xF1);
+  // for terminal checking, we must make sure that we do not detect incorrectly a level change as a game-over
+  m_terminal =
+      (lives_displayed == 0) && display_flag == 0xBD && !m_level_change;
+  m_lives = lives_displayed +
+            1; // Once we reach terminal, lives() will correctly return 0
+  m_level_change = false;
 }
-
 
 /* is end of game */
-bool DemonAttackSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool DemonAttackSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t DemonAttackSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t DemonAttackSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool DemonAttackSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool DemonAttackSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void DemonAttackSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 4;
-    m_level_change = false;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 4;
+  m_level_change = false;
 }
 
-
 /* saves the state of the rom settings */
-void DemonAttackSettings::saveState(Serializer & ser) {
+void DemonAttackSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -117,7 +98,7 @@ void DemonAttackSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void DemonAttackSettings::loadState(Deserializer & ser) {
+void DemonAttackSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -126,36 +107,35 @@ void DemonAttackSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect DemonAttackSettings::getAvailableModes() {
-    ModeVect modes = {1, 3, 5, 7};
-    return modes;
+  ModeVect modes = {1, 3, 5, 7};
+  return modes;
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
-void DemonAttackSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
-
-    if(m == 0) {
-	m = 1; // The default mode is not valid here
+void DemonAttackSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  if (m == 0) {
+    m = 1; // The default mode is not valid here
+  }
+  if (m == 1 || m == 3 || m == 5 || m == 7) {
+    // read the mode we are currently in
+    unsigned char mode = readRam(&system, 0xEA);
+    // press select until the correct mode is reached
+    while (mode != m) {
+      environment->pressSelect(1);
+      mode = readRam(&system, 0xEA);
     }
-    if(m == 1 || m == 3 || m == 5 || m == 7) {
-        // read the mode we are currently in
-        unsigned char mode = readRam(&system, 0xEA);
-        // press select until the correct mode is reached
-        while (mode != m) {
-            environment->pressSelect(1);
-            mode = readRam(&system, 0xEA);
-        }
-        m_level_change = true;
-        //reset the environment to apply changes.
-        environment->softReset();
-    }
-    else {
-        throw std::runtime_error("This mode doesn't currently exist for this game");
-    }
- }
+    m_level_change = true;
+    //reset the environment to apply changes.
+    environment->softReset();
+  } else {
+    throw std::runtime_error("This mode doesn't currently exist for this game");
+  }
+}
 
 DifficultyVect DemonAttackSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+  DifficultyVect diff = {0, 1};
+  return diff;
 }

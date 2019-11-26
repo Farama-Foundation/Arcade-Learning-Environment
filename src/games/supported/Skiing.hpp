@@ -29,52 +29,48 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Skiing */
 class SkiingSettings : public RomSettings {
+ public:
+  SkiingSettings();
 
-    public:
+  // reset
+  void reset();
 
-        SkiingSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "skiing"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "skiing"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  bool isLegal(const Action& a) const;
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        bool isLegal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  ActionVect getStartingActions();
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  virtual int lives() { return 0; }
 
-        ActionVect getStartingActions();
-
-        virtual int lives() { return 0; }
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
 };
 
-#endif // __SKIING_HPP__
+#endif  // __SKIING_HPP__

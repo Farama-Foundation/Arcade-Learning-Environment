@@ -14,49 +14,48 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Laser Gates */
 class LaserGatesSettings : public RomSettings {
-    public:
-        LaserGatesSettings();
+ public:
+  LaserGatesSettings();
 
-        // reset
-        void reset();
+  // reset
+  void reset();
 
-        // is end of game
-        bool isTerminal() const;
+  // is end of game
+  bool isTerminal() const;
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // the rom-name
-		// MD5 1fa58679d4a39052bd9db059e8cda4ad
-        const char* rom() const { return "laser_gates"; }
+  // the rom-name
+  // MD5 1fa58679d4a39052bd9db059e8cda4ad
+  const char* rom() const { return "laser_gates"; }
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // LaserGates requires the fire action to start the game
-        ActionVect getStartingActions();
+  // LaserGates requires the fire action to start the game
+  ActionVect getStartingActions();
 
-        virtual int lives() { return 0; }
+  virtual int lives() { return 0; }
 
-    private:
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
 };
 
-#endif // __LASERGATES_HPP__
+#endif  // __LASERGATES_HPP__

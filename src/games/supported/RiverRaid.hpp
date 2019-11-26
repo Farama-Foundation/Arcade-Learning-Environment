@@ -33,55 +33,52 @@
 
 /* RL wrapper for RiverRaid */
 class RiverRaidSettings : public RomSettings {
+ public:
+  RiverRaidSettings();
 
-    public:
+  // reset
+  void reset();
 
-        RiverRaidSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "riverraid"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "riverraid"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  virtual int lives() { return isTerminal() ? 0 : numericLives(); }
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // returns a list of difficulties that the game can be played in
+  // in this game, there are 2 available difficulties
+  DifficultyVect getAvailableDifficulties();
 
-        virtual int lives() { return isTerminal() ? 0 : numericLives(); }
+ private:
+  /** Necessary because Riverraid stores its lives in a very strange format */
+  int numericLives() const;
 
-        // returns a list of difficulties that the game can be played in
-        // in this game, there are 2 available difficulties
-        DifficultyVect getAvailableDifficulties();
-
-    private:
-
-        /** Necessary because Riverraid stores its lives in a very strange format */
-        int numericLives() const;
-
-        std::map<int, int> m_ram_vals_to_digits;
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives_byte;
-        int m_lives;
+  std::map<int, int> m_ram_vals_to_digits;
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives_byte;
+  int m_lives;
 };
 
-#endif // __RIVERRAID_HPP__
+#endif  // __RIVERRAID_HPP__

@@ -28,79 +28,59 @@
 
 #include "../RomUtils.hpp"
 
-
-AssaultSettings::AssaultSettings() {
-
-    reset();
-}
-
+AssaultSettings::AssaultSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AssaultSettings::clone() const {
-
-    RomSettings* rval = new AssaultSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new AssaultSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void AssaultSettings::step(const System& system) {
+  // update the reward
+  reward_t score = getDecimalScore(0x82, 0x81, 0x80, &system);
+  m_reward = score - m_score;
+  m_score = score;
 
-    // update the reward
-    reward_t score = getDecimalScore(0x82, 0x81, 0x80, &system);
-    m_reward = score - m_score;
-    m_score = score;
-
-    // update terminal status
-    m_lives = readRam(&system, 0xE5);
-    m_terminal = (m_lives == 0);
+  // update terminal status
+  m_lives = readRam(&system, 0xE5);
+  m_terminal = (m_lives == 0);
 }
-
 
 /* is end of game */
-bool AssaultSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool AssaultSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t AssaultSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t AssaultSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool AssaultSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool AssaultSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void AssaultSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 4;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 4;
 }
 
 /* saves the state of the rom settings */
-void AssaultSettings::saveState(Serializer & ser) {
+void AssaultSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -108,7 +88,7 @@ void AssaultSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void AssaultSettings::loadState(Deserializer & ser) {
+void AssaultSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();

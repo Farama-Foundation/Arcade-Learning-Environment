@@ -29,49 +29,45 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Montezuma Revenge */
 class MontezumaRevengeSettings : public RomSettings {
+ public:
+  MontezumaRevengeSettings();
 
-    public:
+  // reset
+  void reset();
 
-        MontezumaRevengeSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "montezuma_revenge"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "montezuma_revenge"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
-
-        virtual int lives() { return isTerminal() ? 0 : m_lives; }
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 };
 
-#endif // __MONTEZUMAREVENGE_HPP__
+#endif  // __MONTEZUMAREVENGE_HPP__

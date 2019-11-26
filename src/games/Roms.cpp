@@ -90,9 +90,8 @@
 #include "supported/YarsRevenge.hpp"
 #include "supported/Zaxxon.hpp"
 
-
 /* list of supported games */
-static const RomSettings *roms[]  = {
+static const RomSettings* roms[] = {
     new AdventureSettings(),
     new AirRaidSettings(),
     new AlienSettings(),
@@ -171,19 +170,18 @@ static const RomSettings *roms[]  = {
     new ZaxxonSettings(),
 };
 
-
 /* looks for the RL wrapper corresponding to a particular rom title */
-RomSettings *buildRomRLWrapper(const std::string &rom) {
+RomSettings* buildRomRLWrapper(const std::string& rom) {
+  size_t slash_ind = rom.find_last_of("/\\");
+  std::string rom_str = rom.substr(slash_ind + 1);
+  size_t dot_idx = rom_str.find_first_of(".");
+  rom_str = rom_str.substr(0, dot_idx);
+  std::transform(rom_str.begin(), rom_str.end(), rom_str.begin(), ::tolower);
 
-    size_t slash_ind = rom.find_last_of("/\\");
-    std::string rom_str = rom.substr(slash_ind + 1);
-    size_t dot_idx = rom_str.find_first_of(".");
-    rom_str = rom_str.substr(0, dot_idx);
-    std::transform(rom_str.begin(), rom_str.end(), rom_str.begin(), ::tolower);
+  for (size_t i = 0; i < sizeof(roms) / sizeof(roms[0]); i++) {
+    if (rom_str == roms[i]->rom())
+      return roms[i]->clone();
+  }
 
-    for (size_t i=0; i < sizeof(roms)/sizeof(roms[0]); i++) {
-        if (rom_str == roms[i]->rom()) return roms[i]->clone();
-    }
-
-    return NULL;
+  return NULL;
 }

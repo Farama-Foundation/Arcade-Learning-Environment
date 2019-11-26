@@ -27,14 +27,10 @@
 
 #include "../RomUtils.hpp"
 
-AdventureSettings::AdventureSettings() {
-
-  reset();
-}
+AdventureSettings::AdventureSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AdventureSettings::clone() const {
-
   RomSettings* rval = new AdventureSettings();
   *rval = *this;
   return rval;
@@ -42,7 +38,6 @@ RomSettings* AdventureSettings::clone() const {
 
 /* process the latest information from ALE */
 void AdventureSettings::step(const System& system) {
-
   int chalice_status = readRam(&system, 0xB9);
   bool chalice_in_yellow_castle = chalice_status == 0x12;
 
@@ -57,67 +52,59 @@ void AdventureSettings::step(const System& system) {
 }
 
 /* is end of game */
-bool AdventureSettings::isTerminal() const {
-
-  return m_terminal;
-}
+bool AdventureSettings::isTerminal() const { return m_terminal; }
 
 /* get the most recently observed reward */
-reward_t AdventureSettings::getReward() const {
-
-  return m_reward;
-}
+reward_t AdventureSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool AdventureSettings::isMinimal(const Action &a) const {
-
+bool AdventureSettings::isMinimal(const Action& a) const {
   switch (a) {
-  case PLAYER_A_NOOP:
-  case PLAYER_A_FIRE:
-  case PLAYER_A_UP:
-  case PLAYER_A_RIGHT:
-  case PLAYER_A_LEFT:
-  case PLAYER_A_DOWN:
-  case PLAYER_A_UPRIGHT:
-  case PLAYER_A_UPLEFT:
-  case PLAYER_A_DOWNRIGHT:
-  case PLAYER_A_DOWNLEFT:
-  case PLAYER_A_UPFIRE:
-  case PLAYER_A_RIGHTFIRE:
-  case PLAYER_A_LEFTFIRE:
-  case PLAYER_A_DOWNFIRE:
-  case PLAYER_A_UPRIGHTFIRE:
-  case PLAYER_A_UPLEFTFIRE:
-  case PLAYER_A_DOWNRIGHTFIRE:
-  case PLAYER_A_DOWNLEFTFIRE:
-    return true;
-  default:
-    return false;
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPRIGHT:
+    case PLAYER_A_UPLEFT:
+    case PLAYER_A_DOWNRIGHT:
+    case PLAYER_A_DOWNLEFT:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_DOWNFIRE:
+    case PLAYER_A_UPRIGHTFIRE:
+    case PLAYER_A_UPLEFTFIRE:
+    case PLAYER_A_DOWNRIGHTFIRE:
+    case PLAYER_A_DOWNLEFTFIRE:
+      return true;
+    default:
+      return false;
   }
 }
 
 /* reset the state of the game */
 void AdventureSettings::reset() {
-
   m_reward = 0;
   m_terminal = false;
 }
 
 /* saves the state of the rom settings */
-void AdventureSettings::saveState(Serializer & ser) {
+void AdventureSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putBool(m_terminal);
 }
 
 // loads the state of the rom settings
-void AdventureSettings::loadState(Deserializer & ser) {
+void AdventureSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_terminal = ser.getBool();
 }
 
 // Returns the supported modes for the game.
 ModeVect AdventureSettings::getAvailableModes() {
-    return ModeVect() = {0, 1, 2};
+  return ModeVect() = {0, 1, 2};
 }
 
 // Set the game mode.
@@ -133,25 +120,25 @@ ModeVect AdventureSettings::getAvailableModes() {
 //   low byte of its internal frame counter at RAM address 0xE5 to seed the rng.
 //   Due to the way game modes are set below this will always be the same value
 //   at present so only 1/256 randomised configuration is available.
-void AdventureSettings::setMode(game_mode_t m, System &system,
+void AdventureSettings::setMode(
+    game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-
-    if (m < 3) {
-        // Read the mode we are currently in.
-        unsigned char mode = (readRam(&system, 0xDD) >> 1) & 0x03;
-        // Press select until the correct mode is reached.
-        while (mode != m) {
-            environment->pressSelect(2);
-            // Adventure uses a debouncer so need to wait before the select
-            // take effect.
-            environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
-            mode = (readRam(&system, 0xDD) >> 1) & 0x03;
-        }
-        // Reset the environment to apply changes.
-        environment->softReset();
-    } else {
-        throw std::runtime_error("This game mode is not supported.");
+  if (m < 3) {
+    // Read the mode we are currently in.
+    unsigned char mode = (readRam(&system, 0xDD) >> 1) & 0x03;
+    // Press select until the correct mode is reached.
+    while (mode != m) {
+      environment->pressSelect(2);
+      // Adventure uses a debouncer so need to wait before the select
+      // take effect.
+      environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+      mode = (readRam(&system, 0xDD) >> 1) & 0x03;
     }
+    // Reset the environment to apply changes.
+    environment->softReset();
+  } else {
+    throw std::runtime_error("This game mode is not supported.");
+  }
 }
 
 // Return the supported difficulty settings for the game.
@@ -159,5 +146,5 @@ void AdventureSettings::setMode(game_mode_t m, System &system,
 // one difficulty switch controls controls the dragons' bite speed, and one
 // causes them to flee when the player is wielding the sword.
 DifficultyVect AdventureSettings::getAvailableDifficulties() {
-    return DifficultyVect() = {0, 1, 2, 3};
+  return DifficultyVect() = {0, 1, 2, 3};
 }
