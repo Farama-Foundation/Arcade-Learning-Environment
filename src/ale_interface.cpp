@@ -55,7 +55,8 @@ using namespace ale;
 std::string ALEInterface::welcomeMessage() {
   std::ostringstream oss;
   oss << "A.L.E: Arcade Learning Environment (version " << Version << ")\n"
-      << "[Powered by Stella]\n" << "Use -help for help screen.";
+      << "[Powered by Stella]\n"
+      << "Use -help for help screen.";
   return oss.str();
 }
 
@@ -68,8 +69,8 @@ void ALEInterface::disableBufferedIO() {
   std::cout.sync_with_stdio();
 }
 
-void ALEInterface::createOSystem(std::unique_ptr<OSystem> &theOSystem,
-                          std::unique_ptr<Settings> &theSettings) {
+void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
+                                 std::unique_ptr<Settings>& theSettings) {
 #if (defined(WIN32) || defined(__MINGW32__))
   theOSystem.reset(new OSystemWin32());
   theSettings.reset(new SettingsWin32(theOSystem.get()));
@@ -81,7 +82,8 @@ void ALEInterface::createOSystem(std::unique_ptr<OSystem> &theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-void ALEInterface::checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem) {
+void ALEInterface::checkForUnsupportedRom(
+    std::unique_ptr<OSystem>& theOSystem) {
   const Properties properties = theOSystem->console().properties();
   const std::string md5 = properties.get(Cartridge_MD5);
   bool found = false;
@@ -96,7 +98,8 @@ void ALEInterface::checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem) 
   if (!found) {
     // If the md5 doesn't match our master list, warn the user.
     Logger::Warning << std::endl;
-    Logger::Warning << "WARNING: Possibly unsupported ROM: mismatched MD5." << std::endl;
+    Logger::Warning << "WARNING: Possibly unsupported ROM: mismatched MD5."
+                    << std::endl;
     Logger::Warning << "Cartridge_MD5: " << md5 << std::endl;
     const std::string name = properties.get(Cartridge_Name);
     Logger::Warning << "Cartridge_name: " << name << std::endl;
@@ -105,7 +108,7 @@ void ALEInterface::checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem) 
 }
 
 void ALEInterface::loadSettings(const std::string& romfile,
-                                std::unique_ptr<OSystem> &theOSystem) {
+                                std::unique_ptr<OSystem>& theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
   std::string configFile = theOSystem->settings().getString("config", false);
@@ -124,7 +127,7 @@ void ALEInterface::loadSettings(const std::string& romfile,
   } else if (!FilesystemNode::fileExists(romfile)) {
     Logger::Error << "ROM file " << romfile << " not found." << std::endl;
     exit(1);
-  } else if (theOSystem->createConsole(romfile))  {
+  } else if (theOSystem->createConsole(romfile)) {
     checkForUnsupportedRom(theOSystem);
     Logger::Info << "Running ROM file..." << std::endl;
     theOSystem->settings().setString("rom_file", romfile);
@@ -133,10 +136,10 @@ void ALEInterface::loadSettings(const std::string& romfile,
     exit(1);
   }
 
-// Must force the resetting of the OSystem's random seed, which is set before we change
-// choose our random seed.
+  // Must force the resetting of the OSystem's random seed, which is set before we change
+  // choose our random seed.
   Logger::Info << "Random seed is "
-      << theOSystem->settings().getInt("random_seed") << std::endl;
+               << theOSystem->settings().getInt("random_seed") << std::endl;
   theOSystem->resetRNGSeed();
 
   std::string currentDisplayFormat = theOSystem->console().getFormat();
@@ -156,8 +159,7 @@ ALEInterface::ALEInterface(bool display_screen) {
   this->setBool("display_screen", display_screen);
 }
 
-ALEInterface::~ALEInterface() {
-}
+ALEInterface::~ALEInterface() {}
 
 // Loads and initializes a game. After this call the game should be
 // ready to play. Resets the OSystem/Console/Environment/etc. This is
@@ -176,12 +178,13 @@ void ALEInterface::loadROM(std::string rom_file = "") {
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
     Logger::Error
-        << "Screen display requires directive __USE_SDL to be defined." << std::endl;
+        << "Screen display requires directive __USE_SDL to be defined."
+        << std::endl;
     Logger::Error << "Please recompile this code with flag '-D__USE_SDL'."
-        << std::endl;
-    Logger::Error
-        << "Also ensure ALE has been compiled with USE_SDL active (see ALE makefile)."
-        << std::endl;
+                  << std::endl;
+    Logger::Error << "Also ensure ALE has been compiled with USE_SDL active "
+                     "(see ALE makefile)."
+                  << std::endl;
     exit(1);
   }
 #endif
@@ -232,14 +235,10 @@ void ALEInterface::setFloat(const std::string& key, const float value) {
 }
 
 // Resets the game, but not the full system.
-void ALEInterface::reset_game() {
-  environment->reset();
-}
+void ALEInterface::reset_game() { environment->reset(); }
 
 // Indicates if the game has ended.
-bool ALEInterface::game_over() const {
-  return environment->isTerminal();
-}
+bool ALEInterface::game_over() const { return environment->isTerminal(); }
 
 // The remaining number of lives.
 int ALEInterface::lives() {
@@ -278,7 +277,7 @@ ModeVect ALEInterface::getAvailableModes() {
 void ALEInterface::setMode(game_mode_t m) {
   //We first need to make sure m is an available mode
   ModeVect available = romSettings->getAvailableModes();
-  if(find(available.begin(), available.end(), m) != available.end()) {
+  if (find(available.begin(), available.end(), m) != available.end()) {
     environment->setMode(m);
   } else {
     throw std::runtime_error("Invalid game mode requested");
@@ -296,7 +295,7 @@ DifficultyVect ALEInterface::getAvailableDifficulties() {
 // This should be called only after the rom is loaded.
 void ALEInterface::setDifficulty(difficulty_t m) {
   DifficultyVect available = romSettings->getAvailableDifficulties();
-  if(find(available.begin(), available.end(), m) != available.end()) {
+  if (find(available.begin(), available.end(), m) != available.end()) {
     environment->setDifficulty(m);
   } else {
     throw std::runtime_error("Invalid difficulty requested");
@@ -322,9 +321,7 @@ ActionVect ALEInterface::getMinimalActionSet() {
 }
 
 // Returns the frame number since the loading of the ROM
-int ALEInterface::getFrameNumber() {
-  return environment->getFrameNumber();
-}
+int ALEInterface::getFrameNumber() { return environment->getFrameNumber(); }
 
 // Returns the frame number since the start of the current episode
 int ALEInterface::getEpisodeFrameNumber() const {
@@ -332,9 +329,7 @@ int ALEInterface::getEpisodeFrameNumber() const {
 }
 
 // Returns the current game screen
-const ALEScreen& ALEInterface::getScreen() {
-  return environment->getScreen();
-}
+const ALEScreen& ALEInterface::getScreen() { return environment->getScreen(); }
 
 //This method should receive an empty vector to fill it with
 //the grayscale colours
@@ -344,9 +339,9 @@ void ALEInterface::getScreenGrayscale(
   size_t h = environment->getScreen().height();
   size_t screen_size = w * h;
 
-  pixel_t *ale_screen_data = environment->getScreen().getArray();
-  theOSystem->colourPalette().applyPaletteGrayscale(grayscale_output_buffer,
-      ale_screen_data, screen_size);
+  pixel_t* ale_screen_data = environment->getScreen().getArray();
+  theOSystem->colourPalette().applyPaletteGrayscale(
+      grayscale_output_buffer, ale_screen_data, screen_size);
 }
 
 //This method should receive a vector to fill it with
@@ -357,29 +352,22 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
   size_t h = environment->getScreen().height();
   size_t screen_size = w * h;
 
-  pixel_t *ale_screen_data = environment->getScreen().getArray();
+  pixel_t* ale_screen_data = environment->getScreen().getArray();
 
-  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer, ale_screen_data, screen_size);
+  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer,
+                                              ale_screen_data, screen_size);
 }
 
 // Returns the current RAM content
-const ALERAM& ALEInterface::getRAM() {
-  return environment->getRAM();
-}
+const ALERAM& ALEInterface::getRAM() { return environment->getRAM(); }
 
 // Saves the state of the system
-void ALEInterface::saveState() {
-  environment->save();
-}
+void ALEInterface::saveState() { environment->save(); }
 
 // Loads the state of the system
-void ALEInterface::loadState() {
-  environment->load();
-}
+void ALEInterface::loadState() { environment->load(); }
 
-ALEState ALEInterface::cloneState() {
-  return environment->cloneState();
-}
+ALEState ALEInterface::cloneState() { return environment->cloneState(); }
 
 void ALEInterface::restoreState(const ALEState& state) {
   return environment->restoreState(state);
@@ -398,7 +386,7 @@ void ALEInterface::saveScreenPNG(const std::string& filename) {
   exporter.save(environment->getScreen(), filename);
 }
 
-ScreenExporter *ALEInterface::createScreenExporter(
-    const std::string &filename) const {
+ScreenExporter*
+ALEInterface::createScreenExporter(const std::string& filename) const {
   return new ScreenExporter(theOSystem->colourPalette(), filename);
 }

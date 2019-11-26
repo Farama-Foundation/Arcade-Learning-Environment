@@ -24,118 +24,112 @@
 #include <cstdlib>
 
 // From RL-Glue agent example.
-int randInRange(int max){
-	double r, x;
-	r = ((double)rand() / ((double)(RAND_MAX)+(double)(1)));
-   	x = (r * (max+1));
-	return (int)x;
+int randInRange(int max) {
+  double r, x;
+  r = ((double)rand() / ((double)(RAND_MAX) + (double)(1)));
+  x = (r * (max + 1));
+  return (int)x;
 }
-
 
 // Print the RAM string
 void printRAM(char* str) {
+  // First we parse the ram (for pedagogical purposes)
+  std::vector<int> ram;
 
-    // First we parse the ram (for pedagogical purposes)
-    std::vector<int> ram;
+  for (int offset = 0; offset < 128; offset++) {
+    // Crude but effective
+    char buffer[16];
+    buffer[0] = str[offset * 2];
+    buffer[1] = str[offset * 2 + 1];
+    buffer[2] = 0;
 
-    for (int offset = 0; offset < 128; offset++) {
+    int value = strtol(buffer, NULL, 16);
 
-        // Crude but effective
-        char buffer[16];
-        buffer[0] = str[offset * 2];
-        buffer[1] = str[offset * 2 + 1];
-        buffer[2] = 0;
+    ram.push_back(value);
+  }
 
-        int value = strtol(buffer, NULL, 16);
+  // Now, if so desired, regurgitate the RAM.
+  const bool printRAM = false;
 
-        ram.push_back(value);
-    }
-
-    // Now, if so desired, regurgitate the RAM.
-    const bool printRAM = false;
-
-    if (printRAM) for (int row = 0; row < 8; row++) {
-        for (int col = 0; col < 16; col++)
-            fprintf (stdout, "%2x ", ram[col + row*16]);
-        fprintf (stdout, "\n");
+  if (printRAM)
+    for (int row = 0; row < 8; row++) {
+      for (int col = 0; col < 16; col++)
+        fprintf(stdout, "%2x ", ram[col + row * 16]);
+      fprintf(stdout, "\n");
     }
 }
-
 
 // Read in RAM and RL data.
 bool readData(FILE* alePipe) {
+  char buffer[65535];
+  fgets(buffer, sizeof(buffer), alePipe);
 
-    char buffer[65535];
-    fgets(buffer, sizeof(buffer), alePipe);
+  // Find the first colon, corresponding to the end of the RAM data
+  char* endRAM = strchr(buffer, ':');
+  printRAM(buffer);
 
-    // Find the first colon, corresponding to the end of the RAM data
-    char* endRAM = strchr(buffer, ':');
-    printRAM(buffer);
+  // Now parse the terminal bit
+  bool terminal = (endRAM[1] == '1');
 
-    // Now parse the terminal bit
-    bool terminal = (endRAM[1] == '1');
+  // Also output reward whenever nonzero
+  int reward = strtol(&endRAM[3], NULL, 10);
+  if (reward != 0)
+    std::cout << "Reward: " << reward << std::endl;
 
-    // Also output reward whenever nonzero
-    int reward = strtol(&endRAM[3], NULL, 10);
-    if (reward != 0)
-        std::cout << "Reward: " << reward << std::endl;
-
-    return terminal;
+  return terminal;
 }
-
 
 void agentMain(FILE* alePipe) {
+  // Read in screen width and height
+  char buffer[1024];
+  fgets(buffer, sizeof(buffer), alePipe);
 
-    // Read in screen width and height
-    char buffer[1024];
-    fgets(buffer, sizeof(buffer), alePipe);
+  std::cout << "ALE says: " << buffer << std::endl;
 
-    std::cout << "ALE says: " << buffer << std::endl;
+  // Request RAM & RL data from ALE
+  fputs("0,1,0,1\n", alePipe);
 
-    // Request RAM & RL data from ALE
-    fputs("0,1,0,1\n", alePipe);
+  int frameNumber = 0;
 
-    int frameNumber = 0;
+  // Now loop until the episode terminates.
+  while (true) {
+    // Read in data
+    bool terminal = readData(alePipe);
 
-    // Now loop until the episode terminates.
-    while (true) {
+    frameNumber++;
 
-        // Read in data
-        bool terminal = readData(alePipe);
+    if (terminal)
+      break;
 
-        frameNumber++;
+    // Write back a random action.
+    fprintf(alePipe, "%d,%d\n", randInRange(17), 18);
+  }
 
-        if (terminal) break;
-
-        // Write back a random action.
-        fprintf(alePipe, "%d,%d\n", randInRange(17), 18);
-    }
-
-    std::cout << "Episode lasted " << frameNumber << " frames" << std::endl;
+  std::cout << "Episode lasted " << frameNumber << " frames" << std::endl;
 }
 
-
 int main(int argc, char** argv) {
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " rom_file" << std::endl;
+    std::cerr
+        << "Note: This example must be run from the same directory as the ALE "
+           "executable ('ale')."
+        << std::endl;
+    return 1;
+  }
 
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " rom_file" << std::endl;
-        std::cerr << "Note: This example must be run from the same directory as the ALE "
-            "executable ('ale')." << std::endl;
-        return 1;
-    }
+  std::string romFile(argv[1]);
 
-    std::string romFile(argv[1]);
+  // We actually fork two processes, ALE itself and an agent
+  std::string aleCmd("./ale -game_controller fifo ");
+  aleCmd += romFile;
 
-    // We actually fork two processes, ALE itself and an agent
-    std::string aleCmd("./ale -game_controller fifo ");
-    aleCmd += romFile;
+  // Spawn the ALE in read/write mode
+  // We could also use named pipes but that is a bit messier
+  FILE* alePipe = popen(aleCmd.c_str(), "r+");
 
-    // Spawn the ALE in read/write mode
-    // We could also use named pipes but that is a bit messier
-    FILE* alePipe = popen(aleCmd.c_str(), "r+");
+  // Now run the agent & communicate with the ale
+  agentMain(alePipe);
 
-    // Now run the agent & communicate with the ale
-    agentMain(alePipe);
-
-    pclose(alePipe);
+  pclose(alePipe);
 }

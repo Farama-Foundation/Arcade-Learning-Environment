@@ -25,26 +25,25 @@
 #include <memory>
 
 class ALEController {
-  public:
-    ALEController(OSystem * osystem);
-    virtual ~ALEController() {}
+ public:
+  ALEController(OSystem* osystem);
+  virtual ~ALEController() {}
 
-    /** Main loop. Returns once ALE terminates. */
-    virtual void run() = 0;
+  /** Main loop. Returns once ALE terminates. */
+  virtual void run() = 0;
 
-  protected:
-    friend class ALEInterface;
+ protected:
+  friend class ALEInterface;
 
-    /** Applies the given action to the environment (e.g. by emulating or resetting) */
-    reward_t applyActions(Action a, Action b);
-    /** Support for SDL display... available to all controllers. Simply call it from run(). */
-    void display();
+  /** Applies the given action to the environment (e.g. by emulating or resetting) */
+  reward_t applyActions(Action a, Action b);
+  /** Support for SDL display... available to all controllers. Simply call it from run(). */
+  void display();
 
-  protected:
-    OSystem* m_osystem;
-    std::unique_ptr<RomSettings> m_settings;
-    StellaEnvironment m_environment;
+ protected:
+  OSystem* m_osystem;
+  std::unique_ptr<RomSettings> m_settings;
+  StellaEnvironment m_environment;
 };
 
-
-#endif // __ALE_CONTROLLER_HPP__
+#endif  // __ALE_CONTROLLER_HPP__

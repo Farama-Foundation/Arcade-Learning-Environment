@@ -23,11 +23,11 @@
 #include "emucore/OSystem.hxx"
 
 #if (defined(WIN32) || defined(__MINGW32__))
-#   include "os_dependent/SettingsWin32.hxx"
-#   include "os_dependent/OSystemWin32.hxx"
+#include "os_dependent/SettingsWin32.hxx"
+#include "os_dependent/OSystemWin32.hxx"
 #else
-#   include "os_dependent/SettingsUNIX.hxx"
-#   include "os_dependent/OSystemUNIX.hxx"
+#include "os_dependent/SettingsUNIX.hxx"
+#include "os_dependent/OSystemUNIX.hxx"
 #endif
 
 #include "controllers/ale_controller.hpp"
@@ -41,23 +41,21 @@ static std::unique_ptr<OSystem> theOSystem;
 static std::unique_ptr<Settings> theSettings;
 
 static ALEController* createController(OSystem* osystem, std::string type) {
-  if(type.empty()){
-    std::cerr << "You must specify a controller type (via -game_controller)." << std::endl;
+  if (type.empty()) {
+    std::cerr << "You must specify a controller type (via -game_controller)."
+              << std::endl;
     exit(1);
-  }
-  else if (type == "fifo") {
+  } else if (type == "fifo") {
     std::cerr << "Game will be controlled through FIFO pipes." << std::endl;
     return new FIFOController(osystem, false);
-  }
-  else if (type == "fifo_named") {
-    std::cerr << "Game will be controlled through named FIFO pipes." << std::endl;
+  } else if (type == "fifo_named") {
+    std::cerr << "Game will be controlled through named FIFO pipes."
+              << std::endl;
     return new FIFOController(osystem, true);
-  }
-  else if (type == "rlglue") {
+  } else if (type == "rlglue") {
     std::cerr << "Game will be controlled through RL-Glue." << std::endl;
     return new RLGlueController(osystem);
-  }
-  else {
+  } else {
     std::cerr << "Invalid controller type: " << type << " " << std::endl;
     exit(1);
   }
@@ -65,7 +63,6 @@ static ALEController* createController(OSystem* osystem, std::string type) {
 
 /* application entry point */
 int main(int argc, char* argv[]) {
-
   ALEInterface::disableBufferedIO();
 
   std::cerr << ALEInterface::welcomeMessage() << std::endl;
@@ -77,8 +74,10 @@ int main(int argc, char* argv[]) {
   ALEInterface::loadSettings(romfile, theOSystem);
 
   // Create the game controller
-  std::string controller_type = theOSystem->settings().getString("game_controller");
-  std::unique_ptr<ALEController> controller(createController(theOSystem.get(), controller_type));
+  std::string controller_type =
+      theOSystem->settings().getString("game_controller");
+  std::unique_ptr<ALEController> controller(
+      createController(theOSystem.get(), controller_type));
 
   controller->run();
 

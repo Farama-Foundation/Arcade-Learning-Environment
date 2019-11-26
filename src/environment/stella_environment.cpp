@@ -16,18 +16,19 @@
  **************************************************************************** */
 
 #include "stella_environment.hpp"
-#include "../emucore/m6502/src/System.hxx"
+
 #include <sstream>
 
-StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
-  m_osystem(osystem),
-  m_settings(settings),
-  m_phosphor_blend(osystem),
-  m_screen(m_osystem->console().mediaSource().height(),
-        m_osystem->console().mediaSource().width()),
-  m_player_a_action(PLAYER_A_NOOP),
-  m_player_b_action(PLAYER_B_NOOP) {
+#include "../emucore/m6502/src/System.hxx"
 
+StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
+    : m_osystem(osystem),
+      m_settings(settings),
+      m_phosphor_blend(osystem),
+      m_screen(m_osystem->console().mediaSource().height(),
+               m_osystem->console().mediaSource().width()),
+      m_player_a_action(PLAYER_A_NOOP),
+      m_player_b_action(PLAYER_B_NOOP) {
   // Determine whether this is a paddle-based game
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
       m_osystem->console().properties().get(Controller_Right) == "PADDLES") {
@@ -43,24 +44,29 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   m_num_reset_steps = 4;
   m_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
 
-  m_max_num_frames_per_episode = m_osystem->settings().getInt("max_num_frames_per_episode");
+  m_max_num_frames_per_episode =
+      m_osystem->settings().getInt("max_num_frames_per_episode");
   m_colour_averaging = m_osystem->settings().getBool("color_averaging");
 
-  m_repeat_action_probability = m_osystem->settings().getFloat("repeat_action_probability");
+  m_repeat_action_probability =
+      m_osystem->settings().getFloat("repeat_action_probability");
 
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
-    ale::Logger::Warning << "Warning: frame skip set to < 1. Setting to 1." << std::endl;
+    ale::Logger::Warning << "Warning: frame skip set to < 1. Setting to 1."
+                         << std::endl;
     m_frame_skip = 1;
   }
 
   // If so desired, we record all emulated frames to a given directory
   std::string recordDir = m_osystem->settings().getString("record_screen_dir");
   if (!recordDir.empty()) {
-    ale::Logger::Info << "Recording screens to directory: " << recordDir << std::endl;
+    ale::Logger::Info << "Recording screens to directory: " << recordDir
+                      << std::endl;
 
     // Create the screen exporter
-    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir));
+    m_screen_exporter.reset(
+        new ScreenExporter(m_osystem->colourPalette(), recordDir));
   }
 }
 
@@ -85,12 +91,13 @@ void StellaEnvironment::reset() {
   m_settings->reset();
 
   // Apply mode that was previously defined, then soft reset with this mode
-  m_settings->setMode(m_state.getCurrentMode(), m_osystem->console().system(), getWrapper());
+  m_settings->setMode(m_state.getCurrentMode(), m_osystem->console().system(),
+                      getWrapper());
   softReset();
 
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
-  for (size_t i = 0; i < startingActions.size(); i++){
+  for (size_t i = 0; i < startingActions.size(); i++) {
     emulate(startingActions[i], PLAYER_B_NOOP);
   }
 }
@@ -127,9 +134,10 @@ void StellaEnvironment::restoreSystemState(const ALEState& target_state) {
   m_state.load(m_osystem, m_settings, m_cartridge_md5, target_state, true);
 }
 
-void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & player_b_action) {
+void StellaEnvironment::noopIllegalActions(Action& player_a_action,
+                                           Action& player_b_action) {
   if (player_a_action < (Action)PLAYER_B_NOOP &&
-        !m_settings->isLegal(player_a_action)) {
+      !m_settings->isLegal(player_a_action)) {
     player_a_action = (Action)PLAYER_A_NOOP;
   }
   // Also drop RESET, which doesn't play nice with our clean notions of RL environments
@@ -137,15 +145,14 @@ void StellaEnvironment::noopIllegalActions(Action & player_a_action, Action & pl
     player_a_action = (Action)PLAYER_A_NOOP;
 
   if (player_b_action < (Action)RESET &&
-        !m_settings->isLegal((Action)((int)player_b_action - PLAYER_B_NOOP))) {
+      !m_settings->isLegal((Action)((int)player_b_action - PLAYER_B_NOOP))) {
     player_b_action = (Action)PLAYER_B_NOOP;
-  }
-  else if (player_b_action == RESET)
+  } else if (player_b_action == RESET)
     player_b_action = (Action)PLAYER_B_NOOP;
 }
 
-reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) {
-
+reward_t StellaEnvironment::act(Action player_a_action,
+                                Action player_b_action) {
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
@@ -154,7 +161,6 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
   // Apply the same action for a given number of times... note that act() will refuse to emulate
   //  past the terminal state
   for (size_t i = 0; i < m_frame_skip; i++) {
-
     // Stochastically drop actions, according to m_repeat_action_probability
     if (rng.nextDouble() >= m_repeat_action_probability)
       m_player_a_action = player_a_action;
@@ -168,7 +174,7 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
 
     // Similarly record screen as needed
     if (m_screen_exporter.get() != NULL)
-        m_screen_exporter->saveNext(m_screen);
+      m_screen_exporter->saveNext(m_screen);
 
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
@@ -188,7 +194,8 @@ void StellaEnvironment::softReset() {
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
   *  and performs one simulation step in Stella. */
-reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_action) {
+reward_t StellaEnvironment::oneStepAct(Action player_a_action,
+                                       Action player_b_action) {
   // Once in a terminal state, refuse to go any further (special actions must be handled
   //  outside of this environment; in particular reset() should be called rather than passing
   //  RESET or SYSTEM_RESET.
@@ -208,8 +215,8 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
 
 bool StellaEnvironment::isTerminal() const {
   return (m_settings->isTerminal() ||
-    (m_max_num_frames_per_episode > 0 &&
-     m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));
+          (m_max_num_frames_per_episode > 0 &&
+           m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));
 }
 
 void StellaEnvironment::pressSelect(size_t num_steps) {
@@ -231,7 +238,8 @@ void StellaEnvironment::setMode(game_mode_t value) {
   m_state.setCurrentMode(value);
 }
 
-void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, size_t num_steps) {
+void StellaEnvironment::emulate(Action player_a_action, Action player_b_action,
+                                size_t num_steps) {
   Event* event = m_osystem->event();
 
   // Handle paddles separately: we have to manually update the paddle positions at each step
@@ -244,8 +252,7 @@ void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, 
       m_osystem->console().mediaSource().update();
       m_settings->step(m_osystem->console().system());
     }
-  }
-  else {
+  } else {
     // In joystick mode we only need to set the action events once
     m_state.setActionJoysticks(event, player_a_action, player_b_action);
 
@@ -261,27 +268,24 @@ void StellaEnvironment::emulate(Action player_a_action, Action player_b_action, 
 }
 
 /** Accessor methods for the environment state. */
-void StellaEnvironment::setState(const ALEState& state) {
-  m_state = state;
-}
+void StellaEnvironment::setState(const ALEState& state) { m_state = state; }
 
-const ALEState& StellaEnvironment::getState() const {
-  return m_state;
-}
+const ALEState& StellaEnvironment::getState() const { return m_state; }
 
 std::unique_ptr<StellaEnvironmentWrapper> StellaEnvironment::getWrapper() {
-    return std::unique_ptr<StellaEnvironmentWrapper>(new StellaEnvironmentWrapper(*this));
+  return std::unique_ptr<StellaEnvironmentWrapper>(
+      new StellaEnvironmentWrapper(*this));
 }
 
 void StellaEnvironment::processScreen() {
   if (m_colour_averaging) {
     // Perform phosphor averaging; the blender stores its result in the given screen
     m_phosphor_blend.process(m_screen);
-  }
-  else {
+  } else {
     // Copy screen over and we're done!
     memcpy(m_screen.getArray(),
-      m_osystem->console().mediaSource().currentFrameBuffer(), m_screen.arraySize());
+           m_osystem->console().mediaSource().currentFrameBuffer(),
+           m_screen.arraySize());
   }
 }
 

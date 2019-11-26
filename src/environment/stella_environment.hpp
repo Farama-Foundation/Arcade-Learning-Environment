@@ -34,111 +34,112 @@
 #include <memory>
 
 class StellaEnvironment {
-  public:
-    StellaEnvironment(OSystem * system, RomSettings * settings);
+ public:
+  StellaEnvironment(OSystem* system, RomSettings* settings);
 
-    /** Resets the system to its start state. */
-    void reset();
+  /** Resets the system to its start state. */
+  void reset();
 
-    /** Save/restore the environment state onto the stack. */
-    void save();
-    void load();
+  /** Save/restore the environment state onto the stack. */
+  void save();
+  void load();
 
-    /** Returns a copy of the current emulator state. Note that this doesn't include
+  /** Returns a copy of the current emulator state. Note that this doesn't include
         pseudorandomness, so that clone/restoreState are suitable for planning. */
-    ALEState cloneState();
-    /** Restores a previously saved copy of the state. */
-    void restoreState(const ALEState&);
+  ALEState cloneState();
+  /** Restores a previously saved copy of the state. */
+  void restoreState(const ALEState&);
 
-    /** Returns a copy of the current emulator state. This includes RNG state information, and
+  /** Returns a copy of the current emulator state. This includes RNG state information, and
         more generally should lead to exactly reproducibility. */
-    ALEState cloneSystemState();
-    /** Restores a previously saved copy of the state, including RNG state information. */
-    void restoreSystemState(const ALEState&);
+  ALEState cloneSystemState();
+  /** Restores a previously saved copy of the state, including RNG state information. */
+  void restoreSystemState(const ALEState&);
 
-    /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
+  /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
       *  and performs one simulation step in Stella. Returns the resultant reward. When
       *  frame skip is set to > 1, up the corresponding number of simulation steps are performed.
       *  Note that the post-act() frame number might not correspond to the pre-act() frame
       *  number plus the frame skip.
       */
-    reward_t act(Action player_a_action, Action player_b_action);
+  reward_t act(Action player_a_action, Action player_b_action);
 
-    /** This functions emulates a push on the reset button of the console */
-    void softReset();
+  /** This functions emulates a push on the reset button of the console */
+  void softReset();
 
-    /** Keep pressing the console select button for a given amount of time*/
-    void pressSelect(size_t num_steps = 1);
+  /** Keep pressing the console select button for a given amount of time*/
+  void pressSelect(size_t num_steps = 1);
 
-    /** Set the difficulty according to the value.
+  /** Set the difficulty according to the value.
       * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
       * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
       *
       * This change takes effect at the immediate next time step.
       */
-    void setDifficulty(difficulty_t value);
+  void setDifficulty(difficulty_t value);
 
-    /** Set the game mode according to the value. The new mode will not take effect until reset() is
+  /** Set the game mode according to the value. The new mode will not take effect until reset() is
       * called */
-    void setMode(game_mode_t value);
+  void setMode(game_mode_t value);
 
-    /** Returns true once we reach a terminal state */
-    bool isTerminal() const;
+  /** Returns true once we reach a terminal state */
+  bool isTerminal() const;
 
-    /** Accessor methods for the environment state. */
-    void setState(const ALEState & state);
-    const ALEState &getState() const;
+  /** Accessor methods for the environment state. */
+  void setState(const ALEState& state);
+  const ALEState& getState() const;
 
-    /** Returns the current screen after processing (e.g. colour averaging) */
-    const ALEScreen &getScreen() const { return m_screen; }
-    const ALERAM &getRAM() const { return m_ram; }
+  /** Returns the current screen after processing (e.g. colour averaging) */
+  const ALEScreen& getScreen() const { return m_screen; }
+  const ALERAM& getRAM() const { return m_ram; }
 
-    int getFrameNumber() const { return m_state.getFrameNumber(); }
-    int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
+  int getFrameNumber() const { return m_state.getFrameNumber(); }
+  int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
-    /** Returns a wrapper providing #include-free access to our methods. */
-    std::unique_ptr<StellaEnvironmentWrapper> getWrapper();
+  /** Returns a wrapper providing #include-free access to our methods. */
+  std::unique_ptr<StellaEnvironmentWrapper> getWrapper();
 
-  private:
-    /** This applies an action exactly one time step. Helper function to act(). */
-    reward_t oneStepAct(Action player_a_action, Action player_b_action);
+ private:
+  /** This applies an action exactly one time step. Helper function to act(). */
+  reward_t oneStepAct(Action player_a_action, Action player_b_action);
 
-    /** Actually emulates the emulator for a given number of steps. */
-    void emulate(Action player_a_action, Action player_b_action, size_t num_steps = 1);
+  /** Actually emulates the emulator for a given number of steps. */
+  void emulate(Action player_a_action, Action player_b_action,
+               size_t num_steps = 1);
 
-    /** Drops illegal actions, such as the fire button in skiing. Note that this is different
+  /** Drops illegal actions, such as the fire button in skiing. Note that this is different
       *   from the minimal set of actions. */
-    void noopIllegalActions(Action& player_a_action, Action& player_b_action);
+  void noopIllegalActions(Action& player_a_action, Action& player_b_action);
 
-    /** Processes the current emulator screen and saves it in m_screen */
-    void processScreen();
-    /** Processes the emulator RAM and saves it in m_ram */
-    void processRAM();
+  /** Processes the current emulator screen and saves it in m_screen */
+  void processScreen();
+  /** Processes the emulator RAM and saves it in m_ram */
+  void processRAM();
 
-  private:
-    OSystem *m_osystem;
-    RomSettings *m_settings;
-    PhosphorBlend m_phosphor_blend; // For performing phosphor colour averaging, if so desired
-    std::string m_cartridge_md5; // Necessary for saving and loading emulator state
+ private:
+  OSystem* m_osystem;
+  RomSettings* m_settings;
+  PhosphorBlend m_phosphor_blend; // For performing phosphor colour averaging, if so desired
+  std::string m_cartridge_md5; // Necessary for saving and loading emulator state
 
-    std::stack<ALEState> m_saved_states; // States are saved on a stack
+  std::stack<ALEState> m_saved_states; // States are saved on a stack
 
-    ALEState m_state; // Current environment state
-    ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)
-    ALERAM m_ram; // The current ALE RAM
+  ALEState m_state;   // Current environment state
+  ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)
+  ALERAM m_ram;       // The current ALE RAM
 
-    bool m_use_paddles;  // Whether this game uses paddles
+  bool m_use_paddles; // Whether this game uses paddles
 
-    /** Parameters loaded from Settings. */
-    int m_num_reset_steps; // Number of RESET frames per reset
-    bool m_colour_averaging; // Whether to average frames
-    int m_max_num_frames_per_episode; // Maxmimum number of frames per episode
-    size_t m_frame_skip; // How many frames to emulate per act()
-    float m_repeat_action_probability; // Stochasticity of the environment
-    std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
+  /** Parameters loaded from Settings. */
+  int m_num_reset_steps;             // Number of RESET frames per reset
+  bool m_colour_averaging;           // Whether to average frames
+  int m_max_num_frames_per_episode;  // Maxmimum number of frames per episode
+  size_t m_frame_skip;               // How many frames to emulate per act()
+  float m_repeat_action_probability; // Stochasticity of the environment
+  std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
 
-    // The last actions taken by our players
-    Action m_player_a_action, m_player_b_action;
+  // The last actions taken by our players
+  Action m_player_a_action, m_player_b_action;
 };
 
-#endif // __STELLA_ENVIRONMENT_HPP__
+#endif  // __STELLA_ENVIRONMENT_HPP__

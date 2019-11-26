@@ -22,16 +22,14 @@
 #include "../common/display_screen.h"
 #include "../common/Log.hpp"
 
-ALEController::ALEController(OSystem* osystem):
-  m_osystem(osystem),
-  m_settings(buildRomRLWrapper(m_osystem->settings().getString("rom_file"))),
-  m_environment(m_osystem, m_settings.get()) {
-
+ALEController::ALEController(OSystem* osystem)
+    : m_osystem(osystem), m_settings(buildRomRLWrapper(
+                              m_osystem->settings().getString("rom_file"))),
+      m_environment(m_osystem, m_settings.get()) {
   if (m_settings.get() == NULL) {
     ale::Logger::Warning << "Unsupported ROM file: " << std::endl;
     exit(1);
-  }
-  else {
+  } else {
     m_environment.reset();
   }
 }

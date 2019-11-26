@@ -51,7 +51,7 @@ static const std::string Version = "0.6.0";
    This class interfaces ALE with external code for controlling agents.
  */
 class ALEInterface {
-public:
+ public:
   ALEInterface();
   ~ALEInterface();
   // Legacy constructor
@@ -132,7 +132,7 @@ public:
   int getEpisodeFrameNumber() const;
 
   // Returns the current game screen
-  const ALEScreen &getScreen();
+  const ALEScreen& getScreen();
 
   //This method should receive an empty vector to fill it with
   //the grayscale colours
@@ -144,7 +144,7 @@ public:
   void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer);
 
   // Returns the current RAM content
-  const ALERAM &getRAM();
+  const ALERAM& getRAM();
 
   // Saves the state of the system
   void saveState();
@@ -174,7 +174,7 @@ public:
   // Creates a ScreenExporter object which can be used to save a sequence of frames. Ownership
   // said object is passed to the caller. Frames are saved in the directory 'path', which needs
   // to exists.
-  ScreenExporter *createScreenExporter(const std::string &path) const;
+  ScreenExporter* createScreenExporter(const std::string& path) const;
 
  public:
   std::unique_ptr<OSystem> theOSystem;
@@ -187,10 +187,10 @@ public:
   // Display ALE welcome message
   static std::string welcomeMessage();
   static void disableBufferedIO();
-  static void createOSystem(std::unique_ptr<OSystem> &theOSystem,
-                            std::unique_ptr<Settings> &theSettings);
+  static void createOSystem(std::unique_ptr<OSystem>& theOSystem,
+                            std::unique_ptr<Settings>& theSettings);
   static void loadSettings(const std::string& romfile,
-                           std::unique_ptr<OSystem> &theOSystem);
+                           std::unique_ptr<OSystem>& theOSystem);
 
  private:
   static void checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem);
