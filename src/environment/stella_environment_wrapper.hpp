@@ -25,13 +25,13 @@ class StellaEnvironmentWrapper {
   // A wrapper for actions within the StellaEnvironment.
   // Allows us to call environment methods without requiring to #include
   // stella_environment.hpp.
-  public:
-    StellaEnvironmentWrapper(StellaEnvironment &environment);
-    reward_t act(Action player_a_action, Action player_b_action);
-    void softReset();
-    void pressSelect(size_t num_steps = 1);
+ public:
+  StellaEnvironmentWrapper(StellaEnvironment& environment);
+  reward_t act(Action player_a_action, Action player_b_action);
+  void softReset();
+  void pressSelect(size_t num_steps = 1);
 
-    StellaEnvironment &m_environment;
+  StellaEnvironment& m_environment;
 };
 
-#endif // __STELLA_ENVIRONMENT_WRAPPER_HPP__
+#endif  // __STELLA_ENVIRONMENT_WRAPPER_HPP__
