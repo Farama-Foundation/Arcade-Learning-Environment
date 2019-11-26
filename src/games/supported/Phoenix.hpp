@@ -29,49 +29,45 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for Phoenix */
 class PhoenixSettings : public RomSettings {
+ public:
+  PhoenixSettings();
 
-    public:
+  // reset
+  void reset();
 
-        PhoenixSettings();
+  // is end of game
+  bool isTerminal() const;
 
-        // reset
-        void reset();
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // the rom-name
+  const char* rom() const { return "phoenix"; }
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // the rom-name
-        const char* rom() const { return "phoenix"; }
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
-
-        virtual int lives() { return isTerminal() ? 0 : m_lives; }
-
-    private:
-
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 };
 
-#endif // __PHOENIX_HPP__
+#endif  // __PHOENIX_HPP__

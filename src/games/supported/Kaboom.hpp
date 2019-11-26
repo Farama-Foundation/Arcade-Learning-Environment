@@ -15,11 +15,8 @@
 #include "../RomSettings.hpp"
 
 /* RL wrapper for Kaboom settings */
-class KaboomSettings: public RomSettings
-{
-
-public:
-
+class KaboomSettings : public RomSettings {
+ public:
   KaboomSettings();
 
   // reset
@@ -32,10 +29,7 @@ public:
   reward_t getReward() const;
 
   // the rom-name
-  const char* rom() const
-  {
-    return "kaboom";
-  }
+  const char* rom() const { return "kaboom"; }
 
   // create a new instance of the rom
   RomSettings* clone() const;
@@ -47,18 +41,17 @@ public:
   void step(const System& system);
 
   // saves the state of the rom settings
-  void saveState(Serializer & ser);
+  void saveState(Serializer& ser);
 
   // loads the state of the rom settings
-  void loadState(Deserializer & ser);
+  void loadState(Deserializer& ser);
 
   ActionVect getStartingActions();
 
-private:
-
+ private:
   bool m_terminal;
   reward_t m_reward;
   reward_t m_score;
 };
 
-#endif // __KABOOM__
+#endif  // __KABOOM__

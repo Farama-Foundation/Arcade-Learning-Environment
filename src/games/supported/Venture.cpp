@@ -28,96 +28,76 @@
 
 #include "../RomUtils.hpp"
 
-
-VentureSettings::VentureSettings() {
-
-    reset();
-}
-
+VentureSettings::VentureSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* VentureSettings::clone() const {
-
-    RomSettings* rval = new VentureSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new VentureSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void VentureSettings::step(const System& system) {
+  // update the reward
+  int score = getDecimalScore(0xC8, 0xC7, &system);
+  score *= 100;
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update the reward
-    int score = getDecimalScore(0xC8, 0xC7, &system);
-    score *= 100;
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  // update terminal status
+  int lives_byte = readRam(&system, 0xC6);
+  int audio_byte = readRam(&system, 0xCD);
+  int death_byte = readRam(&system, 0xBF);
+  m_terminal = (lives_byte == 0 && audio_byte == 0xFF && death_byte & 0x80);
 
-    // update terminal status
-    int lives_byte = readRam(&system, 0xC6);
-    int audio_byte = readRam(&system, 0xCD);
-    int death_byte = readRam(&system, 0xBF);
-    m_terminal = (lives_byte == 0 && audio_byte == 0xFF && death_byte & 0x80);
-
-    m_lives = (lives_byte & 0x7) + 1;
+  m_lives = (lives_byte & 0x7) + 1;
 }
-
 
 /* is end of game */
-bool VentureSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool VentureSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t VentureSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t VentureSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool VentureSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPRIGHT:
-        case PLAYER_A_UPLEFT:
-        case PLAYER_A_DOWNRIGHT:
-        case PLAYER_A_DOWNLEFT:
-        case PLAYER_A_UPFIRE:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_DOWNFIRE:
-        case PLAYER_A_UPRIGHTFIRE:
-        case PLAYER_A_UPLEFTFIRE:
-        case PLAYER_A_DOWNRIGHTFIRE:
-        case PLAYER_A_DOWNLEFTFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool VentureSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPRIGHT:
+    case PLAYER_A_UPLEFT:
+    case PLAYER_A_DOWNRIGHT:
+    case PLAYER_A_DOWNLEFT:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_DOWNFIRE:
+    case PLAYER_A_UPRIGHTFIRE:
+    case PLAYER_A_UPLEFTFIRE:
+    case PLAYER_A_DOWNRIGHTFIRE:
+    case PLAYER_A_DOWNLEFTFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void VentureSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 4;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 4;
 }
 
 /* saves the state of the rom settings */
-void VentureSettings::saveState(Serializer & ser) {
+void VentureSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -125,15 +105,14 @@ void VentureSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void VentureSettings::loadState(Deserializer & ser) {
+void VentureSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
 
-
 DifficultyVect VentureSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1, 2, 3};
-    return diff;
+  DifficultyVect diff = {0, 1, 2, 3};
+  return diff;
 }

@@ -28,87 +28,66 @@
 
 #include "../RomUtils.hpp"
 
-
-AmidarSettings::AmidarSettings() {
-
-    reset();
-}
-
+AmidarSettings::AmidarSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AmidarSettings::clone() const {
-
-    RomSettings* rval = new AmidarSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new AmidarSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void AmidarSettings::step(const System& system) {
+  // update the reward
+  reward_t score = getDecimalScore(0xD9, 0xDA, 0xDB, &system);
+  m_reward = score - m_score;
+  m_score = score;
 
-    // update the reward
-    reward_t score = getDecimalScore(0xD9, 0xDA, 0xDB, &system);
-    m_reward = score - m_score;
-    m_score = score;
+  // update terminal status
+  int livesByte = readRam(&system, 0xD6);
 
-    // update terminal status
-    int livesByte = readRam(&system, 0xD6);
-
-    // MGB it takes one step for the system to reset; this assumes we've
-    //  reset
-    m_terminal = (livesByte == 0x80);
-    m_lives = (livesByte & 0xF);
+  // MGB it takes one step for the system to reset; this assumes we've
+  //  reset
+  m_terminal = (livesByte == 0x80);
+  m_lives = (livesByte & 0xF);
 }
-
 
 /* is end of game */
-bool AmidarSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool AmidarSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t AmidarSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t AmidarSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool AmidarSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPFIRE:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_DOWNFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool AmidarSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_DOWNFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void AmidarSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 3;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 3;
 }
 
-
 /* saves the state of the rom settings */
-void AmidarSettings::saveState(Serializer & ser) {
+void AmidarSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -116,7 +95,7 @@ void AmidarSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void AmidarSettings::loadState(Deserializer & ser) {
+void AmidarSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -124,6 +103,6 @@ void AmidarSettings::loadState(Deserializer & ser) {
 }
 
 DifficultyVect AmidarSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 3};
-    return diff;
+  DifficultyVect diff = {0, 3};
+  return diff;
 }

@@ -28,68 +28,59 @@
 
 #include "../RomUtils.hpp"
 
-KingkongSettings::KingkongSettings() {
-    reset();
-}
+KingkongSettings::KingkongSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* KingkongSettings::clone() const {
-    RomSettings* rval = new KingkongSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new KingkongSettings();
+  *rval = *this;
+  return rval;
 }
 
 /* process the latest information from ALE */
 void KingkongSettings::step(const System& system) {
-    // update the reward
-    int score = getDecimalScore(0x83, 0x82, &system);
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  // update the reward
+  int score = getDecimalScore(0x83, 0x82, &system);
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update terminal status
-    m_lives = readRam(&system, 0xEE);
-    m_terminal = (m_lives == 0);
+  // update terminal status
+  m_lives = readRam(&system, 0xEE);
+  m_terminal = (m_lives == 0);
 }
 
 /* is end of game */
-bool KingkongSettings::isTerminal() const {
-    return m_terminal;
-};
-
+bool KingkongSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t KingkongSettings::getReward() const {
-    return m_reward;
-}
-
+reward_t KingkongSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool KingkongSettings::isMinimal(const Action &a) const {
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-            return true;
-        default:
-            return false;
-    }
+bool KingkongSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void KingkongSettings::reset() {
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 3;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 3;
 }
 
 /* saves the state of the rom settings */
-void KingkongSettings::saveState(Serializer & ser) {
+void KingkongSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -97,7 +88,7 @@ void KingkongSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void KingkongSettings::loadState(Deserializer & ser) {
+void KingkongSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -105,7 +96,7 @@ void KingkongSettings::loadState(Deserializer & ser) {
 }
 
 ActionVect KingkongSettings::getStartingActions() {
-    ActionVect startingActions;
-    startingActions.push_back(RESET);
-    return startingActions;
+  ActionVect startingActions;
+  startingActions.push_back(RESET);
+  return startingActions;
 }

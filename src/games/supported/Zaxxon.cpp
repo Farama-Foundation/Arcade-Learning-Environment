@@ -28,96 +28,76 @@
 
 #include "../RomUtils.hpp"
 
-
-ZaxxonSettings::ZaxxonSettings() {
-
-    reset();
-}
-
+ZaxxonSettings::ZaxxonSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* ZaxxonSettings::clone() const {
-
-    RomSettings* rval = new ZaxxonSettings();
-    *rval = *this;
-    return rval;
+  RomSettings* rval = new ZaxxonSettings();
+  *rval = *this;
+  return rval;
 }
-
 
 /* process the latest information from ALE */
 void ZaxxonSettings::step(const System& system) {
+  // update the reward
+  int score = getDecimalScore(0xE9, 0xE8, &system);
+  score *= 100;
+  int reward = score - m_score;
+  m_reward = reward;
+  m_score = score;
 
-    // update the reward
-    int score = getDecimalScore(0xE9, 0xE8, &system);
-    score *= 100;
-    int reward = score - m_score;
-    m_reward = reward;
-    m_score = score;
+  // update terminal status
+  int lives_byte = readRam(&system, 0xEA) & 0x7;
+  // Note - this *requires* a reset at load time; lives are set to 0 before
+  //  reset is pushed
+  m_terminal = (lives_byte == 0);
 
-    // update terminal status
-    int lives_byte = readRam(&system, 0xEA) & 0x7;
-    // Note - this *requires* a reset at load time; lives are set to 0 before
-    //  reset is pushed
-    m_terminal = (lives_byte == 0);
-
-    m_lives = lives_byte;
+  m_lives = lives_byte;
 }
-
 
 /* is end of game */
-bool ZaxxonSettings::isTerminal() const {
-
-    return m_terminal;
-};
-
+bool ZaxxonSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t ZaxxonSettings::getReward() const {
-
-    return m_reward;
-}
-
+reward_t ZaxxonSettings::getReward() const { return m_reward; }
 
 /* is an action part of the minimal set? */
-bool ZaxxonSettings::isMinimal(const Action &a) const {
-
-    switch (a) {
-        case PLAYER_A_NOOP:
-        case PLAYER_A_FIRE:
-        case PLAYER_A_UP:
-        case PLAYER_A_RIGHT:
-        case PLAYER_A_LEFT:
-        case PLAYER_A_DOWN:
-        case PLAYER_A_UPRIGHT:
-        case PLAYER_A_UPLEFT:
-        case PLAYER_A_DOWNRIGHT:
-        case PLAYER_A_DOWNLEFT:
-        case PLAYER_A_UPFIRE:
-        case PLAYER_A_RIGHTFIRE:
-        case PLAYER_A_LEFTFIRE:
-        case PLAYER_A_DOWNFIRE:
-        case PLAYER_A_UPRIGHTFIRE:
-        case PLAYER_A_UPLEFTFIRE:
-        case PLAYER_A_DOWNRIGHTFIRE:
-        case PLAYER_A_DOWNLEFTFIRE:
-            return true;
-        default:
-            return false;
-    }
+bool ZaxxonSettings::isMinimal(const Action& a) const {
+  switch (a) {
+    case PLAYER_A_NOOP:
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UP:
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_LEFT:
+    case PLAYER_A_DOWN:
+    case PLAYER_A_UPRIGHT:
+    case PLAYER_A_UPLEFT:
+    case PLAYER_A_DOWNRIGHT:
+    case PLAYER_A_DOWNLEFT:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_DOWNFIRE:
+    case PLAYER_A_UPRIGHTFIRE:
+    case PLAYER_A_UPLEFTFIRE:
+    case PLAYER_A_DOWNRIGHTFIRE:
+    case PLAYER_A_DOWNLEFTFIRE:
+      return true;
+    default:
+      return false;
+  }
 }
-
 
 /* reset the state of the game */
 void ZaxxonSettings::reset() {
-
-    m_reward   = 0;
-    m_score    = 0;
-    m_terminal = false;
-    m_lives    = 5;
+  m_reward = 0;
+  m_score = 0;
+  m_terminal = false;
+  m_lives = 5;
 }
 
 /* saves the state of the rom settings */
-void ZaxxonSettings::saveState(Serializer & ser) {
+void ZaxxonSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
@@ -125,7 +105,7 @@ void ZaxxonSettings::saveState(Serializer & ser) {
 }
 
 // loads the state of the rom settings
-void ZaxxonSettings::loadState(Deserializer & ser) {
+void ZaxxonSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
@@ -134,23 +114,23 @@ void ZaxxonSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect ZaxxonSettings::getAvailableModes() {
-    ModeVect modes = {0, 8, 16, 24};
-    return modes;
+  ModeVect modes = {0, 8, 16, 24};
+  return modes;
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
-void ZaxxonSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
-
-    // read the mode we are currently in
-    unsigned char mode = readRam(&system, 0x82);
-    // press select until the correct mode is reached
-    while (mode != m) {
-        // hold select button for 10 frames
-        environment->pressSelect(10);
-        mode = readRam(&system, 0x82);
-    }
-    //reset the environment to apply changes.
-    environment->softReset();
- }
+void ZaxxonSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  // read the mode we are currently in
+  unsigned char mode = readRam(&system, 0x82);
+  // press select until the correct mode is reached
+  while (mode != m) {
+    // hold select button for 10 frames
+    environment->pressSelect(10);
+    mode = readRam(&system, 0x82);
+  }
+  //reset the environment to apply changes.
+  environment->softReset();
+}

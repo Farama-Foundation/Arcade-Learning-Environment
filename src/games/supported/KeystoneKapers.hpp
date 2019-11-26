@@ -14,51 +14,49 @@
 
 #include "../RomSettings.hpp"
 
-
 /* RL wrapper for KeystoneKapers */
 class KeystoneKapersSettings : public RomSettings {
+ public:
+  KeystoneKapersSettings();
 
-    public:
-        KeystoneKapersSettings();
+  // reset
+  void reset();
 
-        // reset
-        void reset();
+  // is end of game
+  bool isTerminal() const;
 
-        // is end of game
-        bool isTerminal() const;
+  // get the most recently observed reward
+  reward_t getReward() const;
 
-        // get the most recently observed reward
-        reward_t getReward() const;
+  // the rom-name
+  // MD5 be929419902e21bd7830a7a7d746195d
+  const char* rom() const { return "keystone_kapers"; }
 
-        // the rom-name
-		// MD5 be929419902e21bd7830a7a7d746195d
-        const char* rom() const { return "keystone_kapers"; }
+  // create a new instance of the rom
+  RomSettings* clone() const;
 
-        // create a new instance of the rom
-        RomSettings* clone() const;
+  // is an action part of the minimal set?
+  bool isMinimal(const Action& a) const;
 
-        // is an action part of the minimal set?
-        bool isMinimal(const Action& a) const;
+  // process the latest information from ALE
+  void step(const System& system);
 
-        // process the latest information from ALE
-        void step(const System& system);
+  // saves the state of the rom settings
+  void saveState(Serializer& ser);
 
-        // saves the state of the rom settings
-        void saveState(Serializer & ser);
+  // loads the state of the rom settings
+  void loadState(Deserializer& ser);
 
-        // loads the state of the rom settings
-        void loadState(Deserializer & ser);
+  // Keystone Kapers requires the reset button to start the game
+  ActionVect getStartingActions();
 
-        // Keystone Kapers requires the reset button to start the game
-        ActionVect getStartingActions();
+  virtual int lives() { return isTerminal() ? 0 : m_lives; }
 
-        virtual int lives() { return isTerminal() ? 0 : m_lives; }
-
-    private:
-        bool m_terminal;
-        reward_t m_reward;
-        reward_t m_score;
-        int m_lives;
+ private:
+  bool m_terminal;
+  reward_t m_reward;
+  reward_t m_score;
+  int m_lives;
 };
 
-#endif // __KEYSTONEKAPERS_HPP__
+#endif  // __KEYSTONEKAPERS_HPP__
