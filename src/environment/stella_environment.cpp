@@ -32,6 +32,10 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
       m_osystem->console().properties().get(Controller_Right) == "PADDLES") {
     m_use_paddles = true;
+    int paddle_min_val = m_osystem->settings().getInt("paddle_min");
+    int paddle_max_val = m_osystem->settings().getInt("paddle_max");
+    m_state.setPaddleLimits(paddle_min_val != -1 ? paddle_min_val : PADDLE_MIN,
+                            paddle_max_val != -1 ? paddle_max_val : PADDLE_MAX);
     m_state.resetPaddles(m_osystem->event());
   } else {
     m_use_paddles = false;

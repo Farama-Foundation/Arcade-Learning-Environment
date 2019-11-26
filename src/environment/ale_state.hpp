@@ -108,6 +108,9 @@ class ALEState {
     /** Sets the paddle to a given position */
     void setPaddles(Event* event_obj, int left, int right);
 
+    /** Set the paddle min/max values */
+    void setPaddleLimits(int paddle_min_val, int paddle_max_val);
+
     /** Updates the paddle position by a delta amount. */
     void updatePaddlePositions(Event* event_obj, int delta_x, int delta_y);
 
@@ -120,6 +123,9 @@ class ALEState {
   private:
     int m_left_paddle;   // Current value for the left-paddle
     int m_right_paddle;  // Current value for the right-paddle
+
+    int m_paddle_min;    // Minimum value for paddle
+    int m_paddle_max;    // Maximum value for paddle
 
     int m_frame_number; // How many frames since the start
     int m_episode_frame_number; // How many frames since the beginning of this episode
