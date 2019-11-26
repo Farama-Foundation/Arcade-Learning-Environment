@@ -24,6 +24,8 @@
 ALEState::ALEState():
   m_left_paddle(PADDLE_DEFAULT_VALUE),
   m_right_paddle(PADDLE_DEFAULT_VALUE),
+  m_paddle_min(PADDLE_MIN),
+  m_paddle_max(PADDLE_MAX),
   m_frame_number(0),
   m_episode_frame_number(0),
   m_mode(0),
@@ -33,6 +35,8 @@ ALEState::ALEState():
 ALEState::ALEState(const ALEState &rhs, const std::string &serialized):
   m_left_paddle(rhs.m_left_paddle),
   m_right_paddle(rhs.m_right_paddle),
+  m_paddle_min(rhs.m_paddle_min),
+  m_paddle_max(rhs.m_paddle_max),
   m_frame_number(rhs.m_frame_number),
   m_episode_frame_number(rhs.m_episode_frame_number),
   m_serialized_state(serialized),
@@ -49,6 +53,8 @@ ALEState::ALEState(const std::string &serialized) {
   this->m_mode = des.getInt();
   this->m_difficulty = des.getInt();
   this->m_serialized_state = des.getString();
+  this->m_paddle_min = des.getInt();
+  this->m_paddle_max = des.getInt();
 }
 
 
@@ -74,6 +80,8 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5, co
   // Copy over other member variables
   m_left_paddle = rhs.m_left_paddle;
   m_right_paddle = rhs.m_right_paddle;
+  m_paddle_min = rhs.m_paddle_min;
+  m_paddle_max = rhs.m_paddle_max;
   m_frame_number = rhs.m_frame_number;
   m_episode_frame_number = rhs.m_episode_frame_number;
   m_mode = rhs.m_mode;
@@ -116,6 +124,8 @@ std::string ALEState::serialize() {
   ser.putInt(this->m_mode);
   ser.putInt(this->m_difficulty);
   ser.putString(this->m_serialized_state);
+  ser.putInt(this->m_paddle_min);
+  ser.putInt(this->m_paddle_max);
 
   return ser.get_str();
 }
@@ -130,7 +140,8 @@ int ALEState::calcPaddleResistance(int x_val) {
 }
 
 void ALEState::resetPaddles(Event * event) {
-  setPaddles(event, PADDLE_DEFAULT_VALUE, PADDLE_DEFAULT_VALUE);
+  int paddle_default = (m_paddle_min + m_paddle_max) / 2;
+  setPaddles(event, paddle_default, paddle_default);
 }
 
 void ALEState::setPaddles(Event * event, int left, int right) {
@@ -146,6 +157,13 @@ void ALEState::setPaddles(Event * event, int left, int right) {
   event->set(Event::PaddleOneResistance, right_resistance);
 }
 
+void ALEState::setPaddleLimits(int paddle_min_val, int paddle_max_val) {
+  m_paddle_min = paddle_min_val;
+  m_paddle_max = paddle_max_val;
+  // Don't update paddle positions as this will send an event. Wait for next
+  // paddle update and the positions will be clamped to the new min/max.
+}
+
 /* *********************************************************************
  *  Updates the positions of the paddles, and sets an event for
  *  updating the corresponding paddle's resistance
@@ -154,19 +172,19 @@ void ALEState::setPaddles(Event * event, int left, int right) {
     // Cap paddle outputs
 
     m_left_paddle += delta_left;
-    if (m_left_paddle < PADDLE_MIN) {
-        m_left_paddle = PADDLE_MIN;
+    if (m_left_paddle < m_paddle_min) {
+        m_left_paddle = m_paddle_min;
     }
-    if (m_left_paddle >  PADDLE_MAX) {
-        m_left_paddle = PADDLE_MAX;
+    if (m_left_paddle >  m_paddle_max) {
+        m_left_paddle = m_paddle_max;
     }
 
     m_right_paddle += delta_right;
-    if (m_right_paddle < PADDLE_MIN) {
-        m_right_paddle = PADDLE_MIN;
+    if (m_right_paddle < m_paddle_min) {
+        m_right_paddle = m_paddle_min;
     }
-    if (m_right_paddle >  PADDLE_MAX) {
-        m_right_paddle = PADDLE_MAX;
+    if (m_right_paddle >  m_paddle_max) {
+        m_right_paddle = m_paddle_max;
     }
 
     // Now set the paddle to their new value
