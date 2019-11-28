@@ -2,15 +2,18 @@ language: cpp
 
 os: linux
             
-dist: xenial
+dist: bionic
 
 compiler:
   - g++
   - clang
 
+addons:
+  apt:
+    packages:
+      - libsdl1.2-dev
+
 script:
   - ./presubmit.sh || travis_terminate 1
-
-  - # cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON
-  - cmake -DUSE_SDL=OFF -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=OFF
-  - make -j 4
+  - cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON
+  - make -j 2
