@@ -1,0 +1,56 @@
+name: Build ALE
+
+on:
+  push:
+    tags-ignore:
+      - "*.*"
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    name: Build ALE on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies on Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install libsdl1.2-dev
+    - name: Install dependencies on macOS
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install sdl
+    - name: Install dependencies on Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        vcpkg install zlib:x64-windows sdl1:x64-windows
+    - name: Configure ALE with vcpkg
+      if: matrix.os == 'windows-latest'
+      run: |
+        mkdir build; cd build
+        cmake ../ `
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake" `
+          -DVCPKG_TARGET_TRIPLET="x64-windows" `
+          -DUSE_SDL=ON `
+          -DUSE_RLGLUE=OFF `
+          -DBUILD_EXAMPLES=OFF
+    - name: Configure ALE
+      if: matrix.os != 'windows-latest'
+      run: |
+        mkdir build; cd build
+        cmake ../ \
+          -DUSE_SDL=ON \
+          -DUSE_RLGLUE=OFF \
+          -DBUILD_EXAMPLES=ON
+    - name: Build ALE
+      run: |
+        cd build
+        cmake --build . --config Debug
