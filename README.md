@@ -4,27 +4,46 @@
 
 # The Arcade Learning Environment
 
-The Arcade Learning Environment (ALE) is a simple object-oriented framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games. It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io/) and separates the details of emulation from agent design. This [video](https://www.youtube.com/watch?v=nzUiEkasXZI) depicts over 50 games currently supported in the ALE.
+## Overview
 
-For an overview of our goals for the ALE read [The Arcade Learning Environment: An Evaluation Platform for General Agents](http://www.jair.org/papers/paper3912.html). If you use ALE in your research, we ask that you please cite this paper in reference to the environment (BibTeX entry at the end of this document). Also, if you have any questions or comments about the ALE, please contact us through our [mailing list](https://groups.google.com/forum/#!forum/arcade-learning-environment).
+The Arcade Learning Environment (ALE) is a simple object-oriented framework that
+allows researchers and hobbyists to develop AI agents for Atari 2600 games. It
+is built on top of the Atari 2600 emulator
+[Stella](https://stella-emu.github.io/) and separates the details of emulation
+from agent design. This [video](https://www.youtube.com/watch?v=nzUiEkasXZI)
+depicts over 50 games currently supported in the ALE.
+
+For an overview of our goals for the ALE read [The Arcade Learning Environment:
+An Evaluation Platform for General
+Agents](http://www.jair.org/papers/paper3912.html). If you use ALE in your
+research, we ask that you please cite this paper in reference to the environment
+(BibTeX entry at the end of this document). Also, if you have any questions or
+comments about the ALE, please contact us through our [mailing
+list](https://groups.google.com/forum/#!forum/arcade-learning-environment).
 
 
-Feedback and suggestions are welcome and may be addressed to any active member of the ALE team.
+Feedback and suggestions are welcome and may be addressed to any active member
+of the ALE team.
 
-### Features
+## Features
+
 - Object-oriented framework with support to add agents and games.
-- Emulation core uncoupled from rendering and sound generation modules for fast emulation with minimal library dependencies.
-- Automatic extraction of game score and end-of-game signal for more than 50 Atari 2600 games.
-- Multi-platform code (compiled and tested under OS X and several Linux distributions, with Cygwin support).
-- Communication between agents and emulation core can be accomplished through pipes, allowing for cross-language development (sample Java code included).
+- Emulation core uncoupled from rendering and sound generation modules for fast
+  emulation with minimal library dependencies.
+- Automatic extraction of game score and end-of-game signal for more than 50
+  Atari 2600 games.
+- Multi-platform code (compiled and tested under OS X and several Linux
+  distributions, with Cygwin support).
+- Communication between agents and emulation core can be accomplished through
+  pipes, allowing for cross-language development (sample Java code included).
 - Python development is supported through ctypes.
 - Agents programmed in C++ have access to all features in the ALE.
 - Visualization tools.
 
 ## Quick start
 
-
 Install main dependences:
+
 ```
 sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev libsdl-image1.2-dev cmake
 ```
@@ -37,25 +56,36 @@ $ cmake -DUSE_SDL=ON -DUSE_RLGLUE=OFF -DBUILD_EXAMPLES=ON ..
 $ make -j 4
 ```
 
-To install python module:
+To install the Python module:
 
 ```
 $ pip install .
+```
+
 or
+
+```
 $ pip install --user .
 ```
 
-Getting the ALE to work on Visual Studio requires a bit of extra wrangling. You may wish to use IslandMan93's [Visual Studio port of the ALE.](https://github.com/Islandman93/Arcade-Learning-Environment)
+Getting the ALE to work on Visual Studio requires a bit of extra wrangling. You
+may wish to use IslandMan93's [Visual Studio port of the
+ALE.](https://github.com/Islandman93/Arcade-Learning-Environment)
 
-For more details and installation instructions, see the [manual](doc/manual/manual.pdf). To ask questions and discuss, please join the [ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
+For more details and installation instructions, see the [manual](doc/manual/manual.pdf).
+To ask questions and discuss, please join the
+[ALE-users group](https://groups.google.com/forum/#!forum/arcade-learning-environment).
 
 ## ALE releases
 
-Releases before v.0.5 are available for download in our previous [website](http://www.arcadelearningenvironment.org/). For the latest releases, please check our releases [page](https://github.com/mgbellemare/Arcade-Learning-Environment/releases).
+Releases before v.0.5 are available for download in our previous
+[website](http://www.arcadelearningenvironment.org/). For the latest releases,
+please check our [releases
+page](https://github.com/mgbellemare/Arcade-Learning-Environment/releases).
 
 ## List of command-line parameters
 
-Execute ./ale -help for more details; alternatively, see documentation 
+Execute `./ale -help` for more details; alternatively, see documentation
 available at http://www.arcadelearningenvironment.org.
 
 ```
@@ -79,9 +109,7 @@ available at http://www.arcadelearningenvironment.org.
   many episodes are played)
 ```
 
-
 ## Citing The Arcade Learning Environment
-
 
 If you use the ALE in your research, we ask that you please cite the following.
 
@@ -101,8 +129,9 @@ In BibTeX format:
 }
 ```
 
-
-If you use the ALE with sticky actions (flag `repeat_action_probability`), or if you use the different game flavours (mode and difficulty switches), we ask you that you also cite the following:
+If you use the ALE with sticky actions (flag `repeat_action_probability`), or if
+you use the different game flavours (mode and difficulty switches), we ask you
+that you also cite the following:
 
 *M. C. Machado, M. G. Bellemare, E. Talvitie, J. Veness, M. J. Hausknecht, M. Bowling. Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents,  Journal of Artificial Intelligence Research, Volume 61, pages 523-562, 2018.*
 
