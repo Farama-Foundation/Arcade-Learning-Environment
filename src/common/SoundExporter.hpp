@@ -24,6 +24,7 @@
 
 #include <fstream>
 #include <vector>
+
 #include "../emucore/m6502/src/bspf/src/bspf.hxx"
 
 namespace ale {
@@ -37,7 +38,7 @@ class SoundExporter {
  public:
   static const int SamplesPerFrame = 512;
 
-  typedef uInt8 SampleType;
+  using SampleType = uInt8;
 
   /** Create a new sound exporter which, on program termination, will write out a wav file. */
   SoundExporter(const std::string& filename, int channels);
@@ -63,7 +64,7 @@ class SoundExporter {
   size_t m_samples_since_write;
 };
 
-} // namespace sound
-} // namespace ale
+}  // namespace sound
+}  // namespace ale
 
 #endif  // __SOUND_EXPORTER_HPP__

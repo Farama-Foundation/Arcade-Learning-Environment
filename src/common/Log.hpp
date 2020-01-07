@@ -9,9 +9,9 @@ class Logger {
  public:
   enum mode { Info = 0, Warning = 1, Error = 2 };
   /** @brief Allow to change the level of verbosity
-         * @param m Info will print all the messages, Warning only the important ones
-         * and Error the critical ones
-         */
+   *  @param m Info will print all the messages, Warning only the important ones
+   *  and Error the critical ones
+   */
   static void setMode(mode m);
 
  private:
@@ -24,11 +24,10 @@ Logger::mode operator<<(Logger::mode log,
                         std::ostream& (*manip)(std::ostream&));
 
 template <typename T> Logger::mode operator<<(Logger::mode log, const T& val) {
-  if (log >= Logger::current_mode)
-    std::cerr << val;
+  if (log >= Logger::current_mode) std::cerr << val;
   return log;
 }
 
 } // namespace ale
 
-#endif
+#endif  // __LOG_HPP__

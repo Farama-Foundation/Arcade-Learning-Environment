@@ -61,5 +61,5 @@ void SoundExporter::writeWAVData() {
   stream.write((const char*)&m_data[0], bufSize);  // The samples DATA!!!
 }
 
-} // namespace sound
-} // namespace ale
+}  // namespace sound
+}  // namespace ale
