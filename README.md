@@ -147,3 +147,30 @@ In BibTex format:
   year = {2018}
 }
 ```
+
+## Contributing, code style
+
+If you would like to make changes to the codebase, please adhere to the
+following code style conventions.
+
+ALE contains two sets of source files: Files .hxx and .cxx are part of the
+Stella emulator code. Files .hpp and .cpp are original ALE code. The Stella
+files are not subject to our conventions, please retain their local style.
+
+The ALE code style conventions are roughly summarised as "clang-format with the
+following settings: ReflowComments: false, PointerAlignment: Left,
+KeepEmptyLinesAtTheStartOfBlocks: false, IndentCaseLabels: true,
+AccessModifierOffset: -1". That is:
+
+- Indent by two spaces; Egyptian braces, no extraneous newlines at the margins
+  of blocks and between top-level declarations.
+- Pointer/ref qualifiers go on the left (e.g. `void* p`).
+- Class member access modifiers are indented by _one_ space.
+- Inline comments should be separated from code by two spaces (though this is
+  not currently applied consistently).
+- There is no strict line length limit, but keep it reasonable.
+- Namespace close braces and `#endif`s should have comments.
+
+The overall format should look reasonably "compact" without being crowded. Use
+blank lines generously _within_ blocks and long comments to create visual cues
+for the segmentation of ideas.
