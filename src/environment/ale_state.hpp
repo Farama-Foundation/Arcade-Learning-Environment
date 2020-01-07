@@ -44,7 +44,7 @@ class ALEState {
   ALEState(const std::string& serialized);
 
   /** Resets the system to its start state. numResetSteps 'RESET' actions are taken after the
-      *  start. */
+   *  start. */
   void reset(int numResetSteps = 1);
 
   /** Returns true if the two states contain the same saved information */
@@ -74,9 +74,9 @@ class ALEState {
   int getEpisodeFrameNumber() const { return m_episode_frame_number; }
 
   /** set the difficulty according to the value.
-      * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
-      * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
-      */
+   *  If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
+   *  If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
+   */
   void setDifficulty(unsigned int value) { m_difficulty = value; }
 
   // Returns the current difficulty setting.
@@ -96,12 +96,12 @@ class ALEState {
 
   // The two methods below are meant to be used by StellaEnvironment.
   /** Restores the environment to a previously saved state. If load_system == true, we also
-        restore system-specific information (such as the RNG state). */
+   *  restore system-specific information (such as the RNG state). */
   void load(OSystem* osystem, RomSettings* settings, std::string md5,
             const ALEState& rhs, bool load_system);
 
   /** Returns a "copy" of the current state, including the information necessary to restore
-      *  the emulator. If save_system == true, this includes the RNG state. */
+   *  the emulator. If save_system == true, this includes the RNG state. */
   ALEState save(OSystem* osystem, RomSettings* settings, std::string md5,
                 bool save_system);
 
