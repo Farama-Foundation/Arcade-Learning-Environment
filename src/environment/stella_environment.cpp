@@ -193,7 +193,7 @@ void StellaEnvironment::softReset() {
 }
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
-  *  and performs one simulation step in Stella. */
+ *  and performs one simulation step in Stella. */
 reward_t StellaEnvironment::oneStepAct(Action player_a_action,
                                        Action player_b_action) {
   // Once in a terminal state, refuse to go any further (special actions must be handled

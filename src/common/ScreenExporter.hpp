@@ -18,6 +18,7 @@
 #define __SCREEN_EXPORTER_HPP__
 
 #include <string>
+
 #include "display_screen.h"
 #include "../environment/ale_screen.hpp"
 
@@ -27,7 +28,7 @@ class ScreenExporter {
   ScreenExporter(ColourPalette& palette);
 
   /** Creates a new ScreenExporter which will save frames successively in the directory provided.
-            Frames are sequentially named with 6 digits, starting at 000000. */
+   *  Frames are sequentially named with 6 digits, starting at 000000. */
   ScreenExporter(ColourPalette& palette, const std::string& path);
 
   /** Save the given screen to the given filename. No paths are created. */
