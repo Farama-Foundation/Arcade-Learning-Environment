@@ -44,7 +44,7 @@ class RLGlueController : public ALEController {
   bool isDone();
 
   /** RL-Glue interface methods. These methods' output mechanism is to fill the RL buffer
-      *  with data. */
+   *  with data. */
 
   /** Initializes the environment; sends a 'task spec' */
   void envInit();
@@ -77,7 +77,7 @@ class RLGlueController : public ALEController {
   bool m_send_rgb;
 };
 
-#else
+#else  // __USE_RLGLUE
 
 class RLGlueController : public ALEController {
  public:

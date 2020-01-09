@@ -135,7 +135,7 @@ void DisplayScreen::handleSDLEvent(const SDL_Event& event) {
             ((SoundSDL*)my_sound)->adjustVolume(1);
           }
           break;
-#endif
+#endif  // SOUND_SUPPORT
         default:
           break;
       }
