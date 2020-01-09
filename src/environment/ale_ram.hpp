@@ -20,7 +20,7 @@
 
 #include <string.h>
 
-typedef unsigned char byte_t;
+using byte_t = unsigned char;
 
 #define RAM_SIZE (128)
 
