@@ -45,23 +45,23 @@ class StellaEnvironment {
   void load();
 
   /** Returns a copy of the current emulator state. Note that this doesn't include
-        pseudorandomness, so that clone/restoreState are suitable for planning. */
+   *  pseudorandomness, so that clone/restoreState are suitable for planning. */
   ALEState cloneState();
   /** Restores a previously saved copy of the state. */
   void restoreState(const ALEState&);
 
   /** Returns a copy of the current emulator state. This includes RNG state information, and
-        more generally should lead to exactly reproducibility. */
+   *  more generally should lead to exactly reproducibility. */
   ALEState cloneSystemState();
   /** Restores a previously saved copy of the state, including RNG state information. */
   void restoreSystemState(const ALEState&);
 
   /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
-      *  and performs one simulation step in Stella. Returns the resultant reward. When
-      *  frame skip is set to > 1, up the corresponding number of simulation steps are performed.
-      *  Note that the post-act() frame number might not correspond to the pre-act() frame
-      *  number plus the frame skip.
-      */
+   *  and performs one simulation step in Stella. Returns the resultant reward. When
+   *  frame skip is set to > 1, up the corresponding number of simulation steps are performed.
+   *  Note that the post-act() frame number might not correspond to the pre-act() frame
+   *  number plus the frame skip.
+   */
   reward_t act(Action player_a_action, Action player_b_action);
 
   /** This functions emulates a push on the reset button of the console */
@@ -71,15 +71,15 @@ class StellaEnvironment {
   void pressSelect(size_t num_steps = 1);
 
   /** Set the difficulty according to the value.
-      * If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
-      * If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
-      *
-      * This change takes effect at the immediate next time step.
-      */
+   *  If the first bit is 1, then it will put the left difficulty switch to A (otherwise leave it on B)
+   *  If the second bit is 1, then it will put the right difficulty switch to A (otherwise leave it on B)
+   *
+   *  This change takes effect at the immediate next time step.
+   */
   void setDifficulty(difficulty_t value);
 
   /** Set the game mode according to the value. The new mode will not take effect until reset() is
-      * called */
+   *  called */
   void setMode(game_mode_t value);
 
   /** Returns true once we reach a terminal state */
@@ -108,7 +108,7 @@ class StellaEnvironment {
                size_t num_steps = 1);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
-      *   from the minimal set of actions. */
+   *   from the minimal set of actions. */
   void noopIllegalActions(Action& player_a_action, Action& player_b_action);
 
   /** Processes the current emulator screen and saves it in m_screen */

@@ -186,7 +186,7 @@ void RLGlueController::envStart() {
 }
 
 /** Reads in an action, returns the next observation-reward-terminal tuple.
-    derived from onEnvStep(). */
+ *  derived from onEnvStep(). */
 void RLGlueController::envStep() {
   unsigned int offset = 0;
 
@@ -295,7 +295,7 @@ RLGlueController::constructRewardObservationTerminal(reward_t reward) {
   return ro;
 }
 
-#else
+#else  // __USE_RLGLUE
 
 RLGlueController::RLGlueController(OSystem* system) : ALEController(system) {}
 
