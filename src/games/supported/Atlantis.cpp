@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Atlantis.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 AtlantisSettings::AtlantisSettings() { reset(); }
 
@@ -133,3 +136,5 @@ void AtlantisSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

@@ -24,12 +24,15 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __RIVERRAID_HPP__
 #define __RIVERRAID_HPP__
 
+#include <map>
+
 #include "../RomSettings.hpp"
 
-#include <map>
+namespace ale {
 
 /* RL wrapper for RiverRaid */
 class RiverRaidSettings : public RomSettings {
@@ -80,5 +83,7 @@ class RiverRaidSettings : public RomSettings {
   int m_lives_byte;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __RIVERRAID_HPP__

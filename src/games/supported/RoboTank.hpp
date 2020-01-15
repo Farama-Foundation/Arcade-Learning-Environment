@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ROBOTANK_HPP__
 #define __ROBOTANK_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for RoboTank */
 class RoboTankSettings : public RomSettings {
@@ -69,5 +72,7 @@ class RoboTankSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ROBOTANK_HPP__

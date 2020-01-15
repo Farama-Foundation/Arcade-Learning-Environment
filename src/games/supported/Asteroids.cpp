@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Asteroids.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 AsteroidsSettings::AsteroidsSettings() { reset(); }
 
@@ -144,3 +147,5 @@ DifficultyVect AsteroidsSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 3};
   return diff;
 }
+
+}  // namespace ale

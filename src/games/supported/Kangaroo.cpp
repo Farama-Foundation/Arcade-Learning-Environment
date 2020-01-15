@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Kangaroo.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 KangarooSettings::KangarooSettings() { reset(); }
 
@@ -135,3 +138,5 @@ void KangarooSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

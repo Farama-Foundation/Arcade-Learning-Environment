@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __STARGUNNER_HPP__
 #define __STARGUNNER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Star Gunner */
 class StarGunnerSettings : public RomSettings {
@@ -82,5 +85,7 @@ class StarGunnerSettings : public RomSettings {
   int m_lives;
   bool m_game_started;
 };
+
+}  // namespace ale
 
 #endif  // __STARGUNNER_HPP__

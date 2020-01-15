@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "RiverRaid.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 RiverRaidSettings::RiverRaidSettings() {
   m_ram_vals_to_digits[0] = 0;
@@ -145,3 +148,5 @@ DifficultyVect RiverRaidSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

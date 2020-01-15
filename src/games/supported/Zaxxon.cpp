@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Zaxxon.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 ZaxxonSettings::ZaxxonSettings() { reset(); }
 
@@ -134,3 +137,5 @@ void ZaxxonSettings::setMode(
   //reset the environment to apply changes.
   environment->softReset();
 }
+
+}  // namespace ale

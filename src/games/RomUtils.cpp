@@ -14,9 +14,12 @@
  * Additional utilities to operate on RAM.
  * *****************************************************************************
  */
+
 #include "RomUtils.hpp"
 
 #include "System.hxx"
+
+namespace ale {
 
 /* reads a byte at a memory location between 0 and 128 */
 int readRam(const System* system, int offset) {
@@ -65,3 +68,5 @@ int getDecimalScore(int lower_index, int middle_index, int higher_index,
   score += ((100000 * higher_left_digit) + 10000 * higher_right_digit);
   return score;
 }
+
+}  // namespace ale

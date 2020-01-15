@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Tetris.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 TetrisSettings::TetrisSettings() { reset(); }
 
@@ -106,3 +109,5 @@ void TetrisSettings::loadState(Deserializer& ser) {
   m_started = ser.getBool();
   m_lives = ser.getInt();
 }
+
+}  // namespace ale

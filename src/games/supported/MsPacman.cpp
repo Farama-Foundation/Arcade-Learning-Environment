@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "MsPacman.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 MsPacmanSettings::MsPacmanSettings() { reset(); }
 
@@ -148,3 +151,5 @@ void MsPacmanSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

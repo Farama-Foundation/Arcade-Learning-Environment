@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __QBERT_HPP__
 #define __QBERT_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for QBert */
 class QBertSettings : public RomSettings {
@@ -74,5 +77,7 @@ class QBertSettings : public RomSettings {
   int m_last_lives;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __QBERT_HPP__

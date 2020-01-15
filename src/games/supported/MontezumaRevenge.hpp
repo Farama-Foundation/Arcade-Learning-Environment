@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __MONTEZUMAREVENGE_HPP__
 #define __MONTEZUMAREVENGE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Montezuma Revenge */
 class MontezumaRevengeSettings : public RomSettings {
@@ -69,5 +72,7 @@ class MontezumaRevengeSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __MONTEZUMAREVENGE_HPP__

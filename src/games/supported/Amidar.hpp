@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __AMIDAR_HPP__
 #define __AMIDAR_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Amidar settings */
 class AmidarSettings : public RomSettings {
@@ -73,5 +76,7 @@ class AmidarSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __AMIDAR_HPP__

@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __DOUBLEDUNK_HPP__
 #define __DOUBLEDUNK_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Double Dunk settings */
 class DoubleDunkSettings : public RomSettings {
@@ -97,5 +100,7 @@ class DoubleDunkSettings : public RomSettings {
   void deactivateOption(System& system, unsigned int bitOfInterest,
                         std::unique_ptr<StellaEnvironmentWrapper>& environment);
 };
+
+}  // namespace ale
 
 #endif  // __DOUBLEDUNK_HPP__

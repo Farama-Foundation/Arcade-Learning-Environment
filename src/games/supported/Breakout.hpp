@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __BREAKOUT_HPP__
 #define __BREAKOUT_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Breakout */
 class BreakoutSettings : public RomSettings {
@@ -87,5 +90,7 @@ class BreakoutSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __BREAKOUT_HPP__

@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Krull.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 KrullSettings::KrullSettings() { reset(); }
 
@@ -109,3 +112,5 @@ void KrullSettings::loadState(Deserializer& ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+}  // namespace ale

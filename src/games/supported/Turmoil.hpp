@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __TURMOIL_HPP__
 #define __TURMOIL_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Turmoil */
 class TurmoilSettings : public RomSettings {
@@ -59,5 +62,7 @@ class TurmoilSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __TURMOIL_HPP__

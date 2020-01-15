@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __GRAVITAR_HPP__
 #define __GRAVITAR_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Gravitar */
 class GravitarSettings : public RomSettings {
@@ -84,5 +87,7 @@ class GravitarSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __GRAVITAR_HPP__

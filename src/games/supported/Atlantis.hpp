@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ATLANTIS_HPP__
 #define __ATLANTIS_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Atlantis settings */
 class AtlantisSettings : public RomSettings {
@@ -81,5 +84,7 @@ class AtlantisSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ATLANTIS_HPP__

@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __VIDEOPINBALL_HPP__
 #define __VIDEOPINBALL_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Video Pinball */
 class VideoPinballSettings : public RomSettings {
@@ -85,5 +88,7 @@ class VideoPinballSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __VIDEOPINBALL_HPP__

@@ -24,11 +24,14 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __FREEWAY_HPP__
 #define __FREEWAY_HPP__
 
 #include "stella_environment_wrapper.hpp"
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Freeway */
 class FreewaySettings : public RomSettings {
@@ -85,5 +88,7 @@ class FreewaySettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __FREEWAY_HPP__

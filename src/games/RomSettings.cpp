@@ -15,7 +15,10 @@
  *  reward information.
  * *****************************************************************************
  */
+
 #include "RomSettings.hpp"
+
+namespace ale {
 
 RomSettings::RomSettings() {}
 
@@ -61,3 +64,5 @@ void RomSettings::setMode(game_mode_t m, System&, std::unique_ptr<StellaEnvironm
 DifficultyVect RomSettings::getAvailableDifficulties() {
   return DifficultyVect(1, 0);
 };
+
+}  // namespace ale

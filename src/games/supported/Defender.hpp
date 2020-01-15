@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __DEFENDER_HPP__
 #define __DEFENDER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Defender settings */
 class DefenderSettings : public RomSettings {
@@ -85,5 +88,7 @@ class DefenderSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __DEFENDER_HPP__

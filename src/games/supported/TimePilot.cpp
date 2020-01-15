@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "TimePilot.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 TimePilotSettings::TimePilotSettings() { reset(); }
 
@@ -109,3 +112,5 @@ DifficultyVect TimePilotSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1, 2};
   return diff;
 }
+
+}  // namespace ale

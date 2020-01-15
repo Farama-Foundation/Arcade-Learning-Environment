@@ -11,9 +11,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Freeway.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 FreewaySettings::FreewaySettings() {
   m_reward = 0;
@@ -116,3 +119,5 @@ DifficultyVect FreewaySettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

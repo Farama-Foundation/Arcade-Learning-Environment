@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Pooyan.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 PooyanSettings::PooyanSettings() { reset(); }
 
@@ -127,3 +130,5 @@ void PooyanSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

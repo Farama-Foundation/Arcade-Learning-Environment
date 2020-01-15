@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __TUTANKHAM_HPP__
 #define __TUTANKHAM_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Tutankham */
 class TutankhamSettings : public RomSettings {
@@ -81,5 +84,7 @@ class TutankhamSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __TUTANKHAM_HPP__

@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __SOLARIS_HPP__
 #define __SOLARIS_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Solaris */
 class SolarisSettings : public RomSettings {
@@ -69,5 +72,7 @@ class SolarisSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __SOLARIS_HPP__

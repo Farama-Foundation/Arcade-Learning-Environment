@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ICEHOCKEY_HPP__
 #define __ICEHOCKEY_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Ice Hockey */
 class IceHockeySettings : public RomSettings {
@@ -84,5 +87,7 @@ class IceHockeySettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __ICEHOCKEY_HPP__

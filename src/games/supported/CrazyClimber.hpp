@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __CRAZYCLIMBER_HPP__
 #define __CRAZYCLIMBER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Crazy Climber settings */
 class CrazyClimberSettings : public RomSettings {
@@ -85,5 +88,7 @@ class CrazyClimberSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __CRAZYCLIMBER_HPP__

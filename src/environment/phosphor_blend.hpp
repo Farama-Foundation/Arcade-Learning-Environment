@@ -20,6 +20,8 @@
 #include "../emucore/OSystem.hxx"
 #include "ale_screen.hpp"
 
+namespace ale {
+
 class PhosphorBlend {
  public:
   PhosphorBlend(OSystem*);
@@ -41,5 +43,7 @@ class PhosphorBlend {
   uInt32 m_avg_palette[256][256];
   uInt8 m_phosphor_blend_ratio;
 };
+
+}  // namespace ale
 
 #endif  // __PHOSPHOR_BLEND_HPP__

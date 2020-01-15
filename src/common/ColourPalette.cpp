@@ -14,14 +14,18 @@
  **************************************************************************** */
 
 #include "ColourPalette.hpp"
+
 #include <cassert>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <cstring>
 #include <fstream>
+
 #include "Palettes.hpp"
 
-using namespace std;
+namespace ale {
+namespace {
 
 inline uInt32 packRGB(uInt8 r, uInt8 g, uInt8 b) {
   return ((uInt32)r << 16) + ((uInt32)g << 8) + (uInt32)b;
@@ -36,6 +40,8 @@ inline uInt32 convertGrayscale(uInt32 packedRGBValue) {
 
   return packRGB(lum, lum, lum);
 }
+
+}  // namespace
 
 ColourPalette::ColourPalette() : m_palette(NULL) {}
 
@@ -63,11 +69,11 @@ uInt8 ColourPalette::getGrayscale(int val) const {
 uInt32 ColourPalette::getRGB(int val) const { return m_palette[val]; }
 
 void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8* src_buffer,
-                                    size_t src_size) {
+                                    std::size_t src_size) {
   uInt8* p = src_buffer;
   uInt8* q = dst_buffer;
 
-  for (size_t i = 0; i < src_size; i++, p++) {
+  for (std::size_t i = 0; i < src_size; i++, p++) {
     int rgb = m_palette[*p];
     *q = (unsigned char)((rgb >> 16)); q++;  // r
     *q = (unsigned char)((rgb >>  8)); q++;  // g
@@ -76,13 +82,13 @@ void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8* src_buffer,
 }
 
 void ColourPalette::applyPaletteRGB(std::vector<unsigned char>& dst_buffer,
-                                    uInt8* src_buffer, size_t src_size) {
+                                    uInt8* src_buffer, std::size_t src_size) {
   dst_buffer.resize(3 * src_size);
   assert(dst_buffer.size() == 3 * src_size);
 
   uInt8* p = src_buffer;
 
-  for (size_t i = 0; i < src_size * 3; i += 3, p++) {
+  for (std::size_t i = 0; i < src_size * 3; i += 3, p++) {
     int rgb = m_palette[*p];
     dst_buffer[i + 0] = (unsigned char)((rgb >> 16));  // r
     dst_buffer[i + 1] = (unsigned char)((rgb >>  8));  // g
@@ -91,30 +97,30 @@ void ColourPalette::applyPaletteRGB(std::vector<unsigned char>& dst_buffer,
 }
 
 void ColourPalette::applyPaletteGrayscale(uInt8* dst_buffer, uInt8* src_buffer,
-                                          size_t src_size) {
+                                          std::size_t src_size) {
   uInt8* p = src_buffer;
   uInt8* q = dst_buffer;
 
-  for (size_t i = 0; i < src_size; i++, p++, q++) {
+  for (std::size_t i = 0; i < src_size; i++, p++, q++) {
     *q = (unsigned char)(m_palette[*p + 1] & 0xFF);
   }
 }
 
 void ColourPalette::applyPaletteGrayscale(
     std::vector<unsigned char>& dst_buffer, uInt8* src_buffer,
-    size_t src_size) {
+    std::size_t src_size) {
   dst_buffer.resize(src_size);
   assert(dst_buffer.size() == src_size);
 
   uInt8* p = src_buffer;
 
-  for (size_t i = 0; i < src_size; i++, p++) {
+  for (std::size_t i = 0; i < src_size; i++, p++) {
     dst_buffer[i] = (unsigned char)(m_palette[*p + 1] & 0xFF);
   }
 }
 
-void ColourPalette::setPalette(const string& type,
-                               const string& displayFormat) {
+void ColourPalette::setPalette(const std::string& type,
+                               const std::string& displayFormat) {
   // See which format we should be using
   int paletteNum = 0;
   if (type == "standard")
@@ -138,7 +144,7 @@ void ColourPalette::setPalette(const string& type,
   m_palette = paletteMapping[paletteNum][paletteFormat];
 }
 
-void ColourPalette::loadUserPalette(const string& paletteFile) {
+void ColourPalette::loadUserPalette(const std::string& paletteFile) {
   const int bytesPerColor = 3;
   const int NTSCPaletteSize = 128;
   const int PALPaletteSize = 128;
@@ -148,20 +154,20 @@ void ColourPalette::loadUserPalette(const string& paletteFile) {
                          PALPaletteSize * bytesPerColor +
                          SECAMPaletteSize * bytesPerColor;
 
-  ifstream paletteStream(paletteFile.c_str(), ios::binary);
+  std::ifstream paletteStream(paletteFile.c_str(), std::ios::binary);
   if (!paletteStream)
     return;
 
   // Make sure the contains enough data for the NTSC, PAL and SECAM palettes
   // This means 128 colours each for NTSC and PAL, at 3 bytes per pixel
   // and 8 colours for SECAM at 3 bytes per pixel
-  paletteStream.seekg(0, ios::end);
-  streampos length = paletteStream.tellg();
-  paletteStream.seekg(0, ios::beg);
+  paletteStream.seekg(0, std::ios::end);
+  std::streampos length = paletteStream.tellg();
+  paletteStream.seekg(0, std::ios::beg);
 
   if (length < expectedFileSize) {
     paletteStream.close();
-    cerr << "ERROR: invalid palette file " << paletteFile << endl;
+    std::cerr << "ERROR: invalid palette file " << paletteFile << std::endl;
     return;
   }
 
@@ -202,3 +208,5 @@ void ColourPalette::loadUserPalette(const string& paletteFile) {
 
   myUserPaletteDefined = true;
 }
+
+}  // namespace ale

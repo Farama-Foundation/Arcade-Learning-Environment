@@ -9,10 +9,14 @@
  *
  * *****************************************************************************
  */
+
 #include "IceHockey.hpp"
 
+#include <algorithm>
+
 #include "../RomUtils.hpp"
-using namespace std;
+
+namespace ale {
 
 IceHockeySettings::IceHockeySettings() { reset(); }
 
@@ -26,10 +30,10 @@ RomSettings* IceHockeySettings::clone() const {
 /* process the latest information from ALE */
 void IceHockeySettings::step(const System& system) {
   // update the reward
-  int my_score = max(getDecimalScore(0x8A, &system), 0);
-  int oppt_score = max(getDecimalScore(0x8B, &system), 0);
+  int my_score = std::max(getDecimalScore(0x8A, &system), 0);
+  int oppt_score = std::max(getDecimalScore(0x8B, &system), 0);
   int score = my_score - oppt_score;
-  int reward = min(score - m_score, 1);
+  int reward = std::min(score - m_score, 1);
   m_reward = reward;
   m_score = score;
 
@@ -124,3 +128,5 @@ DifficultyVect IceHockeySettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1, 2, 3};
   return diff;
 }
+
+}  // namespace ale

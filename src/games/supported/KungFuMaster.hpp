@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __KUNGFUMASTER_HPP__
 #define __KUNGFUMASTER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Kung Fu Master */
 class KungFuMasterSettings : public RomSettings {
@@ -69,5 +72,7 @@ class KungFuMasterSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __KUNGFUMASTER_HPP__

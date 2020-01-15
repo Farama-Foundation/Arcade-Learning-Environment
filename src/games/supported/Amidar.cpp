@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Amidar.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 AmidarSettings::AmidarSettings() { reset(); }
 
@@ -106,3 +109,5 @@ DifficultyVect AmidarSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 3};
   return diff;
 }
+
+}  // namespace ale

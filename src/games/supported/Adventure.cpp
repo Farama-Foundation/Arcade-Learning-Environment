@@ -23,9 +23,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Adventure.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 AdventureSettings::AdventureSettings() { reset(); }
 
@@ -148,3 +151,5 @@ void AdventureSettings::setMode(
 DifficultyVect AdventureSettings::getAvailableDifficulties() {
   return DifficultyVect() = {0, 1, 2, 3};
 }
+
+}  // namespace ale

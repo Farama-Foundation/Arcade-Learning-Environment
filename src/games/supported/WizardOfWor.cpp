@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "WizardOfWor.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 #include "stdio.h"
 
 WizardOfWorSettings::WizardOfWorSettings() { reset(); }
@@ -114,3 +117,5 @@ DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ENDURO_HPP__
 #define __ENDURO_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Enduro settings */
 class EnduroSettings : public RomSettings {
@@ -70,5 +73,7 @@ class EnduroSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __ENDURO_HPP__

@@ -9,7 +9,11 @@
  *
  * *****************************************************************************
  */
+
 #include "ale_state.hpp"
+
+#include <sstream>
+#include <stdexcept>
 
 #include "../emucore/m6502/src/System.hxx"
 #include "../emucore/Event.hxx"
@@ -18,8 +22,7 @@
 #include "../common/Constants.h"
 #include "../games/RomSettings.hpp"
 
-#include <sstream>
-#include <stdexcept>
+namespace ale {
 
 /** Default constructor - loads settings from system */
 ALEState::ALEState()
@@ -531,3 +534,5 @@ bool ALEState::equals(ALEState& rhs) {
           rhs.m_episode_frame_number == this->m_episode_frame_number &&
           rhs.m_mode == this->m_mode && rhs.m_difficulty == this->m_difficulty);
 }
+
+}  // namespace ale

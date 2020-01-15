@@ -22,10 +22,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __TETRIS_HPP__
 #define __TETRIS_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Tetris */
 class TetrisSettings : public RomSettings {
@@ -69,5 +72,7 @@ class TetrisSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __TETRIS_HPP__

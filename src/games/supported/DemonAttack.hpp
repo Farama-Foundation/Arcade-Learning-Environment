@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __DEMONATTACK_HPP__
 #define __DEMONATTACK_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Demon Attack settings */
 class DemonAttackSettings : public RomSettings {
@@ -86,5 +89,7 @@ class DemonAttackSettings : public RomSettings {
   int m_lives;
   bool m_level_change;
 };
+
+}  // namespace ale
 
 #endif  // __DEMONATTACK_HPP__

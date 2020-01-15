@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __FROGGER_HPP__
 #define __FROGGER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Frogger */
 class FroggerSettings : public RomSettings {
@@ -58,5 +61,7 @@ class FroggerSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __FROGGER_HPP__

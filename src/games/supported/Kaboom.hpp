@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __KABOOM_HPP__
 #define __KABOOM_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Kaboom settings */
 class KaboomSettings : public RomSettings {
@@ -53,5 +56,7 @@ class KaboomSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __KABOOM__

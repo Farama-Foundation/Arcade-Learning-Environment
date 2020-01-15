@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __AIRRAID_HPP__
 #define __AIRRAID_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Air Raid settings */
 class AirRaidSettings : public RomSettings {
@@ -65,5 +68,7 @@ class AirRaidSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __AIRRAID_HPP__

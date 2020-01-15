@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "CrazyClimber.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 CrazyClimberSettings::CrazyClimberSettings() { reset(); }
 
@@ -141,3 +144,5 @@ DifficultyVect CrazyClimberSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

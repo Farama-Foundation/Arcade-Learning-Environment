@@ -21,7 +21,10 @@
 #include <vector>
 #include <valarray>
 #include <cstdlib>
+
 #include "../emucore/m6502/src/bspf/src/bspf.hxx"
+
+namespace ale {
 
 // Define actions
 enum Action {
@@ -91,5 +94,7 @@ typedef int reward_t;
 
 // Other constant values
 #define RAM_LENGTH 128
+
+}  // namespace ale
 
 #endif  // __CONSTANTS_H__

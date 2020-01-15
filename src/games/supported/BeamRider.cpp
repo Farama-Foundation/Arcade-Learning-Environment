@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "BeamRider.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 BeamRiderSettings::BeamRiderSettings() { reset(); }
 
@@ -118,3 +121,5 @@ DifficultyVect BeamRiderSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

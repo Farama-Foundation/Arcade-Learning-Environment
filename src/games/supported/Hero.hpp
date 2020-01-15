@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __HERO_HPP__
 #define __HERO_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Hero */
 class HeroSettings : public RomSettings {
@@ -81,5 +84,7 @@ class HeroSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __HERO_HPP__

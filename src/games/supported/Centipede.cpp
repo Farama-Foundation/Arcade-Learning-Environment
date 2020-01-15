@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Centipede.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 CentipedeSettings::CentipedeSettings() { reset(); }
 
@@ -141,3 +144,5 @@ void CentipedeSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

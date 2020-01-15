@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __BERZERK_HPP__
 #define __BERZERK_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Berzerk! settings */
 class BerzerkSettings : public RomSettings {
@@ -81,5 +84,7 @@ class BerzerkSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __BERZERK_HPP__

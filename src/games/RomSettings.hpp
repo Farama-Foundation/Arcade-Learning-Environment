@@ -30,6 +30,7 @@
  *  reward information.
  * *****************************************************************************
  */
+
 #ifndef __ROMSETTINGS_HPP__
 #define __ROMSETTINGS_HPP__
 
@@ -43,6 +44,8 @@
 #include "../environment/stella_environment_wrapper.hpp"
 
 class System;
+
+namespace ale {
 
 // rom support interface
 class RomSettings {
@@ -110,5 +113,7 @@ class RomSettings {
   // By default, there is only one available difficulty.
   virtual DifficultyVect getAvailableDifficulties();
 };
+
+}  // namespace ale
 
 #endif  // __ROMSETTINGS_HPP__

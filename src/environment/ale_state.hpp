@@ -24,6 +24,8 @@
 #include "../emucore/Event.hxx"
 #include "../common/Log.hpp"
 
+namespace ale {
+
 class RomSettings;
 
 #define PADDLE_DELTA 23000
@@ -138,5 +140,7 @@ class ALEState {
   game_mode_t m_mode;              // The current mode we are in
   difficulty_t m_difficulty;       // The current difficulty we are in
 };
+
+}  // namespace ale
 
 #endif  // __ALE_STATE_HPP__

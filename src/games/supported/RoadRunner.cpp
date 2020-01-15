@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "RoadRunner.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 RoadRunnerSettings::RoadRunnerSettings() { reset(); }
 
@@ -120,3 +123,5 @@ void RoadRunnerSettings::loadState(Deserializer& ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+}  // namespace ale
