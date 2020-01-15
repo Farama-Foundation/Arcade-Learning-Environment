@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "BattleZone.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 BattleZoneSettings::BattleZoneSettings() { reset(); }
 
@@ -155,3 +158,5 @@ void BattleZoneSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

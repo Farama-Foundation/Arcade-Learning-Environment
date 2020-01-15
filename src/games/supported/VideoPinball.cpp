@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "VideoPinball.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 VideoPinballSettings::VideoPinballSettings() { reset(); }
 
@@ -135,3 +138,5 @@ DifficultyVect VideoPinballSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

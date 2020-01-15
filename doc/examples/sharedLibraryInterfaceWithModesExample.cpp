@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  ALEInterface ale;
+  ale::ALEInterface ale;
 
   // Get & Set the desired settings
   ale.setInt("random_seed", 123);
@@ -47,14 +47,14 @@ int main(int argc, char** argv) {
   ale.loadROM(argv[1]);
 
   // Get the vectors of available modes and difficulties
-  ModeVect modes = ale.getAvailableModes();
-  DifficultyVect difficulties = ale.getAvailableDifficulties();
+  ale::ModeVect modes = ale.getAvailableModes();
+  ale::DifficultyVect difficulties = ale.getAvailableDifficulties();
 
   cout << "Number of available modes: " << modes.size() << endl;
   cout << "Number of available difficulties: " << difficulties.size() << endl;
 
   // Get the vector of legal actions
-  ActionVect legal_actions = ale.getLegalActionSet();
+  ale::ActionVect legal_actions = ale.getLegalActionSet();
 
   // Play one episode in each mode and in each difficulty
   for (int i = 0; i < modes.size(); i++) {
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
       float totalReward = 0;
       while (!ale.game_over()) {
-        Action a = legal_actions[rand() % legal_actions.size()];
+        ale::Action a = legal_actions[rand() % legal_actions.size()];
         // Apply the action and get the resulting reward
         float reward = ale.act(a);
         totalReward += reward;

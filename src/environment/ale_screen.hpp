@@ -19,11 +19,14 @@
 #define __ALE_SCREEN_HPP__
 
 #include <cassert>
+#include <cstddef>
 #include <cstring>
 #include <memory>
 #include <vector>
 
-typedef unsigned char pixel_t;
+namespace ale {
+
+using pixel_t = unsigned char;
 
 /** A simple wrapper around an Atari screen. */
 class ALEScreen {
@@ -102,5 +105,7 @@ inline pixel_t* ALEScreen::getRow(int r) const {
   assert(r >= 0 && r < m_rows);
   return const_cast<pixel_t*>(&m_pixels[r * m_columns]);
 }
+
+}  // namespace ale
 
 #endif  // __ALE_SCREEN_HPP__

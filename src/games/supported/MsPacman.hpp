@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __MSPACMAN_HPP__
 #define __MSPACMAN_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Ms Pacman */
 class MsPacmanSettings : public RomSettings {
@@ -81,5 +84,7 @@ class MsPacmanSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __MSPACMAN_HPP__

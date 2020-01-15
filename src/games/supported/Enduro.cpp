@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Enduro.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 EnduroSettings::EnduroSettings() { reset(); }
 
@@ -104,3 +107,5 @@ ActionVect EnduroSettings::getStartingActions() {
   startingActions.push_back(PLAYER_A_FIRE);
   return startingActions;
 }
+
+}  // namespace ale

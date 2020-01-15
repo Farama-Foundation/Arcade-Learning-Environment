@@ -1,5 +1,8 @@
-#include "stella_environment.hpp"
 #include "stella_environment_wrapper.hpp"
+
+#include "stella_environment.hpp"
+
+namespace ale {
 
 StellaEnvironmentWrapper::StellaEnvironmentWrapper(
     StellaEnvironment& environment)
@@ -15,3 +18,5 @@ void StellaEnvironmentWrapper::softReset() { m_environment.softReset(); }
 void StellaEnvironmentWrapper::pressSelect(size_t num_steps) {
   m_environment.pressSelect(num_steps);
 }
+
+}  // namespace ale

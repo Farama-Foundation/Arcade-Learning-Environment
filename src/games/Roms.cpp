@@ -9,6 +9,7 @@
  *
  * *****************************************************************************
  */
+
 #include "Roms.hpp"
 #include "RomUtils.hpp"
 
@@ -89,6 +90,8 @@
 #include "supported/WizardOfWor.hpp"
 #include "supported/YarsRevenge.hpp"
 #include "supported/Zaxxon.hpp"
+
+namespace ale {
 
 /* list of supported games */
 static const RomSettings* roms[] = {
@@ -185,3 +188,5 @@ RomSettings* buildRomRLWrapper(const std::string& rom) {
 
   return NULL;
 }
+
+}  // namespace ale

@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __SKIING_HPP__
 #define __SKIING_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Skiing */
 class SkiingSettings : public RomSettings {
@@ -72,5 +75,7 @@ class SkiingSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __SKIING_HPP__

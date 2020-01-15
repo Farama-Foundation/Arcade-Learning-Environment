@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "KungFuMaster.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 KungFuMasterSettings::KungFuMasterSettings() { reset(); }
 
@@ -103,3 +106,5 @@ void KungFuMasterSettings::loadState(Deserializer& ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+}  // namespace ale

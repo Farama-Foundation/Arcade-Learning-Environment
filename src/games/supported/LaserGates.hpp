@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __LASERGATES_HPP__
 #define __LASERGATES_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Laser Gates */
 class LaserGatesSettings : public RomSettings {
@@ -57,5 +60,7 @@ class LaserGatesSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __LASERGATES_HPP__

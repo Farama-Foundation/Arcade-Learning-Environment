@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "SpaceInvaders.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 ActionVect SpaceInvadersSettings::actions;
 
@@ -138,3 +141,5 @@ DifficultyVect SpaceInvadersSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "DonkeyKong.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 DonkeyKongSettings::DonkeyKongSettings() { reset(); }
 
@@ -93,3 +96,5 @@ void DonkeyKongSettings::loadState(Deserializer& ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+}  // namespace ale

@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "BankHeist.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 BankHeistSettings::BankHeistSettings() { reset(); }
 
@@ -142,3 +145,5 @@ DifficultyVect BankHeistSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1, 2, 3};
   return diff;
 }
+
+}  // namespace ale

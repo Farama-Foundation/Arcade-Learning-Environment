@@ -30,8 +30,11 @@
 #include "../common/Log.hpp"
 #include "../common/ScreenExporter.hpp"
 
+#include <cstddef>
 #include <stack>
 #include <memory>
+
+namespace ale {
 
 class StellaEnvironment {
  public:
@@ -141,5 +144,7 @@ class StellaEnvironment {
   // The last actions taken by our players
   Action m_player_a_action, m_player_b_action;
 };
+
+}  // namespace ale
 
 #endif  // __STELLA_ENVIRONMENT_HPP__

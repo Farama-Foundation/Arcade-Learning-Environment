@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ASSAULT_HPP__
 #define __ASSAULT_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Assault settings */
 class AssaultSettings : public RomSettings {
@@ -69,5 +72,7 @@ class AssaultSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ASSAULT_HPP__

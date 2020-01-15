@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __FISHINGDERBY_HPP__
 #define __FISHINGDERBY_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Fishing Derby settings */
 class FishingDerbySettings : public RomSettings {
@@ -72,5 +75,7 @@ class FishingDerbySettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __FISHINGDERBY_HPP__

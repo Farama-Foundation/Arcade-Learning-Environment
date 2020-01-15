@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Seaquest.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 SeaquestSettings::SeaquestSettings() { reset(); }
 
@@ -110,3 +113,5 @@ DifficultyVect SeaquestSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

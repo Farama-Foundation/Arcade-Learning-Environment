@@ -11,9 +11,12 @@
  *
  * *****************************************************************************
  */
+
 #include "JourneyEscape.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 JourneyEscapeSettings::JourneyEscapeSettings() { reset(); }
 
@@ -102,3 +105,5 @@ DifficultyVect JourneyEscapeSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

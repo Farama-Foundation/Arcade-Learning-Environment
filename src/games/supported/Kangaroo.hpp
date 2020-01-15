@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __KANGAROO_HPP__
 #define __KANGAROO_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Kangaroo */
 class KangarooSettings : public RomSettings {
@@ -81,5 +84,7 @@ class KangarooSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __KANGAROO_HPP__

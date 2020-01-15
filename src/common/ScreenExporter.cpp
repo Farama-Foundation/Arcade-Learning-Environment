@@ -15,10 +15,14 @@
  **************************************************************************** */
 
 #include "ScreenExporter.hpp"
+
 #include <zlib.h>
 #include <sstream>
 #include <fstream>
+
 #include "Log.hpp"
+
+namespace ale {
 
 // MGB: These methods originally belonged to ExportScreen. Possibly these should be returned to
 // their own class, rather than be static methods. They are here to avoid exposing the gritty
@@ -182,3 +186,5 @@ void ScreenExporter::saveNext(const ALEScreen& screen) {
 
   m_frame_number++;
 }
+
+}  // namespace ale

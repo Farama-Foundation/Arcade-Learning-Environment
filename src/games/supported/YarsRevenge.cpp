@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "YarsRevenge.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 YarsRevengeSettings::YarsRevengeSettings() { reset(); }
 
@@ -147,3 +150,5 @@ DifficultyVect YarsRevengeSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

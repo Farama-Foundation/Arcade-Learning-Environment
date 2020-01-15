@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __VENTURE_HPP__
 #define __VENTURE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Venture */
 class VentureSettings : public RomSettings {
@@ -73,5 +76,7 @@ class VentureSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __VENTURE_HPP__

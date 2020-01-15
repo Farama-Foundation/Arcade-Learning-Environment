@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __CARNIVAL_HPP__
 #define __CARNIVAL_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Carnival settings */
 class CarnivalSettings : public RomSettings {
@@ -68,5 +71,7 @@ class CarnivalSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __CARNIVAL_HPP__

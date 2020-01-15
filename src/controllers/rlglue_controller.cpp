@@ -28,6 +28,8 @@
 
 #include "../common/Log.hpp"
 
+namespace ale {
+
 RLGlueController::RLGlueController(OSystem* _osystem)
     : ALEController(_osystem) {
   m_max_num_frames = m_osystem->settings().getInt("max_num_frames");
@@ -295,7 +297,11 @@ RLGlueController::constructRewardObservationTerminal(reward_t reward) {
   return ro;
 }
 
+}  // namespace ale
+
 #else  // __USE_RLGLUE
+
+namespace ale {
 
 RLGlueController::RLGlueController(OSystem* system) : ALEController(system) {}
 
@@ -306,5 +312,7 @@ void RLGlueController::run() {
 
   // We should return and terminate gracefully, since we can.
 }
+
+}  // namespace ale
 
 #endif  // __USE_RLGLUE

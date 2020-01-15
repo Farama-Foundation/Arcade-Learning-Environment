@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ZAXXON_HPP__
 #define __ZAXXON_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Zaxxon */
 class ZaxxonSettings : public RomSettings {
@@ -81,5 +84,7 @@ class ZaxxonSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ZAXXON_HPP__

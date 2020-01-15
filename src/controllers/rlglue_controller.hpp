@@ -26,6 +26,8 @@
 #include <rlglue/Environment_common.h>
 #include <rlglue/network/RL_network.h>
 
+namespace ale {
+
 class RLGlueController : public ALEController {
  public:
   RLGlueController(OSystem* osystem);
@@ -77,7 +79,11 @@ class RLGlueController : public ALEController {
   bool m_send_rgb;
 };
 
+}  // namespace ale
+
 #else  // __USE_RLGLUE
+
+namespace ale {
 
 class RLGlueController : public ALEController {
  public:
@@ -87,6 +93,8 @@ class RLGlueController : public ALEController {
   /** This prints an error message and terminate. */
   virtual void run();
 };
+
+}  // namespace ale
 
 #endif  // __USE_RLGLUE
 

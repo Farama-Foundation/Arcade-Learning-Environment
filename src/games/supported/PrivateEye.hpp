@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __PRIVATEEYE_HPP__
 #define __PRIVATEEYE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Private Eye */
 class PrivateEyeSettings : public RomSettings {
@@ -86,5 +89,7 @@ class PrivateEyeSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __PRIVATEEYE_HPP__

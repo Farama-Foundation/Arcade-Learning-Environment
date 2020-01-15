@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Defender.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 DefenderSettings::DefenderSettings() { reset(); }
 
@@ -151,3 +154,5 @@ DifficultyVect DefenderSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

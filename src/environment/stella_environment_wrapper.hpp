@@ -19,6 +19,8 @@
 
 #include "../common/Constants.h"
 
+namespace ale {
+
 class StellaEnvironment;
 
 class StellaEnvironmentWrapper {
@@ -33,5 +35,7 @@ class StellaEnvironmentWrapper {
 
   StellaEnvironment& m_environment;
 };
+
+}  // namespace ale
 
 #endif  // __STELLA_ENVIRONMENT_WRAPPER_HPP__

@@ -15,14 +15,17 @@
  *   controllers, e.g. loading ROM settings and constructing the environment
  *   wrapper.
  **************************************************************************** */
+
 #ifndef __ALE_CONTROLLER_HPP__
 #define __ALE_CONTROLLER_HPP__
+
+#include <memory>
 
 #include "../emucore/OSystem.hxx"
 #include "../emucore/m6502/src/System.hxx"
 #include "../environment/stella_environment.hpp"
 
-#include <memory>
+namespace ale {
 
 class ALEController {
  public:
@@ -45,5 +48,7 @@ class ALEController {
   std::unique_ptr<RomSettings> m_settings;
   StellaEnvironment m_environment;
 };
+
+}  // namespace ale
 
 #endif  // __ALE_CONTROLLER_HPP__

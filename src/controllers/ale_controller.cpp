@@ -17,10 +17,12 @@
  **************************************************************************** */
 
 #include "ale_controller.hpp"
-#include "../games/Roms.hpp"
 
+#include "../games/Roms.hpp"
 #include "../common/display_screen.h"
 #include "../common/Log.hpp"
+
+namespace ale {
 
 ALEController::ALEController(OSystem* osystem)
     : m_osystem(osystem), m_settings(buildRomRLWrapper(
@@ -69,3 +71,5 @@ reward_t ALEController::applyActions(Action player_a, Action player_b) {
   }
   return sum_rewards;
 }
+
+}  // namespace ale

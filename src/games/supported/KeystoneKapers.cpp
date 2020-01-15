@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "KeystoneKapers.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 KeystoneKapersSettings::KeystoneKapersSettings() { reset(); }
 
@@ -92,3 +95,5 @@ ActionVect KeystoneKapersSettings::getStartingActions() {
   startingActions.push_back(RESET);
   return startingActions;
 }
+
+}  // namespace ale

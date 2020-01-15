@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __PITFALL_HPP__
 #define __PITFALL_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Phoenix */
 class PitfallSettings : public RomSettings {
@@ -71,5 +74,7 @@ class PitfallSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __PITFALL_HPP__

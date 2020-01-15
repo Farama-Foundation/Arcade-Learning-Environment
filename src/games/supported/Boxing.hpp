@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __BOXING_HPP__
 #define __BOXING_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Boxing settings */
 class BoxingSettings : public RomSettings {
@@ -72,5 +75,7 @@ class BoxingSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __BOXING_HPP__

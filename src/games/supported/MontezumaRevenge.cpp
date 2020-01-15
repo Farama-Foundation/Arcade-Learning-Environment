@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "MontezumaRevenge.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 MontezumaRevengeSettings::MontezumaRevengeSettings() { reset(); }
 
@@ -110,3 +113,5 @@ void MontezumaRevengeSettings::loadState(Deserializer& ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
+
+}  // namespace ale

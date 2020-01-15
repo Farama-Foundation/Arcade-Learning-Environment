@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __YARS_REVENGE_HPP__
 #define __YARS_REVENGE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for YarsRevenge */
 class YarsRevengeSettings : public RomSettings {
@@ -88,5 +91,7 @@ class YarsRevengeSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __YARS_REVENGE_HPP__

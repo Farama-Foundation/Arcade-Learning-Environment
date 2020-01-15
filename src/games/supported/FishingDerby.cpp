@@ -9,10 +9,14 @@
  *
  * *****************************************************************************
  */
+
 #include "FishingDerby.hpp"
 
+#include <algorithm>
+
 #include "../RomUtils.hpp"
-using namespace std;
+
+namespace ale {
 
 FishingDerbySettings::FishingDerbySettings() { reset(); }
 
@@ -26,8 +30,8 @@ RomSettings* FishingDerbySettings::clone() const {
 /* process the latest information from ALE */
 void FishingDerbySettings::step(const System& system) {
   // update the reward
-  int my_score = max(getDecimalScore(0xBD, &system), 0);
-  int oppt_score = max(getDecimalScore(0xBE, &system), 0);
+  int my_score = std::max(getDecimalScore(0xBD, &system), 0);
+  int oppt_score = std::max(getDecimalScore(0xBE, &system), 0);
   int score = my_score - oppt_score;
   m_reward = score - m_score;
   m_score = score;
@@ -97,3 +101,5 @@ DifficultyVect FishingDerbySettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1, 2, 3};
   return diff;
 }
+
+}  // namespace ale

@@ -22,6 +22,8 @@
 #include "display_screen.h"
 #include "../environment/ale_screen.hpp"
 
+namespace ale {
+
 class ScreenExporter {
  public:
   /** Creates a new ScreenExporter which can be used to save screens using save(filename). */
@@ -49,5 +51,7 @@ class ScreenExporter {
   /** The directory where we save successive frames. */
   std::string m_path;
 };
+
+}  // namespace ale
 
 #endif  // __SCREEN_EXPORTER_HPP__

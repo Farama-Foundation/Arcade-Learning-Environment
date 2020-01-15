@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Asterix.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 AsterixSettings::AsterixSettings() { reset(); }
 
@@ -107,3 +110,5 @@ ActionVect AsterixSettings::getStartingActions() {
   startingActions.push_back(PLAYER_A_FIRE);
   return startingActions;
 }
+
+}  // namespace ale

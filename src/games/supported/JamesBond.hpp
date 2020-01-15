@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __JAMESBOND_HPP__
 #define __JAMESBOND_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for James Bond */
 class JamesBondSettings : public RomSettings {
@@ -81,5 +84,7 @@ class JamesBondSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __JAMESBOND_HPP__

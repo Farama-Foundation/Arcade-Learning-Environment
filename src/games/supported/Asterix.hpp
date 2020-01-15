@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ASTERIX_HPP__
 #define __ASTERIX_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Asterix */
 class AsterixSettings : public RomSettings {
@@ -72,5 +75,7 @@ class AsterixSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ASTERIX_HPP__

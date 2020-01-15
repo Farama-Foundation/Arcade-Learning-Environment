@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ALIEN_HPP__
 #define __ALIEN_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Alien settings */
 class AlienSettings : public RomSettings {
@@ -88,5 +91,7 @@ class AlienSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ALIEN_HPP__

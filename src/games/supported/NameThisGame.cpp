@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "NameThisGame.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 NameThisGameSettings::NameThisGameSettings() { reset(); }
 
@@ -128,3 +131,5 @@ DifficultyVect NameThisGameSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

@@ -15,7 +15,10 @@
  **************************************************************************** */
 
 #include "phosphor_blend.hpp"
+
 #include "../emucore/Console.hxx"
+
+namespace ale {
 
 PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
   // Taken from default Stella settings
@@ -116,3 +119,5 @@ uInt8 PhosphorBlend::rgbToNTSC(uInt32 rgb) {
 
   return m_rgb_ntsc[r >> 2][g >> 2][b >> 2];
 }
+
+}  // namespace ale

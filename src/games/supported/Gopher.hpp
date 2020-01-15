@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __GOPHER_HPP__
 #define __GOPHER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Gopher */
 class GopherSettings : public RomSettings {
@@ -88,5 +91,7 @@ class GopherSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __GOPHER_HPP__

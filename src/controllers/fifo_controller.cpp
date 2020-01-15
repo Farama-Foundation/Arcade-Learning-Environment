@@ -16,9 +16,12 @@
 
 #include "fifo_controller.hpp"
 
-#include <stdio.h>
 #include <cassert>
+#include <cstdio>
+
 #include "../common/Log.hpp"
+
+namespace ale {
 
 #define MAX_RUN_LENGTH (0xFF)
 
@@ -252,3 +255,5 @@ void FIFOController::readAction(Action& action_a, Action& action_b) {
   token = strtok(NULL, ",\n");
   action_b = (Action)atoi(token);
 }
+
+}  // namespace ale

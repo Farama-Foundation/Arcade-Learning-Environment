@@ -27,6 +27,7 @@ class Launcher;
 class Debugger;
 class CheatManager;
 class VideoDialog;
+
 #include "../common/Array.hxx"
 //ALE  #include "EventHandler.hxx"
 //ALE  #include "FrameBuffer.hxx"
@@ -530,16 +531,16 @@ class OSystem
     };
     TimingInfo myTimingInfo;
 
-    ColourPalette &colourPalette() { return m_colour_palette; }
+    ale::ColourPalette &colourPalette() { return m_colour_palette; }
 
     // Table of RGB values for GUI elements
     //ALE  static uInt32 ourGUIColors[kNumUIPalettes][kNumColors-256];
   public:
-    DisplayScreen* p_display_screen; //MHAUSKN
+    ale::DisplayScreen* p_display_screen; //MHAUSKN
 
   private:
 
-    ColourPalette m_colour_palette;
+    ale::ColourPalette m_colour_palette;
 
     /**
       Creates the various framebuffers/renderers available in this system

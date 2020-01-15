@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __TRONDEAD_HPP__
 #define __TRONDEAD_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Trondead */
 class TrondeadSettings : public RomSettings {
@@ -54,5 +57,7 @@ class TrondeadSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __TRONDEAD_HPP__

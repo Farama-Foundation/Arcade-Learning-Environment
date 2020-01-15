@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __SEAQUEST_HPP__
 #define __SEAQUEST_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Seaquest */
 class SeaquestSettings : public RomSettings {
@@ -73,5 +76,7 @@ class SeaquestSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __SEAQUEST_HPP__

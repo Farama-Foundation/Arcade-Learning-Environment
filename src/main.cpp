@@ -9,10 +9,11 @@
  *
  * *****************************************************************************
  */
+
 #include <cstdlib>
 #include <ctime>
-#include <sstream>
 #include <memory>
+#include <sstream>
 
 #include "emucore/m6502/src/bspf/src/bspf.hxx"
 #include "emucore/Console.hxx"
@@ -36,11 +37,13 @@
 #include "common/Constants.h"
 #include "ale_interface.hpp"
 
-// TODO(mgbellemare): Why are these static?
-static std::unique_ptr<OSystem> theOSystem;
-static std::unique_ptr<Settings> theSettings;
+namespace ale {
+namespace {
 
-static ALEController* createController(OSystem* osystem, std::string type) {
+std::unique_ptr<OSystem> theOSystem;
+std::unique_ptr<Settings> theSettings;
+
+ALEController* createController(OSystem* osystem, std::string type) {
   if (type.empty()) {
     std::cerr << "You must specify a controller type (via -game_controller)."
               << std::endl;
@@ -61,29 +64,32 @@ static ALEController* createController(OSystem* osystem, std::string type) {
   }
 }
 
+}  // namespace
+}  // namespace ale
+
 /* application entry point */
 int main(int argc, char* argv[]) {
-  ALEInterface::disableBufferedIO();
+  ale::ALEInterface::disableBufferedIO();
 
-  std::cerr << ALEInterface::welcomeMessage() << std::endl;
+  std::cerr << ale::ALEInterface::welcomeMessage() << std::endl;
 
-  ALEInterface::createOSystem(theOSystem, theSettings);
+  ale::ALEInterface::createOSystem(ale::theOSystem, ale::theSettings);
   // Process commandline arguments, which over-ride all possible
   // config file settings
-  std::string romfile = theOSystem->settings().loadCommandLine(argc, argv);
-  ALEInterface::loadSettings(romfile, theOSystem);
+  std::string romfile = ale::theOSystem->settings().loadCommandLine(argc, argv);
+  ale::ALEInterface::loadSettings(romfile, ale::theOSystem);
 
   // Create the game controller
   std::string controller_type =
-      theOSystem->settings().getString("game_controller");
-  std::unique_ptr<ALEController> controller(
-      createController(theOSystem.get(), controller_type));
+      ale::theOSystem->settings().getString("game_controller");
+  std::unique_ptr<ale::ALEController> controller(
+      ale::createController(ale::theOSystem.get(), controller_type));
 
   controller->run();
 
   // MUST delete theOSystem to avoid a segfault (theOSystem relies on Settings
   //  still being a valid construct)
-  theOSystem.reset(NULL);
+  ale::theOSystem.reset(NULL);
 
   return 0;
 }

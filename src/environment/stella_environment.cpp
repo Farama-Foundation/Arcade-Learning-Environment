@@ -21,6 +21,8 @@
 
 #include "../emucore/m6502/src/System.hxx"
 
+namespace ale {
+
 StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
     : m_osystem(osystem),
       m_settings(settings),
@@ -294,3 +296,5 @@ void StellaEnvironment::processRAM() {
   for (size_t i = 0; i < m_ram.size(); i++)
     *m_ram.byte(i) = m_osystem->console().system().peek(i + 0x80);
 }
+
+}  // namespace ale

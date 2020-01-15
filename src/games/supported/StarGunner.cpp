@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "StarGunner.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 StarGunnerSettings::StarGunnerSettings() { reset(); }
 
@@ -158,3 +161,5 @@ void StarGunnerSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

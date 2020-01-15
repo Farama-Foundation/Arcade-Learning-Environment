@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __BOWLING_HPP__
 #define __BOWLING_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Bowling settings */
 class BowlingSettings : public RomSettings {
@@ -85,5 +88,7 @@ class BowlingSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __BOWLING_HPP__

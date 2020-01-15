@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __FROSTBITE_HPP__
 #define __FROSTBITE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Frostbite */
 class FrostbiteSettings : public RomSettings {
@@ -81,5 +84,7 @@ class FrostbiteSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __FROSTBITE_HPP__

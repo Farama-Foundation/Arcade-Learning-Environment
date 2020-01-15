@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __CENTIPEDE_HPP__
 #define __CENTIPEDE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Centipede settings */
 class CentipedeSettings : public RomSettings {
@@ -81,5 +84,7 @@ class CentipedeSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __CENTIPEDE_HPP__

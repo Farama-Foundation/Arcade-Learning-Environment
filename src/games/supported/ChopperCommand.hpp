@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __CHOPPERCOMMAND_HPP__
 #define __CHOPPERCOMMAND_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Chopper Command settings */
 class ChopperCommandSettings : public RomSettings {
@@ -86,5 +89,7 @@ class ChopperCommandSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __CHOPPERCOMMAND_HPP__

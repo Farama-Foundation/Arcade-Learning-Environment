@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __KRULL_HPP__
 #define __KRULL_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Krull */
 class KrullSettings : public RomSettings {
@@ -69,5 +72,7 @@ class KrullSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __KRULL_HPP__

@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ROADRUNNER_HPP__
 #define __ROADRUNNER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Road Runner */
 class RoadRunnerSettings : public RomSettings {
@@ -69,5 +72,7 @@ class RoadRunnerSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ROADRUNNER_HPP__

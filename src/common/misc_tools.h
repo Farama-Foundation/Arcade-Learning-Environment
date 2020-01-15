@@ -21,6 +21,8 @@
 #include <sys/time.h>
 #endif
 
+namespace ale {
+
 /* *****************************************************************************
     Inline C++ integer exponentiation routines
     Version 1.01
@@ -64,6 +66,7 @@ inline void bound(int& x, int lower_bound, int upper_bound) {
 #if (defined(WIN32) || defined(__MINGW32__))
 
 #include <windows.h>
+
 inline long timeMillis() { return GetTickCount(); }
 
 #else
@@ -75,5 +78,7 @@ inline long timeMillis() {
 }
 
 #endif
+
+}  // namespace ale
 
 #endif  // __MISC_TOOLS_H__

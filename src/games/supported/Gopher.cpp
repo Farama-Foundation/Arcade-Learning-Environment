@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Gopher.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 GopherSettings::GopherSettings() { reset(); }
 
@@ -138,3 +141,5 @@ DifficultyVect GopherSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

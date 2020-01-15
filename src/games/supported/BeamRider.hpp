@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __BEAMRIDER_HPP__
 #define __BEAMRIDER_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Beam Rider - best Atari 2600 game ever! */
 class BeamRiderSettings : public RomSettings {
@@ -75,5 +78,7 @@ class BeamRiderSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __BEAMRIDER_HPP__

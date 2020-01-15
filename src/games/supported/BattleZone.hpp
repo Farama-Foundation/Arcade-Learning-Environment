@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __BATTLEZONE_HPP__
 #define __BATTLEZONE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for BattleZone settings */
 class BattleZoneSettings : public RomSettings {
@@ -81,5 +84,7 @@ class BattleZoneSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __BATTLEZONE_HPP__

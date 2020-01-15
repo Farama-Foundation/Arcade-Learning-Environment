@@ -27,6 +27,7 @@
  *
  *  The shared library interface.
  **************************************************************************** */
+
 #ifndef __ALE_INTERFACE_HPP__
 #define __ALE_INTERFACE_HPP__
 
@@ -44,6 +45,8 @@
 
 #include <string>
 #include <memory>
+
+namespace ale {
 
 static const std::string Version = "0.6.0";
 
@@ -196,4 +199,6 @@ class ALEInterface {
   static void checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem);
 };
 
-#endif
+}  // namespace ale
+
+#endif  // __ALE_INTERFACE_HPP__

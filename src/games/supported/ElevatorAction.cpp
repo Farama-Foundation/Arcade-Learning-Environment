@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "ElevatorAction.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 ElevatorActionSettings::ElevatorActionSettings() { reset(); }
 
@@ -113,3 +116,5 @@ ActionVect ElevatorActionSettings::getStartingActions() {
     startingActions.push_back(PLAYER_A_FIRE);
   return startingActions;
 }
+
+}  // namespace ale

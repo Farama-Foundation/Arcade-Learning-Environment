@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __NAMETHISGAME_HPP__
 #define __NAMETHISGAME_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Name This Game */
 class NameThisGameSettings : public RomSettings {
@@ -85,5 +88,7 @@ class NameThisGameSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __NAMETHISGAME_HPP__

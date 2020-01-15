@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Venture.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 VentureSettings::VentureSettings() { reset(); }
 
@@ -116,3 +119,5 @@ DifficultyVect VentureSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1, 2, 3};
   return diff;
 }
+
+}  // namespace ale

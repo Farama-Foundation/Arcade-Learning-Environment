@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __KINGKONG_HPP__
 #define __KINGKONG_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Kingkong */
 class KingkongSettings : public RomSettings {
@@ -72,5 +75,7 @@ class KingkongSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __KINGKONG_HPP__

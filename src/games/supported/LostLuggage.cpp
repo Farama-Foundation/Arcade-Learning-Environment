@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "LostLuggage.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 LostLuggageSettings::LostLuggageSettings() { reset(); }
 
@@ -107,3 +110,5 @@ ActionVect LostLuggageSettings::getStartingActions() {
   startingActions.push_back(RESET);
   return startingActions;
 }
+
+}  // namespace ale

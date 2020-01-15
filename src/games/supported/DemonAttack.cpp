@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "DemonAttack.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 DemonAttackSettings::DemonAttackSettings() { reset(); }
 
@@ -139,3 +142,5 @@ DifficultyVect DemonAttackSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

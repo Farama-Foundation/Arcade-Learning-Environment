@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __MRDO_HPP__
 #define __MRDO_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for MrDo */
 class MrDoSettings : public RomSettings {
@@ -57,5 +60,7 @@ class MrDoSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __MRDO_HPP__

@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Frogger.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 FroggerSettings::FroggerSettings() { reset(); }
 
@@ -84,3 +87,5 @@ ActionVect FroggerSettings::getStartingActions() {
   startingActions.push_back(RESET);
   return startingActions;
 }
+
+}  // namespace ale

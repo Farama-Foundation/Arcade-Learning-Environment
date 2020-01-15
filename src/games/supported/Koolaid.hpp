@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __KOOLAID_HPP__
 #define __KOOLAID_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Koolaid */
 class KoolaidSettings : public RomSettings {
@@ -53,5 +56,7 @@ class KoolaidSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __KOOLAID_HPP__

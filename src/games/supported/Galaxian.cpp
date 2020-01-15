@@ -23,9 +23,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Galaxian.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 ActionVect GalaxianSettings::actions;
 
@@ -135,3 +138,5 @@ void GalaxianSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

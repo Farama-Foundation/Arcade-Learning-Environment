@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __BANKHEIST_HPP__
 #define __BANKHEIST_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for BankHeist settings */
 class BankHeistSettings : public RomSettings {
@@ -85,5 +88,7 @@ class BankHeistSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __BANKHEIST_HPP__

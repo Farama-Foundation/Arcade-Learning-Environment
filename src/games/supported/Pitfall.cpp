@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Pitfall.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 PitfallSettings::PitfallSettings() { reset(); }
 
@@ -116,3 +119,5 @@ ActionVect PitfallSettings::getStartingActions() {
   startingActions.push_back(PLAYER_A_UP);
   return startingActions;
 }
+
+}  // namespace ale

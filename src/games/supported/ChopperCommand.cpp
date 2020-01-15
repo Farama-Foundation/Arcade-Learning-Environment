@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "ChopperCommand.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 ChopperCommandSettings::ChopperCommandSettings() { reset(); }
 
@@ -141,3 +144,5 @@ DifficultyVect ChopperCommandSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

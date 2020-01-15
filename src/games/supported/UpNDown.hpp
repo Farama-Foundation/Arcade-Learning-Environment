@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __UPNDOWN_HPP__
 #define __UPNDOWN_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Up N Down */
 class UpNDownSettings : public RomSettings {
@@ -76,5 +79,7 @@ class UpNDownSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __UPNDOWN_HPP__
