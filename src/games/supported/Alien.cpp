@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Alien.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 AlienSettings::AlienSettings() { reset(); }
 
@@ -157,3 +160,5 @@ DifficultyVect AlienSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1, 2, 3};
   return diff;
 }
+
+}  // namespace ale

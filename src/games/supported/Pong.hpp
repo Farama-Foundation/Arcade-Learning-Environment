@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __PONG_HPP__
 #define __PONG_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Pong */
 class PongSettings : public RomSettings {
@@ -84,5 +87,7 @@ class PongSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __PONG_HPP__

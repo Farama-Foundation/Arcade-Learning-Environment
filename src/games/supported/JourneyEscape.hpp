@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __JOURNEYESCAPE_HPP__
 #define __JOURNEYESCAPE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Journey Escape */
 class JourneyEscapeSettings : public RomSettings {
@@ -75,5 +78,7 @@ class JourneyEscapeSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
 };
+
+}  // namespace ale
 
 #endif  // __JOURNEYESCAPE_HPP__

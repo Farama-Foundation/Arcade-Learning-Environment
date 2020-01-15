@@ -19,6 +19,8 @@
 
 #include "ale_controller.hpp"
 
+namespace ale {
+
 class FIFOController : public ALEController {
  public:
   FIFOController(OSystem* osystem, bool named_pipes = false);
@@ -56,5 +58,7 @@ class FIFOController : public ALEController {
 
   reward_t latest_reward; // Most recent reward
 };
+
+}  // namespace ale
 
 #endif  // __FIFO_CONTROLLER_HPP__

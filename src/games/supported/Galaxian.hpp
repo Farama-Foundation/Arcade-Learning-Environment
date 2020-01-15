@@ -23,10 +23,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __GALAXIAN_HPP__
 #define __GALAXIAN_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 // RL wrapper for Galaxian
 class GalaxianSettings : public RomSettings {
@@ -85,5 +88,7 @@ class GalaxianSettings : public RomSettings {
 
   static ActionVect actions;
 };
+
+}  // namespace ale
 
 #endif  // __GALAXIAN_HPP__

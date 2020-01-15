@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __POOYAN_HPP__
 #define __POOYAN_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Pooyan */
 class PooyanSettings : public RomSettings {
@@ -81,5 +84,7 @@ class PooyanSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __POOYAN_HPP__

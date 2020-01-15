@@ -15,6 +15,8 @@
 
 #include "Constants.h"
 
+namespace ale {
+
 std::string action_to_string(Action a) {
   static std::string tmp_action_to_string[] = {
       "PLAYER_A_NOOP",
@@ -64,3 +66,5 @@ std::string action_to_string(Action a) {
   assert(a >= 0 && a <= 42);
   return tmp_action_to_string[a];
 }
+
+}  // namespace ale

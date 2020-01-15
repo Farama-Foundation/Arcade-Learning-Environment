@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "MrDo.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 MrDoSettings::MrDoSettings() { reset(); }
 
@@ -90,3 +93,5 @@ ActionVect MrDoSettings::getStartingActions() {
   startingActions.push_back(PLAYER_A_FIRE);
   return startingActions;
 }
+
+}  // namespace ale

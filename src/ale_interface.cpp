@@ -30,10 +30,10 @@
 
 #include "ale_interface.hpp"
 
-#include <stddef.h>
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -49,7 +49,7 @@
 #include "environment/ale_screen.hpp"
 #include "games/RomSettings.hpp"
 
-using namespace ale;
+namespace ale {
 
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {
@@ -390,3 +390,5 @@ ScreenExporter*
 ALEInterface::createScreenExporter(const std::string& filename) const {
   return new ScreenExporter(theOSystem->colourPalette(), filename);
 }
+
+}  // namespace ale

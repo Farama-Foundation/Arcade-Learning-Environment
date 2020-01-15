@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Skiing.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 SkiingSettings::SkiingSettings() { reset(); }
 
@@ -100,3 +103,5 @@ ActionVect SkiingSettings::getStartingActions() {
     startingActions.push_back(PLAYER_A_DOWN);
   return startingActions;
 }
+
+}  // namespace ale

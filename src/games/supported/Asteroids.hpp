@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ASTEROIDS_HPP__
 #define __ASTEROIDS_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Asteroids */
 class AsteroidsSettings : public RomSettings {
@@ -85,5 +88,7 @@ class AsteroidsSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __ASTEROIDS_HPP__

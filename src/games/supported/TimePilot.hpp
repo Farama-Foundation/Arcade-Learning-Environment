@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __TIMEPILOT_HPP__
 #define __TIMEPILOT_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Time Pilot */
 class TimePilotSettings : public RomSettings {
@@ -73,5 +76,7 @@ class TimePilotSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __TIMEPILOT_HPP__

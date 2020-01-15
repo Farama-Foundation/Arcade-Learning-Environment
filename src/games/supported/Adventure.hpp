@@ -23,10 +23,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ADVENTURE_HPP__
 #define __ADVENTURE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Adventure settings */
 class AdventureSettings : public RomSettings {
@@ -77,5 +80,7 @@ class AdventureSettings : public RomSettings {
   bool m_terminal;
   reward_t m_reward;
 };
+
+}  // namespace ale
 
 #endif  // __ADVENTURE_HPP__

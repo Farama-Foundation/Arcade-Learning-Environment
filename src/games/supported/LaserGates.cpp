@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "LaserGates.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 LaserGatesSettings::LaserGatesSettings() { reset(); }
 
@@ -93,3 +96,5 @@ ActionVect LaserGatesSettings::getStartingActions() {
   startingActions.push_back(RESET);
   return startingActions;
 }
+
+}  // namespace ale

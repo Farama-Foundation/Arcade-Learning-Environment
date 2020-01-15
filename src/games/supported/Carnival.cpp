@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Carnival.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 CarnivalSettings::CarnivalSettings() { reset(); }
 
@@ -76,3 +79,5 @@ void CarnivalSettings::loadState(Deserializer& ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
 }
+
+}  // namespace ale

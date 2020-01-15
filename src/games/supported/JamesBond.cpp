@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "JamesBond.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 JamesBondSettings::JamesBondSettings() { reset(); }
 
@@ -142,3 +145,5 @@ void JamesBondSettings::setMode(
     throw std::runtime_error("This mode doesn't currently exist for this game");
   }
 }
+
+}  // namespace ale

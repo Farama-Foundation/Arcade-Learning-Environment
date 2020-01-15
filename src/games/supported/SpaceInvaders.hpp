@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __SPACEINVADERS_HPP__
 #define __SPACEINVADERS_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 // RL wrapper for SpaceInvaders
 class SpaceInvadersSettings : public RomSettings {
@@ -87,5 +90,7 @@ class SpaceInvadersSettings : public RomSettings {
 
   static ActionVect actions;
 };
+
+}  // namespace ale
 
 #endif  // __SPACEINVADERS_HPP__

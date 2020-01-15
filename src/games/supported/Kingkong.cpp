@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Kingkong.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 KingkongSettings::KingkongSettings() { reset(); }
 
@@ -100,3 +103,5 @@ ActionVect KingkongSettings::getStartingActions() {
   startingActions.push_back(RESET);
   return startingActions;
 }
+
+}  // namespace ale

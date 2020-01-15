@@ -24,9 +24,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Breakout.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 BreakoutSettings::BreakoutSettings() { reset(); }
 
@@ -134,3 +137,5 @@ DifficultyVect BreakoutSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

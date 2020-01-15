@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __SIRLANCELOT_HPP__
 #define __SIRLANCELOT_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Up N Down */
 class SirLancelotSettings : public RomSettings {
@@ -58,5 +61,7 @@ class SirLancelotSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __SIRLANCELOT_HPP__

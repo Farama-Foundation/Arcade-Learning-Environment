@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __WIZARDOFWOR_HPP__
 #define __WIZARDOFWOR_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Wizard of Wor */
 class WizardOfWorSettings : public RomSettings {
@@ -73,5 +76,7 @@ class WizardOfWorSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __WIZARDOFWOR_HPP__

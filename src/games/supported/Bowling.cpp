@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Bowling.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 BowlingSettings::BowlingSettings() { reset(); }
 
@@ -106,3 +109,5 @@ DifficultyVect BowlingSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale

@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Koolaid.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 KoolaidSettings::KoolaidSettings() { reset(); }
 
@@ -78,3 +81,5 @@ void KoolaidSettings::loadState(Deserializer& ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
 }
+
+}  // namespace ale

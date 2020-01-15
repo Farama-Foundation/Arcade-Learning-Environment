@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  ALEInterface ale;
+  ale::ALEInterface ale;
 
   // Get & Set the desired settings
   ale.setInt("random_seed", 123);
@@ -62,11 +62,11 @@ int main(int argc, char** argv) {
   ale.loadROM(argv[1]);
 
   // Get the vector of legal actions
-  ActionVect legal_actions = ale.getLegalActionSet();
+  ale::ActionVect legal_actions = ale.getLegalActionSet();
 
   // Play a single episode, which we record.
   while (!ale.game_over()) {
-    Action a = legal_actions[rand() % legal_actions.size()];
+    ale::Action a = legal_actions[rand() % legal_actions.size()];
     // Apply the action (discard the resulting reward)
     ale.act(a);
   }

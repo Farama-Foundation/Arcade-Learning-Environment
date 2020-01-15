@@ -22,6 +22,8 @@
 // Include obscure header file for uInt32 definition
 #include "../emucore/m6502/src/bspf/src/bspf.hxx"
 
+namespace ale {
+
 class ColourPalette {
  public:
   ColourPalette();
@@ -75,5 +77,7 @@ class ColourPalette {
   uInt32 m_userPALPalette[256];
   uInt32 m_userSECAMPalette[256];
 };
+
+}  // namespace ale
 
 #endif  // __COLOUR_PALETTE_HPP__

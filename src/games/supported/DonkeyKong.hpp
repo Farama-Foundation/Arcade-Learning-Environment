@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __DONKEYKONG_HPP__
 #define __DONKEYKONG_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for DonkeyKong */
 class DonkeyKongSettings : public RomSettings {
@@ -55,5 +58,7 @@ class DonkeyKongSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __DONKEYKONG_HPP__

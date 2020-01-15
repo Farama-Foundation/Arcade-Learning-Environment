@@ -14,10 +14,13 @@
  * Additional utilities to operate on RAM.
  * *****************************************************************************
  */
+
 #ifndef __ROMUTILS_HPP__
 #define __ROMUTILS_HPP__
 
 class System;
+
+namespace ale {
 
 // reads a byte at a memory location between 0 and 1023
 extern int readRam(const System* system, int offset);
@@ -26,5 +29,7 @@ extern int readRam(const System* system, int offset);
 extern int getDecimalScore(int idx, const System* system);
 extern int getDecimalScore(int lo, int hi, const System* system);
 extern int getDecimalScore(int lo, int mid, int hi, const System* system);
+
+}  // namespace ale
 
 #endif  // __ROMUTILS_HPP__

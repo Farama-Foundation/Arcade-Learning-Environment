@@ -18,7 +18,9 @@
 #ifndef __ALE_RAM_HPP__
 #define __ALE_RAM_HPP__
 
-#include <string.h>
+#include <cstring>
+
+namespace ale {
 
 using byte_t = unsigned char;
 
@@ -72,5 +74,7 @@ inline byte_t ALERAM::get(unsigned int x) const {
 }
 
 inline byte_t* ALERAM::byte(unsigned int x) { return &m_ram[x & 0x7F]; }
+
+}  // namespace ale
 
 #endif  // __ALE_RAM_HPP__

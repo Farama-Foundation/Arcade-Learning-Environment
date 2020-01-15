@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Tennis.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 TennisSettings::TennisSettings() { reset(); }
 
@@ -139,3 +142,5 @@ DifficultyVect TennisSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1, 2, 3};
   return diff;
 }
+
+}  // namespace ale

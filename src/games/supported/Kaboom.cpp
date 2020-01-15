@@ -9,10 +9,14 @@
  *
  * *****************************************************************************
  */
+
 #include "Kaboom.hpp"
 
-#include "../RomUtils.hpp"
 #include <iostream>
+
+#include "../RomUtils.hpp"
+
+namespace ale {
 
 KaboomSettings::KaboomSettings() { reset(); }
 
@@ -80,3 +84,5 @@ ActionVect KaboomSettings::getStartingActions() {
   startingActions.push_back(PLAYER_A_FIRE);
   return startingActions;
 }
+
+}  // namespace ale

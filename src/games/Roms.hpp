@@ -9,6 +9,7 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __ROMS_HPP__
 #define __ROMS_HPP__
 
@@ -16,7 +17,11 @@
 
 #include "RomSettings.hpp"
 
+namespace ale {
+
 // looks for the RL wrapper corresponding to a particular rom title
-extern RomSettings* buildRomRLWrapper(const std::string& rom);
+RomSettings* buildRomRLWrapper(const std::string& rom);
+
+}  // namespace ale
 
 #endif  // __ROMS_HPP__

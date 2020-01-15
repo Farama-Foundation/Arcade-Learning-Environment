@@ -13,13 +13,16 @@
  *
  *  Supports displaying the screen via SDL.
  **************************************************************************** */
+
 #include "display_screen.h"
+
+#include <algorithm>
 
 #include "SoundSDL.hxx"
 
-using namespace std;
-
 #ifdef __USE_SDL
+
+namespace ale {
 
 DisplayScreen::DisplayScreen(MediaSource* mediaSource, Sound* sound,
                              ColourPalette& palette)
@@ -81,7 +84,7 @@ void DisplayScreen::display_screen() {
 
   // Wait a while, calibrating so that the delay remains the same
   Uint32 newTime = SDL_GetTicks();
-  Uint32 delta = newTime - min(last_frame_time, newTime);
+  Uint32 delta = newTime - std::min(last_frame_time, newTime);
 
   if (delta < delay_msec) {
     SDL_Delay(delay_msec - delta);
@@ -198,5 +201,7 @@ Action DisplayScreen::getUserAction() {
   }
   return a;
 }
+
+}  // namespace ale
 
 #endif  // __USE_SDL

@@ -9,10 +9,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __LOSTLUGGAGE_HPP__
 #define __LOSTLUGGAGE_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Lost Luggage */
 class LostLuggageSettings : public RomSettings {
@@ -61,5 +64,7 @@ class LostLuggageSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __LOSTLUGGAGE_HPP__

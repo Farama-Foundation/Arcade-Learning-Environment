@@ -25,7 +25,10 @@
 #include "../emucore/MediaSrc.hxx"
 
 #ifdef __USE_SDL
+
 #include "SDL.h"
+
+namespace ale {
 
 class DisplayScreen {
  public:
@@ -64,7 +67,13 @@ class DisplayScreen {
   // Used to calibrate delay between frames
   Uint32 last_frame_time;
 };
+
+}  // namespace ale
+
 #else
+
+namespace ale {
+
 /** A dummy class that simply ignores display events. */
 class DisplayScreen {
  public:
@@ -73,6 +82,9 @@ class DisplayScreen {
   bool manual_control_engaged() { return false; }
   Action getUserAction() { return UNDEFINED; }
 };
+
+}  // namespace ale
+
 #endif  // __USE_SDL
 
 #endif  // DISPLAY_SCREEN

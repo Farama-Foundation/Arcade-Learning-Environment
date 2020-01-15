@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "SirLancelot.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 SirLancelotSettings::SirLancelotSettings() { reset(); }
 
@@ -86,3 +89,5 @@ ActionVect SirLancelotSettings::getStartingActions() {
   startingActions.push_back(PLAYER_A_LEFT);
   return startingActions;
 }
+
+}  // namespace ale

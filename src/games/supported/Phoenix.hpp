@@ -24,10 +24,13 @@
  *
  * *****************************************************************************
  */
+
 #ifndef __PHOENIX_HPP__
 #define __PHOENIX_HPP__
 
 #include "../RomSettings.hpp"
+
+namespace ale {
 
 /* RL wrapper for Phoenix */
 class PhoenixSettings : public RomSettings {
@@ -69,5 +72,7 @@ class PhoenixSettings : public RomSettings {
   reward_t m_score;
   int m_lives;
 };
+
+}  // namespace ale
 
 #endif  // __PHOENIX_HPP__

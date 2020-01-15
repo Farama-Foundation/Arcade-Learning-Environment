@@ -9,9 +9,12 @@
  *
  * *****************************************************************************
  */
+
 #include "Pong.hpp"
 
 #include "../RomUtils.hpp"
+
+namespace ale {
 
 PongSettings::PongSettings() { reset(); }
 
@@ -111,3 +114,5 @@ DifficultyVect PongSettings::getAvailableDifficulties() {
   DifficultyVect diff = {0, 1};
   return diff;
 }
+
+}  // namespace ale
