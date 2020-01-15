@@ -196,7 +196,7 @@ class ALEInterface {
                            std::unique_ptr<OSystem>& theOSystem);
 
  private:
-  static void checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem);
+  static bool isSupportedRom(std::unique_ptr<OSystem>& theOSystem);
 };
 
 }  // namespace ale
