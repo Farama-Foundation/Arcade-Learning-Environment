@@ -18,6 +18,8 @@
 
 #include "RomSettings.hpp"
 
+#include <algorithm>
+
 namespace ale {
 
 RomSettings::RomSettings() {}
@@ -63,6 +65,11 @@ void RomSettings::setMode(game_mode_t m, System&, std::unique_ptr<StellaEnvironm
 
 DifficultyVect RomSettings::getAvailableDifficulties() {
   return DifficultyVect(1, 0);
-};
+}
+
+bool RomSettings::isModeSupported(game_mode_t m) {
+  auto modes = getAvailableModes();
+  return std::find(modes.begin(), modes.end(), m) != modes.end();
+}
 
 }  // namespace ale
