@@ -38,45 +38,45 @@ class FrostbiteSettings : public RomSettings {
   FrostbiteSettings();
 
   // reset
-  void reset();
+  void reset() override;
 
   // is end of game
-  bool isTerminal() const;
+  bool isTerminal() const override;
 
   // get the most recently observed reward
-  reward_t getReward() const;
+  reward_t getReward() const override;
 
   // the rom-name
-  const char* rom() const { return "frostbite"; }
+  const char* rom() const override { return "frostbite"; }
 
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 
   // create a new instance of the rom
-  RomSettings* clone() const;
+  RomSettings* clone() const override;
 
   // is an action part of the minimal set?
-  bool isMinimal(const Action& a) const;
+  bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system);
+  void step(const System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser);
+  void saveState(Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser);
+  void loadState(Deserializer& ser) override;
 
-  virtual int lives() { return isTerminal() ? 0 : m_lives; }
+  int lives() override { return isTerminal() ? 0 : m_lives; }
 
   // returns a list of mode that the game can be played in
   // in this game, there are 2 available modes
-  ModeVect getAvailableModes();
+  ModeVect getAvailableModes() override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
   void setMode(game_mode_t, System& system,
-               std::unique_ptr<StellaEnvironmentWrapper> environment);
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
  private:
   bool m_terminal;
