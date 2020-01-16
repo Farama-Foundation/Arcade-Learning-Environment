@@ -22,8 +22,11 @@ class System;
 
 namespace ale {
 
-// reads a byte at a memory location between 0 and 1023
+// reads a byte at a RAM location between 0 and 0x7f also mapped to [0x80, 0xff]
 extern int readRam(const System* system, int offset);
+
+// reads a byte from anywhere in the memory map between 0x0000 and 0xffff.
+extern int readMappedRam(const System* system, int offset);
 
 // extracts a decimal value from 1, 2, and 3 bytes respectively
 extern int getDecimalScore(int idx, const System* system);
