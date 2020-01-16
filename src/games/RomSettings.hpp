@@ -112,6 +112,10 @@ class RomSettings {
   // Returns a list of difficulties that the game can be played in.
   // By default, there is only one available difficulty.
   virtual DifficultyVect getAvailableDifficulties();
+
+ protected:
+  // Helper function that checks if our settings support this given mode.
+  bool isModeSupported(game_mode_t m);
 };
 
 }  // namespace ale
