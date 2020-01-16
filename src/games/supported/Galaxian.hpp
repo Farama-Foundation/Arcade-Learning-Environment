@@ -37,48 +37,48 @@ class GalaxianSettings : public RomSettings {
   GalaxianSettings();
 
   // reset
-  void reset();
+  void reset() override;
 
   // is end of game
-  bool isTerminal() const;
+  bool isTerminal() const override;
 
   // get the most recently observed reward
-  reward_t getReward() const;
+  reward_t getReward() const override;
 
   // the rom-name
-  const char* rom() const { return "galaxian"; }
+  const char* rom() const override { return "galaxian"; }
 
   // create a new instance of the rom
-  RomSettings* clone() const;
+  RomSettings* clone() const override;
 
   // is an action part of the minimal set?
-  bool isMinimal(const Action& a) const;
+  bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system);
+  void step(const System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser);
+  void saveState(Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser);
+  void loadState(Deserializer& ser) override;
 
-  virtual int lives() { return isTerminal() ? 0 : m_lives; }
+  int lives() override { return isTerminal() ? 0 : m_lives; }
 
   // get the available number of modes
   unsigned int getNumModes() const { return 9; }
 
   // returns a list of mode that the game can be played in
-  ModeVect getAvailableModes();
+  ModeVect getAvailableModes() override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
   void setMode(game_mode_t mode, System& system,
-               std::unique_ptr<StellaEnvironmentWrapper> environment);
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
   // Returns a list of difficulties that the game can be played in.
   // 2 difficulties: 0 is left B, 1 is left A
-  DifficultyVect getAvailableDifficulties() { return {0, 1}; }
+  DifficultyVect getAvailableDifficulties() override { return {0, 1}; }
 
  private:
   bool m_terminal;
