@@ -30,6 +30,53 @@ int readRam(const System* system, int offset) {
   return sys->peek((offset & 0x7F) + 0x80);
 }
 
+// Reads a byte from anywhere in the memory map between 0x0000 and 0xffff.
+// Note that the 6507 CPU used in the Atari 2600 only has 13 address lines
+// physically connected. According to documentation by Chris Wilkson found
+// at: https://atariage.com/forums/topic/192418-mirrored-memory/
+//
+// The address ranges are therefore mirrored in the following way:
+//
+// ***************************************************
+// * $0000-$003F = TIA Addresses $00-$3F (zero page) *
+// * ----------------------------------------------- *
+// *     mirror: $xyz0                               *
+// *     x = {even}                                  *
+// *     y = {anything}                              *
+// *     z = {0, 4}                                  *
+// ***************************************************
+//
+// **************************************
+// * $0080-$00FF = RIOT RAM (zero page) *
+// * ---------------------------------- *
+// *     mirror: $xy80                  *
+// *     x = {even}                     *
+// *     y = {0,1,4,5,8,9,$C,$D}        *
+// **************************************
+//
+// ****************************************
+// * $0280-$029F = RIOT Addresses $00-$1F *
+// * ------------------------------------ *
+// *     mirror: $xyz0                    *
+// *     x = {even}                       *
+// *     y = {2,3,6,7,$A,$B,$E,$F}        *
+// *     z = {8,$A,$C,$E}                 *
+// ****************************************
+//
+// *****************************************
+// * $1000-$1FFF = ROM Addresses $000-$FFF *
+// * ------------------------------------- *
+// *     mirror: $x000                     *
+// *     x = {odd}                         *
+// *****************************************
+//
+int readMappedRam(const System* system, int offset) {
+  // peek modifies data-bus state, but is logically const from
+  // the point of view of the RL interface
+  System* sys = const_cast<System*>(system);
+  return sys->peek(offset);
+}
+
 /* extracts a decimal value from a byte */
 int getDecimalScore(int index, const System* system) {
   int score = 0;
