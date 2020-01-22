@@ -235,25 +235,25 @@ class TIA : public Device , public MediaSource
 
   private:
     // Compute the ball mask table
-    void computeBallMaskTable();
+    static void computeBallMaskTable();
 
     // Compute the collision decode table
-    void computeCollisionTable();
+    static void computeCollisionTable();
 
     // Compute the missle mask table
-    void computeMissleMaskTable();
+    static void computeMissleMaskTable();
 
     // Compute the player mask table
-    void computePlayerMaskTable();
+    static void computePlayerMaskTable();
 
     // Compute the player position reset when table
-    void computePlayerPositionResetWhenTable();
+    static void computePlayerPositionResetWhenTable();
 
     // Compute the player reflect table
-    void computePlayerReflectTable();
+    static void computePlayerReflectTable();
 
     // Compute playfield mask table
-    void computePlayfieldMaskTable();
+    static void computePlayfieldMaskTable();
 
   private:
     // Update the current frame buffer up to one scanline
@@ -455,22 +455,22 @@ class TIA : public Device , public MediaSource
     // the TIA code will fail on a good number of CPUs.
 
     // Pointer to the currently active mask array for the ball
-    uInt8* myCurrentBLMask;
+    const uInt8* myCurrentBLMask;
 
     // Pointer to the currently active mask array for missle 0
-    uInt8* myCurrentM0Mask;
+    const uInt8* myCurrentM0Mask;
 
     // Pointer to the currently active mask array for missle 1
-    uInt8* myCurrentM1Mask;
+    const uInt8* myCurrentM1Mask;
 
     // Pointer to the currently active mask array for player 0
-    uInt8* myCurrentP0Mask;
+    const uInt8* myCurrentP0Mask;
 
     // Pointer to the currently active mask array for player 1
-    uInt8* myCurrentP1Mask;
+    const uInt8* myCurrentP1Mask;
 
     // Pointer to the currently active mask array for the playfield
-    uInt32* myCurrentPFMask;
+    const uInt32* myCurrentPFMask;
 
     // Audio values. Only used by TIADebug.
     uInt8 myAUDV0;
@@ -517,7 +517,7 @@ class TIA : public Device , public MediaSource
     static uInt16 ourCollisionTable[64];
 
     // A mask table which can be used when an object is disabled
-    static uInt8 ourDisabledMaskTable[640];
+    static const uInt8 ourDisabledMaskTable[640];
 
     // Indicates the update delay associated with poking at a TIA address
     static const Int16 ourPokeDelayTable[64];
