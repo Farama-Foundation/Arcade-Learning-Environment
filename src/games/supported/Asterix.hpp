@@ -38,36 +38,36 @@ class AsterixSettings : public RomSettings {
   AsterixSettings();
 
   // reset
-  void reset();
+  void reset() override;
 
   // is end of game
-  bool isTerminal() const;
+  bool isTerminal() const override;
 
   // get the most recently observed reward
-  reward_t getReward() const;
+  reward_t getReward() const override;
 
   // the rom-name
-  const char* rom() const { return "asterix"; }
+  const char* rom() const override { return "asterix"; }
 
   // create a new instance of the rom
-  RomSettings* clone() const;
+  RomSettings* clone() const override;
 
   // is an action part of the minimal set?
-  bool isMinimal(const Action& a) const;
+  bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system);
+  void step(const System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser);
+  void saveState(Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser);
+  void loadState(Deserializer& ser) override;
 
   // Asterix requires the fire action to start the game
-  ActionVect getStartingActions();
+  ActionVect getStartingActions() override;
 
-  virtual int lives() { return isTerminal() ? 0 : m_lives; }
+  int lives() override { return isTerminal() ? 0 : m_lives; }
 
  private:
   bool m_terminal;
