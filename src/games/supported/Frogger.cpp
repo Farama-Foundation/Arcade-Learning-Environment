@@ -39,7 +39,7 @@ void FroggerSettings::step(const System& system) {
 }
 
 /* is end of game */
-bool FroggerSettings::isTerminal() const { return m_terminal; };
+bool FroggerSettings::isTerminal() const { return m_terminal; }
 
 /* get the most recently observed reward */
 reward_t FroggerSettings::getReward() const { return m_reward; }
