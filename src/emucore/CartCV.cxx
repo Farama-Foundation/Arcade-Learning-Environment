@@ -26,7 +26,7 @@
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeCV::CartridgeCV(const uInt8* image, uInt32 size)
+CartridgeCV::CartridgeCV(const uInt8* image, uInt32 size, Random& rng)
 {
   uInt32 addr;
   if(size == 2048)
@@ -38,11 +38,9 @@ CartridgeCV::CartridgeCV(const uInt8* image, uInt32 size)
     }
 
     // Initialize RAM with random values
-  class Random& random = Random::getInstance();
-
     for(uInt32 i = 0; i < 1024; ++i)
     {
-      myRAM[i] = random.next();
+      myRAM[i] = rng.next();
     }
   }
   else if(size == 4096)

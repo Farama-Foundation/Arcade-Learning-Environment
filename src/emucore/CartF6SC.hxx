@@ -25,6 +25,7 @@ class Deserializer;
 
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "Cart.hxx"
+#include "Random.hxx"
 
 /**
   Cartridge class used for Atari's 16K bankswitched games with
@@ -40,8 +41,9 @@ class CartridgeF6SC : public Cartridge
       Create a new cartridge using the specified image
 
       @param image Pointer to the ROM image
+      @param rng A random number generator used to populate the initial extra RAM
     */
-    CartridgeF6SC(const uInt8* image);
+    CartridgeF6SC(const uInt8* image, Random& rng);
  
     /**
       Destructor

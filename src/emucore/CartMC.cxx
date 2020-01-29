@@ -26,7 +26,7 @@
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeMC::CartridgeMC(const uInt8* image, uInt32 size)
+CartridgeMC::CartridgeMC(const uInt8* image, uInt32 size, Random& rng)
   : mySlot3Locked(false)
 {
   uInt32 i;
@@ -38,11 +38,9 @@ CartridgeMC::CartridgeMC(const uInt8* image, uInt32 size)
   myRAM = new uInt8[32 * 1024];
 
   // Initialize RAM with random values
-  class Random& random = Random::getInstance();
-
   for(i = 0; i < 32 * 1024; ++i)
   {
-    myRAM[i] = random.next();
+    myRAM[i] = rng.next();
   }
 
   // Allocate array for the ROM image

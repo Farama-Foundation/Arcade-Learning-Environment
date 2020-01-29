@@ -27,7 +27,7 @@
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Cartridge3E::Cartridge3E(const uInt8* image, uInt32 size)
+Cartridge3E::Cartridge3E(const uInt8* image, uInt32 size, Random& rng)
   : mySize(size)
 {
   // Allocate array for the ROM image
@@ -40,10 +40,9 @@ Cartridge3E::Cartridge3E(const uInt8* image, uInt32 size)
   }
 
   // Initialize RAM with random values
-  class Random& random = Random::getInstance();
   for(uInt32 i = 0; i < 32768; ++i)
   {
-    myRam[i] = random.next();
+    myRam[i] = rng.next();
   }
 }
 

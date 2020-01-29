@@ -26,6 +26,7 @@ class Deserializer;
 
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "Cart.hxx"
+#include "Random.hxx"
 
 /**
   This is the cartridge class for Arcadia (aka Starpath) Supercharger 
@@ -48,8 +49,9 @@ class CartridgeAR : public Cartridge
       @param image     Pointer to the ROM image
       @param size      The size of the ROM image
       @param fastbios  Whether or not to quickly execute the BIOS code
+      @param rng       A random number generator used to populate the initial extra RAM
     */
-    CartridgeAR(const uInt8* image, uInt32 size, bool fastbios);
+    CartridgeAR(const uInt8* image, uInt32 size, bool fastbios, Random& rng);
 
     /**
       Destructor
