@@ -25,9 +25,6 @@
 #include <random>
 #include <sstream>
 
-// A static Random object for compatibility purposes. Don't use this.
-Random Random::s_random;
-
 // Implementation of Random's random number generator wrapper. 
 class Random::Impl {
   
@@ -107,10 +104,6 @@ uInt32 Random::next()
 double Random::nextDouble()
 {
   return m_pimpl->nextDouble();
-}
-
-Random& Random::getInstance() {
-  return s_random;
 }
 
 bool Random::saveState(Serializer& ser) {

@@ -600,7 +600,7 @@ bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
     s = mySettings->getString("hmove");
     if(s != "") props.set(Emulation_HmoveBlanks, s);
 
-  *cart = Cartridge::create(image, size, props, *mySettings);
+  *cart = Cartridge::create(image, size, props, *mySettings, myRandGen);
   if(!*cart)
     return false;
 

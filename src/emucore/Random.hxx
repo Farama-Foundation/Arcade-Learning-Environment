@@ -61,10 +61,6 @@ class Random
     */
     double nextDouble();
 
-    // Returns a static Random object. DO NOT USE THIS. This is mostly meant for use by the
-    // code for the various cartridges. 
-    static Random& getInstance();
-
     /**
       Serializes the RNG state.
     */
@@ -80,9 +76,6 @@ class Random
     // Actual rng (implementation hidden away from the header to avoid depending on rng libraries). 
     class Impl;
     Impl *m_pimpl;
-
-    // A static Random object. Don't use this.
-    static Random s_random;
 };
 #endif
 

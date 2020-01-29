@@ -26,7 +26,7 @@
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeFASC::CartridgeFASC(const uInt8* image)
+CartridgeFASC::CartridgeFASC(const uInt8* image, Random& rng)
 {
   // Copy the ROM image into my buffer
   for(uInt32 addr = 0; addr < 12288; ++addr)
@@ -35,11 +35,9 @@ CartridgeFASC::CartridgeFASC(const uInt8* image)
   }
 
   // Initialize RAM with random values
-  class Random& random = Random::getInstance();
-
   for(uInt32 i = 0; i < 256; ++i)
   {
-    myRAM[i] = random.next();
+    myRAM[i] = rng.next();
   }
 }
  

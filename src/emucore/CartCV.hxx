@@ -25,6 +25,7 @@ class Deserializer;
 
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "Cart.hxx"
+#include "Random.hxx"
 
 /**
   Cartridge class used for Commavid's extra-RAM games.
@@ -43,8 +44,9 @@ class CartridgeCV : public Cartridge
       Create a new cartridge using the specified image
 
       @param image Pointer to the ROM image
+      @param rng A random number generator used to populate the initial extra RAM
     */
-    CartridgeCV(const uInt8* image, uInt32 size);
+    CartridgeCV(const uInt8* image, uInt32 size, Random& rng);
 
     /**
       Destructor

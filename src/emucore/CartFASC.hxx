@@ -25,6 +25,7 @@ class Deserializer;
 
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "Cart.hxx"
+#include "Random.hxx"
 
 /**
   Cartridge class used for CBS' RAM Plus cartridges.  There are
@@ -40,8 +41,9 @@ class CartridgeFASC : public Cartridge
       Create a new cartridge using the specified image
 
       @param image Pointer to the ROM image
+      @param rng A random number generator used to populate the initial extra RAM
     */
-    CartridgeFASC(const uInt8* image);
+    CartridgeFASC(const uInt8* image, Random& rng);
  
     /**
       Destructor
