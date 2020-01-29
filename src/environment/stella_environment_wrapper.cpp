@@ -19,4 +19,8 @@ void StellaEnvironmentWrapper::pressSelect(size_t num_steps) {
   m_environment.pressSelect(num_steps);
 }
 
+Random& StellaEnvironmentWrapper::getSystemRng() {
+  return m_environment.getSystemRng();
+}
+
 }  // namespace ale
