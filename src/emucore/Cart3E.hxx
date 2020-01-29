@@ -25,6 +25,7 @@ class Deserializer;
 
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "Cart.hxx"
+#include "Random.hxx"
 
 /**
   This is the cartridge class for Tigervision's bankswitched
@@ -70,8 +71,9 @@ class Cartridge3E : public Cartridge
 
       @param image Pointer to the ROM image
       @param size The size of the ROM image
+      @param rng A random number generator used to populate the initial extra RAM
     */
-    Cartridge3E(const uInt8* image, uInt32 size);
+    Cartridge3E(const uInt8* image, uInt32 size, Random& rng);
  
     /**
       Destructor

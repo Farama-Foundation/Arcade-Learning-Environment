@@ -27,6 +27,7 @@ class Settings;
 #include <fstream>
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "m6502/src/Device.hxx"
+#include "Random.hxx"
 #include "../common/Log.hpp"
 
 /**
@@ -50,7 +51,7 @@ class Cartridge : public Device
       @return   Pointer to the new cartridge object allocated on the heap
     */
     static Cartridge* create(const uInt8* image, uInt32 size, 
-        const Properties& props, const Settings& settings);
+        const Properties& props, const Settings& settings, Random& rng);
 
     /**
       Create a new cartridge

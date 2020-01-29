@@ -51,7 +51,7 @@
 using namespace std;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
-    const Properties& properties, const Settings& settings)
+    const Properties& properties, const Settings& settings, Random& rng)
 {
   Cartridge* cartridge = 0;
 
@@ -92,7 +92,7 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
   if(type == "2K")
     cartridge = new Cartridge2K(image);
   else if(type == "3E")
-    cartridge = new Cartridge3E(image, size);
+    cartridge = new Cartridge3E(image, size, rng);
   else if(type == "3F")
     cartridge = new Cartridge3F(image, size);
   else if(type == "4A50")
@@ -100,37 +100,37 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
   else if(type == "4K")
     cartridge = new Cartridge4K(image);
   else if(type == "AR")
-    cartridge = new CartridgeAR(image, size, true); //settings.getBool("fastscbios")
+    cartridge = new CartridgeAR(image, size, true, rng);
   else if(type == "DPC")
     cartridge = new CartridgeDPC(image, size);
   else if(type == "E0")
     cartridge = new CartridgeE0(image);
   else if(type == "E7")
-    cartridge = new CartridgeE7(image);
+    cartridge = new CartridgeE7(image, rng);
   else if(type == "F4")
     cartridge = new CartridgeF4(image);
   else if(type == "F4SC")
-    cartridge = new CartridgeF4SC(image);
+    cartridge = new CartridgeF4SC(image, rng);
   else if(type == "F6")
     cartridge = new CartridgeF6(image);
   else if(type == "F6SC")
-    cartridge = new CartridgeF6SC(image);
+    cartridge = new CartridgeF6SC(image, rng);
   else if(type == "F8")
     cartridge = new CartridgeF8(image, false);
   else if(type == "F8 swapped")
     cartridge = new CartridgeF8(image, true);
   else if(type == "F8SC")
-    cartridge = new CartridgeF8SC(image);
+    cartridge = new CartridgeF8SC(image, rng);
   else if(type == "FASC")
-    cartridge = new CartridgeFASC(image);
+    cartridge = new CartridgeFASC(image, rng);
   else if(type == "FE")
     cartridge = new CartridgeFE(image);
   else if(type == "MC")
-    cartridge = new CartridgeMC(image, size);
+    cartridge = new CartridgeMC(image, size, rng);
   else if(type == "MB")
     cartridge = new CartridgeMB(image);
   else if(type == "CV")
-    cartridge = new CartridgeCV(image, size);
+    cartridge = new CartridgeCV(image, size, rng);
   else if(type == "UA")
     cartridge = new CartridgeUA(image);
   else if(type == "0840")
