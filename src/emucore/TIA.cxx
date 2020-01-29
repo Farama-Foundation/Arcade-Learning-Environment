@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <mutex>
 
 #include "Console.hxx"
 #include "Control.hxx"
@@ -30,9 +31,12 @@
 #include "Deserializer.hxx"
 #include "Settings.hxx"
 #include "Sound.hxx"
+
 using namespace std;
 
 #define HBLANK 68
+
+static std::once_flag tia_init_once;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TIA::TIA(const Console& console, Settings& settings)
@@ -95,14 +99,16 @@ TIA::TIA(const Console& console, Settings& settings)
     }
   }
 
-  // Compute all of the mask tables
-  computeBallMaskTable();
-  computeCollisionTable();
-  computeMissleMaskTable();
-  computePlayerMaskTable();
-  computePlayerPositionResetWhenTable();
-  computePlayerReflectTable();
-  computePlayfieldMaskTable();
+  std::call_once(tia_init_once, []() {
+    // Compute all of the mask tables
+    computeBallMaskTable();
+    computeCollisionTable();
+    computeMissleMaskTable();
+    computePlayerMaskTable();
+    computePlayerPositionResetWhenTable();
+    computePlayerReflectTable();
+    computePlayfieldMaskTable();
+  });
 
   // Init stats counters
   myFrameCounter = 0;
