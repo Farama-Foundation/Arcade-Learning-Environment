@@ -99,6 +99,8 @@ class StellaEnvironment {
   int getFrameNumber() const { return m_state.getFrameNumber(); }
   int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
+  Random& getSystemRng() { return m_osystem->rng(); }
+
   /** Returns a wrapper providing #include-free access to our methods. */
   std::unique_ptr<StellaEnvironmentWrapper> getWrapper();
 

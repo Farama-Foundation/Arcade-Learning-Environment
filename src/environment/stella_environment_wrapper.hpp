@@ -18,6 +18,7 @@
 #define __STELLA_ENVIRONMENT_WRAPPER_HPP__
 
 #include "../common/Constants.h"
+#include "../emucore/Random.hxx"
 
 namespace ale {
 
@@ -32,6 +33,7 @@ class StellaEnvironmentWrapper {
   reward_t act(Action player_a_action, Action player_b_action);
   void softReset();
   void pressSelect(size_t num_steps = 1);
+  Random& getSystemRng();
 
   StellaEnvironment& m_environment;
 };
