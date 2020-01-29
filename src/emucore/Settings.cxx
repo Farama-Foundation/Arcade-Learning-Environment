@@ -94,6 +94,9 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("mwheel", "4");
     setInternal("autoslot", "false");
 
+    // Expose setting for SwapPorts property. Required for Surround ROM.
+    setInternal("sp", "NO");
+
     setDefaultSettings();
 }
 
@@ -697,6 +700,12 @@ void Settings::setDefaultSettings() {
     // Controller settings
     intSettings.insert(pair<string, int>("max_num_frames", 0));
     intSettings.insert(pair<string, int>("max_num_frames_per_episode", 0));
+
+    // Expose paddle_min and paddle_max settings but set as 'undefined' so
+    // PADDLE_MIN and PADDLE_MAX defines are used as for default values in
+    // the StellaEnvironment constructor.
+    intSettings.insert(pair<string, int>("paddle_min", -1));
+    intSettings.insert(pair<string, int>("paddle_max", -1));
 
     // FIFO controller settings
     boolSettings.insert(pair<string, bool>("run_length_encoding", true));
