@@ -15,6 +15,9 @@
 
 #include "Constants.h"
 
+#include <cassert>
+#include <string>
+
 namespace ale {
 
 std::string action_to_string(Action a) {

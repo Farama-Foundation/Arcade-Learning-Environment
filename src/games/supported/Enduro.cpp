@@ -12,6 +12,8 @@
 
 #include "Enduro.hpp"
 
+#include <cassert>
+
 #include "../RomUtils.hpp"
 
 namespace ale {

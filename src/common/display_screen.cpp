@@ -17,6 +17,7 @@
 #include "display_screen.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "SoundSDL.hxx"
 
