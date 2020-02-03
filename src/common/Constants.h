@@ -17,12 +17,8 @@
 #ifndef __CONSTANTS_H__
 #define __CONSTANTS_H__
 
-#include <cassert>
+#include <string>
 #include <vector>
-#include <valarray>
-#include <cstdlib>
-
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
 
 namespace ale {
 
