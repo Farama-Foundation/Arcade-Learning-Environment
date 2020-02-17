@@ -10,8 +10,10 @@
  * *****************************************************************************
  */
 
+#include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 #include <memory>
 #include <sstream>
 
@@ -69,7 +71,13 @@ ALEController* createController(OSystem* osystem, std::string type) {
 
 /* application entry point */
 int main(int argc, char* argv[]) {
-  ale::ALEInterface::disableBufferedIO();
+  // Disable buffered I/O.
+  setvbuf(stdout, NULL, _IONBF, 0);
+  setvbuf(stdin, NULL, _IONBF, 0);
+  std::cin.rdbuf()->pubsetbuf(0, 0);
+  std::cout.rdbuf()->pubsetbuf(0, 0);
+  std::cin.sync_with_stdio();
+  std::cout.sync_with_stdio();
 
   std::cerr << ale::ALEInterface::welcomeMessage() << std::endl;
 
