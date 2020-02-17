@@ -60,15 +60,6 @@ std::string ALEInterface::welcomeMessage() {
   return oss.str();
 }
 
-void ALEInterface::disableBufferedIO() {
-  setvbuf(stdout, NULL, _IONBF, 0);
-  setvbuf(stdin, NULL, _IONBF, 0);
-  std::cin.rdbuf()->pubsetbuf(0, 0);
-  std::cout.rdbuf()->pubsetbuf(0, 0);
-  std::cin.sync_with_stdio();
-  std::cout.sync_with_stdio();
-}
-
 void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
                                  std::unique_ptr<Settings>& theSettings) {
 #if (defined(WIN32) || defined(__MINGW32__))
@@ -150,13 +141,11 @@ void ALEInterface::loadSettings(const std::string& romfile,
 }
 
 ALEInterface::ALEInterface() {
-  disableBufferedIO();
   Logger::Info << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
 }
 
 ALEInterface::ALEInterface(bool display_screen) {
-  disableBufferedIO();
   Logger::Info << welcomeMessage() << std::endl;
   createOSystem(theOSystem, theSettings);
   this->setBool("display_screen", display_screen);
