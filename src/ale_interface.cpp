@@ -188,9 +188,15 @@ void ALEInterface::loadROM(std::string rom_file = "") {
   }
 
   romSettings.reset(wrapper);
+
+  // Custom environment settings required for a specific ROM must be added
+  // before the StellaEnvironment is constructed.
+  romSettings->modifyEnvironmentSettings(theOSystem->settings());
+
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
   environment->reset();
+
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
     Logger::Error
