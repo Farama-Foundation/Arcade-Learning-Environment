@@ -41,6 +41,7 @@
 #include "../common/Constants.h"
 #include "../emucore/Serializer.hxx"
 #include "../emucore/Deserializer.hxx"
+#include "../emucore/Settings.hxx"
 #include "../environment/stella_environment_wrapper.hpp"
 
 class System;
@@ -56,6 +57,11 @@ class RomSettings {
 
   // reset
   virtual void reset() {}
+
+  // This method is called with the collection of settings that will be used to
+  // create the Stella emulator for the environment. Overriders may modify these
+  // settings when this is needed for the correct behavior of the ROM in Stella.
+  virtual void modifyEnvironmentSettings(Settings& settings) {}
 
   // is end of game
   virtual bool isTerminal() const = 0;
