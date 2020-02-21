@@ -34,9 +34,7 @@ AdventureSettings::AdventureSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AdventureSettings::clone() const {
-  RomSettings* rval = new AdventureSettings();
-  *rval = *this;
-  return rval;
+  return new AdventureSettings(*this);
 }
 
 /* process the latest information from ALE */
@@ -107,7 +105,7 @@ void AdventureSettings::loadState(Deserializer& ser) {
 
 // Returns the supported modes for the game.
 ModeVect AdventureSettings::getAvailableModes() {
-  return ModeVect() = {0, 1, 2};
+  return {0, 1, 2};
 }
 
 // Set the game mode.
@@ -149,7 +147,7 @@ void AdventureSettings::setMode(
 // one difficulty switch controls controls the dragons' bite speed, and one
 // causes them to flee when the player is wielding the sword.
 DifficultyVect AdventureSettings::getAvailableDifficulties() {
-  return DifficultyVect() = {0, 1, 2, 3};
+  return {0, 1, 2, 3};
 }
 
 }  // namespace ale
