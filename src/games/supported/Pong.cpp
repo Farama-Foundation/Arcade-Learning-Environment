@@ -111,8 +111,7 @@ void PongSettings::setMode(
 }
 
 DifficultyVect PongSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

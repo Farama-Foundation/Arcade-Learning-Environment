@@ -145,8 +145,7 @@ void RiverRaidSettings::loadState(Deserializer& ser) {
 }
 
 DifficultyVect RiverRaidSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

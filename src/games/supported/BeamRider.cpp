@@ -112,14 +112,11 @@ void BeamRiderSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect BeamRiderSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_RIGHT);
-  return startingActions;
+  return {PLAYER_A_RIGHT};
 }
 
 DifficultyVect BeamRiderSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

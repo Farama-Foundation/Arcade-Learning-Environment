@@ -39,7 +39,7 @@ class LostLuggageSettings : public RomSettings {
   RomSettings* clone() const override;
 
   // is an action part of the minimal set?
-  bool isMinimal(const Action& a) const;
+  bool isMinimal(const Action& a) const override;
 
   // FIRE resets the game, prevent this
   bool isLegal(const Action& a) const;
@@ -54,9 +54,9 @@ class LostLuggageSettings : public RomSettings {
   void loadState(Deserializer& ser) override;
 
   // LostLuggage requires the fire action to start the game
-  ActionVect getStartingActions();
+  ActionVect getStartingActions() override;
 
-  virtual int lives() { return isTerminal() ? 0 : m_lives; }
+  int lives() override { return isTerminal() ? 0 : m_lives; }
 
  private:
   bool m_terminal;

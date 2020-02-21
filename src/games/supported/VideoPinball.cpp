@@ -110,8 +110,7 @@ void VideoPinballSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect VideoPinballSettings::getAvailableModes() {
-  ModeVect modes = {0, 2};
-  return modes;
+  return {0, 2};
 }
 
 // set the mode of the game
@@ -135,8 +134,7 @@ void VideoPinballSettings::setMode(
 }
 
 DifficultyVect VideoPinballSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

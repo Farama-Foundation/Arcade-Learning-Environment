@@ -94,9 +94,7 @@ void TurmoilSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect TurmoilSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_FIRE);
-  return startingActions;
+  return {PLAYER_A_FIRE};
 }
 
 }  // namespace ale

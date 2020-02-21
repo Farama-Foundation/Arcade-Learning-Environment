@@ -116,8 +116,7 @@ void FreewaySettings::setMode(
 }
 
 DifficultyVect FreewaySettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

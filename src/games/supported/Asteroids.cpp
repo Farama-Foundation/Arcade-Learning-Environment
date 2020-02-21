@@ -144,8 +144,7 @@ void AsteroidsSettings::setMode(
 }
 
 DifficultyVect AsteroidsSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 3};
-  return diff;
+  return {0, 3};
 }
 
 }  // namespace ale

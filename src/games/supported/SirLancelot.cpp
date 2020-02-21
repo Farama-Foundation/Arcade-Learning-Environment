@@ -84,10 +84,7 @@ void SirLancelotSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect SirLancelotSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(RESET);
-  startingActions.push_back(PLAYER_A_LEFT);
-  return startingActions;
+  return {RESET, PLAYER_A_LEFT};
 }
 
 }  // namespace ale

@@ -113,15 +113,12 @@ void YarsRevengeSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect YarsRevengeSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_FIRE);
-  return startingActions;
+  return {PLAYER_A_FIRE};
 }
 
 // returns a list of mode that the game can be played in
 ModeVect YarsRevengeSettings::getAvailableModes() {
-  ModeVect modes = {0, 0x20, 0x40, 0x60};
-  return modes;
+  return {0, 0x20, 0x40, 0x60};
 }
 
 // set the mode of the game
@@ -147,8 +144,7 @@ void YarsRevengeSettings::setMode(
 }
 
 DifficultyVect YarsRevengeSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

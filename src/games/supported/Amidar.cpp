@@ -106,8 +106,7 @@ void AmidarSettings::loadState(Deserializer& ser) {
 }
 
 DifficultyVect AmidarSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 3};
-  return diff;
+  return {0, 3};
 }
 
 }  // namespace ale

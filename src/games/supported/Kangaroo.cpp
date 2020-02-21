@@ -114,8 +114,7 @@ void KangarooSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect KangarooSettings::getAvailableModes() {
-  ModeVect modes = {0, 1};
-  return modes;
+  return {0, 1};
 }
 
 // set the mode of the game

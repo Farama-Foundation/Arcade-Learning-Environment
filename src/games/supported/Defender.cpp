@@ -151,8 +151,7 @@ void DefenderSettings::setMode(
 }
 
 DifficultyVect DefenderSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

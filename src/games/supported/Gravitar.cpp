@@ -116,10 +116,7 @@ void GravitarSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect GravitarSettings::getStartingActions() {
-  ActionVect startingActions;
-  for (int i = 0; i < 16; i++)
-    startingActions.push_back(PLAYER_A_FIRE);
-  return startingActions;
+  return ActionVect(16, PLAYER_A_FIRE);
 }
 
 // returns a list of mode that the game can be played in

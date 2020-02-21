@@ -94,9 +94,7 @@ void PrivateEyeSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect PrivateEyeSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_UP);
-  return startingActions;
+  return {PLAYER_A_UP};
 }
 
 // returns a list of mode that the game can be played in
@@ -129,8 +127,7 @@ void PrivateEyeSettings::setMode(
 }
 
 DifficultyVect PrivateEyeSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1, 2, 3};
-  return diff;
+  return {0, 1, 2, 3};
 }
 
 }  // namespace ale

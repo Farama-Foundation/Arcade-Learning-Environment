@@ -99,9 +99,7 @@ void KingkongSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect KingkongSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(RESET);
-  return startingActions;
+  return {RESET};
 }
 
 }  // namespace ale

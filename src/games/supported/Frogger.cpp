@@ -83,9 +83,7 @@ void FroggerSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect FroggerSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(RESET);
-  return startingActions;
+  return {RESET};
 }
 
 }  // namespace ale

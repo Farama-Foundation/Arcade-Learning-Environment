@@ -100,8 +100,7 @@ void NameThisGameSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect NameThisGameSettings::getAvailableModes() {
-  ModeVect modes = {0x08, 0x18, 0x28};
-  return modes;
+  return {0x08, 0x18, 0x28};
 }
 
 // set the mode of the game
@@ -128,8 +127,7 @@ void NameThisGameSettings::setMode(
 }
 
 DifficultyVect NameThisGameSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale
