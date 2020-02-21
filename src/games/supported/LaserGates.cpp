@@ -92,9 +92,7 @@ void LaserGatesSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect LaserGatesSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(RESET);
-  return startingActions;
+  return {RESET};
 }
 
 }  // namespace ale

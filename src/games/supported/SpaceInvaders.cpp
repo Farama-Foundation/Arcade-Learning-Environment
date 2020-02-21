@@ -138,8 +138,7 @@ void SpaceInvadersSettings::setMode(
 }
 
 DifficultyVect SpaceInvadersSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

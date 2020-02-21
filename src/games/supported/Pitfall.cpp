@@ -115,9 +115,7 @@ void PitfallSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect PitfallSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_UP);
-  return startingActions;
+  return {PLAYER_A_UP};
 }
 
 }  // namespace ale

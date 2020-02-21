@@ -98,10 +98,7 @@ void SkiingSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect SkiingSettings::getStartingActions() {
-  ActionVect startingActions;
-  for (int i = 0; i < 16; i++)
-    startingActions.push_back(PLAYER_A_DOWN);
-  return startingActions;
+  return ActionVect(16, PLAYER_A_DOWN);
 }
 
 }  // namespace ale

@@ -98,8 +98,7 @@ void FishingDerbySettings::loadState(Deserializer& ser) {
 }
 
 DifficultyVect FishingDerbySettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1, 2, 3};
-  return diff;
+  return {0, 1, 2, 3};
 }
 
 }  // namespace ale

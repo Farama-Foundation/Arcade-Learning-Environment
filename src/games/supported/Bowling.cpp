@@ -81,8 +81,7 @@ void BowlingSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect BowlingSettings::getAvailableModes() {
-  ModeVect modes = {0, 2, 4};
-  return modes;
+  return {0, 2, 4};
 }
 
 // set the mode of the game
@@ -106,8 +105,7 @@ void BowlingSettings::setMode(
 }
 
 DifficultyVect BowlingSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

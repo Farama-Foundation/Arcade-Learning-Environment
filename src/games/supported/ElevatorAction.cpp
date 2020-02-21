@@ -111,10 +111,7 @@ void ElevatorActionSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect ElevatorActionSettings::getStartingActions() {
-  ActionVect startingActions;
-  for (int i = 0; i < 16; i++)
-    startingActions.push_back(PLAYER_A_FIRE);
-  return startingActions;
+  return ActionVect(16, PLAYER_A_FIRE);
 }
 
 }  // namespace ale

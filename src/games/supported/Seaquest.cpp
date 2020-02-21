@@ -110,8 +110,7 @@ void SeaquestSettings::loadState(Deserializer& ser) {
 }
 
 DifficultyVect SeaquestSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

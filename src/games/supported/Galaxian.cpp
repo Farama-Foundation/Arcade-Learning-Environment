@@ -115,8 +115,7 @@ void GalaxianSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect GalaxianSettings::getAvailableModes() {
-  ModeVect modes = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-  return modes;
+  return {1, 2, 3, 4, 5, 6, 7, 8, 9};
 }
 
 // set the mode of the game

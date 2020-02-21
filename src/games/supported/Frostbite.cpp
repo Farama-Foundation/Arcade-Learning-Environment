@@ -117,8 +117,7 @@ void FrostbiteSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect FrostbiteSettings::getAvailableModes() {
-  ModeVect modes = {0, 2};
-  return modes;
+  return {0, 2};
 }
 
 // set the mode of the game
