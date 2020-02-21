@@ -141,8 +141,7 @@ void CrazyClimberSettings::setMode(
 }
 
 DifficultyVect CrazyClimberSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

@@ -114,8 +114,7 @@ void WizardOfWorSettings::loadState(Deserializer& ser) {
 }
 
 DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

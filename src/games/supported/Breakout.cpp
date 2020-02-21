@@ -134,8 +134,7 @@ void BreakoutSettings::setMode(
 }
 
 DifficultyVect BreakoutSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

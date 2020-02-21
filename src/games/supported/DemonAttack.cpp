@@ -110,8 +110,7 @@ void DemonAttackSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect DemonAttackSettings::getAvailableModes() {
-  ModeVect modes = {1, 3, 5, 7};
-  return modes;
+  return {1, 3, 5, 7};
 }
 
 // set the mode of the game
@@ -139,8 +138,7 @@ void DemonAttackSettings::setMode(
 }
 
 DifficultyVect DemonAttackSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

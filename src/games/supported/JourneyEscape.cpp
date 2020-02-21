@@ -96,14 +96,11 @@ void JourneyEscapeSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect JourneyEscapeSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_FIRE);
-  return startingActions;
+  return {PLAYER_A_FIRE};
 }
 
 DifficultyVect JourneyEscapeSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1};
-  return diff;
+  return {0, 1};
 }
 
 }  // namespace ale

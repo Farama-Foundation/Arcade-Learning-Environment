@@ -100,8 +100,7 @@ void IceHockeySettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect IceHockeySettings::getAvailableModes() {
-  ModeVect modes = {0, 2};
-  return modes;
+  return {0, 2};
 }
 
 // set the mode of the game
@@ -125,8 +124,7 @@ void IceHockeySettings::setMode(
 }
 
 DifficultyVect IceHockeySettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1, 2, 3};
-  return diff;
+  return {0, 1, 2, 3};
 }
 
 }  // namespace ale

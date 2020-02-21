@@ -114,8 +114,7 @@ void TennisSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect TennisSettings::getAvailableModes() {
-  ModeVect modes = {0, 2};
-  return modes;
+  return {0, 2};
 }
 
 // set the mode of the game
@@ -139,8 +138,7 @@ void TennisSettings::setMode(
 }
 
 DifficultyVect TennisSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1, 2, 3};
-  return diff;
+  return {0, 1, 2, 3};
 }
 
 }  // namespace ale

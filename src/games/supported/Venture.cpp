@@ -116,8 +116,7 @@ void VentureSettings::loadState(Deserializer& ser) {
 }
 
 DifficultyVect VentureSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1, 2, 3};
-  return diff;
+  return {0, 1, 2, 3};
 }
 
 }  // namespace ale

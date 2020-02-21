@@ -94,9 +94,7 @@ void DoubleDunkSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect DoubleDunkSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_UPFIRE);
-  return startingActions;
+  return {PLAYER_A_UPFIRE};
 }
 
 // returns a list of mode that the game can be played in

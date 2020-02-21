@@ -91,9 +91,7 @@ void KeystoneKapersSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect KeystoneKapersSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(RESET);
-  return startingActions;
+  return {RESET};
 }
 
 }  // namespace ale

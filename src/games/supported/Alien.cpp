@@ -157,8 +157,7 @@ void AlienSettings::setMode(
 }
 
 DifficultyVect AlienSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1, 2, 3};
-  return diff;
+  return  {0, 1, 2, 3};
 }
 
 }  // namespace ale

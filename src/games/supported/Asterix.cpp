@@ -106,9 +106,7 @@ void AsterixSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect AsterixSettings::getStartingActions() {
-  ActionVect startingActions;
-  startingActions.push_back(PLAYER_A_FIRE);
-  return startingActions;
+  return {PLAYER_A_FIRE};
 }
 
 }  // namespace ale

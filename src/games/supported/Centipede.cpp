@@ -118,8 +118,7 @@ void CentipedeSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect CentipedeSettings::getAvailableModes() {
-  ModeVect modes = {0x16, 0x56};
-  return modes;
+  return {0x16, 0x56};
 }
 
 // set the mode of the game

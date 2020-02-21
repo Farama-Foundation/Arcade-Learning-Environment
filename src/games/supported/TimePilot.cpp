@@ -109,8 +109,7 @@ void TimePilotSettings::loadState(Deserializer& ser) {
 }
 
 DifficultyVect TimePilotSettings::getAvailableDifficulties() {
-  DifficultyVect diff = {0, 1, 2};
-  return diff;
+  return {0, 1, 2};
 }
 
 }  // namespace ale
