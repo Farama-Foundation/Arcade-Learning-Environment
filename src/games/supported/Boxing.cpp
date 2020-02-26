@@ -20,9 +20,7 @@ BoxingSettings::BoxingSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* BoxingSettings::clone() const {
-  RomSettings* rval = new BoxingSettings();
-  *rval = *this;
-  return rval;
+  return new BoxingSettings(*this);
 }
 
 /* process the latest information from ALE */

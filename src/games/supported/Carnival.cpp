@@ -20,9 +20,7 @@ CarnivalSettings::CarnivalSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* CarnivalSettings::clone() const {
-  RomSettings* rval = new CarnivalSettings();
-  *rval = *this;
-  return rval;
+  return new CarnivalSettings(*this);
 }
 
 /* process the latest information from ALE */

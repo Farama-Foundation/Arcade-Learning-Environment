@@ -20,9 +20,7 @@ KeystoneKapersSettings::KeystoneKapersSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* KeystoneKapersSettings::clone() const {
-  RomSettings* rval = new KeystoneKapersSettings();
-  *rval = *this;
-  return rval;
+  return new KeystoneKapersSettings(*this);
 }
 
 /* process the latest information from ALE */

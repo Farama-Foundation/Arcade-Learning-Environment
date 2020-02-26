@@ -35,9 +35,7 @@ BerzerkSettings::BerzerkSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* BerzerkSettings::clone() const {
-  RomSettings* rval = new BerzerkSettings();
-  *rval = *this;
-  return rval;
+  return new BerzerkSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -20,9 +20,7 @@ PongSettings::PongSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* PongSettings::clone() const {
-  RomSettings* rval = new PongSettings();
-  *rval = *this;
-  return rval;
+  return new PongSettings(*this);
 }
 
 /* process the latest information from ALE */

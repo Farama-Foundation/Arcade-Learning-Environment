@@ -22,9 +22,7 @@ KaboomSettings::KaboomSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* KaboomSettings::clone() const {
-  RomSettings* rval = new KaboomSettings();
-  *rval = *this;
-  return rval;
+  return new KaboomSettings(*this);
 }
 
 /* process the latest information from ALE */

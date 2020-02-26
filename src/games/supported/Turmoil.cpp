@@ -20,9 +20,7 @@ TurmoilSettings::TurmoilSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* TurmoilSettings::clone() const {
-  RomSettings* rval = new TurmoilSettings();
-  *rval = *this;
-  return rval;
+  return new TurmoilSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -35,9 +35,7 @@ TetrisSettings::TetrisSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* TetrisSettings::clone() const {
-  RomSettings* rval = new TetrisSettings();
-  *rval = *this;
-  return rval;
+  return new TetrisSettings(*this);
 }
 
 /* process the latest information from ALE */

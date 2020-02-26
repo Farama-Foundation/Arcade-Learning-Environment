@@ -35,9 +35,7 @@ MontezumaRevengeSettings::MontezumaRevengeSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* MontezumaRevengeSettings::clone() const {
-  RomSettings* rval = new MontezumaRevengeSettings();
-  *rval = *this;
-  return rval;
+  return new MontezumaRevengeSettings(*this);
 }
 
 /* process the latest information from ALE */

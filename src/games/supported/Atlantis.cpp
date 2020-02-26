@@ -35,9 +35,7 @@ AtlantisSettings::AtlantisSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AtlantisSettings::clone() const {
-  RomSettings* rval = new AtlantisSettings();
-  *rval = *this;
-  return rval;
+  return new AtlantisSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -35,9 +35,7 @@ VentureSettings::VentureSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* VentureSettings::clone() const {
-  RomSettings* rval = new VentureSettings();
-  *rval = *this;
-  return rval;
+  return new VentureSettings(*this);
 }
 
 /* process the latest information from ALE */

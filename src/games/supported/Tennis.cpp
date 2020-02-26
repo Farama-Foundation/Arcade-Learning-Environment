@@ -20,9 +20,7 @@ TennisSettings::TennisSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* TennisSettings::clone() const {
-  RomSettings* rval = new TennisSettings();
-  *rval = *this;
-  return rval;
+  return new TennisSettings(*this);
 }
 
 /* process the latest information from ALE */

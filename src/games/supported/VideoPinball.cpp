@@ -35,9 +35,7 @@ VideoPinballSettings::VideoPinballSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* VideoPinballSettings::clone() const {
-  RomSettings* rval = new VideoPinballSettings();
-  *rval = *this;
-  return rval;
+  return new VideoPinballSettings(*this);
 }
 
 /* process the latest information from ALE */

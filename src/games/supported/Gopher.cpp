@@ -35,9 +35,7 @@ GopherSettings::GopherSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* GopherSettings::clone() const {
-  RomSettings* rval = new GopherSettings();
-  *rval = *this;
-  return rval;
+  return new GopherSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -35,9 +35,7 @@ PooyanSettings::PooyanSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* PooyanSettings::clone() const {
-  RomSettings* rval = new PooyanSettings();
-  *rval = *this;
-  return rval;
+  return new PooyanSettings(*this);
 }
 
 /* process the latest information from ALE */

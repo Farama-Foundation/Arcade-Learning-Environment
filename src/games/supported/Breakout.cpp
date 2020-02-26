@@ -35,9 +35,7 @@ BreakoutSettings::BreakoutSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* BreakoutSettings::clone() const {
-  RomSettings* rval = new BreakoutSettings();
-  *rval = *this;
-  return rval;
+  return new BreakoutSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -20,9 +20,7 @@ DoubleDunkSettings::DoubleDunkSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* DoubleDunkSettings::clone() const {
-  RomSettings* rval = new DoubleDunkSettings();
-  *rval = *this;
-  return rval;
+  return new DoubleDunkSettings(*this);
 }
 
 /* process the latest information from ALE */

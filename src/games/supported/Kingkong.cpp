@@ -35,9 +35,7 @@ KingkongSettings::KingkongSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* KingkongSettings::clone() const {
-  RomSettings* rval = new KingkongSettings();
-  *rval = *this;
-  return rval;
+  return new KingkongSettings(*this);
 }
 
 /* process the latest information from ALE */

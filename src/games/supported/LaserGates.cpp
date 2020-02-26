@@ -20,9 +20,7 @@ LaserGatesSettings::LaserGatesSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* LaserGatesSettings::clone() const {
-  RomSettings* rval = new LaserGatesSettings();
-  *rval = *this;
-  return rval;
+  return new LaserGatesSettings(*this);
 }
 
 /* process the latest information from ALE */

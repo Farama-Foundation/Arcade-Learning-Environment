@@ -35,9 +35,7 @@ PitfallSettings::PitfallSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* PitfallSettings::clone() const {
-  RomSettings* rval = new PitfallSettings();
-  *rval = *this;
-  return rval;
+  return new PitfallSettings(*this);
 }
 
 /* process the latest information from ALE */

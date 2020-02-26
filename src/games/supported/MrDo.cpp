@@ -20,9 +20,7 @@ MrDoSettings::MrDoSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* MrDoSettings::clone() const {
-  RomSettings* rval = new MrDoSettings();
-  *rval = *this;
-  return rval;
+  return new MrDoSettings(*this);
 }
 
 /* process the latest information from ALE */

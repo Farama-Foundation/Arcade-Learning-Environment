@@ -35,9 +35,7 @@ PhoenixSettings::PhoenixSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* PhoenixSettings::clone() const {
-  RomSettings* rval = new PhoenixSettings();
-  *rval = *this;
-  return rval;
+  return new PhoenixSettings(*this);
 }
 
 /* process the latest information from ALE */

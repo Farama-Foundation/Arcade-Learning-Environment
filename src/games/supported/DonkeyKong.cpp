@@ -20,9 +20,7 @@ DonkeyKongSettings::DonkeyKongSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* DonkeyKongSettings::clone() const {
-  RomSettings* rval = new DonkeyKongSettings();
-  *rval = *this;
-  return rval;
+  return new DonkeyKongSettings(*this);
 }
 
 /* process the latest information from ALE */

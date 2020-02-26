@@ -35,9 +35,7 @@ DemonAttackSettings::DemonAttackSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* DemonAttackSettings::clone() const {
-  RomSettings* rval = new DemonAttackSettings();
-  *rval = *this;
-  return rval;
+  return new DemonAttackSettings(*this);
 }
 
 /* process the latest information from ALE */

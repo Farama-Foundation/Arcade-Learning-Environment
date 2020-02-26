@@ -35,9 +35,7 @@ BattleZoneSettings::BattleZoneSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* BattleZoneSettings::clone() const {
-  RomSettings* rval = new BattleZoneSettings();
-  *rval = *this;
-  return rval;
+  return new BattleZoneSettings(*this);
 }
 
 /* process the latest information from ALE */

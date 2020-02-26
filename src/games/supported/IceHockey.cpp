@@ -22,9 +22,7 @@ IceHockeySettings::IceHockeySettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* IceHockeySettings::clone() const {
-  RomSettings* rval = new IceHockeySettings();
-  *rval = *this;
-  return rval;
+  return new IceHockeySettings(*this);
 }
 
 /* process the latest information from ALE */
