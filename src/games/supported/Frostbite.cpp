@@ -35,9 +35,7 @@ FrostbiteSettings::FrostbiteSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* FrostbiteSettings::clone() const {
-  RomSettings* rval = new FrostbiteSettings();
-  *rval = *this;
-  return rval;
+  return new FrostbiteSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -22,9 +22,7 @@ FishingDerbySettings::FishingDerbySettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* FishingDerbySettings::clone() const {
-  RomSettings* rval = new FishingDerbySettings();
-  *rval = *this;
-  return rval;
+  return new FishingDerbySettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -35,9 +35,7 @@ RoadRunnerSettings::RoadRunnerSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* RoadRunnerSettings::clone() const {
-  RomSettings* rval = new RoadRunnerSettings();
-  *rval = *this;
-  return rval;
+  return new RoadRunnerSettings(*this);
 }
 
 /* process the latest information from ALE */

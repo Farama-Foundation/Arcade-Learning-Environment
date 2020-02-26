@@ -20,9 +20,7 @@ FroggerSettings::FroggerSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* FroggerSettings::clone() const {
-  RomSettings* rval = new FroggerSettings();
-  *rval = *this;
-  return rval;
+  return new FroggerSettings(*this);
 }
 
 /* process the latest information from ALE */

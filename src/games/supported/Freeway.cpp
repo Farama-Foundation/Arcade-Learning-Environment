@@ -26,9 +26,7 @@ FreewaySettings::FreewaySettings() {
 
 /* create a new instance of the rom */
 RomSettings* FreewaySettings::clone() const {
-  RomSettings* rval = new FreewaySettings();
-  *rval = *this;
-  return rval;
+  return new FreewaySettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -35,9 +35,7 @@ RoboTankSettings::RoboTankSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* RoboTankSettings::clone() const {
-  RomSettings* rval = new RoboTankSettings();
-  *rval = *this;
-  return rval;
+  return new RoboTankSettings(*this);
 }
 
 /* process the latest information from ALE */

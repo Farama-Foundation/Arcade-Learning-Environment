@@ -35,9 +35,7 @@ AsterixSettings::AsterixSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AsterixSettings::clone() const {
-  RomSettings* rval = new AsterixSettings();
-  *rval = *this;
-  return rval;
+  return new AsterixSettings(*this);
 }
 
 /* process the latest information from ALE */

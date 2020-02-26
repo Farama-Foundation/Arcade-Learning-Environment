@@ -22,9 +22,7 @@ JourneyEscapeSettings::JourneyEscapeSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* JourneyEscapeSettings::clone() const {
-  RomSettings* rval = new JourneyEscapeSettings();
-  *rval = *this;
-  return rval;
+  return new JourneyEscapeSettings(*this);
 }
 
 /* process the latest information from ALE */

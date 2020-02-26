@@ -35,9 +35,7 @@ UpNDownSettings::UpNDownSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* UpNDownSettings::clone() const {
-  RomSettings* rval = new UpNDownSettings();
-  *rval = *this;
-  return rval;
+  return new UpNDownSettings(*this);
 }
 
 /* process the latest information from ALE */

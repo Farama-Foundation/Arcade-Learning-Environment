@@ -35,9 +35,7 @@ CrazyClimberSettings::CrazyClimberSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* CrazyClimberSettings::clone() const {
-  RomSettings* rval = new CrazyClimberSettings();
-  *rval = *this;
-  return rval;
+  return new CrazyClimberSettings(*this);
 }
 
 /* process the latest information from ALE */

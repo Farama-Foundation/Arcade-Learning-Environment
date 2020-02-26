@@ -35,9 +35,7 @@ AssaultSettings::AssaultSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AssaultSettings::clone() const {
-  RomSettings* rval = new AssaultSettings();
-  *rval = *this;
-  return rval;
+  return new AssaultSettings(*this);
 }
 
 /* process the latest information from ALE */

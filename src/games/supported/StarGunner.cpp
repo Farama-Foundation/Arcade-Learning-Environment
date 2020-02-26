@@ -35,9 +35,7 @@ StarGunnerSettings::StarGunnerSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* StarGunnerSettings::clone() const {
-  RomSettings* rval = new StarGunnerSettings();
-  *rval = *this;
-  return rval;
+  return new StarGunnerSettings(*this);
 }
 
 /* process the latest information from ALE */

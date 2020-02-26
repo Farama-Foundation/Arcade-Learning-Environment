@@ -35,9 +35,7 @@ HeroSettings::HeroSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* HeroSettings::clone() const {
-  RomSettings* rval = new HeroSettings();
-  *rval = *this;
-  return rval;
+  return new HeroSettings(*this);
 }
 
 /* process the latest information from ALE */

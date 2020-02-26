@@ -35,9 +35,7 @@ KrullSettings::KrullSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* KrullSettings::clone() const {
-  RomSettings* rval = new KrullSettings();
-  *rval = *this;
-  return rval;
+  return new KrullSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -35,9 +35,7 @@ BankHeistSettings::BankHeistSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* BankHeistSettings::clone() const {
-  RomSettings* rval = new BankHeistSettings();
-  *rval = *this;
-  return rval;
+  return new BankHeistSettings(*this);
 }
 
 /* process the latest information from ALE */

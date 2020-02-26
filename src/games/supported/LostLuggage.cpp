@@ -20,9 +20,7 @@ LostLuggageSettings::LostLuggageSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* LostLuggageSettings::clone() const {
-  RomSettings* rval = new LostLuggageSettings();
-  *rval = *this;
-  return rval;
+  return new LostLuggageSettings(*this);
 }
 
 /* process the latest information from ALE */

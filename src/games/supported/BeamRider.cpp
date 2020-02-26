@@ -35,9 +35,7 @@ BeamRiderSettings::BeamRiderSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* BeamRiderSettings::clone() const {
-  RomSettings* rval = new BeamRiderSettings();
-  *rval = *this;
-  return rval;
+  return new BeamRiderSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -20,9 +20,7 @@ TrondeadSettings::TrondeadSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* TrondeadSettings::clone() const {
-  RomSettings* rval = new TrondeadSettings();
-  *rval = *this;
-  return rval;
+  return new TrondeadSettings(*this);
 }
 
 /* process the latest information from ALE */

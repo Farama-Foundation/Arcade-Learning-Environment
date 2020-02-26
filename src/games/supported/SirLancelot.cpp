@@ -20,9 +20,7 @@ SirLancelotSettings::SirLancelotSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* SirLancelotSettings::clone() const {
-  RomSettings* rval = new SirLancelotSettings();
-  *rval = *this;
-  return rval;
+  return new SirLancelotSettings(*this);
 }
 
 /* process the latest information from ALE */

@@ -35,9 +35,7 @@ CentipedeSettings::CentipedeSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* CentipedeSettings::clone() const {
-  RomSettings* rval = new CentipedeSettings();
-  *rval = *this;
-  return rval;
+  return new CentipedeSettings(*this);
 }
 
 /* process the latest information from ALE */

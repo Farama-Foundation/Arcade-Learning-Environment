@@ -20,9 +20,7 @@ SkiingSettings::SkiingSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* SkiingSettings::clone() const {
-  RomSettings* rval = new SkiingSettings();
-  *rval = *this;
-  return rval;
+  return new SkiingSettings(*this);
 }
 
 /* process the latest information from ALE */

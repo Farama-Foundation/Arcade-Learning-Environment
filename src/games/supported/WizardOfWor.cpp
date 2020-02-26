@@ -36,9 +36,7 @@ WizardOfWorSettings::WizardOfWorSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* WizardOfWorSettings::clone() const {
-  RomSettings* rval = new WizardOfWorSettings();
-  *rval = *this;
-  return rval;
+  return new WizardOfWorSettings(*this);
 }
 
 /* process the latest information from ALE */
