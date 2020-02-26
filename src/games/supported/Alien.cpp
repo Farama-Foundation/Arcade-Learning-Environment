@@ -35,9 +35,7 @@ AlienSettings::AlienSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AlienSettings::clone() const {
-  RomSettings* rval = new AlienSettings();
-  *rval = *this;
-  return rval;
+  return new AlienSettings(*this);
 }
 
 /* process the latest information from ALE */

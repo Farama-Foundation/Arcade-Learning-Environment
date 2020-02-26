@@ -35,9 +35,7 @@ ZaxxonSettings::ZaxxonSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* ZaxxonSettings::clone() const {
-  RomSettings* rval = new ZaxxonSettings();
-  *rval = *this;
-  return rval;
+  return new ZaxxonSettings(*this);
 }
 
 /* process the latest information from ALE */

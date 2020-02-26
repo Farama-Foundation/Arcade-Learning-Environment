@@ -20,9 +20,7 @@ KoolaidSettings::KoolaidSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* KoolaidSettings::clone() const {
-  RomSettings* rval = new KoolaidSettings();
-  *rval = *this;
-  return rval;
+  return new KoolaidSettings(*this);
 }
 
 /* process the latest information from ALE */

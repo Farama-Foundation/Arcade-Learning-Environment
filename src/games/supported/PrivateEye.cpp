@@ -20,9 +20,7 @@ PrivateEyeSettings::PrivateEyeSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* PrivateEyeSettings::clone() const {
-  RomSettings* rval = new PrivateEyeSettings();
-  *rval = *this;
-  return rval;
+  return new PrivateEyeSettings(*this);
 }
 
 /* process the latest information from ALE */

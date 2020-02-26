@@ -35,9 +35,7 @@ KangarooSettings::KangarooSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* KangarooSettings::clone() const {
-  RomSettings* rval = new KangarooSettings();
-  *rval = *this;
-  return rval;
+  return new KangarooSettings(*this);
 }
 
 /* process the latest information from ALE */

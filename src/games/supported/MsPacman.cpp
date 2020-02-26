@@ -35,9 +35,7 @@ MsPacmanSettings::MsPacmanSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* MsPacmanSettings::clone() const {
-  RomSettings* rval = new MsPacmanSettings();
-  *rval = *this;
-  return rval;
+  return new MsPacmanSettings(*this);
 }
 
 /* process the latest information from ALE */

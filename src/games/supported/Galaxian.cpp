@@ -36,9 +36,7 @@ GalaxianSettings::GalaxianSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* GalaxianSettings::clone() const {
-  RomSettings* rval = new GalaxianSettings();
-  *rval = *this;
-  return rval;
+  return new GalaxianSettings(*this);
 }
 
 /* process the latest information from ALE */

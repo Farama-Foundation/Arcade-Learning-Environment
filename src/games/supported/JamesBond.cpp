@@ -35,9 +35,7 @@ JamesBondSettings::JamesBondSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* JamesBondSettings::clone() const {
-  RomSettings* rval = new JamesBondSettings();
-  *rval = *this;
-  return rval;
+  return new JamesBondSettings(*this);
 }
 
 /* process the latest information from ALE */

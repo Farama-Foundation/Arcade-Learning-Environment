@@ -37,9 +37,7 @@ SpaceInvadersSettings::SpaceInvadersSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* SpaceInvadersSettings::clone() const {
-  RomSettings* rval = new SpaceInvadersSettings();
-  *rval = *this;
-  return rval;
+  return new SpaceInvadersSettings(*this);
 }
 
 /* process the latest information from ALE */

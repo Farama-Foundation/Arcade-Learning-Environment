@@ -35,9 +35,7 @@ ChopperCommandSettings::ChopperCommandSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* ChopperCommandSettings::clone() const {
-  RomSettings* rval = new ChopperCommandSettings();
-  *rval = *this;
-  return rval;
+  return new ChopperCommandSettings(*this);
 }
 
 /* process the latest information from ALE */

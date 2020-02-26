@@ -35,9 +35,7 @@ YarsRevengeSettings::YarsRevengeSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* YarsRevengeSettings::clone() const {
-  RomSettings* rval = new YarsRevengeSettings();
-  *rval = *this;
-  return rval;
+  return new YarsRevengeSettings(*this);
 }
 
 /* process the latest information from ALE */

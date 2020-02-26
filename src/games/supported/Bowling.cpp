@@ -20,9 +20,7 @@ BowlingSettings::BowlingSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* BowlingSettings::clone() const {
-  RomSettings* rval = new BowlingSettings();
-  *rval = *this;
-  return rval;
+  return new BowlingSettings(*this);
 }
 
 /* process the latest information from ALE */

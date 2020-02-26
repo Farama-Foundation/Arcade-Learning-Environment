@@ -35,9 +35,7 @@ DefenderSettings::DefenderSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* DefenderSettings::clone() const {
-  RomSettings* rval = new DefenderSettings();
-  *rval = *this;
-  return rval;
+  return new DefenderSettings(*this);
 }
 
 /* process the latest information from ALE */

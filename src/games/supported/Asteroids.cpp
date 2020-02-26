@@ -35,9 +35,7 @@ AsteroidsSettings::AsteroidsSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AsteroidsSettings::clone() const {
-  RomSettings* rval = new AsteroidsSettings();
-  *rval = *this;
-  return rval;
+  return new AsteroidsSettings(*this);
 }
 
 /* process the latest information from ALE */

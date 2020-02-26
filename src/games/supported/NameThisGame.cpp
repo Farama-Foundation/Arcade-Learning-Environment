@@ -35,9 +35,7 @@ NameThisGameSettings::NameThisGameSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* NameThisGameSettings::clone() const {
-  RomSettings* rval = new NameThisGameSettings();
-  *rval = *this;
-  return rval;
+  return new NameThisGameSettings(*this);
 }
 
 /* process the latest information from ALE */

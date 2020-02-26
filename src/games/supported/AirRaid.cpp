@@ -20,9 +20,7 @@ AirRaidSettings::AirRaidSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* AirRaidSettings::clone() const {
-  RomSettings* rval = new AirRaidSettings();
-  *rval = *this;
-  return rval;
+  return new AirRaidSettings(*this);
 }
 
 /* process the latest information from ALE */

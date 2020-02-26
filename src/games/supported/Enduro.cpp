@@ -22,9 +22,7 @@ EnduroSettings::EnduroSettings() { reset(); }
 
 /* create a new instance of the rom */
 RomSettings* EnduroSettings::clone() const {
-  RomSettings* rval = new EnduroSettings();
-  *rval = *this;
-  return rval;
+  return new EnduroSettings(*this);
 }
 
 /* process the latest information from ALE */
