@@ -162,7 +162,6 @@ void ALEInterface::loadROM(std::string rom_file = "") {
   if (rom_file.empty()) {
     rom_file = theOSystem->romFile();
   }
-  loadSettings(rom_file, theOSystem);
 
   RomSettings* wrapper = buildRomRLWrapper(rom_file);
   if (wrapper == NULL) {
@@ -192,6 +191,10 @@ void ALEInterface::loadROM(std::string rom_file = "") {
   // Custom environment settings required for a specific ROM must be added
   // before the StellaEnvironment is constructed.
   romSettings->modifyEnvironmentSettings(theOSystem->settings());
+
+  // Load all settings corresponding to the ROM file and create a new game
+  // console, with attached devices, capable of emulating the ROM.
+  loadSettings(rom_file, theOSystem);
 
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
