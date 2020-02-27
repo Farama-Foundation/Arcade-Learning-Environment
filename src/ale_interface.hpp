@@ -99,6 +99,11 @@ class ALEInterface {
   // This should be called only after the rom is loaded.
   void setMode(game_mode_t m);
 
+  // Returns the game mode value last specified to the environment.
+  // This may not be the exact game mode that the ROM is currently running as
+  // game mode changes only take effect when the environment is reset.
+  game_mode_t getMode() const { return environment->getMode(); }
+
   //Returns the vector of difficulties available for the current game.
   //This should be called only after the rom is loaded. Notice
   // that there are 2 levers, the right and left switches. They
@@ -116,6 +121,9 @@ class ALEInterface {
   // The difficulty must be an available mode (otherwise it throws an exception).
   // This should be called only after the rom is loaded.
   void setDifficulty(difficulty_t m);
+
+  // Returns the current difficulty switch setting in use by the environment.
+  difficulty_t getDifficulty() const { return environment->getDifficulty(); }
 
   // Returns the vector of legal actions. This should be called only
   // after the rom is loaded.

@@ -101,6 +101,14 @@ class StellaEnvironment {
 
   Random& getSystemRng() { return m_osystem->rng(); }
 
+  // Returns the current difficulty switch setting in use by the environment.
+  difficulty_t getDifficulty() const { return m_state.getDifficulty(); }
+
+  // Returns the game mode value last specified to the environment.
+  // This may not be the exact game mode that the ROM is currently running as
+  // game mode changes only take effect when the environment is reset.
+  game_mode_t getMode() const { return m_state.getCurrentMode(); }
+
   /** Returns a wrapper providing #include-free access to our methods. */
   std::unique_ptr<StellaEnvironmentWrapper> getWrapper();
 
