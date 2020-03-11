@@ -128,10 +128,17 @@ bool OSystem::create()
   // Create the event handler for the system
   //ALE   myEventHandler = new EventHandler(this);
   //ALE  myEventHandler->initialize();
-  
   // Create the streamer used for accessing eventstreams/recordings
+
+  // Delete the previous event object (if any).
+  delete myEvent;
+
   // Create the event object which will be used for this handler
   myEvent = new Event();
+
+  // Delete the previous properties set (if any).
+  delete myPropSet;
+
   // Create a properties set for us to use and set it up
   myPropSet = new PropertiesSet(this);
 
