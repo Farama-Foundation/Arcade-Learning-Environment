@@ -18,54 +18,36 @@
 #ifndef __ALE_RAM_HPP__
 #define __ALE_RAM_HPP__
 
+#include <cstddef>
 #include <cstring>
 
 namespace ale {
 
 using byte_t = unsigned char;
 
-#define RAM_SIZE (128)
-
 /** A simple wrapper around the Atari RAM. */
 class ALERAM {
+  static constexpr std::size_t kRamSize = 128;
+
  public:
-  ALERAM();
-  ALERAM(const ALERAM& rhs);
-
-  ALERAM& operator=(const ALERAM& rhs);
-
-  /** Byte accessors */
+  /** Byte accessors: x is wrapped to [0, 128). */
   byte_t get(unsigned int x) const;
   byte_t* byte(unsigned int x);
 
-  /** Returns the whole array (equivalent to byte(0)). */
-  byte_t* array() const { return (byte_t*)(m_ram); }
+  /** Returns a pointer to the first element of the entire
+      array (equivalent to &byte[0]). */
+  const byte_t* array() const { return m_ram; }
 
-  size_t size() const { return sizeof(m_ram); }
+  std::size_t size() const { return sizeof(m_ram); }
+
   /** Returns whether two copies of the RAM are equal */
-  bool equals(const ALERAM& rhs) const;
+  bool equals(const ALERAM& rhs) const {
+    return std::memcmp(m_ram, rhs.m_ram, size()) == 0;
+  }
 
  protected:
-  byte_t m_ram[RAM_SIZE];
+  byte_t m_ram[kRamSize];
 };
-
-inline ALERAM::ALERAM() {}
-
-inline ALERAM::ALERAM(const ALERAM& rhs) {
-  // Copy data over
-  memcpy(m_ram, rhs.m_ram, sizeof(m_ram));
-}
-
-inline ALERAM& ALERAM::operator=(const ALERAM& rhs) {
-  // Copy data over
-  memcpy(m_ram, rhs.m_ram, sizeof(m_ram));
-
-  return *this;
-}
-
-inline bool ALERAM::equals(const ALERAM& rhs) const {
-  return (memcmp(m_ram, rhs.m_ram, size()) == 0);
-}
 
 // Byte accessors
 inline byte_t ALERAM::get(unsigned int x) const {
@@ -73,7 +55,10 @@ inline byte_t ALERAM::get(unsigned int x) const {
   return m_ram[x & 0x7F];
 }
 
-inline byte_t* ALERAM::byte(unsigned int x) { return &m_ram[x & 0x7F]; }
+inline byte_t* ALERAM::byte(unsigned int x) {
+  // Wrap RAM around the first 128 bytes
+  return &m_ram[x & 0x7F];
+}
 
 }  // namespace ale
 
