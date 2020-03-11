@@ -59,7 +59,7 @@ extern "C" {
     std::memcpy(screen_data,ale_screen_data,w*h*sizeof(ale::pixel_t));
   }
   void getRAM(ale::ALEInterface *ale,unsigned char *ram){
-    unsigned char *ale_ram = ale->getRAM().array();
+    const unsigned char *ale_ram = ale->getRAM().array();
     int size = ale->getRAM().size();
     std::memcpy(ram,ale_ram,size*sizeof(unsigned char));
   }
