@@ -63,6 +63,7 @@
 #include "supported/MrDo.hpp"
 #include "supported/MsPacman.hpp"
 #include "supported/NameThisGame.hpp"
+#include "supported/Pacman.hpp"
 #include "supported/Phoenix.hpp"
 #include "supported/Pitfall.hpp"
 #include "supported/Pong.hpp"
@@ -78,6 +79,7 @@
 #include "supported/Solaris.hpp"
 #include "supported/SpaceInvaders.hpp"
 #include "supported/StarGunner.hpp"
+#include "supported/Surround.hpp"
 #include "supported/Tennis.hpp"
 #include "supported/Tetris.hpp"
 #include "supported/TimePilot.hpp"
@@ -87,6 +89,7 @@
 #include "supported/UpNDown.hpp"
 #include "supported/Venture.hpp"
 #include "supported/VideoPinball.hpp"
+#include "supported/VideoChess.hpp"
 #include "supported/WizardOfWor.hpp"
 #include "supported/YarsRevenge.hpp"
 #include "supported/Zaxxon.hpp"
@@ -144,6 +147,7 @@ static const RomSettings* roms[] = {
     new MrDoSettings(),
     new MsPacmanSettings(),
     new NameThisGameSettings(),
+    new PacmanSettings(),
     new PhoenixSettings(),
     new PitfallSettings(),
     new PongSettings(),
@@ -159,6 +163,7 @@ static const RomSettings* roms[] = {
     new SolarisSettings(),
     new SpaceInvadersSettings(),
     new StarGunnerSettings(),
+    new SurroundSettings(),
     new TennisSettings(),
     new TetrisSettings(),
     new TimePilotSettings(),
@@ -167,6 +172,7 @@ static const RomSettings* roms[] = {
     new TutankhamSettings(),
     new UpNDownSettings(),
     new VentureSettings(),
+    new VideoChessSettings(),
     new VideoPinballSettings(),
     new WizardOfWorSettings(),
     new YarsRevengeSettings(),

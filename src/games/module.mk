@@ -55,6 +55,7 @@ MODULE_OBJS := \
 	src/games/supported/NameThisGame.o \
 	src/games/supported/Phoenix.o \
 	src/games/supported/Pitfall.o \
+	src/games/supported/Pacman.o \
 	src/games/supported/Pong.o \
 	src/games/supported/Pooyan.o \
 	src/games/supported/PrivateEye.o \
@@ -68,6 +69,7 @@ MODULE_OBJS := \
 	src/games/supported/Solaris.o \
 	src/games/supported/SpaceInvaders.o \
 	src/games/supported/StarGunner.o \
+	src/games/supported/Surround.o \
 	src/games/supported/Tennis.o \
 	src/games/supported/Tetris.o \
 	src/games/supported/TimePilot.o \
@@ -77,6 +79,7 @@ MODULE_OBJS := \
 	src/games/supported/UpNDown.o \
 	src/games/supported/Venture.o \
 	src/games/supported/VideoPinball.o \
+	src/games/supported/VideoChess.o \
 	src/games/supported/WizardOfWor.o \
 	src/games/supported/YarsRevenge.o \
 	src/games/supported/Zaxxon.o \
@@ -84,5 +87,5 @@ MODULE_OBJS := \
 MODULE_DIRS += \
 	src/games
 
-# Include common rules 
+# Include common rules
 include $(srcdir)/common.rules

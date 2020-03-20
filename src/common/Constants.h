@@ -66,6 +66,7 @@ enum Action {
   SAVE_STATE             = 43,
   LOAD_STATE             = 44,
   SYSTEM_RESET           = 45,
+  SELECT                 = 46, // Used to select game mode... should only be used internally 
   LAST_ACTION_INDEX      = 50
 };
 
