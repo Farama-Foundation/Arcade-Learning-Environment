@@ -1,10 +1,5 @@
 /* *****************************************************************************
- *
- * This wrapper was authored by Stig Petersen, March 2014
- *
- * Xitari
- *
- * Copyright 2014 Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -221,4 +216,3 @@ void VideoChessSettings::loadState(Deserializer & ser) {
   m_lives = ser.getInt();
   m_materialValue = ser.getInt();
 }
-

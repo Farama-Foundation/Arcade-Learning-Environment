@@ -1,10 +1,5 @@
 /* *****************************************************************************
- * 
- * This wrapper was authored by Stig Petersen, March 2014
- *
- * Xitari
- *
- * Copyright 2014 Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -20,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -66,7 +61,7 @@ class VideoChessSettings : public RomSettings {
 
         // saves the state of the rom settings
         void saveState(Serializer & ser);
-    
+
         // loads the state of the rom settings
         void loadState(Deserializer & ser);
 
@@ -85,4 +80,3 @@ class VideoChessSettings : public RomSettings {
 } // namespace ale
 
 #endif // __VIDEOCHESS_HPP__
-

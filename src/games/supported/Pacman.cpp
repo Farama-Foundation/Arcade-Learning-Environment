@@ -1,10 +1,5 @@
 /* *****************************************************************************
- * 
- * This wrapper was authored by Stig Petersen, March 2014
- * 
- * Xitari
- *
- * Copyright 2014 Google Inc.
+ * The method lives() is based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -20,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * *****************************************************************************
  * A.L.E (Arcade Learning Environment)
- * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and 
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare and
  *   the Reinforcement Learning and Artificial Intelligence Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
@@ -44,8 +39,8 @@ PacmanSettings::PacmanSettings() {
 
 
 /* create a new instance of the rom */
-RomSettings* PacmanSettings::clone() const { 
-    
+RomSettings* PacmanSettings::clone() const {
+
     RomSettings* rval = new PacmanSettings();
     *rval = *this;
     return rval;
@@ -54,7 +49,7 @@ RomSettings* PacmanSettings::clone() const {
 
 /* process the latest information from ALE */
 void PacmanSettings::step(const System& system) {
-  
+
     reward_t score = getDecimalScore(0xCC, 0xCE, 0xD0, &system);
 
     // update the reward
@@ -76,9 +71,9 @@ bool PacmanSettings::isTerminal() const {
 
 
 /* get the most recently observed reward */
-reward_t PacmanSettings::getReward() const { 
+reward_t PacmanSettings::getReward() const {
 
-    return m_reward; 
+    return m_reward;
 }
 
 
@@ -94,13 +89,13 @@ bool PacmanSettings::isMinimal(const Action &a) const {
             return true;
         default:
             return false;
-    }   
+    }
 }
 
 
 /* reset the state of the game */
 void PacmanSettings::reset() {
-    
+
     m_reward   = 0;
     m_score    = 0;
     m_terminal = false;
@@ -108,7 +103,7 @@ void PacmanSettings::reset() {
 }
 
 
-        
+
 /* saves the state of the rom settings */
 void PacmanSettings::saveState(Serializer & ser) {
   ser.putInt(m_reward);
@@ -124,4 +119,3 @@ void PacmanSettings::loadState(Deserializer & ser) {
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
-
