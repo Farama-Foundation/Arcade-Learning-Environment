@@ -17,6 +17,8 @@
 #ifndef DISPLAY_SCREEN_H
 #define DISPLAY_SCREEN_H
 
+#include <algorithm>
+
 #include <stdio.h>
 #include <stdlib.h>
 
