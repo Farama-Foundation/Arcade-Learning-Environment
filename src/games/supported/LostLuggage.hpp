@@ -42,7 +42,7 @@ class LostLuggageSettings : public RomSettings {
   bool isMinimal(const Action& a) const override;
 
   // FIRE resets the game, prevent this
-  bool isLegal(const Action& a) const;
+  bool isLegal(const Action& a) const override;
 
   // process the latest information from ALE
   void step(const System& system) override;
@@ -57,6 +57,13 @@ class LostLuggageSettings : public RomSettings {
   ActionVect getStartingActions() override;
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
+
+  ModeVect getAvailableModes() override;
+
+  void setMode(game_mode_t m, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
+
+  DifficultyVect getAvailableDifficulties() override;
 
  private:
   bool m_terminal;
