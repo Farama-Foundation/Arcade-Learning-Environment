@@ -96,8 +96,33 @@ void KingkongSettings::loadState(Deserializer& ser) {
   m_lives = ser.getInt();
 }
 
-ActionVect KingkongSettings::getStartingActions() {
-  return {RESET};
+// According to https://atariage.com/manual_html_page.php?SoftwareLabelID=265
+// there are eight game modes of which four are single player. The game mode
+// alters the speed of the bombs and whether the magic bombs are present.
+ModeVect KingkongSettings::getAvailableModes() {
+  return {0, 1, 2, 3};
+}
+
+void KingkongSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  if (m < 4) {
+    // Read the mode we are currently in.
+    int mode = readRam(&system, 0xec);
+    // We ignore the odd numbered modes as these are for two players.
+    int desired_mode = m * 2;
+
+    // Press select until the correct mode is reached.
+    while (mode != desired_mode) {
+      environment->pressSelect(2);
+      mode = readRam(&system, 0xec);
+    }
+
+    // Reset the environment to apply changes.
+    environment->softReset();
+  } else {
+    throw std::runtime_error("This game mode is not supported.");
+  }
 }
 
 }  // namespace ale
