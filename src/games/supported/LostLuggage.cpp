@@ -104,7 +104,38 @@ void LostLuggageSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect LostLuggageSettings::getStartingActions() {
-  return {RESET};
+  return {PLAYER_A_FIRE};
+}
+
+// According to https://atariage.com/manual_html_page.php?SoftwareLabelID=277
+// the left difficulty switch sets whether there are one or two catchers.
+DifficultyVect LostLuggageSettings::getAvailableDifficulties() {
+  return {0, 1};
+}
+
+// According to https://atariage.com/manual_html_page.php?SoftwareLabelID=277
+// there are 8 variations of the game but only modes 1 and 4 are for a single
+// player. The additional game mode adds the presence of a critical suitcase
+// that must be caught or the game is immediately over.
+ModeVect LostLuggageSettings::getAvailableModes() {
+  return {0, 1};
+}
+
+void LostLuggageSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  if (isModeSupported(m)) {
+    const int desired_mode = 1 + m * 3;
+    // Press select until the correct mode is reached.
+    while (readRam(&system, 0x94) != desired_mode) {
+      environment->pressSelect(2);
+    }
+
+    // Reset the environment to apply changes.
+    environment->softReset();
+  } else {
+    throw std::runtime_error("This game mode is not supported.");
+  }
 }
 
 }  // namespace ale
