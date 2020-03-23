@@ -54,6 +54,11 @@ class MrDoSettings : public RomSettings {
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
 
+  ModeVect getAvailableModes() override;
+
+  void setMode(game_mode_t m, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
+
  private:
   bool m_terminal;
   reward_t m_reward;
