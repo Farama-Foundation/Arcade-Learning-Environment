@@ -94,4 +94,10 @@ void TrondeadSettings::loadState(Deserializer& ser) {
   m_lives = ser.getInt();
 }
 
+// According to https://atariage.com/manual_html_page.php?SoftwareLabelID=569
+// the left difficulty switch sets the speed of the game.
+DifficultyVect TrondeadSettings::getAvailableDifficulties() {
+  return {0, 1};
+}
+
 }  // namespace ale

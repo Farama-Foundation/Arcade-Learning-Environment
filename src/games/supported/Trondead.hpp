@@ -51,6 +51,8 @@ class TrondeadSettings : public RomSettings {
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
 
+  DifficultyVect getAvailableDifficulties() override;
+
  private:
   bool m_terminal;
   reward_t m_reward;
