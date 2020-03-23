@@ -108,8 +108,10 @@ void PongSettings::setMode(
   }
 }
 
+// The left difficulty switch sets the width of the CPU opponent's bat.
+// The right difficulty switch sets the width of the player's bat.
 DifficultyVect PongSettings::getAvailableDifficulties() {
-  return {0, 1};
+  return {0, 1, 2, 3};
 }
 
 }  // namespace ale
