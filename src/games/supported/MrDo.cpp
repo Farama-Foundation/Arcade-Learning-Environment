@@ -90,4 +90,24 @@ ActionVect MrDoSettings::getStartingActions() {
   return {PLAYER_A_FIRE};
 }
 
+// According to https://atariage.com/manual_html_page.php?SoftwareLabelID=318
+// there are four game modes of increasing difficulty.
+ModeVect MrDoSettings::getAvailableModes() {
+  return {0, 1, 2, 3};
+}
+
+void MrDoSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  if (m < 4) {
+    // Press select until the correct mode is reached.
+    while (readRam(&system, 0x80) != m) { environment->pressSelect(5); }
+
+    // Reset the environment to apply changes.
+    environment->softReset();
+  } else {
+    throw std::runtime_error("This game mode is not supported.");
+  }
+}
+
 }  // namespace ale
