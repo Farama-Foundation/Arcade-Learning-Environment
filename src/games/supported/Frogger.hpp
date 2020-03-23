@@ -50,10 +50,14 @@ class FroggerSettings : public RomSettings {
   // loads the state of the rom settings
   void loadState(Deserializer& ser) override;
 
-  // Frogger requires the RESET action to start the game
-  ActionVect getStartingActions();
-
   int lives() override { return isTerminal() ? 0 : m_lives; }
+
+  ModeVect getAvailableModes() override;
+
+  void setMode(game_mode_t m, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
+
+  DifficultyVect getAvailableDifficulties() override;
 
  private:
   bool m_terminal;
