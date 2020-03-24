@@ -73,8 +73,7 @@ void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-bool ALEInterface::isSupportedRom(
-    std::unique_ptr<OSystem>& theOSystem) {
+bool ALEInterface::isSupportedRom(std::unique_ptr<OSystem>& theOSystem) {
   const Properties properties = theOSystem->console().properties();
   const std::string md5 = properties.get(Cartridge_MD5);
   bool found = false;
@@ -167,6 +166,10 @@ void ALEInterface::loadROM(std::string rom_file = "") {
   if (wrapper == NULL) {
     Logger::Error << std::endl
       << "Attempt to wrap ROM " << rom_file << " failed." << std::endl;
+
+    // We need to load the settings now to make the isSupportedRom check work;
+    // the check needs the console (and its properties) to be initialized.
+    loadSettings(rom_file, theOSystem);
 
     if (isSupportedRom(theOSystem)) {
       Logger::Error << "It seems the ROM is supported." << std::endl;
