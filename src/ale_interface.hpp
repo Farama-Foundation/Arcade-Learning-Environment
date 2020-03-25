@@ -75,8 +75,9 @@ class ALEInterface {
 
   // Resets the Atari and loads a game. After this call the game
   // should be ready to play. This is necessary after changing a
-  // setting for the setting to take effect.
-  void loadROM(std::string rom_file);
+  // setting for the setting to take effect. Optionally specify
+  // a new ROM to load.
+  void loadROM(std::string rom_file = {});
 
   // Applies an action to the game and returns the reward. It is the
   // user's responsibility to check if the game has ended and reset
