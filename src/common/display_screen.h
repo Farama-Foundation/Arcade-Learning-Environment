@@ -24,7 +24,7 @@
 
 #include "Constants.h"
 #include "ColourPalette.hpp"
-#include "../emucore/MediaSrc.hxx"
+#include "emucore/MediaSrc.hxx"
 
 #ifdef __USE_SDL
 

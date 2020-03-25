@@ -27,7 +27,7 @@
 
 #include "Gravitar.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -21,7 +21,7 @@
 
 class OSystem;
 
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
 /**
   This class defines UNIX-like OS's (Linux) system specific settings.

@@ -17,8 +17,8 @@
 #ifndef __STELLA_ENVIRONMENT_WRAPPER_HPP__
 #define __STELLA_ENVIRONMENT_WRAPPER_HPP__
 
-#include "../common/Constants.h"
-#include "../emucore/Random.hxx"
+#include "common/Constants.h"
+#include "emucore/Random.hxx"
 
 namespace ale {
 

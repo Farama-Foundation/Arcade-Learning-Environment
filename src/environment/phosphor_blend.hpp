@@ -17,7 +17,7 @@
 #ifndef __PHOSPHOR_BLEND_HPP__
 #define __PHOSPHOR_BLEND_HPP__
 
-#include "../emucore/OSystem.hxx"
+#include "emucore/OSystem.hxx"
 #include "ale_screen.hpp"
 
 namespace ale {

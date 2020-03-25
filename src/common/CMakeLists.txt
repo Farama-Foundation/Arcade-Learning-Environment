@@ -1,0 +1,14 @@
+target_sources(ale PRIVATE
+        ColourPalette.cpp
+        Constants.cpp
+        display_screen.cpp
+        Log.cpp
+        Palettes.hpp
+        ScreenExporter.cpp
+        SoundExporter.cpp
+        SoundNull.cxx
+        SoundSDL.cxx
+        Version.hxx
+        VideoModeList.hxx
+        Array.hxx
+)

@@ -19,7 +19,7 @@
 #ifndef OSYSTEM_WIN32_HXX
 #define OSYSTEM_WIN32_HXX
 
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
 /**
   This class defines Windows system specific settings.

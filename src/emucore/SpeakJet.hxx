@@ -80,7 +80,7 @@
   @version $Id: SpeakJet.hxx,v 1.7 2007/01/01 18:04:50 stephena Exp $
 */
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 
 #include "SDL.h"
 #include <SDL_thread.h>

@@ -28,7 +28,7 @@
 #ifndef __POOYAN_HPP__
 #define __POOYAN_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

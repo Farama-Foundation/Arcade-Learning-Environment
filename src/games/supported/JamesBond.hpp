@@ -28,7 +28,7 @@
 #ifndef __JAMESBOND_HPP__
 #define __JAMESBOND_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

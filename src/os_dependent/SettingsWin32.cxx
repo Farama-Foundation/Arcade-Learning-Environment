@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -16,8 +16,8 @@
 // $Id: SettingsWin32.cxx,v 1.26 2007/01/01 18:04:56 stephena Exp $
 //============================================================================
 
-#include "bspf.hxx"
-#include "Settings.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/Settings.hxx"
 #include "SettingsWin32.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -20,8 +20,8 @@
 #include <fstream>
 #include <windows.h>
 
-#include "bspf.hxx"
-#include "OSystem.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/OSystem.hxx"
 #include "OSystemWin32.hxx"
 
 using namespace std;

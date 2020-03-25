@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -27,7 +27,7 @@
 #include <tchar.h>
 #include <direct.h>
 
-#include "FSNode.hxx"
+#include "emucore/FSNode.hxx"
 
 using namespace std;
 
@@ -91,7 +91,7 @@ char* WindowsFilesystemNode::toAscii(TCHAR* x)
 {
 #ifndef UNICODE
   return (char*)x;
-#else	
+#else
   static char asciiString[MAX_PATH];
   WideCharToMultiByte(CP_ACP, 0, x, _tcslen(x) + 1, asciiString, sizeof(asciiString), NULL, NULL);
   return asciiString;
@@ -196,10 +196,10 @@ FSList WindowsFilesystemNode::listDir(ListMode mode) const
     TCHAR drive_buffer[100];
     GetLogicalDriveStrings(sizeof(drive_buffer) / sizeof(TCHAR), drive_buffer);
 
-    for (TCHAR *current_drive = drive_buffer; *current_drive; 
+    for (TCHAR *current_drive = drive_buffer; *current_drive;
          current_drive += _tcslen(current_drive) + 1)
     {
-      WindowsFilesystemNode entry;		
+      WindowsFilesystemNode entry;
       char drive_name[2];
 
       drive_name[0] = toAscii(current_drive)[0];

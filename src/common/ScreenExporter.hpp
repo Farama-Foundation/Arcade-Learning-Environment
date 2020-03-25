@@ -20,7 +20,7 @@
 #include <string>
 
 #include "display_screen.h"
-#include "../environment/ale_screen.hpp"
+#include "environment/ale_screen.hpp"
 
 namespace ale {
 

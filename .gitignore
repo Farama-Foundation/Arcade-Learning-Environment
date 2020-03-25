@@ -30,3 +30,4 @@ doc/examples/*Example
 
 # Python
 *.pyc
+dist/

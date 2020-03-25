@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -23,12 +23,12 @@
 
 class OSystem;
 
-#include "SDL.h"
+#include <SDL.h>
 
-#include "../emucore/Sound.hxx"
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
-#include "MediaSrc.hxx"
-#include "TIASnd.hxx"
+#include "emucore/Sound.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/MediaSrc.hxx"
+#include "emucore/TIASnd.hxx"
 
 // If desired, we save sound to disk
 #include "SoundExporter.hpp"
@@ -48,7 +48,7 @@ class SoundSDL : public Sound
       using the object.
     */
     SoundSDL(OSystem* osystem);
- 
+
     /**
       Destructor
     */
@@ -145,7 +145,7 @@ class SoundSDL : public Sound
     /**
       * Tells the sound engine to record one frame's worth of sound.
       */
-    void recordNextFrame(); 
+    void recordNextFrame();
 
   public:
     /**
@@ -287,9 +287,9 @@ class SoundSDL : public Sound
     static void callback(void* udata, uInt8* stream, int len);
 
     // Keeps track of how many samples we still need to record
-    int myNumRecordSamplesNeeded; 
+    int myNumRecordSamplesNeeded;
 
-    std::auto_ptr<ale::sound::SoundExporter> mySoundExporter; 
+    std::auto_ptr<ale::sound::SoundExporter> mySoundExporter;
 };
 
 #endif  // SOUND_SUPPORT

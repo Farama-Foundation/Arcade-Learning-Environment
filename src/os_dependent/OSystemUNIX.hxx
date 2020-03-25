@@ -19,7 +19,7 @@
 #ifndef OSYSTEM_UNIX_HXX
 #define OSYSTEM_UNIX_HXX
 
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
 /**
   This class defines UNIX-like OS's (Linux) system specific settings.

@@ -20,7 +20,7 @@
 #define DESERIALIZER_HXX
 
 #include <sstream>
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 
 /**
  This class implements a Deserializer device, whereby data is

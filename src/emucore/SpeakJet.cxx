@@ -19,7 +19,7 @@
 #ifdef ATARIVOX_SUPPORT
 
 #include "SpeakJet.hxx"
-#include "../common/Log.hpp"
+#include "common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SpeakJet::SpeakJet()

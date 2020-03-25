@@ -28,7 +28,7 @@
 #ifndef __JOURNEYESCAPE_HPP__
 #define __JOURNEYESCAPE_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

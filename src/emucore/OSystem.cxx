@@ -38,18 +38,18 @@ using namespace std;
 #include "PropsSet.hxx"
 #include "Event.hxx"
 #include "OSystem.hxx"
-#include "SoundSDL.hxx"
+#include "common/SoundSDL.hxx"
 
 #define MAX_ROM_SIZE  512 * 1024
 
 #include <time.h>
 
-#include "bspf.hxx"
+#include "bspf/bspf.hxx"
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem()
-  : 
+  :
     myEvent(NULL),
     mySound(NULL),
     mySettings(NULL),
@@ -104,7 +104,7 @@ OSystem::~OSystem()
   if (myPropSet != NULL)
     delete myPropSet;
   if (myEvent != NULL)
-    delete myEvent; 
+    delete myEvent;
   if (p_display_screen != NULL) {
       delete p_display_screen;
   }
@@ -128,6 +128,7 @@ bool OSystem::create()
   // Create the event handler for the system
   //ALE   myEventHandler = new EventHandler(this);
   //ALE  myEventHandler->initialize();
+
   // Create the streamer used for accessing eventstreams/recordings
 
   // Delete the previous event object (if any).
@@ -159,7 +160,7 @@ bool OSystem::create()
   // opened until needed, so this is non-blocking (on those systems
   // that only have a single sound device (no hardware mixing)
   createSound();
-  
+
   // Seed RNG. This will likely get re-called, e.g. by the ALEInterface, but is needed
   // by other interfaces.
   resetRNGSeed();
@@ -360,7 +361,7 @@ bool OSystem::createConsole(const string& romfile)
   // Do a little error checking; it shouldn't be necessary
   if(myConsole) deleteConsole();
 
-  bool retval = false; 
+  bool retval = false;
 
   // If a blank ROM has been given, we reload the current one (assuming one exists)
   if(romfile == "")
@@ -440,7 +441,7 @@ bool OSystem::createConsole(const string& romfile)
     exit(1);
 #endif
     p_display_screen = new ale::DisplayScreen(&myConsole->mediaSource(),
-                                              mySound, m_colour_palette); 
+                                              mySound, m_colour_palette);
   }
 
   return retval;
@@ -465,12 +466,12 @@ void OSystem::deleteConsole()
     //        << "  Frames per second:  " << framesPerSecond << endl
     //        << endl;
     // }
-    delete myConsole;  
+    delete myConsole;
     myConsole = NULL;
   }
   if (p_display_screen) {       //ALE
     delete p_display_screen;    //ALE
-    p_display_screen = NULL;    //ALE 
+    p_display_screen = NULL;    //ALE
   }
 }
 
@@ -570,7 +571,7 @@ bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
   // Get a valid set of properties, including any entered on the commandline
   string s;
   myPropSet->getMD5(md5, props);
-  
+
     s = mySettings->getString("type");
     if(s != "") props.set(Cartridge_Type, s);
     s = mySettings->getString("channels");

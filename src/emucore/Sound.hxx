@@ -23,7 +23,7 @@ class OSystem;
 class Serializer;
 class Deserializer;
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 
 /**
   This class is an abstract base class for the various sound objects.
