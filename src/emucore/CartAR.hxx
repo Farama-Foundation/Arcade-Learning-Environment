@@ -24,7 +24,7 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 #include "Cart.hxx"
 #include "Random.hxx"
 

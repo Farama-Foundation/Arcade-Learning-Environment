@@ -26,7 +26,7 @@
 #ifndef __TETRIS_HPP__
 #define __TETRIS_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

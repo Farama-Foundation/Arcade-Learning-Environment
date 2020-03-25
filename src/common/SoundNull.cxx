@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -16,13 +16,13 @@
 // $Id: SoundNull.cxx,v 1.6 2007/01/01 18:04:40 stephena Exp $
 //============================================================================
 
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
 
-#include "bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
-#include "OSystem.hxx"
-#include "Settings.hxx"
+#include "emucore/OSystem.hxx"
+#include "emucore/Settings.hxx"
 #include "SoundNull.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -28,7 +28,7 @@
 #ifndef __ASTEROIDS_HPP__
 #define __ASTEROIDS_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

@@ -28,7 +28,7 @@
 #ifndef __TENNIS_HPP__
 #define __TENNIS_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

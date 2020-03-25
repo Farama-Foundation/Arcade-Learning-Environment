@@ -20,7 +20,7 @@
 #define VIDMODE_LIST_HXX
 
 #include "Array.hxx"
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
 struct VideoMode {
   uInt32 image_x, image_y, image_w, image_h;

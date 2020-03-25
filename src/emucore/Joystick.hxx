@@ -19,7 +19,7 @@
 #ifndef JOYSTICK_HXX
 #define JOYSTICK_HXX
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 #include "Control.hxx"
 
 /**

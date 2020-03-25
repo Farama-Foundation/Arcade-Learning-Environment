@@ -23,7 +23,7 @@
 class MediaSource;
 class Sound;
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 
 /**
   This class provides an interface for accessing graphics and audio data.

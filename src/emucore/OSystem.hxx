@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -28,20 +28,19 @@ class Debugger;
 class CheatManager;
 class VideoDialog;
 
-#include "../common/Array.hxx"
+#include "common/Array.hxx"
 //ALE  #include "EventHandler.hxx"
 //ALE  #include "FrameBuffer.hxx"
 #include "Sound.hxx"
-#include "../common/SoundNull.hxx"
+#include "common/SoundNull.hxx"
 #include "Settings.hxx"
 #include "Console.hxx"
-#include "Event.hxx"  //ALE 
+#include "Event.hxx"  //ALE
 //ALE  #include "Font.hxx"
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "../common/display_screen.h" 
-#include "../common/ColourPalette.hpp"
-#include "../common/ScreenExporter.hpp"
-#include "../common/Log.hpp"
+#include "bspf/bspf.hxx"
+#include "common/display_screen.h"
+#include "common/ColourPalette.hpp"
+#include "common/Log.hpp"
 
 struct Resolution {
   uInt32 width;
@@ -83,7 +82,7 @@ class OSystem
     /**
       Adds the specified settings object to the system.
 
-      @param settings The settings object to add 
+      @param settings The settings object to add
     */
     void attach(Settings* settings) { mySettings = settings; }
 
@@ -94,8 +93,8 @@ class OSystem
     */
     //ALE  inline EventHandler& eventHandler() const { return *myEventHandler; }
 
-    /**  //ALE 
-      Get the event object of the system  
+    /**  //ALE
+      Get the event object of the system
 
       @return The event object
     */
@@ -354,12 +353,12 @@ class OSystem
     */
     void resetRNGSeed();
 
-    /** 
+    /**
       Serializes the OSystem state.
     */
     bool saveState(Serializer& out);
 
-    /** 
+    /**
       Deserializes the OSystem state.
     */
     bool loadState(Deserializer& in);
@@ -439,7 +438,7 @@ class OSystem
   protected:
     // Pointer to the EventHandler object
     //ALE  EventHandler* myEventHandler;
-    // Global Event object  //ALE 
+    // Global Event object  //ALE
     Event* myEvent;
 
     // Pointer to the FrameBuffer object
@@ -458,7 +457,7 @@ class OSystem
     Console* myConsole;
 
     // Random number generator shared across the emulator's components
-    Random myRandGen; 
+    Random myRandGen;
 
     // Pointer to the Menu object
     //ALE  Menu* myMenu;
@@ -514,10 +513,10 @@ class OSystem
     // The font object to use for the ROM launcher
     //ALE  GUI::Font* myLauncherFont;
 
-    // The font object to use for the console/debugger 
+    // The font object to use for the console/debugger
     //ALE  GUI::Font* myConsoleFont;
 
-    public: //ALE 
+    public: //ALE
     // Time per frame for a video update, based on the current framerate
     uInt32 myTimePerFrame;
 

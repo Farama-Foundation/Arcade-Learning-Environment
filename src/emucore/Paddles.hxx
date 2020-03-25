@@ -19,7 +19,7 @@
 #ifndef PADDLES_HXX
 #define PADDLES_HXX
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 #include "Control.hxx"
 #include "Event.hxx"
 

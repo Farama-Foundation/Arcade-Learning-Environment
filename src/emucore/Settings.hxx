@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -24,8 +24,8 @@ class OSystem;
 #include <map>
 #include <stdexcept>
 
-#include "../common/Array.hxx"
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "common/Array.hxx"
+#include "bspf/bspf.hxx"
 
 /**
   This class provides an interface for accessing frontend specific settings.
@@ -51,9 +51,9 @@ class Settings
       This method should be called to load the current settings from an rc file.
     */
     virtual void loadConfig();
-    
+
     /**
-      This method loads the given 
+      This method loads the given
     */
     void loadConfig(const char* config_file);
 
@@ -62,12 +62,6 @@ class Settings
     */
     virtual void saveConfig();
 
-    /**
-      This method should be called to load the arguments from the commandline.
-
-      @return Name of the ROM to load, otherwise empty string
-    */
-    std::string loadCommandLine(int argc, char** argv);
 
     /**
       This method should be called *after* settings have been read,
@@ -75,10 +69,6 @@ class Settings
     */
     void validate();
 
-    /**
-      This method should be called to display usage information.
-    */
-    void usage();
 
     /**
       Get the value assigned to the specified key.  If the key does

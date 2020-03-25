@@ -13,7 +13,7 @@
 #ifndef __FROGGER_HPP__
 #define __FROGGER_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

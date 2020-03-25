@@ -25,9 +25,9 @@ class Serializer;
 class Deserializer;
 class Settings;
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 #include "Sound.hxx"
-#include "m6502/src/Device.hxx"
+#include "Device.hxx"
 #include "MediaSrc.hxx"
 
 /**

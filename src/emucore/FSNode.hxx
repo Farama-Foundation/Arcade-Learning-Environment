@@ -54,7 +54,7 @@
  * i.e. the root dir is usually not the best starting point for browsing.
  */
 
-#include "../common/Array.hxx"
+#include "common/Array.hxx"
 
 class FilesystemNode;
 

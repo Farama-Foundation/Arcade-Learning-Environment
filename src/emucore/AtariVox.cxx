@@ -21,7 +21,7 @@
 #include "Event.hxx"
 #include "AtariVox.hxx"
 #include "SpeakJet.hxx"
-#include "../common/Log.hpp"
+#include "common/Log.hpp"
 
 #define DEBUG_ATARIVOX 0
 

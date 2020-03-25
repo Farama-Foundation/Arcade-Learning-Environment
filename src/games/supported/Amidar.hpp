@@ -28,7 +28,7 @@
 #ifndef __AMIDAR_HPP__
 #define __AMIDAR_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

@@ -23,7 +23,7 @@ class Controller;
 class Event;
 class System;
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 
 /**
   A controller is a device that plugs into either the left or right 

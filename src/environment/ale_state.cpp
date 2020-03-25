@@ -15,12 +15,12 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "../emucore/m6502/src/System.hxx"
-#include "../emucore/Event.hxx"
-#include "../emucore/Deserializer.hxx"
-#include "../emucore/Serializer.hxx"
-#include "../common/Constants.h"
-#include "../games/RomSettings.hpp"
+#include "emucore/System.hxx"
+#include "emucore/Event.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/Serializer.hxx"
+#include "common/Constants.h"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

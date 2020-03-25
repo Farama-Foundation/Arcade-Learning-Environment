@@ -19,7 +19,7 @@
 #ifndef EVENT_HXX
 #define EVENT_HXX
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 
 class Event;
 

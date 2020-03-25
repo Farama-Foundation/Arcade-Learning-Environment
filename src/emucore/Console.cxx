@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -39,7 +39,7 @@
 #include "Paddles.hxx"
 #include "Props.hxx"
 #include "PropsSet.hxx"
-#include "Settings.hxx" 
+#include "Settings.hxx"
 #include "Sound.hxx"
 #include "Switches.hxx"
 #include "System.hxx"
@@ -48,7 +48,7 @@
 #include "OSystem.hxx"
 //ALE #include "Menu.hxx"
 //ALE #include "CommandMenu.hxx"
-#include "Version.hxx"
+#include "common/Version.hxx"
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
@@ -57,7 +57,7 @@
   #include "CheatManager.hxx"
 #endif
 using namespace std;
-#include "../common/Log.hpp"
+#include "common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
@@ -71,7 +71,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySwitches = 0;
   mySystem = 0;
   myEvent = 0;
-  
+
   // Attach the event subsystem to the current console
   //ALE  myEvent = myOSystem->eventHandler().event();
   myEvent = myOSystem->event();
@@ -115,7 +115,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   {
     myControllers[leftPort] = new Joystick(Controller::Left, *myEvent);
   }
- 
+
   // Construct right controller
   if(right == "BOOSTER-GRIP")
   {
@@ -325,7 +325,7 @@ void Console::togglePalette()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::togglePhosphor()
 {
-  // MGB: This method is deprecated. 
+  // MGB: This method is deprecated.
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

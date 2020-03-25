@@ -17,7 +17,7 @@
 
 #include "RomUtils.hpp"
 
-#include "System.hxx"
+#include "emucore/System.hxx"
 
 namespace ale {
 

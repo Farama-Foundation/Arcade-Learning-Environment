@@ -19,7 +19,7 @@
 #ifndef MD5_HXX
 #define MD5_HXX
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "bspf/bspf.hxx"
 
 /**
   Get the MD5 Message-Digest of the specified message with the 

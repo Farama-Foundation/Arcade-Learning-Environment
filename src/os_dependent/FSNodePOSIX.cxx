@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -19,7 +19,7 @@
 //   Copyright (C) 2002-2004 The ScummVM project
 //============================================================================
 
-#include "FSNode.hxx"
+#include "emucore/FSNode.hxx"
 
 #ifdef MACOSX
   #include <sys/types.h>
@@ -66,10 +66,10 @@ static const char* lastPathComponent(const string& str)
 {
   const char *start = str.c_str();
   const char *cur = start + str.size() - 2;
-    
+
   while (cur > start && *cur != '/')
     --cur;
-    
+
   return cur+1;
 }
 
