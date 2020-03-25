@@ -1,0 +1,4 @@
+-e .
+pytest
+pytest-benchmark
+atari-py
