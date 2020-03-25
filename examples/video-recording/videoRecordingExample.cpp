@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
 
   std::cout << std::endl;
   std::cout << "Recording complete. To create a video, you may want to run \n"
-               "  doc/scripts/videoRecordingExampleJoinXXX.sh. See manual for "
+               "  examples/video-recording/*-join-video.sh. See docs for "
                "details.."
             << std::endl;
 
