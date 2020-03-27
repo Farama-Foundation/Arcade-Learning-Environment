@@ -18,6 +18,8 @@
 
 #include "ale_controller.hpp"
 
+#include <cstdlib>
+
 #include "../games/Roms.hpp"
 #include "../common/display_screen.h"
 #include "../common/Log.hpp"
@@ -25,12 +27,13 @@
 namespace ale {
 
 ALEController::ALEController(OSystem* osystem)
-    : m_osystem(osystem), m_settings(buildRomRLWrapper(
-                              m_osystem->settings().getString("rom_file"))),
+    : m_osystem(osystem),
+      m_settings(
+          buildRomRLWrapper(m_osystem->settings().getString("rom_file"))),
       m_environment(m_osystem, m_settings.get()) {
-  if (m_settings.get() == NULL) {
+  if (m_settings == nullptr) {
     ale::Logger::Warning << "Unsupported ROM file: " << std::endl;
-    exit(1);
+    std::exit(1);
   } else {
     m_environment.reset();
   }
