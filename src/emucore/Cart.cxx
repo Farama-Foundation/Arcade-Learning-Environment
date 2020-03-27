@@ -53,7 +53,7 @@ using namespace std;
 Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
     const Properties& properties, const Settings& settings, Random& rng)
 {
-  Cartridge* cartridge = 0;
+  Cartridge* cartridge = nullptr;
 
   // Get the type of the cartridge we're creating
   const string& md5 = properties.get(Cartridge_MD5);
@@ -137,7 +137,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
   else
     ale::Logger::Error << "ERROR: Invalid cartridge type " << type << " ..." << endl;
 
-  cartridge->myAboutString = buf.str();
+  if (cartridge != nullptr)
+    cartridge->myAboutString = buf.str();
+
   return cartridge;
 }
 
@@ -176,7 +178,7 @@ string Cartridge::autodetectType(const uInt8* image, uInt32 size)
   // Guess type based on size
   const char* type = 0;
 
-  if((size % 8448) == 0)
+  if(size != 0 && size % 8448 == 0)
   {
     type = "AR";
   }
@@ -277,7 +279,7 @@ string Cartridge::autodetectType(const uInt8* image, uInt32 size)
     else if(isProbably3F(image, size))
       type = "3F";
     else
-      type = "4K";  // Most common bankswitching type
+      return "Unrecognized cartridge; ROM size was " + std::to_string(size);
   }
 
   return type;
@@ -288,6 +290,8 @@ bool Cartridge::searchForBytes(const uInt8* image, uInt32 imagesize,
                                const uInt8* signature, uInt32 sigsize,
                                uInt32 minhits)
 {
+  if (sigsize > imagesize) return false;
+
   uInt32 count = 0;
   for(uInt32 i = 0; i < imagesize - sigsize; ++i)
   {
