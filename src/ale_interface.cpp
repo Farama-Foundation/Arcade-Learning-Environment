@@ -102,12 +102,12 @@ void ALEInterface::loadSettings(const std::string& romfile,
   theOSystem->create();
 
   // Attempt to load the ROM
-  if (romfile == "") {
+  if (romfile.empty()) {
     Logger::Error << "No ROM File specified." << std::endl;
-    exit(1);
+    std::exit(1);
   } else if (!FilesystemNode::fileExists(romfile)) {
     Logger::Error << "ROM file " << romfile << " not found." << std::endl;
-    exit(1);
+    std::exit(1);
   } else if (theOSystem->createConsole(romfile)) {
     if (!isSupportedRom(theOSystem)) {
       const Properties properties = theOSystem->console().properties();
@@ -126,7 +126,7 @@ void ALEInterface::loadSettings(const std::string& romfile,
     theOSystem->settings().setString("rom_file", romfile);
   } else {
     Logger::Error << "Unable to create console for " << romfile << std::endl;
-    exit(1);
+    std::exit(1);
   }
 
   // Must force the resetting of the OSystem's random seed, which is set before we change
@@ -185,7 +185,7 @@ void ALEInterface::loadROM(std::string rom_file) {
       << "ROM files should be named using snake case, "
       << "e.g., space_invaders.bin" << std::endl;
 
-    exit(1);
+    std::exit(1);
   }
 
   romSettings.reset(wrapper);
@@ -212,7 +212,7 @@ void ALEInterface::loadROM(std::string rom_file) {
     Logger::Error << "Also ensure ALE has been compiled with USE_SDL active "
                      "(see ALE makefile)."
                   << std::endl;
-    exit(1);
+    std::exit(1);
   }
 #endif
 }
@@ -269,10 +269,11 @@ bool ALEInterface::game_over() const { return environment->isTerminal(); }
 
 // The remaining number of lives.
 int ALEInterface::lives() {
-  if (!romSettings.get()) {
+  if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
+  } else {
+    return romSettings->lives();
   }
-  return romSettings->lives();
 }
 
 // Applies an action to the game and returns the reward. It is the
@@ -332,19 +333,21 @@ void ALEInterface::setDifficulty(difficulty_t m) {
 // Returns the vector of legal actions. This should be called only
 // after the rom is loaded.
 ActionVect ALEInterface::getLegalActionSet() {
-  if (!romSettings.get()) {
+  if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
+  } else {
+    return romSettings->getAllActions();
   }
-  return romSettings->getAllActions();
 }
 
 // Returns the vector of the minimal set of actions needed to play
 // the game.
 ActionVect ALEInterface::getMinimalActionSet() {
-  if (!romSettings.get()) {
+  if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
+  } else {
+    return romSettings->getMinimalActionSet();
   }
-  return romSettings->getMinimalActionSet();
 }
 
 // Returns the frame number since the loading of the ROM
