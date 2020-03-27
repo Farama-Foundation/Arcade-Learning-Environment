@@ -171,7 +171,7 @@ void ScreenExporter::save(const ALEScreen& screen,
 
 void ScreenExporter::saveNext(const ALEScreen& screen) {
   // Must have specified a directory.
-  assert(m_path.size() > 0);
+  assert(!m_path.empty());
 
   // MGB: It would be nice here to automagically create paths, but the only way I know of
   // doing this cleanly is via boost, which we don't include.
