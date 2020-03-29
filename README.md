@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mgbellemare/Arcade-Learning-Environment.svg?branch=master)](https://travis-ci.org/mgbellemare/Arcade-Learning-Environment)
+![Build Status](https://github.com/mgbellemare/Arcade-Learning-Environment/workflows/Build%20ALE/badge.svg)
 
 <img align="right" src="doc/manual/figures/ale.gif" width=50>
 
@@ -15,7 +15,7 @@ depicts over 50 games currently supported in the ALE.
 
 For an overview of our goals for the ALE read [The Arcade Learning Environment:
 An Evaluation Platform for General
-Agents](http://www.jair.org/papers/paper3912.html). If you use ALE in your
+Agents](https://jair.org/index.php/jair/article/view/10819). If you use ALE in your
 research, we ask that you please cite this paper in reference to the environment
 (BibTeX entry at the end of this document). Also, if you have any questions or
 comments about the ALE, please contact us through our [mailing
@@ -94,18 +94,18 @@ available at http://www.arcadelearningenvironment.org.
 -game_controller [fifo|fifo_named] -- specifies how agents interact
   with the ALE; see Java agent documentation for details
 
--config [file] -- specifies a configuration file, from which additional 
+-config [file] -- specifies a configuration file, from which additional
   parameters are read
 
 -run_length_encoding [false|true] -- determine whether run-length encoding is
-  used to send data over pipes; irrelevant when an internal agent is 
+  used to send data over pipes; irrelevant when an internal agent is
   being used
 
 -max_num_frames_per_episode [n] -- sets the maximum number of frames per
   episode. Once this number is reached, a new episode will start. Currently
-  implemented for all agents when using pipes (fifo/fifo_named) 
+  implemented for all agents when using pipes (fifo/fifo_named)
 
--max_num_frames [n] -- sets the maximum number of frames (independent of how 
+-max_num_frames [n] -- sets the maximum number of frames (independent of how
   many episodes are played)
 ```
 
@@ -117,7 +117,7 @@ If you use the ALE in your research, we ask that you please cite the following.
 
 In BibTeX format:
 
-```
+```bibtex
 @Article{bellemare13arcade,
   author = {{Bellemare}, M.~G. and {Naddaf}, Y. and {Veness}, J. and {Bowling}, M.},
   title = {The Arcade Learning Environment: An Evaluation Platform for General Agents},
@@ -137,7 +137,7 @@ that you also cite the following:
 
 In BibTex format:
 
-```
+```bibtex
 @Article{machado18arcade,
   author = {Marlos C. Machado and Marc G. Bellemare and Erik Talvitie and Joel Veness and Matthew J. Hausknecht and Michael Bowling},
   title = {Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents},
