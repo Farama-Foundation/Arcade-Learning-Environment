@@ -18,7 +18,7 @@
 
 #include <cassert>
 
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/System.hxx"
 #include "emucore/TIA.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"

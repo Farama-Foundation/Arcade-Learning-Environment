@@ -23,7 +23,7 @@
 #include "emucore/DefProps.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/PropsSet.hxx"
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

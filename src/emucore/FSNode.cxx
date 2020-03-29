@@ -20,7 +20,7 @@
 //============================================================================
 
 #include "emucore/FSNode.hxx"
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

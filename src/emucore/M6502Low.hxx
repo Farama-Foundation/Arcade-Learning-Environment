@@ -13,45 +13,51 @@
 // See the file "license" for information on usage and redistribution of
 // this file, and for a DISCLAIMER OF ALL WARRANTIES.
 //
-// $Id: M6502Hi.hxx,v 1.5 2007/01/01 18:04:51 stephena Exp $
+// $Id: M6502Low.hxx,v 1.7 2007/01/01 18:04:51 stephena Exp $
 //============================================================================
 
-#ifndef M6502HIGH_HXX
-#define M6502HIGH_HXX
+#ifndef M6502LOW_HXX
+#define M6502LOW_HXX
 
-class M6502High;
+class M6502Low;
 class Serializer;
 class Deserializer;
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
-#include "emucore/m6502/src/M6502.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/M6502.hxx"
 
 /**
-  This class provides a high compatibility 6502 microprocessor emulator.  
-  The memory accesses and cycle counts it generates are valid at the
-  sub-instruction level and "false" reads are generated (such as the ones 
-  produced by the Indirect,X addressing when it crosses a page boundary).
-  This provides provides better compatibility for hardware that has side
-  effects and for games which are very time sensitive.
+  This class provides a low compatibility 6502 microprocessor emulator.  
+  The memory accesses and cycle updates of this emulator are not 100% 
+  accurate as shown below:
 
+    1. Only memory accesses which are actually needed are done 
+       (i.e. no "false" reads and writes are performed)
+
+    2. Cycle counts are updated at the beginning of the instruction
+       execution and not valid at the sub-instruction level
+
+  If speed is the most important issue then use this class, however, if 
+  better compatibility is neccessary use one of the other 6502 classes.
+  
   @author  Bradford W. Mott
-  @version $Id: M6502Hi.hxx,v 1.5 2007/01/01 18:04:51 stephena Exp $
+  @version $Id: M6502Low.hxx,v 1.7 2007/01/01 18:04:51 stephena Exp $
 */
-class M6502High : public M6502
+class M6502Low : public M6502
 {
   public:
     /**
-      Create a new high compatibility 6502 microprocessor with the 
-      specified cycle multiplier.
+      Create a new low compatibility 6502 microprocessor with the specified 
+      cycle multiplier.
 
       @param systemCyclesPerProcessorCycle The cycle multiplier
     */
-    M6502High(uInt32 systemCyclesPerProcessorCycle);
+    M6502Low(uInt32 systemCyclesPerProcessorCycle);
 
     /**
       Destructor
     */
-    virtual ~M6502High();
+    virtual ~M6502Low();
 
   public:
     /**
@@ -87,17 +93,6 @@ class M6502High : public M6502
     */
     virtual const char* name() const;
 
-  public:
-    /**
-      Get the number of memory accesses to distinct memory locations
-
-      @return The number of memory accesses to distinct memory locations
-    */
-    uInt32 distinctAccesses() const
-    {
-      return myNumberOfDistinctAccesses;
-    }
-
   protected:
     /**
       Called after an interrupt has be requested using irq() or nmi()
@@ -106,28 +101,19 @@ class M6502High : public M6502
 
   protected:
     /*
-      Get the byte at the specified address and update the cycle
-      count
+      Get the byte at the specified address 
 
       @return The byte at the specified address
     */
     inline uInt8 peek(uInt16 address);
 
     /**
-      Change the byte at the specified address to the given value and
-      update the cycle count
+      Change the byte at the specified address to the given value
 
       @param address The address where the value should be stored
       @param value The value to be stored at the address
     */
     inline void poke(uInt16 address, uInt8 value);
-
-  private:
-    // Indicates the numer of distinct memory accesses
-    uInt32 myNumberOfDistinctAccesses;
-
-    // Indicates the last address which was accessed
-    uInt16 myLastAddress;
 };
 #endif
 

@@ -1,4 +1,4 @@
-add_subdirectory(m6502)
+add_subdirectory(bspf)
 
 target_sources(ale
   PRIVATE
@@ -30,14 +30,19 @@ target_sources(ale
     Console.cxx
     Control.cxx
     Deserializer.cxx
+    Device.cxx
     Driving.cxx
     Event.cxx
     FSNode.cxx
     Joystick.cxx
     Keyboard.cxx
+    M6502.cxx
+    M6502Hi.cxx
+    M6502Low.cxx
     M6532.cxx
     MD5.cxx
     MediaSrc.cxx
+    NullDev.cxx
     OSystem.cxx
     Paddles.cxx
     Props.cxx
@@ -47,6 +52,7 @@ target_sources(ale
     Settings.cxx
     SpeakJet.cxx
     Switches.cxx
+    System.cxx
     TIA.cxx
     TIASnd.cxx
 )

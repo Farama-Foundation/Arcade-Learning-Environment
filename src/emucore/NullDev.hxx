@@ -23,8 +23,8 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
-#include "emucore/m6502/src/Device.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/Device.hxx"
 
 /**
   Class that represents a "null" device.  The basic idea is that a

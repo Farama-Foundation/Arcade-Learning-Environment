@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <iostream>
 #include "emucore/CartDPC.hxx"
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 using namespace std;

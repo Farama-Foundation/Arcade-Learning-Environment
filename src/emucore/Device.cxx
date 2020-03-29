@@ -16,7 +16,7 @@
 // $Id: Device.cxx,v 1.4 2007/01/01 18:04:50 stephena Exp $
 //============================================================================
 
-#include "emucore/m6502/src/Device.hxx"
+#include "emucore/Device.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Device::Device()

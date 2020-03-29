@@ -17,7 +17,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/System.hxx"
 #include "emucore/Event.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/Serializer.hxx"

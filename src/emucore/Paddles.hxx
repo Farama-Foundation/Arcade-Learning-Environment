@@ -19,7 +19,7 @@
 #ifndef PADDLES_HXX
 #define PADDLES_HXX
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 #include "emucore/Control.hxx"
 #include "emucore/Event.hxx"
 

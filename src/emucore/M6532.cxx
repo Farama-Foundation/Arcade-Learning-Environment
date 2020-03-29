@@ -20,7 +20,7 @@
 #include "emucore/Console.hxx"
 #include "emucore/M6532.hxx"
 #include "emucore/Switches.hxx"
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/OSystem.hxx"

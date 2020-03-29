@@ -24,8 +24,8 @@
 
 #include "emucore/Console.hxx"
 #include "emucore/Control.hxx"
-#include "emucore/m6502/src/M6502.hxx"
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/M6502.hxx"
+#include "emucore/System.hxx"
 #include "emucore/TIA.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"

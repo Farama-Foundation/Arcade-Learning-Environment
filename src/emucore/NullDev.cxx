@@ -16,7 +16,7 @@
 // $Id: NullDev.cxx,v 1.5 2007/01/01 18:04:51 stephena Exp $
 //============================================================================
 
-#include "emucore/m6502/src/NullDev.hxx"
+#include "emucore/NullDev.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 using namespace std;

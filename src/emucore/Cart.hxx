@@ -25,8 +25,8 @@ class Properties;
 class Settings;
 
 #include <fstream>
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
-#include "emucore/m6502/src/Device.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/Device.hxx"
 #include "emucore/Random.hxx"
 #include "common/Log.hpp"
 

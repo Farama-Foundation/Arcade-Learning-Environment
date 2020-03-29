@@ -23,7 +23,7 @@ class Event;
 class Properties;
 class Switches;
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
 /**
   This class represents the console switches of the game console.
