@@ -37,7 +37,7 @@ class VideoDialog;
 #include "emucore/Console.hxx"
 #include "emucore/Event.hxx"  //ALE 
 //ALE  #include "Font.hxx"
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 #include "common/display_screen.h"
 #include "common/ColourPalette.hpp"
 #include "common/Log.hpp"

@@ -19,7 +19,7 @@
 #ifndef TIASOUND_HXX
 #define TIASOUND_HXX
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
 /**
   This class implements a fairly accurate emulation of the TIA sound

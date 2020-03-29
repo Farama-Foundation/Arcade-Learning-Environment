@@ -26,9 +26,9 @@ class NullDevice;
 class Serializer;
 class Deserializer;
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
-#include "emucore/m6502/src/Device.hxx"
-#include "emucore/m6502/src/NullDev.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/Device.hxx"
+#include "emucore/NullDev.hxx"
 
 /**
   This class represents a system consisting of a 6502 microprocessor

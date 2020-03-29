@@ -20,9 +20,9 @@
 
 #include <cassert>
 
-#include "emucore/m6502/src/M6502Hi.hxx"
+#include "emucore/M6502Hi.hxx"
 #include "emucore/Random.hxx"
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartAR.hxx"

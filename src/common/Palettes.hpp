@@ -1,7 +1,7 @@
 #ifndef ALE_RGBPALETTES_HPP_H
 #define ALE_RGBPALETTES_HPP_H
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 
 namespace ale {
 

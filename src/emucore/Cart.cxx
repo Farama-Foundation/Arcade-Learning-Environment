@@ -21,7 +21,7 @@
 #include <cassert>
 #include <sstream>
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 #include "emucore/Cart.hxx"
 #include "emucore/Cart0840.hxx"
 #include "emucore/Cart2K.hxx"

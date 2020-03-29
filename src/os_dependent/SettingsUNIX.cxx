@@ -16,7 +16,7 @@
 // $Id: SettingsUNIX.cxx,v 1.23 2007/07/27 13:49:16 stephena Exp $
 //============================================================================
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/bspf/bspf.hxx"
 #include "emucore/Settings.hxx"
 #include "os_dependent/SettingsUNIX.hxx"
 
