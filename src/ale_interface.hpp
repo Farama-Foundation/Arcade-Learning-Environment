@@ -33,22 +33,24 @@
 
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
+#if (defined(WIN32) || defined(__MINGW32__))
 #include "os_dependent/SettingsWin32.hxx"
 #include "os_dependent/OSystemWin32.hxx"
+#else
 #include "os_dependent/SettingsUNIX.hxx"
 #include "os_dependent/OSystemUNIX.hxx"
+#endif
 #include "games/Roms.hpp"
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
 #include "common/ScreenExporter.hpp"
 #include "common/Log.hpp"
+#include "version.hpp"
 
 #include <string>
 #include <memory>
 
 namespace ale {
-
-static const std::string Version = "0.6.0";
 
 /**
    This class interfaces ALE with external code for controlling agents.

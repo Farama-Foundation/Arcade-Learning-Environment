@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+set(USE_SDL @USE_SDL@)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ZLIB REQUIRED)
+find_dependency(Threads REQUIRED)
+
+if (USE_SDL)
+    find_dependency(SDL REQUIRED)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/ale-targets.cmake")
