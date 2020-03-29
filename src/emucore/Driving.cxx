@@ -20,7 +20,7 @@
 
 #include "emucore/Event.hxx"
 #include "emucore/Driving.hxx"
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/System.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Driving::Driving(Jack jack, const Event& event)

@@ -28,8 +28,8 @@ class CpuDebug;
 class Expression;
 class PackedBitArray;
 
-#include "emucore/m6502/src/bspf/src/bspf.hxx"
-#include "emucore/m6502/src/System.hxx"
+#include "emucore/bspf/bspf.hxx"
+#include "emucore/System.hxx"
 #include "common/Array.hxx"
 #ifdef DEBUGGER_SUPPORT
 #include "StringList.hxx"
