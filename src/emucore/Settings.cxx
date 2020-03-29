@@ -155,55 +155,6 @@ void Settings::loadConfig()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-string Settings::loadCommandLine(int argc, char** argv)
-{
-  for(int i = 1; i < argc; ++i)
-  {
-    // strip off the '-' character
-    string key = argv[i];
-    if(key[0] == '-')
-    {
-      key = key.substr(1, key.length());
-
-      // Take care of the arguments which are meant to be executed immediately
-      // (and then Stella should exit)
-      if(key == "help" || key == "listrominfo")
-      {
-        usage();
-        setExternal(key, "true");
-        return "";
-      }
-
-      // Take care of arguments without an option
-      if(key == "rominfo" || key == "debug" || key == "holdreset" ||
-         key == "holdselect" || key == "holdbutton0")
-      {
-        setExternal(key, "true");
-        continue;
-      }
-
-      if(++i >= argc)
-      {
-        ale::Logger::Error << "Missing argument for '" << key << "'" << endl;
-        return "";
-      }
-      string value = argv[i];
-
-      // Settings read from the commandline must not be saved to 
-      // the rc-file, unless they were previously set
-      if(int idx = getInternalPos(key) != -1)
-        setInternal(key, value, idx);   // don't set initialValue here
-      else
-        setExternal(key, value);
-    }
-    else
-      return key;
-  }
-
-  return "";
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::validate()
 {
   string s;
@@ -260,75 +211,6 @@ void Settings::validate()
   s = getString("palette");
   if(s != "standard" && s != "z26" && s != "user")
     setInternal("palette", "standard");
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Settings::usage() {
-
-    cerr << "\n"
-       " ***************************************************************************\n"
-       " * Welcome to A.L.E (Arcade Learning Environment)\n"
-       " * (Powered by Stella)\n"
-       " ***************************************************************************\n"
-       "\n"
-       " Usage: ale [options ...] romfile\n"
-       "\n"
-       " Main arguments:\n"
-       "   -help -- prints out help information\n"
-       "   -game_controller [fifo|fifo_named"
-#ifdef __USE_RLGLUE
-       "|rlglue"
-#endif
-       "] (default: unset)\n"
-       "      Defines how Stella communicates with the player agent:\n"
-       "            - 'fifo':       Control occurs through FIFO pipes\n"
-       "            - 'fifo_named': Control occurs through named FIFO pipes\n"
-#ifdef __USE_RLGLUE
-       "            - 'rlglue':     External control via RL-Glue\n"
-#endif
-       "   -random_seed [n|time] (default: time)\n"
-       "     Sets the seed used for random number generation\n"
-#ifdef __USE_SDL
-       "   -display_screen [true|false] (default: false)\n"
-       "     Displays the game screen\n"
-#endif
-#ifdef SOUND_SUPPORT
-       "   -sound [true|false] (default: false)\n"
-       "     Enable game sounds\n"
-#endif
-       "\n"
-       " Environment arguments:\n"
-       "   -max_num_frames m (default: 0)\n"
-       "     The program will quit after this number of frames. 0 means never.\n"
-       "   -max_num_frames_per_episode m (default: 0)\n"
-       "     Ends each episode after this number of frames. 0 means never.\n"
-       "   -color_averaging [true|false] (default: false)\n"
-       "     Phosphor blends screens to reduce flicker\n"
-       "   -record_screen_dir [save_directory]\n"
-       "     Saves game screen images to save_directory\n"
-       "   -repeat_action_probability (default: 0.25)\n"
-       "     Stochasticity in the environment. It is the probability the previous "
-                "action will repeated without executing the new one.\n"
-       "\n"
-       " FIFO Controller arguments:\n"
-       "   -run_length_encoding [true|false] (default: true)\n"
-       "     Encodes data using run-length encoding\n"
-       "\n"
-#ifdef __USE_RLGLUE
-       " RL-Glue Controller arguments:\n"
-       "   -send_rgb [true|false] (default: false)\n"
-       "     Sends RGB values for each pixel instead of the pallette index values\n"
-       "   -restricted_action_set [true|false] (default: false)\n"
-       "     Agents use a smaller set of actions (RL-Glue interfaces only)\n"
-       "\n"
-#endif
-       " Misc. arguments:\n"
-       "   -ld [A/B] (default: B)\n"
-       "     Left player difficulty. B means easy.\n"
-       "   -rd [A/B] (default: B)\n"
-       "     Right player difficulty. B means easy.\n"
-       "\n"
-    ; // Closing the std::cerr statement
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
