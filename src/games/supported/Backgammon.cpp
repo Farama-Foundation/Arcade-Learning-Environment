@@ -84,7 +84,7 @@ void BackgammonSettings::step(const System& system) {
 
   // Count all player/computer pieces in order to verify the board state is
   // valid.
-  for (char address = 0x81; address <= 0x8d; address++) {
+  for (int address = 0x81; address <= 0x8d; ++address) {
     std::int8_t pieces = readPieces(&system, address);
     if (pieces > 0) {
       num_computer_pieces_in += pieces;
@@ -92,7 +92,7 @@ void BackgammonSettings::step(const System& system) {
       num_player_pieces_in += -pieces;
     }
   }
-  for (char address = 0x8f; address <= 0x9b; address++) {
+  for (int address = 0x8f; address <= 0x9b; ++address) {
     std::int8_t pieces = readPieces(&system, address);
     if (pieces > 0) {
       num_computer_pieces_in += pieces;
