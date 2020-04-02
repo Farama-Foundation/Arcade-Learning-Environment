@@ -1,5 +1,7 @@
 The Arcade Learning Environment
-<img align="right" src="docs/manual/figures/ale.svg" width=75>
+<a href="#the-arcade-learning-environment">
+  <img align="right" src="docs/static/ale.svg" width=75 />
+</a>
 ===============================
 
 ![Build Status](https://github.com/mgbellemare/Arcade-Learning-Environment/workflows/Build%20ALE/badge.svg)

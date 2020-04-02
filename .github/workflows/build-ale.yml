@@ -3,6 +3,8 @@ on:
   push:
     tags-ignore:
       - "*.*"
+    paths-ignore:
+      - "docs/**"
     branches:
       - "*"
   pull_request:
