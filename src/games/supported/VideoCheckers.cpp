@@ -52,19 +52,19 @@ void VideoCheckersSettings::step(const System& system) {
   unsigned char num_black_pieces = 0;
   unsigned char num_white_pieces = 0;
 
-  for (int address = 0x80; address <= 0x87; address++) {
+  for (int address = 0x80; address <= 0x87; ++address) {
     unsigned char state = readRam(&system, address);
     process_board_state(state, num_black_pieces, num_white_pieces);
   }
-  for (int address = 0x89; address <= 0x90; address++) {
+  for (int address = 0x89; address <= 0x90; ++address) {
     unsigned char state = readRam(&system, address);
     process_board_state(state, num_black_pieces, num_white_pieces);
   }
-  for (int address = 0x92; address <= 0x99; address++) {
+  for (int address = 0x92; address <= 0x99; ++address) {
     unsigned char state = readRam(&system, address);
     process_board_state(state, num_black_pieces, num_white_pieces);
   }
-  for (int address = 0x9b; address <= 0xa2; address++) {
+  for (int address = 0x9b; address <= 0xa2; ++address) {
     unsigned char state = readRam(&system, address);
     process_board_state(state, num_black_pieces, num_white_pieces);
   }
