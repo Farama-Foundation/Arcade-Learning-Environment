@@ -31,8 +31,7 @@
 namespace ale {
 
 class MiniatureGolfSettings final : public RomSettings {
-
-public:
+ public:
   MiniatureGolfSettings();
 
   void reset() override;
@@ -55,7 +54,7 @@ public:
 
   DifficultyVect getAvailableDifficulties() override;
 
-private:
+ private:
   void updateRewardWhenLevelFinishes(int levelNumber);
 
   int m_levelNumber;
@@ -65,8 +64,10 @@ private:
   int m_hitsAtStartOfLevel;
   bool m_terminal;
   reward_t m_reward;
-  static const int kNumberOfLevels = 9;
+
+  static constexpr int kNumberOfLevels = 9;
 };
 
-}
+}  // namespace "ale"
+
 #endif // __MINIATURE_GOLF_HPP__
