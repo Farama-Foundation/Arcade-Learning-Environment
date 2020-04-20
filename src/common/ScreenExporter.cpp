@@ -17,8 +17,11 @@
 #include "ScreenExporter.hpp"
 
 #include <zlib.h>
-#include <sstream>
+#include <cassert>
 #include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "Log.hpp"
 
@@ -130,7 +133,7 @@ static void writePNGData(std::ofstream& out, const ALEScreen& screen,
   if ((compress(&compmem[0], &compmemsize, &buffer[0],
                 height * (width * 3 + 1)) != Z_OK)) {
     // @todo -- throw a proper exception
-    ale::Logger::Error << "Error: Couldn't compress PNG" << std::endl;
+    Logger::Error << "Error: Couldn't compress PNG\n";
     return;
   }
 
@@ -156,8 +159,7 @@ void ScreenExporter::save(const ALEScreen& screen,
   std::ofstream out(filename.c_str(), std::ios_base::binary);
   if (!out.good()) {
     // @todo exception
-    ale::Logger::Error << "Could not open " << filename << " for writing"
-                       << std::endl;
+    Logger::Error << "Could not open " << filename << " for writing\n";
     return;
   }
 
