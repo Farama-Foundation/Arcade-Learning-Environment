@@ -167,7 +167,7 @@ void ColourPalette::loadUserPalette(const std::string& paletteFile) {
 
   if (length < expectedFileSize) {
     paletteStream.close();
-    std::cerr << "ERROR: invalid palette file " << paletteFile << std::endl;
+    std::cerr << "ERROR: invalid palette file " << paletteFile << "\n";
     return;
   }
 
