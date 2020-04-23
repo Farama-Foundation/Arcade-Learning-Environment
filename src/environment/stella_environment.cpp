@@ -21,6 +21,8 @@
 
 #include "../emucore/m6502/src/System.hxx"
 
+#include "games/RomSettings2P.hpp"
+
 namespace ale {
 
 StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
@@ -170,19 +172,36 @@ reward_t StellaEnvironment::act(Action player_a_action,
     if (rng.nextDouble() >= m_repeat_action_probability)
       m_player_b_action = player_b_action;
 
-    // If so desired, request one frame's worth of sound (this does nothing if recording
-    // is not enabled)
-    m_osystem->sound().recordNextFrame();
-
-    // Similarly record screen as needed
-    if (m_screen_exporter.get() != NULL)
-      m_screen_exporter->saveNext(m_screen);
-
-    // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }
 
   return sum_rewards;
+}
+
+std::pair<reward_t,reward_t> StellaEnvironment::act2P(Action player_a_action,
+                                Action player_b_action) {
+  // Total reward received as we repeat the action
+  reward_t sum_rewards_p1 = 0;
+  reward_t sum_rewards_p2 = 0;
+
+  Random& rng = m_osystem->rng();
+
+  // Apply the same action for a given number of times... note that act() will refuse to emulate
+  //  past the terminal state
+  for (size_t i = 0; i < m_frame_skip; i++) {
+    // Stochastically drop actions, according to m_repeat_action_probability
+    if (rng.nextDouble() >= m_repeat_action_probability)
+      m_player_a_action = player_a_action;
+    // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
+    if (rng.nextDouble() >= m_repeat_action_probability)
+      m_player_b_action = player_b_action;
+
+    oneStepAct(m_player_a_action, m_player_b_action);
+    sum_rewards_p1 += m_settings->getReward();
+    sum_rewards_p2 += m_settings->getRewardP2();
+  }
+
+  return std::pair<reward_t,reward_t>(sum_rewards_p1,sum_rewards_p2);
 }
 
 /** This functions emulates a push on the reset button of the console */
@@ -204,6 +223,14 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action,
   if (isTerminal())
     return 0;
 
+  // If so desired, request one frame's worth of sound (this does nothing if recording
+  // is not enabled)
+  m_osystem->sound().recordNextFrame();
+
+  // Similarly record screen as needed
+  if (m_screen_exporter.get() != NULL)
+    m_screen_exporter->saveNext(m_screen);
+
   // Convert illegal actions into NOOPs; actions such as reset are always legal
   noopIllegalActions(player_a_action, player_b_action);
 
@@ -211,6 +238,7 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action,
   emulate(player_a_action, player_b_action);
   // Increment the number of frames seen so far
   m_state.incrementFrame();
+
 
   return m_settings->getReward();
 }

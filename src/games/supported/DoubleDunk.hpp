@@ -29,11 +29,12 @@
 #define __DOUBLEDUNK_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Double Dunk settings */
-class DoubleDunkSettings : public RomSettings {
+class DoubleDunkSettings : public RomSettings2P {
  public:
   DoubleDunkSettings();
 
@@ -74,6 +75,7 @@ class DoubleDunkSettings : public RomSettings {
   // returns a list of mode that the game can be played in
   // in this game, there are 16 available modes
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function

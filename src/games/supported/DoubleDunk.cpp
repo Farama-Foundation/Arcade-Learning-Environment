@@ -100,11 +100,15 @@ ModeVect DoubleDunkSettings::getAvailableModes() {
   // this game has a menu that allows to define various yes/no options
   // setting these options define in a way a different mode
   // there are 4 relevant options, which makes 2^4=16 available modes
-  ModeVect modes(getNumModes());
+  int single_player_modes = 16;
+  ModeVect modes(single_player_modes);
   for (unsigned int i = 0; i < modes.size(); i++) {
     modes[i] = i;
   }
   return modes;
+}
+ModeVect DoubleDunkSettings::get2PlayerModes() {
+  return oppositeModes(32);
 }
 
 void DoubleDunkSettings::goDown(
@@ -148,8 +152,13 @@ void DoubleDunkSettings::setMode(
   if (m < getNumModes()) {
     environment->pressSelect();
 
-    //discard the first two entries (irrelevant)
+    if(m & 16){
+      activateOption(system, 0x40, environment);
+    } else {
+      deactivateOption(system, 0x40, environment);
+    }
     goDown(system, environment);
+    //discard the second entry (irrelevant)
     goDown(system, environment);
 
     //deal with the 3 points option

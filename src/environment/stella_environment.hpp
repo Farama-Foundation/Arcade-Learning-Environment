@@ -66,6 +66,7 @@ class StellaEnvironment {
    *  number plus the frame skip.
    */
   reward_t act(Action player_a_action, Action player_b_action);
+  std::pair<reward_t,reward_t> act2P(Action player_a_action, Action player_b_action);
 
   /** This functions emulates a push on the reset button of the console */
   void softReset();

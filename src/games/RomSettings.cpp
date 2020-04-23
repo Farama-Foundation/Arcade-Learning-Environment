@@ -48,6 +48,10 @@ ActionVect RomSettings::getAllActions() {
   return actions;
 }
 
+bool RomSettings::supportsTwoPlayers() const{
+  return false;
+}
+
 ActionVect RomSettings::getStartingActions() {
   return ActionVect();
 }
@@ -71,5 +75,16 @@ bool RomSettings::isModeSupported(game_mode_t m) {
   auto modes = getAvailableModes();
   return std::find(modes.begin(), modes.end(), m) != modes.end();
 }
+
+void two_player_fail(){
+  throw std::runtime_error("2 player method used for 1 player game");
+}
+reward_t RomSettings::getRewardP2() const { two_player_fail(); }
+bool RomSettings::isMinimalP2(const Action& a) const { two_player_fail(); }
+bool RomSettings::isLegalP2(const Action& a) const { two_player_fail(); }
+int RomSettings::livesP2() { two_player_fail(); }
+ActionVect RomSettings::getMinimalActionSetP2() { two_player_fail(); }
+ActionVect RomSettings::getAllActionsP2() { two_player_fail(); }
+ModeVect RomSettings::get2PlayerModes() { two_player_fail(); }
 
 }  // namespace ale

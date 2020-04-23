@@ -79,11 +79,14 @@ class ALEInterface {
   // a new ROM to load.
   void loadROM(std::string rom_file = {});
 
+  bool supportsTwoPlayers();
+
   // Applies an action to the game and returns the reward. It is the
   // user's responsibility to check if the game has ended and reset
   // when necessary - this method will keep pressing buttons on the
   // game over screen.
   reward_t act(Action action);
+  std::pair<reward_t,reward_t> act2P(Action action_a,Action action_b);
 
   // Indicates if the game has ended.
   bool game_over() const;
@@ -94,6 +97,7 @@ class ALEInterface {
   // Returns the vector of modes available for the current game.
   // This should be called only after the rom is loaded.
   ModeVect getAvailableModes();
+  ModeVect get2PlayerModes();
 
   // Sets the mode of the game.
   // The mode must be an available mode (otherwise it throws an exception).
@@ -104,6 +108,8 @@ class ALEInterface {
   // This may not be the exact game mode that the ROM is currently running as
   // game mode changes only take effect when the environment is reset.
   game_mode_t getMode() const { return environment->getMode(); }
+
+  bool inTwoPlayerMode();
 
   //Returns the vector of difficulties available for the current game.
   //This should be called only after the rom is loaded. Notice
@@ -129,16 +135,19 @@ class ALEInterface {
   // Returns the vector of legal actions. This should be called only
   // after the rom is loaded.
   ActionVect getLegalActionSet();
+  ActionVect getLegalActionsP2();
 
   // Returns the vector of the minimal set of actions needed to play
   // the game.
   ActionVect getMinimalActionSet();
+  ActionVect getMinimalActionSetP2();
 
   // Returns the frame number since the loading of the ROM
   int getFrameNumber();
 
   // The remaining number of lives.
   int lives();
+  int livesP2();
 
   // Returns the frame number since the start of the current episode
   int getEpisodeFrameNumber() const;

@@ -69,6 +69,9 @@ class RomSettings {
   // get the most recently observed reward
   virtual reward_t getReward() const = 0;
 
+  //default false
+  virtual bool supportsTwoPlayers() const;
+
   // the rom-name
   virtual const char* rom() const = 0;
 
@@ -119,6 +122,14 @@ class RomSettings {
   // By default, there is only one available difficulty.
   virtual DifficultyVect getAvailableDifficulties();
 
+  //two player methods. all fail when on a single player game
+  virtual reward_t getRewardP2() const;
+  virtual bool isMinimalP2(const Action& a) const;
+  virtual bool isLegalP2(const Action& a) const;
+  virtual int livesP2();
+  virtual ActionVect getMinimalActionSetP2();
+  virtual ActionVect getAllActionsP2();
+  virtual ModeVect get2PlayerModes();
  protected:
   // Helper function that checks if our settings support this given mode.
   bool isModeSupported(game_mode_t m);
