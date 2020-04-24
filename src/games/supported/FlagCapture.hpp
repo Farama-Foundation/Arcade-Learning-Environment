@@ -40,6 +40,7 @@ class FlagCaptureSettings : public RomSettings2P {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const override { return "flag_capture"; }
 
@@ -58,6 +59,8 @@ class FlagCaptureSettings : public RomSettings2P {
 
   void setMode(game_mode_t m, System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
+
+ ActionVect getStartingActions() override;
 
  private:
   bool m_terminal;

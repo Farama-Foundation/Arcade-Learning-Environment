@@ -53,12 +53,13 @@ void OthelloSettings::step(const System& system) {
   // the board is full of counters. We must also wait for the counters to reach
   // their final colour for scoring. We detect this when the cursor stops
   // flashing for at least one second, signalling no more player input.
-  m_terminal = m_cursor_inactive > 50;
+  m_terminal = m_cursor_inactive > 75;
 }
 
 bool OthelloSettings::isTerminal() const { return m_terminal; }
 
 reward_t OthelloSettings::getReward() const { return m_reward; }
+reward_t OthelloSettings::getRewardP2() const { return -m_reward; }
 
 bool OthelloSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -114,20 +115,23 @@ DifficultyVect OthelloSettings::getAvailableDifficulties() {
 // there are three one player game modes which set the skill level as
 // beginner, intermediate and expert.
 ModeVect OthelloSettings::getAvailableModes() {
-  return {0, 1, 2};
+  return {1, 2, 3};
+}
+ModeVect OthelloSettings::get2PlayerModes() {
+  return {4};
 }
 
 void OthelloSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 3) {
+  if (m <= 4) {
     // Read the mode we are currently in.
-    unsigned char mode = readRam(&system, 0xde) - 1;
+    unsigned char mode = readRam(&system, 0xde);
 
     // Press select until the correct mode is reached.
     while (mode != m) {
       environment->pressSelect(2);
-      mode = readRam(&system, 0xde) - 1;
+      mode = readRam(&system, 0xde);
     }
 
     // Reset the environment to apply changes.
@@ -136,5 +140,6 @@ void OthelloSettings::setMode(
     throw std::runtime_error("This game mode is not supported.");
   }
 }
+
 
 }  // namespace ale

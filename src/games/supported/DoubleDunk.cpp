@@ -42,6 +42,7 @@ bool DoubleDunkSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t DoubleDunkSettings::getReward() const { return m_reward; }
+reward_t DoubleDunkSettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
 bool DoubleDunkSettings::isMinimal(const Action& a) const {

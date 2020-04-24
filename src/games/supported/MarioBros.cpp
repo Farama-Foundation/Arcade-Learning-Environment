@@ -99,16 +99,24 @@ void MarioBrosSettings::reset() {
 
 void MarioBrosSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
+  ser.putInt(m_reward_p2);
   ser.putInt(m_score);
+  ser.putInt(m_score_p2);
   ser.putInt(m_lives);
+  ser.putInt(m_lives_p2);
   ser.putBool(m_terminal);
+  ser.putBool(is_two_player);
 }
 
 void MarioBrosSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
+  m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
+  m_score_p2 = ser.getInt();
   m_lives = ser.getInt();
+  m_lives_p2 = ser.getInt();
   m_terminal = ser.getBool();
+  is_two_player = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=286

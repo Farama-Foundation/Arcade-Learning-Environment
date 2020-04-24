@@ -41,16 +41,17 @@ void FlagCaptureSettings::step(const System& system) {
     score -= getDecimalScore(0xeb, &system);
   }
   else{
+    // Game terminates when timer stored at RAM 0xeb expires after 75 seconds.
     m_terminal = getDecimalScore(0xeb, &system) == 0;
   }
   m_reward = score - m_score;
   m_score = score;
-  // Game terminates when timer stored at RAM 0xeb expires after 75 seconds.
 }
 
 bool FlagCaptureSettings::isTerminal() const { return m_terminal; }
 
 reward_t FlagCaptureSettings::getReward() const { return m_reward; }
+reward_t FlagCaptureSettings::getRewardP2() const { return -m_reward; }
 
 bool FlagCaptureSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -64,7 +65,7 @@ bool FlagCaptureSettings::isMinimal(const Action& a) const {
     case PLAYER_A_UPLEFT:
     case PLAYER_A_DOWNRIGHT:
     case PLAYER_A_DOWNLEFT:
-    case PLAYER_A_UPFIRE:
+    // case PLAYER_A_UPFIRE:
     // case PLAYER_A_RIGHTFIRE:
     // case PLAYER_A_LEFTFIRE:
     // case PLAYER_A_DOWNFIRE:
@@ -81,20 +82,24 @@ bool FlagCaptureSettings::isMinimal(const Action& a) const {
 void FlagCaptureSettings::reset() {
   m_reward = 0;
   m_score = 0;
-  is_two_player = m_mode <= 3;
+  is_two_player = m_mode <= 4;
   m_terminal = false;
 }
 
 void FlagCaptureSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
+  ser.putInt(m_mode);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
+  ser.putBool(is_two_player);
 }
 
 void FlagCaptureSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
+  m_mode = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
+  is_two_player = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareID=1022
@@ -105,7 +110,7 @@ ModeVect FlagCaptureSettings::getAvailableModes() {
   return {8, 9, 10};
 }
 ModeVect FlagCaptureSettings::get2PlayerModes() {
-  return {1, 2, 3};
+  return {1, 2, 3, 4};
 }
 void FlagCaptureSettings::setMode(
     game_mode_t m, System& system,
@@ -123,9 +128,17 @@ void FlagCaptureSettings::setMode(
     }
 
     m_mode = mode;
+    is_two_player = m_mode <= 4;
 
     // Reset the environment to apply changes.
     environment->softReset();
 }
 
+ActionVect FlagCaptureSettings::getStartingActions() {
+  ActionVect startingActions;
+  for (int i = 0; i < 10; ++i) {
+    startingActions.push_back(PLAYER_A_FIRE);
+  }
+  return startingActions;
+}
 }  // namespace ale

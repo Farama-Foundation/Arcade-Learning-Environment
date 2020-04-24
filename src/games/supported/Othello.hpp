@@ -27,10 +27,11 @@
 #define __OTHELLO_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
-class OthelloSettings : public RomSettings {
+class OthelloSettings : public RomSettings2P {
  public:
   OthelloSettings();
 
@@ -39,6 +40,7 @@ class OthelloSettings : public RomSettings {
   virtual bool isTerminal() const;
 
   virtual reward_t getReward() const;
+  virtual reward_t getRewardP2() const override;
 
   virtual const char* rom() const { return "othello"; }
 
@@ -53,6 +55,7 @@ class OthelloSettings : public RomSettings {
   virtual void loadState(Deserializer& ser);
 
   virtual ModeVect getAvailableModes();
+  virtual ModeVect get2PlayerModes();
 
   virtual void setMode(game_mode_t m, System& system,
                        std::unique_ptr<StellaEnvironmentWrapper> environment);

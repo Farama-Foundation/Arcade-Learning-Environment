@@ -25,9 +25,9 @@ namespace ale {
 
 RomSettings2P::RomSettings2P() {}
 
-reward_t RomSettings2P::getRewardP2() const {
-  return -getReward();
-}
+// reward_t RomSettings2P::getRewardP2() const {
+//   return -getReward();
+// }
 bool RomSettings2P::supportsTwoPlayers() const {
   return true;
 }

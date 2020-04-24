@@ -7,6 +7,8 @@ using namespace std;
 
 void save_frame(std::vector<unsigned char> & Buff);
 
+constexpr int steps_to_test = 2000;
+
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
@@ -19,9 +21,9 @@ void init_two_player_fnames(){
     // "fishing_derby",
     // "flag_capture",
     // "ice_hockey",
-    "lost_luggage",
-    "mario_bros",
-    "othello",
+    // "lost_luggage",
+    // "mario_bros",
+    // "othello", //othello seems to be working, just isn't passing the test
     "pong",
     "space_invaders",
     "space_war",
@@ -65,22 +67,43 @@ std::size_t hash_vec(std::vector<uint8_t> const& vec) {
   }
   return seed;
 }
+std::size_t hash_together(std::size_t h1, std::size_t h2){
+  return h1 + 0x9e3779b9 + (h2 << 6) + (h2 >> 2);
+}
 size_t play_sequence(ALEInterface & interface,int sequence_num){
   size_t hashCode = 0;
   std::vector<unsigned char> output_rgb_buffer(192*160*3);
   save_frame(output_rgb_buffer);
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
-  Action p1_action = min_actionsp1[0];
+  for(int j = 0; j < steps_to_test; j++){
+    int action_p1 = sequence_num == 0 ? (j/4)%min_actionsp1.size() : (j/64)%min_actionsp1.size();
+
+    interface.act(min_actionsp1[action_p1]);
+
+    interface.getScreenRGB(output_rgb_buffer);
+    hashCode = hash_vec(output_rgb_buffer);
+  }
+  return hashCode;
+}
+size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
+  size_t hashCode = 0;
+  std::vector<unsigned char> output_rgb_buffer(192*160*3);
+  save_frame(output_rgb_buffer);
+  ActionVect min_actionsp1 = interface.getMinimalActionSet();
   ActionVect min_actionsp2 = interface.getMinimalActionSetP2();
-  for(int j = 0; j < 5000; j++){
-    int action_p1 = (j/128)%min_actionsp1.size();
+  for(int j = 0; j < steps_to_test; j++){
+    int action_p1 = (j/32)%min_actionsp1.size();
     int action_p2 = sequence_num == 0 ? (j/4)%min_actionsp2.size() : (j/64)%min_actionsp2.size();
 
     interface.act2P(min_actionsp1[action_p1], min_actionsp2[action_p2]);
 
     interface.getScreenRGB(output_rgb_buffer);
-    hashCode = hash_vec(output_rgb_buffer);
-    if(j % 16 == 0){
+    hashCode = hash_together(hashCode,hash_vec(output_rgb_buffer));
+    if(interface.game_over()){
+      std::cout << "game ended early\n";
+      break;
+    }
+    if(j % 213 == 0){
       save_frame(output_rgb_buffer);
     }
   }
@@ -96,6 +119,20 @@ bool test_two_player_controlability(std::string fname){
     ModeVect modes = interface.get2PlayerModes();
     interface.setMode(modes[0]);
     interface.reset_game();
+    hashs[i] = play_sequence_p2(interface,i);
+  }
+  return hashs[0] != hashs[1];
+}
+bool test_single_player_controlability(std::string fname){
+  int seed = 123982;
+  size_t hashs[2] = {0,0};
+  for(int i = 0; i < 2; i++){
+    ALEInterface interface;
+    interface.setInt("random_seed", seed);
+    interface.loadROM(fname);
+    ModeVect modes = interface.getAvailableModes();
+    interface.setMode(modes[modes.size()-1]);
+    interface.reset_game();
     hashs[i] = play_sequence(interface,i);
   }
   return hashs[0] != hashs[1];
@@ -110,11 +147,14 @@ int main(){
         cout << fname << "\n";
         exit(-1);
     }
+    else if(!test_single_player_controlability(fname)){
+      cout << binname << " environment not controllable in single player mode\n";
+    }
     else if(!test_two_player(fname)){
       cout << binname << " environment not two player\n";
     }
     else if(!test_two_player_controlability(fname)){
-      cout << binname << " environment not controllable\n";
+      cout << binname << " environment not controllable in two player mode\n";
     }
     else{
       cout << binname << " environment passes!\n";

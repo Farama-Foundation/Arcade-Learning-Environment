@@ -48,7 +48,7 @@ class RomSettings2P : public RomSettings {
 
   // get the most recently observed reward
   // default is the negative of getReward()
-  virtual reward_t getRewardP2() const;
+  virtual reward_t getRewardP2() const { return 0; };
 
   // is an action part of the minimal set?
   virtual bool isMinimalP2(const Action& a) const;

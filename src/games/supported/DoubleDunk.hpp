@@ -46,6 +46,7 @@ class DoubleDunkSettings : public RomSettings2P {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "double_dunk"; }

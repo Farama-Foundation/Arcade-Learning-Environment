@@ -356,6 +356,9 @@ void ALEInterface::setMode(game_mode_t m) {
 }
 
 bool ALEInterface::inTwoPlayerMode(){
+  if(!romSettings->supportsTwoPlayers()){
+    return false;
+  }
   ModeVect modes = romSettings->get2PlayerModes();
   game_mode_t m = this->getMode();
   return find(modes.begin(), modes.end(), m) != modes.end();

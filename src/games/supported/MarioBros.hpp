@@ -48,6 +48,7 @@ class MarioBrosSettings : public RomSettings2P {
   bool isMinimal(const Action& a) const override;
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
+  int livesP2() override { return isTerminal() ? 0 : m_lives_p2; }
 
   void step(const System& system) override;
 

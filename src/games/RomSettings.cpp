@@ -19,6 +19,7 @@
 #include "RomSettings.hpp"
 
 #include <algorithm>
+#include <cassert>
 
 namespace ale {
 
@@ -75,10 +76,10 @@ bool RomSettings::isModeSupported(game_mode_t m) {
   auto modes = getAvailableModes();
   return std::find(modes.begin(), modes.end(), m) != modes.end();
 }
+#define xstr(a) str(a)
+#define str(a) #a
+#define two_player_fail() throw std::runtime_error("2 player method used for 1 player game in line: " xstr(__LINE__));
 
-void two_player_fail(){
-  throw std::runtime_error("2 player method used for 1 player game");
-}
 reward_t RomSettings::getRewardP2() const { two_player_fail(); }
 bool RomSettings::isMinimalP2(const Action& a) const { two_player_fail(); }
 bool RomSettings::isLegalP2(const Action& a) const { two_player_fail(); }
