@@ -42,6 +42,7 @@ bool PongSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t PongSettings::getReward() const { return m_reward; }
+reward_t PongSettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
 bool PongSettings::isMinimal(const Action& a) const {
@@ -81,11 +82,10 @@ void PongSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect PongSettings::getAvailableModes() {
-  ModeVect modes(getNumModes());
-  for (unsigned int i = 0; i < modes.size(); i++) {
-    modes[i] = i;
-  }
-  return modes;
+  return {0, 1};
+}
+ModeVect PongSettings::get2PlayerModes() {
+  return {2, 3};
 }
 
 // set the mode of the game
@@ -93,7 +93,7 @@ ModeVect PongSettings::getAvailableModes() {
 void PongSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < getNumModes()) {
+  if (m < 4) {
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x96);
     // press select until the correct mode is reached
