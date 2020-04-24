@@ -32,14 +32,14 @@ void init_two_player_fnames(){
     "video_checkers",
     "wizard_of_wor",
   };
-  std::string main_path = "/home/benblack/anaconda3/lib/python3.7/site-packages/ale_py/ROM/";
+  std::string main_path = "roms/";//"/home/benblack/anaconda3/lib/python3.7/site-packages/ale_py/ROM/";
   for(std::string fname : two_player_fnames){
-    std::string new_fname = main_path + fname + "/" + fname + ".bin";
+    std::string new_fname = main_path + fname + ".bin";
     two_player_games.push_back(new_fname);
-    std::ifstream  src(new_fname, std::ios::binary);
-    std::ofstream  dst("roms/"+fname+".bin",   std::ios::binary);
+    //std::ifstream  src(new_fname, std::ios::binary);
+    //std::ofstream  dst("roms/"+fname+".bin",   std::ios::binary);
 
-    dst << src.rdbuf();
+  //  dst << src.rdbuf();
   }
 }
 bool test_env_exists(std::string fname){

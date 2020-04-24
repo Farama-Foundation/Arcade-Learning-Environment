@@ -31,7 +31,6 @@
 
 namespace ale {
 
-ActionVect SpaceInvadersSettings::actions;
 
 SpaceInvadersSettings::SpaceInvadersSettings() { reset(); }
 
@@ -44,15 +43,24 @@ RomSettings* SpaceInvadersSettings::clone() const {
 void SpaceInvadersSettings::step(const System& system) {
   // update the reward
   int score = getDecimalScore(0xE8, 0xE6, &system);
+  int scoreP2 = getDecimalScore(0xE9, 0xE7, &system);
   // reward cannot get negative in this game. When it does, it means that the score has looped
   // (overflow)
+  // 10000 is the highest possible score
+  const int maximumScore = 10000;
+
+  m_reward_p2 = scoreP2 - m_score_p2;
+  if (m_reward_p2 < 0) {
+    m_reward_p2 = (maximumScore - m_score_p2) + scoreP2;
+  }
+  m_score_p2 = scoreP2;
+
   m_reward = score - m_score;
   if (m_reward < 0) {
-    // 10000 is the highest possible score
-    const int maximumScore = 10000;
     m_reward = (maximumScore - m_score) + score;
   }
   m_score = score;
+
   m_lives = readRam(&system, 0xC9);
 
   // update terminal status
@@ -64,8 +72,18 @@ void SpaceInvadersSettings::step(const System& system) {
 /* is end of game */
 bool SpaceInvadersSettings::isTerminal() const { return m_terminal; };
 
+int SpaceInvadersSettings::lives() {
+ return isTerminal() ? 0 : m_lives;
+}
+int SpaceInvadersSettings::livesP2() {
+  //wierd but correct, both players share the same number of lives even though
+  //their rewards are different, and the game is competitive
+   return isTerminal() ? 0 : m_lives;
+}
+
 /* get the most recently observed reward */
 reward_t SpaceInvadersSettings::getReward() const { return m_reward; }
+reward_t SpaceInvadersSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool SpaceInvadersSettings::isMinimal(const Action& a) const {
@@ -85,7 +103,9 @@ bool SpaceInvadersSettings::isMinimal(const Action& a) const {
 /* reset the state of the game */
 void SpaceInvadersSettings::reset() {
   m_reward = 0;
+  m_reward_p2 = 0;
   m_score = 0;
+  m_score_p2 = 0;
   m_terminal = false;
   m_lives = 3;
 }
@@ -93,7 +113,9 @@ void SpaceInvadersSettings::reset() {
 /* saves the state of the rom settings */
 void SpaceInvadersSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
+  ser.putInt(m_reward_p2);
   ser.putInt(m_score);
+  ser.putInt(m_score_p2);
   ser.putBool(m_terminal);
   ser.putInt(m_lives);
 }
@@ -101,16 +123,25 @@ void SpaceInvadersSettings::saveState(Serializer& ser) {
 // loads the state of the rom settings
 void SpaceInvadersSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
+  m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
+  m_score_p2 = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
 }
 
 // returns a list of mode that the game can be played in
 ModeVect SpaceInvadersSettings::getAvailableModes() {
-  ModeVect modes(getNumModes());
-  for (unsigned int i = 0; i < modes.size(); i++) {
+  ModeVect modes(16);
+  for (unsigned int i = 0; i < 16; i++) {
     modes[i] = i;
+  }
+  return modes;
+}
+ModeVect SpaceInvadersSettings::get2PlayerModes() {
+  ModeVect modes(32);
+  for (unsigned int i = 32; i < 64; i++) {
+    modes[i-32] = i;
   }
   return modes;
 }
@@ -120,7 +151,7 @@ ModeVect SpaceInvadersSettings::getAvailableModes() {
 void SpaceInvadersSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < getNumModes()) {
+  if (m < 64) {
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0xDC);
     // press select until the correct mode is reached

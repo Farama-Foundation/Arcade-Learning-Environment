@@ -29,11 +29,12 @@
 #define __SPACEINVADERS_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
 // RL wrapper for SpaceInvaders
-class SpaceInvadersSettings : public RomSettings {
+class SpaceInvadersSettings : public RomSettings2P {
  public:
   SpaceInvadersSettings();
 
@@ -45,6 +46,7 @@ class SpaceInvadersSettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "space_invaders"; }
@@ -67,11 +69,13 @@ class SpaceInvadersSettings : public RomSettings {
   // loads the state of the rom settings
   void loadState(Deserializer& ser) override;
 
-  int lives() override { return isTerminal() ? 0 : m_lives; }
+  int lives() override;
+  int livesP2() override;
 
   // returns a list of mode that the game can be played in
   // in this game, there are 16 available modes
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
@@ -85,10 +89,12 @@ class SpaceInvadersSettings : public RomSettings {
  private:
   bool m_terminal;
   reward_t m_reward;
+  reward_t m_reward_p2;
   reward_t m_score;
+  reward_t m_score_p2;
   int m_lives;
 
-  static ActionVect actions;
+  //static ActionVect actions;
 };
 
 }  // namespace ale
