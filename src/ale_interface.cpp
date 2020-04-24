@@ -200,7 +200,11 @@ void ALEInterface::loadROM(std::string rom_file) {
 
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
+
+  setMode(romSettings->getAvailableModes()[0]);
+
   environment->reset();
+
 
 #ifndef __USE_SDL
   if (theOSystem->p_display_screen != NULL) {
@@ -340,9 +344,11 @@ ModeVect ALEInterface::get2PlayerModes() {
 void ALEInterface::setMode(game_mode_t m) {
   //We first need to make sure m is an available mode
   ModeVect available = romSettings->getAvailableModes();
-  ModeVect available2P = romSettings->get2PlayerModes();
-  if (find(available.begin(), available.end(), m) != available.end() ||
-    find(available2P.begin(), available2P.end(), m) != available2P.end()) {
+  if(romSettings->supportsTwoPlayers()){
+    ModeVect available2P = romSettings->get2PlayerModes();
+    available.insert(available.end(),available2P.begin(),available2P.end());
+  }
+  if (find(available.begin(), available.end(), m) != available.end()) {
     environment->setMode(m);
   } else {
     throw std::runtime_error("Invalid game mode requested");

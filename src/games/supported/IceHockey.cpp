@@ -100,13 +100,17 @@ void IceHockeySettings::loadState(Deserializer& ser) {
 ModeVect IceHockeySettings::getAvailableModes() {
   return {0, 2};
 }
+ModeVect IceHockeySettings::get2PlayerModes() {
+  return {1, 3};
+}
+
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void IceHockeySettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0 || m == 2) {
+  if (m < 4) {
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x80);
     // press select until the correct mode is reached

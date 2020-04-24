@@ -10,7 +10,7 @@ option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
 option(BUILD_CLI "Build ALE Command Line Interface" ON)
 option(BUILD_C_LIB "Build ALE C Library (needed for Python interface)" ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11 -fPIC -Og -g -fomit-frame-pointer -D__STDC_CONSTANT_MACROS")
 
 if(CMAKE_COMPILER_IS_GNUCC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused")
@@ -162,6 +162,13 @@ if(BUILD_CLI)
   target_link_libraries(ale-bin ${LINK_LIBS})
 endif()
 
+if(BUILD_CLI)
+  add_executable(test-ale ${SOURCE_DIR}/test_main.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
+  set_target_properties(test-ale PROPERTIES OUTPUT_NAME test_envs)
+  set_target_properties(test-ale PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(test-ale ${LINK_LIBS})
+endif()
+
 if(BUILD_C_LIB)
   add_library(ale-c-lib SHARED ${CMAKE_CURRENT_SOURCE_DIR}/ale_py/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp ${SOURCES})
   set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
@@ -262,5 +269,3 @@ ENDFOREACH(file)
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   COMMAND rm -rf ${INCLUDE_INSTALL_DIR}/ale)
-
-

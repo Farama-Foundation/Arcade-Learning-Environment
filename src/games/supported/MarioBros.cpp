@@ -37,11 +37,24 @@ RomSettings* MarioBrosSettings::clone() const {
 
 void MarioBrosSettings::step(const System& system) {
   int score = getDecimalScore(0x8A, 0x89, &system) * 100;
+
+  m_lives = readRam(&system, 0x87);
+
+  if(is_two_player){
+    int score_p2 = getDecimalScore(0x8C, 0x8B, &system) * 100;
+    m_lives_p2 = readRam(&system, 0x88);
+
+    m_reward_p2 = score_p2 - m_score_p2;
+    m_score_p2 = score_p2;
+
+    m_terminal = m_lives == 0 && m_lives_p2 == 0;
+  }
+  else{
+    m_terminal = m_lives == 0;
+  }
   m_reward = score - m_score;
   m_score = score;
-  m_lives = readRam(&system, 0x87);
   // Game terminates when the player runs out of lives.
-  m_terminal = m_lives == 0;
 }
 
 bool MarioBrosSettings::isTerminal() const { return m_terminal; }
@@ -76,8 +89,11 @@ bool MarioBrosSettings::isMinimal(const Action& a) const {
 
 void MarioBrosSettings::reset() {
   m_reward = 0;
+  m_reward_p2 = 0;
   m_score = 0;
+  m_score_p2 = 0;
   m_lives = 0;
+  m_lives_p2 = 0;
   m_terminal = false;
 }
 
@@ -100,29 +116,31 @@ void MarioBrosSettings::loadState(Deserializer& ser) {
 // determines whether there are fireballs present and how many lives the player
 // gets to start (3 or 5).
 ModeVect MarioBrosSettings::getAvailableModes() {
-  return {0, 1, 2, 3};
+  return {0, 2, 4, 6};
+}
+ModeVect MarioBrosSettings::get2PlayerModes() {
+  return {1, 3, 5, 7};
 }
 
 void MarioBrosSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 4) {
-    // Read the mode we are currently in.
-    int mode = readRam(&system, 0x80);
-    // Skip the odd numbered modes are these are for two players.
-    int desired_mode = m * 2;
 
-    // Press select until the correct mode is reached.
-    while (mode != desired_mode) {
-      environment->pressSelect(5);
-      mode = readRam(&system, 0x80);
-    }
+  is_two_player = !isModeSupported(m);
 
-    // Reset the environment to apply changes.
-    environment->softReset();
-  } else {
-    throw std::runtime_error("This game mode is not supported.");
+  // Read the mode we are currently in.
+  int mode = readRam(&system, 0x80);
+  // Skip the odd numbered modes are these are for two players.
+  int desired_mode = m;
+
+  // Press select until the correct mode is reached.
+  while (mode != desired_mode) {
+    environment->pressSelect(5);
+    mode = readRam(&system, 0x80);
   }
+
+  // Reset the environment to apply changes.
+  environment->softReset();
 }
 
 ActionVect MarioBrosSettings::getStartingActions() {

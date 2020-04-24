@@ -27,10 +27,11 @@
 #define __FLAG_CAPTURE_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
-class FlagCaptureSettings : public RomSettings {
+class FlagCaptureSettings : public RomSettings2P {
  public:
   FlagCaptureSettings();
 
@@ -53,6 +54,7 @@ class FlagCaptureSettings : public RomSettings {
   void loadState(Deserializer& ser) override;
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   void setMode(game_mode_t m, System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
@@ -61,6 +63,8 @@ class FlagCaptureSettings : public RomSettings {
   bool m_terminal;
   reward_t m_reward;
   int m_score;
+  int m_mode = 1;
+  bool is_two_player = true;
 };
 
 }  // namespace ale

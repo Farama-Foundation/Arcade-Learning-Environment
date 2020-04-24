@@ -37,10 +37,15 @@ RomSettings* FlagCaptureSettings::clone() const {
 
 void FlagCaptureSettings::step(const System& system) {
   int score = getDecimalScore(0xea, &system);
+  if (is_two_player){
+    score -= getDecimalScore(0xeb, &system);
+  }
+  else{
+    m_terminal = getDecimalScore(0xeb, &system) == 0;
+  }
   m_reward = score - m_score;
   m_score = score;
   // Game terminates when timer stored at RAM 0xeb expires after 75 seconds.
-  m_terminal = getDecimalScore(0xeb, &system) == 0;
 }
 
 bool FlagCaptureSettings::isTerminal() const { return m_terminal; }
@@ -60,13 +65,13 @@ bool FlagCaptureSettings::isMinimal(const Action& a) const {
     case PLAYER_A_DOWNRIGHT:
     case PLAYER_A_DOWNLEFT:
     case PLAYER_A_UPFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
-    case PLAYER_A_DOWNFIRE:
-    case PLAYER_A_UPRIGHTFIRE:
-    case PLAYER_A_UPLEFTFIRE:
-    case PLAYER_A_DOWNRIGHTFIRE:
-    case PLAYER_A_DOWNLEFTFIRE:
+    // case PLAYER_A_RIGHTFIRE:
+    // case PLAYER_A_LEFTFIRE:
+    // case PLAYER_A_DOWNFIRE:
+    // case PLAYER_A_UPRIGHTFIRE:
+    // case PLAYER_A_UPLEFTFIRE:
+    // case PLAYER_A_DOWNRIGHTFIRE:
+    // case PLAYER_A_DOWNLEFTFIRE:
       return true;
     default:
       return false;
@@ -76,6 +81,7 @@ bool FlagCaptureSettings::isMinimal(const Action& a) const {
 void FlagCaptureSettings::reset() {
   m_reward = 0;
   m_score = 0;
+  is_two_player = m_mode <= 3;
   m_terminal = false;
 }
 
@@ -96,29 +102,30 @@ void FlagCaptureSettings::loadState(Deserializer& ser) {
 // player. These determine whether the flag is stationary or moving and are
 // timed against a fixed 75 second clock.
 ModeVect FlagCaptureSettings::getAvailableModes() {
-  return {0, 1, 2};
+  return {8, 9, 10};
 }
-
+ModeVect FlagCaptureSettings::get2PlayerModes() {
+  return {1, 2, 3};
+}
 void FlagCaptureSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 3) {
+
     // Read the mode we are currently in.
     int mode = readRam(&system, 0xd6);
     // Single player modes are [8, 10]
-    int desired_mode = m + 8;
+    int desired_mode = m;
 
     // Press select until the correct mode is reached for single player only.
     while (mode != desired_mode) {
-      environment->pressSelect(2);
+      environment->pressSelect(10);
       mode = readRam(&system, 0xd6);
     }
 
+    m_mode = mode;
+
     // Reset the environment to apply changes.
     environment->softReset();
-  } else {
-    throw std::runtime_error("This game mode is not supported.");
-  }
 }
 
 }  // namespace ale

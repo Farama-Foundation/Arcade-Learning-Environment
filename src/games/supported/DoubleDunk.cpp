@@ -149,7 +149,7 @@ void DoubleDunkSettings::deactivateOption(
 void DoubleDunkSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < getNumModes()) {
+
     environment->pressSelect();
 
     if(m & 16){
@@ -198,9 +198,6 @@ void DoubleDunkSettings::setMode(
     environment->act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
     environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
 
-  } else {
-    throw std::runtime_error("This mode doesn't currently exist for this game");
-  }
 }
 
 }  // namespace ale

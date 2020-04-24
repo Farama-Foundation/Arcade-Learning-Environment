@@ -29,11 +29,12 @@
 #define __ICEHOCKEY_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Ice Hockey */
-class IceHockeySettings : public RomSettings {
+class IceHockeySettings : public RomSettings2P {
  public:
   IceHockeySettings();
 
@@ -72,6 +73,7 @@ class IceHockeySettings : public RomSettings {
   // returns a list of mode that the game can be played in
   // in this game, there are 2 available modes
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function

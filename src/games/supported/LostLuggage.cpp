@@ -26,6 +26,7 @@ RomSettings* LostLuggageSettings::clone() const {
 /* process the latest information from ALE */
 void LostLuggageSettings::step(const System& system) {
   // update the reward
+  //Not suitable for two players
   int score = getDecimalScore(0x96, 0x95, 0x94, &system);
   int reward = score - m_score;
   m_reward = reward;
@@ -118,14 +119,19 @@ DifficultyVect LostLuggageSettings::getAvailableDifficulties() {
 // player. The additional game mode adds the presence of a critical suitcase
 // that must be caught or the game is immediately over.
 ModeVect LostLuggageSettings::getAvailableModes() {
-  return {0, 1};
+  return {1, 4};
+}
+ModeVect LostLuggageSettings::get2PlayerModes() {
+  return {2, 5};
+}
+bool LostLuggageSettings::supportsTwoPlayers()const{
+  return false;//reward for two players is not suitable
 }
 
 void LostLuggageSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (isModeSupported(m)) {
-    const int desired_mode = 1 + m * 3;
+    const int desired_mode = m;
     // Press select until the correct mode is reached.
     while (readRam(&system, 0x94) != desired_mode) {
       environment->pressSelect(2);
@@ -133,9 +139,7 @@ void LostLuggageSettings::setMode(
 
     // Reset the environment to apply changes.
     environment->softReset();
-  } else {
-    throw std::runtime_error("This game mode is not supported.");
-  }
+
 }
 
 }  // namespace ale

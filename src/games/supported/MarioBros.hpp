@@ -27,10 +27,11 @@
 #define __MARIO_BROS_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
-class MarioBrosSettings : public RomSettings {
+class MarioBrosSettings : public RomSettings2P {
  public:
   MarioBrosSettings();
 
@@ -55,6 +56,7 @@ class MarioBrosSettings : public RomSettings {
   void loadState(Deserializer& ser) override;
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   void setMode(game_mode_t m, System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
@@ -64,8 +66,12 @@ class MarioBrosSettings : public RomSettings {
  private:
   bool m_terminal;
   reward_t m_reward;
+  reward_t m_reward_p2;
   int m_score;
+  int m_score_p2;
   int m_lives;
+  int m_lives_p2;
+  bool is_two_player = false;
 };
 
 }  // namespace ale
