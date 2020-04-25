@@ -1,0 +1,7 @@
+Two player manuals
+
+
+* [flag_capture](https://atariage.com/manual_page.php?SystemID=2600&SoftwareLabelID=183&ItemTypeID=&currentPage=7&maxPages=8)
+* [space_invaders](https://atariage.com/manual_html_page.php?SoftwareLabelID=460)
+* [pong](https://atariage.com/manual_html_page.php?SoftwareLabelID=587)
+* [space war](https://atariage.com/manual_html_page.php?SoftwareLabelID=470)

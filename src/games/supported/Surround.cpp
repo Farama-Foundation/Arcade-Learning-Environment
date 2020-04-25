@@ -58,6 +58,7 @@ bool SurroundSettings::isTerminal() const { return m_terminal; }
 
 /* get the most recently observed reward */
 reward_t SurroundSettings::getReward() const { return m_reward; }
+reward_t SurroundSettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
 bool SurroundSettings::isMinimal(const Action& a) const {
@@ -111,28 +112,28 @@ DifficultyVect SurroundSettings::getAvailableDifficulties() {
 // https://atariage.com/manual_html_page.php?SoftwareLabelID=535
 // There are only two single player modes, the second is faster than the first.
 ModeVect SurroundSettings::getAvailableModes() {
-  return {0, 2};
+  return {2, 4};
+}
+
+ModeVect SurroundSettings::get2PlayerModes() {
+  return {1, 5, 6, 7, 8, 9, 10, 11, 12};
 }
 
 void SurroundSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0 || m == 2) {
-    // Read the game mode from RAM address 0xf9.
-    unsigned char mode = readRam(&system, 0xf9);
-    int desired_mode = m + 1;
+  // Read the game mode from RAM address 0xf9.
+  unsigned char mode = readRam(&system, 0xf9);
+  int desired_mode = m - 1;
 
-    // Press select until the correct mode is reached for single player only.
-    while (mode != desired_mode) {
-      environment->pressSelect(2);
-      mode = readRam(&system, 0xf9);
-    }
-
-    // Reset the environment to apply changes.
-    environment->softReset();
-  } else {
-    throw std::runtime_error("This game mode is not supported.");
+  // Press select until the correct mode is reached for single player only.
+  while (mode != desired_mode) {
+    environment->pressSelect(2);
+    mode = readRam(&system, 0xf9);
   }
+
+  // Reset the environment to apply changes.
+  environment->softReset();
 }
 
 }  // namespace ale

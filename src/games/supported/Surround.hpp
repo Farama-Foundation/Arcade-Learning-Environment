@@ -31,11 +31,12 @@
 #define __SURROUND_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
 // RL wrapper for SpaceInvaders
-class SurroundSettings : public RomSettings {
+class SurroundSettings : public RomSettings2P {
  public:
   SurroundSettings();
 
@@ -49,6 +50,7 @@ class SurroundSettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "surround"; }
@@ -69,6 +71,7 @@ class SurroundSettings : public RomSettings {
   void loadState(Deserializer& ser) override;
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   void setMode(game_mode_t m, System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;

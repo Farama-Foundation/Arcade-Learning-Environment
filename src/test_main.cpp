@@ -26,7 +26,7 @@ void init_two_player_fnames(){
     // "othello", //othello seems to be working, just isn't passing the test
     // "pong",
     // "space_invaders",
-    "space_war",
+    // "space_war",
     "surround",
     "tennis",
     "video_checkers",
