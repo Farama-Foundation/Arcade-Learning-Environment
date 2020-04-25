@@ -24,8 +24,8 @@ void init_two_player_fnames(){
     // "lost_luggage",
     // "mario_bros",
     // "othello", //othello seems to be working, just isn't passing the test
-    "pong",
-    "space_invaders",
+    // "pong",
+    // "space_invaders",
     "space_war",
     "surround",
     "tennis",

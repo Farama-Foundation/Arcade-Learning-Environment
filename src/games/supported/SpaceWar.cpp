@@ -37,18 +37,26 @@ RomSettings* SpaceWarSettings::clone() const {
 
 void SpaceWarSettings::step(const System& system) {
   int score = getDecimalScore(0xa7, &system);
-  m_reward = score - m_score;
-  m_score = score;
+  m_reward = (score - m_score_p1);
+  m_score_p1 = score;
+
+  if(is_two_player){
+    int score_p2 = getDecimalScore(0xa8, &system);
+    m_reward -= (score_p2 - m_score_p2);
+    m_score_p2 = score_p2;
+  }
+
   // Game terminates either when the player gets 10 points or the 10 minute
   // timer expires. The timer counts up every 256 vsyncs, incrementing from 0x74
   // until it wraps around to 0x00. 35840 vsyncs ~= 600 seconds = 10 minutes.
   int timer = readRam(&system, 0x80);
-  m_terminal = score == 10 || timer == 0;
+  m_terminal = m_score_p1 == 10 || m_score_p2 == 10 ||  timer == 0;
 }
 
 bool SpaceWarSettings::isTerminal() const { return m_terminal; }
 
 reward_t SpaceWarSettings::getReward() const { return m_reward; }
+reward_t SpaceWarSettings::getRewardP2() const { return -m_reward; }
 
 bool SpaceWarSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -78,20 +86,25 @@ bool SpaceWarSettings::isMinimal(const Action& a) const {
 
 void SpaceWarSettings::reset() {
   m_reward = 0;
-  m_score = 0;
+  m_score_p1 = 0;
+  m_score_p2 = 0;
   m_terminal = false;
 }
 
 void SpaceWarSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
-  ser.putInt(m_score);
+  ser.putInt(m_score_p1);
+  ser.putInt(m_score_p2);
   ser.putBool(m_terminal);
+  ser.putBool(is_two_player);
 }
 
 void SpaceWarSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
-  m_score = ser.getInt();
+  m_score_p1 = ser.getInt();
+  m_score_p2 = ser.getInt();
   m_terminal = ser.getBool();
+  is_two_player = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=470
@@ -102,16 +115,21 @@ void SpaceWarSettings::loadState(Deserializer& ser) {
 // replenished. We therefore remove the first five modes but the rest [6-17] are
 // valid, with the second (inert) player acting as a distractor when present.
 ModeVect SpaceWarSettings::getAvailableModes() {
-  return {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+  return {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
+}
+ModeVect SpaceWarSettings::get2PlayerModes() {
+  return {1, 2, 3, 4, 5};
 }
 
 void SpaceWarSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (isModeSupported(m)) {
+
+    is_two_player = m <= 5;
+
     // Ignore the first five modes as these not completable without input from
     // a second player.
-    int wanted_mode = m + 6;
+    int wanted_mode = m;
 
     // Press select until the correct mode is reached.
     while (getDecimalScore(0xa7, &system) != wanted_mode) {
@@ -120,9 +138,6 @@ void SpaceWarSettings::setMode(
 
     // Reset the environment to apply changes.
     environment->softReset();
-  } else {
-    throw std::runtime_error("This game mode is not supported.");
-  }
 }
 
 }  // namespace ale
