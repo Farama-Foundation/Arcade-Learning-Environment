@@ -66,15 +66,26 @@ class WizardOfWorSettings : public RomSettings {
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
 
+
+  ModeVect getAvailableModes() override;
+
   // returns a list of difficulties that the game can be played in
   // in this game, there are 2 available difficulties
   DifficultyVect getAvailableDifficulties() override;
 
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
+
+  ActionVect getStartingActions();
+
  private:
   bool m_terminal;
   reward_t m_reward;
+  reward_t m_reward_p2;
   reward_t m_score;
+  reward_t m_score_p2;
   int m_lives;
+  int m_lives_p2;
 };
 
 }  // namespace ale

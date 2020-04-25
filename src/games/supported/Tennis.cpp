@@ -56,6 +56,7 @@ bool TennisSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t TennisSettings::getReward() const { return m_reward; }
+reward_t TennisSettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
 bool TennisSettings::isMinimal(const Action& a) const {
@@ -112,7 +113,10 @@ void TennisSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect TennisSettings::getAvailableModes() {
-  return {0, 2};
+  return {1, 3};
+}
+ModeVect TennisSettings::get2PlayerModes() {
+  return {2, 4};
 }
 
 // set the mode of the game
@@ -120,19 +124,18 @@ ModeVect TennisSettings::getAvailableModes() {
 void TennisSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0 || m == 2) {
+
+    game_mode_t target_m = m - 1;
+    
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x80);
     // press select until the correct mode is reached
-    while (mode != m) {
+    while (mode != target_m) {
       environment->pressSelect(2);
       mode = readRam(&system, 0x80);
     }
     //reset the environment to apply changes.
     environment->softReset();
-  } else {
-    throw std::runtime_error("This mode doesn't currently exist for this game");
-  }
 }
 
 DifficultyVect TennisSettings::getAvailableDifficulties() {

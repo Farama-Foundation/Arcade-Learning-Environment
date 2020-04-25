@@ -81,9 +81,11 @@ void VideoCheckersSettings::step(const System& system) {
 bool VideoCheckersSettings::isTerminal() const { return m_terminal; }
 
 reward_t VideoCheckersSettings::getReward() const { return m_reward; }
+reward_t VideoCheckersSettings::getRewardP2() const { return -m_reward; }
 
 bool VideoCheckersSettings::isMinimal(const Action& a) const {
   switch (a) {
+    //case PLAYER_A_NOOP:
     case PLAYER_A_FIRE:
     case PLAYER_A_UPRIGHT:
     case PLAYER_A_UPLEFT:
@@ -103,45 +105,38 @@ void VideoCheckersSettings::reset() {
 void VideoCheckersSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putBool(m_terminal);
+  ser.putBool(m_reverse_checkers);
 }
 
 void VideoCheckersSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_terminal = ser.getBool();
+  m_reverse_checkers = ser.getBool();
 }
 
 ModeVect VideoCheckersSettings::getAvailableModes() {
-  // https://atariage.com/manual_html_page.php?SoftwareID=1429
+  // https://atariage.com/manual_html_page.php?SoftwareID=1427
   // Index 0 to 8 is regular checkers in increasing difficulty
   // displayed onscreen and stored in memory as 1 to 9
   // 9 to 17 is reverse checkers in increasing difficulty
   // displayed onscreen as 11 to 19 and stored in memory as 17 to 25
-  return {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
+  return {1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 }
-
+ModeVect VideoCheckersSettings::get2PlayerModes() {
+  return {10};
+}
 // Set the game mode.
 // The given mode must be one returned by the previous function.
 void VideoCheckersSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  auto availableModes = getAvailableModes();
-  if (std::find(availableModes.begin(), availableModes.end(), m)
-      != availableModes.end()) {
-    m_reverse_checkers = m >= 9;
-    // apply offset to match corresponding value in memory
-    if (m_reverse_checkers) {
-      m += 8;
-    } else {
-      ++m;
-    }
 
-    while (readRam(&system, 0xF6) != m) { environment->pressSelect(1); }
+  m_reverse_checkers = m >= 11;
 
-    // reset the environment to apply changes.
-    environment->softReset();
-  } else {
-    throw std::runtime_error("This game mode is not supported.");
-  }
+  while (getDecimalScore(0xF6, &system) != m) { environment->pressSelect(1); }
+
+  // reset the environment to apply changes.
+  environment->softReset();
 }
 
 }  // namespace ale

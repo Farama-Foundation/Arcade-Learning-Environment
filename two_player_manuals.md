@@ -5,3 +5,4 @@ Two player manuals
 * [space_invaders](https://atariage.com/manual_html_page.php?SoftwareLabelID=460)
 * [pong](https://atariage.com/manual_html_page.php?SoftwareLabelID=587)
 * [space war](https://atariage.com/manual_html_page.php?SoftwareLabelID=470)
+* [video checkers](https://atariage.com/manual_html_page.php?SoftwareID=1427)

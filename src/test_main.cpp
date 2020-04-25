@@ -12,24 +12,24 @@ constexpr int steps_to_test = 2000;
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
-    // "backgammon",
-    // "blackjack",
-    // "boxing",
-    // "casino",
-    // "double_dunk",
-    // "entombed",
-    // "fishing_derby",
-    // "flag_capture",
-    // "ice_hockey",
-    // "lost_luggage",
-    // "mario_bros",
-    // "othello", //othello seems to be working, just isn't passing the test
-    // "pong",
-    // "space_invaders",
-    // "space_war",
+    "backgammon",
+    "blackjack",
+    "boxing",
+    "casino",
+    "double_dunk",
+    "entombed",
+    "fishing_derby",
+    "flag_capture",
+    "ice_hockey",
+    "lost_luggage",
+    "mario_bros",
+    "othello", //othello seems to be working, just isn't passing the test
+    "pong",
+    "space_invaders",
+    "space_war",
     "surround",
     "tennis",
-    "video_checkers",
+    "video_checkers", // this actually passes the tests, the test just doesn't play p1 well by default
     "wizard_of_wor",
   };
   std::string main_path = "roms/";//"/home/benblack/anaconda3/lib/python3.7/site-packages/ale_py/ROM/";
@@ -75,13 +75,20 @@ size_t play_sequence(ALEInterface & interface,int sequence_num){
   std::vector<unsigned char> output_rgb_buffer(192*160*3);
   save_frame(output_rgb_buffer);
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
+  int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
-    int action_p1 = sequence_num == 0 ? (j/4)%min_actionsp1.size() : (j/64)%min_actionsp1.size();
+    if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
+      action_p1 = rand()%min_actionsp1.size();
+    }
 
     interface.act(min_actionsp1[action_p1]);
 
     interface.getScreenRGB(output_rgb_buffer);
-    hashCode = hash_vec(output_rgb_buffer);
+    hashCode = hash_together(hashCode,hash_vec(output_rgb_buffer));
+
+    if(j % 43 == 0){
+      save_frame(output_rgb_buffer);
+    }
   }
   return hashCode;
 }
@@ -91,9 +98,13 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
   save_frame(output_rgb_buffer);
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
   ActionVect min_actionsp2 = interface.getMinimalActionSetP2();
+  int action_p2 = 0;
   for(int j = 0; j < steps_to_test; j++){
     int action_p1 = (j/32)%min_actionsp1.size();
-    int action_p2 = sequence_num == 0 ? (j/4)%min_actionsp2.size() : (j/64)%min_actionsp2.size();
+
+    if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
+      action_p2 = rand()%min_actionsp2.size();
+    }
 
     interface.act2P(min_actionsp1[action_p1], min_actionsp2[action_p2]);
 
@@ -147,11 +158,13 @@ int main(){
         cout << fname << "\n";
         exit(-1);
     }
-    else if(!test_single_player_controlability(fname)){
-      cout << binname << " environment not controllable in single player mode\n";
-    }
     else if(!test_two_player(fname)){
-      cout << binname << " environment not two player\n";
+      if(!test_single_player_controlability(fname)){
+        cout << binname << " environment not two player and not controllable in single player mode\n";
+      }
+      else{
+        cout << binname << " environment not two player but works in single player\n";
+      }
     }
     else if(!test_two_player_controlability(fname)){
       cout << binname << " environment not controllable in two player mode\n";

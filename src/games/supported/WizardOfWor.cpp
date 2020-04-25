@@ -43,6 +43,7 @@ RomSettings* WizardOfWorSettings::clone() const {
 void WizardOfWorSettings::step(const System& system) {
   // update the reward
   reward_t score = getDecimalScore(0x86, 0x88, &system);
+  reward_t scoreP2 = getDecimalScore(0x85, 0x87, &system);
   if (score >= 8000)
     score -= 8000; // MGB score does not go beyond 999
   score *= 100;
@@ -51,6 +52,7 @@ void WizardOfWorSettings::step(const System& system) {
 
   // update terminal status
   int newLives = readRam(&system, 0x8D) & 15;
+  int newLivesP2 = readRam(&system, 0x8C) & 15;
   int byte1 = readRam(&system, 0xF4);
 
   bool isWaiting = (readRam(&system, 0xD7) & 0x1) == 0;
@@ -60,6 +62,7 @@ void WizardOfWorSettings::step(const System& system) {
   // Wizard of Wor decreases the life total when we move into the play field; we only
   // change the life total when we actually are waiting
   m_lives = isWaiting ? newLives : m_lives;
+  m_lives_p2 = isWaiting ? newLivesP2 : m_lives_p2;
 }
 
 /* is end of game */
@@ -71,7 +74,7 @@ reward_t WizardOfWorSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool WizardOfWorSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
+  //  case PLAYER_A_NOOP:
     case PLAYER_A_FIRE:
     case PLAYER_A_UP:
     case PLAYER_A_RIGHT:
@@ -114,5 +117,32 @@ void WizardOfWorSettings::loadState(Deserializer& ser) {
 DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
   return {0, 1};
 }
+
+ModeVect WizardOfWorSettings::getAvailableModes()  {
+  return {0};
+}
+
+// Set the game mode.
+// The given mode must be one returned by the previous function.
+void WizardOfWorSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+  while (getDecimalScore(0x81, &system) != m) { environment->pressSelect(1); }
+
+  // reset the environment to apply changes.
+  environment->softReset();
+}
+ActionVect WizardOfWorSettings::getStartingActions() {
+  // Must press fire to start the game but there is quite a strong debounce
+  // in effect so need to wait for several seconds
+  // in order to begin.
+  ActionVect startingActions;
+  for (int i = 0; i < 10; ++i) {
+    startingActions.push_back(PLAYER_A_NOOP);
+  }
+  return startingActions;
+}
+
 
 }  // namespace ale

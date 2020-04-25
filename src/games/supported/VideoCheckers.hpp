@@ -29,10 +29,11 @@
 #define __VIDEO_CHECKERS_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
-class VideoCheckersSettings : public RomSettings {
+class VideoCheckersSettings : public RomSettings2P {
  public:
   VideoCheckersSettings();
 
@@ -41,6 +42,7 @@ class VideoCheckersSettings : public RomSettings {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const  override { return "video_checkers"; }
 
@@ -54,9 +56,8 @@ class VideoCheckersSettings : public RomSettings {
 
   void loadState(Deserializer& ser) override;
 
-  int lives() override { return isTerminal() ? 0 : 1; }
-
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   void setMode(game_mode_t, System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
