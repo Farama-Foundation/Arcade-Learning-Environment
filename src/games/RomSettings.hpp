@@ -94,9 +94,7 @@ class RomSettings {
   virtual bool isLegal(const Action& a) const;
 
   // Remaining lives.
-  virtual int lives() {
-    return isTerminal() ? 0 : 1;
-  }
+  virtual int lives();
 
   // Returns a restricted (minimal) set of actions. If not overriden, this is all actions.
   virtual ActionVect getMinimalActionSet();

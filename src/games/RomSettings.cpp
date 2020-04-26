@@ -28,6 +28,9 @@ RomSettings::RomSettings() {}
 bool RomSettings::isLegal(const Action& a) const {
   return true;
 }
+int RomSettings::lives() {
+  return isTerminal() ? 0 : 1;
+}
 
 ActionVect RomSettings::getMinimalActionSet() {
   ActionVect actions;

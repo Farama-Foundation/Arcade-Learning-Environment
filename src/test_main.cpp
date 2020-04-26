@@ -12,9 +12,9 @@ constexpr int steps_to_test = 2000;
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
-    "backgammon",
-    "blackjack",
-    "boxing",
+    // "backgammon",
+    // "blackjack",
+    // "boxing",
     "casino",
     "double_dunk",
     "entombed",

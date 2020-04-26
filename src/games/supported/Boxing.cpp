@@ -55,6 +55,7 @@ bool BoxingSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t BoxingSettings::getReward() const { return m_reward; }
+reward_t BoxingSettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
 bool BoxingSettings::isMinimal(const Action& a) const {
@@ -106,6 +107,23 @@ void BoxingSettings::loadState(Deserializer& ser) {
 
 DifficultyVect BoxingSettings::getAvailableDifficulties() {
   return {0, 1, 2, 3};
+}
+
+ModeVect BoxingSettings::getAvailableModes() {
+  return {1};
+}
+ModeVect BoxingSettings::get2PlayerModes() {
+  return {2};
+}
+
+void BoxingSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+  while (readRam(&system, 0x92) != m) { environment->pressSelect(1); }
+  // reset the environment to apply changes.
+  environment->softReset();
+
 }
 
 }  // namespace ale

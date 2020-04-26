@@ -29,11 +29,12 @@
 #define __BOXING_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Boxing settings */
-class BoxingSettings : public RomSettings {
+class BoxingSettings : public RomSettings2P {
  public:
   BoxingSettings();
 
@@ -45,6 +46,7 @@ class BoxingSettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "boxing"; }
@@ -65,6 +67,12 @@ class BoxingSettings : public RomSettings {
   void loadState(Deserializer& ser) override;
 
   int lives() override { return 0; }
+
+  ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
   // returns a list of difficulties that the game can be played in
   // in this game, there are 4 available difficulties

@@ -34,6 +34,9 @@ bool RomSettings2P::supportsTwoPlayers() const {
 bool RomSettings2P::isLegalP2(const Action& a)const {
   return true;
 }
+int RomSettings2P::livesP2() {
+  return lives();
+}
 bool RomSettings2P::isMinimalP2(const Action& a) const{
   return isMinimal((Action)(a - PLAYER_B_NOOP));
 }

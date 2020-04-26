@@ -60,9 +60,7 @@ class RomSettings2P : public RomSettings {
   virtual bool supportsTwoPlayers() const;
 
   // Remaining lives.
-  virtual int livesP2() {
-    return isTerminal() ? 0 : 1;
-  }
+  virtual int livesP2();
 
   // Returns a restricted (minimal) set of actions.
   // If not overriden, this is the player 2 version of all player 1 actions.
