@@ -27,10 +27,11 @@
 #define __ENTOMBED_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
-class EntombedSettings : public RomSettings {
+class EntombedSettings : public RomSettings2P {
  public:
   EntombedSettings();
 
@@ -39,10 +40,14 @@ class EntombedSettings : public RomSettings {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const override { return "entombed"; }
 
   RomSettings* clone() const override;
+
+  int lives() override;
+  int livesP2() override;
 
   bool isMinimal(const Action& a) const override;
 
@@ -56,10 +61,20 @@ class EntombedSettings : public RomSettings {
 
   ActionVect getStartingActions() override;
 
+  ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  void setMode(game_mode_t, System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
+
+
  private:
   bool m_terminal;
   reward_t m_reward;
   int m_score;
+  int lives_p1;
+  int lives_p2;
+  bool is_two_player;
 };
 
 }  // namespace ale

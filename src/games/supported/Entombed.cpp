@@ -36,19 +36,33 @@ RomSettings* EntombedSettings::clone() const {
 }
 
 void EntombedSettings::step(const System& system) {
-  // Score is stored as hexadecimal in RAM 0xE3:
-  int score = readRam(&system, 0xe3);
-  m_reward = score - m_score;
-  m_score = score;
   // Lives are stored as the bottom 2 bits of RAM 0xC7:
-  int lives = readRam(&system, 0xc7) & 0x03;
-  // Game terminates when the player runs out of lives.
-  m_terminal = lives == 0;
+  lives_p1 = readRam(&system, 0xc7) & 0x03;
+  // Livesp2 are stored as the bottom 2 bits of RAM 0xC7:
+  lives_p2 = readRam(&system, 0xc7) & 0x03;
+
+  if(is_two_player){
+    int score = lives_p1 - lives_p2;
+    m_reward = score - m_score;
+    m_score = score;
+  }
+  else{
+    // Score is stored as hexadecimal in RAM 0xE3:
+    int score = readRam(&system, 0xe3);
+    m_reward = score - m_score;
+    m_score = score;
+  }
+  // Game terminates when either player runs out of lives.
+  m_terminal = lives_p1 == 0 || (is_two_player && lives_p2 == 0);
 }
 
 bool EntombedSettings::isTerminal() const { return m_terminal; }
 
 reward_t EntombedSettings::getReward() const { return m_reward; }
+reward_t EntombedSettings::getRewardP2() const { return -m_reward; }
+
+int EntombedSettings::lives() { return lives_p1; }
+int EntombedSettings::livesP2() { return lives_p2; }
 
 bool EntombedSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -79,19 +93,27 @@ bool EntombedSettings::isMinimal(const Action& a) const {
 void EntombedSettings::reset() {
   m_reward = 0;
   m_score = 0;
+  lives_p1 = 0;
+  lives_p2 = 0;
   m_terminal = false;
 }
 
 void EntombedSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
+  ser.putInt(lives_p1);
+  ser.putInt(lives_p2);
   ser.putBool(m_terminal);
+  ser.putBool(is_two_player);
 }
 
 void EntombedSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
+  lives_p1 = ser.getInt();
+  lives_p2 = ser.getInt();
   m_terminal = ser.getBool();
+  is_two_player = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=165
@@ -106,6 +128,26 @@ DifficultyVect EntombedSettings::getAvailableDifficulties() {
 ActionVect EntombedSettings::getStartingActions() {
   return {PLAYER_A_FIRE, PLAYER_A_NOOP, PLAYER_A_NOOP, PLAYER_A_NOOP,
           PLAYER_A_NOOP, PLAYER_A_NOOP};
+}
+ModeVect EntombedSettings::getAvailableModes() {
+  return {1};
+}
+
+ModeVect EntombedSettings::get2PlayerModes() {
+  return {2};
+}
+
+void EntombedSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+  game_mode_t byte_value = m == 1 ? 1 : 0;
+  is_two_player = m == 2;
+
+  while (readRam(&system, 0xf4) != byte_value) { environment->pressSelect(1); }
+  // reset the environment to apply changes.
+  environment->softReset();
+
 }
 
 }  // namespace ale

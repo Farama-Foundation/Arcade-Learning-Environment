@@ -7,3 +7,4 @@ Two player manuals
 * [space war](https://atariage.com/manual_html_page.php?SoftwareLabelID=470)
 * [video checkers](https://atariage.com/manual_html_page.php?SoftwareID=1427)
 * [Boxing](https://atariage.com/manual_html_page.php?SoftwareLabelID=45)
+* [Entombed](https://atariage.com/manual_html_page.php?SoftwareLabelID=165)
