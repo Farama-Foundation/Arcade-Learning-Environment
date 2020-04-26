@@ -37,6 +37,7 @@
 #include "supported/Casino.hpp"
 #include "supported/Centipede.hpp"
 #include "supported/ChopperCommand.hpp"
+#include "supported/Combat.hpp"
 #include "supported/CrazyClimber.hpp"
 #include "supported/Crossbow.hpp"
 #include "supported/DarkChambers.hpp"
@@ -146,6 +147,7 @@ static const RomSettings* roms[] = {
     new CasinoSettings(),
     new CentipedeSettings(),
     new ChopperCommandSettings(),
+    new CombatSettings(),
     new CrazyClimberSettings(),
     new CrossbowSettings(),
     new DarkChambersSettings(),

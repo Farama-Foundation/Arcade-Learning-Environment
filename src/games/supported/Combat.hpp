@@ -1,5 +1,5 @@
 /* *****************************************************************************
- * The method lives() is based on Xitari's code, from Google Inc.
+ * The lines 70 and 77 are based on Xitari's code, from Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
@@ -25,8 +25,8 @@
  * *****************************************************************************
  */
 
-#ifndef __FISHINGDERBY_HPP__
-#define __FISHINGDERBY_HPP__
+#ifndef __COMBAT_HPP__
+#define __COMBAT_HPP__
 
 #include "../RomSettings.hpp"
 #include "../RomSettings2P.hpp"
@@ -34,9 +34,9 @@
 namespace ale {
 
 /* RL wrapper for Fishing Derby settings */
-class FishingDerbySettings : public RomSettings2P {
+class CombatSettings : public RomSettings2P {
  public:
-  FishingDerbySettings();
+  CombatSettings();
 
   // reset
   void reset() override;
@@ -49,7 +49,7 @@ class FishingDerbySettings : public RomSettings2P {
   reward_t getRewardP2() const override;
 
   // the rom-name
-  const char* rom() const override { return "fishing_derby"; }
+  const char* rom() const override { return "combat"; }
 
   // create a new instance of the rom
   RomSettings* clone() const override;
@@ -86,4 +86,4 @@ class FishingDerbySettings : public RomSettings2P {
 
 }  // namespace ale
 
-#endif  // __FISHINGDERBY_HPP__
+#endif  // __COMBAT_HPP__
