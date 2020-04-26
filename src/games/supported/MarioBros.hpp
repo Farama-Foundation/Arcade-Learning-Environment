@@ -40,6 +40,7 @@ class MarioBrosSettings : public RomSettings2P {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const override { return "mario_bros"; }
 

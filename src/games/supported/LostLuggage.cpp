@@ -121,12 +121,6 @@ DifficultyVect LostLuggageSettings::getAvailableDifficulties() {
 ModeVect LostLuggageSettings::getAvailableModes() {
   return {1, 4};
 }
-ModeVect LostLuggageSettings::get2PlayerModes() {
-  return {2, 5};
-}
-bool LostLuggageSettings::supportsTwoPlayers()const{
-  return false;//reward for two players is not suitable
-}
 
 void LostLuggageSettings::setMode(
     game_mode_t m, System& system,

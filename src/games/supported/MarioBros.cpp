@@ -40,13 +40,13 @@ void MarioBrosSettings::step(const System& system) {
 
   m_lives = readRam(&system, 0x87);
 
+  int score_p2 = getDecimalScore(0x8C, 0x8B, &system) * 100;
+  m_lives_p2 = readRam(&system, 0x88);
+
+  m_reward_p2 = score_p2 - m_score_p2;
+  m_score_p2 = score_p2;
+
   if(is_two_player){
-    int score_p2 = getDecimalScore(0x8C, 0x8B, &system) * 100;
-    m_lives_p2 = readRam(&system, 0x88);
-
-    m_reward_p2 = score_p2 - m_score_p2;
-    m_score_p2 = score_p2;
-
     m_terminal = m_lives == 0 && m_lives_p2 == 0;
   }
   else{
@@ -60,6 +60,7 @@ void MarioBrosSettings::step(const System& system) {
 bool MarioBrosSettings::isTerminal() const { return m_terminal; }
 
 reward_t MarioBrosSettings::getReward() const { return m_reward; }
+reward_t MarioBrosSettings::getRewardP2() const { return m_reward_p2; }
 
 bool MarioBrosSettings::isMinimal(const Action& a) const {
   switch (a) {

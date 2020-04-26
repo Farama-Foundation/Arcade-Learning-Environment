@@ -31,7 +31,7 @@ void IceHockeySettings::step(const System& system) {
   int my_score = std::max(getDecimalScore(0x8A, &system), 0);
   int oppt_score = std::max(getDecimalScore(0x8B, &system), 0);
   int score = my_score - oppt_score;
-  int reward = std::min(score - m_score, 1);
+  int reward = score - m_score;
   m_reward = reward;
   m_score = score;
 
@@ -47,6 +47,7 @@ bool IceHockeySettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t IceHockeySettings::getReward() const { return m_reward; }
+reward_t IceHockeySettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
 bool IceHockeySettings::isMinimal(const Action& a) const {

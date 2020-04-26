@@ -118,6 +118,7 @@ void BackgammonSettings::step(const System& system) {
 bool BackgammonSettings::isTerminal() const { return m_terminal; }
 
 reward_t BackgammonSettings::getReward() const { return m_reward; }
+reward_t BackgammonSettings::getRewardP2() const { return -m_reward; }
 
 bool BackgammonSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -157,19 +158,23 @@ ModeVect BackgammonSettings::getAvailableModes() {
   // https://atariage.com/manual_html_page.php?SoftwareID=842
   // We only support mode 3 which is single player, no acey deucey and no
   // doubling cube.
-  return {0};
+  return {3};
+}
+ModeVect BackgammonSettings::get2PlayerModes() {
+  // https://atariage.com/manual_html_page.php?SoftwareID=842
+  // We only support mode 4 which is two player, no acey deucey and no
+  // doubling cube.
+  return {4};
 }
 
 void BackgammonSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0) {
-    while (readRam(&system, 0xDC) != 3) { environment->pressSelect(1); }
-    // reset the environment to apply changes.
-    environment->softReset();
-  } else {
-    throw std::runtime_error("This game mode is not supported.");
-  }
+
+  while (readRam(&system, 0xDC) != m) { environment->pressSelect(1); }
+  // reset the environment to apply changes.
+  environment->softReset();
+
 }
 
 DifficultyVect BackgammonSettings::getAvailableDifficulties() {

@@ -99,9 +99,11 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
   ActionVect min_actionsp2 = interface.getMinimalActionSetP2();
   int action_p2 = 0;
+  int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
-    int action_p1 = (j/32)%min_actionsp1.size();
-
+    if(j % 32 == 0){
+       action_p1 = rand()%min_actionsp1.size();
+    }
     if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
       action_p2 = rand()%min_actionsp2.size();
     }

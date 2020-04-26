@@ -14,12 +14,11 @@
 #define __LOSTLUGGAGE_HPP__
 
 #include "../RomSettings.hpp"
-#include "../RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Lost Luggage */
-class LostLuggageSettings : public RomSettings2P {
+class LostLuggageSettings : public RomSettings {
  public:
   LostLuggageSettings();
 
@@ -60,8 +59,6 @@ class LostLuggageSettings : public RomSettings2P {
   int lives() override { return isTerminal() ? 0 : m_lives; }
 
   ModeVect getAvailableModes() override;
-  ModeVect get2PlayerModes() override;
-  bool supportsTwoPlayers() const override;
 
   void setMode(game_mode_t m, System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
