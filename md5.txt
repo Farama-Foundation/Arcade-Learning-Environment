@@ -1,4 +1,4 @@
-The following is a list of the md5 checksums for the various roms supported by ALE. 
+The following is a list of the md5 checksums for the various roms supported by ALE.
 
 35be55426c1fec32dfb503b4f0651572 air_raid.bin
 f1a0a23e6464d954e3a9579c4ccd01c8 alien.bin
@@ -17,6 +17,7 @@ f34f08e5eb96e500e851a80be3277a56 breakout.bin
 028024fb8e5e5f18ea586652f9799c96 carnival.bin
 91c2098e88a6b13f977af8c003e0bca5 centipede.bin
 c1cb228470a87beb5f36e90ac745da26 chopper_command.bin
+0ef64cdbecccb7049752a3de0b7ade14 combat.bin
 55ef7b65066428367844342ed59f956c crazy_climber.bin
 0f643c34e40e3f1daafd9c524d3ffe64 defender.bin
 f0e0addc07971561ab80d9abe1b8d333 demon_attack.bin
