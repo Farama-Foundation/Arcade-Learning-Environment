@@ -42,8 +42,6 @@ class SurroundSettings : public RomSettings {
   // reset
   void reset() override;
 
-  void modifyEnvironmentSettings(Settings& settings) override;
-
   // is end of game
   bool isTerminal() const override;
 
