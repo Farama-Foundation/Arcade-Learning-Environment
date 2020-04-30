@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -95,7 +95,7 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("autoslot", "false");
 
     // Expose setting for SwapPorts property. Required for Surround ROM.
-    setInternal("sp", "NO");
+    setInternal("sp", "");
 
     setDefaultSettings();
 }
@@ -113,7 +113,7 @@ void Settings::loadConfig(const char* config_file){
 
     ifstream in(config_file);
     if(!in || !in.is_open()) {
-        ale::Logger::Warning << "Warning: couldn't load settings file: " << config_file << std::endl; 
+        ale::Logger::Warning << "Warning: couldn't load settings file: " << config_file << std::endl;
         return;
     }
 
@@ -189,7 +189,7 @@ string Settings::loadCommandLine(int argc, char** argv)
       }
       string value = argv[i];
 
-      // Settings read from the commandline must not be saved to 
+      // Settings read from the commandline must not be saved to
       // the rc-file, unless they were previously set
       if(int idx = getInternalPos(key) != -1)
         setInternal(key, value, idx);   // don't set initialValue here
@@ -454,7 +454,7 @@ int Settings::getInt(const string& key, bool strict) const {
     int idx = -1;
     if((idx = getInternalPos(key)) != -1) {
         return (int) atoi(myInternalSettings[idx].value.c_str());
-    } else { 
+    } else {
         if((idx = getExternalPos(key)) != -1) {
             return (int) atoi(myExternalSettings[idx].value.c_str());
         } else {
@@ -475,7 +475,7 @@ float Settings::getFloat(const string& key, bool strict) const {
     int idx = -1;
     if((idx = getInternalPos(key)) != -1) {
         return (float) atof(myInternalSettings[idx].value.c_str());
-    } else { 
+    } else {
         if((idx = getExternalPos(key)) != -1) {
             return (float) atof(myExternalSettings[idx].value.c_str());
         } else {
@@ -537,7 +537,7 @@ const string& Settings::getString(const string& key, bool strict) const {
             exit(-1);
         } else {
             static std::string EmptyString("");
-            return EmptyString; 
+            return EmptyString;
         }
     }
 }
