@@ -29,11 +29,12 @@
 #define __WIZARDOFWOR_HPP__
 
 #include "../RomSettings.hpp"
+#include "../RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Wizard of Wor */
-class WizardOfWorSettings : public RomSettings {
+class WizardOfWorSettings : public RomSettings2P {
  public:
   WizardOfWorSettings();
 
@@ -45,6 +46,7 @@ class WizardOfWorSettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "wizard_of_wor"; }
@@ -68,6 +70,7 @@ class WizardOfWorSettings : public RomSettings {
 
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   // returns a list of difficulties that the game can be played in
   // in this game, there are 2 available difficulties
@@ -76,10 +79,10 @@ class WizardOfWorSettings : public RomSettings {
   void setMode(game_mode_t, System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
-  ActionVect getStartingActions();
 
  private:
   bool m_terminal;
+  bool is_two_player;
   reward_t m_reward;
   reward_t m_reward_p2;
   reward_t m_score;

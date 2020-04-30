@@ -43,12 +43,18 @@ RomSettings* WizardOfWorSettings::clone() const {
 void WizardOfWorSettings::step(const System& system) {
   // update the reward
   reward_t score = getDecimalScore(0x86, 0x88, &system);
-  reward_t scoreP2 = getDecimalScore(0x85, 0x87, &system);
   if (score >= 8000)
     score -= 8000; // MGB score does not go beyond 999
   score *= 100;
   m_reward = score - m_score;
   m_score = score;
+
+  reward_t scoreP2 = getDecimalScore(0x85, 0x87, &system);
+  if (scoreP2 >= 8000)
+    scoreP2 -= 8000; // MGB score does not go beyond 999
+  scoreP2 *= 100;
+  m_reward_p2 = scoreP2 - m_score_p2;
+  m_score_p2 = scoreP2;
 
   // update terminal status
   int newLives = readRam(&system, 0x8D) & 15;
@@ -57,7 +63,7 @@ void WizardOfWorSettings::step(const System& system) {
 
   bool isWaiting = (readRam(&system, 0xD7) & 0x1) == 0;
 
-  m_terminal = newLives == 0 && byte1 == 0xF8;
+  m_terminal = newLives == 0 && byte1 == 0xF8 && (newLivesP2 == 0 || !is_two_player);
 
   // Wizard of Wor decreases the life total when we move into the play field; we only
   // change the life total when we actually are waiting
@@ -70,6 +76,7 @@ bool WizardOfWorSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t WizardOfWorSettings::getReward() const { return m_reward; }
+reward_t WizardOfWorSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool WizardOfWorSettings::isMinimal(const Action& a) const {
@@ -93,25 +100,37 @@ bool WizardOfWorSettings::isMinimal(const Action& a) const {
 /* reset the state of the game */
 void WizardOfWorSettings::reset() {
   m_reward = 0;
+  m_reward_p2 = 0;
   m_score = 0;
+  m_score_p2 = 0;
   m_terminal = false;
   m_lives = 3;
+  m_lives_p2 = 3;
+  is_two_player = false;
 }
 
 /* saves the state of the rom settings */
 void WizardOfWorSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
+  ser.putInt(m_reward_p2);
   ser.putInt(m_score);
+  ser.putInt(m_score_p2);
   ser.putBool(m_terminal);
+  ser.putBool(is_two_player);
   ser.putInt(m_lives);
+  ser.putInt(m_lives_p2);
 }
 
 // loads the state of the rom settings
 void WizardOfWorSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
+  m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
+  m_score_p2 = ser.getInt();
   m_terminal = ser.getBool();
+  is_two_player = ser.getBool();
   m_lives = ser.getInt();
+  m_lives_p2 = ser.getInt();
 }
 
 DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
@@ -120,6 +139,9 @@ DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
 
 ModeVect WizardOfWorSettings::getAvailableModes()  {
   return {0};
+}
+ModeVect WizardOfWorSettings::get2PlayerModes()  {
+  return {1};
 }
 
 // Set the game mode.
@@ -130,18 +152,15 @@ void WizardOfWorSettings::setMode(
 
   while (getDecimalScore(0x81, &system) != m) { environment->pressSelect(1); }
 
+  if(m == 1){
+    is_two_player = true;
+  }
+  else{
+    is_two_player = false;
+  }
+
   // reset the environment to apply changes.
   environment->softReset();
-}
-ActionVect WizardOfWorSettings::getStartingActions() {
-  // Must press fire to start the game but there is quite a strong debounce
-  // in effect so need to wait for several seconds
-  // in order to begin.
-  ActionVect startingActions;
-  for (int i = 0; i < 10; ++i) {
-    startingActions.push_back(PLAYER_A_NOOP);
-  }
-  return startingActions;
 }
 
 
