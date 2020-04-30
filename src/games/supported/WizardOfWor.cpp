@@ -152,12 +152,7 @@ void WizardOfWorSettings::setMode(
 
   while (getDecimalScore(0x81, &system) != m) { environment->pressSelect(1); }
 
-  if(m == 1){
-    is_two_player = true;
-  }
-  else{
-    is_two_player = false;
-  }
+  is_two_player = (m == 1);
 
   // reset the environment to apply changes.
   environment->softReset();

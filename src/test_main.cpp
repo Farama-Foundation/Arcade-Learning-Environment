@@ -22,6 +22,7 @@ void init_two_player_fnames(){
     // "fishing_derby",
     // "flag_capture",
     // "ice_hockey",
+    "joust",
     // "lost_luggage",
     // "mario_bros",
     // "othello", //othello seems to be working, just isn't passing the test

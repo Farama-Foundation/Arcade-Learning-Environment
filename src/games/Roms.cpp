@@ -65,6 +65,7 @@
 #include "supported/IceHockey.hpp"
 #include "supported/JamesBond.hpp"
 #include "supported/JourneyEscape.hpp"
+#include "supported/Joust.hpp"
 #include "supported/Kaboom.hpp"
 #include "supported/Kangaroo.hpp"
 #include "supported/KeystoneKapers.hpp"
@@ -175,6 +176,7 @@ static const RomSettings* roms[] = {
     new IceHockeySettings(),
     new JamesBondSettings(),
     new JourneyEscapeSettings(),
+    new JoustSettings(),
     new KaboomSettings(),
     new KangarooSettings(),
     new KoolaidSettings(),

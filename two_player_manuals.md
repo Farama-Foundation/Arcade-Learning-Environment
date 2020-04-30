@@ -9,3 +9,4 @@ Two player manuals
 * [Boxing](https://atariage.com/manual_html_page.php?SoftwareLabelID=45)
 * [Entombed](https://atariage.com/manual_html_page.php?SoftwareLabelID=165)
 * [Combat](https://atariage.com/manual_html_page.php?SoftwareID=935)
+* [Joust](https://atariage.com/manual_html_page.php?SoftwareLabelID=253)
