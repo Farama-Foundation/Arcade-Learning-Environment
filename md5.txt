@@ -76,7 +76,6 @@ fc2233fc116faef0d3c31541717ca2db pacman.bin
 ef3a4f64b6494ba770862768caf04b86 private_eye.bin
 484b0076816a104875e00467d431c2d2 qbert.bin
 393948436d1f4cc3192410bb918f9724 riverraid.bin
-2bd00beefdb424fa39931a75e890695d road_runner.bin
 ce5cc62608be2cd3ed8abd844efb8919 road_runner.bin
 4f618c2429138e0280969193ed6c107e robotank.bin
 240bfbac5163af4df5ae713985386f92 seaquest.bin
