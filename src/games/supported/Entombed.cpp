@@ -38,28 +38,36 @@ RomSettings* EntombedSettings::clone() const {
 void EntombedSettings::step(const System& system) {
   // Lives are stored as the bottom 2 bits of RAM 0xC7:
   lives_p1 = readRam(&system, 0xc7) & 0x03;
-  // Livesp2 are stored as the bottom 2 bits of RAM 0xC7:
-  lives_p2 = readRam(&system, 0xc7) & 0x03;
+  // Livesp2 are stored as bits in the middle of RAM 0xC7:
+  lives_p2 = readRam(&system, 0xc7) & 0x30;
+
+  int depth_reached = readRam(&system, 0xe3);
 
   if(is_two_player){
-    int score = lives_p1 - lives_p2;
-    m_reward = score - m_score;
-    m_score = score;
+    if(is_cooperative){
+      int score = depth_reached;
+      m_reward = score - m_score;
+      m_score = score;
+    }
+    else{
+      int score = lives_p1 - lives_p2;
+      m_reward = score - m_score;
+      m_score = score;
+    }
+    m_terminal = lives_p1 == 0 || lives_p2 == 0;
   }
   else{
     // Score is stored as hexadecimal in RAM 0xE3:
-    int score = readRam(&system, 0xe3);
-    m_reward = score - m_score;
-    m_score = score;
+    m_reward = depth_reached - m_score;
+    m_score = depth_reached;
+    m_terminal = lives_p1 == 0;
   }
-  // Game terminates when either player runs out of lives.
-  m_terminal = lives_p1 == 0 || (is_two_player && lives_p2 == 0);
 }
 
 bool EntombedSettings::isTerminal() const { return m_terminal; }
 
 reward_t EntombedSettings::getReward() const { return m_reward; }
-reward_t EntombedSettings::getRewardP2() const { return -m_reward; }
+reward_t EntombedSettings::getRewardP2() const { return is_cooperative ? m_reward : -m_reward; }
 
 int EntombedSettings::lives() { return lives_p1; }
 int EntombedSettings::livesP2() { return lives_p2; }
@@ -105,6 +113,7 @@ void EntombedSettings::saveState(Serializer& ser) {
   ser.putInt(lives_p2);
   ser.putBool(m_terminal);
   ser.putBool(is_two_player);
+  ser.putBool(is_cooperative);
 }
 
 void EntombedSettings::loadState(Deserializer& ser) {
@@ -114,6 +123,7 @@ void EntombedSettings::loadState(Deserializer& ser) {
   lives_p2 = ser.getInt();
   m_terminal = ser.getBool();
   is_two_player = ser.getBool();
+  is_cooperative = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=165
@@ -134,15 +144,18 @@ ModeVect EntombedSettings::getAvailableModes() {
 }
 
 ModeVect EntombedSettings::get2PlayerModes() {
-  return {2};
+  //2 is competitive reward: you are trying to make the other player die before you
+  //3 is cooperative reward. You want to maximize the depth you both reach.
+  return {2,3};
 }
 
 void EntombedSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-  game_mode_t byte_value = m == 1 ? 1 : 0;
-  is_two_player = m == 2;
+  game_mode_t byte_value = (m == 1 ? 1 : 0);
+  is_two_player = (m == 2);
+  is_cooperative = (m == 3);
 
   while (readRam(&system, 0xf4) != byte_value) { environment->pressSelect(1); }
   // reset the environment to apply changes.

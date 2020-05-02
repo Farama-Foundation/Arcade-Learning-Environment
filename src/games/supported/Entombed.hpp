@@ -75,6 +75,7 @@ class EntombedSettings : public RomSettings2P {
   int lives_p1;
   int lives_p2;
   bool is_two_player;
+  bool is_cooperative;
 };
 
 }  // namespace ale
