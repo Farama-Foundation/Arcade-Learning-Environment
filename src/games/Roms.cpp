@@ -77,6 +77,7 @@
 #include "supported/LaserGates.hpp"
 #include "supported/LostLuggage.hpp"
 #include "supported/MarioBros.hpp"
+#include "supported/MazeCraze.hpp"
 #include "supported/MiniatureGolf.hpp"
 #include "supported/MontezumaRevenge.hpp"
 #include "supported/MrDo.hpp"
@@ -188,6 +189,7 @@ static const RomSettings* roms[] = {
     new LaserGatesSettings(),
     new LostLuggageSettings(),
     new MarioBrosSettings(),
+    new MazeCrazeSettings(),
     new MiniatureGolfSettings(),
     new MontezumaRevengeSettings(),
     new MrDoSettings(),
