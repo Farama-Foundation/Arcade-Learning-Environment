@@ -65,9 +65,10 @@ class FlagCaptureSettings : public RomSettings2P {
  private:
   bool m_terminal;
   reward_t m_reward;
+  reward_t m_reward_p2;
   int m_score;
-  int m_mode = 1;
-  bool is_two_player = true;
+  int m_score_p2;
+  bool is_two_player;
 };
 
 }  // namespace ale

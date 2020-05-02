@@ -82,10 +82,10 @@ void PongSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect PongSettings::getAvailableModes() {
-  return {0, 1};
+  return {1, 2};
 }
 ModeVect PongSettings::get2PlayerModes() {
-  return {2, 3};
+  return {3, 4};
 }
 
 // set the mode of the game
@@ -93,19 +93,14 @@ ModeVect PongSettings::get2PlayerModes() {
 void PongSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 4) {
-    // read the mode we are currently in
-    unsigned char mode = readRam(&system, 0x96);
-    // press select until the correct mode is reached
-    while (mode != m) {
-      environment->pressSelect(2);
-      mode = readRam(&system, 0x96);
-    }
-    //reset the environment to apply changes.
-    environment->softReset();
-  } else {
-    throw std::runtime_error("This mode doesn't currently exist for this game");
+  game_mode_t target = m - 1;
+  
+  // press select until the correct mode is reached
+  while (readRam(&system, 0x96) != target) {
+    environment->pressSelect(2);
   }
+  //reset the environment to apply changes.
+  environment->softReset();
 }
 
 // The left difficulty switch sets the width of the CPU opponent's bat.

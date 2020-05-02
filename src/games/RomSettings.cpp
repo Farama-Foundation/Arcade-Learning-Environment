@@ -29,7 +29,7 @@ bool RomSettings::isLegal(const Action& a) const {
   return true;
 }
 int RomSettings::lives() {
-  return isTerminal() ? 0 : 1;
+  return 0;
 }
 
 ActionVect RomSettings::getMinimalActionSet() {

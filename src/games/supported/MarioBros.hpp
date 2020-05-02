@@ -48,8 +48,8 @@ class MarioBrosSettings : public RomSettings2P {
 
   bool isMinimal(const Action& a) const override;
 
-  int lives() override { return isTerminal() ? 0 : m_lives; }
-  int livesP2() override { return isTerminal() ? 0 : m_lives_p2; }
+  int lives() override;
+  int livesP2() override;
 
   void step(const System& system) override;
 
@@ -73,7 +73,7 @@ class MarioBrosSettings : public RomSettings2P {
   int m_score_p2;
   int m_lives;
   int m_lives_p2;
-  bool is_two_player = false;
+  bool is_two_player;
 };
 
 }  // namespace ale

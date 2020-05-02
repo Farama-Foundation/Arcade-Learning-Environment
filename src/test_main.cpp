@@ -12,27 +12,24 @@ constexpr int steps_to_test = 2000;
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
-    // "backgammon",
-    // "blackjack",
-    // "boxing",
-    // "casino",
-    // "combat",
-    // "double_dunk",
-    // "entombed",
-    // "fishing_derby",
-    // "flag_capture",
-    // "ice_hockey",
+    "backgammon",
+    "boxing",
+    "combat",
+    "double_dunk",
+    "entombed",
+    "fishing_derby",
+    "flag_capture",
+    "ice_hockey",
     "joust",
-    // "lost_luggage",
-    // "mario_bros",
+    "mario_bros",
     "maze_craze",
-    // "othello", //othello seems to be working, just isn't passing the test
-    // "pong",
-    // "space_invaders",
-    // "space_war",
-    // "surround",
-    // "tennis",
-    // "video_checkers", // this actually passes the tests, the test just doesn't play p1 well by default
+    "othello", //othello seems to be working, just isn't passing the test
+    "pong",
+    "space_invaders",
+    "space_war",
+    "surround",
+    "tennis",
+    "video_checkers", // this actually passes the tests, the test just doesn't play p1 well by default
     "wizard_of_wor",
   };
   std::string main_path = "roms/";//"/home/benblack/anaconda3/lib/python3.7/site-packages/ale_py/ROM/";

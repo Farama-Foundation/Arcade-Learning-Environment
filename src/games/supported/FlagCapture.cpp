@@ -36,22 +36,29 @@ RomSettings* FlagCaptureSettings::clone() const {
 }
 
 void FlagCaptureSettings::step(const System& system) {
-  int score = getDecimalScore(0xea, &system);
   if (is_two_player){
-    score -= getDecimalScore(0xeb, &system);
+    int score_p1 = getDecimalScore(0xab, &system);
+    int score_p2 = getDecimalScore(0xeb, &system);
+    m_reward = score_p1 - m_score;
+    m_reward_p2 = score_p2 - m_score_p2;
+    m_score = score_p1;
+    m_score_p2 = score_p2;
+    //game terminates when score maxes out
+    m_terminal = m_score == 99 || m_score_p2 == 99;
   }
   else{
+    int score = getDecimalScore(0xea, &system);
+    m_reward = score - m_score;
+    m_score = score;
     // Game terminates when timer stored at RAM 0xeb expires after 75 seconds.
-    m_terminal = getDecimalScore(0xeb, &system) == 0;
+    m_terminal = getDecimalScore(0xeb, &system) == 0 || score == 99;
   }
-  m_reward = score - m_score;
-  m_score = score;
 }
 
 bool FlagCaptureSettings::isTerminal() const { return m_terminal; }
 
 reward_t FlagCaptureSettings::getReward() const { return m_reward; }
-reward_t FlagCaptureSettings::getRewardP2() const { return -m_reward; }
+reward_t FlagCaptureSettings::getRewardP2() const { return m_reward_p2; }
 
 bool FlagCaptureSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -65,14 +72,6 @@ bool FlagCaptureSettings::isMinimal(const Action& a) const {
     case PLAYER_A_UPLEFT:
     case PLAYER_A_DOWNRIGHT:
     case PLAYER_A_DOWNLEFT:
-    // case PLAYER_A_UPFIRE:
-    // case PLAYER_A_RIGHTFIRE:
-    // case PLAYER_A_LEFTFIRE:
-    // case PLAYER_A_DOWNFIRE:
-    // case PLAYER_A_UPRIGHTFIRE:
-    // case PLAYER_A_UPLEFTFIRE:
-    // case PLAYER_A_DOWNRIGHTFIRE:
-    // case PLAYER_A_DOWNLEFTFIRE:
       return true;
     default:
       return false;
@@ -81,23 +80,26 @@ bool FlagCaptureSettings::isMinimal(const Action& a) const {
 
 void FlagCaptureSettings::reset() {
   m_reward = 0;
+  m_reward_p2 = 0;
   m_score = 0;
-  is_two_player = m_mode <= 4;
+  m_score_p2 = 0;
   m_terminal = false;
 }
 
 void FlagCaptureSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
-  ser.putInt(m_mode);
+  ser.putInt(m_reward_p2);
   ser.putInt(m_score);
+  ser.putInt(m_score_p2);
   ser.putBool(m_terminal);
   ser.putBool(is_two_player);
 }
 
 void FlagCaptureSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
-  m_mode = ser.getInt();
+  m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
+  m_score_p2 = ser.getInt();
   m_terminal = ser.getBool();
   is_two_player = ser.getBool();
 }
@@ -127,8 +129,7 @@ void FlagCaptureSettings::setMode(
       mode = readRam(&system, 0xd6);
     }
 
-    m_mode = mode;
-    is_two_player = m_mode <= 4;
+    is_two_player = m <= 4;
 
     // Reset the environment to apply changes.
     environment->softReset();

@@ -35,11 +35,16 @@ void JoustSettings::step(const System& system) {
   m_reward_p2 = score_p2 - m_score_p2;
   m_score_p2 = score_p2;
 
-  lives_p1 = (int)(char)(readRam(&system,0x81) + 1);
-  lives_p2 = (int)(char)(readRam(&system,0x82) + 1);
+  lives_p1 = (int)(char)(readRam(&system,0x81));
+  lives_p2 = (int)(char)(readRam(&system,0x82));
 
-  m_terminal = score >= 990000 || (score_p2 >= 990000 && is_two_player)
-              || (lives_p1 == 0 && (lives_p2 == 0 || !is_two_player));
+  if(is_two_player){
+    m_terminal = score >= 990000 || score_p2 >= 990000
+                || (lives_p1 == -1 && lives_p2 == -1);
+  }
+  else {
+    m_terminal = score >= 990000 || lives_p1 == -1;
+  }
 }
 
 /* is end of game */
@@ -95,10 +100,10 @@ void JoustSettings::reset() {
 void JoustSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_reward_p2);
-  ser.putInt(lives_p1);
-  ser.putInt(lives_p2);
   ser.putInt(m_score);
   ser.putInt(m_score_p2);
+  ser.putInt(lives_p1);
+  ser.putInt(lives_p2);
   ser.putBool(m_terminal);
   ser.putBool(is_two_player);
 }

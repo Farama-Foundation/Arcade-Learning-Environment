@@ -153,9 +153,10 @@ void EntombedSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
-  game_mode_t byte_value = (m == 1 ? 1 : 0);
-  is_two_player = (m == 2);
+  is_two_player = (m > 1);
   is_cooperative = (m == 3);
+
+  game_mode_t byte_value = (m == 1 ? 1 : 0);
 
   while (readRam(&system, 0xf4) != byte_value) { environment->pressSelect(1); }
   // reset the environment to apply changes.

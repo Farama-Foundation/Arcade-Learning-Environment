@@ -61,24 +61,24 @@ void SpaceInvadersSettings::step(const System& system) {
   }
   m_score = score;
 
-  m_lives = readRam(&system, 0xC9);
+  m_lives = readRam(&system, 0xC9) - 1;
 
   // update terminal status
   // If bit 0x80 is on, then game is over
   int some_byte = readRam(&system, 0x98);
-  m_terminal = (some_byte & 0x80) || m_lives == 0;
+  m_terminal = (some_byte & 0x80) || m_lives == -1;
 }
 
 /* is end of game */
 bool SpaceInvadersSettings::isTerminal() const { return m_terminal; };
 
 int SpaceInvadersSettings::lives() {
- return isTerminal() ? 0 : m_lives;
+ return m_lives;
 }
 int SpaceInvadersSettings::livesP2() {
   //wierd but correct, both players share the same number of lives even though
-  //their rewards are different, and the game is competitive
-   return isTerminal() ? 0 : m_lives;
+  //their rewards are different
+   return m_lives;
 }
 
 /* get the most recently observed reward */
@@ -107,7 +107,7 @@ void SpaceInvadersSettings::reset() {
   m_score = 0;
   m_score_p2 = 0;
   m_terminal = false;
-  m_lives = 3;
+  m_lives = 2;
 }
 
 /* saves the state of the rom settings */
@@ -132,16 +132,18 @@ void SpaceInvadersSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect SpaceInvadersSettings::getAvailableModes() {
+  // all modes from 1 - 16
   ModeVect modes(16);
   for (unsigned int i = 0; i < 16; i++) {
-    modes[i] = i;
+    modes[i] = i+1;
   }
   return modes;
 }
 ModeVect SpaceInvadersSettings::get2PlayerModes() {
+  // all the modes from 33 - 64
   ModeVect modes(32);
   for (unsigned int i = 32; i < 64; i++) {
-    modes[i-32] = i;
+    modes[i-32] = i+1;
   }
   return modes;
 }
@@ -151,19 +153,15 @@ ModeVect SpaceInvadersSettings::get2PlayerModes() {
 void SpaceInvadersSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 64) {
-    // read the mode we are currently in
-    unsigned char mode = readRam(&system, 0xDC);
-    // press select until the correct mode is reached
-    while (mode != m) {
-      environment->pressSelect(2);
-      mode = readRam(&system, 0xDC);
-    }
-    //reset the environment to apply changes.
-    environment->softReset();
-  } else {
-    throw std::runtime_error("This mode doesn't currently exist for this game");
+
+  game_mode_t target = m - 1;
+  // read the mode we are currently in
+  // press select until the correct mode is reached
+  while (readRam(&system, 0xDC) != target) {
+    environment->pressSelect(2);
   }
+  //reset the environment to apply changes.
+  environment->softReset();
 }
 
 DifficultyVect SpaceInvadersSettings::getAvailableDifficulties() {

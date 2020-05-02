@@ -58,7 +58,7 @@ class BackgammonSettings : public RomSettings2P {
 
   void loadState(Deserializer& ser) override;
 
-  int lives() override { return isTerminal() ? 0 : 1; }
+  int lives() override { return 0; }
 
   ModeVect getAvailableModes() override;
   ModeVect get2PlayerModes() override;

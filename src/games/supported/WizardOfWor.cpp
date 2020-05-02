@@ -57,18 +57,19 @@ void WizardOfWorSettings::step(const System& system) {
   m_score_p2 = scoreP2;
 
   // update terminal status
-  int newLives = readRam(&system, 0x8D) & 15;
-  int newLivesP2 = readRam(&system, 0x8C) & 15;
+  int newLives = (readRam(&system, 0x8D) & 15) - 1;
+  int newLivesP2 = (readRam(&system, 0x8C) & 15) - 1;
   int byte1 = readRam(&system, 0xF4);
 
   bool isWaiting = (readRam(&system, 0xD7) & 0x1) == 0;
+  bool isWaitingP2 = (readRam(&system, 0xD6) & 0x1) == 0;
 
-  m_terminal = newLives == 0 && byte1 == 0xF8 && (newLivesP2 == 0 || !is_two_player);
+  m_terminal = newLives == -1 && byte1 == 0xF8 && (newLivesP2 == -1 || !is_two_player);
 
   // Wizard of Wor decreases the life total when we move into the play field; we only
   // change the life total when we actually are waiting
   m_lives = isWaiting ? newLives : m_lives;
-  m_lives_p2 = isWaiting ? newLivesP2 : m_lives_p2;
+  m_lives_p2 = isWaitingP2 ? newLivesP2 : m_lives_p2;
 }
 
 /* is end of game */
@@ -77,6 +78,9 @@ bool WizardOfWorSettings::isTerminal() const { return m_terminal; };
 /* get the most recently observed reward */
 reward_t WizardOfWorSettings::getReward() const { return m_reward; }
 reward_t WizardOfWorSettings::getRewardP2() const { return m_reward_p2; }
+
+int lives() { return m_lives; }
+int livesP2() { return m_lives_p2; }
 
 /* is an action part of the minimal set? */
 bool WizardOfWorSettings::isMinimal(const Action& a) const {
@@ -104,9 +108,8 @@ void WizardOfWorSettings::reset() {
   m_score = 0;
   m_score_p2 = 0;
   m_terminal = false;
-  m_lives = 3;
-  m_lives_p2 = 3;
-  is_two_player = false;
+  m_lives = 2;
+  m_lives_p2 = 2;
 }
 
 /* saves the state of the rom settings */

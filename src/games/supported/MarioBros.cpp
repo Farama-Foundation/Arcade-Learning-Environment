@@ -38,19 +38,19 @@ RomSettings* MarioBrosSettings::clone() const {
 void MarioBrosSettings::step(const System& system) {
   int score = getDecimalScore(0x8A, 0x89, &system) * 100;
 
-  m_lives = readRam(&system, 0x87);
+  m_lives = readRam(&system, 0x87) - 1;
 
   int score_p2 = getDecimalScore(0x8C, 0x8B, &system) * 100;
-  m_lives_p2 = readRam(&system, 0x88);
+  m_lives_p2 = readRam(&system, 0x88) - 1;
 
   m_reward_p2 = score_p2 - m_score_p2;
   m_score_p2 = score_p2;
 
   if(is_two_player){
-    m_terminal = m_lives == 0 && m_lives_p2 == 0;
+    m_terminal = m_lives == -1 && m_lives_p2 == -1;
   }
   else{
-    m_terminal = m_lives == 0;
+    m_terminal = m_lives == -1;
   }
   m_reward = score - m_score;
   m_score = score;
@@ -61,6 +61,9 @@ bool MarioBrosSettings::isTerminal() const { return m_terminal; }
 
 reward_t MarioBrosSettings::getReward() const { return m_reward; }
 reward_t MarioBrosSettings::getRewardP2() const { return m_reward_p2; }
+
+int MarioBrosSettings::lives() override { return m_lives; }
+int MarioBrosSettings::livesP2() override { return m_lives_p2; }
 
 bool MarioBrosSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -93,8 +96,8 @@ void MarioBrosSettings::reset() {
   m_reward_p2 = 0;
   m_score = 0;
   m_score_p2 = 0;
-  m_lives = 0;
-  m_lives_p2 = 0;
+  m_lives = 5;
+  m_lives_p2 = 5;
   m_terminal = false;
 }
 
@@ -125,10 +128,10 @@ void MarioBrosSettings::loadState(Deserializer& ser) {
 // determines whether there are fireballs present and how many lives the player
 // gets to start (3 or 5).
 ModeVect MarioBrosSettings::getAvailableModes() {
-  return {0, 2, 4, 6};
+  return {1, 3, 5, 7};
 }
 ModeVect MarioBrosSettings::get2PlayerModes() {
-  return {1, 3, 5, 7};
+  return {2, 4, 6, 8};
 }
 
 void MarioBrosSettings::setMode(
@@ -137,15 +140,12 @@ void MarioBrosSettings::setMode(
 
   is_two_player = !isModeSupported(m);
 
-  // Read the mode we are currently in.
-  int mode = readRam(&system, 0x80);
   // Skip the odd numbered modes are these are for two players.
-  int desired_mode = m;
+  int desired_mode = m - 1;
 
   // Press select until the correct mode is reached.
-  while (mode != desired_mode) {
+  while (readRam(&system, 0x80) != desired_mode) {
     environment->pressSelect(5);
-    mode = readRam(&system, 0x80);
   }
 
   // Reset the environment to apply changes.

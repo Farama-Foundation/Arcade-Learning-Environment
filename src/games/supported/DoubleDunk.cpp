@@ -109,7 +109,12 @@ ModeVect DoubleDunkSettings::getAvailableModes() {
   return modes;
 }
 ModeVect DoubleDunkSettings::get2PlayerModes() {
-  return oppositeModes(32);
+  //the same modes as player 1, but + 16
+  ModeVect modes(16);
+  for (unsigned int i = 16; i < 32; i++) {
+    modes[i-16] = i;
+  }
+  return modes;
 }
 
 void DoubleDunkSettings::goDown(

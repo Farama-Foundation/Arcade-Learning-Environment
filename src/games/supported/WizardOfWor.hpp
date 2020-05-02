@@ -66,7 +66,8 @@ class WizardOfWorSettings : public RomSettings2P {
   // loads the state of the rom settings
   void loadState(Deserializer& ser) override;
 
-  int lives() override { return isTerminal() ? 0 : m_lives; }
+  int lives() override;
+  int livesP2() override;
 
 
   ModeVect getAvailableModes() override;
