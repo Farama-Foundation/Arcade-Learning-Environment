@@ -79,8 +79,8 @@ bool WizardOfWorSettings::isTerminal() const { return m_terminal; };
 reward_t WizardOfWorSettings::getReward() const { return m_reward; }
 reward_t WizardOfWorSettings::getRewardP2() const { return m_reward_p2; }
 
-int WizardOfWorSettings::lives() { return m_lives; }
-int WizardOfWorSettings::livesP2() { return m_lives_p2; }
+int lives() { return m_lives; }
+int livesP2() { return m_lives_p2; }
 
 /* is an action part of the minimal set? */
 bool WizardOfWorSettings::isMinimal(const Action& a) const {
