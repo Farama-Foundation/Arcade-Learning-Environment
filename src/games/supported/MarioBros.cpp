@@ -62,8 +62,8 @@ bool MarioBrosSettings::isTerminal() const { return m_terminal; }
 reward_t MarioBrosSettings::getReward() const { return m_reward; }
 reward_t MarioBrosSettings::getRewardP2() const { return m_reward_p2; }
 
-int MarioBrosSettings::lives() override { return m_lives; }
-int MarioBrosSettings::livesP2() override { return m_lives_p2; }
+int MarioBrosSettings::lives() { return m_lives; }
+int MarioBrosSettings::livesP2() { return m_lives_p2; }
 
 bool MarioBrosSettings::isMinimal(const Action& a) const {
   switch (a) {
