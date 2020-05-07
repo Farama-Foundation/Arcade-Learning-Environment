@@ -36,7 +36,7 @@ template <typename T> void write(std::ofstream& stream, const T& t) {
 
 class SoundExporter {
  public:
-  static const int SamplesPerFrame = 512;
+  static constexpr int SamplesPerFrame = 512;
 
   using SampleType = uInt8;
 

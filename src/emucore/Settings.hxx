@@ -63,22 +63,10 @@ class Settings
     virtual void saveConfig();
 
     /**
-      This method should be called to load the arguments from the commandline.
-
-      @return Name of the ROM to load, otherwise empty string
-    */
-    std::string loadCommandLine(int argc, char** argv);
-
-    /**
       This method should be called *after* settings have been read,
       to validate (and change, if necessary) any improper settings.
     */
     void validate();
-
-    /**
-      This method should be called to display usage information.
-    */
-    void usage();
 
     /**
       Get the value assigned to the specified key.  If the key does
