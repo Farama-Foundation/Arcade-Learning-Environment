@@ -66,7 +66,7 @@ class StellaEnvironment {
    *  number plus the frame skip.
    */
   reward_t act(Action player_a_action, Action player_b_action);
-  std::pair<reward_t,reward_t> act2P(Action player_a_action, Action player_b_action);
+  std::vector<reward_t> act(std::vector<Action> actions);
 
   /** This functions emulates a push on the reset button of the console */
   void softReset();
@@ -115,15 +115,16 @@ class StellaEnvironment {
 
  private:
   /** This applies an action exactly one time step. Helper function to act(). */
-  reward_t oneStepAct(Action player_a_action, Action player_b_action);
+  void oneStepAct(std::vector<Action> actions,std::vector<reward_t> & rewards);
 
   /** Actually emulates the emulator for a given number of steps. */
   void emulate(Action player_a_action, Action player_b_action,
                size_t num_steps = 1);
+ void emulate(std::vector<Action> actions, size_t num_steps = 1);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
    *   from the minimal set of actions. */
-  void noopIllegalActions(Action& player_a_action, Action& player_b_action);
+  void noopIllegalAction(Action& action);
 
   /** Processes the current emulator screen and saves it in m_screen */
   void processScreen();
@@ -153,7 +154,7 @@ class StellaEnvironment {
   std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
 
   // The last actions taken by our players
-  Action m_player_a_action, m_player_b_action;
+  std::vector<Action> m_actions;
 };
 
 }  // namespace ale

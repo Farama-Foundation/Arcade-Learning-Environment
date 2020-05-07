@@ -48,6 +48,9 @@ class System;
 
 namespace ale {
 
+using RewardVec = std::vector<reward_t>;
+using ModePlayerVect = std::vector<ModeVect>;
+
 // rom support interface
 class RomSettings {
  public:
@@ -68,9 +71,6 @@ class RomSettings {
 
   // get the most recently observed reward
   virtual reward_t getReward() const = 0;
-
-  //default false
-  virtual bool supportsTwoPlayers() const;
 
   // the rom-name
   virtual const char* rom() const = 0;
@@ -122,12 +122,18 @@ class RomSettings {
 
   //two player methods. all fail when on a single player game
   virtual reward_t getRewardP2() const;
-  virtual bool isMinimalP2(const Action& a) const;
-  virtual bool isLegalP2(const Action& a) const;
   virtual int livesP2();
-  virtual ActionVect getMinimalActionSetP2();
-  virtual ActionVect getAllActionsP2();
   virtual ModeVect get2PlayerModes();
+
+  //four player methods. all fail when on a
+  virtual reward_t getRewardP3() const;
+  virtual reward_t getRewardP4() const;
+  virtual int livesP3();
+  virtual int livesP4();
+  virtual ModeVect get3PlayerModes();
+  virtual ModeVect get4PlayerModes();
+
+  //multiplayer methods
  protected:
   // Helper function that checks if our settings support this given mode.
   bool isModeSupported(game_mode_t m);

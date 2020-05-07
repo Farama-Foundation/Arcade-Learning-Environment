@@ -271,20 +271,47 @@ void ALEInterface::reset_game() { environment->reset(); }
 // Indicates if the game has ended.
 bool ALEInterface::game_over() const { return environment->isTerminal(); }
 
-bool ALEInterface::supportsTwoPlayers(){
+bool ALEInterface::supportsNumPlayers(int num_players){
   if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
   } else {
-    return romSettings->supportsTwoPlayers();
+    if(num_players == 1){
+      return romSettings->getAvailableModes().size() != 0;
+    }
+    else if(num_players == 2){
+      return romSettings->get2PlayerModes().size() != 0;
+    }
+    else if(num_players == 4){
+      return romSettings->get4PlayerModes().size() != 0;
+    }
+    else{
+      return false;
+    }
   }
 }
 
 // The remaining number of lives.
-int ALEInterface::lives() {
+std::vector<int> ALEInterface::lives() {
   if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
   } else {
-    return romSettings->lives();
+    int num_players = this->numPlayersActive();
+    if(num_players == 1){
+      return {romSettings->lives()};
+    }
+    else if(num_players == 2){
+      return {romSettings->lives(),romSettings->livesP2()};
+    }
+    else if(num_players == 4){
+      return {romSettings->lives(),
+        romSettings->livesP2(),
+        romSettings->livesP3(),
+        romSettings->livesP4()
+      };
+    }
+    else{
+      assert(false);
+    }
   }
 }
 
@@ -293,8 +320,8 @@ int ALEInterface::lives() {
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
 reward_t ALEInterface::act(Action action) {
-  if(inTwoPlayerMode()){
-    throw std::runtime_error("Single player action when in two player mode");
+  if(numPlayersActive() != 1){
+    throw std::runtime_error("Single player action when in multi player mode");
   }
   reward_t reward = environment->act(action, PLAYER_B_NOOP);
   if (theOSystem->p_display_screen != NULL) {
@@ -307,25 +334,15 @@ reward_t ALEInterface::act(Action action) {
   }
   return reward;
 }
-std::pair<reward_t,reward_t> ALEInterface::act2P(Action action_a, Action action_b) {
+std::vector<reward_t> ALEInterface::act(std::vector<Action> action){
   if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
   }
-  if(!inTwoPlayerMode()){
-    throw std::runtime_error("Two player action when in single player mode");
+  if(action.size() != numPlayersActive()){
+    throw std::runtime_error("number of players active in the mode is not equal to the action size given to act");
   }
-  std::pair<reward_t,reward_t> reward = environment->act2P(action_a, action_b);
-  if (theOSystem->p_display_screen != NULL) {
-    theOSystem->p_display_screen->display_screen();
-    while (theOSystem->p_display_screen->manual_control_engaged()) {
-      Action user_action = theOSystem->p_display_screen->getUserAction();
-      std::pair<reward_t,reward_t> frame_rew = environment->act2P(user_action, action_b);
-      reward.first += frame_rew.first;
-      reward.second += frame_rew.second;
-      theOSystem->p_display_screen->display_screen();
-    }
-  }
-  return reward;
+
+  return environment->act(action);
 }
 
 
@@ -337,6 +354,9 @@ ModeVect ALEInterface::getAvailableModes() {
 ModeVect ALEInterface::get2PlayerModes() {
   return romSettings->get2PlayerModes();
 }
+ModeVect ALEInterface::get4PlayerModes() {
+  return romSettings->get4PlayerModes();
+}
 
 // Sets the mode of the game.
 // The mode must be an available mode.
@@ -344,24 +364,35 @@ ModeVect ALEInterface::get2PlayerModes() {
 void ALEInterface::setMode(game_mode_t m) {
   //We first need to make sure m is an available mode
   ModeVect available = romSettings->getAvailableModes();
-  if(romSettings->supportsTwoPlayers()){
-    ModeVect available2P = romSettings->get2PlayerModes();
-    available.insert(available.end(),available2P.begin(),available2P.end());
-  }
-  if (find(available.begin(), available.end(), m) != available.end()) {
+  ModeVect available2P = romSettings->get2PlayerModes();
+  ModeVect available4P = romSettings->get4PlayerModes();
+  available.insert(available.end(),available2P.begin(),available2P.end());
+  available.insert(available.end(),available4P.begin(),available4P.end());
+  if (std::find(available.begin(), available.end(), m) != available.end()) {
     environment->setMode(m);
   } else {
     throw std::runtime_error("Invalid game mode requested");
   }
 }
 
-bool ALEInterface::inTwoPlayerMode(){
-  if(!romSettings->supportsTwoPlayers()){
-    return false;
-  }
-  ModeVect modes = romSettings->get2PlayerModes();
+bool in_modes(const ModeVect & modes,game_mode_t m){
+  return std::find(modes.begin(), modes.end(), m) != modes.end();
+}
+
+int ALEInterface::numPlayersActive(){
   game_mode_t m = this->getMode();
-  return find(modes.begin(), modes.end(), m) != modes.end();
+  if(in_modes(romSettings->get4PlayerModes(),m)){
+    return 4;
+  }
+  else if (in_modes(romSettings->get2PlayerModes(),m)) {
+    return 2;
+  }
+  else if(in_modes(romSettings->getAvailableModes(),m)){
+    return 1;
+  }
+  else{
+    assert(false && "bad mode");
+  }
 }
 
 //Returns the vector of difficulties available for the current game.
@@ -375,7 +406,7 @@ DifficultyVect ALEInterface::getAvailableDifficulties() {
 // This should be called only after the rom is loaded.
 void ALEInterface::setDifficulty(difficulty_t m) {
   DifficultyVect available = romSettings->getAvailableDifficulties();
-  if (find(available.begin(), available.end(), m) != available.end()) {
+  if (std::find(available.begin(), available.end(), m) != available.end()) {
     environment->setDifficulty(m);
   } else {
     throw std::runtime_error("Invalid difficulty requested");
@@ -391,13 +422,6 @@ ActionVect ALEInterface::getLegalActionSet() {
     return romSettings->getAllActions();
   }
 }
-ActionVect ALEInterface::getLegalActionsP2() {
-  if (romSettings == nullptr) {
-    throw std::runtime_error("ROM not set");
-  } else {
-    return romSettings->getAllActionsP2();
-  }
-}
 
 // Returns the vector of the minimal set of actions needed to play
 // the game.
@@ -406,13 +430,6 @@ ActionVect ALEInterface::getMinimalActionSet() {
     throw std::runtime_error("ROM not set");
   } else {
     return romSettings->getMinimalActionSet();
-  }
-}
-ActionVect ALEInterface::getMinimalActionSetP2() {
-  if (romSettings == nullptr) {
-    throw std::runtime_error("ROM not set");
-  } else {
-    return romSettings->getMinimalActionSetP2();
   }
 }
 

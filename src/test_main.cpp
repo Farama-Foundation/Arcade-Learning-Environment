@@ -97,7 +97,6 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
   std::vector<unsigned char> output_rgb_buffer(192*160*3);
   save_frame(output_rgb_buffer);
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
-  ActionVect min_actionsp2 = interface.getMinimalActionSetP2();
   int action_p2 = 0;
   int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
@@ -108,7 +107,36 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
       action_p2 = rand()%min_actionsp2.size();
     }
 
-    interface.act2P(min_actionsp1[action_p1], min_actionsp2[action_p2]);
+    interface.act({min_actionsp1[action_p1], min_actionsp1[action_p2]});
+
+    interface.getScreenRGB(output_rgb_buffer);
+    hashCode = hash_together(hashCode,hash_vec(output_rgb_buffer));
+    if(interface.game_over()){
+      std::cout << "game ended early\n";
+      break;
+    }
+    if(j % 213 == 0){
+      save_frame(output_rgb_buffer);
+    }
+  }
+  return hashCode;
+}
+size_t play_sequence_p4(ALEInterface & interface,int sequence_num){
+  size_t hashCode = 0;
+  std::vector<unsigned char> output_rgb_buffer(192*160*3);
+  save_frame(output_rgb_buffer);
+  ActionVect min_actionsp1 = interface.getMinimalActionSet();
+  int action_p4 = 0;
+  int action_p1 = 0;
+  for(int j = 0; j < steps_to_test; j++){
+    if(j % 32 == 0){
+       action_p1 = rand()%min_actionsp1.size();
+    }
+    if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
+      action_p4 = rand()%min_actionsp1.size();
+    }
+
+    interface.act({min_actionsp1[action_p1], min_actionsp2[action_p1], min_actionsp2[action_p1], min_actionsp2[action_p4]});
 
     interface.getScreenRGB(output_rgb_buffer);
     hashCode = hash_together(hashCode,hash_vec(output_rgb_buffer));

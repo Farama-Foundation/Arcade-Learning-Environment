@@ -28,13 +28,12 @@
 #ifndef __PONG_HPP__
 #define __PONG_HPP__
 
-#include "../RomSettings.hpp"
-#include "../RomSettings2P.hpp"
+#include "../RomSettings4P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Pong */
-class PongSettings : public RomSettings2P {
+class PongSettings : public RomSettings4P {
  public:
   PongSettings();
 
@@ -47,12 +46,11 @@ class PongSettings : public RomSettings2P {
   // get the most recently observed reward
   reward_t getReward() const override;
   reward_t getRewardP2() const override;
+  reward_t getRewardP3() const override;
+  reward_t getRewardP4() const override;
 
   // the rom-name
   const char* rom() const override { return "pong"; }
-
-  // get the available number of modes
-  unsigned int getNumModes() const { return 2; }
 
   // create a new instance of the rom
   RomSettings* clone() const override;
@@ -79,6 +77,7 @@ class PongSettings : public RomSettings2P {
   // in this game, there are 2 available modes
   ModeVect getAvailableModes() override;
   ModeVect get2PlayerModes() override;
+  ModeVect get4PlayerModes() override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function

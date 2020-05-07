@@ -90,8 +90,10 @@ ale_lib.getMinimalActionSize.argtypes = [c_void_p]
 ale_lib.getMinimalActionSize.restype = c_int
 ale_lib.getFrameNumber.argtypes = [c_void_p]
 ale_lib.getFrameNumber.restype = c_int
-ale_lib.lives.argtypes = [c_void_p]
-ale_lib.lives.restype = c_int
+ale_lib.lives.argtypes = [c_void_p, c_void_p]
+ale_lib.lives.restype = None
+ale_lib.livesSize.argtypes = [c_void_p]
+ale_lib.livesSize.restype = c_int
 ale_lib.getEpisodeFrameNumber.argtypes = [c_void_p]
 ale_lib.getEpisodeFrameNumber.restype = c_int
 ale_lib.getScreen.argtypes = [c_void_p, c_void_p]
@@ -232,7 +234,10 @@ class ALEInterface(object):
         return ale_lib.getFrameNumber(self.obj)
 
     def lives(self):
-        return ale_lib.lives(self.obj)
+        life_size = ale_lib.livesSize(self.obj)
+        act = np.zeros((life_size), dtype=np.intc)
+        ale_lib.lives(self.obj, as_ctypes(act))
+        return act
 
     def getEpisodeFrameNumber(self):
         return ale_lib.getEpisodeFrameNumber(self.obj)

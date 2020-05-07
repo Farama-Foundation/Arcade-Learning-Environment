@@ -11,3 +11,4 @@ Two player manuals
 * [Combat](https://atariage.com/manual_html_page.php?SoftwareID=935)
 * [Joust](https://atariage.com/manual_html_page.php?SoftwareLabelID=253)
 * [Maze craze](https://atariage.com/manual_html_page.php?SoftwareLabelID=295)
+* [Warlords](https://atariage.com/manual_html_page.php?SoftwareLabelID=593)

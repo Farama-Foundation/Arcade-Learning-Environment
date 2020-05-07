@@ -17,8 +17,37 @@
 
 #include <cassert>
 #include <string>
+#include <bitset>
 
 namespace ale {
+
+ActionValue from_action(action_ty action,action_set_ty option){
+  assert(validate_against(action,option));
+
+  ActionValue val;
+  val.should_fire = action%2;
+  action /= 2;
+  val.left_right_v = action%3 - 1;
+  action /= 3;
+  val.up_down_v = action%3 - 1;
+  val.use_paddle = (option & IS_PADDLE) != 0;
+  return val;
+}
+
+bool validate_against(action_ty action, action_set_ty option){
+  assert(validate_action_set(option));
+  ActionValue act = from_action(action);
+  return (act.should_fire == 0 || option & CAN_FIRE) &&
+   (act.left_right_v == 0 || option & CAN_LEFT_RIGHT) &&
+    (act.up_down_v == 0 || option & CAN_UP_DOWN);
+}
+
+bool validate_action_set(action_set_ty option){
+  return (!(option & IS_PADDLE) || !(option & CAN_UP_DOWN));
+}
+
+
+
 
 std::string action_to_string(Action a) {
   static std::string tmp_action_to_string[] = {

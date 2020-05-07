@@ -138,17 +138,7 @@ DifficultyVect MazeCrazeSettings::getAvailableDifficulties() {
   return {0};
 }
 ModeVect MazeCrazeSettings::getAvailableModes() {
-  //all modes but terror modes are reasonable for a single player
-  ModeVect modes;
-  for(int j = 0; j < 16; j++){
-    for(int i = 0; i < 4; i++){
-      //remove terror games
-      if(!((j == 6 && i == 0) || j == 9 || j == 10 || j == 14)) {
-        modes.push_back(j*4+i);
-      }
-    }
-  }
-  return modes;
+  return {};
 }
 ModeVect MazeCrazeSettings::get2PlayerModes() {
   //all modes two player

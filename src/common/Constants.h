@@ -22,6 +22,27 @@
 
 namespace ale {
 
+using action_set_ty = int;
+constexpr action_set_ty CAN_FIRE = 0x1;
+constexpr action_set_ty CAN_LEFT_RIGHT = 0x2;
+constexpr action_set_ty CAN_UP_DOWN = 0x4;
+constexpr action_set_ty IS_PADDLE = 0x8;
+
+constexpr size_t NUM_ACTIONS = 2*3*3;
+
+using action_ty = int;
+
+struct ActionValue{
+  int8_t should_fire;
+  int8_t left_right_v;
+  int8_t up_down_v;
+  int8_t use_paddle;
+};
+
+ActionValue from_action(action_ty action);
+bool validate_against(action_ty action, action_set_ty option);
+bool validate_action_set(action_set_ty option);
+
 // Define actions
 enum Action {
   PLAYER_A_NOOP          = 0,

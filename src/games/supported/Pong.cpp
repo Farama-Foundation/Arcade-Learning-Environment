@@ -43,6 +43,10 @@ bool PongSettings::isTerminal() const { return m_terminal; };
 /* get the most recently observed reward */
 reward_t PongSettings::getReward() const { return m_reward; }
 reward_t PongSettings::getRewardP2() const { return -m_reward; }
+//P3 is on same team as P1, P2-P4
+reward_t PongSettings::getRewardP3() const { return m_reward; };
+reward_t PongSettings::getRewardP4() const { return -m_reward; };
+
 
 /* is an action part of the minimal set? */
 bool PongSettings::isMinimal(const Action& a) const {
@@ -85,7 +89,25 @@ ModeVect PongSettings::getAvailableModes() {
   return {1, 2};
 }
 ModeVect PongSettings::get2PlayerModes() {
-  return {3, 4};
+  return {3, 4,
+          9, 10,
+          13,14,
+          19,20,
+          23,24,25,26,27,28,
+          35,36,
+          39,40,
+          43,44,45,46};
+}
+ModeVect PongSettings::get4PlayerModes() {
+  return {5,6,7,8
+          11,12,
+          15,16,17,18,
+          21,22,
+          29,30,31,32,
+          33,34,
+          37,38,
+          41,42,
+          47,48,49,50};
 }
 
 // set the mode of the game
@@ -94,7 +116,7 @@ void PongSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   game_mode_t target = m - 1;
-  
+
   // press select until the correct mode is reached
   while (readRam(&system, 0x96) != target) {
     environment->pressSelect(2);

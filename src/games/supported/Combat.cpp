@@ -98,7 +98,7 @@ DifficultyVect CombatSettings::getAvailableDifficulties() {
 ModeVect CombatSettings::getAvailableModes() {
   // this isn't actually single player.
   //don't use this game in single player mode.
-  return {1};
+  return {};
 }
 
 ModeVect CombatSettings::get2PlayerModes() {

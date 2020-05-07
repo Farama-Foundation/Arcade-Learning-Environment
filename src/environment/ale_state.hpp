@@ -59,8 +59,7 @@ class ALEState {
 
   /** Applies paddle actions. This actually modifies the game state by updating the paddle
       *  resistances. */
-  void applyActionPaddles(Event* event_obj, int player_a_action,
-                          int player_b_action);
+  void applyActionPaddles(Event* event_obj, int action, int pnum);
   /** Sets the joystick events. No effect until the emulator is run forward. */
   void setActionJoysticks(Event* event_obj, int player_a_action,
                           int player_b_action);
@@ -111,13 +110,13 @@ class ALEState {
   void resetKeys(Event* event_obj);
 
   /** Sets the paddle to a given position */
-  void setPaddles(Event* event_obj, int left, int right);
+  void setPaddles(Event* event_obj, int paddle_val, int paddle_num);
 
   /** Set the paddle min/max values */
   void setPaddleLimits(int paddle_min_val, int paddle_max_val);
 
   /** Updates the paddle position by a delta amount. */
-  void updatePaddlePositions(Event* event_obj, int delta_x, int delta_y);
+  void updatePaddlePositions(Event* event_obj, int delta, int paddle_num);
 
   /** Calculates the Paddle resistance, based on the given x val */
   int calcPaddleResistance(int x_val);
@@ -126,8 +125,7 @@ class ALEState {
   void setDifficultySwitches(Event* event_obj, unsigned int value);
 
  private:
-  int m_left_paddle;               // Current value for the left-paddle
-  int m_right_paddle;              // Current value for the right-paddle
+  int m_paddle[4];               // Current value for the paddles
 
   int m_paddle_min;                // Minimum value for paddle
   int m_paddle_max;                // Maximum value for paddle

@@ -52,10 +52,6 @@ ActionVect RomSettings::getAllActions() {
   return actions;
 }
 
-bool RomSettings::supportsTwoPlayers() const{
-  return false;
-}
-
 ActionVect RomSettings::getStartingActions() {
   return ActionVect();
 }
@@ -82,13 +78,16 @@ bool RomSettings::isModeSupported(game_mode_t m) {
 #define xstr(a) str(a)
 #define str(a) #a
 #define two_player_fail() throw std::runtime_error("2 player method used for 1 player game in line: " xstr(__LINE__));
+#define four_player_fail() throw std::runtime_error("4 player method used for 1 or two player game in line: " xstr(__LINE__));
 
 reward_t RomSettings::getRewardP2() const { two_player_fail(); }
-bool RomSettings::isMinimalP2(const Action& a) const { two_player_fail(); }
-bool RomSettings::isLegalP2(const Action& a) const { two_player_fail(); }
 int RomSettings::livesP2() { two_player_fail(); }
-ActionVect RomSettings::getMinimalActionSetP2() { two_player_fail(); }
-ActionVect RomSettings::getAllActionsP2() { two_player_fail(); }
-ModeVect RomSettings::get2PlayerModes() { two_player_fail(); }
+ModeVect RomSettings::get2PlayerModes() { return ModeVect{}; }
 
+reward_t RomSettings::getRewardP3() const { four_player_fail(); }
+reward_t RomSettings::getRewardP4() const { four_player_fail(); };
+int RomSettings::livesP3() { four_player_fail(); };
+int RomSettings::livesP4() { four_player_fail(); };
+ModeVect RomSettings::get3PlayerModes() { return ModeVect{}; };
+ModeVect RomSettings::get4PlayerModes() { return ModeVect{}; };
 }  // namespace ale

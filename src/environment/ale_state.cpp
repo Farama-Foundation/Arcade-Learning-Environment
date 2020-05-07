@@ -26,30 +26,35 @@ namespace ale {
 
 /** Default constructor - loads settings from system */
 ALEState::ALEState()
-    : m_left_paddle(PADDLE_DEFAULT_VALUE),
-      m_right_paddle(PADDLE_DEFAULT_VALUE),
-      m_paddle_min(PADDLE_MIN),
+    : m_paddle_min(PADDLE_MIN),
       m_paddle_max(PADDLE_MAX),
       m_frame_number(0),
       m_episode_frame_number(0),
       m_mode(0),
-      m_difficulty(0) {}
+      m_difficulty(0) {
+        for(int i = 0; i < 4; i++){
+          m_paddle[i] = PADDLE_DEFAULT_VALUE;
+        }
+      }
 
 ALEState::ALEState(const ALEState& rhs, const std::string& serialized)
-    : m_left_paddle(rhs.m_left_paddle),
-      m_right_paddle(rhs.m_right_paddle),
-      m_paddle_min(rhs.m_paddle_min),
+    : m_paddle_min(rhs.m_paddle_min),
       m_paddle_max(rhs.m_paddle_max),
       m_frame_number(rhs.m_frame_number),
       m_episode_frame_number(rhs.m_episode_frame_number),
       m_serialized_state(serialized),
       m_mode(rhs.m_mode),
-      m_difficulty(rhs.m_difficulty) {}
+      m_difficulty(rhs.m_difficulty) {
+        for(int i = 0; i < 4; i++){
+          m_paddle[i] = rhs.m_paddle[i];
+        }
+      }
 
 ALEState::ALEState(const std::string& serialized) {
   Deserializer des(serialized);
-  this->m_left_paddle = des.getInt();
-  this->m_right_paddle = des.getInt();
+  for(int i = 0;i < 4; i++){
+    this->m_paddle[i] = des.getInt();
+  }
   this->m_frame_number = des.getInt();
   this->m_episode_frame_number = des.getInt();
   this->m_mode = des.getInt();
@@ -79,8 +84,9 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5,
   settings->loadState(deser);
 
   // Copy over other member variables
-  m_left_paddle = rhs.m_left_paddle;
-  m_right_paddle = rhs.m_right_paddle;
+  for(int i = 0; i < 4; i++){
+    m_paddle[i] = rhs.m_paddle[i];
+  }
   m_paddle_min = rhs.m_paddle_min;
   m_paddle_max = rhs.m_paddle_max;
   m_frame_number = rhs.m_frame_number;
@@ -116,8 +122,9 @@ void ALEState::resetEpisodeFrameNumber() { m_episode_frame_number = 0; }
 std::string ALEState::serialize() {
   Serializer ser;
 
-  ser.putInt(this->m_left_paddle);
-  ser.putInt(this->m_right_paddle);
+  for(int i = 0;i < 4; i++){
+    ser.putInt(this->m_paddle[i]);
+  }
   ser.putInt(this->m_frame_number);
   ser.putInt(this->m_episode_frame_number);
   ser.putInt(this->m_mode);
@@ -141,17 +148,20 @@ void ALEState::resetPaddles(Event* event) {
   setPaddles(event, paddle_default, paddle_default);
 }
 
-void ALEState::setPaddles(Event* event, int left, int right) {
-  m_left_paddle = left;
-  m_right_paddle = right;
+void ALEState::setPaddles(Event* event, int paddle_val, int paddle_num) {
+  m_paddle[paddle_num] = paddle_val;
 
   // Compute the "resistance" (this is for vestigal clarity)
-  int left_resistance = calcPaddleResistance(m_left_paddle);
-  int right_resistance = calcPaddleResistance(m_right_paddle);
+  int resitance = calcPaddleResistance(paddle_val);
 
+  Event::Type paddle_fires[] = {
+    Event::PaddleZeroResistance,
+    Event::PaddleOneResistance,
+    Event::PaddleTwoResistance,
+    Event::PaddleThreeResistance
+  };
   // Update the events with the new resistances
-  event->set(Event::PaddleZeroResistance, left_resistance);
-  event->set(Event::PaddleOneResistance, right_resistance);
+  event->set(paddle_fires[paddle_num], resitance);
 }
 
 void ALEState::setPaddleLimits(int paddle_min_val, int paddle_max_val) {
@@ -165,48 +175,38 @@ void ALEState::setPaddleLimits(int paddle_min_val, int paddle_max_val) {
  *  Updates the positions of the paddles, and sets an event for
  *  updating the corresponding paddle's resistance
  * ********************************************************************/
-void ALEState::updatePaddlePositions(Event* event, int delta_left,
-                                     int delta_right) {
+void ALEState::updatePaddlePositions(Event* event, int delta,
+                                     int paddle_num) {
   // Cap paddle outputs
 
-  m_left_paddle += delta_left;
-  if (m_left_paddle < m_paddle_min) {
-    m_left_paddle = m_paddle_min;
+  m_paddle[paddle_num] += delta;
+  if (m_paddle[paddle_num] < m_paddle_min) {
+    m_paddle[paddle_num] = m_paddle_min;
   }
-  if (m_left_paddle > m_paddle_max) {
-    m_left_paddle = m_paddle_max;
-  }
-
-  m_right_paddle += delta_right;
-  if (m_right_paddle < m_paddle_min) {
-    m_right_paddle = m_paddle_min;
-  }
-  if (m_right_paddle > m_paddle_max) {
-    m_right_paddle = m_paddle_max;
+  if (m_paddle[paddle_num] > m_paddle_max) {
+    m_paddle[paddle_num] = m_paddle_max;
   }
 
   // Now set the paddle to their new value
-  setPaddles(event, m_left_paddle, m_right_paddle);
+  setPaddles(event, m_paddle[paddle_num], paddle_num);
 }
 
-void ALEState::applyActionPaddles(Event* event, int player_a_action,
-                                  int player_b_action) {
+void ALEState::applyActionPaddles(Event* event, int action, int pnum) {
   // Reset keys
   resetKeys(event);
 
   // First compute whether we should increase or decrease the paddle position
   //  (for both left and right players)
-  int delta_left;
-  int delta_right;
+  int delta;
 
-  switch (player_a_action) {
+  switch (action) {
     case PLAYER_A_RIGHT:
     case PLAYER_A_RIGHTFIRE:
     case PLAYER_A_UPRIGHT:
     case PLAYER_A_DOWNRIGHT:
     case PLAYER_A_UPRIGHTFIRE:
     case PLAYER_A_DOWNRIGHTFIRE:
-      delta_left = -PADDLE_DELTA;
+      delta = -PADDLE_DELTA;
       break;
 
     case PLAYER_A_LEFT:
@@ -215,45 +215,28 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
     case PLAYER_A_DOWNLEFT:
     case PLAYER_A_UPLEFTFIRE:
     case PLAYER_A_DOWNLEFTFIRE:
-      delta_left = PADDLE_DELTA;
+      delta = PADDLE_DELTA;
       break;
     default:
-      delta_left = 0;
-      break;
-  }
-
-  switch (player_b_action) {
-    case PLAYER_B_RIGHT:
-    case PLAYER_B_RIGHTFIRE:
-    case PLAYER_B_UPRIGHT:
-    case PLAYER_B_DOWNRIGHT:
-    case PLAYER_B_UPRIGHTFIRE:
-    case PLAYER_B_DOWNRIGHTFIRE:
-      delta_right = -PADDLE_DELTA;
-      break;
-
-    case PLAYER_B_LEFT:
-    case PLAYER_B_LEFTFIRE:
-    case PLAYER_B_UPLEFT:
-    case PLAYER_B_DOWNLEFT:
-    case PLAYER_B_UPLEFTFIRE:
-    case PLAYER_B_DOWNLEFTFIRE:
-      delta_right = PADDLE_DELTA;
-      break;
-    default:
-      delta_right = 0;
+      delta = 0;
       break;
   }
 
   // Now update the paddle positions
-  updatePaddlePositions(event, delta_left, delta_right);
+  updatePaddlePositions(event, delta, pnum);
 
   // Handle reset
-  if (player_a_action == RESET || player_b_action == RESET)
+  if (action == RESET)
     event->set(Event::ConsoleReset, 1);
 
+  Event::Type paddle_fires[] = {
+    Event::PaddleZeroFire,
+    Event::PaddleOneFire,
+    Event::PaddleTwoFire,
+    Event::PaddleThreeFire
+  };
   // Now add the fire event
-  switch (player_a_action) {
+  switch (action) {
     case PLAYER_A_FIRE:
     case PLAYER_A_UPFIRE:
     case PLAYER_A_RIGHTFIRE:
@@ -263,24 +246,7 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
     case PLAYER_A_UPLEFTFIRE:
     case PLAYER_A_DOWNRIGHTFIRE:
     case PLAYER_A_DOWNLEFTFIRE:
-      event->set(Event::PaddleZeroFire, 1);
-      break;
-    default:
-      // Nothing
-      break;
-  }
-
-  switch (player_b_action) {
-    case PLAYER_B_FIRE:
-    case PLAYER_B_UPFIRE:
-    case PLAYER_B_RIGHTFIRE:
-    case PLAYER_B_LEFTFIRE:
-    case PLAYER_B_DOWNFIRE:
-    case PLAYER_B_UPRIGHTFIRE:
-    case PLAYER_B_UPLEFTFIRE:
-    case PLAYER_B_DOWNRIGHTFIRE:
-    case PLAYER_B_DOWNLEFTFIRE:
-      event->set(Event::PaddleOneFire, 1);
+      event->set(paddle_fires[pnum], 1);
       break;
     default:
       // Nothing
@@ -521,6 +487,8 @@ void ALEState::resetKeys(Event* event) {
   // also reset paddle fire
   event->set(Event::PaddleZeroFire, 0);
   event->set(Event::PaddleOneFire, 0);
+  event->set(Event::PaddleTwoFire, 0);
+  event->set(Event::PaddleThreeFire, 0);
 
   // Set the difficulty switches accordingly for this time step.
   setDifficultySwitches(event, m_difficulty);
@@ -528,8 +496,7 @@ void ALEState::resetKeys(Event* event) {
 
 bool ALEState::equals(ALEState& rhs) {
   return (rhs.m_serialized_state == this->m_serialized_state &&
-          rhs.m_left_paddle == this->m_left_paddle &&
-          rhs.m_right_paddle == this->m_right_paddle &&
+          std::equal(rhs.m_paddle,rhs.m_paddle+4,this->m_paddle) &&
           rhs.m_frame_number == this->m_frame_number &&
           rhs.m_episode_frame_number == this->m_episode_frame_number &&
           rhs.m_mode == this->m_mode && rhs.m_difficulty == this->m_difficulty);

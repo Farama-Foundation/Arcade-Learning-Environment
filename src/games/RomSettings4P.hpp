@@ -31,40 +31,30 @@
  * *****************************************************************************
  */
 
-#ifndef __ROMSETTINGS2P_HPP__
-#define __ROMSETTINGS2P_HPP__
+#ifndef __ROMSETTINGS4P_HPP__
+#define __ROMSETTINGS4P_HPP__
 
-#include "RomSettings.hpp"
+#include "RomSettings2P.hpp"
 
 
 namespace ale {
 
 // rom support interface
-class RomSettings2P : public RomSettings {
+class RomSettings4P : public RomSettings2P {
  public:
-  RomSettings2P();
+  RomSettings4P();
 
-  virtual ~RomSettings2P() {}
+  virtual ~RomSettings4P() {}
 
-  // get the most recently observed reward
-  // default is the negative of getReward()
-  virtual reward_t getRewardP2() const = 0;
-
-
-  // Remaining lives.
-  virtual int livesP2();
-
-  // Returns a list of mode that the game can be played with two players.
-  // By default, there is only one available mode with two players.
-  // note that this list will be disjoint from getAvailableModes
-  virtual ModeVect get2PlayerModes() = 0;
+  virtual reward_t getRewardP3() const = 0;
+  virtual reward_t getRewardP4() const = 0;
+  virtual int livesP3();
+  virtual int livesP4();
+  virtual ModeVect get4PlayerModes() = 0;
   virtual void setMode(game_mode_t m, System&, std::unique_ptr<StellaEnvironmentWrapper>) = 0;
 
-protected:
-  //helper method to get 2 player modes
-  ModeVect oppositeModes(int num_modes);
 };
 
 }  // namespace ale
 
-#endif  // __ROMSETTINGS2P_HPP__
+#endif  // __ROMSETTINGS4P_HPP__
