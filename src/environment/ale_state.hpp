@@ -91,6 +91,10 @@ class ALEState {
 
   std::string serialize();
 
+  /** Reset key presses */
+  void resetKeys(Event* event_obj);
+
+
  protected:
   // Let StellaEnvironment access these methods: they are needed for emulation purposes
   friend class StellaEnvironment;
@@ -105,9 +109,6 @@ class ALEState {
    *  the emulator. If save_system == true, this includes the RNG state. */
   ALEState save(OSystem* osystem, RomSettings* settings, std::string md5,
                 bool save_system);
-
-  /** Reset key presses */
-  void resetKeys(Event* event_obj);
 
   /** Sets the paddle to a given position */
   void setPaddles(Event* event_obj, int paddle_val, int paddle_num);

@@ -10,7 +10,7 @@ add_library(ale OBJECT)
 
 # Require C++11 for dependencies
 target_compile_features(ale PUBLIC cxx_std_11)
-target_compile_options(ale PUBLIC -O3 -fPIC)
+target_compile_options(ale PUBLIC -Og -g -fPIC)
 
 # Platform specific flags
 if (UNIX)

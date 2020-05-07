@@ -145,7 +145,9 @@ int ALEState::calcPaddleResistance(int x_val) {
 
 void ALEState::resetPaddles(Event* event) {
   int paddle_default = (m_paddle_min + m_paddle_max) / 2;
-  setPaddles(event, paddle_default, paddle_default);
+  for(int i = 0; i < 4; i++){
+    setPaddles(event, paddle_default, i);
+  }
 }
 
 void ALEState::setPaddles(Event* event, int paddle_val, int paddle_num) {
@@ -154,14 +156,14 @@ void ALEState::setPaddles(Event* event, int paddle_val, int paddle_num) {
   // Compute the "resistance" (this is for vestigal clarity)
   int resitance = calcPaddleResistance(paddle_val);
 
-  Event::Type paddle_fires[] = {
+  Event::Type paddle_resists[] = {
     Event::PaddleZeroResistance,
     Event::PaddleOneResistance,
     Event::PaddleTwoResistance,
     Event::PaddleThreeResistance
   };
   // Update the events with the new resistances
-  event->set(paddle_fires[paddle_num], resitance);
+  event->set(paddle_resists[paddle_num], resitance);
 }
 
 void ALEState::setPaddleLimits(int paddle_min_val, int paddle_max_val) {
@@ -193,8 +195,10 @@ void ALEState::updatePaddlePositions(Event* event, int delta,
 
 void ALEState::applyActionPaddles(Event* event, int action, int pnum) {
   // Reset keys
-  resetKeys(event);
-
+  //resetKeys(event);
+  // if(action >= 18)
+  // std::cout << action << "\n";
+  // std::cout << pnum << "\n";
   // First compute whether we should increase or decrease the paddle position
   //  (for both left and right players)
   int delta;

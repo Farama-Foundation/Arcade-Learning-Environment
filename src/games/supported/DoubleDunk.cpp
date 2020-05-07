@@ -201,8 +201,6 @@ void DoubleDunkSettings::setMode(
     //reset the environment to apply changes.
     environment->softReset();
     //apply starting action
-    environment->act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
-    environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
 
 }
 

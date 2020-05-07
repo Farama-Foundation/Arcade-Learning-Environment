@@ -12,6 +12,8 @@ constexpr int steps_to_test = 2000;
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
+    "double_dunk",
+    "pong",
     "backgammon",
     "boxing",
     "combat",
@@ -58,7 +60,14 @@ bool test_two_player(std::string fname){
 
   interface.loadROM(fname);
   interface.reset_game();
-  return interface.supportsTwoPlayers();
+  return interface.supportsNumPlayers(2) ;
+}
+bool test_four_player(std::string fname){
+  ALEInterface interface;
+
+  interface.loadROM(fname);
+  interface.reset_game();
+  return interface.supportsNumPlayers(4) ;
 }
 std::size_t hash_vec(std::vector<uint8_t> const& vec) {
   std::size_t seed = vec.size();
@@ -104,7 +113,7 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
        action_p1 = rand()%min_actionsp1.size();
     }
     if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
-      action_p2 = rand()%min_actionsp2.size();
+      action_p2 = rand()%min_actionsp1.size();
     }
 
     interface.act({min_actionsp1[action_p1], min_actionsp1[action_p2]});
@@ -116,7 +125,7 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
       break;
     }
     if(j % 213 == 0){
-      save_frame(output_rgb_buffer);
+    //  save_frame(output_rgb_buffer);
     }
   }
   return hashCode;
@@ -124,7 +133,7 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
 size_t play_sequence_p4(ALEInterface & interface,int sequence_num){
   size_t hashCode = 0;
   std::vector<unsigned char> output_rgb_buffer(192*160*3);
-  save_frame(output_rgb_buffer);
+  //save_frame(output_rgb_buffer);
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
   int action_p4 = 0;
   int action_p1 = 0;
@@ -136,7 +145,7 @@ size_t play_sequence_p4(ALEInterface & interface,int sequence_num){
       action_p4 = rand()%min_actionsp1.size();
     }
 
-    interface.act({min_actionsp1[action_p1], min_actionsp2[action_p1], min_actionsp2[action_p1], min_actionsp2[action_p4]});
+    interface.act(std::vector<Action>{min_actionsp1[action_p1], min_actionsp1[action_p1], min_actionsp1[action_p1], min_actionsp1[action_p4]});
 
     interface.getScreenRGB(output_rgb_buffer);
     hashCode = hash_together(hashCode,hash_vec(output_rgb_buffer));
@@ -154,6 +163,7 @@ bool test_two_player_controlability(std::string fname){
   int seed = 123982;
   size_t hashs[2] = {0,0};
   for(int i = 0; i < 2; i++){
+    srand(seed);
     ALEInterface interface;
     interface.setInt("random_seed", seed);
     interface.loadROM(fname);
@@ -164,10 +174,27 @@ bool test_two_player_controlability(std::string fname){
   }
   return hashs[0] != hashs[1];
 }
+bool test_four_player_controlability(std::string fname){
+  int seed = 123982;
+  size_t hashs[2] = {0,0};
+  std::cout << "running 4p test\n";
+  for(int i = 0; i < 2; i++){
+    srand(seed);
+    ALEInterface interface;
+    interface.setInt("random_seed", seed);
+    interface.loadROM(fname);
+    ModeVect modes = interface.get4PlayerModes();
+    interface.setMode(modes[0]);
+    interface.reset_game();
+    hashs[i] = play_sequence_p4(interface,i);
+  }
+  return hashs[0] != hashs[1];
+}
 bool test_single_player_controlability(std::string fname){
   int seed = 123982;
   size_t hashs[2] = {0,0};
   for(int i = 0; i < 2; i++){
+    srand(seed);
     ALEInterface interface;
     interface.setInt("random_seed", seed);
     interface.loadROM(fname);
@@ -188,6 +215,23 @@ int main(){
         cout << fname << "\n";
         exit(-1);
     }
+    else if(test_four_player(fname)){
+      test_two_player_controlability(fname);
+      if (!test_four_player_controlability(fname) ){
+      cout << binname << " environment not controllable in four player mode\n";
+    }
+    else{
+      cout << binname << " environment works in 4player!\n";
+    }
+    }
+    else if(test_two_player(fname)){
+      if(!test_two_player_controlability(fname)){
+        cout << binname << " environment not controllable in two player mode\n";
+      }
+      else{
+        cout << binname << " environment works in 2player!\n";
+      }
+    }
     else if(!test_two_player(fname)){
       if(!test_single_player_controlability(fname)){
         cout << binname << " environment not two player and not controllable in single player mode\n";
@@ -195,9 +239,6 @@ int main(){
       else{
         cout << binname << " environment not two player but works in single player\n";
       }
-    }
-    else if(!test_two_player_controlability(fname)){
-      cout << binname << " environment not controllable in two player mode\n";
     }
     else{
       cout << binname << " environment passes!\n";

@@ -103,6 +103,12 @@ void StellaEnvironment::reset() {
   for (size_t i = 0; i < startingActions.size(); i++) {
     emulate(startingActions[i], PLAYER_B_NOOP);
   }
+  // this is needed for double dunk to work
+  emulate({PLAYER_A_NOOP,PLAYER_A_NOOP});
+  for (size_t i = 0; i < startingActions.size(); i++) {
+    emulate({PLAYER_A_NOOP,startingActions[i]});
+  }
+  emulate({PLAYER_A_NOOP,PLAYER_A_NOOP});
 }
 
 /** Save/restore the environment state. */
@@ -150,7 +156,7 @@ reward_t StellaEnvironment::act(Action player_a_action,
 
 std::vector<reward_t> StellaEnvironment::act(std::vector<Action> actions) {
   // Total reward received as we repeat the action
-  std::vector<reward_t> sum_rewards(0,actions.size());
+  std::vector<reward_t> sum_rewards(actions.size(),0);
 
   Random& rng = m_osystem->rng();
 
@@ -264,6 +270,7 @@ void StellaEnvironment::emulate(std::vector<Action> actions,
     // Run emulator forward for 'num_steps'
     for (size_t t = 0; t < num_steps; t++) {
       // Update paddle position at every step
+      m_state.resetKeys(event);
       for(int p = 0; p < actions.size(); p++){
         m_state.applyActionPaddles(event, actions[p], p);
       }

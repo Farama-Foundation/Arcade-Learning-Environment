@@ -201,7 +201,18 @@ void ALEInterface::loadROM(std::string rom_file) {
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
 
-  setMode(romSettings->getAvailableModes()[0]);
+  if(romSettings->getAvailableModes().size()){
+    setMode(romSettings->getAvailableModes()[0]);
+  }
+  else if(romSettings->get2PlayerModes().size()){
+    setMode(romSettings->get2PlayerModes()[0]);
+  }
+  else if(romSettings->get4PlayerModes().size()){
+    setMode(romSettings->get4PlayerModes()[0]);
+  }
+  else{
+    assert(false && "game has no avaliable modes!!!");
+  }
 
   environment->reset();
 
