@@ -22,6 +22,7 @@ target_sources(ale PRIVATE
         Casino.cpp
         Centipede.cpp
         ChopperCommand.cpp
+        Combat.cpp
         CrazyClimber.cpp
         Crossbow.cpp
         DarkChambers.cpp
@@ -49,6 +50,7 @@ target_sources(ale PRIVATE
         IceHockey.cpp
         JamesBond.cpp
         JourneyEscape.cpp
+        Joust.cpp
         Kaboom.cpp
         Kangaroo.cpp
         KeystoneKapers.cpp
@@ -60,6 +62,7 @@ target_sources(ale PRIVATE
         LaserGates.cpp
         LostLuggage.cpp
         MarioBros.cpp
+        MazeCraze.cpp
         MiniatureGolf.cpp
         MontezumaRevenge.cpp
         MrDo.cpp

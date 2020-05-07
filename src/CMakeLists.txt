@@ -1,5 +1,6 @@
 option(USE_SDL "Use SDL" OFF)
 option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
+option(BUILD_TEST_EXEC "Build C++ Shared Library" On)
 
 # Include src/ and cmake binary directory (for version.hpp)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
@@ -20,6 +21,9 @@ endif()
 find_package(ZLIB REQUIRED)
 target_include_directories(ale PUBLIC ${ZLIB_INCLUDE_DIRS})
 target_link_libraries(ale PUBLIC ${ZLIB_LIBRARIES})
+
+find_package(Threads REQUIRED)
+target_link_libraries(ale PRIVATE Threads::Threads)
 
 if (USE_SDL)
   target_compile_definitions(ale PUBLIC -D__USE_SDL
@@ -51,12 +55,22 @@ if (NOT GIT_SHA)
 endif()
 configure_file ("version.hpp.in" "version.hpp")
 
+
+if (BUILD_TEST_EXEC)
+  add_executable(test_exec test_main.cpp ale_interface.cpp)
+  set_target_properties(test_exec PROPERTIES OUTPUT_NAME test_exe)
+  target_link_libraries(test_exec PUBLIC ale ${ZLIB_LIBRARIES})
+
+endif()
+
 # C++ Library
 if (BUILD_CPP_LIB)
   add_library(ale-lib ale_interface.cpp)
   set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
   target_link_libraries(ale-lib PUBLIC ale)
 endif()
+
+
 
 
 # Install cpp-lib and CMake config & pkg-config

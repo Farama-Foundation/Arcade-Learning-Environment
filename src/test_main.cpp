@@ -73,7 +73,7 @@ std::size_t hash_together(std::size_t h1, std::size_t h2){
 size_t play_sequence(ALEInterface & interface,int sequence_num){
   size_t hashCode = 0;
   std::vector<unsigned char> output_rgb_buffer(192*160*3);
-  save_frame(output_rgb_buffer);
+  //save_frame(output_rgb_buffer);
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
   int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
@@ -87,7 +87,7 @@ size_t play_sequence(ALEInterface & interface,int sequence_num){
     hashCode = hash_together(hashCode,hash_vec(output_rgb_buffer));
 
     if(j % 43 == 0){
-      save_frame(output_rgb_buffer);
+    //  save_frame(output_rgb_buffer);
     }
   }
   return hashCode;
@@ -117,7 +117,7 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
       break;
     }
     if(j % 213 == 0){
-      save_frame(output_rgb_buffer);
+    //  save_frame(output_rgb_buffer);
     }
   }
   return hashCode;
