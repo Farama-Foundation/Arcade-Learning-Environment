@@ -98,14 +98,14 @@ def _parse_version(filename):
             2) Running in CI with a version tag will be of the form TAGGED_VERSION
     raises:
         RuntimeError:
-            1) Unable to find ALEVERSION in `filename` 
+            1) Unable to find ALEVERSION in `filename`
         AssertionError:
             1) Running in CI and tagged version doesn't match parsed version
             2) Tagged version or parsed version doesn't conform to semver rules
     """
     # Parse version from file
     contents = _read(filename)
-    version_match = re.search(r"ALEVERSION\s\"(\d+.*)\"", contents, re.M)
+    version_match = re.search(r"ale\sVERSION\s(\d+.*)", contents, re.M)
     if not version_match:
         raise RuntimeError("Unable to find ALEVERSION in %s" % filename)
 
@@ -134,11 +134,11 @@ def _parse_version(filename):
 setup(
     name="ale-py",
     version=_parse_version("CMakeLists.txt"),
-    description="Arcade Learning Environment Python Interface",
+    description="Arcade Learning Environment Python Interface for Multiplayer",
     long_description=_read("README.md"),
     long_description_content_type="text/markdown",
     keywords=["reinforcement-learning", "arcade-learning-environment", "atari"],
-    url="https://github.com/mgbellemare/Arcade-Learning-Environment",
+    url="https://github.com/PettingZoo-Team/Arcade-Learning-Environment",
     author="Arcade Learning Environment Authors",
     license="GPL",
     ext_modules=[
@@ -150,7 +150,7 @@ setup(
                 "-DUSE_RLGLUE=OFF",
                 "-DBUILD_EXAMPLES=OFF",
                 "-DBUILD_CPP_LIB=OFF",
-                "-DBUILD_CLI=OFF",
+                "-DBUILD_TEST_EXEC=OFF",
                 "-DBUILD_C_LIB=ON",
             ],
         )

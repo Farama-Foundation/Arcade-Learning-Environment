@@ -166,7 +166,7 @@ bool test_two_player_controlability(std::string fname){
     ALEInterface interface;
     interface.setInt("random_seed", seed);
     interface.loadROM(fname);
-    ModeVect modes = interface.get2PlayerModes();
+    ModeVect modes = interface.getAvailableModes(2);
     interface.setMode(modes[0]);
     interface.reset_game();
     hashs[i] = play_sequence_p2(interface,i);
@@ -182,7 +182,7 @@ bool test_four_player_controlability(std::string fname){
     ALEInterface interface;
     interface.setInt("random_seed", seed);
     interface.loadROM(fname);
-    ModeVect modes = interface.get4PlayerModes();
+    ModeVect modes = interface.getAvailableModes(4);
     interface.setMode(modes[0]);
     interface.reset_game();
     hashs[i] = play_sequence_p4(interface,i);

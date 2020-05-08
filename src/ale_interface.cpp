@@ -359,14 +359,22 @@ std::vector<reward_t> ALEInterface::act(std::vector<Action> action){
 
 // Returns the vector of modes available for the current game.
 // This should be called only after the rom is loaded.
-ModeVect ALEInterface::getAvailableModes() {
-  return romSettings->getAvailableModes();
-}
-ModeVect ALEInterface::get2PlayerModes() {
-  return romSettings->get2PlayerModes();
-}
-ModeVect ALEInterface::get4PlayerModes() {
-  return romSettings->get4PlayerModes();
+ModeVect ALEInterface::getAvailableModes(int num_players) {
+  if(num_players == 1){
+    return romSettings->getAvailableModes();
+  }
+  else if(num_players == 2){
+    return romSettings->get2PlayerModes();
+  }
+  else if(num_players == 3){
+    return ModeVect{};
+  }
+  else if(num_players == 4){
+    return romSettings->get4PlayerModes();
+  }
+  else {
+    throw std::runtime_error(std::to_string(num_players)+" is not a valid number of players, only 1-4 players allowed.");
+  }
 }
 
 // Sets the mode of the game.

@@ -17,15 +17,27 @@ extern "C" {
   void setFloat(ale::ALEInterface *ale,const char *key,float value){ale->setFloat(key,value);}
   void loadROM(ale::ALEInterface *ale,const char *rom_file){ale->loadROM(rom_file);}
   int act(ale::ALEInterface *ale,int action){return ale->act((ale::Action)action);}
+  int actMultiSize(ale::ALEInterface *ale){return ale->numPlayersActive();}
+  void actMulti(ale::ALEInterface *ale,int *actions,int * rewards) {
+    int num_players = ale->numPlayersActive();
+    std::vector<Action> actions_v(num_players);
+    for(int i = 0; i < num_players; i++){
+      actions_v[i] = (Action)actions[i];
+    }
+    std::vector<reward_t> rewards_v = ale->act(actions_v);
+    for(int i = 0; i < num_players; i++){
+      rewards[i] = rewards_v[i];
+    }
+  }
   bool game_over(ale::ALEInterface *ale){return ale->game_over();}
   void reset_game(ale::ALEInterface *ale){ale->reset_game();}
-  void getAvailableModes(ale::ALEInterface *ale,int *availableModes) {
-    ale::ModeVect modes_vect = ale->getAvailableModes();
-    for(unsigned int i = 0; i < ale->getAvailableModes().size(); i++){
+  void getAvailableModes(ale::ALEInterface *ale,int *availableModes,int num_players) {
+    ale::ModeVect modes_vect = ale->getAvailableModes(num_players);
+    for(unsigned int i = 0; i < modes_vect.size(); i++){
       availableModes[i] = modes_vect[i];
     }
   }
-  int getAvailableModesSize(ale::ALEInterface *ale) {return ale->getAvailableModes().size();}
+  int getAvailableModesSize(ale::ALEInterface *ale,int num_players) {return ale->getAvailableModes(num_players).size();}
   void setMode(ale::ALEInterface *ale, int mode) {ale->setMode(mode);}
   void getAvailableDifficulties(ale::ALEInterface *ale,int *availableDifficulties) {
     ale::DifficultyVect difficulties_vect = ale->getAvailableDifficulties();

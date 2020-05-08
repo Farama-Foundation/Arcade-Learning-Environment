@@ -98,9 +98,7 @@ class ALEInterface {
 
   // Returns the vector of modes available for the current game.
   // This should be called only after the rom is loaded.
-  ModeVect getAvailableModes();
-  ModeVect get2PlayerModes();
-  ModeVect get4PlayerModes();
+  ModeVect getAvailableModes(int num_players=1);
 
   // Sets the mode of the game.
   // The mode must be an available mode (otherwise it throws an exception).
