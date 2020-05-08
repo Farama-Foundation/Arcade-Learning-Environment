@@ -51,6 +51,7 @@ fca4a5be1251927027f2c24774a02160 hero.bin
 a4c08c4994eb9d24fb78be1793e82e26 ice_hockey.bin
 e51030251e440cffaab1ac63438b44ae jamesbond.bin
 718ae62c70af4e5fd8e932fee216948a journey_escape.bin
+3276c777cbe97cdd2b4a63ffc16b7151 joust.bin
 5428cdfada281c569c74c7308c7f2c26 kaboom.bin
 4326edb70ff20d0ee5ba58fa5cb09d60 kangaroo.bin
 6c1f3f2e359dbf55df462ccbcdd2f6bf keystone_kapers.bin
@@ -61,6 +62,7 @@ eed9eaf1a0b6a2b9bc4c8032cb43e3fb klax.bin
 5b92a93b23523ff16e2789b820e2a4c5 kung_fu_master.bin
 8e4cd60d93fcde8065c1a2b972a26377 laser_gates.bin
 2d76c5d1aad506442b9e9fb67765e051 lost_luggage.bin
+ed2218b3075d15eaa34e3356025ccca3 maze_craze.bin
 e908611d99890733be31733a979c62d8 mario_bros.bin
 df62a658496ac98a3aa4a6ee5719c251 miniature_golf.bin
 3347a6dd59049b15a38394aa2dafa585 montezuma_revenge.bin
@@ -102,6 +104,7 @@ a499d720e7ee35c62424de882a3351b6 up_n_down.bin
 f0b7db930ca0e548c41a97160b9f6275 videochess.bin
 3f540a30fdee0b20aed7288e4a5ea528 videocube.bin
 107cc025334211e6d29da0b6be46aec7 video_pinball.bin
+cbe5a166550a8129a5e6d374901dffad warlords.bin
 7e8aa18bc9502eb57daaf5e7c1e94da7 wizard_of_wor.bin
 ec3beb6d8b5689e867bafb5d5f507491 word_zapper.bin
 c5930d0e8cdae3e037349bfa08e871be yars_revenge.bin
