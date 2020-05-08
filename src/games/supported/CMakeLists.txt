@@ -102,6 +102,7 @@ target_sources(ale PRIVATE
         VideoChess.cpp
         VideoCube.cpp
         VideoPinball.cpp
+        Warlords.cpp
         WizardOfWor.cpp
         WordZapper.cpp
         YarsRevenge.cpp

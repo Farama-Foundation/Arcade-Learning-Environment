@@ -12,8 +12,6 @@ constexpr int steps_to_test = 2000;
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
-    "double_dunk",
-    "pong",
     "backgammon",
     "boxing",
     "combat",
@@ -33,6 +31,7 @@ void init_two_player_fnames(){
     "tennis",
     "video_checkers", // this actually passes the tests, the test just doesn't play p1 well by default
     "wizard_of_wor",
+    "warlords",
   };
   std::string main_path = "roms/";//"/home/benblack/anaconda3/lib/python3.7/site-packages/ale_py/ROM/";
   for(std::string fname : two_player_fnames){
@@ -138,7 +137,7 @@ size_t play_sequence_p4(ALEInterface & interface,int sequence_num){
   int action_p4 = 0;
   int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
-    if(j % 32 == 0){
+    if(j % 8 == 0){
        action_p1 = rand()%min_actionsp1.size();
     }
     if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
@@ -153,8 +152,8 @@ size_t play_sequence_p4(ALEInterface & interface,int sequence_num){
       std::cout << "game ended early\n";
       break;
     }
-    if(j % 213 == 0){
-    //  save_frame(output_rgb_buffer);
+    if(j % 216 == 0){
+     //save_frame(output_rgb_buffer);
     }
   }
   return hashCode;

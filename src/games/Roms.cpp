@@ -117,6 +117,7 @@
 #include "supported/VideoChess.hpp"
 #include "supported/VideoCube.hpp"
 #include "supported/VideoPinball.hpp"
+#include "supported/Warlords.hpp"
 #include "supported/WizardOfWor.hpp"
 #include "supported/WordZapper.hpp"
 #include "supported/YarsRevenge.hpp"
@@ -229,6 +230,7 @@ static const RomSettings* roms[] = {
     new VideoChessSettings(),
     new VideoCubeSettings(),
     new VideoPinballSettings(),
+    new WarlordsSettings(),
     new WizardOfWorSettings(),
     new WordZapperSettings(),
     new YarsRevengeSettings(),
