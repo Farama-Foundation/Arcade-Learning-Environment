@@ -132,7 +132,7 @@ def _parse_version(filename):
 
 
 setup(
-    name="ale-py-multi",
+    name="ale-py",
     version=_parse_version("CMakeLists.txt"),
     description="Arcade Learning Environment Python Interface",
     long_description=_read("README.md"),
@@ -156,7 +156,7 @@ setup(
         )
     ],
     cmdclass={"build_ext": CMakeBuild},
-    packages=["ale_py_multi"],
+    packages=["ale_py"],
     install_requires=["numpy"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
