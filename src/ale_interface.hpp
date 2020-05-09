@@ -142,8 +142,11 @@ class ALEInterface {
   // Returns the frame number since the loading of the ROM
   int getFrameNumber();
 
-  // The remaining number of lives.
-  std::vector<int> lives();
+  // The remaining number of lives for player 1.
+  int lives();
+
+  // lives for all players
+  std::vector<int> allLives();
 
   // Returns the frame number since the start of the current episode
   int getEpisodeFrameNumber() const;

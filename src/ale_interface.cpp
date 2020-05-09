@@ -300,9 +300,22 @@ bool ALEInterface::supportsNumPlayers(int num_players){
     }
   }
 }
+int ALEInterface::lives(){
+  if (romSettings == nullptr) {
+    throw std::runtime_error("ROM not set");
+  }
+  else{
+    if(num_players == 1){
+      return romSettings->lives();
+    }
+    else{
+      throw std::runtime_error("called `lives` in a multiplayer mode. Call allLives() instead.");
+    }
+  }
+}
 
 // The remaining number of lives.
-std::vector<int> ALEInterface::lives() {
+std::vector<int> ALEInterface::allLives(){
   if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
   } else {
