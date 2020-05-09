@@ -105,7 +105,7 @@ def _parse_version(filename):
     """
     # Parse version from file
     contents = _read(filename)
-    version_match = re.search(r"ale\sVERSION\s(\d+.*)", contents, re.M)
+    version_match = re.search(r"ALEVERSION\s\"(\d+.*)\"", contents, re.M)
     if not version_match:
         raise RuntimeError("Unable to find ALEVERSION in %s" % filename)
 
@@ -132,13 +132,13 @@ def _parse_version(filename):
 
 
 setup(
-    name="ale-py",
+    name="ale-py-multi",
     version=_parse_version("CMakeLists.txt"),
-    description="Arcade Learning Environment Python Interface for Multiplayer",
+    description="Arcade Learning Environment Python Interface",
     long_description=_read("README.md"),
     long_description_content_type="text/markdown",
     keywords=["reinforcement-learning", "arcade-learning-environment", "atari"],
-    url="https://github.com/PettingZoo-Team/Arcade-Learning-Environment",
+    url="https://github.com/mgbellemare/Arcade-Learning-Environment",
     author="Arcade Learning Environment Authors",
     license="GPL",
     ext_modules=[
@@ -150,13 +150,13 @@ setup(
                 "-DUSE_RLGLUE=OFF",
                 "-DBUILD_EXAMPLES=OFF",
                 "-DBUILD_CPP_LIB=OFF",
-                "-DBUILD_TEST_EXEC=OFF",
+                "-DBUILD_CLI=OFF",
                 "-DBUILD_C_LIB=ON",
             ],
         )
     ],
     cmdclass={"build_ext": CMakeBuild},
-    packages=["ale_py"],
+    packages=["ale_py_multi"],
     install_requires=["numpy"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

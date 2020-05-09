@@ -173,7 +173,6 @@ std::vector<reward_t> StellaEnvironment::act(std::vector<Action> actions) {
         m_actions[i] = PLAYER_A_NOOP;
       }
     }
-
     oneStepAct(m_actions, sum_rewards);
   }
 
@@ -280,7 +279,7 @@ void StellaEnvironment::emulate(std::vector<Action> actions,
     }
   } else {
     // In joystick mode we only need to set the action events once
-    Action player_b_action = actions.size() == 2 ? (Action)(actions[1] + PLAYER_B_NOOP) : PLAYER_B_NOOP;
+    Action player_b_action = actions.size() >= 2 ? (Action)(actions[1] + PLAYER_B_NOOP) : PLAYER_B_NOOP;
     Action player_a_action = actions.at(0);
     m_state.setActionJoysticks(event, player_a_action, player_b_action);
 

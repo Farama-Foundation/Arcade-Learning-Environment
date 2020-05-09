@@ -20,11 +20,11 @@ extern "C" {
   int actMultiSize(ale::ALEInterface *ale){return ale->numPlayersActive();}
   void actMulti(ale::ALEInterface *ale,int *actions,int * rewards) {
     int num_players = ale->numPlayersActive();
-    std::vector<Action> actions_v(num_players);
+    std::vector<ale::Action> actions_v(num_players);
     for(int i = 0; i < num_players; i++){
-      actions_v[i] = (Action)actions[i];
+      actions_v[i] = (ale::Action)actions[i];
     }
-    std::vector<reward_t> rewards_v = ale->act(actions_v);
+    std::vector<ale::reward_t> rewards_v = ale->act(actions_v);
     for(int i = 0; i < num_players; i++){
       rewards[i] = rewards_v[i];
     }

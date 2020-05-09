@@ -1,6 +1,8 @@
 option(USE_SDL "Use SDL" OFF)
 option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
 option(BUILD_TEST_EXEC "Build C++ Shared Library" On)
+option(BUILD_C_LIB "Build C Shared Library" OFF)
+
 
 # Include src/ and cmake binary directory (for version.hpp)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
@@ -70,6 +72,19 @@ if (BUILD_CPP_LIB)
   target_link_libraries(ale-lib PUBLIC ale)
 endif()
 
+if(BUILD_C_LIB)
+  add_library(ale-c-lib SHARED ${SOURCE_DIR}/../ale_py/ale_c_wrapper.cpp ${SOURCE_DIR}/ale_interface.cpp)
+  set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
+  set_target_properties(ale-c-lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ale_py)
+  if(PYTHON_MODULE_EXTENSION)
+    set_target_properties(ale-c-lib PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
+  endif()
+  if(UNIX)
+    install(TARGETS ale-c-lib
+      DESTINATION ${LIB_INSTALL_DIR})
+  endif()
+  target_link_libraries(ale-c-lib ale)
+endif()
 
 
 

@@ -184,7 +184,20 @@ class ALEInterface(object):
         ale_lib.loadROM(self.obj, _str_as_bytes(rom_file))
 
     def act(self, action):
-        return ale_lib.act(self.obj, int(action))
+        try:
+            action = int(action)
+            action = np.array([action],dtype=np.intc)
+        except Exception:
+            action = np.asarray(action,dtype=np.intc)
+
+        len_action = len(action)
+        len_expected = ale_lib.actMultiSize(self.obj)
+        if len_action != len_expected:
+            raise RuntimeError("expected action of length {} for game mode, got action of length {}".format(len_expected, len_action))
+
+        rewards = np.zeros_like(action)
+        ale_lib.actMulti(self.obj, as_ctypes(action), as_ctypes(rewards))
+        return rewards
 
     def game_over(self):
         return ale_lib.game_over(self.obj)
@@ -204,10 +217,10 @@ class ALEInterface(object):
         ale_lib.getMinimalActionSet(self.obj, as_ctypes(act))
         return act
 
-    def getAvailableModes(self):
-        modes_size = ale_lib.getAvailableModesSize(self.obj)
+    def getAvailableModes(self, num_players=1):
+        modes_size = ale_lib.getAvailableModesSize(self.obj, num_players)
         modes = np.zeros((modes_size), dtype=np.intc)
-        ale_lib.getAvailableModes(self.obj, as_ctypes(modes))
+        ale_lib.getAvailableModes(self.obj, as_ctypes(modes), num_players)
         return modes
 
     def setMode(self, mode):
@@ -239,9 +252,15 @@ class ALEInterface(object):
 
     def lives(self):
         life_size = ale_lib.livesSize(self.obj)
-        act = np.zeros((life_size), dtype=np.intc)
+        lives = np.zeros((life_size), dtype=np.intc)
         ale_lib.lives(self.obj, as_ctypes(act))
-        return act
+        return lives[0]
+
+    def allLives(self):
+        life_size = ale_lib.livesSize(self.obj)
+        lives = np.zeros((life_size), dtype=np.intc)
+        ale_lib.lives(self.obj, as_ctypes(act))
+        return lives
 
     def getEpisodeFrameNumber(self):
         return ale_lib.getEpisodeFrameNumber(self.obj)

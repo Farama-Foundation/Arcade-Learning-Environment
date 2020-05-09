@@ -86,7 +86,7 @@ size_t play_sequence(ALEInterface & interface,int sequence_num){
   int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
     if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
-      action_p1 = rand()%min_actionsp1.size();
+       action_p1 = (std::hash<int>()(j))%min_actionsp1.size();
     }
 
     interface.act(min_actionsp1[action_p1]);
@@ -109,10 +109,10 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
   int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
     if(j % 32 == 0){
-       action_p1 = rand()%min_actionsp1.size();
+       action_p1 = (std::hash<int>()(j))%min_actionsp1.size();
     }
     if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
-      action_p2 = rand()%min_actionsp1.size();
+      action_p2 = std::hash<int>()(j)%min_actionsp1.size();
     }
 
     interface.act({min_actionsp1[action_p1], min_actionsp1[action_p2]});
@@ -123,8 +123,8 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
       std::cout << "game ended early\n";
       break;
     }
-    if(j % 213 == 0){
-    //  save_frame(output_rgb_buffer);
+    if(j % 14 == 0){
+      save_frame(output_rgb_buffer);
     }
   }
   return hashCode;
@@ -138,10 +138,10 @@ size_t play_sequence_p4(ALEInterface & interface,int sequence_num){
   int action_p1 = 0;
   for(int j = 0; j < steps_to_test; j++){
     if(j % 8 == 0){
-       action_p1 = rand()%min_actionsp1.size();
+       action_p1 = (std::hash<int>()(j))%min_actionsp1.size();
     }
     if((sequence_num == 0 && j % 4 == 0) || (sequence_num == 1 && j % 64 == 0)){
-      action_p4 = rand()%min_actionsp1.size();
+       action_p4 = (std::hash<int>()(j))%min_actionsp1.size();
     }
 
     interface.act(std::vector<Action>{min_actionsp1[action_p1], min_actionsp1[action_p1], min_actionsp1[action_p1], min_actionsp1[action_p4]});
