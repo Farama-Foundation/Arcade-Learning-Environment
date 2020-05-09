@@ -130,11 +130,10 @@ void MazeCrazeSettings::loadState(Deserializer& ser) {
   p2_isalive = ser.getBool();
 }
 
-// According to https://atariage.com/manual_html_page.php?SoftwareLabelID=931
-// The left difficulty switch must be kept in position 'b' for normal gameplay,
-// whilst the right difficulty switch determines whether white (player) or black
-// (computer) makes the first move.
 DifficultyVect MazeCrazeSettings::getAvailableDifficulties() {
+  // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=931
+  // The left difficulty controls player a speed,
+  // right difficulty switch controls player b speed
   return {0};
 }
 ModeVect MazeCrazeSettings::getAvailableModes() {

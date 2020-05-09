@@ -223,6 +223,9 @@ class ALEInterface(object):
         ale_lib.getAvailableModes(self.obj, as_ctypes(modes), num_players)
         return modes
 
+    def numPlayersActive(self):
+        return ale_lib.actMultiSize(self.obj)
+
     def setMode(self, mode):
         ale_lib.setMode(self.obj, int(mode))
 
