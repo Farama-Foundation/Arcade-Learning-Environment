@@ -1,8 +1,0 @@
-#ifndef __VERSION_HPP__
-#define __VERSION_HPP__
-
-#define ALE_VERSION "@PROJECT_VERSION@"
-#define ALE_GIT_SHA "@GIT_SHA@"
-#define ALE_VERSION_STR "@PROJECT_VERSION@+@GIT_SHA@"
-
-#endif // __VERSION_HPP__
