@@ -3,7 +3,7 @@ option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
 option(BUILD_PYTHON "Build Python Interface" ON)
 
 # Include src/ and cmake binary directory (for version.hpp)
-include_directories(BEFORE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # ale object containing source files
 add_library(ale OBJECT)
