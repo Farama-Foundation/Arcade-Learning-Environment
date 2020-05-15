@@ -1,6 +1,5 @@
 add_subdirectory(m6502)
 
-target_include_directories(ale PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>)
 target_sources(ale
   PRIVATE
     AtariVox.cxx
