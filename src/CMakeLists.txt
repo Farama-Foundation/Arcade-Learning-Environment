@@ -1,5 +1,6 @@
 option(USE_SDL "Use SDL" OFF)
 option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
+option(BUILD_PYTHON "Build Python Interface" ON)
 
 # Include src/ and cmake binary directory (for version.hpp)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
@@ -64,6 +65,26 @@ if (BUILD_CPP_LIB)
   add_library(ale-lib ale_interface.cpp)
   set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
   target_link_libraries(ale-lib PUBLIC ale)
+endif()
+
+# Python Interface
+if (BUILD_PYTHON)
+  find_package(Python3 COMPONENTS Interpreter Development)
+
+  include(FetchContent)
+  FetchContent_Declare(
+      pybind11
+      GIT_REPOSITORY https://github.com/pybind/pybind11
+      GIT_TAG v2.4.3
+  )
+  FetchContent_MakeAvailable(pybind11)
+
+  add_library(ale-py MODULE ale_interface.cpp ale_python_interface.cpp)
+  target_link_libraries(ale-py PUBLIC ale)
+  target_link_libraries(ale-py PRIVATE pybind11::module)
+  set_target_properties(ale-py PROPERTIES OUTPUT_NAME ale_py
+                                          PREFIX "${PYTHON_MODULE_PREFIX}"
+                                          SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endif()
 
 
