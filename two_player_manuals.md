@@ -1,0 +1,22 @@
+Two player manuals
+
+
+* [Backgammon](https://atariage.com/manual_html_page.php?SoftwareID=842)
+* [Boxing](https://atariage.com/manual_html_page.php?SoftwareLabelID=45)
+* [Combat](https://atariage.com/manual_html_page.php?SoftwareID=935)
+* [double dunk](https://atariage.com/manual_html_page.php?SoftwareLabelID=153)
+* [Entombed](https://atariage.com/manual_html_page.php?SoftwareLabelID=165)
+* [flag_capture](https://atariage.com/manual_html_page.php?SoftwareLabelID=183)
+* [Joust](https://atariage.com/manual_html_page.php?SoftwareLabelID=253)
+* [ice hockey](https://atariage.com/manual_html_page.php?SoftwareLabelID=241)
+* [Maze craze](https://atariage.com/manual_html_page.php?SoftwareLabelID=295)
+* [mario bros](https://atariage.com/manual_html_page.php?SoftwareLabelID=286)
+* [othello](https://atariage.com/manual_html_page.php?SoftwareLabelID=335)
+* [pong](https://atariage.com/manual_html_page.php?SoftwareLabelID=587)
+* [space_invaders](https://atariage.com/manual_html_page.php?SoftwareLabelID=460)
+* [space war](https://atariage.com/manual_html_page.php?SoftwareLabelID=470)
+* [surround](https://atariage.com/manual_html_page.php?SoftwareLabelID=943)
+* [tennis](https://atariage.com/manual_html_page.php?SoftwareLabelID=555)
+* [video checkers](https://atariage.com/manual_html_page.php?SoftwareID=1427)
+* [wizard_of_wor](https://atariage.com/manual_html_page.php?SoftwareLabelID=598)
+* [Warlords](https://atariage.com/manual_html_page.php?SoftwareLabelID=593)
