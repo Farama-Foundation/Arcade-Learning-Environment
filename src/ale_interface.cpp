@@ -305,7 +305,7 @@ int ALEInterface::lives(){
     throw std::runtime_error("ROM not set");
   }
   else{
-    if(num_players == 1){
+    if(numPlayersActive() == 1){
       return romSettings->lives();
     }
     else{

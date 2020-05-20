@@ -63,12 +63,12 @@ extern "C" {
   int getMinimalActionSize(ale::ALEInterface *ale){return ale->getMinimalActionSet().size();}
   int getFrameNumber(ale::ALEInterface *ale){return ale->getFrameNumber();}
   void lives(ale::ALEInterface *ale,int *lives){
-    auto live_vect = ale->lives();
-    for(unsigned int i = 0;i < ale->lives().size();i++){
+    auto live_vect = ale->allLives();
+    for(unsigned int i = 0;i < ale->allLives().size();i++){
       lives[i] = live_vect[i];
     }
   }
-  int livesSize(ale::ALEInterface *ale){return ale->lives().size();}
+  int livesSize(ale::ALEInterface *ale){return ale->allLives().size();}
   int getEpisodeFrameNumber(ale::ALEInterface *ale){return ale->getEpisodeFrameNumber();}
   void getScreen(ale::ALEInterface *ale,unsigned char *screen_data){
     int w = ale->getScreen().width();
