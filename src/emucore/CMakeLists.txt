@@ -1,0 +1,52 @@
+add_subdirectory(m6502)
+
+target_include_directories(ale PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>)
+target_sources(ale PRIVATE
+        AtariVox.cxx
+        Booster.cxx
+        Cart.cxx
+        Cart0840.cxx
+        Cart2K.cxx
+        Cart3E.cxx
+        Cart3F.cxx
+        Cart4A50.cxx
+        Cart4K.cxx
+        CartAR.cxx
+        CartCV.cxx
+        CartDPC.cxx
+        CartE0.cxx
+        CartE7.cxx
+        CartF4.cxx
+        CartF4SC.cxx
+        CartF6.cxx
+        CartF6SC.cxx
+        CartF8.cxx
+        CartF8SC.cxx
+        CartFASC.cxx
+        CartFE.cxx
+        CartMB.cxx
+        CartMC.cxx
+        CartUA.cxx
+        Console.cxx
+        Control.cxx
+        Deserializer.cxx
+        Driving.cxx
+        Event.cxx
+        FSNode.cxx
+        Joystick.cxx
+        Keyboard.cxx
+        M6532.cxx
+        MD5.cxx
+        MediaSrc.cxx
+        OSystem.cxx
+        Paddles.cxx
+        Props.cxx
+        PropsSet.cxx
+        Random.cxx
+        Serializer.cxx
+        Settings.cxx
+        SpeakJet.cxx
+        Switches.cxx
+        TIA.cxx
+        TIASnd.cxx
+)

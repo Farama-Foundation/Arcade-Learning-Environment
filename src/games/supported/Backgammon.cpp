@@ -32,7 +32,7 @@
 namespace ale {
 
 std::int8_t readPieces(const System* system, int offset) {
-  int value = ale::readRam(system, offset);
+  int value = readRam(system, offset);
   if (value >= 128) {
     // Return player pieces as negative counters
     int res = value - 256;

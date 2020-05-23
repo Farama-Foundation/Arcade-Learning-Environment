@@ -3233,6 +3233,7 @@
 "Cartridge.ModelNo" "CX2641 / 99807 / 75105"
 "Cartridge.Name" "Surround (1978) (Atari) [o1]"
 "Cartridge.Rarity" "Common"
+"Console.SwapPorts" "YES"
 ""
 
 "Cartridge.MD5" "321c3451129357af42a375d12afd4450"
@@ -4914,6 +4915,7 @@
 "Cartridge.ModelNo" "CX2641 / 99807 / 75105"
 "Cartridge.Name" "Surround (1978) (Atari)"
 "Cartridge.Rarity" "Common"
+"Console.SwapPorts" "YES"
 ""
 
 "Cartridge.MD5" "4f89b897444e7c3b36aed469b8836839"
@@ -5203,6 +5205,7 @@
 "Cartridge.Name" "Surround (1978) (Atari) [a1]"
 "Cartridge.Rarity" "Common"
 "Cartridge.Type" "2K"
+"Console.SwapPorts" "YES"
 ""
 
 "Cartridge.MD5" "528400fad9a77fd5ad7fc5fdc2b7d69d"
@@ -10282,6 +10285,7 @@
 "Cartridge.MD5" "a60598ad7ee9c5ccad42d5b0df1570a1"
 "Cartridge.Manufacturer" "Atari"
 "Cartridge.Name" "Surround (32-in-1) (Atari) (PAL) [!]"
+"Console.SwapPorts" "YES"
 ""
 
 "Cartridge.MD5" "a74689a08746a667a299b0507e1e6dd9"
@@ -11912,6 +11916,7 @@
 "Cartridge.ModelNo" "CX2641 / 99807 / 75105"
 "Cartridge.Name" "Surround (1978) (Atari) (PAL) [!]"
 "Cartridge.Rarity" "Common"
+"Console.SwapPorts" "YES"
 ""
 
 "Cartridge.MD5" "c3bbc673acf2701b5275e85d9372facf"
@@ -13277,6 +13282,7 @@
 "Cartridge.MD5" "d89fedded0436fdeda7c3c37e2fb7cf1"
 "Cartridge.Manufacturer" "Atari"
 "Cartridge.Name" "Surround (1978) (Atari) (PAL) [p1][o1][!]"
+"Console.SwapPorts" "YES"
 ""
 
 "Cartridge.MD5" "d88691c995008b9ab61a44bb686b32e4"
