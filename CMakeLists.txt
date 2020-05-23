@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project(ale)
-set(ALEVERSION "0.6.0")
+set(ALEVERSION "0.1.0")
 
 
 option(USE_SDL "Use SDL" OFF)
