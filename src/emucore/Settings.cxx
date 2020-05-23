@@ -94,9 +94,6 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("mwheel", "4");
     setInternal("autoslot", "false");
 
-    // Expose setting for SwapPorts property. Required for Surround ROM.
-    setInternal("sp", "");
-
     setDefaultSettings();
 }
 
