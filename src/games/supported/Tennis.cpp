@@ -126,7 +126,7 @@ void TennisSettings::setMode(
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
 
     game_mode_t target_m = m - 1;
-    
+
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x80);
     // press select until the correct mode is reached
