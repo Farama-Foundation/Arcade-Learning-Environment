@@ -157,7 +157,7 @@ setup(
         )
     ],
     cmdclass={"build_ext": CMakeBuild},
-    packages=["ale_py"],
+    packages=["multi_agent_ale_py"],
     install_requires=["numpy"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

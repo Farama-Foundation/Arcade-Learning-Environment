@@ -1,5 +1,5 @@
 import os
-from ale_py import ALEInterface
+from multi_agent_ale_py import ALEInterface
 
 
 def test_load_rom():
