@@ -146,7 +146,7 @@ setup(
     license="GPL",
     ext_modules=[
         CMakeExtension(
-            "ale_py.libale_c",
+            "multi_agent_ale_py.libale_c",
             ".",
             [
                 "-DUSE_SDL=OFF",
