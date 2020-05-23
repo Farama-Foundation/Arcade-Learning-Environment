@@ -4,6 +4,10 @@ set(USE_SDL @USE_SDL@)
 
 include(CMakeFindDependencyMacro)
 find_dependency(ZLIB REQUIRED)
+<<<<<<< HEAD
+=======
+find_dependency(Threads REQUIRED)
+>>>>>>> ale_orig/master
 
 if (USE_SDL)
     find_dependency(SDL REQUIRED)

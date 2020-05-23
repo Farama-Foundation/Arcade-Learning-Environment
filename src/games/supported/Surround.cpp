@@ -81,12 +81,6 @@ void SurroundSettings::reset() {
     m_terminal = false;
 }
 
-void SurroundSettings::modifyEnvironmentSettings(Settings& settings) {
-  // Surround requires the controller ports to be swapped over. The 'sp' key
-  // refers to the Console_SwapPorts setting used when creating the console.
-  settings.setString("sp", "YES");
-}
-
 /* saves the state of the rom settings */
 void SurroundSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);

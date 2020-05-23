@@ -1,6 +1,6 @@
 option(USE_SDL "Use SDL" OFF)
 option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
-option(BUILD_TEST_EXEC "Build C++ Shared Library" On)
+option(BUILD_TEST_EXEC "Build C++ Shared Library" OFF)
 option(BUILD_C_LIB "Build C Shared Library" OFF)
 
 
@@ -12,24 +12,29 @@ add_library(ale OBJECT)
 
 # Require C++11 for dependencies
 target_compile_features(ale PUBLIC cxx_std_11)
-target_compile_options(ale PUBLIC -Og -g -fPIC)
+target_compile_options(ale PUBLIC -O3 -fPIC)
 
-# Platform specific flags
-if (UNIX)
-  target_compile_options(ale PUBLIC -Wall -Wunused -fomit-frame-pointer)
-endif()
+# Compiler specific flags
+target_compile_options(ale
+  PUBLIC
+    $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wunused -fomit-frame-pointer>
+)
 
 # Dependencies
 find_package(ZLIB REQUIRED)
-target_include_directories(ale PUBLIC ${ZLIB_INCLUDE_DIRS})
-target_link_libraries(ale PUBLIC ${ZLIB_LIBRARIES})
-
 find_package(Threads REQUIRED)
-target_link_libraries(ale PRIVATE Threads::Threads)
+target_link_libraries(ale
+  PRIVATE
+    ZLIB::ZLIB
+    Threads::Threads
+)
 
 if (USE_SDL)
-  target_compile_definitions(ale PUBLIC -D__USE_SDL
-                                 PUBLIC -DSOUND_SUPPORT)
+  target_compile_definitions(ale
+    PUBLIC
+      -D__USE_SDL
+      -DSOUND_SUPPORT
+  )
   find_package(SDL REQUIRED)
   target_include_directories(ale PUBLIC ${SDL_INCLUDE_DIR})
   target_link_libraries(ale PUBLIC ${SDL_LIBRARY})
@@ -135,9 +140,4 @@ if (UNIX AND BUILD_CPP_LIB)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
                 "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-
-  # Configure & Install pkg-config
-  configure_file(${CMAKE_MODULE_PATH}/lib${PROJECT_NAME}.pc.in lib${PROJECT_NAME}.pc)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}.pc"
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 endif()
