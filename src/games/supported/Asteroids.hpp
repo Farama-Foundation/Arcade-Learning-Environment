@@ -49,6 +49,9 @@ class AsteroidsSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "asteroids"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "ccbd36746ed4525821a8083b0d6d2c2c"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 33; }
 

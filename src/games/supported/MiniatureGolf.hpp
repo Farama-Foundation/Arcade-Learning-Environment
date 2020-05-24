@@ -42,6 +42,9 @@ class MiniatureGolfSettings final : public RomSettings {
 
   const char* rom() const override { return "miniature_golf"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "df62a658496ac98a3aa4a6ee5719c251"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

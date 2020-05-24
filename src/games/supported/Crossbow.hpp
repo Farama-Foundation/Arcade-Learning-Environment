@@ -42,6 +42,9 @@ class CrossbowSettings : public RomSettings {
 
   const char* rom() const override { return "crossbow"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "8cd26dcf249456fe4aeb8db42d49df74"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

@@ -49,6 +49,9 @@ class AsterixSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "asterix"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "89a68746eff7f266bbf08de2483abe55"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

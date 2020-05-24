@@ -49,6 +49,9 @@ class GopherSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "gopher"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "c16c79aad6272baffb8aae9a7fff0864"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

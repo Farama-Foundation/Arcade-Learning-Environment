@@ -49,6 +49,9 @@ class AlienSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "alien"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "f1a0a23e6464d954e3a9579c4ccd01c8"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 

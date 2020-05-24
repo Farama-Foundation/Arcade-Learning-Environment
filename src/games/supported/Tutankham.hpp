@@ -49,6 +49,9 @@ class TutankhamSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "tutankham"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "085322bae40d904f53bdcc56df0593fc"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 

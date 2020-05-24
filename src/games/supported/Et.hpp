@@ -42,6 +42,9 @@ class EtSettings : public RomSettings {
 
   const char* rom() const override { return "et"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "615a3bf251a38eb6638cdc7ffbde5480"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

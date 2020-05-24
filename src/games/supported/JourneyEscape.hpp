@@ -49,6 +49,9 @@ class JourneyEscapeSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "journey_escape"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "718ae62c70af4e5fd8e932fee216948a"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

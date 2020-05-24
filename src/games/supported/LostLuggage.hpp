@@ -35,6 +35,9 @@ class LostLuggageSettings : public RomSettings {
   // MD5 7c00e7a205d3fda98eb20da7c9c50a55
   const char* rom() const override { return "lost_luggage"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "2d76c5d1aad506442b9e9fb67765e051"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

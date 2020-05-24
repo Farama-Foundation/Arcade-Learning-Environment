@@ -49,6 +49,9 @@ class VideoPinballSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "video_pinball"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "107cc025334211e6d29da0b6be46aec7"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

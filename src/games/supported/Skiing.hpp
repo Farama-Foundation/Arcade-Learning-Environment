@@ -49,6 +49,9 @@ class SkiingSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "skiing"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "b76fbadc8ffb1f83e2ca08b6fb4d6c9f"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

@@ -47,6 +47,9 @@ class HangmanSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "hangman"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "f16c709df0a6c52f47ff52b9d95b7d8d"; }
+
 
   // create a new instance of the rom
   RomSettings* clone() const override;

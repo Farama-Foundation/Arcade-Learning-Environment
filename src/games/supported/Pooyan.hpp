@@ -49,6 +49,9 @@ class PooyanSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "pooyan"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "4799a40b6e889370b7ee55c17ba65141"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 

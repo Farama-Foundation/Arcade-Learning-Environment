@@ -35,6 +35,9 @@ class DonkeyKongSettings : public RomSettings {
   // MD5 36b20c427975760cb9cf4a47e41369e4
   const char* rom() const override { return "donkey_kong"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "36b20c427975760cb9cf4a47e41369e4"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

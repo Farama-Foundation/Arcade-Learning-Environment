@@ -49,6 +49,9 @@ class JamesBondSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "jamesbond"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "e51030251e440cffaab1ac63438b44ae"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

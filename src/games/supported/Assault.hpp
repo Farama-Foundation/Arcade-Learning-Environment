@@ -49,6 +49,9 @@ class AssaultSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "assault"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "de78b3a064d374390ac0710f95edde92"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

@@ -43,6 +43,9 @@ public:
 
   const char* rom() const override { return "darkchambers"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "106855474c69d08c8ffa308d47337269"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

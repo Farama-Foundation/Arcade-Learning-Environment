@@ -49,6 +49,9 @@ class EnduroSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "enduro"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "94b92a882f6dbaa6993a46e2dcc58402"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

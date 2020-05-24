@@ -49,6 +49,9 @@ class NameThisGameSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "name_this_game"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "36306070f0c90a72461551a7a4f3a209"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 3; }
 

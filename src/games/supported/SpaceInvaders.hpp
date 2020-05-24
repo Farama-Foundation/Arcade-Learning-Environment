@@ -49,6 +49,9 @@ class SpaceInvadersSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "space_invaders"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "72ffbef6504b75e69ee1045af9075f66"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 16; }
 

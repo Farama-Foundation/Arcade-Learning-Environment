@@ -35,6 +35,9 @@ class SirLancelotSettings : public RomSettings {
   // MD5 7ead257e8b5a44cac538f5f54c7a0023
   const char* rom() const override { return "sir_lancelot"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "dd0cbe5351551a538414fb9e37fc56e8"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

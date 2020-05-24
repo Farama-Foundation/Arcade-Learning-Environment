@@ -48,6 +48,9 @@ class AdventureSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "adventure"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "4b27f5397c442d25f0c418ccdacf1926"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

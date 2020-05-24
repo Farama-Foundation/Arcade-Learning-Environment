@@ -204,6 +204,8 @@ class ALEInterface {
   int max_num_frames; // Maximum number of frames for each episode
 
  public:
+  // Check if the rom with filename matches a supported MD5
+  static bool isSupportedRom(const std::string& rom_file);
   // Display ALE welcome message
   static std::string welcomeMessage();
   static void disableBufferedIO();
@@ -211,9 +213,6 @@ class ALEInterface {
                             std::unique_ptr<Settings>& theSettings);
   static void loadSettings(const std::string& romfile,
                            std::unique_ptr<OSystem>& theOSystem);
-
- private:
-  static bool isSupportedRom(std::unique_ptr<OSystem>& theOSystem);
 };
 
 }  // namespace ale

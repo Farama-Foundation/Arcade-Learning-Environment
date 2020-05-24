@@ -49,6 +49,9 @@ class HeroSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "hero"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "fca4a5be1251927027f2c24774a02160"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 5; }
 

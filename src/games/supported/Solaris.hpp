@@ -49,6 +49,9 @@ class SolarisSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "solaris"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "e72eb8d4410152bdcb69e7fba327b420"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

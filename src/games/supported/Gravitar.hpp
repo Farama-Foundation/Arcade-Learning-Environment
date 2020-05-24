@@ -49,6 +49,9 @@ class GravitarSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "gravitar"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "8ac18076d01a6b63acf6e2cab4968940"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 5; }
 

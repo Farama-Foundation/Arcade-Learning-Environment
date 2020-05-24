@@ -49,6 +49,9 @@ class QBertSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "qbert"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "484b0076816a104875e00467d431c2d2"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

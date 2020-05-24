@@ -72,6 +72,9 @@ class RomSettings {
   // the rom-name
   virtual const char* rom() const = 0;
 
+  // the md5 of the supported ROM version
+  virtual const char* md5() const = 0;
+
   // create a new instance of the rom
   virtual RomSettings* clone() const = 0;
 

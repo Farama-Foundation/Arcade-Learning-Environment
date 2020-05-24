@@ -49,6 +49,9 @@ class DemonAttackSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "demon_attack"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "f0e0addc07971561ab80d9abe1b8d333"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 8; }
 

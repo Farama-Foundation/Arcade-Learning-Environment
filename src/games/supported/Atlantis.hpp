@@ -49,6 +49,9 @@ class AtlantisSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "atlantis"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "9ad36e699ef6f45d9eb6c4cf90475c9f"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 

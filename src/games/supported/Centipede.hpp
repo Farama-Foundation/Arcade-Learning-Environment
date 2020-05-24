@@ -49,6 +49,9 @@ class CentipedeSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "centipede"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "91c2098e88a6b13f977af8c003e0bca5"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

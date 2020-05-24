@@ -35,6 +35,9 @@ class LaserGatesSettings : public RomSettings {
   // MD5 1fa58679d4a39052bd9db059e8cda4ad
   const char* rom() const override { return "laser_gates"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "8e4cd60d93fcde8065c1a2b972a26377"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

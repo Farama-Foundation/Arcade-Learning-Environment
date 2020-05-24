@@ -35,6 +35,9 @@ class FroggerSettings : public RomSettings {
   // MD5 081e2c114c9c20b61acf25fc95c71bf4
   const char* rom() const override { return "frogger"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "081e2c114c9c20b61acf25fc95c71bf4"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

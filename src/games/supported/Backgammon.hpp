@@ -46,6 +46,9 @@ class BackgammonSettings : public RomSettings {
 
   const char* rom() const override { return "backgammon"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "8556b42aa05f94bc29ff39c39b11bff4"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

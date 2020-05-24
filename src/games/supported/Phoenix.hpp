@@ -49,6 +49,9 @@ class PhoenixSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "phoenix"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "7e52a95074a66640fcfde124fffd491a"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

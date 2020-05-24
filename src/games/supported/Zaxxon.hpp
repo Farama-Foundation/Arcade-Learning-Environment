@@ -49,6 +49,9 @@ class ZaxxonSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "zaxxon"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "eea0da9b987d661264cce69a7c13c3bd"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 

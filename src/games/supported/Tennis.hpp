@@ -49,6 +49,9 @@ class TennisSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "tennis"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "42cdd6a9e42a3639e190722b8ea3fc51"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

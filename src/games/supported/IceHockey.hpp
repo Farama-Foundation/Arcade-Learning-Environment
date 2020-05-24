@@ -49,6 +49,9 @@ class IceHockeySettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "ice_hockey"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "a4c08c4994eb9d24fb78be1793e82e26"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 
