@@ -49,6 +49,9 @@ class BankHeistSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "bank_heist"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "00ce0bdd43aed84a983bef38fe7f5ee3"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 8; }
 

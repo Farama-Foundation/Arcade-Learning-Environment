@@ -42,6 +42,9 @@ class CasinoSettings : public RomSettings {
 
   const char* rom() const override { return "casino"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "b816296311019ab69a21cb9e9e235d12"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

@@ -34,6 +34,9 @@ class AirRaidSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "air_raid"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "35be55426c1fec32dfb503b4f0651572"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 8; }
 

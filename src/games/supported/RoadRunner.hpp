@@ -49,6 +49,9 @@ class RoadRunnerSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "road_runner"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "ce5cc62608be2cd3ed8abd844efb8919"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

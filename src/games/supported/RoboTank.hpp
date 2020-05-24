@@ -49,6 +49,9 @@ class RoboTankSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "robotank"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "4f618c2429138e0280969193ed6c107e"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

@@ -51,6 +51,9 @@ class CombatSettings : public RomSettings2P {
   // the rom-name
   const char* rom() const override { return "combat"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "0ef64cdbecccb7049752a3de0b7ade14"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

@@ -49,6 +49,9 @@ class YarsRevengeSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "yars_revenge"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "c5930d0e8cdae3e037349bfa08e871be"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 

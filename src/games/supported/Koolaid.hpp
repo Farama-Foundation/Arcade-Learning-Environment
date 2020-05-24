@@ -34,6 +34,9 @@ class KoolaidSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "koolaid"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "534e23210dd1993c828d944c6ac4d9fb"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

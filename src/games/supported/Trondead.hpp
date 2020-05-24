@@ -34,6 +34,9 @@ class TrondeadSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "trondead"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "fb27afe896e7c928089307b32e5642ee"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

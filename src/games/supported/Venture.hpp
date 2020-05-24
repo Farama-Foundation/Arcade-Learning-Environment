@@ -49,6 +49,9 @@ class VentureSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "venture"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "3e899eba0ca8cd2972da1ae5479b4f0d"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

@@ -80,7 +80,7 @@ bool RomSettings::isModeSupported(game_mode_t m) {
 #define two_player_fail() throw std::runtime_error("2 player method used for 1 player game in line: " xstr(__LINE__));
 #define four_player_fail() throw std::runtime_error("4 player method used for 1 or two player game in line: " xstr(__LINE__));
 
-reward_t RomSettings::getRewardP2() const { two_player_fail(); }
+reward_t RomSettings::getRewardP2() const { return -1; }
 int RomSettings::livesP2() { two_player_fail(); }
 ModeVect RomSettings::get2PlayerModes() { return ModeVect{}; }
 

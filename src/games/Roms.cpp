@@ -10,6 +10,8 @@
  * *****************************************************************************
  */
 
+#include <fstream>
+
 #include "Roms.hpp"
 #include "RomUtils.hpp"
 
@@ -122,6 +124,8 @@
 #include "supported/WordZapper.hpp"
 #include "supported/YarsRevenge.hpp"
 #include "supported/Zaxxon.hpp"
+
+#include "emucore/MD5.hxx"
 
 namespace ale {
 
@@ -245,6 +249,14 @@ RomSettings* buildRomRLWrapper(const std::string& rom) {
   rom_str = rom_str.substr(0, dot_idx);
   std::transform(rom_str.begin(), rom_str.end(), rom_str.begin(), ::tolower);
 
+  std::ifstream romfile(rom);
+  std::string str((std::istreambuf_iterator<char>(romfile)),
+                   std::istreambuf_iterator<char>());
+  std::string md5_val = MD5((const unsigned char*)str.data(),str.size());
+  for (size_t i = 0; i < sizeof(roms) / sizeof(roms[0]); i++) {
+    if (md5_val == roms[i]->md5())
+      return roms[i]->clone();
+  }
   for (size_t i = 0; i < sizeof(roms) / sizeof(roms[0]); i++) {
     if (rom_str == roms[i]->rom())
       return roms[i]->clone();

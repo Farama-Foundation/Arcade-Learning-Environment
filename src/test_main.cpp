@@ -204,7 +204,37 @@ bool test_single_player_controlability(std::string fname){
   }
   return hashs[0] != hashs[1];
 }
+void test_all_default(){
+  using namespace std;
+  ifstream file("md5.txt");
+  assert(file);
+  vector<string> names;
+  vector<string> md5s;
+  while(file){
+    string name,md5;
+    file >> md5;
+    file >> name;
+    if(name.size() <= 4){
+      break;
+    }
+    string stripname(name.begin(),name.end()-4);
+    names.push_back(stripname);
+    md5s.push_back(md5);
+  }
+  for (int i = 0; i < names.size(); i++){
+    cout << names[i] << ": worked\n";
+    string path_base =  "/home/ben/.virtualenvs/zoo/lib/python3.6/site-packages/ale_py/ROM/";
+    string path = path_base + names[i] + "/" + names[i] + ".bin";
+
+    ALEInterface interface;
+    interface.loadROM(path);
+    interface.reset_game();
+    assert(interface.isSupportedRom());
+  }
+
+}
 int main(){
+  //test_all_default();
   init_two_player_fnames();
   for(std::string fname : two_player_games){
     size_t last_slash = fname.find_last_of('/');
@@ -214,6 +244,12 @@ int main(){
         cout << fname << "\n";
         exit(-1);
     }
+    // else if(!test_two_player(fname)){
+    //   cout << binname << " environment bad\n";
+    // }
+    // else if(true){
+    //   cout << binname << " environment not crashing (not necessarily controllable)!\n";
+    // }
     else if(test_four_player(fname)){
       test_two_player_controlability(fname);
       if (!test_four_player_controlability(fname) ){

@@ -49,6 +49,9 @@ class CrazyClimberSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "crazy_climber"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "55ef7b65066428367844342ed59f956c"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 
