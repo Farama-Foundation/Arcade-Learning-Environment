@@ -42,6 +42,9 @@ class EarthworldSettings : public RomSettings {
 
   const char* rom() const override { return "earthworld"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "5aea9974b975a6a844e6df10d2b861c4"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

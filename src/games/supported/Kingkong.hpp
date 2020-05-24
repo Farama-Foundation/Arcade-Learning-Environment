@@ -49,6 +49,9 @@ class KingkongSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "king_kong"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "0dd4c69b5f9a7ae96a7a08329496779a"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

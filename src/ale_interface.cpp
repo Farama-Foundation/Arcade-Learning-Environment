@@ -41,11 +41,13 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
+#include <fstream>
 
 #include "common/ColourPalette.hpp"
 #include "common/Constants.h"
 #include "emucore/Console.hxx"
 #include "emucore/Props.hxx"
+#include "emucore/MD5.hxx"
 #include "environment/ale_screen.hpp"
 #include "games/RomSettings.hpp"
 
@@ -73,21 +75,6 @@ void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-bool ALEInterface::isSupportedRom(std::unique_ptr<OSystem>& theOSystem) {
-  const Properties properties = theOSystem->console().properties();
-  const std::string md5 = properties.get(Cartridge_MD5);
-  bool found = false;
-  std::ifstream ss("md5.txt");
-  std::string item;
-  while (!found && std::getline(ss, item)) {
-    if (!item.compare(0, md5.size(), md5)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 void ALEInterface::loadSettings(const std::string& romfile,
                                 std::unique_ptr<OSystem>& theOSystem) {
   // Load the configuration from a config file (passed on the command
@@ -109,19 +96,6 @@ void ALEInterface::loadSettings(const std::string& romfile,
     Logger::Error << "ROM file " << romfile << " not found." << std::endl;
     std::exit(1);
   } else if (theOSystem->createConsole(romfile)) {
-    if (!isSupportedRom(theOSystem)) {
-      const Properties properties = theOSystem->console().properties();
-      const std::string md5 = properties.get(Cartridge_MD5);
-      const std::string name = properties.get(Cartridge_Name);
-
-      // If the md5 doesn't match our master list, warn the user.
-      Logger::Warning << std::endl;
-      Logger::Warning << "WARNING: Possibly unsupported ROM: mismatched MD5."
-                      << std::endl;
-      Logger::Warning << "Cartridge_MD5: " << md5 << std::endl;
-      Logger::Warning << "Cartridge_name: " << name << std::endl;
-      Logger::Warning << std::endl;
-    }
     Logger::Info << "Running ROM file..." << std::endl;
     theOSystem->settings().setString("rom_file", romfile);
   } else {
@@ -161,31 +135,40 @@ void ALEInterface::loadROM(std::string rom_file) {
     rom_file = theOSystem->romFile();
   }
 
-  RomSettings* wrapper = buildRomRLWrapper(rom_file);
+  // Load all settings corresponding to the ROM file and create a new game
+  // console, with attached devices, capable of emulating the ROM.
+  loadSettings(rom_file, theOSystem);
+
+  const Properties properties = theOSystem->console().properties();
+  const std::string md5 = properties.get(Cartridge_MD5);
+  const std::string name = properties.get(Cartridge_Name);
+
+  RomSettings* wrapper = buildRomRLWrapper(rom_file, md5);
   if (wrapper == NULL) {
     Logger::Error << std::endl
-      << "Attempt to wrap ROM " << rom_file << " failed." << std::endl;
-
-    // We need to load the settings now to make the isSupportedRom check work;
-    // the check needs the console (and its properties) to be initialized.
-    loadSettings(rom_file, theOSystem);
-
-    if (isSupportedRom(theOSystem)) {
-      Logger::Error << "It seems the ROM is supported." << std::endl;
-    } else {
-      Logger::Error
-        << "This ROM may not be supported." << std::endl
-        << "For a list of supported ROMs see "
-        << "https://github.com/mgbellemare/Arcade-Learning-Environment"
-        << std::endl;
-    }
+      << "Attempt to wrap ROM " << rom_file
+      << "(" << md5 << ") failed." << std::endl;
 
     Logger::Error
-      << "Perhaps the filename isn't what we expected." << std::endl
-      << "ROM files should be named using snake case, "
-      << "e.g., space_invaders.bin" << std::endl;
+      << "If you're using an MD5 mismatched ROM, please make sure "
+      << "the filename is in snake case." << std::endl
+      << "e.g., space_invaders.bin" << std::endl << std::endl;
+
+    Logger::Error
+      << "For a list of supported ROMs see "
+      << "https://github.com/mgbellemare/Arcade-Learning-Environment"
+      << std::endl;
 
     std::exit(1);
+  } else if (wrapper->md5() != md5) {
+    Logger::Warning << std::endl;
+    Logger::Warning << "WARNING: Possibly unsupported ROM: mismatched MD5."
+                    << std::endl;
+    Logger::Warning << "Expected MD5:  " << wrapper->md5() << std::endl;
+    Logger::Warning << "Cartridge MD5: " << md5 << std::endl;
+    Logger::Warning << "Cartridge Name: " << name << std::endl;
+
+    Logger::Warning << std::endl;
   }
 
   romSettings.reset(wrapper);
@@ -193,10 +176,6 @@ void ALEInterface::loadROM(std::string rom_file) {
   // Custom environment settings required for a specific ROM must be added
   // before the StellaEnvironment is constructed.
   romSettings->modifyEnvironmentSettings(theOSystem->settings());
-
-  // Load all settings corresponding to the ROM file and create a new game
-  // console, with attached devices, capable of emulating the ROM.
-  loadSettings(rom_file, theOSystem);
 
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
@@ -215,6 +194,23 @@ void ALEInterface::loadROM(std::string rom_file) {
     std::exit(1);
   }
 #endif
+}
+
+bool ALEInterface::isSupportedRom(const std::string& rom_file){
+  std::ifstream fsnode(rom_file);
+  // TODO C++17: Use FS
+  if (!fsnode.good()) {
+    throw std::runtime_error("Failed to open rom file.");
+  }
+
+  std::vector<uint8_t> rom((std::istreambuf_iterator<char>(fsnode)),
+                            std::istreambuf_iterator<char>());
+  fsnode.close();
+
+  std::string md5 = MD5(rom.data(), rom.size());
+  RomSettings* wrapper = buildRomRLWrapper(rom_file, md5);
+
+  return wrapper != NULL && wrapper->md5() == md5;
 }
 
 // Get the value of a setting.

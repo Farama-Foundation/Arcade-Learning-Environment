@@ -44,6 +44,9 @@ class VideoCheckersSettings : public RomSettings {
 
   const char* rom() const  override { return "video_checkers"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "539d26b6e9df0da8e7465f0f5ad863b7"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

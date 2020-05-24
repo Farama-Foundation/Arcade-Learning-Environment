@@ -49,6 +49,9 @@ class BeamRiderSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "beam_rider"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "79ab4123a83dc11d468fb2108ea09e2e"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

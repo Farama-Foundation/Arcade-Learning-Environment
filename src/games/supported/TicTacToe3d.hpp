@@ -43,6 +43,9 @@ public:
 
   const char* rom() const override { return "tic_tac_toe_3d"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "0db4f4150fecf77e4ce72ca4d04c052f"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

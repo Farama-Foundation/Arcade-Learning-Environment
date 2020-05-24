@@ -49,6 +49,9 @@ class BowlingSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "bowling"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "c9b7afad3bfd922e006a6bfc1d4f3fe7"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 3; }
 

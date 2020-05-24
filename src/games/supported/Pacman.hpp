@@ -55,6 +55,9 @@ class PacmanSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "pacman"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "fc2233fc116faef0d3c31541717ca2db"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

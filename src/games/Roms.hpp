@@ -20,7 +20,7 @@
 namespace ale {
 
 // looks for the RL wrapper corresponding to a particular rom title
-RomSettings* buildRomRLWrapper(const std::string& rom);
+RomSettings* buildRomRLWrapper(const std::string& rom, const std::string md5);
 
 }  // namespace ale
 

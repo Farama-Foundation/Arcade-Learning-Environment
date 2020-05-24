@@ -193,6 +193,11 @@ def test_save_screen_png(tetris):
     os.remove(file)
 
 
+def test_is_rom_supported(ale, test_rom_path):
+    assert ale.isSupportedRom(test_rom_path)
+    with pytest.raises(RuntimeError) as exc_info:
+        ale.isSupportedRom("notfound")
+
 def test_save_load_state(tetris):
     state = tetris.cloneState()
     tetris.saveState()

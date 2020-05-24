@@ -42,6 +42,9 @@ class EntombedSettings : public RomSettings {
 
   const char* rom() const override { return "entombed"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "6b683be69f92958abe0e2a9945157ad5"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

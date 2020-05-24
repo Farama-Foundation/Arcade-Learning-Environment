@@ -42,6 +42,9 @@ class SupermanSettings : public RomSettings {
 
   const char* rom() const override { return "superman"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "a9531c763077464307086ec9a1fd057d"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

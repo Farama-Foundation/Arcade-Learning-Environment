@@ -42,6 +42,9 @@ class OthelloSettings : public RomSettings {
 
   virtual const char* rom() const { return "othello"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "113cd09c9771ac278544b7e90efe7df2"; }
+
   virtual RomSettings* clone() const;
 
   virtual bool isMinimal(const Action& a) const;

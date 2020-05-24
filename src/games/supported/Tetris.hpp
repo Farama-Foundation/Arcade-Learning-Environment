@@ -47,6 +47,9 @@ class TetrisSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "tetris"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "b0e1ee07fbc73493eac5651a52f90f00"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

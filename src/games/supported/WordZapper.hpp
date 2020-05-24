@@ -41,6 +41,9 @@ class WordZapperSettings : public RomSettings {
 
   const char* rom() const override { return "word_zapper"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "ec3beb6d8b5689e867bafb5d5f507491"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

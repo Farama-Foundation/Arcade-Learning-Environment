@@ -44,6 +44,9 @@ class BlackjackSettings : public RomSettings {
 
   const char* rom() const override { return "blackjack"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "0a981c03204ac2b278ba392674682560"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

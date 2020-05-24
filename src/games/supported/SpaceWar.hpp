@@ -42,6 +42,9 @@ class SpaceWarSettings : public RomSettings {
 
   const char* rom() const override { return "space_war"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "b702641d698c60bcdc922dbd8c9dd49c"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

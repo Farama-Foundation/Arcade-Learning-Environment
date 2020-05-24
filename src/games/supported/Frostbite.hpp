@@ -49,6 +49,9 @@ class FrostbiteSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "frostbite"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "4ca73eb959299471788f0b685c3ba0b5"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

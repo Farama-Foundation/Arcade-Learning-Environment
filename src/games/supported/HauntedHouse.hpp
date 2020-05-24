@@ -42,6 +42,9 @@ class HauntedHouseSettings : public RomSettings {
 
   const char* rom() const override { return "haunted_house"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "f0a6e99f5875891246c3dbecbf2d2cea"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

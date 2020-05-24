@@ -35,6 +35,9 @@ class KeystoneKapersSettings : public RomSettings {
   // MD5 be929419902e21bd7830a7a7d746195d
   const char* rom() const override { return "keystone_kapers"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "6c1f3f2e359dbf55df462ccbcdd2f6bf"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

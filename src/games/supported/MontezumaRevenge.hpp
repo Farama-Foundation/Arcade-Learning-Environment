@@ -49,6 +49,9 @@ class MontezumaRevengeSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "montezuma_revenge"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "3347a6dd59049b15a38394aa2dafa585"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

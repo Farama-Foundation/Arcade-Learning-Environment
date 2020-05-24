@@ -52,6 +52,9 @@ class Atlantis2Settings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "atlantis2"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "826481f6fc53ea47c9f272f7050eedf7"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

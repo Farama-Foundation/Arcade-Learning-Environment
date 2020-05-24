@@ -49,6 +49,9 @@ class PrivateEyeSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "private_eye"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "ef3a4f64b6494ba770862768caf04b86"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 5; }
 

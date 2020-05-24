@@ -50,6 +50,9 @@ class FreewaySettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "freeway"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "8e0ab801b1705a740b476b7f588c6d16"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 8; }
 

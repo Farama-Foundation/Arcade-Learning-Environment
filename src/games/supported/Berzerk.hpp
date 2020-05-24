@@ -49,6 +49,9 @@ class BerzerkSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "berzerk"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "136f75c4dd02c29283752b7e5799f978"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 12; }
 
