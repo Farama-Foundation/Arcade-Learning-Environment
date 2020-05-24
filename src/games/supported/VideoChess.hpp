@@ -54,6 +54,9 @@ class VideoChessSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "videochess"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "f0b7db930ca0e548c41a97160b9f6275"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

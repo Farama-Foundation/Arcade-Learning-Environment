@@ -49,6 +49,9 @@ class PongSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "pong"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "60e0ea3cbe0913d39803477945e9e5ec"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

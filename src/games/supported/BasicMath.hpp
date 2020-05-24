@@ -42,6 +42,9 @@ class BasicMathSettings : public RomSettings {
 
   const char* rom() const override { return "basic_math"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "819aeeb9a2e11deb54e6de334f843894"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

@@ -228,9 +228,9 @@ static const RomSettings* roms[] = {
     new YarsRevengeSettings(),
     new ZaxxonSettings(),
 };
-
-/* looks for the RL wrapper corresponding to a particular rom title */
-RomSettings* buildRomRLWrapper(const std::string& rom) {
+/* looks for the RL wrapper corresponding to a particular rom filename,
+ * and optionally md5. returns null if neither match */
+RomSettings* buildRomRLWrapper(const std::string& rom, const std::string rom_md5 = std::string()){
   size_t slash_ind = rom.find_last_of("/\\");
   std::string rom_str = rom.substr(slash_ind + 1);
   size_t dot_idx = rom_str.find_first_of(".");
@@ -238,10 +238,9 @@ RomSettings* buildRomRLWrapper(const std::string& rom) {
   std::transform(rom_str.begin(), rom_str.end(), rom_str.begin(), ::tolower);
 
   for (size_t i = 0; i < sizeof(roms) / sizeof(roms[0]); i++) {
-    if (rom_str == roms[i]->rom())
+    if (rom_md5 == roms[i]->md5() || rom_str == roms[i]->rom())
       return roms[i]->clone();
   }
-
   return NULL;
 }
 

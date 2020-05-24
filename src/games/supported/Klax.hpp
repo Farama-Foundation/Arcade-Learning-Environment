@@ -42,6 +42,9 @@ class KlaxSettings : public RomSettings {
 
   const char* rom() const override { return "klax"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "eed9eaf1a0b6a2b9bc4c8032cb43e3fb"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

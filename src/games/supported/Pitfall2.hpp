@@ -47,6 +47,9 @@ class Pitfall2Settings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "pitfall2"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "6d842c96d5a01967be9680080dd5be54"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

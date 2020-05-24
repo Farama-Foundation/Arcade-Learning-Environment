@@ -51,6 +51,9 @@ class SurroundSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "surround"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "4d7517ae69f95cfbc053be01312b7dba"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

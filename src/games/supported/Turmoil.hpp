@@ -36,6 +36,9 @@ class TurmoilSettings : public RomSettings {
   // 7a5463545dfb2dcfdafa6074b2f2c15e  Turmoil.bin
   const char* rom() const override { return "turmoil"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "7a5463545dfb2dcfdafa6074b2f2c15e"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

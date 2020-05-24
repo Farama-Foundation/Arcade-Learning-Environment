@@ -49,6 +49,9 @@ class ChopperCommandSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "chopper_command"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "c1cb228470a87beb5f36e90ac745da26"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 

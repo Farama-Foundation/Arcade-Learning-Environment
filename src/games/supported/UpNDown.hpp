@@ -49,6 +49,9 @@ class UpNDownSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "up_n_down"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "a499d720e7ee35c62424de882a3351b6"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

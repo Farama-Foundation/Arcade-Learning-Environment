@@ -49,6 +49,9 @@ class BoxingSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "boxing"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "c3ef5c4653212088eda54dc91d787870"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

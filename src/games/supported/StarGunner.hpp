@@ -49,6 +49,9 @@ class StarGunnerSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "star_gunner"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "a3c1c70024d7aabb41381adbfb6d3b25"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 4; }
 

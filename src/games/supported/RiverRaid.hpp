@@ -51,6 +51,9 @@ class RiverRaidSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "riverraid"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "393948436d1f4cc3192410bb918f9724"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

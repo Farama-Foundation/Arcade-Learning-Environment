@@ -49,6 +49,9 @@ class ElevatorActionSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "elevator_action"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "71f8bacfbdca019113f3f0801849057e"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

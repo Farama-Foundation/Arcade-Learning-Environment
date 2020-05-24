@@ -49,6 +49,9 @@ class SeaquestSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "seaquest"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "240bfbac5163af4df5ae713985386f92"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

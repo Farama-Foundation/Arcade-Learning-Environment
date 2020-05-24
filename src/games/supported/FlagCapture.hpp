@@ -42,6 +42,9 @@ class FlagCaptureSettings : public RomSettings {
 
   const char* rom() const override { return "flag_capture"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "30512e0e83903fc05541d2f6a6a62654"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;
