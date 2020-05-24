@@ -59,14 +59,10 @@ $ make -j 4
 To install the Python module:
 
 ```
-$ pip install .
+$ pip install multi-agent-ale-py
 ```
 
-or
 
-```
-$ pip install --user .
-```
 
 Getting the ALE to work on Visual Studio requires a bit of extra wrangling. You
 may wish to use IslandMan93's [Visual Studio port of the

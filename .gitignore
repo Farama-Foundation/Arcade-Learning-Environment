@@ -2,8 +2,9 @@
 
 ale
 build
+dist
 doc/examples/*Example
-
+multi_agent_ale_py.egg-info
 ## Generic
 
 # Emacs temp files

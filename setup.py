@@ -134,18 +134,19 @@ def _parse_version(filename):
 
 
 setup(
-    name="ale-py",
+    name="multi-agent-ale-py",
     version=_parse_version("CMakeLists.txt"),
-    description="Arcade Learning Environment Python Interface",
+    description="Multi-Agent Arcade Learning Environment Python Interface",
     long_description=_read("README.md"),
     long_description_content_type="text/markdown",
     keywords=["reinforcement-learning", "arcade-learning-environment", "atari"],
-    url="https://github.com/mgbellemare/Arcade-Learning-Environment",
-    author="Arcade Learning Environment Authors",
+    url="https://github.com/PettingZoo-Team/Multi-Agent-ALE",
+    author="PettingZoo Team",
+    author_email="justinkterry@gmail.com",
     license="GPL",
     ext_modules=[
         CMakeExtension(
-            "ale_py.libale_c",
+            "multi_agent_ale_py.libale_c",
             ".",
             [
                 "-DUSE_SDL=OFF",
@@ -158,7 +159,7 @@ setup(
         )
     ],
     cmdclass={"build_ext": CMakeBuild},
-    packages=["ale_py"],
+    packages=["multi_agent_ale_py"],
     install_requires=["numpy"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
