@@ -1,0 +1,6 @@
+include CMakeLists.txt
+recursive-include src *
+recursive-include scripts *
+recursive-include multi_agent_ale_py *.bin
+recursive-include multi_agent_ale_py *.cpp
+recursive-include multi_agent_ale_py *.h
