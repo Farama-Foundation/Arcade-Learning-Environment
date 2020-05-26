@@ -49,6 +49,9 @@ class KrullSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "krull"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "4baada22435320d185c95b7dd2bcdb24"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

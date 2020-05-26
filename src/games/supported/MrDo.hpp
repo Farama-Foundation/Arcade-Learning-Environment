@@ -34,6 +34,9 @@ class MrDoSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "mr_do"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "aa7bb54d2c189a31bb1fa20099e42859"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

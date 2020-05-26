@@ -51,6 +51,9 @@ class DoubleDunkSettings : public RomSettings2P {
   // the rom-name
   const char* rom() const override { return "double_dunk"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "368d88a6c071caba60b4f778615aae94"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 16; }
 

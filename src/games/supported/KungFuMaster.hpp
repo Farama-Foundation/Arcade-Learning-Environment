@@ -49,6 +49,9 @@ class KungFuMasterSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "kung_fu_master"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "5b92a93b23523ff16e2789b820e2a4c5"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

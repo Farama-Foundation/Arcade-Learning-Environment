@@ -51,6 +51,9 @@ class WizardOfWorSettings : public RomSettings2P {
   // the rom-name
   const char* rom() const override { return "wizard_of_wor"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "7e8aa18bc9502eb57daaf5e7c1e94da7"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

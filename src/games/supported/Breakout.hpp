@@ -49,6 +49,9 @@ class BreakoutSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "breakout"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "f34f08e5eb96e500e851a80be3277a56"; }
+
   // get the available number of modes
   unsigned int getNumModes() const { return 12; }
 

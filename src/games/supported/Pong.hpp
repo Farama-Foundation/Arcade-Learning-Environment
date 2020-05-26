@@ -52,6 +52,9 @@ class PongSettings : public RomSettings4P {
   // the rom-name
   const char* rom() const override { return "pong"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "60e0ea3cbe0913d39803477945e9e5ec"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

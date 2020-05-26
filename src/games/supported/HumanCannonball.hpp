@@ -42,6 +42,9 @@ class HumanCannonballSettings : public RomSettings {
 
   const char* rom() const override { return "human_cannonball"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "7972e5101fa548b952d852db24ad6060"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

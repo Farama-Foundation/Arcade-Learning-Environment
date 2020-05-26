@@ -44,6 +44,9 @@ class MarioBrosSettings : public RomSettings2P {
 
   const char* rom() const override { return "mario_bros"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "e908611d99890733be31733a979c62d8"; }
+
   RomSettings* clone() const override;
 
   bool isMinimal(const Action& a) const override;

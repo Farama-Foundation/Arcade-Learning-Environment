@@ -47,6 +47,9 @@ class MazeCrazeSettings : public RomSettings2P {
 
   const char* rom() const { return "maze_craze"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "ed2218b3075d15eaa34e3356025ccca3"; }
+
   RomSettings* clone() const;
 
   bool isMinimal(const Action& a) const;

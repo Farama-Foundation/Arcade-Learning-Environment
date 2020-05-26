@@ -51,6 +51,9 @@ class JoustSettings : public RomSettings2P {
   // the rom-name
   const char* rom() const override { return "joust"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "3276c777cbe97cdd2b4a63ffc16b7151"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

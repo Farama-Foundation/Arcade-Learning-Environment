@@ -49,6 +49,9 @@ class CarnivalSettings : public RomSettings {
   // the rom-name
   const char* rom() const override { return "carnival"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "028024fb8e5e5f18ea586652f9799c96"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 

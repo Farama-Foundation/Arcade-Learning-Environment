@@ -73,16 +73,13 @@ void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-bool ALEInterface::isSupportedRom(std::unique_ptr<OSystem>& theOSystem) {
+bool ALEInterface::isSupportedRom() {
   const Properties properties = theOSystem->console().properties();
   const std::string md5 = properties.get(Cartridge_MD5);
   bool found = false;
-  std::ifstream ss("md5.txt");
-  std::string item;
-  while (!found && std::getline(ss, item)) {
-    if (!item.compare(0, md5.size(), md5)) {
-      return true;
-    }
+  std::string item(romSettings->md5());
+  if (!item.compare(0, md5.size(), md5)) {
+    return true;
   }
 
   return false;
@@ -109,7 +106,7 @@ void ALEInterface::loadSettings(const std::string& romfile,
     Logger::Error << "ROM file " << romfile << " not found." << std::endl;
     std::exit(1);
   } else if (theOSystem->createConsole(romfile)) {
-    if (!isSupportedRom(theOSystem)) {
+    if (!isSupportedRom()) {
       const Properties properties = theOSystem->console().properties();
       const std::string md5 = properties.get(Cartridge_MD5);
       const std::string name = properties.get(Cartridge_Name);
@@ -120,6 +117,7 @@ void ALEInterface::loadSettings(const std::string& romfile,
                       << std::endl;
       Logger::Warning << "Cartridge_MD5: " << md5 << std::endl;
       Logger::Warning << "Cartridge_name: " << name << std::endl;
+      Logger::Warning << "Expected_MD5: " << romSettings->md5() << std::endl;
       Logger::Warning << std::endl;
     }
     Logger::Info << "Running ROM file..." << std::endl;
@@ -170,7 +168,7 @@ void ALEInterface::loadROM(std::string rom_file) {
     // the check needs the console (and its properties) to be initialized.
     loadSettings(rom_file, theOSystem);
 
-    if (isSupportedRom(theOSystem)) {
+    if (isSupportedRom()) {
       Logger::Error << "It seems the ROM is supported." << std::endl;
     } else {
       Logger::Error
@@ -347,12 +345,12 @@ reward_t ALEInterface::act(Action action) {
   if(numPlayersActive() != 1){
     throw std::runtime_error("Single player action when in multi player mode");
   }
-  reward_t reward = environment->act(action, PLAYER_B_NOOP);
+  reward_t reward = environment->act({action})[0];
   if (theOSystem->p_display_screen != NULL) {
     theOSystem->p_display_screen->display_screen();
     while (theOSystem->p_display_screen->manual_control_engaged()) {
       Action user_action = theOSystem->p_display_screen->getUserAction();
-      reward += environment->act(user_action, PLAYER_B_NOOP);
+      reward += environment->act({user_action})[0];
       theOSystem->p_display_screen->display_screen();
     }
   }

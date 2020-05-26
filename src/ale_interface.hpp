@@ -207,15 +207,14 @@ class ALEInterface {
 
  public:
   // Display ALE welcome message
-  static std::string welcomeMessage();
-  static void disableBufferedIO();
-  static void createOSystem(std::unique_ptr<OSystem>& theOSystem,
+  std::string welcomeMessage();
+  void disableBufferedIO();
+  void createOSystem(std::unique_ptr<OSystem>& theOSystem,
                             std::unique_ptr<Settings>& theSettings);
-  static void loadSettings(const std::string& romfile,
+  void loadSettings(const std::string& romfile,
                            std::unique_ptr<OSystem>& theOSystem);
 
- private:
-  static bool isSupportedRom(std::unique_ptr<OSystem>& theOSystem);
+  bool isSupportedRom();
 };
 
 }  // namespace ale

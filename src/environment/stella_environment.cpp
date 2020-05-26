@@ -104,7 +104,9 @@ void StellaEnvironment::reset() {
   // this is needed for double dunk to work
   emulate({PLAYER_A_NOOP,PLAYER_A_NOOP});
   for (size_t i = 0; i < startingActions.size(); i++) {
-    emulate({PLAYER_A_NOOP,startingActions[i]});
+    if (startingActions[i] != RESET){
+      emulate({PLAYER_A_NOOP,startingActions[i]});
+    }
   }
   emulate({PLAYER_A_NOOP,PLAYER_A_NOOP});
 }

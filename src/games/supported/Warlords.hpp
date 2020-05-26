@@ -52,6 +52,9 @@ class WarlordsSettings : public RomSettings4P {
   // the rom-name
   const char* rom() const override { return "warlords"; }
 
+  // The md5 checksum of the ROM that this game supports
+  const char* md5() const override { return "cbe5a166550a8129a5e6d374901dffad"; }
+
   // create a new instance of the rom
   RomSettings* clone() const override;
 
