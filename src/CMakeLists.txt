@@ -17,7 +17,7 @@ target_compile_options(ale PUBLIC -O3 -fPIC)
 # Compiler specific flags
 target_compile_options(ale
   PUBLIC
-    $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wunused -fomit-frame-pointer>
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wunused>
 )
 
 # Dependencies
