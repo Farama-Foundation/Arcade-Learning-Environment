@@ -88,7 +88,7 @@ def _is_valid_semver(version):
 
 def _parse_version(filename):
     """
-    Parse ALEVERSION from `CMakeLists.txt`
+    Parse ale VERSION from `CMakeLists.txt`
 
     args:
         filename: should point to the projects CMakeLists.txt
@@ -98,7 +98,7 @@ def _parse_version(filename):
             2) Running in CI with a version tag will be of the form TAGGED_VERSION
     raises:
         RuntimeError:
-            1) Unable to find ALEVERSION in `filename` 
+            1) Unable to find ale VERSION in `filename` 
         AssertionError:
             1) Running in CI and tagged version doesn't match parsed version
             2) Tagged version or parsed version doesn't conform to semver rules
@@ -107,11 +107,11 @@ def _parse_version(filename):
     contents = _read(filename)
     version_match = re.search(r"ale VERSION\s(\d+.*)", contents, re.M)
     if not version_match:
-        raise RuntimeError("Unable to find ALEVERSION in %s" % filename)
+        raise RuntimeError("Unable to find ale VERSION in %s" % filename)
 
     version = version_match.group(1)
     version_suffix = ".dev"
-    assert _is_valid_semver(version), "ALEVERSION %s must conform to semver." % version
+    assert _is_valid_semver(version), "ale VERSION %s must conform to semver." % version
 
     # If the git ref is a tag verify the tag and don't use a suffix
     ref = "GITHUB_REF"
@@ -123,7 +123,7 @@ def _parse_version(filename):
             "Tag is invalid semver. %s must conform to semver." % version_tag
         )
         assert version_tag == version, (
-            "Tagged version must match ALEVERSION but got:\n\tALEVERSION: %s\n\tTAG: %s"
+            "Tagged version must match ale VERSION but got:\n\tale VERSION: %s\n\tTAG: %s"
             % (version, version_tag)
         )
         version_suffix = ""
