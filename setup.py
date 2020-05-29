@@ -105,7 +105,7 @@ def _parse_version(filename):
     """
     # Parse version from file
     contents = _read(filename)
-    version_match = re.search(r"ALEVERSION\s\"(\d+.*)\"", contents, re.M)
+    version_match = re.search(r"ale VERSION\s(\d+.*)", contents, re.M)
     if not version_match:
         raise RuntimeError("Unable to find ALEVERSION in %s" % filename)
 
