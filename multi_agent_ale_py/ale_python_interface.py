@@ -261,13 +261,13 @@ class ALEInterface(object):
     def lives(self):
         life_size = ale_lib.livesSize(self.obj)
         lives = np.zeros((life_size), dtype=np.intc)
-        ale_lib.lives(self.obj, as_ctypes(act))
+        ale_lib.lives(self.obj, as_ctypes(lives))
         return lives[0]
 
     def allLives(self):
         life_size = ale_lib.livesSize(self.obj)
         lives = np.zeros((life_size), dtype=np.intc)
-        ale_lib.lives(self.obj, as_ctypes(act))
+        ale_lib.lives(self.obj, as_ctypes(lives))
         return lives
 
     def getEpisodeFrameNumber(self):
