@@ -74,7 +74,8 @@ class MazeCrazeSettings : public RomSettings2P {
   bool p2_isalive;
   int steps_p1_deactive;
   int steps_p2_deactive;
-  reward_t m_reward;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   int m_score;
 };
 

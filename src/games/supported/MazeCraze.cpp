@@ -39,6 +39,8 @@ void MazeCrazeSettings::step(const System& system) {
   int player1_score = readRam(&system,0xEC) == 0xff ? 1 : 0;
   int player2_score = readRam(&system,0xED) == 0xff ? 1 : 0;
 
+  m_reward_p1 = 0;
+  m_reward_p2 = 0;
   //a player is killed if the bit saying it cannot move
   //is set for a couple seconds.
   if(readRam(&system,0xEA)&4) {
@@ -53,21 +55,37 @@ void MazeCrazeSettings::step(const System& system) {
   else{
     steps_p2_deactive = 0;
   }
-  p1_isalive = p1_isalive && steps_p1_deactive < 60;
-  p2_isalive = p2_isalive && steps_p2_deactive < 60;
-
-  m_reward = player1_score - player2_score;
-
+  if (p1_isalive && steps_p1_deactive >= 60){
+    p1_isalive = false;
+    m_reward_p1 = -1;
+  }
+  if (p2_isalive && steps_p2_deactive >= 60){
+    p2_isalive = false;
+    m_reward_p2 = -1;
+  }
+  int completion_score = player1_score - player2_score;
+  if(completion_score != 0){
+    if(!p1_isalive){
+      m_reward_p2 = 1;
+    }
+    else if(!p2_isalive){
+      m_reward_p1 = 1;
+    }
+    else{
+      m_reward_p1 = completion_score;
+      m_reward_p2 = -completion_score;
+    }
+  }
 
   // game is over when some player wins/ i.e. reward is not zero
   // or both players are dead
-  m_terminal = m_reward != 0 || (!p1_isalive && !p2_isalive);
+  m_terminal = completion_score != 0 || (!p1_isalive && !p2_isalive);
 }
 
 bool MazeCrazeSettings::isTerminal() const { return m_terminal; }
 
-reward_t MazeCrazeSettings::getReward() const { return m_reward; }
-reward_t MazeCrazeSettings::getRewardP2() const { return -m_reward; }
+reward_t MazeCrazeSettings::getReward() const { return m_reward_p1; }
+reward_t MazeCrazeSettings::getRewardP2() const { return m_reward_p2; }
 
 int MazeCrazeSettings::lives() { return p1_isalive ? 0 : -1; }
 int MazeCrazeSettings::livesP2() { return p2_isalive ? 0 : -1; }
@@ -101,7 +119,8 @@ bool MazeCrazeSettings::isMinimal(const Action& a) const {
 }
 
 void MazeCrazeSettings::reset() {
-  m_reward = 0;
+  m_reward_p1 = 0;
+  m_reward_p2 = 0;
   m_score = 0;
   p1_isalive = true;
   p2_isalive = true;
@@ -111,7 +130,8 @@ void MazeCrazeSettings::reset() {
 }
 
 void MazeCrazeSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward);
+  ser.putInt(m_reward_p1);
+  ser.putInt(m_reward_p2);
   ser.putInt(m_score);
   ser.putInt(steps_p1_deactive);
   ser.putInt(steps_p2_deactive);
@@ -121,7 +141,8 @@ void MazeCrazeSettings::saveState(Serializer& ser) {
 }
 
 void MazeCrazeSettings::loadState(Deserializer& ser) {
-  m_reward = ser.getInt();
+  m_reward_p1 = ser.getInt();
+  m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
   steps_p1_deactive = ser.getInt();
   steps_p2_deactive = ser.getInt();
