@@ -160,7 +160,10 @@ setup(
     ],
     cmdclass={"build_ext": CMakeBuild},
     packages=["multi_agent_ale_py"],
-    install_requires=["numpy"],
+    install_requires=[
+        "numpy",
+        "cmake"
+    ],
     include_package_data=True,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
