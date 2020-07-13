@@ -34,7 +34,9 @@ void CombatSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
 
-  m_terminal = my_score == 99 || oppt_score == 99;
+  int over_flag = readRam(&system, 0x88);
+
+  m_terminal = my_score == 99 || oppt_score == 99 || over_flag == 0;
 }
 
 /* is end of game */

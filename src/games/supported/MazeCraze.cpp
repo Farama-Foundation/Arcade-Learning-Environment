@@ -43,23 +43,11 @@ void MazeCrazeSettings::step(const System& system) {
   m_reward_p2 = 0;
   //a player is killed if the bit saying it cannot move
   //is set for a couple seconds.
-  if(readRam(&system,0xEA)&4) {
-    steps_p1_deactive++;
-  }
-  else{
-    steps_p1_deactive = 0;
-  }
-  if(readRam(&system,0xEB)&4) {
-    steps_p2_deactive++;
-  }
-  else{
-    steps_p2_deactive = 0;
-  }
-  if (p1_isalive && steps_p1_deactive >= 60){
+  if(p1_isalive && readRam(&system,0xEA)&0x40) {
     p1_isalive = false;
     m_reward_p1 = -1;
   }
-  if (p2_isalive && steps_p2_deactive >= 60){
+  if(p2_isalive && readRam(&system,0xEB)&0x40) {
     p2_isalive = false;
     m_reward_p2 = -1;
   }
@@ -124,8 +112,6 @@ void MazeCrazeSettings::reset() {
   m_score = 0;
   p1_isalive = true;
   p2_isalive = true;
-  steps_p1_deactive = 0;
-  steps_p2_deactive = 0;
   m_terminal = false;
 }
 
@@ -133,8 +119,6 @@ void MazeCrazeSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward_p1);
   ser.putInt(m_reward_p2);
   ser.putInt(m_score);
-  ser.putInt(steps_p1_deactive);
-  ser.putInt(steps_p2_deactive);
   ser.putBool(m_terminal);
   ser.putBool(p1_isalive);
   ser.putBool(p2_isalive);
@@ -144,8 +128,6 @@ void MazeCrazeSettings::loadState(Deserializer& ser) {
   m_reward_p1 = ser.getInt();
   m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
-  steps_p1_deactive = ser.getInt();
-  steps_p2_deactive = ser.getInt();
   m_terminal = ser.getBool();
   p1_isalive = ser.getBool();
   p2_isalive = ser.getBool();

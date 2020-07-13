@@ -27,18 +27,43 @@ RomSettings* WarlordsSettings::clone() const {
 
 /* process the latest information from ALE */
 void WarlordsSettings::step(const System& system) {
-  // update the reward
-  for(size_t i = 0; i < 4; i++){
-    int score_byte = readRam(&system, 0xe0+i);
-    //yes, this is the correct formula. I don't understand it either, but it works.
-    int score = (score_byte - 5) / 6;
-    m_rewards[i] = score - m_scores[i];
-    m_scores[i] = score;
+  int lives_byte = readRam(&system, 0xee);
+  int new_lives[4] = {
+    (0x80 & lives_byte) ? -1 : 0,
+    (0x40 & lives_byte) ? -1 : 0,
+    (0x20 & lives_byte) ? -1 : 0,
+    (0x10 & lives_byte) ? -1 : 0
+  };
+  // update
+  int num_alive = 4;
+  for(int i = 0; i < 4; i++){
+    num_alive += new_lives[i];
+    assert(new_lives[i] <= m_lives[i] && "did not register lives correctly, reset before terminate");
 
-    if(score >= 10){
-      m_terminal = true;
+    m_rewards[i] = new_lives[i] < m_lives[i] ? -1 : 0;
+    m_lives[i] = new_lives[i];
+  }
+  m_terminal = num_alive <= 1;
+  //set reward to +1 for winner
+  if(m_terminal){
+    for(int i = 0; i < 4; i++){
+      if(m_lives[i] == 0){
+        m_rewards[i] = 1;
+      }
     }
   }
+  // update the reward (obsolete since reward now tracks lives directly)
+  // for(size_t i = 0; i < 4; i++){
+  //   int score_byte = readRam(&system, 0xe0+i);
+  //   //yes, this is the correct formula. I don't understand it either, but it works.
+  //   int score = (score_byte - 5) / 6;
+  //   m_rewards[i] = score - m_scores[i];
+  //   m_scores[i] = score;
+  //
+  //   if(score >= 10){
+  //     m_terminal = true;
+  //   }
+  // }
 }
 
 /* is end of game */
@@ -49,6 +74,11 @@ reward_t WarlordsSettings::getReward() const { return m_rewards[0]; }
 reward_t WarlordsSettings::getRewardP2() const { return m_rewards[1]; }
 reward_t WarlordsSettings::getRewardP3() const { return m_rewards[2]; }
 reward_t WarlordsSettings::getRewardP4() const { return m_rewards[3]; }
+
+int WarlordsSettings::lives() { return m_lives[0]; }
+int WarlordsSettings::livesP2() { return m_lives[1]; }
+int WarlordsSettings::livesP3() { return m_lives[2]; }
+int WarlordsSettings::livesP4() { return m_lives[3]; }
 
 /* is an action part of the minimal set? */
 bool WarlordsSettings::isMinimal(const Action& a) const {
@@ -70,6 +100,7 @@ void WarlordsSettings::reset() {
   for(size_t i = 0; i < 4; i++){
     m_rewards[i] = 0;
     m_scores[i] = 0;
+    m_lives[i] = 0;
   }
   m_terminal = false;
 }
@@ -79,6 +110,7 @@ void WarlordsSettings::saveState(Serializer& ser) {
   for(size_t i = 0; i < 4; i++){
     ser.putInt(m_rewards[i]);
     ser.putInt(m_scores[i]);
+    ser.putInt(m_lives[i]);
   }
   ser.putBool(m_terminal);
 }
@@ -88,6 +120,7 @@ void WarlordsSettings::loadState(Deserializer& ser) {
   for(size_t i = 0; i < 4; i++){
     m_rewards[i] = ser.getInt();
     m_scores[i] = ser.getInt();
+    m_lives[i] = ser.getInt();
   }
   m_terminal = ser.getBool();
 }

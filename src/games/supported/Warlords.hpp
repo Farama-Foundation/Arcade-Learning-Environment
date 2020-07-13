@@ -70,7 +70,10 @@ class WarlordsSettings : public RomSettings4P {
   // loads the state of the rom settings
   void loadState(Deserializer& ser) override;
 
-  int lives() override { return 0; }
+  int lives() override;
+  int livesP2() override;
+  int livesP3() override;
+  int livesP4() override;
 
   // returns a list of difficulties that the game can be played in
   // in this game, there are 4 available difficulties
@@ -87,6 +90,7 @@ class WarlordsSettings : public RomSettings4P {
 
  private:
   bool m_terminal;
+  int m_lives[4];
   reward_t m_rewards[4];
   reward_t m_scores[4];
 };

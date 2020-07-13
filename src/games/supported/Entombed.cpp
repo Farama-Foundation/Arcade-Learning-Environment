@@ -37,17 +37,27 @@ RomSettings* EntombedSettings::clone() const {
 
 void EntombedSettings::step(const System& system) {
   // Lives are stored as the bottom 2 bits of RAM 0xC7:
-  lives_p1 = readRam(&system, 0xc7) & 0x03;
+  int new_lives1 = readRam(&system, 0xc7) & 0x03;
   // Livesp2 are stored as bits in the middle of RAM 0xC7:
-  lives_p2 = readRam(&system, 0xc7) & 0x30;
+  int new_lives2 = readRam(&system, 0xc7) & 0x30;
 
-  int depth_reached = readRam(&system, 0xe3);
+  if(new_lives1 < lives_p1 || new_lives2 < lives_p2){
+    depth_counter = 0;
+  }
+  depth_counter++;
+
+  lives_p1 = new_lives1;
+  lives_p2 = new_lives2;
 
   if(is_two_player){
     if(is_cooperative){
-      int score = depth_reached;
-      m_reward = score - m_score;
-      m_score = score;
+      if(depth_counter >= 60*10 && depth_counter % (60*5) == 0){
+        //rewards every 5 seconds after the first 10 seconds after starting a stage
+        m_reward = 1;
+      }
+      else{
+        m_reward = 0;
+      }
     }
     else{
       int score = lives_p1 - lives_p2;
@@ -58,6 +68,7 @@ void EntombedSettings::step(const System& system) {
   }
   else{
     // Score is stored as hexadecimal in RAM 0xE3:
+    int depth_reached = readRam(&system, 0xe3);
     m_reward = depth_reached - m_score;
     m_score = depth_reached;
     m_terminal = lives_p1 == 0;
@@ -99,6 +110,7 @@ bool EntombedSettings::isMinimal(const Action& a) const {
 }
 
 void EntombedSettings::reset() {
+  depth_counter = 0;
   m_reward = 0;
   m_score = 0;
   lives_p1 = 0;
@@ -107,6 +119,7 @@ void EntombedSettings::reset() {
 }
 
 void EntombedSettings::saveState(Serializer& ser) {
+  ser.putInt(depth_counter);
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putInt(lives_p1);
@@ -117,6 +130,7 @@ void EntombedSettings::saveState(Serializer& ser) {
 }
 
 void EntombedSettings::loadState(Deserializer& ser) {
+  depth_counter = ser.getInt();
   m_reward = ser.getInt();
   m_score = ser.getInt();
   lives_p1 = ser.getInt();
