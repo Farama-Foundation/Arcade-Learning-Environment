@@ -1,5 +1,6 @@
 option(USE_SDL "Use SDL" OFF)
 option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
+option(BUILD_C_LIB "Build C Shared Library" OFF)
 
 # Include src/ and cmake binary directory (for version.hpp)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
@@ -58,6 +59,20 @@ if (NOT GIT_SHA)
   set(GIT_SHA "(unknown)")
 endif()
 configure_file ("version.hpp.in" "version.hpp")
+
+# C Library
+# Modified from https://github.com/openai/atari-py/blob/master/atari_py/ale_interface/CMakeLists.txt
+if (BUILD_C_LIB)
+  add_library(ale-c-lib SHARED 
+              ${CMAKE_CURRENT_SOURCE_DIR}/../ale_py/ale_c_wrapper.cpp
+              ale_interface.cpp)
+  set_target_properties(ale-c-lib PROPERTIES OUTPUT_NAME ale_c)
+  target_link_libraries(ale-c-lib PUBLIC ale)
+  if(UNIX)
+    install(TARGETS ale-c-lib
+            DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  endif()
+endif()
 
 # C++ Library
 if (BUILD_CPP_LIB)

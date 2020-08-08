@@ -1,5 +1,6 @@
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+from multiprocessing import cpu_count
 import subprocess
 import os
 import sys
@@ -16,6 +17,7 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     def build_extensions(self):
+        cpu_cores = max(1, cpu_count() - 1)
         try:
             subprocess.check_output(["cmake", "--version"])
         except OSError:
@@ -41,14 +43,12 @@ class CMakeBuild(build_ext):
 
             cmake_build_args = []
             cmake_config_args = [
-                "-DOUTPUT_NAME={}".format(ext.name),
                 "-DCMAKE_BUILD_TYPE={}".format(cfg),
                 "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir),
                 "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir),
                 "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_{}={}".format(
                     cfg.upper(), self.build_temp
                 ),
-                "-DPYTHON_MODULE_EXTENSION={}".format(ext_suffix),
             ] + ext.config
 
             # -DCMAKE_BUILD_TYPE doesn't work on Windows
@@ -65,11 +65,12 @@ class CMakeBuild(build_ext):
             if not os.path.exists(self.build_temp):
                 os.makedirs(self.build_temp)
 
+            print(["cmake", ext.sourcedir] + cmake_config_args)
             subprocess.check_call(
                 ["cmake", ext.sourcedir] + cmake_config_args, cwd=self.build_temp
             )
             subprocess.check_call(
-                ["cmake", "--build", "."] + cmake_build_args, cwd=self.build_temp
+                ["cmake", "--build", ".", "-j", str(cpu_cores)] + cmake_build_args, cwd=self.build_temp
             )
 
 
@@ -105,13 +106,13 @@ def _parse_version(filename):
     """
     # Parse version from file
     contents = _read(filename)
-    version_match = re.search(r"ALEVERSION\s\"(\d+.*)\"", contents, re.M)
+    version_match = re.search(r".*?ale VERSION\s(\d+.*)", contents, re.M)
     if not version_match:
-        raise RuntimeError("Unable to find ALEVERSION in %s" % filename)
+        raise RuntimeError("Unable to find ale VERSION in %s" % filename)
 
     version = version_match.group(1)
     version_suffix = ".dev"
-    assert _is_valid_semver(version), "ALEVERSION %s must conform to semver." % version
+    assert _is_valid_semver(version), "ale VERSION %s must conform to semver." % version
 
     # If the git ref is a tag verify the tag and don't use a suffix
     ref = "GITHUB_REF"
@@ -123,7 +124,7 @@ def _parse_version(filename):
             "Tag is invalid semver. %s must conform to semver." % version_tag
         )
         assert version_tag == version, (
-            "Tagged version must match ALEVERSION but got:\n\tALEVERSION: %s\n\tTAG: %s"
+            "Tagged version must match ale VERSION but got:\n\tale VERSION: %s\n\tTAG: %s"
             % (version, version_tag)
         )
         version_suffix = ""
@@ -147,11 +148,8 @@ setup(
             ".",
             [
                 "-DUSE_SDL=OFF",
-                "-DUSE_RLGLUE=OFF",
-                "-DBUILD_EXAMPLES=OFF",
                 "-DBUILD_CPP_LIB=OFF",
-                "-DBUILD_CLI=OFF",
-                "-DBUILD_C_LIB=ON",
+                "-DBUILD_C_LIB=ON"
             ],
         )
     ],
