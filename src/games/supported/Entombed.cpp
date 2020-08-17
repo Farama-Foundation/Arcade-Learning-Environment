@@ -39,7 +39,7 @@ void EntombedSettings::step(const System& system) {
   // Lives are stored as the bottom 2 bits of RAM 0xC7:
   int new_lives1 = readRam(&system, 0xc7) & 0x03;
   // Livesp2 are stored as bits in the middle of RAM 0xC7:
-  int new_lives2 = readRam(&system, 0xc7) & 0x30;
+  int new_lives2 = (readRam(&system, 0xc7) & 0x30) >> 4;
 
   if(new_lives1 < lives_p1 || new_lives2 < lives_p2){
     depth_counter = 0;
