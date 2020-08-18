@@ -13,6 +13,7 @@ function repair_wheel {
 
 
 yum install -y wget
+yum install -y zlib-devel
 
 CMAKE_DIR="/cmk"
 mkdir ${CMAKE_DIR} && cd ${CMAKE_DIR}
