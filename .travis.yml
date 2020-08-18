@@ -6,6 +6,7 @@ jobs:
     services:
       - docker
     script:
+      - chmod +x travis/build-wheels.sh
       - export DOCKER_IMAGE=quay.io/pypa/manylinux2010_x86_64
       - export PLAT=manylinux2010_x86_64
       - docker pull quay.io/pypa/manylinux2010_x86_64
