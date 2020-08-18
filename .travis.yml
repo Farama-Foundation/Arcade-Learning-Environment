@@ -7,6 +7,7 @@ jobs:
       - docker
     script:
       - chmod +x travis/build-wheels.sh
+      - sudo apt install zlib1g-dev
       - touch requirements.txt
       - export DOCKER_IMAGE=quay.io/pypa/manylinux2010_x86_64
       - export PLAT=manylinux2010_x86_64
