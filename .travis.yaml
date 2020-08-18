@@ -1,0 +1,43 @@
+language: python
+jobs:
+  include:
+  - name: Python on Linux
+    sudo: required
+    services:
+      - docker
+    script:
+      - export DOCKER_IMAGE=quay.io/pypa/manylinux2010_x86_64
+      - export PLAT=manylinux2010_x86_64
+      - docker pull quay.io/pypa/manylinux2010_x86_64
+      - docker run --rm -e PLAT=$PLAT -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
+      - ls wheelhouse/
+
+  - name: "Python on macOS"
+    os: osx
+    osx_image: xcode11.4
+    addons:
+      homebrew:
+        packages:
+          - swig
+          - llvm
+    language: shell
+    script:
+      - pip3 install pathlib
+      - pip3 install twine
+      - python3 setup.py sdist bdist_wheel
+      - mkdir wheelhouse
+      - cp -a dist/. wheelhouse/
+      - ls wheelhouse/
+
+install:
+  - pip3 install wheel
+  - pip3 install -r requirements.txt
+  - pip3 install twine
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - twine upload wheelhouse/* --skip-existing -u $PYPI_USER -p $PYPI_PASSWORD
+  on:
+    branch: production

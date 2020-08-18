@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.14)
 
-project(ale VERSION 0.1.5
+project(ale VERSION 0.1.6
             DESCRIPTION "The Arcade Learning Environment (ALE) - a platform for AI research."
             HOMEPAGE_URL "http://www.arcadelearningenvironment.org"
             LANGUAGES CXX)
