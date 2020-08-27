@@ -67,7 +67,11 @@ class VideoCheckersSettings : public RomSettings2P {
 
  private:
   bool m_terminal;
-  reward_t m_reward;
+  bool m_is_white_turn;
+  int turn_same_count;
+  bool two_player_mode;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   bool m_reverse_checkers;
 };
 
