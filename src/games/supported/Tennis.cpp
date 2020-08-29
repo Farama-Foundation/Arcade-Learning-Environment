@@ -34,13 +34,18 @@ void TennisSettings::step(const System& system) {
   int delta_points = my_points - oppt_points;
 
   // a reward for the game
-  if (m_prev_delta_points != delta_points)
-    m_reward = delta_points - m_prev_delta_points;
+  if (m_prev_delta_points != delta_points){
+    m_reward_p1 = delta_points - m_prev_delta_points;
+    turn_counter += 1;
+  }
   // a reward for each point
-  else if (m_prev_delta_score != delta_score)
-    m_reward = delta_score - m_prev_delta_score;
-  else
-    m_reward = 0;
+  else if (m_prev_delta_score != delta_score){
+    m_reward_p1 = delta_score - m_prev_delta_score;
+  }
+  else{
+    m_reward_p1 = 0;
+  }
+  m_reward_p2 = -m_reward_p1;
 
   m_prev_delta_points = delta_points;
   m_prev_delta_score = delta_score;
@@ -49,14 +54,34 @@ void TennisSettings::step(const System& system) {
   m_terminal = (my_points >= 6 && delta_points >= 2) ||
                (oppt_points >= 6 && -delta_points >= 2) ||
                (my_points == 7 || oppt_points == 7);
+
+  if (two_player_mode){
+    // serve stalling is not possible to happen alongside scoring, so this will
+    //not overwrite previously calculated scored/terminal above
+    int serve_stall_counter = readRam(&system, 0xcc);
+    // times out serve after 3 seconds in two player mode
+    // to disallow stalling
+    if (serve_stall_counter >= 3){
+       // timed out serve on agent:
+       if(turn_counter % 2 == 0){
+         m_reward_p1 = -1;
+         m_reward_p2 = 0;
+       }
+       else{
+         m_reward_p1 = 0;
+         m_reward_p2 = -1;
+       }
+       m_terminal = true;
+     }
+  }
 }
 
 /* is end of game */
 bool TennisSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t TennisSettings::getReward() const { return m_reward; }
-reward_t TennisSettings::getRewardP2() const { return -m_reward; }
+reward_t TennisSettings::getReward() const { return m_reward_p1; }
+reward_t TennisSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool TennisSettings::isMinimal(const Action& a) const {
@@ -87,16 +112,21 @@ bool TennisSettings::isMinimal(const Action& a) const {
 
 /* reset the state of the game */
 void TennisSettings::reset() {
-  m_reward = 0;
+  m_reward_p1 = 0;
+  m_reward_p2 = 0;
   m_prev_delta_points = 0;
+  turn_counter = 0;
   m_prev_delta_score = 0;
   m_terminal = false;
 }
 
 /* saves the state of the rom settings */
 void TennisSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward);
+  ser.putInt(m_reward_p1);
+  ser.putInt(m_reward_p2);
+  ser.putInt(turn_counter);
   ser.putBool(m_terminal);
+  ser.putBool(two_player_mode);
 
   ser.putInt(m_prev_delta_points);
   ser.putInt(m_prev_delta_score);
@@ -104,8 +134,11 @@ void TennisSettings::saveState(Serializer& ser) {
 
 // loads the state of the rom settings
 void TennisSettings::loadState(Deserializer& ser) {
-  m_reward = ser.getInt();
+  m_reward_p1 = ser.getInt();
+  m_reward_p2 = ser.getInt();
+  turn_counter = ser.getInt();
   m_terminal = ser.getBool();
+  two_player_mode = ser.getBool();
 
   m_prev_delta_points = ser.getInt();
   m_prev_delta_score = ser.getInt();
@@ -127,6 +160,7 @@ void TennisSettings::setMode(
 
     game_mode_t target_m = m - 1;
 
+    two_player_mode = isModeSupported(m, 2);
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x80);
     // press select until the correct mode is reached

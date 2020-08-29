@@ -71,8 +71,8 @@ DifficultyVect RomSettings::getAvailableDifficulties() {
   return DifficultyVect(1, 0);
 }
 
-bool RomSettings::isModeSupported(game_mode_t m) {
-  auto modes = getAvailableModes();
+bool RomSettings::isModeSupported(game_mode_t m, int players) {
+  auto modes = (players == 1) ? getAvailableModes() : ((players == 2) ? get2PlayerModes() : get4PlayerModes()) ;
   return std::find(modes.begin(), modes.end(), m) != modes.end();
 }
 #define xstr(a) str(a)

@@ -90,7 +90,10 @@ class TennisSettings : public RomSettings2P {
 
  private:
   bool m_terminal;
-  reward_t m_reward;
+  bool two_player_mode;
+  int turn_counter;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   int m_prev_delta_points;
   int m_prev_delta_score;
 };

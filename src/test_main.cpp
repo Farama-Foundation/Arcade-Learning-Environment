@@ -13,9 +13,11 @@ std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
     "video_checkers", // this actually passes the tests, the test just doesn't play p1 well by default
+    "tennis",
+    "othello", //othello seems to be working, just isn't passing the test
+    "double_dunk",
     "boxing",
     "combat",
-    "double_dunk",
     "entombed",
     "fishing_derby",
     "flag_capture",
@@ -23,13 +25,11 @@ void init_two_player_fnames(){
     "joust",
     "mario_bros",
     "maze_craze",
-    "othello", //othello seems to be working, just isn't passing the test
     "pong",
     "space_invaders",
     "space_war",
     "surround",
     "wizard_of_wor",
-    "tennis",
     "warlords",
   };
   std::string main_path = "roms/";//"/home/benblack/anaconda3/lib/python3.7/site-packages/ale_py/ROM/";
