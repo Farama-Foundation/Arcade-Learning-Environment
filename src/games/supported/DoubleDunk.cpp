@@ -29,7 +29,8 @@ void DoubleDunkSettings::step(const System& system) {
   int my_score = getDecimalScore(0xF6, &system);
   int oppt_score = getDecimalScore(0xF7, &system);
   int score = my_score - oppt_score;
-  m_reward = score - m_score;
+  m_reward_p1 = score - m_score;
+  m_reward_p2 = -m_reward_p1;
   m_score = score;
 
   // update terminal status
@@ -44,16 +45,16 @@ void DoubleDunkSettings::step(const System& system) {
     no_choice_counter++;
     if(max_turn_time > 0 && no_choice_counter > max_turn_time){
       if(choice_value == 0){
-        //neither player made a selection
-        m_reward = 0;
+        m_reward_p1 = -1;
+        m_reward_p2 = -1;
       }
       else if(choice_value&0x40){
-        //player 1 made a selection, player 2 did not
-        m_reward = 1;
+        m_reward_p1 = 0;
+        m_reward_p2 = -1;
       }
       else if(choice_value&0x80){
-        //player 2 made a selection, player 2 did not
-        m_reward = -1;
+        m_reward_p1 = -1;
+        m_reward_p2 = 0;
       }
       no_choice_counter = 0;
     }
@@ -64,8 +65,8 @@ void DoubleDunkSettings::step(const System& system) {
 bool DoubleDunkSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t DoubleDunkSettings::getReward() const { return m_reward; }
-reward_t DoubleDunkSettings::getRewardP2() const { return -m_reward; }
+reward_t DoubleDunkSettings::getReward() const { return m_reward_p1; }
+reward_t DoubleDunkSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool DoubleDunkSettings::isMinimal(const Action& a) const {
@@ -96,7 +97,8 @@ bool DoubleDunkSettings::isMinimal(const Action& a) const {
 
 /* reset the state of the game */
 void DoubleDunkSettings::reset() {
-  m_reward = 0;
+  m_reward_p1 = 0;
+  m_reward_p2 = 0;
   m_score = 0;
   no_choice_counter = 0;
   m_terminal = false;
@@ -104,7 +106,8 @@ void DoubleDunkSettings::reset() {
 
 /* saves the state of the rom settings */
 void DoubleDunkSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward);
+  ser.putInt(m_reward_p1);
+  ser.putInt(m_reward_p2);
   ser.putInt(m_score);
   ser.putInt(max_turn_time);
   ser.putInt(no_choice_counter);
@@ -113,7 +116,8 @@ void DoubleDunkSettings::saveState(Serializer& ser) {
 
 // loads the state of the rom settings
 void DoubleDunkSettings::loadState(Deserializer& ser) {
-  m_reward = ser.getInt();
+  m_reward_p1 = ser.getInt();
+  m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
   max_turn_time = ser.getInt();
   no_choice_counter = ser.getInt();

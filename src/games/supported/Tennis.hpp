@@ -96,7 +96,8 @@ class TennisSettings : public RomSettings2P {
   int max_turn_time;
   int turn_counter;
   int no_serve_counter;
-  reward_t m_reward;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   int m_prev_delta_points;
   int m_prev_delta_score;
 };

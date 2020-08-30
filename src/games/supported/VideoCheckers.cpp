@@ -74,34 +74,35 @@ void VideoCheckersSettings::step(const System& system) {
   }
   turn_same_count += 1;
   m_is_white_turn = is_white_turn;
-
-  m_reward = 0;
-
   // 10 seconds to make a move
   if(max_turn_time > 0 && turn_same_count > max_turn_time){
     //remember white is p2
     if (is_white_turn){
-      m_reward = 1;
+      m_reward_p1 = 0;
+      m_reward_p2 = -1;
     }
     else{
-      m_reward = -1;
+      m_reward_p1 = -1;
+      m_reward_p2 = 0;
     }
     turn_same_count = 0;
   }
 
   if (num_black_pieces == 0) {
-    m_reward = m_reverse_checkers ? +1 : -1;
+    m_reward_p1 = m_reverse_checkers ? +1 : -1;
+    m_reward_p2 = -m_reward_p1;
     m_terminal = true;
   } else if (num_white_pieces == 0) {
-    m_reward = m_reverse_checkers ? -1 : +1;
+    m_reward_p1 = m_reverse_checkers ? -1 : +1;
+    m_reward_p2 = -m_reward_p1;
     m_terminal = true;
   }
 }
 
 bool VideoCheckersSettings::isTerminal() const { return m_terminal; }
 
-reward_t VideoCheckersSettings::getReward() const { return m_reward; }
-reward_t VideoCheckersSettings::getRewardP2() const { return -m_reward; }
+reward_t VideoCheckersSettings::getReward() const { return m_reward_p1; }
+reward_t VideoCheckersSettings::getRewardP2() const { return m_reward_p2; }
 
 void VideoCheckersSettings::modifyEnvironmentSettings(Settings& settings) {
   int default_setting = -1;
@@ -127,14 +128,16 @@ bool VideoCheckersSettings::isMinimal(const Action& a) const {
 }
 
 void VideoCheckersSettings::reset() {
-  m_reward = 0;
+  m_reward_p1 = 0;
+  m_reward_p2 = 0;
   turn_same_count = 0;
   m_is_white_turn = false;
   m_terminal = false;
 }
 
 void VideoCheckersSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward);
+  ser.putInt(m_reward_p1);
+  ser.putInt(m_reward_p2);
   ser.putInt(turn_same_count);
   ser.putBool(m_is_white_turn);
   ser.putBool(two_player_mode);
@@ -143,7 +146,8 @@ void VideoCheckersSettings::saveState(Serializer& ser) {
 }
 
 void VideoCheckersSettings::loadState(Deserializer& ser) {
-  m_reward = ser.getInt();
+  m_reward_p1 = ser.getInt();
+  m_reward_p2 = ser.getInt();
   turn_same_count = ser.getInt();
   m_is_white_turn = ser.getBool();
   two_player_mode = ser.getBool();

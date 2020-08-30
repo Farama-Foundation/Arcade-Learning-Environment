@@ -73,7 +73,8 @@ class VideoCheckersSettings : public RomSettings2P {
   int turn_same_count;
   int max_turn_time;
   bool two_player_mode;
-  reward_t m_reward;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   bool m_reverse_checkers;
 };
 

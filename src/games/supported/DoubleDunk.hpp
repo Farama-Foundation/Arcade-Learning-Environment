@@ -90,7 +90,8 @@ class DoubleDunkSettings : public RomSettings2P {
 
  private:
   bool m_terminal;
-  reward_t m_reward;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   reward_t m_score;
   int max_turn_time;
   int no_choice_counter;

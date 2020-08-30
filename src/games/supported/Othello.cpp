@@ -39,7 +39,8 @@ void OthelloSettings::step(const System& system) {
   int white_score = getDecimalScore(0xce, &system);
   int black_score = getDecimalScore(0xd0, &system);
   int score = white_score - black_score;
-  m_reward = score - m_score;
+  m_reward_m1 = score - m_score;
+  m_reward_m2 = -m_reward_m1;
   m_score = score;
 
   // Player indicator is zero if game is over
@@ -56,7 +57,7 @@ void OthelloSettings::step(const System& system) {
   m_terminal = m_cursor_inactive > 75;
 
   if(two_player_mode){
-    if (m_reward != 0){
+    if (m_reward_m1 != 0){
       // reward is non-zero every time there is a turn change
       turn_same_count = 0;
     }
@@ -66,10 +67,10 @@ void OthelloSettings::step(const System& system) {
       unsigned char active_player = readRam(&system, 0xc0);
       // not moving is made to be the worst possible action, receiving total of 0 score.
       if (active_player == 0xff){
-        m_reward = -white_score;
+        m_reward_m1 = -white_score;
       }
       else{
-        m_reward = black_score;
+        m_reward_m2 = -black_score;
       }
       turn_same_count = 0;
     }
@@ -78,8 +79,8 @@ void OthelloSettings::step(const System& system) {
 
 bool OthelloSettings::isTerminal() const { return m_terminal; }
 
-reward_t OthelloSettings::getReward() const { return m_reward; }
-reward_t OthelloSettings::getRewardP2() const { return -m_reward; }
+reward_t OthelloSettings::getReward() const { return m_reward_m1; }
+reward_t OthelloSettings::getRewardP2() const { return m_reward_m2; }
 
 bool OthelloSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -103,7 +104,8 @@ bool OthelloSettings::isMinimal(const Action& a) const {
 }
 
 void OthelloSettings::reset() {
-  m_reward = 0;
+  m_reward_m1 = 0;
+  m_reward_m2 = 0;
   m_score = 0;
   turn_same_count = 0;
   m_terminal = false;
@@ -111,7 +113,8 @@ void OthelloSettings::reset() {
 }
 
 void OthelloSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward);
+  ser.putInt(m_reward_m1);
+  ser.putInt(m_reward_m2);
   ser.putInt(m_score);
   ser.putInt(turn_same_count);
   ser.putBool(m_terminal);
@@ -121,7 +124,8 @@ void OthelloSettings::saveState(Serializer& ser) {
 }
 
 void OthelloSettings::loadState(Deserializer& ser) {
-  m_reward = ser.getInt();
+  m_reward_m1 = ser.getInt();
+  m_reward_m2 = ser.getInt();
   m_score = ser.getInt();
   turn_same_count = ser.getInt();
   m_terminal = ser.getBool();
