@@ -35,17 +35,16 @@ void TennisSettings::step(const System& system) {
 
   // a reward for the game
   if (m_prev_delta_points != delta_points){
-    m_reward_p1 = delta_points - m_prev_delta_points;
+    m_reward = delta_points - m_prev_delta_points;
     turn_counter += 1;
   }
   // a reward for each point
   else if (m_prev_delta_score != delta_score){
-    m_reward_p1 = delta_score - m_prev_delta_score;
+    m_reward = delta_score - m_prev_delta_score;
   }
   else{
-    m_reward_p1 = 0;
+    m_reward = 0;
   }
-  m_reward_p2 = -m_reward_p1;
 
   m_prev_delta_points = delta_points;
   m_prev_delta_score = delta_score;
@@ -68,12 +67,10 @@ void TennisSettings::step(const System& system) {
     if (stall_time > 0 && no_serve_counter >= stall_time){
        // timed out serve on agent:
        if(turn_counter % 2 == 0){
-         m_reward_p1 = -1;
-         m_reward_p2 = 0;
+         m_reward = -1;
        }
        else{
-         m_reward_p1 = 0;
-         m_reward_p2 = -1;
+         m_reward = 1;
        }
        no_serve_counter = 0;
      }
@@ -84,8 +81,8 @@ void TennisSettings::step(const System& system) {
 bool TennisSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t TennisSettings::getReward() const { return m_reward_p1; }
-reward_t TennisSettings::getRewardP2() const { return m_reward_p2; }
+reward_t TennisSettings::getReward() const { return m_reward; }
+reward_t TennisSettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
 bool TennisSettings::isMinimal(const Action& a) const {
@@ -116,8 +113,7 @@ bool TennisSettings::isMinimal(const Action& a) const {
 
 /* reset the state of the game */
 void TennisSettings::reset() {
-  m_reward_p1 = 0;
-  m_reward_p2 = 0;
+  m_reward = 0;
   m_prev_delta_points = 0;
   turn_counter = 0;
   no_serve_counter = 0;
@@ -127,8 +123,7 @@ void TennisSettings::reset() {
 
 /* saves the state of the rom settings */
 void TennisSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward_p1);
-  ser.putInt(m_reward_p2);
+  ser.putInt(m_reward);
   ser.putInt(turn_counter);
   ser.putInt(no_serve_counter);
   ser.putBool(m_terminal);
@@ -141,8 +136,7 @@ void TennisSettings::saveState(Serializer& ser) {
 
 // loads the state of the rom settings
 void TennisSettings::loadState(Deserializer& ser) {
-  m_reward_p1 = ser.getInt();
-  m_reward_p2 = ser.getInt();
+  m_reward = ser.getInt();
   turn_counter = ser.getInt();
   no_serve_counter = ser.getInt();
   m_terminal = ser.getBool();
