@@ -7,7 +7,7 @@ using namespace std;
 
 void save_frame(std::vector<unsigned char> & Buff);
 
-constexpr int steps_to_test = 2000;
+constexpr int steps_to_test = 20000;
 
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){

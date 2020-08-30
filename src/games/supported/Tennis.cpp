@@ -61,7 +61,7 @@ void TennisSettings::step(const System& system) {
     int serve_stall_counter = readRam(&system, 0xcc);
     // times out serve after 3 seconds in two player mode
     // to disallow stalling
-    if (serve_stall_counter >= 3){
+    if (stall_penalty_limit > 0 && serve_stall_counter >= (stall_penalty_limit+59)/60){
        // timed out serve on agent:
        if(turn_counter % 2 == 0){
          m_reward_p1 = -1;
@@ -130,6 +130,7 @@ void TennisSettings::saveState(Serializer& ser) {
 
   ser.putInt(m_prev_delta_points);
   ser.putInt(m_prev_delta_score);
+  ser.putInt(stall_penalty_limit);
 }
 
 // loads the state of the rom settings
@@ -142,6 +143,7 @@ void TennisSettings::loadState(Deserializer& ser) {
 
   m_prev_delta_points = ser.getInt();
   m_prev_delta_score = ser.getInt();
+  stall_penalty_limit = ser.getInt();
 }
 
 // returns a list of mode that the game can be played in
@@ -174,6 +176,16 @@ void TennisSettings::setMode(
 
 DifficultyVect TennisSettings::getAvailableDifficulties() {
   return {0, 1, 2, 3};
+}
+
+
+void TennisSettings::modifyEnvironmentSettings(Settings& settings) {
+  int default_setting = -1;
+  stall_penalty_limit = settings.getInt("stall_penalty_limit");
+  if(stall_penalty_limit == default_setting){
+    const int DEFAULT_STALL_LIMIT = 60*3;
+    stall_penalty_limit = DEFAULT_STALL_LIMIT;
+  }
 }
 
 }  // namespace ale

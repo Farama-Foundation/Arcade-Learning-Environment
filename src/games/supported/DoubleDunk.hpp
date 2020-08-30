@@ -54,6 +54,8 @@ class DoubleDunkSettings : public RomSettings2P {
   // The md5 checksum of the ROM that this game supports
   const char* md5() const override { return "368d88a6c071caba60b4f778615aae94"; }
 
+  virtual void modifyEnvironmentSettings(Settings& settings);
+
   // get the available number of modes
   unsigned int getNumModes() const { return 16; }
 
@@ -88,8 +90,12 @@ class DoubleDunkSettings : public RomSettings2P {
 
  private:
   bool m_terminal;
-  reward_t m_reward;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   reward_t m_score;
+  int stall_penalty_limit;
+  int no_choice_counter;
+  bool is_two_player;
 
   // this game has a menu that allows to define various yes/no options
   // this function goes to the next option in the menu

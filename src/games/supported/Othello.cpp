@@ -39,7 +39,8 @@ void OthelloSettings::step(const System& system) {
   int white_score = getDecimalScore(0xce, &system);
   int black_score = getDecimalScore(0xd0, &system);
   int score = white_score - black_score;
-  m_reward = score - m_score;
+  m_reward_m1 = score - m_score;
+  m_reward_m2 = -m_reward_m1;
   m_score = score;
 
   // On screen cursor flashes every 4 frames when player input is accepted.
@@ -54,12 +55,31 @@ void OthelloSettings::step(const System& system) {
   // their final colour for scoring. We detect this when the cursor stops
   // flashing for at least one second, signalling no more player input.
   m_terminal = m_cursor_inactive > 75;
+
+
+  if (m_reward_m1 != 0){
+    // reward is non-zero every time there is a turn change
+    turn_same_count = 0;
+  }
+  turn_same_count += 1;
+  // 15 second timer to move
+  if (stall_penalty_limit > 0 && turn_same_count >= stall_penalty_limit){
+    unsigned char active_player = readRam(&system, 0xc0);
+    // not moving is made to be the worst possible action, receiving total of 0 score.
+    if (active_player == 0xff){
+      m_reward_m1 = -white_score;
+    }
+    else{
+      m_reward_m2 = -black_score;
+    }
+    m_terminal = true;
+  }
 }
 
 bool OthelloSettings::isTerminal() const { return m_terminal; }
 
-reward_t OthelloSettings::getReward() const { return m_reward; }
-reward_t OthelloSettings::getRewardP2() const { return -m_reward; }
+reward_t OthelloSettings::getReward() const { return m_reward_m1; }
+reward_t OthelloSettings::getRewardP2() const { return m_reward_m2; }
 
 bool OthelloSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -83,24 +103,34 @@ bool OthelloSettings::isMinimal(const Action& a) const {
 }
 
 void OthelloSettings::reset() {
-  m_reward = 0;
+  m_reward_m1 = 0;
+  m_reward_m2 = 0;
   m_score = 0;
+  turn_same_count = 0;
   m_terminal = false;
   m_cursor_inactive = 0;
 }
 
 void OthelloSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward);
+  ser.putInt(m_reward_m1);
+  ser.putInt(m_reward_m2);
   ser.putInt(m_score);
+  ser.putInt(turn_same_count);
   ser.putBool(m_terminal);
+  ser.putBool(two_player_mode);
   ser.putInt(m_cursor_inactive);
+  ser.putInt(stall_penalty_limit);
 }
 
 void OthelloSettings::loadState(Deserializer& ser) {
-  m_reward = ser.getInt();
+  m_reward_m1 = ser.getInt();
+  m_reward_m2 = ser.getInt();
   m_score = ser.getInt();
+  turn_same_count = ser.getInt();
   m_terminal = ser.getBool();
+  two_player_mode = ser.getBool();
   m_cursor_inactive = ser.getInt();
+  stall_penalty_limit = ser.getInt();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=931
@@ -124,6 +154,8 @@ ModeVect OthelloSettings::get2PlayerModes() {
 void OthelloSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
+
+  two_player_mode = (m == 4);
   if (m <= 4) {
     // Read the mode we are currently in.
     unsigned char mode = readRam(&system, 0xde);
@@ -138,6 +170,16 @@ void OthelloSettings::setMode(
     environment->softReset();
   } else {
     throw std::runtime_error("This game mode is not supported.");
+  }
+}
+
+
+void OthelloSettings::modifyEnvironmentSettings(Settings& settings) {
+  int default_setting = -1;
+  stall_penalty_limit = settings.getInt("stall_penalty_limit");
+  if(stall_penalty_limit == default_setting){
+    const int DEFAULT_STALL_LIMIT = 60*10;
+    stall_penalty_limit = DEFAULT_STALL_LIMIT;
   }
 }
 

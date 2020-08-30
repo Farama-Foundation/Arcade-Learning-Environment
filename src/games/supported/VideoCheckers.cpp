@@ -75,8 +75,7 @@ void VideoCheckersSettings::step(const System& system) {
   turn_same_count += 1;
   m_is_white_turn = is_white_turn;
   // 10 seconds to make a move
-  const int lose_reset_count = 60*10;
-  if(turn_same_count > lose_reset_count){
+  if(stall_penalty_limit > 0 && turn_same_count > stall_penalty_limit){
     if (m_is_white_turn){
       m_reward_p1 = 0;
       m_reward_p2 = -1;
@@ -103,6 +102,15 @@ bool VideoCheckersSettings::isTerminal() const { return m_terminal; }
 
 reward_t VideoCheckersSettings::getReward() const { return m_reward_p1; }
 reward_t VideoCheckersSettings::getRewardP2() const { return m_reward_p2; }
+
+void VideoCheckersSettings::modifyEnvironmentSettings(Settings& settings) {
+  int default_setting = -1;
+  stall_penalty_limit = settings.getInt("stall_penalty_limit");
+  if(stall_penalty_limit == default_setting){
+    const int DEFAULT_STALL_LIMIT = 60*10;
+    stall_penalty_limit = DEFAULT_STALL_LIMIT;
+  }
+}
 
 bool VideoCheckersSettings::isMinimal(const Action& a) const {
   switch (a) {
