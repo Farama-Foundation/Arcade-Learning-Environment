@@ -78,7 +78,7 @@ void VideoCheckersSettings::step(const System& system) {
   m_reward = 0;
 
   // 10 seconds to make a move
-  if(stall_time > 0 && turn_same_count > stall_time){
+  if(max_turn_time > 0 && turn_same_count > max_turn_time){
     //remember white is p2
     if (is_white_turn){
       m_reward = 1;
@@ -105,10 +105,10 @@ reward_t VideoCheckersSettings::getRewardP2() const { return -m_reward; }
 
 void VideoCheckersSettings::modifyEnvironmentSettings(Settings& settings) {
   int default_setting = -1;
-  stall_time = settings.getInt("stall_time");
-  if(stall_time == default_setting){
+  max_turn_time = settings.getInt("max_turn_time");
+  if(max_turn_time == default_setting){
     const int DEFAULT_STALL_LIMIT = 60*10;
-    stall_time = DEFAULT_STALL_LIMIT;
+    max_turn_time = DEFAULT_STALL_LIMIT;
   }
 }
 

@@ -42,7 +42,7 @@ void DoubleDunkSettings::step(const System& system) {
       no_choice_counter = 0;
     }
     no_choice_counter++;
-    if(stall_time > 0 && no_choice_counter > stall_time){
+    if(max_turn_time > 0 && no_choice_counter > max_turn_time){
       if(choice_value == 0){
         //neither player made a selection
         m_reward = 0;
@@ -106,7 +106,7 @@ void DoubleDunkSettings::reset() {
 void DoubleDunkSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
-  ser.putInt(stall_time);
+  ser.putInt(max_turn_time);
   ser.putInt(no_choice_counter);
   ser.putBool(m_terminal);
 }
@@ -115,7 +115,7 @@ void DoubleDunkSettings::saveState(Serializer& ser) {
 void DoubleDunkSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
-  stall_time = ser.getInt();
+  max_turn_time = ser.getInt();
   no_choice_counter = ser.getInt();
   m_terminal = ser.getBool();
 }
@@ -237,10 +237,10 @@ void DoubleDunkSettings::setMode(
 
 void DoubleDunkSettings::modifyEnvironmentSettings(Settings& settings) {
   int default_setting = -1;
-  stall_time = settings.getInt("stall_time");
-  if(stall_time == default_setting){
+  max_turn_time = settings.getInt("max_turn_time");
+  if(max_turn_time == default_setting){
     const int DEFAULT_STALL_LIMIT = 60*2;
-    stall_time = DEFAULT_STALL_LIMIT;
+    max_turn_time = DEFAULT_STALL_LIMIT;
   }
 }
 
