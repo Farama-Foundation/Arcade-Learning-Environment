@@ -42,18 +42,19 @@ void OthelloSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
 
-  // On screen cursor flashes every 4 frames when player input is accepted.
-  if (readRam(&system, 0xe8) == 0) {
-    ++m_cursor_inactive;
+  // Player indicator is 0xff if white's turn, 0s01 if blacks turn and 0x00 if game is over
+  // Also is 0x00 in other situations, but seemingly temporarily
+  if (readRam(&system, 0xc0) == 0) {
+    ++m_no_input;
   } else {
-    m_cursor_inactive = 0;
+    m_no_input = 0;
   }
 
   // The game is over when there are no more valid moves not necessarily when
   // the board is full of counters. We must also wait for the counters to reach
-  // their final colour for scoring. We detect this when the cursor stops
-  // flashing for at least one second, signalling no more player input.
-  m_terminal = m_cursor_inactive > 50;
+  // their final colour for scoring. We detect this when the turn indicator is 0
+  //, signalling no more player input.
+  m_terminal = m_no_input > 50;
 }
 
 bool OthelloSettings::isTerminal() const { return m_terminal; }
@@ -85,21 +86,21 @@ void OthelloSettings::reset() {
   m_reward = 0;
   m_score = 0;
   m_terminal = false;
-  m_cursor_inactive = 0;
+  m_no_input = 0;
 }
 
 void OthelloSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
-  ser.putInt(m_cursor_inactive);
+  ser.putInt(m_no_input);
 }
 
 void OthelloSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
-  m_cursor_inactive = ser.getInt();
+  m_no_input = ser.getInt();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=931
