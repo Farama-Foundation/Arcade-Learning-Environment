@@ -56,7 +56,6 @@ void DoubleDunkSettings::step(const System& system) {
         m_reward_p1 = -1;
         m_reward_p2 = 0;
       }
-      m_terminal = true;
     }
   }
 }

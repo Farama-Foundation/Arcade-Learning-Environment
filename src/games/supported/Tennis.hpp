@@ -95,6 +95,7 @@ class TennisSettings : public RomSettings2P {
   bool two_player_mode;
   int stall_penalty_limit;
   int turn_counter;
+  int no_serve_counter;
   reward_t m_reward_p1;
   reward_t m_reward_p2;
   int m_prev_delta_points;

@@ -59,9 +59,13 @@ void TennisSettings::step(const System& system) {
     // serve stalling is not possible to happen alongside scoring, so this will
     //not overwrite previously calculated scored/terminal above
     int serve_stall_counter = readRam(&system, 0xcc);
+    if(serve_stall_counter == 0){
+      no_serve_counter = 0;
+    }
+    no_serve_counter += 1;
     // times out serve after 3 seconds in two player mode
     // to disallow stalling
-    if (stall_penalty_limit > 0 && serve_stall_counter >= (stall_penalty_limit+59)/60){
+    if (stall_penalty_limit > 0 && no_serve_counter >= stall_penalty_limit){
        // timed out serve on agent:
        if(turn_counter % 2 == 0){
          m_reward_p1 = -1;
@@ -71,7 +75,6 @@ void TennisSettings::step(const System& system) {
          m_reward_p1 = 0;
          m_reward_p2 = -1;
        }
-       m_terminal = true;
      }
   }
 }
@@ -116,6 +119,7 @@ void TennisSettings::reset() {
   m_reward_p2 = 0;
   m_prev_delta_points = 0;
   turn_counter = 0;
+  no_serve_counter = 0;
   m_prev_delta_score = 0;
   m_terminal = false;
 }
@@ -125,6 +129,7 @@ void TennisSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward_p1);
   ser.putInt(m_reward_p2);
   ser.putInt(turn_counter);
+  ser.putInt(no_serve_counter);
   ser.putBool(m_terminal);
   ser.putBool(two_player_mode);
 
@@ -138,6 +143,7 @@ void TennisSettings::loadState(Deserializer& ser) {
   m_reward_p1 = ser.getInt();
   m_reward_p2 = ser.getInt();
   turn_counter = ser.getInt();
+  no_serve_counter = ser.getInt();
   m_terminal = ser.getBool();
   two_player_mode = ser.getBool();
 

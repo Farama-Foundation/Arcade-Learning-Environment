@@ -72,7 +72,6 @@ void OthelloSettings::step(const System& system) {
     else{
       m_reward_m2 = -black_score;
     }
-    m_terminal = true;
   }
 }
 
