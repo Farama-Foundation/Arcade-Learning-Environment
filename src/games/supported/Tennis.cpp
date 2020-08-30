@@ -75,6 +75,7 @@ void TennisSettings::step(const System& system) {
          m_reward_p1 = 0;
          m_reward_p2 = -1;
        }
+       no_serve_counter = 0;
      }
   }
 }

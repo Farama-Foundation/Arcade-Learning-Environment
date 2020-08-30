@@ -84,6 +84,7 @@ void VideoCheckersSettings::step(const System& system) {
       m_reward_p1 = -1;
       m_reward_p2 = 0;
     }
+    turn_same_count = 0;
   }
 
   if (num_black_pieces == 0) {

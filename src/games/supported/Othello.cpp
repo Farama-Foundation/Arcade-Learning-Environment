@@ -72,6 +72,7 @@ void OthelloSettings::step(const System& system) {
     else{
       m_reward_m2 = -black_score;
     }
+    turn_same_count = 0;
   }
 }
 
