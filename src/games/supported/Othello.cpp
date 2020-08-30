@@ -42,8 +42,8 @@ void OthelloSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
 
-  // On screen cursor flashes every 4 frames when player input is accepted.
-  if (readRam(&system, 0xe8) == 0) {
+  // Player indicator is zero if game is over
+  if (readRam(&system, 0xc0) == 0) {
     ++m_cursor_inactive;
   } else {
     m_cursor_inactive = 0;
@@ -55,23 +55,24 @@ void OthelloSettings::step(const System& system) {
   // flashing for at least one second, signalling no more player input.
   m_terminal = m_cursor_inactive > 75;
 
-
-  if (m_reward != 0){
-    // reward is non-zero every time there is a turn change
-    turn_same_count = 0;
-  }
-  turn_same_count += 1;
-  // 15 second timer to move
-  if (max_turn_time > 0 && turn_same_count >= max_turn_time){
-    unsigned char active_player = readRam(&system, 0xc0);
-    // not moving is made to be the worst possible action, receiving total of 0 score.
-    if (active_player == 0xff){
-      m_reward = -white_score;
+  if(two_player_mode){
+    if (m_reward != 0){
+      // reward is non-zero every time there is a turn change
+      turn_same_count = 0;
     }
-    else{
-      m_reward = black_score;
+    turn_same_count += 1;
+    // 15 second timer to move
+    if (max_turn_time > 0 && turn_same_count >= max_turn_time){
+      unsigned char active_player = readRam(&system, 0xc0);
+      // not moving is made to be the worst possible action, receiving total of 0 score.
+      if (active_player == 0xff){
+        m_reward = -white_score;
+      }
+      else{
+        m_reward = black_score;
+      }
+      turn_same_count = 0;
     }
-    turn_same_count = 0;
   }
 }
 
