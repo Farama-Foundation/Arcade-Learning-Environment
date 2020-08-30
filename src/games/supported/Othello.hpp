@@ -71,7 +71,7 @@ class OthelloSettings : public RomSettings2P {
   bool m_terminal;
   int turn_same_count;
   bool two_player_mode;
-  int stall_penalty_limit;
+  int stall_time;
   reward_t m_reward_m1;
   reward_t m_reward_m2;
   int m_score;

@@ -93,7 +93,7 @@ class TennisSettings : public RomSettings2P {
  private:
   bool m_terminal;
   bool two_player_mode;
-  int stall_penalty_limit;
+  int stall_time;
   int turn_counter;
   int no_serve_counter;
   reward_t m_reward_p1;

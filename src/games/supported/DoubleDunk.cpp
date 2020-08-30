@@ -43,7 +43,7 @@ void DoubleDunkSettings::step(const System& system) {
       no_choice_counter = 0;
     }
     no_choice_counter++;
-    if(stall_penalty_limit > 0 && no_choice_counter > stall_penalty_limit){
+    if(stall_time > 0 && no_choice_counter > stall_time){
       if(choice_value == 0){
         m_reward_p1 = -1;
         m_reward_p2 = -1;
@@ -109,7 +109,7 @@ void DoubleDunkSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward_p1);
   ser.putInt(m_reward_p2);
   ser.putInt(m_score);
-  ser.putInt(stall_penalty_limit);
+  ser.putInt(stall_time);
   ser.putInt(no_choice_counter);
   ser.putBool(m_terminal);
 }
@@ -119,7 +119,7 @@ void DoubleDunkSettings::loadState(Deserializer& ser) {
   m_reward_p1 = ser.getInt();
   m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
-  stall_penalty_limit = ser.getInt();
+  stall_time = ser.getInt();
   no_choice_counter = ser.getInt();
   m_terminal = ser.getBool();
 }
@@ -241,10 +241,10 @@ void DoubleDunkSettings::setMode(
 
 void DoubleDunkSettings::modifyEnvironmentSettings(Settings& settings) {
   int default_setting = -1;
-  stall_penalty_limit = settings.getInt("stall_penalty_limit");
-  if(stall_penalty_limit == default_setting){
+  stall_time = settings.getInt("stall_time");
+  if(stall_time == default_setting){
     const int DEFAULT_STALL_LIMIT = 60*2;
-    stall_penalty_limit = DEFAULT_STALL_LIMIT;
+    stall_time = DEFAULT_STALL_LIMIT;
   }
 }
 

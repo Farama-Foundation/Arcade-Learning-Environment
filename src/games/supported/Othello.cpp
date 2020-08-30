@@ -63,7 +63,7 @@ void OthelloSettings::step(const System& system) {
   }
   turn_same_count += 1;
   // 15 second timer to move
-  if (stall_penalty_limit > 0 && turn_same_count >= stall_penalty_limit){
+  if (stall_time > 0 && turn_same_count >= stall_time){
     unsigned char active_player = readRam(&system, 0xc0);
     // not moving is made to be the worst possible action, receiving total of 0 score.
     if (active_player == 0xff){
@@ -119,7 +119,7 @@ void OthelloSettings::saveState(Serializer& ser) {
   ser.putBool(m_terminal);
   ser.putBool(two_player_mode);
   ser.putInt(m_cursor_inactive);
-  ser.putInt(stall_penalty_limit);
+  ser.putInt(stall_time);
 }
 
 void OthelloSettings::loadState(Deserializer& ser) {
@@ -130,7 +130,7 @@ void OthelloSettings::loadState(Deserializer& ser) {
   m_terminal = ser.getBool();
   two_player_mode = ser.getBool();
   m_cursor_inactive = ser.getInt();
-  stall_penalty_limit = ser.getInt();
+  stall_time = ser.getInt();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=931
@@ -176,10 +176,10 @@ void OthelloSettings::setMode(
 
 void OthelloSettings::modifyEnvironmentSettings(Settings& settings) {
   int default_setting = -1;
-  stall_penalty_limit = settings.getInt("stall_penalty_limit");
-  if(stall_penalty_limit == default_setting){
+  stall_time = settings.getInt("stall_time");
+  if(stall_time == default_setting){
     const int DEFAULT_STALL_LIMIT = 60*10;
-    stall_penalty_limit = DEFAULT_STALL_LIMIT;
+    stall_time = DEFAULT_STALL_LIMIT;
   }
 }
 

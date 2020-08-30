@@ -93,7 +93,7 @@ class DoubleDunkSettings : public RomSettings2P {
   reward_t m_reward_p1;
   reward_t m_reward_p2;
   reward_t m_score;
-  int stall_penalty_limit;
+  int stall_time;
   int no_choice_counter;
   bool is_two_player;
 
