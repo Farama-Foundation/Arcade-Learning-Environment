@@ -67,10 +67,10 @@ void OthelloSettings::step(const System& system) {
       unsigned char active_player = readRam(&system, 0xc0);
       // not moving is made to be the worst possible action, receiving total of 0 score.
       if (active_player == 0xff){
-        m_reward_m1 = -white_score;
+        m_reward_m1 = -1;
       }
       else{
-        m_reward_m2 = -black_score;
+        m_reward_m2 = -1;
       }
       turn_same_count = 0;
     }
