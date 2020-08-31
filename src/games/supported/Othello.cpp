@@ -65,7 +65,6 @@ void OthelloSettings::step(const System& system) {
     // 15 second timer to move
     if (max_turn_time > 0 && turn_same_count >= max_turn_time){
       unsigned char active_player = readRam(&system, 0xc0);
-      // not moving is made to be the worst possible action, receiving total of 0 score.
       if (active_player == 0xff){
         m_reward_m1 = -1;
       }
