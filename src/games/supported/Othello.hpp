@@ -44,6 +44,8 @@ class OthelloSettings : public RomSettings2P {
 
   virtual const char* rom() const { return "othello"; }
 
+  virtual void modifyEnvironmentSettings(Settings& settings);
+
   // The md5 checksum of the ROM that this game supports
   const char* md5() const override { return "113cd09c9771ac278544b7e90efe7df2"; }
 
@@ -67,7 +69,11 @@ class OthelloSettings : public RomSettings2P {
 
  private:
   bool m_terminal;
-  reward_t m_reward;
+  int turn_same_count;
+  bool two_player_mode;
+  int max_turn_time;
+  reward_t m_reward_m1;
+  reward_t m_reward_m2;
   int m_score;
   int m_cursor_inactive;
 };

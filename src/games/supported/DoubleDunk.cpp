@@ -29,20 +29,44 @@ void DoubleDunkSettings::step(const System& system) {
   int my_score = getDecimalScore(0xF6, &system);
   int oppt_score = getDecimalScore(0xF7, &system);
   int score = my_score - oppt_score;
-  m_reward = score - m_score;
+  m_reward_p1 = score - m_score;
+  m_reward_p2 = -m_reward_p1;
   m_score = score;
 
   // update terminal status
   int some_value = readRam(&system, 0xFE);
   m_terminal = (my_score >= 24 || oppt_score >= 24) && some_value == 0xE7;
+
+  if(is_two_player){
+    int choice_value = readRam(&system, 0x89);
+    if (!(choice_value == 0 || choice_value&0x80 || choice_value&0x40)){
+      no_choice_counter = 0;
+    }
+    no_choice_counter++;
+    if(max_turn_time > 0 && no_choice_counter > max_turn_time){
+      if(choice_value == 0){
+        m_reward_p1 = -1;
+        m_reward_p2 = -1;
+      }
+      else if(choice_value&0x40){
+        m_reward_p1 = 0;
+        m_reward_p2 = -1;
+      }
+      else if(choice_value&0x80){
+        m_reward_p1 = -1;
+        m_reward_p2 = 0;
+      }
+      no_choice_counter = 0;
+    }
+  }
 }
 
 /* is end of game */
 bool DoubleDunkSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t DoubleDunkSettings::getReward() const { return m_reward; }
-reward_t DoubleDunkSettings::getRewardP2() const { return -m_reward; }
+reward_t DoubleDunkSettings::getReward() const { return m_reward_p1; }
+reward_t DoubleDunkSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool DoubleDunkSettings::isMinimal(const Action& a) const {
@@ -73,22 +97,30 @@ bool DoubleDunkSettings::isMinimal(const Action& a) const {
 
 /* reset the state of the game */
 void DoubleDunkSettings::reset() {
-  m_reward = 0;
+  m_reward_p1 = 0;
+  m_reward_p2 = 0;
   m_score = 0;
+  no_choice_counter = 0;
   m_terminal = false;
 }
 
 /* saves the state of the rom settings */
 void DoubleDunkSettings::saveState(Serializer& ser) {
-  ser.putInt(m_reward);
+  ser.putInt(m_reward_p1);
+  ser.putInt(m_reward_p2);
   ser.putInt(m_score);
+  ser.putInt(max_turn_time);
+  ser.putInt(no_choice_counter);
   ser.putBool(m_terminal);
 }
 
 // loads the state of the rom settings
 void DoubleDunkSettings::loadState(Deserializer& ser) {
-  m_reward = ser.getInt();
+  m_reward_p1 = ser.getInt();
+  m_reward_p2 = ser.getInt();
   m_score = ser.getInt();
+  max_turn_time = ser.getInt();
+  no_choice_counter = ser.getInt();
   m_terminal = ser.getBool();
 }
 
@@ -159,8 +191,10 @@ void DoubleDunkSettings::setMode(
     environment->pressSelect();
 
     if(m & 16){
+      is_two_player = true;
       activateOption(system, 0x40, environment);
     } else {
+      is_two_player = false;
       deactivateOption(system, 0x40, environment);
     }
     goDown(system, environment);
@@ -202,6 +236,16 @@ void DoubleDunkSettings::setMode(
     environment->softReset();
     //apply starting action
 
+}
+
+
+void DoubleDunkSettings::modifyEnvironmentSettings(Settings& settings) {
+  int default_setting = -1;
+  max_turn_time = settings.getInt("max_turn_time");
+  if(max_turn_time == default_setting){
+    const int DEFAULT_STALL_LIMIT = 60*2;
+    max_turn_time = DEFAULT_STALL_LIMIT;
+  }
 }
 
 }  // namespace ale

@@ -595,6 +595,7 @@ void Settings::setDefaultSettings() {
     boolSettings.insert(pair<string, bool>("color_averaging", false));
     boolSettings.insert(pair<string, bool>("send_rgb", false));
     intSettings.insert(pair<string, int>("frame_skip", 1));
+    intSettings.insert(pair<string, int>("max_turn_time", -1));
     floatSettings.insert(pair<string, float>("repeat_action_probability", 0.25));
     stringSettings.insert(pair<string, string>("rom_file", ""));
 

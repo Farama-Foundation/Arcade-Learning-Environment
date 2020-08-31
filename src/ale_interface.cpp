@@ -275,7 +275,9 @@ void ALEInterface::setFloat(const std::string& key, const float value) {
 }
 
 // Resets the game, but not the full system.
-void ALEInterface::reset_game() { environment->reset(); }
+void ALEInterface::reset_game() {
+  environment->reset();
+}
 
 // Indicates if the game has ended.
 bool ALEInterface::game_over() const { return environment->isTerminal(); }

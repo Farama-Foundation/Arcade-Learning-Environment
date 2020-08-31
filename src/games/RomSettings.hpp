@@ -138,7 +138,7 @@ class RomSettings {
   //multiplayer methods
  protected:
   // Helper function that checks if our settings support this given mode.
-  bool isModeSupported(game_mode_t m);
+  bool isModeSupported(game_mode_t m, int players=1);
 };
 
 }  // namespace ale

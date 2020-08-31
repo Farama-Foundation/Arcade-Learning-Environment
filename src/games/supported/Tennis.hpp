@@ -54,6 +54,8 @@ class TennisSettings : public RomSettings2P {
   // The md5 checksum of the ROM that this game supports
   const char* md5() const override { return "42cdd6a9e42a3639e190722b8ea3fc51"; }
 
+  virtual void modifyEnvironmentSettings(Settings& settings);
+
   // get the available number of modes
   unsigned int getNumModes() const { return 2; }
 
@@ -90,7 +92,12 @@ class TennisSettings : public RomSettings2P {
 
  private:
   bool m_terminal;
-  reward_t m_reward;
+  bool two_player_mode;
+  int max_turn_time;
+  int turn_counter;
+  int no_serve_counter;
+  reward_t m_reward_p1;
+  reward_t m_reward_p2;
   int m_prev_delta_points;
   int m_prev_delta_score;
 };

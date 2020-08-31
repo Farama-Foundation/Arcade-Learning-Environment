@@ -12,10 +12,12 @@ constexpr int steps_to_test = 2000;
 std::vector<std::string> two_player_games;
 void init_two_player_fnames(){
   std::vector<std::string> two_player_fnames = {
-    "backgammon",
+    "video_checkers", // this actually passes the tests, the test just doesn't play p1 well by default
+    "tennis",
+    "othello", //othello seems to be working, just isn't passing the test
+    "double_dunk",
     "boxing",
     "combat",
-    "double_dunk",
     "entombed",
     "fishing_derby",
     "flag_capture",
@@ -23,13 +25,10 @@ void init_two_player_fnames(){
     "joust",
     "mario_bros",
     "maze_craze",
-    "othello", //othello seems to be working, just isn't passing the test
     "pong",
     "space_invaders",
     "space_war",
     "surround",
-    "tennis",
-    "video_checkers", // this actually passes the tests, the test just doesn't play p1 well by default
     "wizard_of_wor",
     "warlords",
   };
@@ -103,7 +102,7 @@ size_t play_sequence(ALEInterface & interface,int sequence_num){
 size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
   size_t hashCode = 0;
   std::vector<unsigned char> output_rgb_buffer(192*160*3);
-  save_frame(output_rgb_buffer);
+  //save_frame(output_rgb_buffer);
   ActionVect min_actionsp1 = interface.getMinimalActionSet();
   int action_p2 = 0;
   int action_p1 = 0;
@@ -124,7 +123,7 @@ size_t play_sequence_p2(ALEInterface & interface,int sequence_num){
       break;
     }
     if(j % 14 == 0){
-      save_frame(output_rgb_buffer);
+    //  save_frame(output_rgb_buffer);
     }
   }
   return hashCode;
