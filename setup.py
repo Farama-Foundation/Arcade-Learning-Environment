@@ -109,7 +109,7 @@ def _parse_version(filename):
         raise RuntimeError("Unable to find VERSION in {}".format(filename))
 
     version = version_match.group(1)
-    version_suffix = ".dev0"
+    version_suffix = ""
     assert _is_valid_semver(version), "ALEVERSION {} must conform to semver.".format(
         version
     )
