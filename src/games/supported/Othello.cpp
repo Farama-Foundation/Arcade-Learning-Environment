@@ -42,8 +42,8 @@ void OthelloSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
 
-  // Player indicator is 0xff if white's turn, 0s01 if blacks turn and 0x00 if game is over
-  // Also is 0x00 in other situations, but seemingly temporarily
+  // Player indicator is 0xff if white's turn, 0x01 if black's turn and 0x00
+  // if game is over. Also is 0x00 in other situations, but only temporarily
   if (readRam(&system, 0xc0) == 0) {
     ++m_no_input;
   } else {
@@ -52,8 +52,8 @@ void OthelloSettings::step(const System& system) {
 
   // The game is over when there are no more valid moves not necessarily when
   // the board is full of counters. We must also wait for the counters to reach
-  // their final colour for scoring. We detect this when the turn indicator is 0
-  //, signalling no more player input.
+  // their final colour for scoring. We detect this when the turn indicator
+  // is 0, signalling no more player input.
   m_terminal = m_no_input > 50;
 }
 
