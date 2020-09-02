@@ -42,8 +42,9 @@ void OthelloSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
 
-  // Player indicator is 0xff if white's turn, 0x01 if black's turn and 0x00
-  // if game is over. Also is 0x00 in other situations, but only temporarily
+  // Player indicator is 0xff if white's turn, 0x01 if black's turn, and 0x00
+  // if the game is over. Also it is 0x00 in other situations, but only
+  // temporarily.
   if (readRam(&system, 0xc0) == 0) {
     ++m_no_input;
   } else {
