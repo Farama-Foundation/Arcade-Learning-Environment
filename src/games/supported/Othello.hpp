@@ -63,7 +63,7 @@ class OthelloSettings : public RomSettings {
   bool m_terminal;
   reward_t m_reward;
   int m_score;
-  int m_cursor_inactive;
+  int m_no_input;
 };
 
 }  // namespace ale
