@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "VideoPinball.hpp"
+#include "games/supported/VideoPinball.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

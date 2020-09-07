@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "ChopperCommand.hpp"
+#include "games/supported/ChopperCommand.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

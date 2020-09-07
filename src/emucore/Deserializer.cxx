@@ -16,7 +16,7 @@
 // $Id: Deserializer.cxx,v 1.12 2007/01/01 18:04:47 stephena Exp $
 //============================================================================
 
-#include "Deserializer.hxx"
+#include "emucore/Deserializer.hxx"
 #include <sstream>
 using namespace std;
 

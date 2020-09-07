@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "HauntedHouse.hpp"
+#include "games/supported/HauntedHouse.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

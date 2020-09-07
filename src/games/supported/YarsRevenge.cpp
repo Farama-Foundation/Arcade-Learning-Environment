@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "YarsRevenge.hpp"
+#include "games/supported/YarsRevenge.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "Hangman.hpp"
+#include "games/supported/Hangman.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

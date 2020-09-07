@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "WizardOfWor.hpp"
+#include "games/supported/WizardOfWor.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 #include "stdio.h"

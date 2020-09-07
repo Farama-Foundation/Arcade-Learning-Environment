@@ -23,10 +23,10 @@
 #include <string>
 using namespace std;
 
-#include "OSystem.hxx"
-#include "Version.hxx"
-#include "bspf.hxx"
-#include "Settings.hxx"
+#include "emucore/OSystem.hxx"
+#include "common/Version.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Settings.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Settings::Settings(OSystem* osystem) : myOSystem(osystem) {

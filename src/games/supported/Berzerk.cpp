@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Berzerk.hpp"
+#include "games/supported/Berzerk.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

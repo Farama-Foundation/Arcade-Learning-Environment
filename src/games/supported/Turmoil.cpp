@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Turmoil.hpp"
+#include "games/supported/Turmoil.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

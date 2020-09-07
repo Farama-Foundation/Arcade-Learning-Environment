@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "StarGunner.hpp"
+#include "games/supported/StarGunner.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

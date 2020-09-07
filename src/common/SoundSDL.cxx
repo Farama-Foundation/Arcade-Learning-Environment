@@ -23,16 +23,16 @@
 #include <cmath>
 #include "SDL.h"
 
-#include "TIASnd.hxx"
+#include "emucore/TIASnd.hxx"
 // #include "FrameBuffer.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
-#include "Settings.hxx"
-#include "System.hxx"
-#include "OSystem.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/Settings.hxx"
+#include "emucore/m6502/src/System.hxx"
+#include "emucore/OSystem.hxx"
 
-#include "SoundSDL.hxx"
-#include "Log.hpp"
+#include "common/SoundSDL.hxx"
+#include "common/Log.hpp"
 
 using namespace std;
 using namespace ale;

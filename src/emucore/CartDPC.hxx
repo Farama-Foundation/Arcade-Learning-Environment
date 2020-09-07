@@ -23,8 +23,8 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "Cart.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Cart.hxx"
 
 /**
   Cartridge class used for Pitfall II.  There are two 4K program banks, a 

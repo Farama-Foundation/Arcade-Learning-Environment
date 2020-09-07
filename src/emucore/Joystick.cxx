@@ -17,8 +17,8 @@
 //============================================================================
 
 #include <assert.h>
-#include "Event.hxx"
-#include "Joystick.hxx"
+#include "emucore/Event.hxx"
+#include "emucore/Joystick.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Joystick::Joystick(Jack jack, const Event& event)

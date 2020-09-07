@@ -28,7 +28,7 @@
 #ifndef __PHOENIX_HPP__
 #define __PHOENIX_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

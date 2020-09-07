@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "Superman.hpp"
+#include "games/supported/Superman.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

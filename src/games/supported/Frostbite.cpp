@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Frostbite.hpp"
+#include "games/supported/Frostbite.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -15,7 +15,7 @@
 
 #include <string>
 
-#include "RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

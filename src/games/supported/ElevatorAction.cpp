@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "ElevatorAction.hpp"
+#include "games/supported/ElevatorAction.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "Pitfall2.hpp"
+#include "games/supported/Pitfall2.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

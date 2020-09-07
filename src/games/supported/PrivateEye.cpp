@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "PrivateEye.hpp"
+#include "games/supported/PrivateEye.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

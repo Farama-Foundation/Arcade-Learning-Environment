@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Alien.hpp"
+#include "games/supported/Alien.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

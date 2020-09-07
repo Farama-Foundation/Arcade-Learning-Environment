@@ -28,20 +28,19 @@ class Debugger;
 class CheatManager;
 class VideoDialog;
 
-#include "../common/Array.hxx"
+#include "common/Array.hxx"
 //ALE  #include "EventHandler.hxx"
 //ALE  #include "FrameBuffer.hxx"
-#include "Sound.hxx"
-#include "../common/SoundNull.hxx"
-#include "Settings.hxx"
-#include "Console.hxx"
-#include "Event.hxx"  //ALE 
+#include "emucore/Sound.hxx"
+#include "common/SoundNull.hxx"
+#include "emucore/Settings.hxx"
+#include "emucore/Console.hxx"
+#include "emucore/Event.hxx"  //ALE 
 //ALE  #include "Font.hxx"
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "../common/display_screen.h" 
-#include "../common/ColourPalette.hpp"
-#include "../common/ScreenExporter.hpp"
-#include "../common/Log.hpp"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "common/display_screen.h"
+#include "common/ColourPalette.hpp"
+#include "common/Log.hpp"
 
 struct Resolution {
   uInt32 width;

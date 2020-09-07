@@ -17,7 +17,7 @@
 //============================================================================
 
 #include <assert.h>
-#include "Control.hxx"
+#include "emucore/Control.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Controller::Controller(Jack jack, const Event& event, Type type)

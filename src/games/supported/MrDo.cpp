@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "MrDo.hpp"
+#include "games/supported/MrDo.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

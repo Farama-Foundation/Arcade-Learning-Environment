@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Frogger.hpp"
+#include "games/supported/Frogger.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

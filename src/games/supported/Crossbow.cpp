@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "Crossbow.hpp"
+#include "games/supported/Crossbow.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

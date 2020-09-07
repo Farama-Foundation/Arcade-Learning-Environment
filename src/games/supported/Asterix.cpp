@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Asterix.hpp"
+#include "games/supported/Asterix.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

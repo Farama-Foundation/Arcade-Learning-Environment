@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Bowling.hpp"
+#include "games/supported/Bowling.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

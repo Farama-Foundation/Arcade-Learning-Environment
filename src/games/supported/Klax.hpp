@@ -26,7 +26,7 @@
 #ifndef __KLAX_HPP__
 #define __KLAX_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

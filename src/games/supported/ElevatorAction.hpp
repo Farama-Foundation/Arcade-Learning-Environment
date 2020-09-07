@@ -28,7 +28,7 @@
 #ifndef __ELEVATORACTION_HPP__
 #define __ELEVATORACTION_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

@@ -80,11 +80,11 @@
   @version $Id: SpeakJet.hxx,v 1.7 2007/01/01 18:04:50 stephena Exp $
 */
 
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
 
 #include "SDL.h"
 #include <SDL_thread.h>
-#include "rsynth/rsynth.h"
+#include "emucore/rsynth/rsynth.h"
 
 struct SpeechBuffer;
 

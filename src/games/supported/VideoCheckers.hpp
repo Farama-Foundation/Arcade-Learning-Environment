@@ -28,7 +28,7 @@
 #ifndef __VIDEO_CHECKERS_HPP__
 #define __VIDEO_CHECKERS_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

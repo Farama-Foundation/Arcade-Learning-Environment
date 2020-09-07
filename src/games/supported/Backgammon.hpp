@@ -28,7 +28,7 @@
 #ifndef __BACKGAMMON_HPP__
 #define __BACKGAMMON_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 
