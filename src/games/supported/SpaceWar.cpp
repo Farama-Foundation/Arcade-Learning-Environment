@@ -102,19 +102,15 @@ void SpaceWarSettings::loadState(Deserializer& ser) {
 // replenished. We therefore remove the first five modes but the rest [6-17] are
 // valid, with the second (inert) player acting as a distractor when present.
 ModeVect SpaceWarSettings::getAvailableModes() {
-  return {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+  return {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
 }
 
 void SpaceWarSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (isModeSupported(m)) {
-    // Ignore the first five modes as these not completable without input from
-    // a second player.
-    int wanted_mode = m + 6;
-
     // Press select until the correct mode is reached.
-    while (getDecimalScore(0xa7, &system) != wanted_mode) {
+    while (getDecimalScore(0xa7, &system) != m) {
       environment->pressSelect(2);
     }
 
