@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "MontezumaRevenge.hpp"
+#include "games/supported/MontezumaRevenge.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -20,9 +20,9 @@
 
 #include <string>
 
-#include "../emucore/OSystem.hxx"
-#include "../emucore/Event.hxx"
-#include "../common/Log.hpp"
+#include "emucore/OSystem.hxx"
+#include "emucore/Event.hxx"
+#include "common/Log.hpp"
 
 namespace ale {
 

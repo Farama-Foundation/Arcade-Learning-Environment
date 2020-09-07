@@ -24,9 +24,9 @@
  * *****************************************************************************
  */
 
-#include "Adventure.hpp"
+#include "games/supported/Adventure.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -10,11 +10,11 @@
  * *****************************************************************************
  */
 
-#include "IceHockey.hpp"
+#include "games/supported/IceHockey.hpp"
 
 #include <algorithm>
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -25,10 +25,10 @@ class Properties;
 class Settings;
 
 #include <fstream>
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "m6502/src/Device.hxx"
-#include "Random.hxx"
-#include "../common/Log.hpp"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/m6502/src/Device.hxx"
+#include "emucore/Random.hxx"
+#include "common/Log.hpp"
 
 /**
   A cartridge is a device which contains the machine code for a 

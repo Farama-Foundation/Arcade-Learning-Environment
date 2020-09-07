@@ -16,16 +16,16 @@
 // $Id: M6502Hi.cxx,v 1.19 2007/01/01 18:04:51 stephena Exp $
 //============================================================================
 
-#include "M6502Hi.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
+#include "emucore/m6502/src/M6502Hi.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
 
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
 using namespace std;
 
-#include "../../../common/Log.hpp"
+#include "common/Log.hpp"
 
 #define debugStream ale::Logger::Info
 

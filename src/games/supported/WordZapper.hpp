@@ -25,7 +25,7 @@
 #ifndef __WORD_ZAPPER_HPP__
 #define __WORD_ZAPPER_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

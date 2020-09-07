@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "DonkeyKong.hpp"
+#include "games/supported/DonkeyKong.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

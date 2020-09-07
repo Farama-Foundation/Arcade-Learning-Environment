@@ -14,12 +14,12 @@
  *  Supports displaying the screen via SDL.
  **************************************************************************** */
 
-#include "display_screen.h"
+#include "common/display_screen.h"
 
 #include <algorithm>
 #include <cassert>
 
-#include "SoundSDL.hxx"
+#include "common/SoundSDL.hxx"
 
 #ifdef __USE_SDL
 

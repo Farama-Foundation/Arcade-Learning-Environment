@@ -18,11 +18,11 @@
 
 #include <cassert>
 
-#include "System.hxx"
-#include "TIA.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
-#include "Cart3F.hxx"
+#include "emucore/m6502/src/System.hxx"
+#include "emucore/TIA.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/Cart3F.hxx"
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

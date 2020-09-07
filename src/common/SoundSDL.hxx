@@ -25,13 +25,13 @@ class OSystem;
 
 #include "SDL.h"
 
-#include "../emucore/Sound.hxx"
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
-#include "MediaSrc.hxx"
-#include "TIASnd.hxx"
+#include "emucore/Sound.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/MediaSrc.hxx"
+#include "emucore/TIASnd.hxx"
 
 // If desired, we save sound to disk
-#include "SoundExporter.hpp"
+#include "common/SoundExporter.hpp"
 #include <memory>
 
 /**

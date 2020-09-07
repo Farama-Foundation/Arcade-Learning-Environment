@@ -32,19 +32,19 @@ using namespace std;
   #include "CheatManager.hxx"
 #endif
 
-#include "FSNode.hxx"
-#include "MD5.hxx"
-#include "Settings.hxx"
-#include "PropsSet.hxx"
-#include "Event.hxx"
-#include "OSystem.hxx"
-#include "SoundSDL.hxx"
+#include "emucore/FSNode.hxx"
+#include "emucore/MD5.hxx"
+#include "emucore/Settings.hxx"
+#include "emucore/PropsSet.hxx"
+#include "emucore/Event.hxx"
+#include "emucore/OSystem.hxx"
+#include "common/SoundSDL.hxx"
 
 #define MAX_ROM_SIZE  512 * 1024
 
 #include <time.h>
 
-#include "bspf.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -128,6 +128,7 @@ bool OSystem::create()
   // Create the event handler for the system
   //ALE   myEventHandler = new EventHandler(this);
   //ALE  myEventHandler->initialize();
+
   // Create the streamer used for accessing eventstreams/recordings
 
   // Delete the previous event object (if any).

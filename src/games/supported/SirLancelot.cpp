@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "SirLancelot.hpp"
+#include "games/supported/SirLancelot.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

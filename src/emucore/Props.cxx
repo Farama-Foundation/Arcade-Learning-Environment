@@ -22,7 +22,7 @@
 #include <string>
 using namespace std;
 
-#include "Props.hxx"
+#include "emucore/Props.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Properties::Properties()

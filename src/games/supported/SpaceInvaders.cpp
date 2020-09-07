@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "SpaceInvaders.hpp"
+#include "games/supported/SpaceInvaders.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

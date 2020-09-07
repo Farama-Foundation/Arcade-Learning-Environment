@@ -10,19 +10,19 @@
  * *****************************************************************************
  */
 
-#include "ale_state.hpp"
+#include "environment/ale_state.hpp"
 
 #include <cstdlib>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
-#include "../emucore/m6502/src/System.hxx"
-#include "../emucore/Event.hxx"
-#include "../emucore/Deserializer.hxx"
-#include "../emucore/Serializer.hxx"
-#include "../common/Constants.h"
-#include "../games/RomSettings.hpp"
+#include "emucore/m6502/src/System.hxx"
+#include "emucore/Event.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/Serializer.hxx"
+#include "common/Constants.h"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

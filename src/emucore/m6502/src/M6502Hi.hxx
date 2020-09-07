@@ -23,8 +23,8 @@ class M6502High;
 class Serializer;
 class Deserializer;
 
-#include "bspf/src/bspf.hxx"
-#include "M6502.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/m6502/src/M6502.hxx"
 
 /**
   This class provides a high compatibility 6502 microprocessor emulator.  

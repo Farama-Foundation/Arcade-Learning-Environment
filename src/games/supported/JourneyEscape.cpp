@@ -12,9 +12,9 @@
  * *****************************************************************************
  */
 
-#include "JourneyEscape.hpp"
+#include "games/supported/JourneyEscape.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

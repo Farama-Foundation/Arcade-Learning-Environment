@@ -12,9 +12,9 @@
  * *****************************************************************************
  */
 
-#include "Freeway.hpp"
+#include "games/supported/Freeway.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -28,7 +28,7 @@
 #ifndef __KANGAROO_HPP__
 #define __KANGAROO_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

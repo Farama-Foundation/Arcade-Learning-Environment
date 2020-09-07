@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Tutankham.hpp"
+#include "games/supported/Tutankham.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "HumanCannonball.hpp"
+#include "games/supported/HumanCannonball.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -28,7 +28,7 @@
 #ifndef __STARGUNNER_HPP__
 #define __STARGUNNER_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

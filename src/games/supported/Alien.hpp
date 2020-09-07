@@ -28,7 +28,7 @@
 #ifndef __ALIEN_HPP__
 #define __ALIEN_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

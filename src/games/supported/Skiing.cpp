@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Skiing.hpp"
+#include "games/supported/Skiing.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

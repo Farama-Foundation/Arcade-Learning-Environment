@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Zaxxon.hpp"
+#include "games/supported/Zaxxon.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

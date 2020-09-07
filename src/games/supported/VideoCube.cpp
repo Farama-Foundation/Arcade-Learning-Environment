@@ -23,12 +23,12 @@
  * *****************************************************************************
  */
 
-#include "VideoCube.hpp"
+#include "games/supported/VideoCube.hpp"
 
 #include <cmath>
 #include <stdexcept>
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

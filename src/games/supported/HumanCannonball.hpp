@@ -26,7 +26,7 @@
 #ifndef __HUMAN_CANNONBALL_HPP__
 #define __HUMAN_CANNONBALL_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

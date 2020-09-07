@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Centipede.hpp"
+#include "games/supported/Centipede.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

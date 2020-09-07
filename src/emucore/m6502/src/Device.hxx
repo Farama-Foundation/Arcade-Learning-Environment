@@ -23,7 +23,7 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "bspf/src/bspf.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
 
 /**
   Abstract base class for devices which can be attached to a 6502

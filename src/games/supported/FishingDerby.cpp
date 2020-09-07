@@ -10,11 +10,11 @@
  * *****************************************************************************
  */
 
-#include "FishingDerby.hpp"
+#include "games/supported/FishingDerby.hpp"
 
 #include <algorithm>
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

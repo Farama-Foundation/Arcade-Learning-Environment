@@ -22,9 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Constants.h"
-#include "ColourPalette.hpp"
-#include "../emucore/MediaSrc.hxx"
+#include "common/Constants.h"
+#include "common/ColourPalette.hpp"
+#include "emucore/MediaSrc.hxx"
 
 #ifdef __USE_SDL
 

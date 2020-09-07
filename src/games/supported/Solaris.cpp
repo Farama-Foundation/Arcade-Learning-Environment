@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Solaris.hpp"
+#include "games/supported/Solaris.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

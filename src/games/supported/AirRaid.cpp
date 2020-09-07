@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "AirRaid.hpp"
+#include "games/supported/AirRaid.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

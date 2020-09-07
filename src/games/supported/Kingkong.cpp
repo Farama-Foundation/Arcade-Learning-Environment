@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Kingkong.hpp"
+#include "games/supported/Kingkong.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -28,9 +28,9 @@
  * *****************************************************************************
  */
 
-#include "Atlantis2.hpp"
+#include "games/supported/Atlantis2.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

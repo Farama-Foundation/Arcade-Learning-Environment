@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Venture.hpp"
+#include "games/supported/Venture.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

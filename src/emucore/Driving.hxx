@@ -22,8 +22,8 @@
 class Driving;
 class System;
 
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "Control.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Control.hxx"
 
 /**
   The standard Atari 2600 Indy 500 driving controller.

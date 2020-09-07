@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "MiniatureGolf.hpp"
+#include "games/supported/MiniatureGolf.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

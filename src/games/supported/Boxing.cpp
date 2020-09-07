@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Boxing.hpp"
+#include "games/supported/Boxing.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

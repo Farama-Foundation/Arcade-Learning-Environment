@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Pooyan.hpp"
+#include "games/supported/Pooyan.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

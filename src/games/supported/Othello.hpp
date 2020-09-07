@@ -26,7 +26,7 @@
 #ifndef __OTHELLO_HPP__
 #define __OTHELLO_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

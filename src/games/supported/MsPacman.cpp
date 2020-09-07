@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "MsPacman.hpp"
+#include "games/supported/MsPacman.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

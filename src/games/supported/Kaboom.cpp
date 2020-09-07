@@ -10,11 +10,11 @@
  * *****************************************************************************
  */
 
-#include "Kaboom.hpp"
+#include "games/supported/Kaboom.hpp"
 
 #include <iostream>
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

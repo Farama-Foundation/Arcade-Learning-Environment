@@ -18,17 +18,17 @@
 #ifndef __STELLA_ENVIRONMENT_HPP__
 #define __STELLA_ENVIRONMENT_HPP__
 
-#include "ale_ram.hpp"
-#include "ale_screen.hpp"
-#include "ale_state.hpp"
-#include "phosphor_blend.hpp"
-#include "stella_environment_wrapper.hpp"
-#include "../emucore/Event.hxx"
-#include "../emucore/OSystem.hxx"
-#include "../games/RomSettings.hpp"
-#include "../common/Constants.h"
-#include "../common/Log.hpp"
-#include "../common/ScreenExporter.hpp"
+#include "environment/ale_ram.hpp"
+#include "environment/ale_screen.hpp"
+#include "environment/ale_state.hpp"
+#include "environment/phosphor_blend.hpp"
+#include "environment/stella_environment_wrapper.hpp"
+#include "emucore/Event.hxx"
+#include "emucore/OSystem.hxx"
+#include "common/Constants.h"
+#include "games/RomSettings.hpp"
+#include "common/Log.hpp"
+#include "common/ScreenExporter.hpp"
 
 #include <cstddef>
 #include <stack>

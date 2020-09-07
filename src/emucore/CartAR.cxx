@@ -20,12 +20,12 @@
 
 #include <cassert>
 
-#include "M6502Hi.hxx"
-#include "Random.hxx"
-#include "System.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
-#include "CartAR.hxx"
+#include "emucore/m6502/src/M6502Hi.hxx"
+#include "emucore/Random.hxx"
+#include "emucore/m6502/src/System.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/CartAR.hxx"
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

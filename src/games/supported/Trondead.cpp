@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Trondead.hpp"
+#include "games/supported/Trondead.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

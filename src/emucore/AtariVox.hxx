@@ -22,8 +22,8 @@
 #ifndef ATARIVOX_HXX
 #define ATARIVOX_HXX
 
-#include "Control.hxx"
-#include "SpeakJet.hxx"
+#include "emucore/Control.hxx"
+#include "emucore/SpeakJet.hxx"
 
 /**
   Richard Hutchinson's AtariVox "controller": A speech synthesizer and

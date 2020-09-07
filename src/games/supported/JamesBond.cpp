@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "JamesBond.hpp"
+#include "games/supported/JamesBond.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

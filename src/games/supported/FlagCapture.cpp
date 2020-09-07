@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "FlagCapture.hpp"
+#include "games/supported/FlagCapture.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

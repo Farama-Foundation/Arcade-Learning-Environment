@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "RoboTank.hpp"
+#include "games/supported/RoboTank.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 
