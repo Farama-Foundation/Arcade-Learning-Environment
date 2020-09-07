@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Gopher.hpp"
+#include "games/supported/Gopher.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

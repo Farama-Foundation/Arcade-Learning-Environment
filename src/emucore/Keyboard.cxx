@@ -16,8 +16,8 @@
 // $Id: Keyboard.cxx,v 1.8 2007/01/13 20:39:48 bwmott Exp $
 //============================================================================
 
-#include "Event.hxx"
-#include "Keyboard.hxx"
+#include "emucore/Event.hxx"
+#include "emucore/Keyboard.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Keyboard::Keyboard(Jack jack, const Event& event)

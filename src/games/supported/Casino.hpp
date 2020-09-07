@@ -26,7 +26,7 @@
 #ifndef __CASINO_HPP__
 #define __CASINO_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

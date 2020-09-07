@@ -17,9 +17,9 @@
 //============================================================================
 
 #include <time.h>
-#include "Random.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
+#include "emucore/Random.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
 
 // This uses C++11.
 #include <random>

@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Defender.hpp"
+#include "games/supported/Defender.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

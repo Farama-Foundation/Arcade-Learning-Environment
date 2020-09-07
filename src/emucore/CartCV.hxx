@@ -23,9 +23,9 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "Cart.hxx"
-#include "Random.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Cart.hxx"
+#include "emucore/Random.hxx"
 
 /**
   Cartridge class used for Commavid's extra-RAM games.

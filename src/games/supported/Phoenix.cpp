@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Phoenix.hpp"
+#include "games/supported/Phoenix.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

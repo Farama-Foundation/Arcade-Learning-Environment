@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "QBert.hpp"
+#include "games/supported/QBert.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

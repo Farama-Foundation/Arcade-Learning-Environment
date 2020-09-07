@@ -20,7 +20,7 @@
 #include <string>
 
 // Include obscure header file for uInt32 definition
-#include "../emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
 
 namespace ale {
 

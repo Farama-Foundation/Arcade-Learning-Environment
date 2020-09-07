@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Seaquest.hpp"
+#include "games/supported/Seaquest.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

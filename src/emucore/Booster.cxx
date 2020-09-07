@@ -16,8 +16,8 @@
 // $Id: Booster.cxx,v 1.8 2007/01/05 17:54:08 stephena Exp $
 //============================================================================
 
-#include "Event.hxx"
-#include "Booster.hxx"
+#include "emucore/Event.hxx"
+#include "emucore/Booster.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BoosterGrip::BoosterGrip(Jack jack, const Event& event)

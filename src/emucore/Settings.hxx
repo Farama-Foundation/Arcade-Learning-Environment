@@ -24,8 +24,8 @@ class OSystem;
 #include <map>
 #include <stdexcept>
 
-#include "../common/Array.hxx"
-#include "m6502/src/bspf/src/bspf.hxx"
+#include "common/Array.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
 
 /**
   This class provides an interface for accessing frontend specific settings.

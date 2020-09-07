@@ -28,7 +28,7 @@
 #ifndef __TIMEPILOT_HPP__
 #define __TIMEPILOT_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

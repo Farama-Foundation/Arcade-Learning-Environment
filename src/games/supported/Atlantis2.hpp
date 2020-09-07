@@ -31,7 +31,7 @@
 #ifndef __ATLANTIS2_HPP__
 #define __ATLANTIS2_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Tetris.hpp"
+#include "games/supported/Tetris.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

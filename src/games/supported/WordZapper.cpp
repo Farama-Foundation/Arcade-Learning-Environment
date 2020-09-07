@@ -22,9 +22,9 @@
  *
  * *****************************************************************************
  */
-#include "WordZapper.hpp"
+#include "games/supported/WordZapper.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

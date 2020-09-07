@@ -18,11 +18,11 @@
 
 #include <cassert>
 
-#include "Random.hxx"
-#include "System.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
-#include "CartF6SC.hxx"
+#include "emucore/Random.hxx"
+#include "emucore/m6502/src/System.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/CartF6SC.hxx"
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

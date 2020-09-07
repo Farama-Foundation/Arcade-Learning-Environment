@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Breakout.hpp"
+#include "games/supported/Breakout.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

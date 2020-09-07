@@ -26,7 +26,7 @@
 #ifndef __ET_HPP__
 #define __ET_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

@@ -16,8 +16,8 @@
 // $Id: TIASnd.cxx,v 1.6 2007/01/01 18:04:50 stephena Exp $
 //============================================================================
 
-#include "System.hxx"
-#include "TIASnd.hxx"
+#include "emucore/m6502/src/System.hxx"
+#include "emucore/TIASnd.hxx"
 #include <cassert>
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

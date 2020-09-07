@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "LaserGates.hpp"
+#include "games/supported/LaserGates.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

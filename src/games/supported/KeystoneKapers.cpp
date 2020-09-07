@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "KeystoneKapers.hpp"
+#include "games/supported/KeystoneKapers.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

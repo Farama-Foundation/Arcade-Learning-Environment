@@ -19,8 +19,8 @@
 //   Copyright (C) 2002-2004 The ScummVM project
 //============================================================================
 
-#include "FSNode.hxx"
-#include "bspf.hxx"
+#include "emucore/FSNode.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

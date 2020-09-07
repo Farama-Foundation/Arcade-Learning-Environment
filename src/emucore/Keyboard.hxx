@@ -19,8 +19,8 @@
 #ifndef KEYBOARD_HXX
 #define KEYBOARD_HXX
 
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "Control.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Control.hxx"
 
 /**
   The standard Atari 2600 keyboard controller

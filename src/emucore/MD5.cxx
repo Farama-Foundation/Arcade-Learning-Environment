@@ -19,7 +19,7 @@
 // $Id: MD5.cxx,v 1.7 2007/01/01 18:04:48 stephena Exp $
 //============================================================================
 
-#include "MD5.hxx"
+#include "emucore/MD5.hxx"
 using namespace std;
 
 /*

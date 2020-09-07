@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "RoadRunner.hpp"
+#include "games/supported/RoadRunner.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "BattleZone.hpp"
+#include "games/supported/BattleZone.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

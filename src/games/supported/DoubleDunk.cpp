@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "DoubleDunk.hpp"
+#include "games/supported/DoubleDunk.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

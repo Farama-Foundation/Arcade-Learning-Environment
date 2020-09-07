@@ -26,13 +26,13 @@ class MediaSource;
 class Switches;
 class System;
 
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "Control.hxx"
-#include "Props.hxx"
-#include "TIA.hxx"
-#include "Cart.hxx"
-#include "M6532.hxx"
-#include "AtariVox.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Control.hxx"
+#include "emucore/Props.hxx"
+#include "emucore/TIA.hxx"
+#include "emucore/Cart.hxx"
+#include "emucore/M6532.hxx"
+#include "emucore/AtariVox.hxx"
 
 /**
   This class represents the entire game console.

@@ -16,9 +16,9 @@
 // $Id: M6502Low.cxx,v 1.12 2007/01/01 18:04:51 stephena Exp $
 //============================================================================
 
-#include "M6502Low.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
+#include "emucore/m6502/src/M6502Low.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
 
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"

@@ -27,7 +27,7 @@
 #ifndef __GALAXIAN_HPP__
 #define __GALAXIAN_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

@@ -18,8 +18,8 @@
 
 #ifdef ATARIVOX_SUPPORT
 
-#include "SpeakJet.hxx"
-#include "../common/Log.hpp"
+#include "emucore/SpeakJet.hxx"
+#include "common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SpeakJet::SpeakJet()

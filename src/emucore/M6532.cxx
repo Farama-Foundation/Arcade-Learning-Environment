@@ -17,16 +17,16 @@
 //============================================================================
 
 #include <assert.h>
-#include "Console.hxx"
-#include "M6532.hxx"
-#include "Switches.hxx"
-#include "System.hxx"
-#include "Serializer.hxx"
-#include "Deserializer.hxx"
-#include "OSystem.hxx"
+#include "emucore/Console.hxx"
+#include "emucore/M6532.hxx"
+#include "emucore/Switches.hxx"
+#include "emucore/m6502/src/System.hxx"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/OSystem.hxx"
 #include <iostream>
 using namespace std;
-#include "../common/Log.hpp"
+#include "common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6532::M6532(const Console& console)

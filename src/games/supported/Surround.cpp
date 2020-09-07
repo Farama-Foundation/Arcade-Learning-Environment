@@ -26,9 +26,9 @@
  *
  * *****************************************************************************
  */
-#include "Surround.hpp"
+#include "games/supported/Surround.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

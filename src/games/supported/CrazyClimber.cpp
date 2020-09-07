@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "CrazyClimber.hpp"
+#include "games/supported/CrazyClimber.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

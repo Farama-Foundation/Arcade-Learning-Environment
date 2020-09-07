@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Pong.hpp"
+#include "games/supported/Pong.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

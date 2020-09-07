@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Assault.hpp"
+#include "games/supported/Assault.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

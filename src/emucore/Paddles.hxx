@@ -19,9 +19,9 @@
 #ifndef PADDLES_HXX
 #define PADDLES_HXX
 
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "Control.hxx"
-#include "Event.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Control.hxx"
+#include "emucore/Event.hxx"
 
 /**
   The standard Atari 2600 pair of paddle controllers.

@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Asteroids.hpp"
+#include "games/supported/Asteroids.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

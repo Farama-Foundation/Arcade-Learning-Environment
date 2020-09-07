@@ -16,9 +16,9 @@
 // $Id: Switches.cxx,v 1.7 2007/01/01 18:04:50 stephena Exp $
 //============================================================================
 
-#include "Event.hxx"
-#include "Props.hxx"
-#include "Switches.hxx"
+#include "emucore/Event.hxx"
+#include "emucore/Props.hxx"
+#include "emucore/Switches.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 Switches::Switches(const Event& event, const Properties& properties)

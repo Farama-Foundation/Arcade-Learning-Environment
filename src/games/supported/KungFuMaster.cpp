@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "KungFuMaster.hpp"
+#include "games/supported/KungFuMaster.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

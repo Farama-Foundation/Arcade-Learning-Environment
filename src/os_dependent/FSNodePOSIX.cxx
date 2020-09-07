@@ -19,7 +19,7 @@
 //   Copyright (C) 2002-2004 The ScummVM project
 //============================================================================
 
-#include "FSNode.hxx"
+#include "emucore/FSNode.hxx"
 
 #ifdef MACOSX
   #include <sys/types.h>

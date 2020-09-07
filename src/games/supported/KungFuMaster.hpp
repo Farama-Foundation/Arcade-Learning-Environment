@@ -28,7 +28,7 @@
 #ifndef __KUNGFUMASTER_HPP__
 #define __KUNGFUMASTER_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

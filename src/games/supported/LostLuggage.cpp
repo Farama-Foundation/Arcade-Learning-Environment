@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "LostLuggage.hpp"
+#include "games/supported/LostLuggage.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

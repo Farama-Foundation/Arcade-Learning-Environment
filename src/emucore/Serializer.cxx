@@ -16,7 +16,7 @@
 // $Id: Serializer.cxx,v 1.11 2007/01/01 18:04:49 stephena Exp $
 //============================================================================
 
-#include "Serializer.hxx"
+#include "emucore/Serializer.hxx"
 using namespace std;
 
 

@@ -28,7 +28,7 @@
 #ifndef __ASTERIX_HPP__
 #define __ASTERIX_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

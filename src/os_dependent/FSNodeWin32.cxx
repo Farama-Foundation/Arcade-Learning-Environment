@@ -27,7 +27,7 @@
 #include <tchar.h>
 #include <direct.h>
 
-#include "FSNode.hxx"
+#include "emucore/FSNode.hxx"
 
 using namespace std;
 

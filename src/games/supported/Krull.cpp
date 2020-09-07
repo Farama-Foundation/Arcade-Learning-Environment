@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Krull.hpp"
+#include "games/supported/Krull.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

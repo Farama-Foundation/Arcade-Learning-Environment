@@ -26,7 +26,7 @@
 #ifndef __EARTHWORLD_HPP__
 #define __EARTHWORLD_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

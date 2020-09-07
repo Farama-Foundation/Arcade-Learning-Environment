@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "Othello.hpp"
+#include "games/supported/Othello.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

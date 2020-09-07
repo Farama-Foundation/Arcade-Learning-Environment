@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Koolaid.hpp"
+#include "games/supported/Koolaid.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

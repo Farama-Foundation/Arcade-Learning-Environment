@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Backgammon.hpp"
+#include "games/supported/Backgammon.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

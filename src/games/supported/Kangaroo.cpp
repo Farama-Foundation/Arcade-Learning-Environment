@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "Kangaroo.hpp"
+#include "games/supported/Kangaroo.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

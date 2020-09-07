@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "BasicMath.hpp"
+#include "games/supported/BasicMath.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

@@ -10,9 +10,9 @@
  * *****************************************************************************
  */
 
-#include "Carnival.hpp"
+#include "games/supported/Carnival.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

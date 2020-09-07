@@ -28,7 +28,7 @@
 #ifndef __TUTANKHAM_HPP__
 #define __TUTANKHAM_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

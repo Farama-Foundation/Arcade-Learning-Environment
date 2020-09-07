@@ -27,7 +27,7 @@
 #ifndef __ADVENTURE_HPP__
 #define __ADVENTURE_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

@@ -26,7 +26,7 @@
 #ifndef __HAUNTED_HOUSE_HPP__
 #define __HAUNTED_HOUSE_HPP__
 
-#include "../RomSettings.hpp"
+#include "games/RomSettings.hpp"
 
 namespace ale {
 

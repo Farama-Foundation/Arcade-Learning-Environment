@@ -18,10 +18,10 @@
 
 #ifdef ATARIVOX_SUPPORT
 
-#include "Event.hxx"
-#include "AtariVox.hxx"
-#include "SpeakJet.hxx"
-#include "../common/Log.hpp"
+#include "emucore/Event.hxx"
+#include "emucore/AtariVox.hxx"
+#include "emucore/SpeakJet.hxx"
+#include "common/Log.hpp"
 
 #define DEBUG_ATARIVOX 0
 

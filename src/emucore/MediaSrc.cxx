@@ -17,7 +17,7 @@
 //============================================================================
 
 #include <assert.h>
-#include "MediaSrc.hxx"
+#include "emucore/MediaSrc.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MediaSource::MediaSource()

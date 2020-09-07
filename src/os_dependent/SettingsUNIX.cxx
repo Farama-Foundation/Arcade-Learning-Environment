@@ -16,9 +16,9 @@
 // $Id: SettingsUNIX.cxx,v 1.23 2007/07/27 13:49:16 stephena Exp $
 //============================================================================
 
-#include "bspf.hxx"
-#include "Settings.hxx"
-#include "SettingsUNIX.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Settings.hxx"
+#include "os_dependent/SettingsUNIX.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SettingsUNIX::SettingsUNIX(OSystem* osystem)

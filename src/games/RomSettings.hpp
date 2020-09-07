@@ -38,11 +38,11 @@
 #include <memory>
 #include <stdexcept>
 
-#include "../common/Constants.h"
-#include "../emucore/Serializer.hxx"
-#include "../emucore/Deserializer.hxx"
-#include "../emucore/Settings.hxx"
-#include "../environment/stella_environment_wrapper.hpp"
+#include "common/Constants.h"
+#include "emucore/Serializer.hxx"
+#include "emucore/Deserializer.hxx"
+#include "emucore/Settings.hxx"
+#include "environment/stella_environment_wrapper.hpp"
 
 class System;
 

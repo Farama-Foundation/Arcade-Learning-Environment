@@ -29,9 +29,9 @@
  *
  * *****************************************************************************
  */
-#include "Pacman.hpp"
+#include "games/supported/Pacman.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

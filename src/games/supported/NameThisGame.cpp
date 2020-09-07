@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "NameThisGame.hpp"
+#include "games/supported/NameThisGame.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

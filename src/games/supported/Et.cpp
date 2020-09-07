@@ -23,9 +23,9 @@
  * *****************************************************************************
  */
 
-#include "Et.hpp"
+#include "games/supported/Et.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

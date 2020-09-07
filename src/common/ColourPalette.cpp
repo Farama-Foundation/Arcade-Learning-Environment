@@ -13,7 +13,7 @@
  *  Enables conversion from NTSC/SECAM/PAL to RGB via the OSystem's palette.
  **************************************************************************** */
 
-#include "ColourPalette.hpp"
+#include "common/ColourPalette.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -22,7 +22,7 @@
 #include <cstring>
 #include <fstream>
 
-#include "Palettes.hpp"
+#include "common/Palettes.hpp"
 
 namespace ale {
 namespace {

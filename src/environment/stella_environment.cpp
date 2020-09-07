@@ -15,11 +15,11 @@
  *
  **************************************************************************** */
 
-#include "stella_environment.hpp"
+#include "environment/stella_environment.hpp"
 
 #include <sstream>
 
-#include "../emucore/m6502/src/System.hxx"
+#include "emucore/m6502/src/System.hxx"
 
 namespace ale {
 

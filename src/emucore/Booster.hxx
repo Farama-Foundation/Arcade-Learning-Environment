@@ -19,8 +19,8 @@
 #ifndef BOOSTERGRIP_HXX
 #define BOOSTERGRIP_HXX
 
-#include "m6502/src/bspf/src/bspf.hxx"
-#include "Control.hxx"
+#include "emucore/m6502/src/bspf/src/bspf.hxx"
+#include "emucore/Control.hxx"
 
 /**
   The standard Atari 2600 joystick controller fitted with the 

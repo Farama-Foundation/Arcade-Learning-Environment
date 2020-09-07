@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "BeamRider.hpp"
+#include "games/supported/BeamRider.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 

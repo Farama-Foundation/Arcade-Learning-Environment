@@ -25,9 +25,9 @@
  * *****************************************************************************
  */
 
-#include "DemonAttack.hpp"
+#include "games/supported/DemonAttack.hpp"
 
-#include "../RomUtils.hpp"
+#include "games/RomUtils.hpp"
 
 namespace ale {
 
