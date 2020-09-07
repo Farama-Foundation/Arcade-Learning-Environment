@@ -111,12 +111,12 @@ void VideoCheckersSettings::loadState(Deserializer& ser) {
 }
 
 ModeVect VideoCheckersSettings::getAvailableModes() {
-  // https://atariage.com/manual_html_page.php?SoftwareID=1429
-  // Index 0 to 8 is regular checkers in increasing difficulty
-  // displayed onscreen and stored in memory as 1 to 9
-  // 9 to 17 is reverse checkers in increasing difficulty
-  // displayed onscreen as 11 to 19 and stored in memory as 17 to 25
-  return {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
+  // https://atariage.com/manual_html_page.php?SoftwareID=579
+  // Games 1 to 9 are regular checkers in increasing difficulty,
+  // displayed onscreen and stored in memory as 1 to 9.
+  // Games 11 to 19 are reverse checkers in increasing difficulty,
+  // displayed onscreen as 11 to 19 but stored in memory as 17 to 25.
+  return {1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 }
 
 // Set the game mode.
@@ -125,14 +125,11 @@ void VideoCheckersSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   auto availableModes = getAvailableModes();
-  if (std::find(availableModes.begin(), availableModes.end(), m)
-      != availableModes.end()) {
-    m_reverse_checkers = m >= 9;
+  if (isModeSupported(m)) {
+    m_reverse_checkers = m >= 11;
     // apply offset to match corresponding value in memory
     if (m_reverse_checkers) {
-      m += 8;
-    } else {
-      ++m;
+      m += 6;
     }
 
     while (readRam(&system, 0xF6) != m) { environment->pressSelect(1); }

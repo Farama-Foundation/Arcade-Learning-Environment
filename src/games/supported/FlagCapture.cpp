@@ -96,22 +96,16 @@ void FlagCaptureSettings::loadState(Deserializer& ser) {
 // player. These determine whether the flag is stationary or moving and are
 // timed against a fixed 75 second clock.
 ModeVect FlagCaptureSettings::getAvailableModes() {
-  return {0, 1, 2};
+  return {8, 9, 10};
 }
 
 void FlagCaptureSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 3) {
-    // Read the mode we are currently in.
-    int mode = readRam(&system, 0xd6);
-    // Single player modes are [8, 10]
-    int desired_mode = m + 8;
-
+  if (isModeSupported(m)) {
     // Press select until the correct mode is reached for single player only.
-    while (mode != desired_mode) {
+    while (readRam(&system, 0xd6) != m) {
       environment->pressSelect(2);
-      mode = readRam(&system, 0xd6);
     }
 
     // Reset the environment to apply changes.

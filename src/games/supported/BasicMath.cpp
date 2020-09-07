@@ -94,22 +94,16 @@ DifficultyVect BasicMathSettings::getAvailableDifficulties() {
 // According to https://atariage.com/manual_html_page.php?SoftwareID=850
 // there are four valid game modes with random artihmetic problems.
 ModeVect BasicMathSettings::getAvailableModes() {
-  return {0, 1, 2, 3};
+  return {5, 6, 7, 8};
 }
 
 void BasicMathSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 4) {
-    // Read the mode we are currently in.
-    unsigned char mode = readRam(&system, 0xc5);
-    // Game modes with randomly generated questions are actually [5 - 8].
-    unsigned char matching_mode = 5 + m;
-
+  if (isModeSupported(m)) {
     // Press select until the correct mode is reached.
-    while (mode != matching_mode) {
+    while (readRam(&system, 0xc5) != m) {
       environment->pressSelect(2);
-      mode = readRam(&system, 0xc5);
     }
 
     // Reset the environment to apply changes.

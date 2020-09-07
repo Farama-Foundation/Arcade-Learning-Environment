@@ -100,22 +100,16 @@ void MarioBrosSettings::loadState(Deserializer& ser) {
 // determines whether there are fireballs present and how many lives the player
 // gets to start (3 or 5).
 ModeVect MarioBrosSettings::getAvailableModes() {
-  return {0, 1, 2, 3};
+  return {0, 2, 4, 6};
 }
 
 void MarioBrosSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 4) {
-    // Read the mode we are currently in.
-    int mode = readRam(&system, 0x80);
-    // Skip the odd numbered modes are these are for two players.
-    int desired_mode = m * 2;
-
+  if (isModeSupported(m)) {
     // Press select until the correct mode is reached.
-    while (mode != desired_mode) {
+    while (readRam(&system, 0x80) != m) {
       environment->pressSelect(5);
-      mode = readRam(&system, 0x80);
     }
 
     // Reset the environment to apply changes.
