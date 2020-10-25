@@ -72,7 +72,7 @@ class EntombedSettings : public RomSettings2P {
 
 
  private:
-  int depth_counter;
+  int cur_depth;
   bool m_terminal;
   reward_t m_reward;
   int m_score;
