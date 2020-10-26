@@ -49,7 +49,7 @@ void EntombedSettings::step(const System& system) {
 
   if(is_two_player){
     if(is_cooperative){
-      if(cur_substage == cur_depth+1){
+      if(cur_substage >= cur_depth){
         //rewards every 5 seconds after the first 10 seconds after starting a stage
         m_reward = 1;
       }
