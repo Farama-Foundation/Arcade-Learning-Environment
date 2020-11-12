@@ -168,6 +168,8 @@ class ALEInterface {
   // Returns the current RAM content
   const ALERAM& getRAM();
 
+  void setRAM(size_t memory_index, byte_t value);
+
   // Saves the state of the system
   void saveState();
 

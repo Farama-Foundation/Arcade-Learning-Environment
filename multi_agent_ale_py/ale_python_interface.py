@@ -108,6 +108,8 @@ ale_lib.getRAM.argtypes = [c_void_p, c_void_p]
 ale_lib.getRAM.restype = None
 ale_lib.getRAMSize.argtypes = [c_void_p]
 ale_lib.getRAMSize.restype = c_int
+ale_lib.setRAM.argtypes = [c_size_t, c_ubyte]
+ale_lib.setRAM.restype = None
 ale_lib.getScreenWidth.argtypes = [c_void_p]
 ale_lib.getScreenWidth.restype = c_int
 ale_lib.getScreenHeight.argtypes = [c_void_p]
@@ -337,6 +339,8 @@ class ALEInterface(object):
         ale_lib.getRAM(self.obj, as_ctypes(ram))
         return ram
 
+    def setRAM(self, memory_index, value):
+        return ale_lib.setRAM(self.obj, as_ctypes(memory_index), as_ctypes(value))
     def saveScreenPNG(self, filename):
         """Save the current screen as a png file"""
         return ale_lib.saveScreenPNG(self.obj, _str_as_bytes(filename))

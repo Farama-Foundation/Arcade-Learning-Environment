@@ -322,4 +322,9 @@ void StellaEnvironment::processRAM() {
     *m_ram.byte(i) = m_osystem->console().system().peek(i + 0x80);
 }
 
+void StellaEnvironment::setRAM(size_t memory_index, byte_t value) {
+  m_osystem->console().system().poke(memory_index + 0x80, value);
+  *m_ram.byte(memory_index) = value;
+}
+
 }  // namespace ale
