@@ -340,7 +340,13 @@ class ALEInterface(object):
         return ram
 
     def setRAM(self, memory_index, value):
-        return ale_lib.setRAM(self.obj, as_ctypes(memory_index), as_ctypes(value))
+        """Set ram at memory_index to value"""
+        if not 0 <= memory_index <= 127:
+            raise RuntimeError("Index out of bounds.")
+        if not 0 <= value <= 255:
+            raise RuntimeError("Invalid ram value.")
+        return ale_lib.setRAM(self.obj, memory_index, value)
+
     def saveScreenPNG(self, filename):
         """Save the current screen as a png file"""
         return ale_lib.saveScreenPNG(self.obj, _str_as_bytes(filename))
