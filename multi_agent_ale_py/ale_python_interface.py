@@ -108,6 +108,8 @@ ale_lib.getRAM.argtypes = [c_void_p, c_void_p]
 ale_lib.getRAM.restype = None
 ale_lib.getRAMSize.argtypes = [c_void_p]
 ale_lib.getRAMSize.restype = c_int
+ale_lib.setRAM.argtypes = [c_size_t, c_ubyte]
+ale_lib.setRAM.restype = None
 ale_lib.getScreenWidth.argtypes = [c_void_p]
 ale_lib.getScreenWidth.restype = c_int
 ale_lib.getScreenHeight.argtypes = [c_void_p]
@@ -336,6 +338,14 @@ class ALEInterface(object):
             ram = np.zeros(ram_size, dtype=np.uint8)
         ale_lib.getRAM(self.obj, as_ctypes(ram))
         return ram
+
+    def setRAM(self, memory_index, value):
+        """Set ram at memory_index to value"""
+        if not 0 <= memory_index <= 127:
+            raise RuntimeError("Index out of bounds.")
+        if not 0 <= value <= 255:
+            raise RuntimeError("Invalid ram value.")
+        return ale_lib.setRAM(self.obj, memory_index, value)
 
     def saveScreenPNG(self, filename):
         """Save the current screen as a png file"""

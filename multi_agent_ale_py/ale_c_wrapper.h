@@ -82,6 +82,9 @@ extern "C" {
     int size = ale->getRAM().size();
     std::memcpy(ram,ale_ram,size*sizeof(unsigned char));
   }
+  void setRAM(ale::ALEInterface *ale, size_t memory_index, ale::byte_t value) {
+    return ale->setRAM(memory_index, value);
+  }
   int getRAMSize(ale::ALEInterface *ale){return ale->getRAM().size();}
   int getScreenWidth(ale::ALEInterface *ale){return ale->getScreen().width();}
   int getScreenHeight(ale::ALEInterface *ale){return ale->getScreen().height();}

@@ -506,6 +506,10 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
 // Returns the current RAM content
 const ALERAM& ALEInterface::getRAM() { return environment->getRAM(); }
 
+void ALEInterface::setRAM(size_t memory_index, byte_t value) {
+  return environment->setRAM(memory_index, value);
+}
+
 // Saves the state of the system
 void ALEInterface::saveState() { environment->save(); }
 
