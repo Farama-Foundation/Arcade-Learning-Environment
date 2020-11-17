@@ -1,22 +1,25 @@
-option(USE_SDL "Use SDL" OFF)
-option(BUILD_CPP_LIB "Build C++ Shared Library" ON)
-option(BUILD_PYTHON "Build Python Interface" ON)
+option(BUILD_PYTHON_LIB "Build Python Interface" ON)
+option(BUILD_CPP_LIB "Build C++ Interface" ON)
+option(USE_SDL "Build with SDL support" OFF)
 
 # Include src/ and cmake binary directory (for version.hpp)
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+# Project specific target properties
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
+# Compiler options
+add_compile_options(
+  "$<$<CONFIG:RELEASE>:-O3>"
+  "$<$<CONFIG:DEBUG>:-O0>"
+  "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall>"
+  "$<$<CXX_COMPILER_ID:MSVC>:/W4>")
+
 # ale object containing source files
 add_library(ale OBJECT)
-
-# Require C++11 for dependencies
-target_compile_features(ale PUBLIC cxx_std_11)
-target_compile_options(ale PUBLIC -O3 -fPIC)
-
-# Compiler specific flags
-target_compile_options(ale
-  PUBLIC
-    $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wunused -fomit-frame-pointer>
-)
 
 # Dependencies
 find_package(ZLIB REQUIRED)
@@ -24,15 +27,13 @@ find_package(Threads REQUIRED)
 target_link_libraries(ale
   PRIVATE
     ZLIB::ZLIB
-    Threads::Threads
-)
+    Threads::Threads)
 
 if (USE_SDL)
   target_compile_definitions(ale
     PUBLIC
       -D__USE_SDL
-      -DSOUND_SUPPORT
-  )
+      -DSOUND_SUPPORT)
   find_package(SDL REQUIRED)
   target_include_directories(ale PUBLIC ${SDL_INCLUDE_DIR})
   target_link_libraries(ale PUBLIC ${SDL_LIBRARY})
@@ -52,8 +53,7 @@ if(GIT_FOUND)
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     OUTPUT_VARIABLE GIT_SHA
     ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 if (NOT GIT_SHA)
   set(GIT_SHA "(unknown)")
@@ -68,15 +68,14 @@ if (BUILD_CPP_LIB)
 endif()
 
 # Python Interface
-if (BUILD_PYTHON)
-  find_package(Python3 COMPONENTS Interpreter Development)
+if (BUILD_PYTHON_LIB)
+  find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
   include(FetchContent)
   FetchContent_Declare(
       pybind11
       GIT_REPOSITORY https://github.com/pybind/pybind11
-      GIT_TAG v2.4.3
-  )
+      GIT_TAG v2.4.3)
   FetchContent_MakeAvailable(pybind11)
 
   add_library(ale-py MODULE ale_interface.cpp ale_python_interface.cpp)
@@ -121,15 +120,13 @@ if (UNIX AND BUILD_CPP_LIB)
   write_basic_package_version_file(
     ${PROJECT_NAME}-config-version.cmake
     VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY AnyNewerVersion
-  )
+    COMPATIBILITY AnyNewerVersion)
 
   # Configure installable cmake config
   configure_package_config_file(
     ${CMAKE_MODULE_PATH}/${PROJECT_NAME}-config.cmake.in
     ${PROJECT_NAME}-config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-  )
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
   # Install config-version and config
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
