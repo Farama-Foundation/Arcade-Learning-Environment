@@ -8,9 +8,11 @@ project(ale VERSION 0.6.1
 # Set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
+# Main ALE src directory
 add_subdirectory(src)
 
 # Only include tests in the main project
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  enable_testing()
   add_subdirectory(tests)
 endif()
