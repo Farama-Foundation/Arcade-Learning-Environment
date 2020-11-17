@@ -30,7 +30,8 @@ void ALEPythonInterface::getScreen(
 
   if (info.shape[0] != h || info.shape[1] != w) {
     std::stringstream msg;
-    msg << "Invalid shape, expecting shape (" << h << ", " << w << ")";
+    msg << "Invalid shape, (" << info.shape[0] << ", " << info.shape[1] << "), "
+        << "expecting shape (" << h << ", " << w << ")";
     throw std::runtime_error(msg.str());
   }
 
@@ -52,7 +53,8 @@ void ALEPythonInterface::getScreenRGB(
 
   if (info.shape[0] != h || info.shape[1] != w || info.shape[2] != 3) {
     std::stringstream msg;
-    msg << "Invalid shape, expecting shape (" << h << ", " << w << ", 3)";
+    msg << "Invalid shape (" << info.shape[0] << ", " << info.shape[1] << ", "
+        << info.shape[2] << "), expecting shape " << "(" << h << ", " << w << ", 3)";
     throw std::runtime_error(msg.str());
   }
 
@@ -74,7 +76,8 @@ void ALEPythonInterface::getScreenGrayscale(
 
   if (info.shape[0] != h || info.shape[1] != w) {
     std::stringstream msg;
-    msg << "Invalid shape, expecting shape (" << h << ", " << w << ")";
+    msg << "Invalid shape (" << info.shape[0] << ", " << info.shape[1] << "), "
+        << "expecting shape (" << h << ", " << w << ")";
     throw std::runtime_error(msg.str());
   }
 
@@ -176,7 +179,8 @@ void ALEPythonInterface::getRAM(
 
   if (info.shape[0] != ram.size()) {
     std::stringstream msg;
-    msg << "Invalid shape, expecting shape (" << ram.size() << ")";
+    msg << "Invalid shape (" << info.shape[0] << "), "
+        << "expecting shape (" << ram.size() << ")";
     throw std::runtime_error(msg.str());
   }
 
