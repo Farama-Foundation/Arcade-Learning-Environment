@@ -75,7 +75,7 @@ if (BUILD_PYTHON_LIB)
   FetchContent_Declare(
       pybind11
       GIT_REPOSITORY https://github.com/pybind/pybind11
-      GIT_TAG v2.4.3)
+      GIT_TAG v2.6.1)
   FetchContent_MakeAvailable(pybind11)
 
   add_library(ale-py MODULE ale_interface.cpp ale_python_interface.cpp)
