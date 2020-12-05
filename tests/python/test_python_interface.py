@@ -76,6 +76,15 @@ def test_get_ram(tetris):
     assert exc_info.type == RuntimeError
 
 
+def test_set_ram(tetris):
+    tetris.setRAM(10, 10)
+    assert 10 == tetris.getRAM()[10]
+    with pytest.raises(RuntimeError):
+        tetris.setRAM(1000, 10)
+    with pytest.raises(TypeError):
+        tetris.setRAM(10, 1000)
+
+
 def test_reset_game(tetris):
     ram = tetris.getRAM()
     for _ in range(20):

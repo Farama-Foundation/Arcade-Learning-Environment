@@ -87,6 +87,10 @@ class StellaEnvironment {
 
   /** Returns the current screen after processing (e.g. colour averaging) */
   const ALEScreen& getScreen() const { return m_screen; }
+
+  /** Accessor methods for RAM. `setRAM` can be useful to alter the environment.
+   *  For example, learning a causal model of RAM transitions, changing environment dynamics, etc. */
+  void setRAM(size_t memory_index, byte_t value);
   const ALERAM& getRAM() const { return m_ram; }
 
   int getFrameNumber() const { return m_state.getFrameNumber(); }

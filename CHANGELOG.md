@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new games: Atlantis2, Backgammon, BasicMath, Blackjack, Casino, Crossbow, DarkChambers, Earthworld, Entombed, ET, FlagCapture, Hangman, HauntedHouse, HumanCannonball, Klax, MarioBros, MiniatureGolf, Othello, Pacman, Pitfall2, SpaceWar, Superman, Surround, TicTacToe3D, VideoCheckers, VideoChess, VideoCube, WordZapper (thanks @tkoppe)
 - Added (additional) mode/difficulty settings for: Lost Luggage, Turmoil, Tron Dead Discs, Pong, Mr. Do, King Kong, Frogger, Adventure (thanks @tkoppe)
 - Added `cloneState(include_rng)` which will eventually replace `cloneSystemState` (behind the scenes `cloneSystemState` is equivalent to `cloneState(include_rng=True)`).
+- Added `setRAM` which can be useful for modifying the environment, e.g., learning a causal model over RAM transitions, altering game dynamics, etc.
 
 ### Changed
 - Rewrote SDL support using SDL2 primitives
