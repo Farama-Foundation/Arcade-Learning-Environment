@@ -355,6 +355,14 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
 // Returns the current RAM content
 const ALERAM& ALEInterface::getRAM() { return environment->getRAM(); }
 
+// Set byte at memory address
+void ALEInterface::setRAM(size_t memory_index, byte_t value) {
+  if (memory_index < 0 || memory_index >= 128){
+      throw std::runtime_error("setRAM index out of bounds.");
+  }
+  return environment->setRAM(memory_index, value);
+}
+
 ALEState ALEInterface::cloneState(bool include_rng) {
   return environment->cloneState(include_rng);
 }

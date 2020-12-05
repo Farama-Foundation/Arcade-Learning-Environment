@@ -161,6 +161,10 @@ class ALEInterface {
   // Returns the current RAM content
   const ALERAM& getRAM();
 
+  // Set byte at memory address. This can be useful to change the environment
+  // for example if you were trying to learn a causal model of RAM locations.
+  void setRAM(size_t memory_index, byte_t value);
+
   // This makes a copy of the environment state. By defualt this copy does *not* include pseudorandomness
   // making it suitable for planning purposes. If `include_prng` is set to true, then the
   // pseudorandom number generator is also serialized.
