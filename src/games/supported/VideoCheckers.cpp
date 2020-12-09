@@ -74,16 +74,18 @@ void VideoCheckersSettings::step(const System& system) {
   }
   turn_same_count += 1;
   m_is_white_turn = is_white_turn;
+
+  m_reward_p1 = 0;
+  m_reward_p2 = 0;
+  
   // 10 seconds to make a move
   if(max_turn_time > 0 && turn_same_count > max_turn_time){
     //remember white is p2
     if (is_white_turn){
-      m_reward_p1 = 0;
       m_reward_p2 = -1;
     }
     else{
       m_reward_p1 = -1;
-      m_reward_p2 = 0;
     }
     turn_same_count = 0;
   }
