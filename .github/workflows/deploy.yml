@@ -30,7 +30,7 @@ jobs:
         - ls wheelhouse/
         - twine upload wheelhouse/* --skip-existing -u $PYPI_USER -p $PYPI_PASSWORD
 
-  build_linux:
+  build_macos:
 
     runs-on: macos-latest
     strategy:
