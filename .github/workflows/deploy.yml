@@ -23,7 +23,7 @@ jobs:
     - name: Build package
       run: |
         pip install pathlib
-        pip install twine
+        pip install twine wheel
         python setup.py sdist bdist_wheel
         mkdir wheelhouse
         cp -a dist/. wheelhouse/
@@ -45,7 +45,7 @@ jobs:
     - name: Build package
       run: |
         pip install pathlib
-        pip install twine
+        pip install twine wheel
         python setup.py sdist bdist_wheel
         mkdir wheelhouse
         cp -a dist/. wheelhouse/
