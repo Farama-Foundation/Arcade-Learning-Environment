@@ -24,7 +24,7 @@ PATH=${CMAKE_DIR}/cmake-install:${CMAKE_DIR}/cmake-install/bin:$PATH
 cd ..
 
 for PYBIN in /opt/python/*/bin; do
-    if [[ ( "$PYBIN" == *"36"* ) || ( "$PYBIN" == *"37"* ) || ( "$PYBIN" == *"38"* ) ]]; then
+    if [[ ( "$PYBIN" == *"36"* ) || ( "$PYBIN" == *"37"* ) || ( "$PYBIN" == *"38"* )  || ( "$PYBIN" == *"39"* ) ]]; then
         "${PYBIN}/pip" install -r /io/requirements.txt
         "${PYBIN}/pip" wheel /io/ --no-deps -w wheelhouse/
     fi
