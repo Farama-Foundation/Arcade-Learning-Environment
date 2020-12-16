@@ -28,7 +28,7 @@ jobs:
         mkdir wheelhouse
         cp -a dist/. wheelhouse/
         ls wheelhouse/
-        twine upload wheelhouse/* --skip-existing -u $PYPI_USER -p $PYPI_PASSWORD
+        twine upload wheelhouse/* --skip-existing -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASSWORD }}
 
   build_macos:
 
@@ -50,4 +50,4 @@ jobs:
         mkdir wheelhouse
         cp -a dist/. wheelhouse/
         ls wheelhouse/
-        twine upload wheelhouse/* --skip-existing -u $PYPI_USER -p $PYPI_PASSWORD
+        twine upload wheelhouse/* --skip-existing -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASSWORD }}
