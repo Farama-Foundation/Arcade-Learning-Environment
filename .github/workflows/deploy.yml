@@ -22,6 +22,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Build package
       run: |
+        pip install wheel numpy twine
         chmod +x travis/build-wheels.sh
         touch requirements.txt
         export DOCKER_IMAGE=quay.io/pypa/manylinux2010_x86_64
@@ -46,7 +47,7 @@ jobs:
     - name: Build package
       run: |
         pip install pathlib
-        pip install twine wheel
+        pip install wheel numpy twine
         python setup.py sdist bdist_wheel
         mkdir wheelhouse
         cp -a dist/. wheelhouse/
