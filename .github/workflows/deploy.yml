@@ -1,0 +1,53 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python package
+
+on:
+  push:
+    branches: [ production ]
+
+jobs:
+  build_linux:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build package
+      run: |
+        - pip install pathlib
+        - pip install twine
+        - python setup.py sdist bdist_wheel
+        - mkdir wheelhouse
+        - cp -a dist/. wheelhouse/
+        - ls wheelhouse/
+        - twine upload wheelhouse/* --skip-existing -u $PYPI_USER -p $PYPI_PASSWORD
+
+  build_linux:
+
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build package
+      run: |
+        - pip install pathlib
+        - pip install twine
+        - python setup.py sdist bdist_wheel
+        - mkdir wheelhouse
+        - cp -a dist/. wheelhouse/
+        - ls wheelhouse/
+        - twine upload wheelhouse/* --skip-existing -u $PYPI_USER -p $PYPI_PASSWORD
