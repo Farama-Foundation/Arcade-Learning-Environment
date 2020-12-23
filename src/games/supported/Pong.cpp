@@ -81,11 +81,7 @@ void PongSettings::loadState(Deserializer& ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect PongSettings::getAvailableModes() {
-  ModeVect modes(getNumModes());
-  for (unsigned int i = 0; i < modes.size(); i++) {
-    modes[i] = i;
-  }
-  return modes;
+  return {1, 2};
 }
 
 // set the mode of the game
@@ -93,11 +89,11 @@ ModeVect PongSettings::getAvailableModes() {
 void PongSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < getNumModes()) {
+  if (isModeSupported(m)) {
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x96);
     // press select until the correct mode is reached
-    while (mode != m) {
+    while (mode != m - 1) {
       environment->pressSelect(2);
       mode = readRam(&system, 0x96);
     }
