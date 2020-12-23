@@ -105,16 +105,16 @@ DifficultyVect SurroundSettings::getAvailableDifficulties() {
 // https://atariage.com/manual_html_page.php?SoftwareLabelID=535
 // There are only two single player modes, the second is faster than the first.
 ModeVect SurroundSettings::getAvailableModes() {
-  return {0, 2};
+  return {2, 4};
 }
 
 void SurroundSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0 || m == 2) {
+  if (isModeSupported(m)) {
     // Read the game mode from RAM address 0xf9.
     unsigned char mode = readRam(&system, 0xf9);
-    int desired_mode = m + 1;
+    int desired_mode = m - 1;
 
     // Press select until the correct mode is reached for single player only.
     while (mode != desired_mode) {
