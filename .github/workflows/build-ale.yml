@@ -1,5 +1,4 @@
-name: Build ale
-
+name: Build ALE
 on:
   push:
     tags-ignore:
@@ -11,51 +10,85 @@ on:
       - "*"
 
 jobs:
+  presubmit:
+    name: Presubmit checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./scripts/presubmit.sh
+
+
   build:
-    name: Build ale on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Build ALE on ${{ matrix.config.os }}
+    needs: presubmit
+    defaults:
+      run:
+        shell: bash
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        config: [
+          {"os": "ubuntu-latest", "deps": ["zlib"], "triplet": "x64-linux"},
+          {"os": "windows-latest", "deps": ["zlib"], "triplet": "x64-windows"},
+          {"os": "macos-latest", "deps": ["zlib"], "triplet": "x64-osx"}
+        ]
+    env:
+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.config.triplet }}
+    runs-on: ${{ matrix.config.os }}
+
     steps:
     - uses: actions/checkout@v2
-    - name: Presubmit check
-      run: ./scripts/presubmit.sh
-    - uses: actions/setup-python@v1
-      name: Install Python ${{ matrix.python_version }}
+
+    - uses: actions/setup-python@v2
       with:
-        python-version: "3.9"
-    - name: Install Python dependencies
+        python-version: "3.x"
+
+    - name: Get vcpkg cache info
+      id: vcpkg-cache-info
       run: |
-        python -m pip install numpy pytest cmake
-    - name: Install dependencies on Ubuntu
-      if: matrix.os == 'ubuntu-latest'
+        echo "::set-output name=root::$VCPKG_INSTALLATION_ROOT"
+        echo "::set-output name=sha::$(git -C $VCPKG_INSTALLATION_ROOT rev-parse --short HEAD)"
+
+    - name: Cache vcpkg dependencies
+      id: vcpkg-cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.vcpkg-cache-info.outputs.root }}/installed/${{ matrix.config.triplet }}
+        key: |
+          vcpkg-${{ matrix.config.triplet }}-${{ join(matrix.config.deps, '-') }}-${{ steps.vcpkg-cache-info.outputs.sha }}
+        restore-keys: |
+          vcpkg-${{ matrix.config.triplet }}-${{ join(matrix.config.deps, '-') }}-
+
+    - name: Install vcpkg dependencies
+      if: steps.vcpkg-cache.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get update
-        sudo apt-get install libsdl1.2-dev
-    - name: Install dependencies on macOS
-      if: matrix.os == 'macos-latest'
+        vcpkg install ${{ join(matrix.config.deps, ' ') }} --triplet ${{ matrix.config.triplet }}
+
+    - name: Get pip cache info
+      id: pip-cache-info
+      run: echo "::set-output name=dir::$(python -m pip cache dir)"
+
+    - name: Cache pip dependencies
+      id: pip-cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.pip-cache-info.outputs.dir }}
+        key: ${{ matrix.config.os }}-pip-${{ hashFiles('**/requirements-dev.txt') }}
+        restore-keys: |
+          ${{ matrix.config.os }}-pip-
+
+    - name: Install pip dependencies
       run: |
-        brew install sdl
-    - name: Install dependencies on Windows
-      if: matrix.os == 'windows-latest'
-      run: |
-        vcpkg install zlib:x64-windows sdl1:x64-windows
-    - name: Configure ale with vcpkg
-      if: matrix.os == 'windows-latest'
+        python -m pip install -r requirements-dev.txt
+
+    - name: Configure ALE
       run: |
         mkdir build; cd build
-        cmake ../ `
-          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake" `
-          -DVCPKG_TARGET_TRIPLET="x64-windows" `
-          -DUSE_SDL=ON
-    - name: Configure ale
-      if: matrix.os != 'windows-latest'
-      run: |
-        mkdir build; cd build
-        cmake ../ -DUSE_SDL=ON -DPython3_FIND_FRAMEWORK=NEVER
-    - name: Build & Test ale
-      run: |
-        cd build
-        cmake --build . --config Debug
-        ctest -C Debug --progress -VV
+        cmake ../ -DUSE_SDL=OFF -DPython3_EXECUTABLE=$(which python)
+
+    - name: Build ALE
+      working-directory: ./build
+      run: cmake --build . --config Debug --parallel 2
+
+    - name: Test ALE
+      working-directory: ./build
+      run: ctest -C Debug --progress -VV
