@@ -3,6 +3,7 @@ import os
 import sys
 import platform
 import multiprocessing
+import subprocess
 import shlex
 import re
 
@@ -110,57 +111,34 @@ def _is_valid_semver(version):
     return re.match(regex, version)
 
 
-def _parse_version(filename):
+def parse_version(version_file):
     """
-    Parse VERSION from `CMakeLists.txt`
+    Parse version from `version_file`.
 
-    args:
-        filename: should point to the projects CMakeLists.txt
-    returns:
-        version:
-            1) Running locally version will be of the form VERSION.dev
-            2) Running in CI with a version tag will be of the form TAGGED_VERSION
-    raises:
-        RuntimeError:
-            1) Unable to find ALEVERSION in `filename`
-        AssertionError:
-            1) Running in CI and tagged version doesn't match parsed version
-            2) Tagged version or parsed version doesn't conform to semver rules
+    If `ALE_BUILD_VERSION` is specified this version overrides that in
+    `version_file`.
+
+    If `ALE_BUILD_VERSION` is not specified the git sha will be appended
+    to the version identifier.
+
+    raises AssertionError: If `ALE_BUILD_VERSION` doesn't start with the version
+        specified in `version_file`
     """
-    # Parse version from file
-    contents = _read(filename)
-    version_match = re.search(r"ale.*VERSION\s(\d+[^\n]*)", contents, re.M | re.S)
-    if not version_match:
-        raise RuntimeError("Unable to find VERSION in {}".format(filename))
+    version = open(version_file).read().strip()
 
-    version = version_match.group(1)
-    version_suffix = ".dev0"
-    assert _is_valid_semver(version), "ALEVERSION {} must conform to semver.".format(
-        version
-    )
+    if os.getenv('ALE_BUILD_VERSION'):
+        assert os.getenv('ALE_BUILD_VERSION').startswith(version)
+        version = os.getenv('ALE_BUILD_VERSION')
+    else:
+        sha = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=here).decode('ascii').strip()
+        version += f"+{sha}"
 
-    # If the git ref is a tag verify the tag and don't use a suffix
-    ref = "GITHUB_REF"
-    tag_regex = r"refs\/tags\/v(.*)$"
-    if os.environ.get(ref, False) and re.match(tag_regex, os.environ.get(ref)):
-        version_match = re.search(tag_regex, os.environ.get(ref))
-        version_tag = version_match.group(1)
-        assert _is_valid_semver(
-            version_tag
-        ), "Tag is invalid semver. {} must conform to semver.".format(version_tag)
-        assert (
-            version_tag == version
-        ), "Tagged version must match VERSION but got:\n\tVERSION: {}\n\tTAG: {}".format(
-            version, tagged_version
-        )
-        version_suffix = ""
-
-    return version + version_suffix
+    return version
 
 
 setup(
     name="ale-py",
-    version=_parse_version("CMakeLists.txt"),
+    version=parse_version("version.txt"),
     description="The Arcade Learning Environment (ALE) - a platform for AI research.",
     long_description=_read("README.md"),
     long_description_content_type="text/markdown",
