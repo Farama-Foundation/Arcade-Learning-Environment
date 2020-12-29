@@ -9,7 +9,6 @@ target_sources(ale
     SoundExporter.cpp
     SoundNull.cxx
     SoundSDL.cxx
-    Version.hxx
     VideoModeList.hxx
     Array.hxx
 )

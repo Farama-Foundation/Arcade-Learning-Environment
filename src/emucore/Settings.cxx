@@ -24,7 +24,6 @@
 using namespace std;
 
 #include "emucore/OSystem.hxx"
-#include "common/Version.hxx"
 #include "emucore/bspf/bspf.hxx"
 #include "emucore/Settings.hxx"
 

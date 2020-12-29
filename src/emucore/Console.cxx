@@ -48,7 +48,6 @@
 #include "emucore/OSystem.hxx"
 //ALE #include "Menu.hxx"
 //ALE #include "CommandMenu.hxx"
-#include "common/Version.hxx"
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
@@ -337,15 +336,6 @@ void Console::setProperties(const Properties& props)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::initializeVideo(bool full)
 {
-  if(full)
-  {
-    string title = string("Stella ") + STELLA_VERSION +
-                   ": \"" + myProperties.get(Cartridge_Name) + "\"";
-    // ALE myOSystem->frameBuffer().initialize(title,
-    // ALE                                     myMediaSource->width() << 1,
-    // ALE                                     myMediaSource->height());
-  }
-
   //ALE   bool enable = myProperties.get(Display_Phosphor) == "YES";
   //ALE   int blend = atoi(myProperties.get(Display_PPBlend).c_str());
   //ALE  myOSystem->frameBuffer().enablePhosphor(enable, blend);
