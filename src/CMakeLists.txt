@@ -46,18 +46,6 @@ add_subdirectory(os_dependent)
 add_subdirectory(environment)
 add_subdirectory(games)
 
-find_package(Git QUIET)
-if(GIT_FOUND)
-  execute_process(
-    COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
-    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
-    OUTPUT_VARIABLE GIT_SHA
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif()
-if (NOT GIT_SHA)
-  set(GIT_SHA "(unknown)")
-endif()
 configure_file ("version.hpp.in" "version.hpp")
 
 # C++ Library
