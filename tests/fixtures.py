@@ -13,6 +13,11 @@ def test_rom_path(resources):
 
 
 @pytest.fixture
+def random_rom_path(resources):
+    yield resources["random.bin"]
+
+
+@pytest.fixture
 def ale():
     yield ale_py.ALEInterface()
 

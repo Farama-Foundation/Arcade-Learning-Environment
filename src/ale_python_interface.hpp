@@ -17,6 +17,7 @@
 #define __ALE_PYTHON_INTERFACE_HPP__
 
 #include <sstream>
+#include <optional>
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -57,8 +58,8 @@ class ALEPythonInterface : public ALEInterface {
   }
 
   // Implicitely cast std::string -> fs::path
-  static inline bool isSupportedRom(const std::string& rom_file) {
-    return ALEInterface::isSupportedRom(rom_file);
+  static inline std::optional<std::string> isSupportedROM(const std::string& rom_file) {
+    return ALEInterface::isSupportedROM(rom_file);
   }
 
   inline uint32_t getRAMSize() { return ALEInterface::getRAM().size(); }
@@ -137,7 +138,7 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("setBool", &ale::ALEPythonInterface::setBool)
       .def("setFloat", &ale::ALEPythonInterface::setFloat)
       .def("loadROM", &ale::ALEPythonInterface::loadROM)
-      .def_static("isSupportedRom", &ale::ALEPythonInterface::isSupportedRom)
+      .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
       .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
                       ale::ALEPythonInterface::act)
       .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
