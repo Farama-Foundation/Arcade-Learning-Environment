@@ -170,7 +170,7 @@ void ALEInterface::loadROM(fs::path rom_file) {
   environment->reset();
 }
 
-bool ALEInterface::isSupportedRom(const fs::path& rom_file){
+std::optional<std::string> ALEInterface::isSupportedROM(const fs::path& rom_file){
   if (!fs::exists(rom_file)) {
     throw std::runtime_error("ROM file doesn't exist");
   }
@@ -187,7 +187,10 @@ bool ALEInterface::isSupportedRom(const fs::path& rom_file){
   std::string md5 = MD5(rom.data(), rom.size());
   RomSettings* wrapper = buildRomRLWrapper(rom_file, md5);
 
-  return wrapper != NULL && wrapper->md5() == md5;
+  if (wrapper != NULL && wrapper->md5() == md5) {
+    return wrapper->rom();
+  }
+  return std::nullopt;
 }
 
 // Get the value of a setting.
