@@ -39,6 +39,7 @@
 #include "version.hpp"
 
 #include <string>
+#include <optional>
 #include <memory>
 #include <filesystem>
 
@@ -199,7 +200,7 @@ class ALEInterface {
 
  public:
   // Check if the rom with filename matches a supported MD5
-  static bool isSupportedRom(const fs::path& rom_file);
+  static std::optional<std::string> isSupportedROM(const fs::path& rom_file);
   // Display ALE welcome message
   static std::string welcomeMessage();
   static void disableBufferedIO();
