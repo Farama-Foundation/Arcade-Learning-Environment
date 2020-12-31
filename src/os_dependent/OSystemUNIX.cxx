@@ -29,10 +29,8 @@
 #include "os_dependent/OSystemUNIX.hxx"
 using namespace std;
 
-//ALE  #ifdef HAVE_GETTIMEOFDAY
 #include <time.h>
 #include <sys/time.h>
-//ALE  #endif
 
 /**
   Each derived class is responsible for calling the following methods
@@ -48,7 +46,6 @@ using namespace std;
 OSystemUNIX::OSystemUNIX()
   : OSystem()
 {
-  //ALE  const string& basedir = string(getenv("HOME")) + "/.stella";
   string basedir = string(".");  //ALE 
   setBaseDir(basedir);
   setConfigFile(basedir + "/ale.cfg");
@@ -61,11 +58,7 @@ OSystemUNIX::~OSystemUNIX()
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt32 OSystemUNIX::getTicks() {
-//ALE  #ifdef HAVE_GETTIMEOFDAY
     timeval now;
     gettimeofday(&now, 0);
     return (uInt32) (now.tv_sec * 1000000 + now.tv_usec);
-//ALE  #else
-//ALE    return (uInt32) SDL_GetTicks() * 1000;
-//ALE  #endif
 }

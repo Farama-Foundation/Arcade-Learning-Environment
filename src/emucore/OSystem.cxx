@@ -116,19 +116,6 @@ bool OSystem::create()
   // Get updated paths for all configuration files
   setConfigPaths();
 
-  // Get relevant information about the video hardware
-  // This must be done before any graphics context is created, since
-  // it may be needed to initialize the size of graphical objects
-  //ALE  queryVideoHardware();
-
-  // Create fonts to draw text
-  //ALE   myFont         = new GUI::Font(GUI::stellaDesc);
-  //ALE   myLauncherFont = new GUI::Font(GUI::stellaDesc);
-  //ALE   myConsoleFont  = new GUI::Font(GUI::consoleDesc);
-  // Create the event handler for the system
-  //ALE   myEventHandler = new EventHandler(this);
-  //ALE  myEventHandler->initialize();
-
   // Create the streamer used for accessing eventstreams/recordings
 
   // Delete the previous event object (if any).
@@ -148,10 +135,6 @@ bool OSystem::create()
   myCheatManager->loadCheatDatabase();
 #endif
 
-  // Create menu and launcher GUI objects
-  //ALE  myMenu = new Menu(this);
-  //ALE  myCommandMenu = new CommandMenu(this);
-  //ALE   myLauncher = new Launcher(this);
 #ifdef DEBUGGER_SUPPORT
   myDebugger = new Debugger(this);
 #endif
@@ -213,17 +196,6 @@ void OSystem::setConfigPaths()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/* ALE
-void OSystem::setUIPalette()
-{
-  int palette = mySettings->getInt("uipalette") - 1;
-  if(palette < 0 || palette >= kNumUIPalettes) palette = 0;
-  myFrameBuffer->setUIPalette(&ourGUIColors[palette][0]);
-  myEventHandler->refreshDisplay();
-}
-ALE */
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::setBaseDir(const string& basedir)
 {
   myBaseDir = basedir;
@@ -237,99 +209,6 @@ void OSystem::setFramerate(uInt32 framerate)
   myDisplayFrameRate = framerate;
   myTimePerFrame = (uInt32)(1000000.0 / (double)myDisplayFrameRate);
 }
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/* ALE
-bool OSystem::createFrameBuffer(bool showmessage)
-{
-  // Check if we can re-use the current framebuffer
-  bool changeBuffer = (myFrameBuffer == NULL);
-  if(!changeBuffer)
-  {
-    if((mySettings->getString("video") == "soft" &&
-        myFrameBuffer->type() != kSoftBuffer) ||
-       (mySettings->getString("video") == "gl" &&
-        myFrameBuffer->type() != kGLBuffer))
-      changeBuffer = true;
-  }
-  // Now we only create when absolutely necessary
-  if(changeBuffer)
-  {
-    delete myFrameBuffer;
-    myFrameBuffer = MediaFactory::createVideo(this);
-  }
-
-  // Re-initialize the framebuffer to current settings
-  switch(myEventHandler->state())
-  {
-    case EventHandler::S_EMULATE:
-    case EventHandler::S_PAUSE:
-    case EventHandler::S_MENU:
-    case EventHandler::S_CMDMENU:
-      myConsole->initializeVideo();
-      break;  // S_EMULATE, S_PAUSE, S_MENU, S_CMDMENU
-
-    case EventHandler::S_LAUNCHER:
-      myLauncher->initializeVideo();
-      break;  // S_LAUNCHER
-
-#ifdef DEBUGGER_SUPPORT
-    case EventHandler::S_DEBUGGER:
-      myDebugger->initializeVideo();
-      break;  // S_DEBUGGER
-#endif
-
-    default:
-      break;
-  }
-
-  // Setup the SDL joysticks (must be done after FrameBuffer is created)
-  if(changeBuffer) myEventHandler->setupJoysticks();
-
-  // Update the UI palette
-  setUIPalette();
-
-  if(showmessage)
-  {
-    switch(myFrameBuffer->type())
-    {
-      case kSoftBuffer:
-        myFrameBuffer->showMessage("Software mode");
-        break;
-      case kGLBuffer:
-        myFrameBuffer->showMessage("OpenGL mode");
-        break;
-    }
-  }
-
-  return true;
-}
-
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::toggleFrameBuffer()
-{
-#ifdef DISPLAY_OPENGL
-  // First figure out which mode to switch to
-  string video = mySettings->getString("video");
-  if(video == "soft")
-    video = "gl";
-  else if(video == "gl")
-    video = "soft";
-  else   // a driver that doesn't exist was requested, so use software mode
-    video = "soft";
-
-  // Update the settings and create the framebuffer
-  mySettings->setString("video", video);
-  createFrameBuffer(true);  // show onscreen message, re-initialize framebuffer
-
-  // The palette and phosphor info for the framebuffer will be lost
-  // when a new framebuffer is created; we must restore it
-  if(myConsole)
-    myConsole->initializeVideo(false);
-#endif
-}
-ALE */
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void OSystem::createSound()
@@ -393,9 +272,6 @@ bool OSystem::createConsole(const string& romfile)
     #ifdef CHEATCODE_SUPPORT
       myCheatManager->loadCheats(md5);
     #endif
-      //ALE  myEventHandler->reset(EventHandler::S_EMULATE);
-      //ALE  createFrameBuffer(false);  // Takes care of initializeVideo()
-      //ALE  myConsole->initializeAudio();
     #ifdef DEBUGGER_SUPPORT
       myDebugger->setConsole(myConsole);
       myDebugger->initialize();
@@ -413,7 +289,6 @@ bool OSystem::createConsole(const string& romfile)
       // Update the timing info for a new console run
       resetLoopTiming();
 
-      //ALE  myFrameBuffer->setCursorState();
       retval = true;
     }
     else
@@ -473,21 +348,6 @@ void OSystem::deleteConsole()
     p_display_screen = NULL;    //ALE 
   }
 }
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/* ALE
-void OSystem::createLauncher()
-{
-  myEventHandler->reset(EventHandler::S_LAUNCHER);
-  createFrameBuffer(false);
-  myLauncher->reStack();
-  myFrameBuffer->setCursorState();
-  myEventHandler->refreshDisplay();
-
-  setFramerate(60);
-  resetLoopTiming();
-}
-ALE */
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
@@ -617,171 +477,6 @@ void OSystem::resetLoopTiming()
   myTimingInfo.start = getTicks();
   myTimingInfo.virt = getTicks();
 }
-
-/* ALE
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::setDefaultJoymap()
-{
-  EventMode mode;
-
-  mode = kEmulationMode;  // Default emulation events
-  // Left joystick (assume joystick zero, button zero)
-  myEventHandler->setDefaultJoyMapping(Event::JoystickZeroFire, mode, 0, 0);
-  // Right joystick (assume joystick one, button zero)
-  myEventHandler->setDefaultJoyMapping(Event::JoystickOneFire, mode, 1, 0);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::setDefaultJoyAxisMap()
-{
-  EventMode mode;
-
-  mode = kEmulationMode;  // Default emulation events
-  // Left joystick left/right directions (assume joystick zero)
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickZeroLeft, mode, 0, 0, 0);
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickZeroRight, mode, 0, 0, 1);
-  // Left joystick up/down directions (assume joystick zero)
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickZeroUp, mode, 0, 1, 0);
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickZeroDown, mode, 0, 1, 1);
-  // Right joystick left/right directions (assume joystick one)
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickOneLeft, mode, 1, 0, 0);
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickOneRight, mode, 1, 0, 1);
-  // Right joystick left/right directions (assume joystick one)
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickOneUp, mode, 1, 1, 0);
-  myEventHandler->setDefaultJoyAxisMapping(Event::JoystickOneDown, mode, 1, 1, 1);
-
-  mode = kMenuMode;  // Default menu/UI events
-  myEventHandler->setDefaultJoyAxisMapping(Event::UILeft, mode, 0, 0, 0);
-  myEventHandler->setDefaultJoyAxisMapping(Event::UIRight, mode, 0, 0, 1);
-  myEventHandler->setDefaultJoyAxisMapping(Event::UIUp, mode, 0, 1, 0);
-  myEventHandler->setDefaultJoyAxisMapping(Event::UIDown, mode, 0, 1, 1);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::setDefaultJoyHatMap()
-{
-// FIXME - add emul and UI events
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::pollEvent()
-{
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::joyButtonHandled(int button)
-{
-  // Since we don't do any platform-specific event polling,
-  // no button is ever handled at this level
-  return false;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::stateChanged(EventHandler::State state)
-{
-}
-ALE */
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/* ALE
-void OSystem::queryVideoHardware()
-{
-  if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
-    return;
-
-  // First get the maximum windowed desktop resolution
-  const SDL_VideoInfo* info = SDL_GetVideoInfo();
-  myDesktopWidth  = info->current_w;
-  myDesktopHeight = info->current_h;
-
-  // Then get the valid fullscreen modes
-  // If there are any errors, just use the desktop resolution
-  ostringstream buf;
-  SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN);
-  if((modes == (SDL_Rect**)0) || (modes == (SDL_Rect**)-1))
-  {
-    Resolution r;
-    r.width  = myDesktopWidth;
-    r.height = myDesktopHeight;
-    buf << r.width << "x" << r.height;
-    r.name = buf.str();
-    myResolutions.push_back(r);
-  }
-  else
-  {
-    for(uInt32 i = 0; modes[i]; ++i)
-    {
-      Resolution r;
-      r.width  = modes[i]->w;
-      r.height = modes[i]->h;
-      buf.str("");
-      buf << r.width << "x" << r.height;
-      r.name = buf.str();
-      myResolutions.insert_at(0, r);  // insert in opposite (of descending) order
-    }
-  }
-}
-ALE */
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*
-  Palette is defined as follows:
-    // Base colors
-    kColor         TODO
-    kBGColor       TODO
-    kShadowColor      Item is disabled
-    kTextColor        Normal text color
-    kTextColorHi      Highlighted text color
-    kTextColorEm   TODO
-
-    // UI elements (dialog and widgets)
-    kDlgColor         Dialog background
-    kWidColor         Widget background
-    kWidFrameColor    Border for currently selected widget
-
-    // Button colors
-    kBtnColor         Normal button background
-    kBtnColorHi       Highlighted button background
-    kBtnTextColor     Normal button font color
-    kBtnTextColorHi   Highlighted button font color
-
-    // Checkbox colors
-    kCheckColor       Color of 'X' in checkbox
-
-    // Scrollbar colors
-    kScrollColor      Normal scrollbar color
-    kScrollColorHi    Highlighted scrollbar color
-
-    // Debugger colors
-    kDbgChangedColor      Background color for changed cells
-    kDbgChangedTextColor  Text color for changed cells
-    kDbgColorHi           Highlighted color in debugger data cells
-*/
-/* ALE
-uInt32 OSystem::ourGUIColors[kNumUIPalettes][kNumColors-256] = {
-  // Standard
-  { 0x686868, 0x000000, 0x404040, 0x000000, 0x62a108, 0x9f0000,
-    0xc9af7c, 0xf0f0cf, 0xc80000,
-    0xac3410, 0xd55941, 0xffffff, 0xffd652,
-    0xac3410,
-    0xac3410, 0xd55941,
-    0xac3410, 0xd55941,
-    0xc80000, 0x00ff00, 0xc8c8ff
-  },
-
-  // Classic
-  { 0x686868, 0x000000, 0x404040, 0x20a020, 0x00ff00, 0xc80000,
-    0x000000, 0x000000, 0xc80000,
-    0x000000, 0x000000, 0x20a020, 0x00ff00,
-    0x20a020,
-    0x20a020, 0x00ff00,
-    0x20a020, 0x00ff00,
-    0xc80000, 0x00ff00, 0xc8c8ff
-  }
-};
-
-ALE */
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem(const OSystem& osystem)

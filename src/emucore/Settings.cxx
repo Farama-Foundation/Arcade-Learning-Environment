@@ -137,8 +137,6 @@ void Settings::loadConfig(const char* config_file){
           continue;
 
         // Only settings which have been previously set are valid
-        //ALE  if(int idx = getInternalPos(key) != -1)
-        //ALE  setInternal(key, value, idx, true);
         setInternal(key, value);
     }
 
