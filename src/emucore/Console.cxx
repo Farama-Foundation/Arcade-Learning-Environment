@@ -29,7 +29,6 @@
 #include "emucore/Control.hxx"
 #include "emucore/Driving.hxx"
 #include "emucore/Event.hxx"
-//ALE #include "EventHandler.hxx"
 #include "emucore/Joystick.hxx"
 #include "emucore/Keyboard.hxx"
 #include "emucore/M6502Hi.hxx"
@@ -44,10 +43,8 @@
 #include "emucore/Switches.hxx"
 #include "emucore/System.hxx"
 #include "emucore/TIA.hxx"
-//ALE #include "FrameBuffer.hxx"
 #include "emucore/OSystem.hxx"
-//ALE #include "Menu.hxx"
-//ALE #include "CommandMenu.hxx"
+
 #ifdef DEBUGGER_SUPPORT
   #include "Debugger.hxx"
 #endif
@@ -71,8 +68,6 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySystem = 0;
   myEvent = 0;
   
-  // Attach the event subsystem to the current console
-  //ALE  myEvent = myOSystem->eventHandler().event();
   myEvent = myOSystem->event();
 
   // Setup the controllers based on properties
@@ -218,12 +213,6 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   // Reset, the system to its power-on state
   mySystem->reset();
 
-  // Bumper Bash requires all 4 directions
-//ALE   const string& md5 = myProperties.get(Cartridge_MD5);
-//ALE   bool allow = (md5 == "aa1c41f86ec44c0a44eb64c332ce08af" ||
-//ALE                 md5 == "1bf503c724001b09be79c515ecfcbd03");
-//ALE  myOSystem->eventHandler().allowAllDirections(allow);
-
   myAboutString = buf.str();
 }
 
@@ -245,7 +234,6 @@ void Console::toggleFormat()
     myDisplayFormat = "PAL";
     myProperties.set(Display_Format, myDisplayFormat);
     mySystem->reset();
-    //ALE  myOSystem->frameBuffer().showMessage("PAL Mode");
     framerate = 50;
   }
   else if(myDisplayFormat == "PAL")
@@ -253,7 +241,6 @@ void Console::toggleFormat()
     myDisplayFormat = "PAL60";
     myProperties.set(Display_Format, myDisplayFormat);
     mySystem->reset();
-    //ALE  myOSystem->frameBuffer().showMessage("PAL60 Mode");
     framerate = 60;
   }
   else if(myDisplayFormat == "PAL60")
@@ -261,7 +248,6 @@ void Console::toggleFormat()
     myDisplayFormat = "SECAM";
     myProperties.set(Display_Format, myDisplayFormat);
     mySystem->reset();
-    //ALE  myOSystem->frameBuffer().showMessage("SECAM Mode");
     framerate = 50;
   }
   else if(myDisplayFormat == "SECAM")
@@ -269,7 +255,6 @@ void Console::toggleFormat()
     myDisplayFormat = "NTSC";
     myProperties.set(Display_Format, myDisplayFormat);
     mySystem->reset();
-    //ALE  myOSystem->frameBuffer().showMessage("NTSC Mode");
     framerate = 60;
   }
 
@@ -316,7 +301,6 @@ void Console::togglePalette()
   }
 
   myOSystem->settings().setString("palette", palette);
-  //ALE  myOSystem->frameBuffer().showMessage(message);
 
   myOSystem->colourPalette().setPalette(palette, myDisplayFormat);
 }
@@ -336,11 +320,7 @@ void Console::setProperties(const Properties& props)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::initializeVideo(bool full)
 {
-  //ALE   bool enable = myProperties.get(Display_Phosphor) == "YES";
-  //ALE   int blend = atoi(myProperties.get(Display_PPBlend).c_str());
-  //ALE  myOSystem->frameBuffer().enablePhosphor(enable, blend);
   myOSystem->colourPalette().setPalette(myOSystem->settings().getString("palette"), myDisplayFormat);
-
   myOSystem->setFramerate(getFrameRate());
 }
 
@@ -397,7 +377,6 @@ void Console::changeYStart(int direction)
     ystart++;
     if(ystart > 64)
     {
-      //ALE   myOSystem->frameBuffer().showMessage("YStart at maximum");
       return;
     }
   }
@@ -406,7 +385,6 @@ void Console::changeYStart(int direction)
     ystart--;
     if(ystart < 0)
     {
-      //ALE   myOSystem->frameBuffer().showMessage("YStart at minimum");
       return;
     }
   }
@@ -416,11 +394,9 @@ void Console::changeYStart(int direction)
   strval << ystart;
   myProperties.set(Display_YStart, strval.str());
   ((TIA*)myMediaSource)->frameReset();
-  //ALE  myOSystem->frameBuffer().refresh();
 
   message = "YStart ";
   message += strval.str();
-  //ALE  myOSystem->frameBuffer().showMessage(message);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -435,7 +411,6 @@ void Console::changeHeight(int direction)
     height++;
     if(height > 256)
     {
-      //ALE  myOSystem->frameBuffer().showMessage("Height at maximum");
       return;
     }
   }
@@ -444,7 +419,6 @@ void Console::changeHeight(int direction)
     height--;
     if(height < 200)
     {
-      //ALE  myOSystem->frameBuffer().showMessage("Height at minimum");
       return;
     }
   }
@@ -458,7 +432,6 @@ void Console::changeHeight(int direction)
 
   message = "Height ";
   message += strval.str();
-  //ALE  myOSystem->frameBuffer().showMessage(message);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -466,7 +439,6 @@ void Console::toggleTIABit(TIA::TIABit bit, const string& bitname, bool show) co
 {
   bool result = ((TIA*)myMediaSource)->toggleBit(bit);
   string message = bitname + (result ? " enabled" : " disabled");
-  //ALE  myOSystem->frameBuffer().showMessage(message);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -474,7 +446,6 @@ void Console::enableBits(bool enable) const
 {
   ((TIA*)myMediaSource)->enableBits(enable);
   string message = string("TIA bits") + (enable ? " enabled" : " disabled");
-  //ALE  myOSystem->frameBuffer().showMessage(message);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

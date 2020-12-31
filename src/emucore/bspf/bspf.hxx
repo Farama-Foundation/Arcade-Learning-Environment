@@ -55,16 +55,7 @@ typedef unsigned int uInt32;
   #include <inttypes.h>
 #endif
 
-// Defines to help with path handling
-//ALE  #if defined BSPF_UNIX
 #define BSPF_PATH_SEPARATOR  "/"
-//ALE  #elif (defined(BSPF_DOS) || defined(BSPF_WIN32) || defined(BSPF_OS2))
-//ALE    #define BSPF_PATH_SEPARATOR  "\\"
-//ALE  #elif defined BSPF_MAC_OSX
-//ALE    #define BSPF_PATH_SEPARATOR  "/"
-//ALE  #elif defined BSPF_GP2X
-//ALE      #define BSPF_PATH_SEPARATOR  "/"
-//ALE  #endif
 
 // I wish Windows had a complete POSIX layer
 #ifdef BSPF_WIN32
