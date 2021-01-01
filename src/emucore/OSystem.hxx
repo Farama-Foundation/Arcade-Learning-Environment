@@ -122,11 +122,6 @@ class OSystem
     virtual void setFramerate(uInt32 framerate);
 
     /**
-      Set all config file paths for the OSystem.
-    */
-    void setConfigPaths();
-
-    /**
       Get the current framerate for the video system.
 
       @return  The video framerate currently in use
@@ -145,42 +140,6 @@ class OSystem
       @return  An array of supported resolutions
     */
     const ResolutionList& supportedResolutions() const { return myResolutions; }
-
-    /**
-      Return the default directory for storing data.
-    */
-    const std::string& baseDir() const { return myBaseDir; }
-
-    /**
-      This method should be called to get the full path of the gamelist
-      cache file (used by the Launcher to show a listing of available games).
-
-      @return String representing the full path of the gamelist cache file.
-    */
-    const std::string& cacheFile() const { return myGameListCacheFile; }
-
-    /**
-      This method should be called to get the full path of the config file.
-
-      @return String representing the full path of the config filename.
-    */
-    const std::string& configFile() const { return myConfigFile; }
-
-    /**
-      This method should be called to get the full path of the
-      (optional) palette file.
-
-      @return String representing the full path of the properties filename.
-    */
-    const std::string& paletteFile() const { return myPaletteFile; }
-
-    /**
-      This method should be called to get the full path of the
-      properties file (stella.pro).
-
-      @return String representing the full path of the properties filename.
-    */
-    const std::string& propertiesFile() const { return myPropertiesFile; }
 
     /**
       This method should be called to get the full path of the currently
@@ -272,25 +231,6 @@ class OSystem
     virtual uInt32 getTicks() = 0;
 
   protected:
-    /**
-      Set the base directory for all Stella files (these files may be
-      located in other places through settings).
-    */
-    void setBaseDir(const std::string& basedir);
-
-    /**
-      Set the location of the gamelist cache file
-    */
-    void setCacheFile(const std::string& cachefile) { myGameListCacheFile = cachefile; }
-
-    /**
-      Set the locations of config file
-    */
-    void setConfigFile(const std::string& file) { myConfigFile = file; }
-
-
-
-  protected:
     // Global Event object  //ALE 
     Event* myEvent;
 
@@ -327,15 +267,8 @@ class OSystem
 
   private:
     enum { kNumUIPalettes = 2 };
-    std::string myBaseDir;
 
-    std::string myConfigFile;
-    std::string myPaletteFile;
-    std::string myPropertiesFile;
-
-    std::string myGameListCacheFile;
     std::string myRomFile;
-
     std::string myFeatures;
 
     public: //ALE 

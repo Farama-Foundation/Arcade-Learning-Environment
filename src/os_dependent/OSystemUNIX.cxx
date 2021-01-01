@@ -32,23 +32,10 @@ using namespace std;
 #include <time.h>
 #include <sys/time.h>
 
-/**
-  Each derived class is responsible for calling the following methods
-  in its constructor:
-
-  setBaseDir()
-  setConfigFile()
-
-  See OSystem.hxx for a further explanation
-*/
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystemUNIX::OSystemUNIX()
   : OSystem()
 {
-  string basedir = string(".");  //ALE 
-  setBaseDir(basedir);
-  setConfigFile(basedir + "/ale.cfg");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
