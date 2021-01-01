@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         config: [
-          {"os": "ubuntu-latest", "deps": ["zlib"], "triplet": "x64-linux"},
+          {"os": "ubuntu-20.04", "deps": ["zlib"], "triplet": "x64-linux"},
           {"os": "windows-latest", "deps": ["zlib"], "triplet": "x64-windows"},
           {"os": "macos-latest", "deps": ["zlib"], "triplet": "x64-osx"}
         ]
