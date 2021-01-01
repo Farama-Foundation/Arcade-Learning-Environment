@@ -49,9 +49,6 @@
   #include "Debugger.hxx"
 #endif
 
-#ifdef CHEATCODE_SUPPORT
-  #include "CheatManager.hxx"
-#endif
 using namespace std;
 #include "common/Log.hpp"
 

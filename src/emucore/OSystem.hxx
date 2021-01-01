@@ -25,7 +25,6 @@ class Menu;
 class CommandMenu;
 class Launcher;
 class Debugger;
-class CheatManager;
 class VideoDialog;
 
 #include "common/Array.hxx"
@@ -124,15 +123,6 @@ class OSystem
     inline Debugger& debugger(void) const { return *myDebugger; }
 #endif
 
-#ifdef CHEATCODE_SUPPORT
-    /**
-      Get the cheat manager of the system.
-
-      @return The cheatmanager object
-    */
-    inline CheatManager& cheat(void) const { return *myCheatManager; }
-#endif
-
     /**
       Set the framerate for the video system.  It's placed in this class since
       the mainLoop() method is defined here.
@@ -178,13 +168,6 @@ class OSystem
       @return String representing the full path of the gamelist cache file.
     */
     const std::string& cacheFile() const { return myGameListCacheFile; }
-
-    /**
-      This method should be called to get the full path of the cheat file.
-
-      @return String representing the full path of the cheat filename.
-    */
-    const std::string& cheatFile() const { return myCheatFile; }
 
     /**
       This method should be called to get the full path of the config file.
@@ -356,7 +339,6 @@ class OSystem
     enum { kNumUIPalettes = 2 };
     std::string myBaseDir;
 
-    std::string myCheatFile;
     std::string myConfigFile;
     std::string myPaletteFile;
     std::string myPropertiesFile;
