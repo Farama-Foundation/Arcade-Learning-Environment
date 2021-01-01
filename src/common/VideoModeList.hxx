@@ -19,7 +19,8 @@
 #ifndef VIDMODE_LIST_HXX
 #define VIDMODE_LIST_HXX
 
-#include "common/Array.hxx"
+#include <vector>
+
 #include "emucore/bspf/bspf.hxx"
 
 struct VideoMode {
@@ -95,7 +96,7 @@ class VideoModeList
     }
 
   private:
-    Common::Array<VideoMode> myModeList;
+    std::vector<VideoMode> myModeList;
     int myIdx;
 };
 
