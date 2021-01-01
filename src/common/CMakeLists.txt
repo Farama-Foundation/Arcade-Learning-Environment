@@ -10,5 +10,4 @@ target_sources(ale
     SoundNull.cxx
     SoundSDL.cxx
     VideoModeList.hxx
-    Array.hxx
 )
