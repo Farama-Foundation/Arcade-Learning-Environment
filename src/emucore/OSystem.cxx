@@ -87,11 +87,6 @@ OSystem::~OSystem()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool OSystem::create()
 {
-  // Get updated paths for all configuration files
-  setConfigPaths();
-
-  // Create the streamer used for accessing eventstreams/recordings
-
   // Delete the previous event object (if any).
   delete myEvent;
 
@@ -102,7 +97,7 @@ bool OSystem::create()
   delete myPropSet;
 
   // Create a properties set for us to use and set it up
-  myPropSet = new PropertiesSet(this);
+  myPropSet = new PropertiesSet();
 
   // Create the sound object; the sound subsystem isn't actually
   // opened until needed, so this is non-blocking (on those systems
@@ -137,30 +132,6 @@ bool OSystem::saveState(Serializer& out) {
 
 bool OSystem::loadState(Deserializer& in) {
     return myRandGen.loadState(in);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::setConfigPaths()
-{
-  myGameListCacheFile = myBaseDir + BSPF_PATH_SEPARATOR + "stella.cache";
-
-  myPaletteFile = mySettings->getString("palettefile");
-  if(myPaletteFile == "")
-    myPaletteFile = myBaseDir + BSPF_PATH_SEPARATOR + "stella.pal";
-  mySettings->setString("palettefile", myPaletteFile);
-
-  myPropertiesFile = mySettings->getString("propsfile");
-  if(myPropertiesFile == "")
-    myPropertiesFile = myBaseDir + BSPF_PATH_SEPARATOR + "stella.pro";
-  mySettings->setString("propsfile", myPropertiesFile);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::setBaseDir(const string& basedir)
-{
-  myBaseDir = basedir;
-  if(!FilesystemNode::dirExists(myBaseDir))
-    FilesystemNode::makeDir(myBaseDir);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -227,7 +198,6 @@ bool OSystem::createConsole(const string& romfile)
     {
       // Create an instance of the 2600 game console
       myConsole = new Console(this, cart, props);
-      m_colour_palette.loadUserPalette(paletteFile());
 
       if(mySettings->getBool("showinfo"))
         cerr << "Game console created:" << endl

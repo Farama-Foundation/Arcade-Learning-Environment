@@ -71,20 +71,10 @@ void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
   theOSystem.reset(new OSystemUNIX());
   theSettings.reset(new SettingsUNIX(theOSystem.get()));
 #endif
-
-  theOSystem->settings().loadConfig();
 }
 
 void ALEInterface::loadSettings(const std::string& romfile,
                                 std::unique_ptr<OSystem>& theOSystem) {
-  // Load the configuration from a config file (passed on the command
-  //  line), if provided
-  std::string configFile = theOSystem->settings().getString("config", false);
-
-  if (!configFile.empty()) {
-    theOSystem->settings().loadConfig(configFile.c_str());
-  }
-
   theOSystem->settings().validate();
   theOSystem->create();
 

@@ -26,28 +26,10 @@
 
 using namespace std;
 
-/**
-  Each derived class is responsible for calling the following methods
-  in its constructor:
-
-  setBaseDir()
-  setConfigFile()
-
-  See OSystem.hxx for a further explanation
-*/
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystemWin32::OSystemWin32()
   : OSystem()
 {
-  // TODO - there really should be code here to determine which version
-  // of Windows is being used.
-  // If using a version which supports multiple users (NT and above),
-  // the relevant directories should be created in per-user locations.
-  // For now, we just put it in the same directory as the executable.
-  const string& basedir = ".";
-  setBaseDir(basedir);
-  setConfigFile(basedir + "\\ale.cfg");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
