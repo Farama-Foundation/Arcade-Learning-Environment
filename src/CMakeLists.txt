@@ -43,7 +43,6 @@ endif()
 # Add submodules
 add_subdirectory(common)
 add_subdirectory(emucore)
-add_subdirectory(os_dependent)
 add_subdirectory(environment)
 add_subdirectory(games)
 
