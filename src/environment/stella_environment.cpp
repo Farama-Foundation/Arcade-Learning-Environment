@@ -18,6 +18,7 @@
 #include "environment/stella_environment.hpp"
 
 #include <sstream>
+#include <cstring>
 
 #include "emucore/System.hxx"
 
@@ -286,7 +287,7 @@ void StellaEnvironment::processScreen() {
     m_phosphor_blend.process(m_screen);
   } else {
     // Copy screen over and we're done!
-    memcpy(m_screen.getArray(),
+    std::memcpy(m_screen.getArray(),
            m_osystem->console().mediaSource().currentFrameBuffer(),
            m_screen.arraySize());
   }

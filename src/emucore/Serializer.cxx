@@ -17,7 +17,6 @@
 //============================================================================
 
 #include "emucore/Serializer.hxx"
-using namespace std;
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -53,11 +52,11 @@ void Serializer::putInt(int value)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Serializer::putString(const string& str)
+void Serializer::putString(const std::string& str)
 {
     int len = str.length();
     putInt(len);
-    myStream.write(str.data(), (streamsize)len);
+    myStream.write(str.data(), (std::streamsize)len);
     
     if(myStream.bad())
         throw "Serializer: file write failed";

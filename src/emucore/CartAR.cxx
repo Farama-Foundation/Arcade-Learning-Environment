@@ -16,8 +16,8 @@
 // $Id: CartAR.cxx,v 1.18 2007/01/14 16:17:53 stephena Exp $
 //============================================================================
 
-#include <string.h>
-
+#include <string>
+#include <cstring>
 #include <cassert>
 
 #include "emucore/M6502Hi.hxx"
@@ -26,7 +26,6 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartAR.hxx"
-using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeAR::CartridgeAR(const uInt8* image, uInt32 size, bool fastbios, Random& rng)
@@ -37,7 +36,7 @@ CartridgeAR::CartridgeAR(const uInt8* image, uInt32 size, bool fastbios, Random&
   // Create a load image buffer and copy the given image
   myLoadImages = new uInt8[size];
   myNumberOfLoadImages = size / 8448;
-  memcpy(myLoadImages, image, size);
+  std::memcpy(myLoadImages, image, size);
 
   // Initialize RAM with random values
   for(i = 0; i < 6 * 1024; ++i)
@@ -385,7 +384,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
     if(myLoadImages[(image * 8448) + 8192 + 5] == load)
     {
       // Copy the load's header
-      memcpy(myHeader, myLoadImages + (image * 8448) + 8192, 256);
+      std::memcpy(myHeader, myLoadImages + (image * 8448) + 8192, 256);
 
       // Verify the load's header 
       if(checksum(myHeader, 8) != 0x55)
@@ -411,7 +410,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
         // Copy page to Supercharger RAM (don't allow a copy into ROM area)
         if(bank < 3)
         {
-          memcpy(myImage + (bank * 2048) + (page * 256), src, 256);
+          std::memcpy(myImage + (bank * 2048) + (page * 256), src, 256);
         }
       }
 
@@ -433,7 +432,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CartridgeAR::save(Serializer& out)
 {
-  string cart = name();
+  std::string cart = name();
 
   try
   {
@@ -485,12 +484,12 @@ bool CartridgeAR::save(Serializer& out)
   }
   catch(const char* msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in save state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in save state for " << cart << std::endl;
     return false;
   }
 
@@ -500,7 +499,7 @@ bool CartridgeAR::save(Serializer& out)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CartridgeAR::load(Deserializer& in)
 {
-  string cart = name();
+  std::string cart = name();
 
   try
   {
@@ -553,12 +552,12 @@ bool CartridgeAR::load(Deserializer& in)
   }
   catch(const char* msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in load state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in load state for " << cart << std::endl;
     return false;
   }
 

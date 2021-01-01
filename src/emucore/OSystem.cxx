@@ -20,9 +20,8 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <zlib.h>
-#include <string.h>
-using namespace std;
 
 #include "emucore/MD5.hxx"
 #include "emucore/Settings.hxx"
@@ -152,7 +151,7 @@ void OSystem::createSound()
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::createConsole(const string& romfile)
+bool OSystem::createConsole(const std::string& romfile)
 {
   // Do a little error checking; it shouldn't be necessary
   if(myConsole) deleteConsole();
@@ -164,7 +163,7 @@ bool OSystem::createConsole(const string& romfile)
   {
     if(myRomFile == "")
     {
-      ale::Logger::Error << "ERROR: Rom file not specified ..." << endl;
+      ale::Logger::Error << "ERROR: Rom file not specified ..." << std::endl;
       return false;
     }
   }
@@ -174,7 +173,7 @@ bool OSystem::createConsole(const string& romfile)
   // Open the cartridge image and read it in
   uInt8* image = nullptr;
   int size = -1;
-  string md5;
+  std::string md5;
   if(openROM(myRomFile, md5, &image, &size))
   {
     // Get all required info for creating a valid console
@@ -185,21 +184,21 @@ bool OSystem::createConsole(const string& romfile)
       // Create an instance of the 2600 game console
       myConsole = new Console(this, cart, props);
 
-      ale::Logger::Info << "Game console created:" << endl
-            << "  ROM file:  " << myRomFile << endl
-            << myConsole->about() << endl;
+      ale::Logger::Info << "Game console created:" << std::endl
+            << "  ROM file:  " << myRomFile << std::endl
+            << myConsole->about() << std::endl;
 
       retval = true;
     }
     else
     {
-      ale::Logger::Error << "ERROR: Couldn't create console for " << myRomFile << " ..." << endl;
+      ale::Logger::Error << "ERROR: Couldn't create console for " << myRomFile << " ..." << std::endl;
       retval = false;
     }
   }
   else
   {
-    ale::Logger::Error << "ERROR: Couldn't open " << myRomFile << " ..." << endl;
+    ale::Logger::Error << "ERROR: Couldn't open " << myRomFile << " ..." << std::endl;
     retval = false;
   }
 
@@ -237,7 +236,7 @@ void OSystem::deleteConsole()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
+bool OSystem::openROM(const std::string& rom, std::string& md5, uInt8** image, int* size)
 {
   // Assume the file is either gzip'ed or not compressed at all
   gzFile f = gzopen(rom.c_str(), "rb");
@@ -258,12 +257,12 @@ bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
   Properties props;
   myPropSet->getMD5(md5, props);
 
-  string name = props.get(Cartridge_Name);
+  std::string name = props.get(Cartridge_Name);
   if(name == "Untitled")
   {
     // Get the filename from the rom pathname
-    string::size_type pos = rom.find_last_of(BSPF_PATH_SEPARATOR);
-    if(pos+1 != string::npos)
+    std::string::size_type pos = rom.find_last_of(BSPF_PATH_SEPARATOR);
+    if(pos+1 != std::string::npos)
     {
       name = rom.substr(pos+1);
       props.set(Cartridge_MD5, md5);
@@ -276,14 +275,14 @@ bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-string OSystem::getROMInfo(const string& romfile)
+std::string OSystem::getROMInfo(const std::string& romfile)
 {
-  ostringstream buf;
+  std::ostringstream buf;
 
   // Open the cartridge image and read it in
   uInt8* image = nullptr;
   int size = -1;
-  string md5;
+  std::string md5;
   if(openROM(romfile, md5, &image, &size))
   {
     // Get all required info for creating a temporary console
@@ -296,7 +295,7 @@ string OSystem::getROMInfo(const string& romfile)
       delete console;
     }
     else
-      buf << "ERROR: Couldn't open " << romfile << " ..." << endl;
+      buf << "ERROR: Couldn't open " << romfile << " ..." << std::endl;
   }
 
   // Free the image and console since we don't need it any longer
@@ -307,11 +306,11 @@ string OSystem::getROMInfo(const string& romfile)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
-                               const string& md5,
+                               const std::string& md5,
                                Cartridge** cart, Properties& props)
 {
   // Get a valid set of properties, including any entered on the commandline
-  string s;
+  std::string s;
   myPropSet->getMD5(md5, props);
   
     s = mySettings->getString("type");
@@ -320,7 +319,7 @@ bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
     if(s != "") props.set(Cartridge_Sound, s);
     s = mySettings->getString("ld");
     if (s == "A") {
-        ale::Logger::Info << "Setting Left Player's Difficulty to mode: A" << endl;
+        ale::Logger::Info << "Setting Left Player's Difficulty to mode: A" << std::endl;
     }
     if(s != "") props.set(Console_LeftDifficulty, s);
     s = mySettings->getString("rd");

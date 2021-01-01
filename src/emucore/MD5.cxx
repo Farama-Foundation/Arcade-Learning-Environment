@@ -20,7 +20,6 @@
 //============================================================================
 
 #include "emucore/MD5.hxx"
-using namespace std;
 
 /*
  Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All 
@@ -326,7 +325,7 @@ static void MD5_memset(POINTER output, int value, unsigned int len)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-string MD5(const uInt8* buffer, uInt32 length)
+std::string MD5(const uInt8* buffer, uInt32 length)
 {
   char hex[] = "0123456789abcdef";
   MD5_CTX context;
@@ -336,7 +335,7 @@ string MD5(const uInt8* buffer, uInt32 length)
   MD5Update(&context, buffer, length);
   MD5Final(md5, &context);
 
-  string result;
+  std::string result;
   for(int t = 0; t < 16; ++t)
   {
     result += hex[(md5[t] >> 4) & 0x0f];

@@ -20,8 +20,6 @@
 
 #include <mutex>
 
-using namespace std;
-
 static std::once_flag bcd_table_init_once;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -139,7 +137,7 @@ void M6502::PS(uInt8 ps)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ostream& operator<<(ostream& out, const M6502::AddressingMode& mode)
+std::ostream& operator<<(std::ostream& out, const M6502::AddressingMode& mode)
 {
   switch(mode)
   {
