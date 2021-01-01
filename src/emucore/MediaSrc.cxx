@@ -16,7 +16,7 @@
 // $Id: MediaSrc.cxx,v 1.4 2007/01/01 18:04:49 stephena Exp $
 //============================================================================
 
-#include <assert.h>
+#include <cassert>
 #include "emucore/MediaSrc.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

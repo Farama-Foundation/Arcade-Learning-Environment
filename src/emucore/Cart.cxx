@@ -16,7 +16,8 @@
 // $Id: Cart.cxx,v 1.34 2007/06/14 13:47:50 stephena Exp $
 //============================================================================
 
-#include <string.h>
+#include <string>
+#include <cstring>
 
 #include <cassert>
 #include <sstream>
@@ -48,7 +49,7 @@
 #include "emucore/MD5.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/Settings.hxx"
-using namespace std;
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
     const Properties& properties, const Settings& settings, Random& rng)
@@ -56,8 +57,8 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
   Cartridge* cartridge = nullptr;
 
   // Get the type of the cartridge we're creating
-  const string& md5 = properties.get(Cartridge_MD5);
-  string type = properties.get(Cartridge_Type);
+  const std::string& md5 = properties.get(Cartridge_MD5);
+  std::string type = properties.get(Cartridge_Type);
 
   // First consider the ROMs that are special and don't have a properties entry
   // Hopefully this list will be very small
@@ -70,22 +71,22 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
   }
 
   // Collect some info about the ROM
-  ostringstream buf;
-  buf << "  ROM Size:        " << size << endl
+  std::ostringstream buf;
+  buf << "  ROM Size:        " << size << std::endl
       << "  Bankswitch Type: " << type;
 
   // See if we should try to auto-detect the cartridge type
   // If we ask for extended info, always do an autodetect
   if(type == "AUTO-DETECT" || settings.getBool("rominfo"))
   {
-    string detected = autodetectType(image, size);
+    std::string detected = autodetectType(image, size);
     buf << " ==> " << detected;
     if(type != "AUTO-DETECT" && type != detected)
       buf << " (auto-detection not consistent)";
 
     type = detected;
   }
-  buf << endl;
+  buf << std::endl;
 
   // We should know the cart's type by now so let's create it
   if(type == "2K")
@@ -135,7 +136,7 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size,
   else if(type == "0840")
     cartridge = new Cartridge0840(image);
   else
-    ale::Logger::Error << "ERROR: Invalid cartridge type " << type << " ..." << endl;
+    ale::Logger::Error << "ERROR: Invalid cartridge type " << type << " ..." << std::endl;
 
   if (cartridge != nullptr)
     cartridge->myAboutString = buf.str();
@@ -155,14 +156,14 @@ Cartridge::~Cartridge()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool Cartridge::save(ofstream& out)
+bool Cartridge::save(std::ofstream& out)
 {
   int size = -1;
 
   uInt8* image = getImage(size);
   if(image == 0 || size <= 0)
   {
-    ale::Logger::Error << "save not supported" << endl;
+    ale::Logger::Error << "save not supported" << std::endl;
     return false;
   }
 
@@ -173,7 +174,7 @@ bool Cartridge::save(ofstream& out)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-string Cartridge::autodetectType(const uInt8* image, uInt32 size)
+std::string Cartridge::autodetectType(const uInt8* image, uInt32 size)
 {
   // Guess type based on size
   const char* type = 0;

@@ -16,11 +16,11 @@
 // $Id: TIA.cxx,v 1.79 2007/02/06 23:34:33 stephena Exp $
 //============================================================================
 
-#include <cassert>
-#include <cstdlib>
-#include <cstring>
+#include <string>
 #include <iostream>
 #include <mutex>
+#include <cassert>
+#include <cstring>
 
 #include "emucore/Console.hxx"
 #include "emucore/Control.hxx"
@@ -31,8 +31,6 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/Settings.hxx"
 #include "emucore/Sound.hxx"
-
-using namespace std;
 
 #define HBLANK 68
 
@@ -310,7 +308,7 @@ void TIA::install(System& system)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool TIA::save(Serializer& out)
 {
-  string device = name();
+  std::string device = name();
 
   try
   {
@@ -391,12 +389,12 @@ bool TIA::save(Serializer& out)
   }
   catch(char *msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in save state for " << device << endl;
+    ale::Logger::Error << "Unknown error in save state for " << device << std::endl;
     return false;
   }
 
@@ -406,7 +404,7 @@ bool TIA::save(Serializer& out)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool TIA::load(Deserializer& in)
 {
-  string device = name();
+  std::string device = name();
 
   try
   {
@@ -491,12 +489,12 @@ bool TIA::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in load state for " << device << endl;
+    ale::Logger::Error << "Unknown error in load state for " << device << std::endl;
     return false;
   }
 
@@ -1122,7 +1120,7 @@ inline void TIA::updateFrameScanline(uInt32 clocksToUpdate, uInt32 hpos)
   // See if we're in the vertical blank region
   if(myVBLANK & 0x02)
   {
-    memset(myFramePointer, 0, clocksToUpdate);
+    std::memset(myFramePointer, 0, clocksToUpdate);
   }
   // Handle all other possible combinations
   else
@@ -1135,7 +1133,7 @@ inline void TIA::updateFrameScanline(uInt32 clocksToUpdate, uInt32 hpos)
       case 0x00 | PriorityBit:
       case 0x00 | PriorityBit | ScoreBit:
       {
-        memset(myFramePointer, myCOLUBK, clocksToUpdate);
+        std::memset(myFramePointer, myCOLUBK, clocksToUpdate);
         break;
       }
 
@@ -1779,7 +1777,7 @@ inline void TIA::updateFrame(Int32 clock)
         (clocksFromStartOfScanLine < (HBLANK + 8)))
     {
       Int32 blanks = (HBLANK + 8) - clocksFromStartOfScanLine;
-      memset(oldFramePointer, 0, blanks);
+      std::memset(oldFramePointer, 0, blanks);
 
       if((clocksToUpdate + clocksFromStartOfScanLine) >= (HBLANK + 8))
       {
@@ -2126,7 +2124,7 @@ void TIA::poke(uInt16 addr, uInt8 value)
 
     case 0x03:    // Reset horizontal sync counter
     {
-//      cerr << "TIA Poke: " << hex << addr << endl;
+//      std::cerr << "TIA Poke: " << hex << addr << std::endl;
       break;
     }
 
@@ -2810,7 +2808,7 @@ void TIA::poke(uInt16 addr, uInt8 value)
     default:
     {
 #ifdef DEBUG_ACCESSES
-      ale::Logger::Info << "BAD TIA Poke: " << hex << addr << endl;
+      ale::Logger::Info << "BAD TIA Poke: " << hex << addr << std::endl;
 #endif
       break;
     }

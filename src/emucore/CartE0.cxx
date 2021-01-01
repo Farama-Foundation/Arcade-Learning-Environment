@@ -22,7 +22,6 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartE0.hxx"
-using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeE0::CartridgeE0(const uInt8* image)
@@ -200,7 +199,7 @@ void CartridgeE0::segmentTwo(uInt16 slice)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CartridgeE0::save(Serializer& out)
 {
-  string cart = name();
+  std::string cart = name();
 
   try
   {
@@ -212,12 +211,12 @@ bool CartridgeE0::save(Serializer& out)
   }
   catch(const char* msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in save state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in save state for " << cart << std::endl;
     return false;
   }
 
@@ -227,7 +226,7 @@ bool CartridgeE0::save(Serializer& out)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CartridgeE0::load(Deserializer& in)
 {
-  string cart = name();
+  std::string cart = name();
 
   try
   {
@@ -240,12 +239,12 @@ bool CartridgeE0::load(Deserializer& in)
   }
   catch(const char* msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in load state for " << cart << endl;
+    ale::Logger::Error << "Unknown error in load state for " << cart << std::endl;
     return false;
   }
 

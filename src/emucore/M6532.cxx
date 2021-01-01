@@ -16,7 +16,9 @@
 // $Id: M6532.cxx,v 1.10 2007/06/21 12:27:00 stephena Exp $
 //============================================================================
 
-#include <assert.h>
+#include <iostream>
+#include <cassert>
+
 #include "emucore/Console.hxx"
 #include "emucore/M6532.hxx"
 #include "emucore/Switches.hxx"
@@ -24,8 +26,6 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/OSystem.hxx"
-#include <iostream>
-using namespace std;
 #include "common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -210,7 +210,7 @@ uInt8 M6532::peek(uInt16 addr)
     default:
     {    
 #ifdef DEBUG_ACCESSES
-      ale::Logger::Error << "BAD M6532 Peek: " << hex << addr << endl;
+      ale::Logger::Error << "BAD M6532 Peek: " << hex << addr << std::endl;
 #endif
       return 0;
     }
@@ -308,13 +308,13 @@ void M6532::poke(uInt16 addr, uInt8 value)
                        << ((addr & 0x02) ? "PA7 enabled" : "PA7 disabled")
                        << ", "
                        << ((addr & 0x01) ? "Positive edge" : "Negative edge")
-                       << endl;
+                       << std::endl;
 #endif
   }
   else
   {
 #ifdef DEBUG_ACCESSES
-    ale::Logger::Error << "BAD M6532 Poke: " << hex << addr << endl;
+    ale::Logger::Error << "BAD M6532 Poke: " << hex << addr << std::endl;
 #endif
   }
 }
@@ -322,7 +322,7 @@ void M6532::poke(uInt16 addr, uInt8 value)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6532::save(Serializer& out)
 {
-  string device = name();
+  std::string device = name();
 
   try
   {
@@ -343,12 +343,12 @@ bool M6532::save(Serializer& out)
   }
   catch(char *msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in save state for " << device << endl;
+    ale::Logger::Error << "Unknown error in save state for " << device << std::endl;
     return false;
   }
 
@@ -358,7 +358,7 @@ bool M6532::save(Serializer& out)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6532::load(Deserializer& in)
 {
-  string device = name();
+  std::string device = name();
 
   try
   {
@@ -381,12 +381,12 @@ bool M6532::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in load state for " << device << endl;
+    ale::Logger::Error << "Unknown error in load state for " << device << std::endl;
     return false;
   }
 

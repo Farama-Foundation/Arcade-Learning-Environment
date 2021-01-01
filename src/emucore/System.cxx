@@ -16,7 +16,7 @@
 // $Id: System.cxx,v 1.21 2007/01/01 18:04:51 stephena Exp $
 //============================================================================
 
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
 #include "emucore/Device.hxx"
@@ -25,7 +25,6 @@
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
-using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 System::System()
@@ -126,12 +125,12 @@ bool System::save(Serializer& out)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    std::cerr << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for \'System\'" << endl;
+    std::cerr << "Unknown error in save state for \'System\'" << std::endl;
     return false;
   }
 
@@ -150,12 +149,12 @@ bool System::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    std::cerr << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for \'System\'" << endl;
+    std::cerr << "Unknown error in load state for \'System\'" << std::endl;
     return false;
   }
 
@@ -197,7 +196,7 @@ const System::PageAccess& System::getPageAccess(uInt16 page)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool System::saveState(const string& md5sum, Serializer& out)
+bool System::saveState(const std::string& md5sum, Serializer& out)
 {
   // Open the file as a new Serializer
   if(!out.isOpen())
@@ -224,12 +223,12 @@ bool System::saveState(const string& md5sum, Serializer& out)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    std::cerr << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for \'System\'" << endl;
+    std::cerr << "Unknown error in save state for \'System\'" << std::endl;
     return false;
   }
 
@@ -237,7 +236,7 @@ bool System::saveState(const string& md5sum, Serializer& out)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool System::loadState(const string& md5sum, Deserializer& in)
+bool System::loadState(const std::string& md5sum, Deserializer& in)
 {
   // Open the file as a new Deserializer
   if(!in.isOpen())
@@ -265,12 +264,12 @@ bool System::loadState(const string& md5sum, Deserializer& in)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    std::cerr << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for \'System\'" << endl;
+    std::cerr << "Unknown error in load state for \'System\'" << std::endl;
     return false;
   }
 

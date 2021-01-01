@@ -16,7 +16,7 @@
 // $Id: Control.cxx,v 1.6 2007/01/05 17:54:09 stephena Exp $
 //============================================================================
 
-#include <assert.h>
+#include <cassert>
 #include "emucore/Control.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

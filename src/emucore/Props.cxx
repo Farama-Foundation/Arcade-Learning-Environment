@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
-using namespace std;
 
 #include "emucore/Props.hxx"
 
@@ -42,7 +41,7 @@ Properties::~Properties()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const string& Properties::get(PropertyType key) const
+const std::string& Properties::get(PropertyType key) const
 {
   if(key >= 0 && key < LastPropType)
     return myProperties[key];
@@ -53,7 +52,7 @@ const string& Properties::get(PropertyType key) const
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Properties::set(PropertyType key, const string& value)
+void Properties::set(PropertyType key, const std::string& value)
 {
   if(key >= 0 && key < LastPropType)
   {
@@ -83,7 +82,7 @@ void Properties::set(PropertyType key, const string& value)
       {
         int blend = atoi(myProperties[key].c_str());
         if(blend < 0 || blend > 100) blend = 77;
-        ostringstream buf;
+        std::ostringstream buf;
         buf << blend;
         myProperties[key] = buf.str();
         break;
@@ -96,18 +95,18 @@ void Properties::set(PropertyType key, const string& value)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Properties::load(istream& in)
+void Properties::load(std::istream& in)
 {
   setDefaults();
 
-  string line, key, value;
-  string::size_type one, two, three, four, garbage;
+  std::string line, key, value;
+  std::string::size_type one, two, three, four, garbage;
 
   // Loop reading properties
   while(getline(in, line))
   {
     // Strip all tabs from the line
-    while((garbage = line.find("\t")) != string::npos)
+    while((garbage = line.find("\t")) != std::string::npos)
       line.erase(garbage, 1);
 
     // Ignore commented and empty lines
@@ -124,8 +123,8 @@ void Properties::load(istream& in)
     four = line.find("\"", three + 1);
 
     // Invalid line if it doesn't contain 4 quotes
-    if((one == string::npos) || (two == string::npos) ||
-       (three == string::npos) || (four == string::npos))
+    if((one == std::string::npos) || (two == std::string::npos) ||
+       (three == std::string::npos) || (four == std::string::npos))
       break;
 
     // Otherwise get the key and value
@@ -139,7 +138,7 @@ void Properties::load(istream& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Properties::save(ostream& out) const
+void Properties::save(std::ostream& out) const
 {
   // Write out each of the key and value pairs
   bool changed = false;
@@ -166,7 +165,7 @@ void Properties::save(ostream& out) const
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-string Properties::readQuotedString(istream& in)
+std::string Properties::readQuotedString(std::istream& in)
 {
   char c;
 
@@ -180,7 +179,7 @@ string Properties::readQuotedString(istream& in)
   }
 
   // Read characters until we see the close quote
-  string s;
+  std::string s;
   while(in.get(c))
   {
     if((c == '\\') && (in.peek() == '"'))
@@ -207,7 +206,7 @@ string Properties::readQuotedString(istream& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Properties::writeQuotedString(ostream& out, const string& s)
+void Properties::writeQuotedString(std::ostream& out, const std::string& s)
 {
   out.put('"');
   for(uInt32 i = 0; i < s.length(); ++i)
@@ -254,12 +253,12 @@ void Properties::copy(const Properties& properties)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Properties::print() const
 {
-  cerr << get(Cartridge_MD5) << "|"
-       << get(Cartridge_Name) << "|"
-       << get(Cartridge_Rarity) << "|"
-       << get(Cartridge_Manufacturer) << "|"
-       << get(Cartridge_Note)
-       << endl;
+  std::cerr << get(Cartridge_MD5) << "|"
+            << get(Cartridge_Name) << "|"
+            << get(Cartridge_Rarity) << "|"
+            << get(Cartridge_Manufacturer) << "|"
+            << get(Cartridge_Note)
+            << std::endl;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -270,7 +269,7 @@ void Properties::setDefaults()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-PropertyType Properties::getPropertyType(const string& name)
+PropertyType Properties::getPropertyType(const std::string& name)
 {
   for(int i = 0; i < LastPropType; ++i)
     if(ourPropertyNames[i] == name)

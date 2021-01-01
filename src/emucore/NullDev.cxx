@@ -19,7 +19,6 @@
 #include "emucore/NullDev.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
-using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullDevice::NullDevice()
@@ -51,14 +50,14 @@ void NullDevice::install(System& system)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt8 NullDevice::peek(uInt16 address)
 {
-  cerr << hex << "NullDevice: peek(" << address << ")" << endl;
+  std::cerr << std::hex << "NullDevice: peek(" << address << ")" << std::endl;
   return 0;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void NullDevice::poke(uInt16 address, uInt8 value)
 {
-  cerr << hex << "NullDevice: poke(" << address << "," << value << ")" << endl;
+  std::cerr << std::hex << "NullDevice: poke(" << address << "," << value << ")" << std::endl;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

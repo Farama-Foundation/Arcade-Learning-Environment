@@ -16,7 +16,7 @@
 // $Id: Joystick.cxx,v 1.7 2007/01/05 17:54:23 stephena Exp $
 //============================================================================
 
-#include <assert.h>
+#include <cassert>
 #include "emucore/Event.hxx"
 #include "emucore/Joystick.hxx"
 

@@ -20,8 +20,6 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 
-using namespace std;
-
 #include "common/Log.hpp"
 
 #define debugStream ale::Logger::Info
@@ -117,7 +115,7 @@ bool M6502High::execute(uInt32 number)
       debugStream << "PS=" << ::hex << setw(2) << (int)PS() << " ";
       debugStream << "SP=" << ::hex << setw(2) << (int)SP << " ";
       debugStream << "Cyc=" << dec << mySystem->cycles();
-      debugStream << endl;
+      debugStream << std::endl;
 #endif
     }
 
@@ -183,7 +181,7 @@ void M6502High::interruptHandler()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6502High::save(Serializer& out)
 {
-  string CPU = name();
+  std::string CPU = name();
 
   try
   {
@@ -214,12 +212,12 @@ bool M6502High::save(Serializer& out)
   }
   catch(char *msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in save state for " << CPU << endl;
+    ale::Logger::Error << "Unknown error in save state for " << CPU << std::endl;
     return false;
   }
 
@@ -229,7 +227,7 @@ bool M6502High::save(Serializer& out)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6502High::load(Deserializer& in)
 {
-  string CPU = name();
+  std::string CPU = name();
 
   try
   {
@@ -260,12 +258,12 @@ bool M6502High::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    ale::Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    ale::Logger::Error << "Unknown error in load state for " << CPU << endl;
+    ale::Logger::Error << "Unknown error in load state for " << CPU << std::endl;
     return false;
   }
 
