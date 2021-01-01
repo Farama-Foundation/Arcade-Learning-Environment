@@ -48,21 +48,6 @@ class Settings
 
   public:
     /**
-      This method should be called to load the current settings from an rc file.
-    */
-    virtual void loadConfig();
-    
-    /**
-      This method loads the given 
-    */
-    void loadConfig(const char* config_file);
-
-    /**
-      This method should be called to save the current settings to an rc file.
-    */
-    virtual void saveConfig();
-
-    /**
       This method should be called *after* settings have been read,
       to validate (and change, if necessary) any improper settings.
     */

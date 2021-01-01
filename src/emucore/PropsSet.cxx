@@ -19,7 +19,6 @@
 #include <sstream>
 #include <string.h>
 
-#include "emucore/OSystem.hxx"
 #include "emucore/DefProps.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/PropsSet.hxx"
@@ -27,16 +26,10 @@
 using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-PropertiesSet::PropertiesSet(OSystem* osystem)
-  : myOSystem(osystem),
-    myRoot(NULL),
+PropertiesSet::PropertiesSet()
+  : myRoot(NULL),
     mySize(0)
 {
-  const string& props = myOSystem->propertiesFile();
-  load(props, true);    // do save these properties
-
-  if(myOSystem->settings().getBool("showinfo"))
-    cerr << "User game properties: \'" << props << "\'\n";
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -179,58 +172,10 @@ void PropertiesSet::deleteNode(TreeNode *node)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void PropertiesSet::load(const string& filename, bool save)
-{
-  ifstream in(filename.c_str(), ios::in);
-
-  // Loop reading properties
-  for(;;)
-  {
-    // Make sure the stream is still good or we're done 
-    if(!in)
-      break;
-
-    // Get the property list associated with this profile
-    Properties prop;
-    prop.load(in);
-
-    // If the stream is still good then insert the properties
-    if(in)
-      insert(prop, save);
-  }
-  if(in)
-    in.close();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool PropertiesSet::save(const string& filename) const
-{
-  ofstream out(filename.c_str(), ios::out);
-  if(!out)
-    return false;
-
-  saveNode(out, myRoot);
-  out.close();
-  return true;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void PropertiesSet::print() const
 {
   cerr << size() << endl;
   printNode(myRoot);  // FIXME - print out internal properties as well
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void PropertiesSet::saveNode(ostream& out, TreeNode *node) const
-{
-  if(node)
-  {
-    if(node->valid && node->save)
-      node->props->save(out);
-    saveNode(out, node->left);
-    saveNode(out, node->right);
-  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

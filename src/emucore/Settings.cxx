@@ -76,13 +76,6 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("ssdir", string(".") + BSPF_PATH_SEPARATOR);
     setInternal("sssingle", "false");
 
-    setInternal("romdir", "");
-    setInternal("statedir", "");
-    setInternal("palettefile", "");
-    setInternal("propsfile", "");
-    setInternal("working_dir",  string(".") + BSPF_PATH_SEPARATOR);
-    setInternal("rl_params_file",  "rl_params.txt");
-    setInternal("class_disc_params_file",  "class_disc_params.txt");
     setInternal("rombrowse", "true");
     setInternal("lastrom", "");
 
@@ -100,51 +93,6 @@ Settings::~Settings()
 {
   myInternalSettings.clear();
   myExternalSettings.clear();
-}
-
-void Settings::loadConfig(const char* config_file){
-    string line, key, value;
-    string::size_type equalPos, garbage;
-
-    ifstream in(config_file);
-    if(!in || !in.is_open()) {
-        ale::Logger::Warning << "Warning: couldn't load settings file: " << config_file << std::endl; 
-        return;
-    }
-
-    while(getline(in, line)) {
-        // Strip all whitespace and tabs from the line
-        while((garbage = line.find("\t")) != string::npos)
-          line.erase(garbage, 1);
-
-        // Ignore commented and empty lines
-        if((line.length() == 0) || (line[0] == ';'))
-          continue;
-
-        // Search for the equal sign and discard the line if its not found
-        if((equalPos = line.find("=")) == string::npos)
-          continue;
-
-        // Split the line into key/value pairs and trim any whitespace
-        key   = line.substr(0, equalPos);
-        value = line.substr(equalPos + 1, line.length() - key.length() - 1);
-        key   = trim(key);
-        value = trim(value);
-
-        // Check for absent key or value
-        if((key.length() == 0) || (value.length() == 0))
-          continue;
-
-        // Only settings which have been previously set are valid
-        setInternal(key, value);
-    }
-
-    in.close();
-}
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Settings::loadConfig()
-{
- loadConfig(myOSystem->configFile().c_str());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -204,56 +152,6 @@ void Settings::validate()
   s = getString("palette");
   if(s != "standard" && s != "z26" && s != "user")
     setInternal("palette", "standard");
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Settings::saveConfig()
-{
-  // Do a quick scan of the internal settings to see if any have
-  // changed.  If not, we don't need to save them at all.
-  bool settingsChanged = false;
-  for(unsigned int i = 0; i < myInternalSettings.size(); ++i)
-  {
-    if(myInternalSettings[i].value != myInternalSettings[i].initialValue)
-    {
-      settingsChanged = true;
-      break;
-    }
-  }
-
-  if(!settingsChanged)
-    return;
-
-  ofstream out(myOSystem->configFile().c_str());
-  if(!out || !out.is_open())
-  {
-    ale::Logger::Error << "Error: Couldn't save settings file\n";
-    return;
-  }
-
-  out << ";  Stella configuration file" << endl
-      << ";" << endl
-      << ";  Lines starting with ';' are comments and are ignored." << endl
-      << ";  Spaces and tabs are ignored." << endl
-      << ";" << endl
-      << ";  Format MUST be as follows:" << endl
-      << ";    command = value" << endl
-      << ";" << endl
-      << ";  Commmands are the same as those specified on the commandline," << endl
-      << ";  without the '-' character." << endl
-      << ";" << endl
-      << ";  Values are the same as those allowed on the commandline." << endl
-      << ";  Boolean values are specified as 1 (or true) and 0 (or false)" << endl
-      << ";" << endl;
-
-  // Write out each of the key and value pairs
-  for(unsigned int i = 0; i < myInternalSettings.size(); ++i)
-  {
-    out << myInternalSettings[i].key << " = " <<
-           myInternalSettings[i].value << endl;
-  }
-
-  out.close();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

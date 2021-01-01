@@ -28,7 +28,6 @@ SettingsWin32::SettingsWin32(OSystem* osystem)
   setInternal("fragsize", "2048");
   // Most Windows systems work better without this
   setInternal("dirtyrects", "false");
-  setInternal("romdir", "c:\\");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
