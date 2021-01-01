@@ -53,9 +53,6 @@ OSystem::OSystem()
     myFeatures(""),
     p_display_screen(NULL)
 {
-    #ifdef DISPLAY_OPENGL
-      myFeatures += "OpenGL ";
-    #endif
     #ifdef SOUND_SUPPORT
       myFeatures += "Sound ";
     #endif
@@ -199,14 +196,9 @@ bool OSystem::createConsole(const string& romfile)
       // Create an instance of the 2600 game console
       myConsole = new Console(this, cart, props);
 
-      if(mySettings->getBool("showinfo"))
-        cerr << "Game console created:" << endl
-             << "  ROM file:  " << myRomFile << endl
-             << myConsole->about() << endl;
-      else
-        ale::Logger::Info << "Game console created:" << endl
-             << "  ROM file:  " << myRomFile << endl
-             << myConsole->about() << endl;
+      ale::Logger::Info << "Game console created:" << endl
+            << "  ROM file:  " << myRomFile << endl
+            << myConsole->about() << endl;
 
       // Update the timing info for a new console run
       resetLoopTiming();
@@ -249,16 +241,6 @@ void OSystem::deleteConsole()
   if(myConsole)
   {
     mySound->close();
-    // if(mySettings != NULL && mySettings->getBool("showinfo"))
-    // {
-    //   double executionTime   = (double) myTimingInfo.totalTime / 1000000.0;
-    //   double framesPerSecond = (double) myTimingInfo.totalFrames / executionTime;
-    //   cerr << "Game console stats:" << endl
-    //        << "  Total frames drawn: " << myTimingInfo.totalFrames << endl
-    //        << "  Total time (sec):   " << executionTime << endl
-    //        << "  Frames per second:  " << framesPerSecond << endl
-    //        << endl;
-    // }
     delete myConsole;  
     myConsole = NULL;
   }
