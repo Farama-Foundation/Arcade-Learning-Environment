@@ -22,9 +22,9 @@
 class OSystem;
 
 #include <map>
+#include <vector>
 #include <stdexcept>
 
-#include "common/Array.hxx"
 #include "emucore/bspf/bspf.hxx"
 
 /**
@@ -168,7 +168,7 @@ class Settings
       std::string value;
       std::string initialValue;
     };
-    typedef Common::Array<Setting> SettingsArray;
+    typedef std::vector<Setting> SettingsArray;
 
     const SettingsArray& getInternalSettings() const
       { return myInternalSettings; }
