@@ -24,10 +24,6 @@
 #include <string.h>
 using namespace std;
 
-#ifdef DEBUGGER_SUPPORT
-  #include "Debugger.hxx"
-#endif
-
 #include "emucore/FSNode.hxx"
 #include "emucore/MD5.hxx"
 #include "emucore/Settings.hxx"
@@ -66,9 +62,6 @@ OSystem::OSystem()
     #ifdef JOYSTICK_SUPPORT
       myFeatures += "Joystick ";
     #endif
-    #ifdef DEBUGGER_SUPPORT
-      myFeatures += "Debugger ";
-    #endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -81,14 +74,6 @@ OSystem::~OSystem()
   // since it created them
   if (mySound != NULL)
     delete mySound;
-
-  // These must be deleted after all the others
-  // This is a bit hacky, since it depends on ordering
-  // of d'tor calls
-#ifdef DEBUGGER_SUPPORT
-  if (myDebugger != NULL)
-    delete myDebugger;
-#endif
 
   if (myPropSet != NULL)
     delete myPropSet;
@@ -118,10 +103,6 @@ bool OSystem::create()
 
   // Create a properties set for us to use and set it up
   myPropSet = new PropertiesSet(this);
-
-#ifdef DEBUGGER_SUPPORT
-  myDebugger = new Debugger(this);
-#endif
 
   // Create the sound object; the sound subsystem isn't actually
   // opened until needed, so this is non-blocking (on those systems
@@ -247,11 +228,6 @@ bool OSystem::createConsole(const string& romfile)
       // Create an instance of the 2600 game console
       myConsole = new Console(this, cart, props);
       m_colour_palette.loadUserPalette(paletteFile());
-
-    #ifdef DEBUGGER_SUPPORT
-      myDebugger->setConsole(myConsole);
-      myDebugger->initialize();
-    #endif
 
       if(mySettings->getBool("showinfo"))
         cerr << "Game console created:" << endl

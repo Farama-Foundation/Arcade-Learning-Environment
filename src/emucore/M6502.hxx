@@ -19,23 +19,12 @@
 #ifndef M6502_HXX
 #define M6502_HXX
 
-class D6502;
 class M6502;
 class Serializer;
 class Deserializer;
-class Debugger;
-class CpuDebug;
-class Expression;
-class PackedBitArray;
 
 #include "emucore/bspf/bspf.hxx"
 #include "emucore/System.hxx"
-#include "common/Array.hxx"
-#ifdef DEBUGGER_SUPPORT
-#include "StringList.hxx"
-#endif
-
-typedef Common::Array<Expression*> ExpressionList;
 
 /**
   This is an abstract base class for classes that emulate the
@@ -47,12 +36,6 @@ typedef Common::Array<Expression*> ExpressionList;
 */
 class M6502
 {
-  public:
-    /**
-      The 6502 debugger class is a friend who needs special access
-    */
-    friend class CpuDebug;
-
   public:
     /**
       Enumeration of the 6502 addressing modes
@@ -189,27 +172,6 @@ class M6502
     */
     friend std::ostream& operator<<(std::ostream& out, const AddressingMode& mode);
 
-  public:
-#ifdef DEBUGGER_SUPPORT
-    /**
-      Attach the specified debugger.
-
-      @param debugger The debugger to attach to the microprocessor.
-    */
-    void attach(Debugger& debugger);
-
-    // TODO - document these methods
-    void setBreakPoints(PackedBitArray *bp);
-    void setTraps(PackedBitArray *read, PackedBitArray *write);
-    int totalInstructionCount() { return myTotalInstructionCount; }
-
-    unsigned int addCondBreak(Expression *e, string name);
-    void delCondBreak(unsigned int brk);
-    void clearCondBreaks();
-    const StringList& getCondBreakNames();
-    int evalCondBreaks();
-#endif
-
   protected:
     /**
       Get the 8-bit value of the Processor Status register.
@@ -240,26 +202,6 @@ class M6502
     bool I;     // I flag for processor status register
     bool notZ;  // Z flag complement for processor status register
     bool C;     // C flag for processor status register
-
-#ifdef DEBUGGER_SUPPORT
-    /// Pointer to the debugger for this processor or the null pointer
-    Debugger* myDebugger;
-
-    PackedBitArray* myBreakPoints;
-    PackedBitArray* myReadTraps;
-    PackedBitArray* myWriteTraps;
-
-    // Did we just now hit a trap?
-    bool myJustHitTrapFlag;
-    struct HitTrapInfo {
-      string message;
-      int address;
-    };
-    HitTrapInfo myHitTrapInfo;
-
-    StringList myBreakCondNames;
-    ExpressionList myBreakConds;
-#endif
 
     /** 
       Bit fields used to indicate that certain conditions need to be 
