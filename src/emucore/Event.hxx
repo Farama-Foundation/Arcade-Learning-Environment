@@ -76,7 +76,7 @@ class Event
       DrivingOneFire,
       
       ChangeState, LoadState, SaveState, TakeSnapshot, Quit,
-      PauseMode, MenuMode, CmdMenuMode, DebuggerMode, LauncherMode,
+      PauseMode, MenuMode, CmdMenuMode, LauncherMode,
       Fry, VolumeDecrease, VolumeIncrease,
 
       UIUp, UIDown, UILeft, UIRight, UIHome, UIEnd, UIPgUp, UIPgDown,

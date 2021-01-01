@@ -24,7 +24,6 @@ class GameController;
 class Menu;
 class CommandMenu;
 class Launcher;
-class Debugger;
 class VideoDialog;
 
 #include "common/Array.hxx"
@@ -113,15 +112,6 @@ class OSystem
       @return The console object
     */
     inline Console& console(void) const { return *myConsole; }
-
-#ifdef DEBUGGER_SUPPORT
-    /**
-      Get the ROM debugger of the system.
-
-      @return The debugger object
-    */
-    inline Debugger& debugger(void) const { return *myDebugger; }
-#endif
 
     /**
       Set the framerate for the video system.  It's placed in this class since
