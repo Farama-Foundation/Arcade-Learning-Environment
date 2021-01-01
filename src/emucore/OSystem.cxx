@@ -46,18 +46,9 @@ OSystem::OSystem()
     mySettings(NULL),
     myPropSet(NULL),
     myConsole(NULL),
-    myQuitLoop(false),
-    mySkipEmulation(false),
     myRomFile(""),
-    myFeatures(""),
     p_display_screen(NULL)
 {
-    #ifdef SOUND_SUPPORT
-      myFeatures += "Sound ";
-    #endif
-    #ifdef JOYSTICK_SUPPORT
-      myFeatures += "Joystick ";
-    #endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -134,7 +125,6 @@ bool OSystem::loadState(Deserializer& in) {
 void OSystem::setFramerate(uInt32 framerate)
 {
   myDisplayFrameRate = framerate;
-  myTimePerFrame = (uInt32)(1000000.0 / (double)myDisplayFrameRate);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

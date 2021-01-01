@@ -20,13 +20,7 @@
 #define OSYSTEM_HXX
 
 class PropertiesSet;
-class GameController;
-class Menu;
-class CommandMenu;
-class Launcher;
-class VideoDialog;
 
-#include "common/Array.hxx"
 #include "emucore/Sound.hxx"
 #include "common/SoundNull.hxx"
 #include "emucore/Settings.hxx"
@@ -36,13 +30,6 @@ class VideoDialog;
 #include "common/display_screen.h"
 #include "common/ColourPalette.hpp"
 #include "common/Log.hpp"
-
-struct Resolution {
-  uInt32 width;
-  uInt32 height;
-  std::string name;
-};
-typedef Common::Array<Resolution> ResolutionList;
 
 /**
   This class provides an interface for accessing operating system specific
@@ -129,19 +116,6 @@ class OSystem
     inline uInt32 frameRate() const { return myDisplayFrameRate; }
 
     /**
-      Get the maximum dimensions of a window for the video hardware.
-    */
-    uInt32 desktopWidth() const  { return myDesktopWidth; }
-    uInt32 desktopHeight() const { return myDesktopHeight; }
-
-    /**
-      Get the supported fullscreen resolutions for the video hardware.
-
-      @return  An array of supported resolutions
-    */
-    const ResolutionList& supportedResolutions() const { return myResolutions; }
-
-    /**
       This method should be called to get the full path of the currently
       loaded ROM.
 
@@ -173,13 +147,6 @@ class OSystem
     std::string getROMInfo(const std::string& romfile);
 
     /**
-      The features which are conditionally compiled into Stella.
-
-      @return  The supported features
-    */
-    const std::string& features() const { return myFeatures; }
-
-    /**
       Open the given ROM and return an array containing its contents.
 
       @param rom    The absolute pathname of the ROM file
@@ -190,13 +157,6 @@ class OSystem
       @return  False on any errors, else true
     */
     bool openROM(const std::string& rom, std::string& md5, uInt8** image, int* size);
-
-    /**
-      Issue a quit event to the OSystem.
-    */
-    void quit() { myQuitLoop = true; }
-
-    void skipEmulation() { mySkipEmulation = true; }
 
     /**
       Returns the random number generator for this emulator.
@@ -237,42 +197,15 @@ class OSystem
     // Random number generator shared across the emulator's components
     Random myRandGen; 
 
-    // Maximum dimensions of the desktop area
-    uInt32 myDesktopWidth, myDesktopHeight;
-
-    // Supported fullscreen resolutions
-    ResolutionList myResolutions;
-
     // Number of times per second to iterate through the main loop
     uInt32 myDisplayFrameRate;
-
-    // Indicates whether to stop the main loop
-    bool myQuitLoop;
-
-    // Indicates that the emulation should not occur on the next time step
-    // This is reset to false after one step
-    bool mySkipEmulation;
 
   private:
     enum { kNumUIPalettes = 2 };
 
     std::string myRomFile;
-    std::string myFeatures;
 
-    public: //ALE 
-    // Time per frame for a video update, based on the current framerate
-    uInt32 myTimePerFrame;
-
-    // Indicates whether the main processing loop should proceed
-    struct TimingInfo {
-      uInt32 start;
-      uInt32 current;
-      uInt32 virt;
-      uInt32 totalTime;
-      uInt32 totalFrames;
-    };
-    TimingInfo myTimingInfo;
-
+  public: //ALE
     ale::ColourPalette &colourPalette() { return m_colour_palette; }
 
   public:
