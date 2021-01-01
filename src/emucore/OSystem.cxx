@@ -28,10 +28,6 @@ using namespace std;
   #include "Debugger.hxx"
 #endif
 
-#ifdef CHEATCODE_SUPPORT
-  #include "CheatManager.hxx"
-#endif
-
 #include "emucore/FSNode.hxx"
 #include "emucore/MD5.hxx"
 #include "emucore/Settings.hxx"
@@ -73,9 +69,6 @@ OSystem::OSystem()
     #ifdef DEBUGGER_SUPPORT
       myFeatures += "Debugger ";
     #endif
-    #ifdef CHEATCODE_SUPPORT
-      myFeatures += "Cheats";
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -95,10 +88,6 @@ OSystem::~OSystem()
 #ifdef DEBUGGER_SUPPORT
   if (myDebugger != NULL)
     delete myDebugger;
-#endif
-#ifdef CHEATCODE_SUPPORT
-  if (myCheatManager != NULL)
-    delete myCheatManager;
 #endif
 
   if (myPropSet != NULL)
@@ -129,11 +118,6 @@ bool OSystem::create()
 
   // Create a properties set for us to use and set it up
   myPropSet = new PropertiesSet(this);
-
-#ifdef CHEATCODE_SUPPORT
-  myCheatManager = new CheatManager(this);
-  myCheatManager->loadCheatDatabase();
-#endif
 
 #ifdef DEBUGGER_SUPPORT
   myDebugger = new Debugger(this);
@@ -178,11 +162,6 @@ bool OSystem::loadState(Deserializer& in) {
 void OSystem::setConfigPaths()
 {
   myGameListCacheFile = myBaseDir + BSPF_PATH_SEPARATOR + "stella.cache";
-
-  myCheatFile = mySettings->getString("cheatfile");
-  if(myCheatFile == "")
-    myCheatFile = myBaseDir + BSPF_PATH_SEPARATOR + "stella.cht";
-  mySettings->setString("cheatfile", myCheatFile);
 
   myPaletteFile = mySettings->getString("palettefile");
   if(myPaletteFile == "")
@@ -269,9 +248,6 @@ bool OSystem::createConsole(const string& romfile)
       myConsole = new Console(this, cart, props);
       m_colour_palette.loadUserPalette(paletteFile());
 
-    #ifdef CHEATCODE_SUPPORT
-      myCheatManager->loadCheats(md5);
-    #endif
     #ifdef DEBUGGER_SUPPORT
       myDebugger->setConsole(myConsole);
       myDebugger->initialize();
@@ -326,10 +302,7 @@ void OSystem::deleteConsole()
 {
   if(myConsole)
   {
-  mySound->close();
-  #ifdef CHEATCODE_SUPPORT
-    myCheatManager->saveCheats(myConsole->properties().get(Cartridge_MD5));
-  #endif
+    mySound->close();
     // if(mySettings != NULL && mySettings->getBool("showinfo"))
     // {
     //   double executionTime   = (double) myTimingInfo.totalTime / 1000000.0;

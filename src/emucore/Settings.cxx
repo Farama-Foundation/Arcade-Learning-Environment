@@ -78,7 +78,6 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
 
     setInternal("romdir", "");
     setInternal("statedir", "");
-    setInternal("cheatfile", "");
     setInternal("palettefile", "");
     setInternal("propsfile", "");
     setInternal("working_dir",  string(".") + BSPF_PATH_SEPARATOR);
