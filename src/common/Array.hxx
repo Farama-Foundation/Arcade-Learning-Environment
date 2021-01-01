@@ -22,7 +22,7 @@
 #ifndef ARRAY_HXX
 #define ARRAY_HXX
 
-#include <assert.h>
+#include <cassert>
 
 #include "emucore/bspf/bspf.hxx"
 

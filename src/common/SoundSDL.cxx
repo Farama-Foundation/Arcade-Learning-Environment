@@ -34,8 +34,6 @@
 #include "common/SoundSDL.hxx"
 #include "common/Log.hpp"
 
-using namespace std;
-using namespace ale;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundSDL::SoundSDL(OSystem* osystem)
   : Sound(osystem),
@@ -93,8 +91,8 @@ void SoundSDL::initialize()
 
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
-      Logger::Warning << "WARNING: Couldn't initialize SDL audio system! " << endl;
-      Logger::Warning << "         " << SDL_GetError() << endl;
+      ale::Logger::Warning << "WARNING: Couldn't initialize SDL audio system! " << std::endl;
+      ale::Logger::Warning << "         " << SDL_GetError() << std::endl;
       return;
     }
     else
@@ -117,8 +115,8 @@ void SoundSDL::initialize()
 
       if(SDL_OpenAudio(&desired, &myHardwareSpec) < 0)
       {
-        Logger::Warning << "WARNING: Couldn't open SDL audio system! " << endl;
-        Logger::Warning << "         " << SDL_GetError() << endl;
+        ale::Logger::Warning << "WARNING: Couldn't open SDL audio system! " << st::endl;
+        ale::Logger::Warning << "         " << SDL_GetError() << std::endl;
         return;
       }
 
@@ -126,9 +124,9 @@ void SoundSDL::initialize()
       // will not work so we'll need to disable the audio support)
       if(((float)myHardwareSpec.samples / (float)myHardwareSpec.freq) >= 0.25)
       {
-        Logger::Warning << "WARNING: Sound device doesn't support realtime audio! Make ";
-        Logger::Warning << "sure a sound" << endl;
-        Logger::Warning << "         server isn't running.  Audio is disabled." << endl;
+        ale::Logger::Warning << "WARNING: Sound device doesn't support realtime audio! Make ";
+        ale::Logger::Warning << "sure a sound" << std::endl;
+        ale::Logger::Warning << "         server isn't running.  Audio is disabled." << std::endl;
 
         SDL_CloseAudio();
         return;
@@ -226,8 +224,8 @@ void SoundSDL::setVolume(Int32 percent)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SoundSDL::adjustVolume(Int8 direction)
 {
-  ostringstream strval;
-  string message;
+  std::ostringstream strval;
+  st::string message;
 
   Int32 percent = myVolume;
 
@@ -410,7 +408,7 @@ void SoundSDL::callback(void* udata, uInt8* stream, int len)
   SoundSDL* sound = (SoundSDL*)udata;
   sound->processFragment(stream, (Int32)len);
 #ifdef ATARIVOX_SUPPORT
-  Logger::Info << "SoundSDL::callback(): len==" << len << endl;
+  ale::Logger::Info << "SoundSDL::callback(): len==" << len << std::endl;
 
   // See if we need sound from the AtariVox
   AtariVox *vox = sound->myOSystem->console().atariVox();
@@ -434,7 +432,7 @@ void SoundSDL::callback(void* udata, uInt8* stream, int len)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool SoundSDL::load(Deserializer& in)
 {
-  string device = "TIASound";
+  std::string device = "TIASound";
 
   try
   {
@@ -468,12 +466,12 @@ bool SoundSDL::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    Logger::Error << "Unknown error in load state for " << device << endl;
+    ale::Logger::Error << "Unknown error in load state for " << device << std::endl;
     return false;
   }
 
@@ -483,7 +481,7 @@ bool SoundSDL::load(Deserializer& in)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool SoundSDL::save(Serializer& out)
 {
-  string device = "TIASound";
+  std::string device = "TIASound";
 
   try
   {
@@ -513,12 +511,12 @@ bool SoundSDL::save(Serializer& out)
   }
   catch(char *msg)
   {
-    Logger::Error << msg << endl;
+    ale::Logger::Error << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    Logger::Error << "Unknown error in save state for " << device << endl;
+    ale::Logger::Error << "Unknown error in save state for " << device << std::endl;
     return false;
   }
 

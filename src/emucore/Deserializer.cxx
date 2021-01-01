@@ -18,10 +18,9 @@
 
 #include "emucore/Deserializer.hxx"
 #include <sstream>
-using namespace std;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Deserializer::Deserializer(const string stream_str):
+Deserializer::Deserializer(const std::string stream_str):
 myStream(stream_str) {
     
 }
@@ -53,12 +52,12 @@ int Deserializer::getInt(void)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-string Deserializer::getString(void)
+std::string Deserializer::getString(void)
 {
   int len = getInt();
-  string str;
-  str.resize((string::size_type)len);
-  myStream.read(&str[0], (streamsize)len);
+  std::string str;
+  str.resize((std::string::size_type)len);
+  myStream.read(&str[0], (std::streamsize)len);
 
   if(myStream.bad())
     throw "Deserializer: file read failed";

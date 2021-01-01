@@ -45,7 +45,6 @@
 #include "emucore/TIA.hxx"
 #include "emucore/OSystem.hxx"
 
-using namespace std;
 #include "common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -64,8 +63,8 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   myEvent = myOSystem->event();
 
   // Setup the controllers based on properties
-  const string& left  = myProperties.get(Controller_Left);
-  const string& right = myProperties.get(Controller_Right);
+  const std::string& left  = myProperties.get(Controller_Left);
+  const std::string& right = myProperties.get(Controller_Right);
 
   // Swap the ports if necessary
   int leftPort, rightPort;
@@ -165,9 +164,9 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   myRiot = m6532;
 
   // Query some info about this console
-  ostringstream buf;
-  buf << "  Cart Name: " << myProperties.get(Cartridge_Name) << endl
-      << "  Cart MD5:  " << myProperties.get(Cartridge_MD5) << endl;
+  std::ostringstream buf;
+  buf << "  Cart Name: " << myProperties.get(Cartridge_Name) << std::endl
+      << "  Cart MD5:  " << myProperties.get(Cartridge_MD5) << std::endl;
 
   // Auto-detect NTSC/PAL mode if it's requested
   myDisplayFormat = myProperties.get(Display_Format);
@@ -193,7 +192,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
     if(myProperties.get(Display_Format) == "AUTO-DETECT")
       buf << " ==> " << myDisplayFormat;
   }
-  buf << endl << cart->about();
+  buf << std::endl << cart->about();
 
   // Make sure height is set properly for PAL ROM
   if((myDisplayFormat == "PAL" || myDisplayFormat == "SECAM") &&
@@ -256,7 +255,7 @@ void Console::toggleFormat()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::togglePalette()
 {
-  string palette, message;
+  std::string palette, message;
   palette = myOSystem->settings().getString("palette");
 
   if(palette == "standard")       // switch to z26
@@ -320,7 +319,7 @@ void Console::initializeAudio()
   // Initialize the sound interface.
   // The # of channels can be overridden in the AudioDialog box or on
   // the commandline, but it can't be saved.
-  const string& sound = myProperties.get(Cartridge_Sound);
+  const std::string& sound = myProperties.get(Cartridge_Sound);
   uInt32 channels = (sound == "STEREO" ? 2 : 1);
 
   myOSystem->sound().close();
@@ -359,8 +358,8 @@ void Console::fry() const
 void Console::changeYStart(int direction)
 {
   Int32 ystart = atoi(myProperties.get(Display_YStart).c_str());
-  ostringstream strval;
-  string message;
+  std::ostringstream strval;
+  std::string message;
 
   if(direction == +1)    // increase YStart
   {
@@ -393,8 +392,8 @@ void Console::changeYStart(int direction)
 void Console::changeHeight(int direction)
 {
   Int32 height = atoi(myProperties.get(Display_Height).c_str());
-  ostringstream strval;
-  string message;
+  std::ostringstream strval;
+  std::string message;
 
   if(direction == +1)    // increase Height
   {
@@ -425,17 +424,17 @@ void Console::changeHeight(int direction)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::toggleTIABit(TIA::TIABit bit, const string& bitname, bool show) const
+void Console::toggleTIABit(TIA::TIABit bit, const std::string& bitname, bool show) const
 {
   bool result = ((TIA*)myMediaSource)->toggleBit(bit);
-  string message = bitname + (result ? " enabled" : " disabled");
+  std::string message = bitname + (result ? " enabled" : " disabled");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::enableBits(bool enable) const
 {
   ((TIA*)myMediaSource)->enableBits(enable);
-  string message = string("TIA bits") + (enable ? " enabled" : " disabled");
+  std::string message = std::string("TIA bits") + (enable ? " enabled" : " disabled");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -20,9 +20,7 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 
-using namespace std;
-
-#define debugStream cerr
+#define debugStream std::cerr
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6502Low::M6502Low(uInt32 systemCyclesPerProcessorCycle)
@@ -65,14 +63,14 @@ bool M6502Low::execute(uInt32 number)
       uInt8 operand = 0;
 
 #ifdef DEBUG
-      debugStream << "PC=" << hex << setw(4) << PC << " ";
+      debugStream << "PC=" << std::hex << setw(4) << PC << " ";
 #endif
 
       // Fetch instruction at the program counter
       IR = peek(PC++);
 
 #ifdef DEBUG
-      debugStream << "IR=" << hex << setw(2) << (int)IR << " ";
+      debugStream << "IR=" << std::hex << setw(2) << (int)IR << " ";
       debugStream << "<" << ourAddressingModeTable[IR] << " ";
 #endif
 
@@ -88,20 +86,20 @@ bool M6502Low::execute(uInt32 number)
         default:
           // Oops, illegal instruction executed so set fatal error flag
           myExecutionStatus |= FatalErrorBit;
-          cerr << "Illegal Instruction! " << hex << (int) IR << endl;
+          std::cerr << "Illegal Instruction! " << std::hex << (int) IR << std::endl;
       }
 
 #ifdef DEBUG
-      debugStream << hex << setw(4) << operandAddress << " ";
-      debugStream << setw(4) << ourInstructionMnemonicTable[IR];
+      debugStream << std::hex << std::setw(4) << operandAddress << " ";
+      debugStream << std::setw(4) << ourInstructionMnemonicTable[IR];
       debugStream << "> ";
-      debugStream << "A=" << ::hex << setw(2) << (int)A << " ";
-      debugStream << "X=" << ::hex << setw(2) << (int)X << " ";
-      debugStream << "Y=" << ::hex << setw(2) << (int)Y << " ";
-      debugStream << "PS=" << ::hex << setw(2) << (int)PS() << " ";
-      debugStream << "SP=" << ::hex << setw(2) << (int)SP << " ";
-      debugStream << "Cyc=" << dec << mySystem->cycles();
-      debugStream << endl;
+      debugStream << "A=" << std::hex << std::setw(2) << (int)A << " ";
+      debugStream << "X=" << std::hex << std::setw(2) << (int)X << " ";
+      debugStream << "Y=" << std::hex << std::setw(2) << (int)Y << " ";
+      debugStream << "PS=" << std::hex << std::setw(2) << (int)PS() << " ";
+      debugStream << "SP=" << std::hex << std::setw(2) << (int)SP << " ";
+      debugStream << "Cyc=" << std::dec << mySystem->cycles();
+      debugStream << std::endl;
 #endif
     }
 
@@ -167,7 +165,7 @@ void M6502Low::interruptHandler()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6502Low::save(Serializer& out)
 {
-  string CPU = name();
+  std::string CPU = name();
 
   try
   {
@@ -192,12 +190,12 @@ bool M6502Low::save(Serializer& out)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    std::cerr << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in save state for " << CPU << endl;
+    std::cerr << "Unknown error in save state for " << CPU << std::endl;
     return false;
   }
 
@@ -207,7 +205,7 @@ bool M6502Low::save(Serializer& out)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6502Low::load(Deserializer& in)
 {
-  string CPU = name();
+  std::string CPU = name();
 
   try
   {
@@ -233,12 +231,12 @@ bool M6502Low::load(Deserializer& in)
   }
   catch(char *msg)
   {
-    cerr << msg << endl;
+    std::cerr << msg << std::endl;
     return false;
   }
   catch(...)
   {
-    cerr << "Unknown error in load state for " << CPU << endl;
+    std::cerr << "Unknown error in load state for " << CPU << std::endl;
     return false;
   }
 
