@@ -63,12 +63,12 @@ class OSystem
     /**
       Destructor
     */
-    virtual ~OSystem();
+    ~OSystem();
 
     /**
       Create all child objects which belong to this OSystem
     */
-    virtual bool create();
+    bool create();
 
   public:
     /**
@@ -119,7 +119,7 @@ class OSystem
 
       @param framerate  The video framerate to use
     */
-    virtual void setFramerate(uInt32 framerate);
+    void setFramerate(uInt32 framerate);
 
     /**
       Get the current framerate for the video system.
@@ -218,18 +218,6 @@ class OSystem
     */
     bool loadState(Deserializer& in);
 
-  public:
-    //////////////////////////////////////////////////////////////////////
-    // The following methods are system-specific and must be implemented
-    // in derived classes.
-    //////////////////////////////////////////////////////////////////////
-    /**
-      This method returns number of ticks in microseconds.
-
-      @return Current time in microseconds.
-    */
-    virtual uInt32 getTicks() = 0;
-
   protected:
     // Global Event object  //ALE 
     Event* myEvent;
@@ -307,12 +295,6 @@ class OSystem
     */
     bool queryConsoleInfo(const uInt8* image, uInt32 size, const std::string& md5,
                           Cartridge** cart, Properties& props);
-
-    /**
-      Initializes the timing so that the mainloop is reset to its
-      initial values.
-    */
-    void resetLoopTiming();
 
     // Copy constructor isn't supported by this class so make it private
     OSystem(const OSystem&);

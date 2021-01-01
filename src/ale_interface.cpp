@@ -41,6 +41,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
+#include <filesystem>
 #include <fstream>
 
 #include "common/ColourPalette.hpp"
@@ -50,6 +51,8 @@
 #include "emucore/MD5.hxx"
 #include "environment/ale_screen.hpp"
 #include "games/RomSettings.hpp"
+
+namespace fs = std::filesystem;
 
 namespace ale {
 
@@ -64,13 +67,8 @@ std::string ALEInterface::welcomeMessage() {
 
 void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
                                  std::unique_ptr<Settings>& theSettings) {
-#if (defined(WIN32) || defined(__MINGW32__))
-  theOSystem.reset(new OSystemWin32());
-  theSettings.reset(new SettingsWin32(theOSystem.get()));
-#else
-  theOSystem.reset(new OSystemUNIX());
-  theSettings.reset(new SettingsUNIX(theOSystem.get()));
-#endif
+  theOSystem = std::make_unique<OSystem>();
+  theSettings = std::make_unique<Settings>(theOSystem.get());
 }
 
 void ALEInterface::loadSettings(const std::string& romfile,
@@ -82,7 +80,7 @@ void ALEInterface::loadSettings(const std::string& romfile,
   if (romfile.empty()) {
     Logger::Error << "No ROM File specified." << std::endl;
     std::exit(1);
-  } else if (!FilesystemNode::fileExists(romfile)) {
+  } else if (!fs::exists(romfile)) {
     Logger::Error << "ROM file " << romfile << " not found." << std::endl;
     std::exit(1);
   } else if (theOSystem->createConsole(romfile)) {
@@ -187,8 +185,11 @@ void ALEInterface::loadROM(std::string rom_file) {
 }
 
 bool ALEInterface::isSupportedRom(const std::string& rom_file){
+  if (!fs::exists(rom_file)) {
+    throw std::runtime_error("ROM file doesn't exist");
+  }
+
   std::ifstream fsnode(rom_file);
-  // TODO C++17: Use FS
   if (!fsnode.good()) {
     throw std::runtime_error("Failed to open rom file.");
   }

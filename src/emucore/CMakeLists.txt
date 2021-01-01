@@ -33,7 +33,6 @@ target_sources(ale
     Device.cxx
     Driving.cxx
     Event.cxx
-    FSNode.cxx
     Joystick.cxx
     Keyboard.cxx
     M6502.cxx

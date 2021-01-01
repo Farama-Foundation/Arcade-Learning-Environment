@@ -24,7 +24,6 @@
 #include <string.h>
 using namespace std;
 
-#include "emucore/FSNode.hxx"
 #include "emucore/MD5.hxx"
 #include "emucore/Settings.hxx"
 #include "emucore/PropsSet.hxx"
@@ -200,9 +199,6 @@ bool OSystem::createConsole(const string& romfile)
             << "  ROM file:  " << myRomFile << endl
             << myConsole->about() << endl;
 
-      // Update the timing info for a new console run
-      resetLoopTiming();
-
       retval = true;
     }
     else
@@ -369,14 +365,6 @@ bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
     return false;
 
   return true;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::resetLoopTiming()
-{
-  memset(&myTimingInfo, 0, sizeof(TimingInfo));
-  myTimingInfo.start = getTicks();
-  myTimingInfo.virt = getTicks();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -31,15 +31,7 @@
 #ifndef __ALE_INTERFACE_HPP__
 #define __ALE_INTERFACE_HPP__
 
-#include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
-#if (defined(WIN32) || defined(__MINGW32__))
-#include "os_dependent/SettingsWin32.hxx"
-#include "os_dependent/OSystemWin32.hxx"
-#else
-#include "os_dependent/SettingsUNIX.hxx"
-#include "os_dependent/OSystemUNIX.hxx"
-#endif
 #include "games/Roms.hpp"
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
