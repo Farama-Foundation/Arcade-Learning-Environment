@@ -213,26 +213,6 @@ class TIA : public Device , public MediaSource
     */
     void enableBits(bool mode) { for(uInt8 i = 0; i < 6; ++i) myBitEnabled[i] = mode; }
 
-#ifdef DEBUGGER_SUPPORT
-    /**
-      This method should be called to update the media source with
-      a new scanline.
-    */
-    virtual void updateScanline();
-
-    /**
-      This method should be called to update the media source with
-      a new partial scanline by stepping one CPU instruction.
-    */
-    virtual void updateScanlineByStep();
-
-    /**
-      This method should be called to update the media source with
-      a new partial scanline by tracing to target address.
-    */
-    virtual void updateScanlineByTrace(int target);
-#endif
-
   private:
     // Compute the ball mask table
     static void computeBallMaskTable();

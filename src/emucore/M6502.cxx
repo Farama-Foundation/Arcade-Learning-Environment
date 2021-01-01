@@ -20,9 +20,6 @@
 
 #include <mutex>
 
-#ifdef DEBUGGER_SUPPORT
-  #include "Expression.hxx"
-#endif
 using namespace std;
 
 static std::once_flag bcd_table_init_once;
@@ -33,13 +30,6 @@ M6502::M6502(uInt32 systemCyclesPerProcessorCycle)
       mySystem(0),
       mySystemCyclesPerProcessorCycle(systemCyclesPerProcessorCycle)
 {
-#ifdef DEBUGGER_SUPPORT
-  myDebugger    = NULL;
-  myBreakPoints = NULL;
-  myReadTraps   = NULL;
-  myWriteTraps  = NULL;
-#endif
-
   // Compute the BCD lookup table
   std::call_once(bcd_table_init_once, []() {
     for(uInt16 t = 0; t < 256; ++t)
@@ -62,10 +52,6 @@ M6502::M6502(uInt32 systemCyclesPerProcessorCycle)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6502::~M6502()
 {
-#ifdef DEBUGGER_SUPPORT
-  myBreakConds.clear();
-  myBreakCondNames.clear();
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -357,126 +343,3 @@ const char* M6502::ourInstructionMnemonicTable[256] = {
   "BEQ",  "SBC",  "n/a",  "isb",  "nop",  "SBC",  "INC",  "isb",    // 0xF?
   "SED",  "SBC",  "nop",  "isb",  "nop",  "SBC",  "INC",  "isb"
 };
-
-#ifdef DEBUGGER_SUPPORT
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// This needs to be a list of all 256 opcodes and the type of memory
-// access they do (read, write, read/modify/write, or none). The
-// disassemble() method will use this to figure out what kind of label
-// to use in the disassembly.
-//// const char* M6502::ourLabelTypeTable[256] = {
-//// };
-//// 
-//// // disassemble() will use isXXX methods to determine what type of
-//// // label to show to the user (e.g. isTIA == true means to show a
-//// // non-user label; isRAM == true means to show a user r/w label, etc)
-//// 
-//// // These methods were based on (and checked against) Kroko's
-//// // 2600 memory map, found at
-//// // http://www.qotile.net/minidig/docs/2600_mem_map.txt
-//// 
-//// // is the address in RIOT RAM?
-//// bool isRAM(int addr) {
-//// 	int y = addr & 0xf00;
-//// 	int z = addr & 0xff;
-//// 
-//// 	return !isROM(addr)
-//// 		&&
-//// 		z >= 0x80
-//// 		&&
-//// 		(y == 0     || y == 0x100 || y == 0x400 || y == 0x500 ||
-//// 		 y == 0x800 || y == 0x900 || y == 0xc00 || y == 0xd00);
-//// }
-//// 
-//// // is the address one of the non-RAM RIOT areas?
-//// bool isRIOT(int addr) {
-//// 	int y = addr & 0xf00;
-//// 	int z = addr & 0xff;
-//// 
-//// 	return !isROM(addr)
-//// 		&&
-//// 		z >= 0x80
-//// 		&&
-//// 		(y == 0x200 || y == 0x300 || y == 0x600 || y == 0x700 ||
-//// 		 y == 0xa00 || y == 0xb00 || y == 0xe00 || y == 0xf00);
-//// }
-//// 
-//// // is the address in one of the TIA mirrors?
-//// bool isTIA(int addr) {
-//// 	int z = addr & 0xff;
-//// 	return !isROM(addr) && (z < 0x80);
-//// }
-//// 
-//// // is the address in ROM?
-//// bool isROM(int addr) {
-//// 	// ROM addresses are $xnnn where x is odd
-//// 	return addr % 8192 > 4095;
-//// }
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void M6502::attach(Debugger& debugger)
-{
-  // Remember the debugger for this microprocessor
-  myDebugger = &debugger;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-unsigned int M6502::addCondBreak(Expression *e, string name)
-{
-  myBreakConds.push_back(e);
-  myBreakCondNames.push_back(name);
-  return myBreakConds.size() - 1;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void M6502::delCondBreak(unsigned int brk)
-{
-  if(brk < myBreakConds.size())
-  {
-    delete myBreakConds[brk];
-    myBreakConds.remove_at(brk);
-    myBreakCondNames.remove_at(brk);
-  }
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void M6502::clearCondBreaks()
-{
-  for(unsigned int i=0; i<myBreakConds.size(); i++)
-    delete myBreakConds[i];
-  myBreakConds.clear();
-  myBreakCondNames.clear();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const StringList& M6502::getCondBreakNames()
-{
-  return myBreakCondNames;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int M6502::evalCondBreaks()
-{
-  for(unsigned int i=0; i<myBreakConds.size(); i++)
-  {
-    Expression* e = myBreakConds[i];
-    if(e->evaluate())
-      return i;
-  }
-
-  return -1; // no break hit
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void M6502::setBreakPoints(PackedBitArray *bp)
-{
-  myBreakPoints = bp;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void M6502::setTraps(PackedBitArray *read, PackedBitArray *write)
-{
-  myReadTraps = read;
-  myWriteTraps = write;
-}
-#endif

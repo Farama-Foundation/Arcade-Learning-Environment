@@ -20,9 +20,6 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 
-#ifdef DEBUGGER_SUPPORT
-  #include "Debugger.hxx"
-#endif
 using namespace std;
 
 #define debugStream cerr
@@ -31,9 +28,6 @@ using namespace std;
 M6502Low::M6502Low(uInt32 systemCyclesPerProcessorCycle)
     : M6502(systemCyclesPerProcessorCycle)
 {
-#ifdef DEBUGGER_SUPPORT
-  myJustHitTrapFlag = false;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -44,15 +38,6 @@ M6502Low::~M6502Low()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 inline uInt8 M6502Low::peek(uInt16 address)
 {
-#ifdef DEBUGGER_SUPPORT
-  if(myReadTraps != NULL && myReadTraps->isSet(address))
-  {
-    myJustHitTrapFlag = true;
-    myHitTrapInfo.message = "Read trap: ";
-    myHitTrapInfo.address = address;
-  }
-#endif
-
   uInt8 result = mySystem->peek(address);
   myLastAccessWasRead = true;
   return result;
@@ -61,15 +46,6 @@ inline uInt8 M6502Low::peek(uInt16 address)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 inline void M6502Low::poke(uInt16 address, uInt8 value)
 {
-#ifdef DEBUGGER_SUPPORT
-  if(myWriteTraps != NULL && myWriteTraps->isSet(address))
-  {
-    myJustHitTrapFlag = true;
-    myHitTrapInfo.message = "Write trap: ";
-    myHitTrapInfo.address = address;
-  }
-#endif
-
   mySystem->poke(address, value);
   myLastAccessWasRead = false;
 }
@@ -87,34 +63,6 @@ bool M6502Low::execute(uInt32 number)
     {
       uInt16 operandAddress = 0;
       uInt8 operand = 0;
-
-#ifdef DEBUGGER_SUPPORT
-      if(myJustHitTrapFlag)
-      {
-        if(myDebugger->start(myHitTrapInfo.message, myHitTrapInfo.address))
-        {
-          myJustHitTrapFlag = false;
-          return true;
-        }
-      }
-
-      if(myBreakPoints != NULL)
-      {
-        if(myBreakPoints->isSet(PC))
-        {
-          if(myDebugger->start("Breakpoint hit: ", PC))
-            return true;
-        }
-      }
-
-      int cond = evalCondBreaks();
-      if(cond > -1)
-      {
-        string buf = "CBP: " + myBreakCondNames[cond];
-        if(myDebugger->start(buf))
-          return true;
-      }
-#endif
 
 #ifdef DEBUG
       debugStream << "PC=" << hex << setw(4) << PC << " ";

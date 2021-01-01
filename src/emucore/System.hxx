@@ -259,10 +259,7 @@ class System
         result = access.device->peek(addr);
       }
 
-    #ifdef DEBUGGER_SUPPORT
-      if(!myDataBusLocked)
-    #endif
-        myDataBusState = result;
+      myDataBusState = result;
 
       return result;
     }
@@ -289,10 +286,7 @@ class System
         access.device->poke(addr, value);
       }
 
-    #ifdef DEBUGGER_SUPPORT
-      if(!myDataBusLocked)
-    #endif
-        myDataBusState = value;
+      myDataBusState = value;
     }
 
     /**

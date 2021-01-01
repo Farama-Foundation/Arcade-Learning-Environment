@@ -45,10 +45,6 @@
 #include "emucore/TIA.hxx"
 #include "emucore/OSystem.hxx"
 
-#ifdef DEBUGGER_SUPPORT
-  #include "Debugger.hxx"
-#endif
-
 using namespace std;
 #include "common/Log.hpp"
 
@@ -152,9 +148,6 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   else {
     m6502 = new M6502High(1);
   }
-#ifdef DEBUGGER_SUPPORT
-  m6502->attach(myOSystem->debugger());
-#endif
 
   M6532* m6532 = new M6532(*this);
 

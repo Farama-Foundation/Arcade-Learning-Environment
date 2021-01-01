@@ -67,29 +67,6 @@ class MediaSource
     */
     virtual uInt8* previousFrameBuffer() const = 0;
 
-#ifdef DEBUGGER_SUPPORT
-    /**
-      This method should be called whenever a new scanline is to be drawn.
-      Invoking this method will update the graphics buffer and generate
-      the corresponding audio samples.
-    */
-    virtual void updateScanline() = 0;
-
-    /**
-      This method should be called whenever a new partial scanline is to be
-      drawn by stepping one CPU instruction. Invoking this method will update the
-      graphics buffer and generate the corresponding audio samples.
-    */
-    virtual void updateScanlineByStep() = 0;
-
-    /**
-      This method should be called whenever a new partial scanline is to be
-      drawn by tracing to target address. Invoking this method will update the
-      graphics buffer and generate the corresponding audio samples.
-    */
-    virtual void updateScanlineByTrace(int target) = 0;
-#endif
-
   public:
     /**
       Answers the height of the frame buffer
