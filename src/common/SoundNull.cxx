@@ -29,9 +29,6 @@
 SoundNull::SoundNull(OSystem* osystem)
     : Sound(osystem)
 {
-  // Show some info
-  if(myOSystem->settings().getBool("showinfo"))
-    std::cerr << "Sound disabled." << std::endl << std::endl;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -78,8 +78,6 @@ void SoundSDL::initialize()
   if(!myIsEnabled)
   {
     close();
-    if(myOSystem->settings().getBool("showinfo"))
-      cerr << "Sound disabled." << endl << endl;
     return;
   }
 
@@ -151,17 +149,6 @@ void SoundSDL::initialize()
       // Adjust volume to that defined in settings
       myVolume = myOSystem->settings().getInt("volume");
       setVolume(myVolume);
-
-      // Show some info
-      if(myOSystem->settings().getBool("showinfo"))
-        cerr << "Sound enabled:"  << endl
-             << "  Volume     : " << myVolume << endl
-             << "  Frag size  : " << fragsize << endl
-             << "  Frequency  : " << myHardwareSpec.freq << endl
-             << "  Format     : " << myHardwareSpec.format << endl
-             << "  TIA Freq.  : " << tiafreq << endl
-             << "  Channels   : " << myNumChannels << endl
-             << "  Clip volume: " << (int)clipvol << endl << endl;
     }
   }
 
