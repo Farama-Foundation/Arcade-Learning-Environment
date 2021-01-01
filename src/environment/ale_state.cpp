@@ -12,7 +12,7 @@
 
 #include "environment/ale_state.hpp"
 
-#include <cstdlib>
+#include <cassert>
 #include <sstream>
 #include <stdexcept>
 #include <string>
