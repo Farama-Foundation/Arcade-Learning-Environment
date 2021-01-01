@@ -32,24 +32,7 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     // Add this settings object to the OSystem
     myOSystem->attach(this);
 
-    // Add options that are common to all versions of Stella
-    setInternal("video", "soft");
-
-    setInternal("gl_filter", "nearest");
-    setInternal("gl_aspect", "100");
-    setInternal("gl_fsmax", "never");
-    setInternal("gl_lib", "libGL.so");
-    setInternal("gl_vsync", "false");
-    setInternal("gl_texrect", "false");
-
-    setInternal("zoom_ui", "2");
-    setInternal("zoom_tia", "2");
-    setInternal("fullscreen", "false");
-    setInternal("fullres", "");
-    setInternal("center", "true");
-    setInternal("grabmouse", "false");
     setInternal("palette", "standard");
-    setInternal("colorloss", "false");
 
     setInternal("sound", "false");
     setInternal("fragsize", "512");
@@ -57,33 +40,6 @@ Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     setInternal("tiafreq", "31400");
     setInternal("volume", "100");
     setInternal("clipvol", "true");
-
-    setInternal("keymap", "");
-    setInternal("joymap", "");
-    setInternal("joyaxismap", "");
-    setInternal("joyhatmap", "");
-    setInternal("paddle", "0");
-    setInternal("sa1", "left");
-    setInternal("sa2", "right");
-    setInternal("p0speed", "50");
-    setInternal("p1speed", "50");
-    setInternal("p2speed", "50");
-    setInternal("p3speed", "50");
-    setInternal("pthresh", "600");
-
-    setInternal("showinfo", "false");
-
-    setInternal("ssdir", string(".") + BSPF_PATH_SEPARATOR);
-    setInternal("sssingle", "false");
-
-    setInternal("rombrowse", "true");
-    setInternal("lastrom", "");
-
-    setInternal("debuggerres", "1030x690");
-    setInternal("launcherres", "400x300");
-    setInternal("uipalette", "0");
-    setInternal("mwheel", "4");
-    setInternal("autoslot", "false");
 
     setDefaultSettings();
 }
@@ -101,24 +57,6 @@ void Settings::validate()
   string s;
   int i;
 
-  s = getString("video");
-  if(s != "soft" && s != "gl")
-    setInternal("video", "soft");
-
-#ifdef DISPLAY_OPENGL
-  s = getString("gl_filter");
-  if(s != "linear" && s != "nearest")
-    setInternal("gl_filter", "nearest");
-
-  i = getInt("gl_aspect");
-  if(i < 50 || i > 100)
-    setInternal("gl_aspect", "100");
-
-  s = getString("gl_fsmax");
-  if(s != "never" && s != "ui" && s != "tia" && s != "always")
-    setInternal("gl_fsmax", "never");
-#endif
-
 #ifdef SOUND_SUPPORT
   i = getInt("volume");
   if(i < 0 || i > 100)
@@ -130,24 +68,6 @@ void Settings::validate()
   if(i < 0 || i > 48000)
     setInternal("tiafreq", "31400");
 #endif
-
-  i = getInt("zoom_ui");
-  if(i < 1 || i > 10)
-    setInternal("zoom_ui", "2");
-
-  i = getInt("zoom_tia");
-  if(i < 1 || i > 10)
-    setInternal("zoom_tia", "2");
-
-  i = getInt("paddle");
-  if(i < 0 || i > 3)
-    setInternal("paddle", "0");
-
-  i = getInt("pthresh");
-  if(i < 400)
-    setInternal("pthresh", "400");
-  else if(i > 800)
-    setInternal("pthresh", "800");
 
   s = getString("palette");
   if(s != "standard" && s != "z26" && s != "user")
