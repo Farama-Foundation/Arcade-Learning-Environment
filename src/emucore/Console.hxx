@@ -30,7 +30,6 @@ class System;
 #include "emucore/Props.hxx"
 #include "emucore/TIA.hxx"
 #include "emucore/Cart.hxx"
-#include "emucore/M6532.hxx"
 
 /**
   This class represents the entire game console.
@@ -110,20 +109,6 @@ class Console
     OSystem& osystem() const { return *myOSystem; }
 
     /**
-      Get the cartridge used by the console which contains the ROM code
-
-      @return The cartridge for this console
-    */
-    Cartridge& cartridge() const { return *myCart; }
-
-    /**
-      Get the 6532 used by the console
-
-      @return The 6532 for this console
-    */
-    M6532& riot() const { return *myRiot; }
-
-    /**
       Set the properties to those given
 
       @param The properties to use for the current game
@@ -146,68 +131,11 @@ class Console
 
   public:
     /**
-      Toggle between NTSC/PAL/PAL60 display format.
-    */
-    void toggleFormat();
-
-    /**
       Query the currently selected display format (NTSC/PAL/PAL60).
     */
     std::string getFormat() const { return myDisplayFormat; }
 
-    /**
-      Toggle between the available palettes.
-    */
-    void togglePalette();
-
-    /**
-      Toggles phosphor effect.
-    */
-    void togglePhosphor();
-
-    /**
-      Initialize the video subsystem wrt this class.
-      This is required for changing window size, title, etc.
-
-      @param full  Whether we want a full initialization,
-                   or only reset certain attributes.
-    */
-    void initializeVideo(bool full = true);
-
-    /**
-      Initialize the audio subsystem wrt this class.
-      This is required any time the sound settings change.
-    */
-    void initializeAudio();
-
-    /**
-      Change the "Display.YStart" variable.
-
-      @param direction +1 indicates increase, -1 indicates decrease.
-    */
-    void changeYStart(int direction);
-
-    /**
-      Change the "Display.Height" variable.
-
-      @param direction +1 indicates increase, -1 indicates decrease.
-    */
-    void changeHeight(int direction);
-
-    /**
-      Toggles the TIA bit specified in the method name.
-    */
-    void toggleP0Bit() const { toggleTIABit(TIA::P0, "P0"); }
-    void toggleP1Bit() const { toggleTIABit(TIA::P1, "P1"); }
-    void toggleM0Bit() const { toggleTIABit(TIA::M0, "M0"); }
-    void toggleM1Bit() const { toggleTIABit(TIA::M1, "M1"); }
-    void toggleBLBit() const { toggleTIABit(TIA::BL, "BL"); }
-    void togglePFBit() const { toggleTIABit(TIA::PF, "PF"); }
-    void enableBits(bool enable) const;
-
   private:
-    void toggleTIABit(TIA::TIABit bit, const std::string& bitname, bool show = true) const;
-
     /**
       Returns the framerate based on a number of factors
       (whether 'framerate' is set, what display format is in use, etc)
@@ -236,19 +164,8 @@ class Console
     // Pointer to the 6502 based system being emulated 
     System* mySystem;
 
-    // Pointer to the Cartridge (the debugger needs it)
-    Cartridge *myCart;
-
-    // Pointer to the 6532 (aka RIOT) (the debugger needs it)
-    // A RIOT of my own! (...with apologies to The Clash...)
-    M6532 *myRiot;
-
     // The currently defined display format (NTSC/PAL/PAL60)
     std::string myDisplayFormat;
-
-    // Indicates whether an external palette was found and
-    // successfully loaded
-    bool myUserPaletteDefined;
 
     // Contains info about this console in string format
     std::string myAboutString;
