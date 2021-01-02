@@ -51,6 +51,16 @@ class ALEPythonInterface : public ALEInterface {
     return py::make_tuple(screen.height(), screen.width());
   }
 
+  // Implicitely cast std::string -> fs::path
+  inline void loadROM(std::string rom_file) {
+    return ALEInterface::loadROM(rom_file);
+  }
+
+  // Implicitely cast std::string -> fs::path
+  static inline bool isSupportedRom(const std::string& rom_file) {
+    return ALEInterface::isSupportedRom(rom_file);
+  }
+
   inline uint32_t getRAMSize() { return ALEInterface::getRAM().size(); }
   const py::array_t<uint8_t, py::array::c_style> getRAM();
   void getRAM(py::array_t<uint8_t, py::array::c_style>& buffer);

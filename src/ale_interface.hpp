@@ -41,6 +41,9 @@
 
 #include <string>
 #include <memory>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace ale {
 
@@ -77,7 +80,7 @@ class ALEInterface {
   // should be ready to play. This is necessary after changing a
   // setting for the setting to take effect. Optionally specify
   // a new ROM to load.
-  void loadROM(std::string rom_file = {});
+  void loadROM(fs::path rom_file = {});
 
   // Applies an action to the game and returns the reward. It is the
   // user's responsibility to check if the game has ended and reset
@@ -197,13 +200,13 @@ class ALEInterface {
 
  public:
   // Check if the rom with filename matches a supported MD5
-  static bool isSupportedRom(const std::string& rom_file);
+  static bool isSupportedRom(const fs::path& rom_file);
   // Display ALE welcome message
   static std::string welcomeMessage();
   static void disableBufferedIO();
   static void createOSystem(std::unique_ptr<OSystem>& theOSystem,
                             std::unique_ptr<Settings>& theSettings);
-  static void loadSettings(const std::string& romfile,
+  static void loadSettings(const fs::path& romfile,
                            std::unique_ptr<OSystem>& theOSystem);
 };
 
