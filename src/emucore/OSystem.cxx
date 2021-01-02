@@ -272,36 +272,6 @@ bool OSystem::openROM(const fs::path& rom, std::string& md5, uint8_t** image, in
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string OSystem::getROMInfo(const fs::path& romfile)
-{
-  std::ostringstream buf;
-
-  // Open the cartridge image and read it in
-  uint8_t* image = nullptr;
-  int size = -1;
-  std::string md5;
-  if(openROM(romfile, md5, &image, &size))
-  {
-    // Get all required info for creating a temporary console
-    Cartridge* cart = nullptr;
-    Properties props;
-    if(queryConsoleInfo(image, size, md5, &cart, props))
-    {
-      Console* console = new Console(this, cart, props);
-      buf << console->about();
-      delete console;
-    }
-    else
-      buf << "ERROR: Couldn't open " << romfile << " ..." << std::endl;
-  }
-
-  // Free the image and console since we don't need it any longer
-  delete[] image;
-
-  return buf.str();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool OSystem::queryConsoleInfo(const uint8_t* image, uint32_t size,
                                const std::string& md5,
                                Cartridge** cart, Properties& props)

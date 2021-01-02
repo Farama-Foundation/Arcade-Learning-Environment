@@ -90,13 +90,6 @@ class OSystem
     inline Settings& settings() const { return *mySettings; }
 
     /**
-      Get the set of game properties for the system
-
-      @return The properties set object
-    */
-    inline PropertiesSet& propSet() const { return *myPropSet; }
-
-    /**
       Get the console of the system.
 
       @return The console object
@@ -139,15 +132,6 @@ class OSystem
       Also prints some statistics (fps, total frames, etc).
     */
     void deleteConsole();
-
-    /**
-      Gets all possible info about the ROM by creating a temporary
-      Console object and querying it.
-
-      @param romfile  The full pathname of the ROM to use
-      @return  Some information about this ROM
-    */
-    std::string getROMInfo(const fs::path& romfile);
 
     /**
       Open the given ROM and return an array containing its contents.
@@ -204,8 +188,6 @@ class OSystem
     uint32_t myDisplayFrameRate;
 
   private:
-    enum { kNumUIPalettes = 2 };
-
     std::string myRomFile;
 
   public: //ALE
