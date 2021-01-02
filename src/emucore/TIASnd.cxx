@@ -21,7 +21,7 @@
 #include <cassert>
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TIASound::TIASound(Int32 outputFrequency, Int32 tiaFrequency, uInt32 channels)
+TIASound::TIASound(int outputFrequency, int tiaFrequency, uint32_t channels)
   : myOutputFrequency(outputFrequency),
     myTIAFrequency(tiaFrequency),
     myChannels(channels),
@@ -48,19 +48,19 @@ void TIASound::reset()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void TIASound::outputFrequency(Int32 freq)
+void TIASound::outputFrequency(int freq)
 {
   myOutputFrequency = freq;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void TIASound::tiaFrequency(Int32 freq)
+void TIASound::tiaFrequency(int freq)
 {
   myTIAFrequency = freq;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void TIASound::channels(uInt32 number)
+void TIASound::channels(uint32_t number)
 {
   myChannels = number == 2 ? 2 : 1;
 }
@@ -72,7 +72,7 @@ void TIASound::clipVolume(bool clip)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void TIASound::set(uInt16 address, uInt8 value)
+void TIASound::set(uint16_t address, uint8_t value)
 {
   switch(address)
   {
@@ -108,7 +108,7 @@ void TIASound::set(uInt16 address, uInt8 value)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 TIASound::get(uInt16 address)
+uint8_t TIASound::get(uint16_t address)
 {
   switch(address)
   {
@@ -136,7 +136,7 @@ uInt8 TIASound::get(uInt16 address)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void TIASound::volume(uInt32 percent)
+void TIASound::volume(uint32_t percent)
 {
   assert(percent >= 0);
   if(percent <= 100)
@@ -144,16 +144,16 @@ void TIASound::volume(uInt32 percent)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void TIASound::process(uInt8* buffer, uInt32 samples)
+void TIASound::process(uint8_t* buffer, uint32_t samples)
 {
-  Int32 v0 = ((myAUDV[0] << 2) * myVolumePercentage) / 100;
-  Int32 v1 = ((myAUDV[1] << 2) * myVolumePercentage) / 100;
+  int v0 = ((myAUDV[0] << 2) * myVolumePercentage) / 100;
+  int v1 = ((myAUDV[1] << 2) * myVolumePercentage) / 100;
 
   // Loop until the sample buffer is full
   while(samples > 0)
   {
     // Process both sound channels
-    for(uInt32 c = 0; c < 2; ++c)
+    for(uint32_t c = 0; c < 2; ++c)
     {
       // Update P4 & P5 registers for channel if freq divider outputs a pulse
       if((myFreqDiv[c].clock()))

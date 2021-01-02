@@ -61,7 +61,7 @@ bool BoosterGrip::read(DigitalPin pin)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Int32 BoosterGrip::read(AnalogPin pin)
+int BoosterGrip::read(AnalogPin pin)
 {
   // The CBS Booster-grip has two more buttons on it.  These buttons are
   // connected to the inputs usually used by paddles.

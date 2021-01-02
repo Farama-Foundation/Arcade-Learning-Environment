@@ -39,13 +39,13 @@ Event::~Event()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Int32 Event::get(Type type) const
+int Event::get(Type type) const
 {
   return myValues[type];
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Event::set(Type type, Int32 value)
+void Event::set(Type type, int value)
 {
   myValues[type] = value;
 }

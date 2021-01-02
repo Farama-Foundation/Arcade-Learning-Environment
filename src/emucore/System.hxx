@@ -26,9 +26,10 @@ class NullDevice;
 class Serializer;
 class Deserializer;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Device.hxx"
 #include "emucore/NullDev.hxx"
+
+#include <string>
 
 /**
   This class represents a system consisting of a 6502 microprocessor
@@ -172,7 +173,7 @@ class System
 
       @return The total number of pages available
     */
-    uInt16 numberOfPages() const
+    uint16_t numberOfPages() const
     {
       return myNumberOfPages;
     }
@@ -182,7 +183,7 @@ class System
 
       @return The amount to right shift an address by to get its page
     */
-    uInt16 pageShift() const
+    uint16_t pageShift() const
     {
       return myPageSize;
     }
@@ -192,7 +193,7 @@ class System
 
       @return The mask to apply to an address to obtain its page offset
     */
-    uInt16 pageMask() const
+    uint16_t pageMask() const
     {
       return myPageMask;
     }
@@ -204,7 +205,7 @@ class System
 
       @return The number of system cycles which have passed
     */
-    uInt32 cycles() const 
+    uint32_t cycles() const 
     { 
       return myCycles; 
     }
@@ -214,7 +215,7 @@ class System
 
       @param amount The amount to add to the system cycles counter
     */
-    void incrementCycles(uInt32 amount) 
+    void incrementCycles(uint32_t amount) 
     { 
       myCycles += amount; 
     }
@@ -234,7 +235,7 @@ class System
 
       @return the data bus state
     */  
-    uInt8 getDataBusState() const;
+    uint8_t getDataBusState() const;
 
     /**
       Get the byte at the specified address.  No masking of the
@@ -243,11 +244,11 @@ class System
 
       @return The byte at the specified address
     */
-    inline uInt8 peek(uInt16 addr)
+    inline uint8_t peek(uint16_t addr)
     {
       PageAccess& access = myPageAccessTable[(addr & myAddressMask) >> myPageSize];
 
-      uInt8 result;
+      uint8_t result;
 
       // See if this page uses direct accessing or not
       if(access.directPeekBase != 0)
@@ -272,7 +273,7 @@ class System
       @param addr The address where the value should be stored
       @param value The value to be stored at the address
     */
-    inline void poke(uInt16 addr, uInt8 value) {
+    inline void poke(uint16_t addr, uint8_t value) {
       PageAccess& access = myPageAccessTable[
           (addr & myAddressMask) >> myPageSize];
 
@@ -313,7 +314,7 @@ class System
         to this page, while other values are the base address of an array 
         to directly access for reads to this page.
       */
-      uInt8* directPeekBase;
+      uint8_t* directPeekBase;
 
       /**
         Pointer to a block of memory or the null pointer.  The null pointer
@@ -321,7 +322,7 @@ class System
         to this page, while other values are the base address of an array 
         to directly access for pokes to this page.
       */
-      uInt8* directPokeBase;
+      uint8_t* directPokeBase;
 
       /**
         Pointer to the device associated with this page or to the system's 
@@ -336,7 +337,7 @@ class System
       @param page The page accessing methods should be set for
       @param access The accessing methods to be used by the page
     */
-    void setPageAccess(uInt16 page, const PageAccess& access);
+    void setPageAccess(uint16_t page, const PageAccess& access);
 
     /**
       Get the page accessing method for the specified page.
@@ -344,23 +345,23 @@ class System
       @param page The page to get accessing methods for
       @return The accessing methods used by the page
     */
-    const PageAccess& getPageAccess(uInt16 page);
+    const PageAccess& getPageAccess(uint16_t page);
  
   private:
     // Log base 2 of the addressing space size.
-    static constexpr uInt16 myAddressingSpace = 13;
+    static constexpr uint16_t myAddressingSpace = 13;
 
     // Log base 2 of the page size.
-    static constexpr uInt16 myPageSize = 6;
+    static constexpr uint16_t myPageSize = 6;
 
     // Mask to apply to an address before accessing memory
-    static constexpr uInt16 myAddressMask = (1 << myAddressingSpace) - 1;
+    static constexpr uint16_t myAddressMask = (1 << myAddressingSpace) - 1;
 
     // Mask to apply to an address to obtain its page offset
-    static constexpr uInt16 myPageMask = (1 << myPageSize) - 1;
+    static constexpr uint16_t myPageMask = (1 << myPageSize) - 1;
  
     // Number of pages in the system
-    static constexpr uInt16 myNumberOfPages = 1 << (myAddressingSpace - myPageSize);
+    static constexpr uint16_t myNumberOfPages = 1 << (myAddressingSpace - myPageSize);
 
     // Pointer to a dynamically allocated array of PageAccess structures
     PageAccess* myPageAccessTable;
@@ -369,7 +370,7 @@ class System
     Device* myDevices[100];
 
     // Number of devices attached to the system
-    uInt32 myNumberOfDevices;
+    uint32_t myNumberOfDevices;
 
     // 6502 processor attached to the system or the null pointer
     M6502* myM6502;
@@ -378,13 +379,13 @@ class System
     TIA* myTIA;
 
     // Number of system cycles executed since the last reset
-    uInt32 myCycles;
+    uint32_t myCycles;
 
     // Null device to use for page which are not installed
     NullDevice myNullDevice; 
 
     // The current state of the Data Bus
-    uInt8 myDataBusState;
+    uint8_t myDataBusState;
 
     // Whether or not peek() updates the data bus state. This
     // is true during normal emulation, and false when the
@@ -400,7 +401,7 @@ class System
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-inline uInt8 System::getDataBusState() const
+inline uint8_t System::getDataBusState() const
 {
   return myDataBusState;
 }

@@ -59,7 +59,7 @@ Switches::~Switches()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-uInt8 Switches::read()
+uint8_t Switches::read()
 {
   if(myEvent.get(Event::ConsoleColor) != 0)
   {

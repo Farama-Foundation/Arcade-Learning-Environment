@@ -20,7 +20,6 @@
 #define SERIALIZER_HXX
 
 #include <sstream>
-#include "emucore/bspf/bspf.hxx"
 
 /**
   This class implements a Serializer device, whereby data is

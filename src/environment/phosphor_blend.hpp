@@ -30,18 +30,18 @@ class PhosphorBlend {
 
  private:
   void makeAveragePalette();
-  uInt8 getPhosphor(uInt8 v1, uInt8 v2);
-  uInt32 makeRGB(uInt8 r, uInt8 g, uInt8 b);
+  uint8_t getPhosphor(uint8_t v1, uint8_t v2);
+  uint32_t makeRGB(uint8_t r, uint8_t g, uint8_t b);
   /** Converts a RGB value to an 8-bit format */
-  uInt8 rgbToNTSC(uInt32 rgb);
+  uint8_t rgbToNTSC(uint32_t rgb);
 
  private:
   OSystem* m_osystem;
 
-  uInt8 m_rgb_ntsc[64][64][64];
+  uint8_t m_rgb_ntsc[64][64][64];
 
-  uInt32 m_avg_palette[256][256];
-  uInt8 m_phosphor_blend_ratio;
+  uint32_t m_avg_palette[256][256];
+  uint8_t m_phosphor_blend_ratio;
 };
 
 }  // namespace ale

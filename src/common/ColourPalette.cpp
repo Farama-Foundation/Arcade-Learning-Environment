@@ -21,22 +21,23 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <iostream>
 
 #include "common/Palettes.hpp"
 
 namespace ale {
 namespace {
 
-inline uInt32 packRGB(uInt8 r, uInt8 g, uInt8 b) {
-  return ((uInt32)r << 16) + ((uInt32)g << 8) + (uInt32)b;
+inline uint32_t packRGB(uint8_t r, uint8_t g, uint8_t b) {
+  return ((uint32_t)r << 16) + ((uint32_t)g << 8) + (uint32_t)b;
 }
 
-inline uInt32 convertGrayscale(uInt32 packedRGBValue) {
+inline uint32_t convertGrayscale(uint32_t packedRGBValue) {
   double r = (packedRGBValue >> 16) & 0xff;
   double g = (packedRGBValue >> 8) & 0xff;
   double b = (packedRGBValue >> 0) & 0xff;
 
-  uInt8 lum = (uInt8)round(r * 0.2989 + g * 0.5870 + b * 0.1140);
+  uint8_t lum = (uint8_t)round(r * 0.2989 + g * 0.5870 + b * 0.1140);
 
   return packRGB(lum, lum, lum);
 }
@@ -57,7 +58,7 @@ void ColourPalette::getRGB(int val, int& r, int& g, int& b) const {
   b = (m_palette[val] >> 0) & 0xFF;
 }
 
-uInt8 ColourPalette::getGrayscale(int val) const {
+uint8_t ColourPalette::getGrayscale(int val) const {
   assert(m_palette != NULL);
   assert(val >= 0 && val < 0xFF);
   assert((val & 0x01) == 1);
@@ -66,12 +67,12 @@ uInt8 ColourPalette::getGrayscale(int val) const {
   return (m_palette[val + 1] >> 0) & 0xFF;
 }
 
-uInt32 ColourPalette::getRGB(int val) const { return m_palette[val]; }
+uint32_t ColourPalette::getRGB(int val) const { return m_palette[val]; }
 
-void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8* src_buffer,
+void ColourPalette::applyPaletteRGB(uint8_t* dst_buffer, uint8_t* src_buffer,
                                     std::size_t src_size) {
-  uInt8* p = src_buffer;
-  uInt8* q = dst_buffer;
+  uint8_t* p = src_buffer;
+  uint8_t* q = dst_buffer;
 
   for (std::size_t i = 0; i < src_size; i++, p++) {
     int rgb = m_palette[*p];
@@ -82,11 +83,11 @@ void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8* src_buffer,
 }
 
 void ColourPalette::applyPaletteRGB(std::vector<unsigned char>& dst_buffer,
-                                    uInt8* src_buffer, std::size_t src_size) {
+                                    uint8_t* src_buffer, std::size_t src_size) {
   dst_buffer.resize(3 * src_size);
   assert(dst_buffer.size() == 3 * src_size);
 
-  uInt8* p = src_buffer;
+  uint8_t* p = src_buffer;
 
   for (std::size_t i = 0; i < src_size * 3; i += 3, p++) {
     int rgb = m_palette[*p];
@@ -96,10 +97,10 @@ void ColourPalette::applyPaletteRGB(std::vector<unsigned char>& dst_buffer,
   }
 }
 
-void ColourPalette::applyPaletteGrayscale(uInt8* dst_buffer, uInt8* src_buffer,
+void ColourPalette::applyPaletteGrayscale(uint8_t* dst_buffer, uint8_t* src_buffer,
                                           std::size_t src_size) {
-  uInt8* p = src_buffer;
-  uInt8* q = dst_buffer;
+  uint8_t* p = src_buffer;
+  uint8_t* q = dst_buffer;
 
   for (std::size_t i = 0; i < src_size; i++, p++, q++) {
     *q = (unsigned char)(m_palette[*p + 1] & 0xFF);
@@ -107,12 +108,12 @@ void ColourPalette::applyPaletteGrayscale(uInt8* dst_buffer, uInt8* src_buffer,
 }
 
 void ColourPalette::applyPaletteGrayscale(
-    std::vector<unsigned char>& dst_buffer, uInt8* src_buffer,
+    std::vector<unsigned char>& dst_buffer, uint8_t* src_buffer,
     std::size_t src_size) {
   dst_buffer.resize(src_size);
   assert(dst_buffer.size() == src_size);
 
-  uInt8* p = src_buffer;
+  uint8_t* p = src_buffer;
 
   for (std::size_t i = 0; i < src_size; i++, p++) {
     dst_buffer[i] = (unsigned char)(m_palette[*p + 1] & 0xFF);
@@ -136,7 +137,7 @@ void ColourPalette::setPalette(const std::string& type,
   else if (displayFormat.compare(0, 5, "SECAM") == 0)
     paletteFormat = 2;
 
-  uInt32* paletteMapping[3][3] = {
+  uint32_t* paletteMapping[3][3] = {
       {NTSCPalette, PALPalette, SECAMPalette},
       {NTSCPaletteZ26, PALPaletteZ26, SECAMPaletteZ26},
       {m_userNTSCPalette, m_userPALPalette, m_userSECAMPalette}};
@@ -172,7 +173,7 @@ void ColourPalette::loadUserPalette(const std::string& paletteFile) {
   }
 
   // Now that we have valid data, create the user-defined palettes
-  uInt8 pixbuf[bytesPerColor]; // Temporary buffer for one 24-bit pixel
+  uint8_t pixbuf[bytesPerColor]; // Temporary buffer for one 24-bit pixel
 
   for (int i = 0; i < NTSCPaletteSize; i++) // NTSC palette
   {
@@ -189,7 +190,7 @@ void ColourPalette::loadUserPalette(const std::string& paletteFile) {
         convertGrayscale(m_userPALPalette[(i << 1)]);
   }
 
-  uInt32 tmpSecam[SECAMPaletteSize *
+  uint32_t tmpSecam[SECAMPaletteSize *
                   2]; // All 8 24-bit pixels, plus 8 colorloss pixels
   for (int i = 0; i < SECAMPaletteSize; i++) // SECAM palette
   {
@@ -198,7 +199,7 @@ void ColourPalette::loadUserPalette(const std::string& paletteFile) {
     tmpSecam[(i << 1) + 1] = convertGrayscale(tmpSecam[(i << 1)]);
   }
 
-  uInt32* tmpSECAMPalettePtr = m_userSECAMPalette;
+  uint32_t* tmpSECAMPalettePtr = m_userSECAMPalette;
   for (int i = 0; i < 16; ++i) {
     memcpy(tmpSECAMPalettePtr, tmpSecam, SECAMPaletteSize * 2);
     tmpSECAMPalettePtr += SECAMPaletteSize * 2;

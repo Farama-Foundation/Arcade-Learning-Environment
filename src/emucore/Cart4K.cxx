@@ -24,10 +24,10 @@
 #include "emucore/Cart4K.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Cartridge4K::Cartridge4K(const uInt8* image)
+Cartridge4K::Cartridge4K(const uint8_t* image)
 {
   // Copy the ROM image into my buffer
-  for(uInt32 addr = 0; addr < 4096; ++addr)
+  for(uint32_t addr = 0; addr < 4096; ++addr)
   {
     myImage[addr] = image[addr];
   }
@@ -53,8 +53,8 @@ void Cartridge4K::reset()
 void Cartridge4K::install(System& system)
 {
   mySystem = &system;
-  uInt16 shift = mySystem->pageShift();
-  uInt16 mask = mySystem->pageMask();
+  uint16_t shift = mySystem->pageShift();
+  uint16_t mask = mySystem->pageMask();
 
   // Make sure the system we're being installed in has a page size that'll work
   assert((0x1000 & mask) == 0);
@@ -64,7 +64,7 @@ void Cartridge4K::install(System& system)
   access.device = this;
 
   // Map ROM image into the system
-  for(uInt32 address = 0x1000; address < 0x2000; address += (1 << shift))
+  for(uint32_t address = 0x1000; address < 0x2000; address += (1 << shift))
   {
     access.directPeekBase = &myImage[address & 0x0FFF];
     mySystem->setPageAccess(address >> mySystem->pageShift(), access);
@@ -72,13 +72,13 @@ void Cartridge4K::install(System& system)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 Cartridge4K::peek(uInt16 address)
+uint8_t Cartridge4K::peek(uint16_t address)
 {
   return myImage[address & 0x0FFF];
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Cartridge4K::poke(uInt16, uInt8)
+void Cartridge4K::poke(uint16_t, uint8_t)
 {
   // This is ROM so poking has no effect :-)
 } 
@@ -131,7 +131,7 @@ bool Cartridge4K::load(Deserializer& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Cartridge4K::bank(uInt16 bank)
+void Cartridge4K::bank(uint16_t bank)
 {
   // Doesn't support bankswitching
 }
@@ -150,14 +150,14 @@ int Cartridge4K::bankCount()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool Cartridge4K::patch(uInt16 address, uInt8 value)
+bool Cartridge4K::patch(uint16_t address, uint8_t value)
 {
   myImage[address & 0x0FFF] = value;
   return true;
 } 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8* Cartridge4K::getImage(int& size)
+uint8_t* Cartridge4K::getImage(int& size)
 {
   size = 4096;
   return &myImage[0];

@@ -19,7 +19,6 @@
 #ifndef TIASOUND_HXX
 #define TIASOUND_HXX
 
-#include "emucore/bspf/bspf.hxx"
 
 /**
   This class implements a fairly accurate emulation of the TIA sound
@@ -34,8 +33,8 @@ class TIASound
     /**
       Create a new TIA Sound object using the specified output frequency
     */
-    TIASound(Int32 outputFrequency = 31400, Int32 tiaFrequency = 31400,
-             uInt32 channels = 1);
+    TIASound(int outputFrequency = 31400, int tiaFrequency = 31400,
+             uint32_t channels = 1);
 
     /**
       Destructor
@@ -51,17 +50,17 @@ class TIASound
     /**
       Set the frequency output samples should be generated at
     */
-    void outputFrequency(Int32 freq);
+    void outputFrequency(int freq);
 
     /**
       Set the frequency the of the TIA device
     */
-    void tiaFrequency(Int32 freq);
+    void tiaFrequency(int freq);
 
     /**
       Selects the number of audio channels per sample (1 = mono, 2 = stereo)
     */
-    void channels(uInt32 number);
+    void channels(uint32_t number);
 
     /**
       Set volume clipping (decrease volume range by half to eliminate popping)
@@ -75,14 +74,14 @@ class TIASound
       @param address Register address
       @param value Value to store in the register
     */
-    void set(uInt16 address, uInt8 value);
+    void set(uint16_t address, uint8_t value);
 
     /**
       Gets the specified sound register's value
 
       @param address Register address
     */
-    uInt8 get(uInt16 address);
+    uint8_t get(uint16_t address);
 
     /**
       Create sound samples based on the current sound register settings
@@ -92,12 +91,12 @@ class TIASound
       @param buffer The location to store generated samples
       @param samples The number of samples to generate
     */
-    void process(uInt8* buffer, uInt32 samples);
+    void process(uint8_t* buffer, uint32_t samples);
 
     /**
       Set the volume of the samples created (0-100)
     */
-    void volume(uInt32 percent);
+    void volume(uint32_t percent);
 
   private:
     /**
@@ -112,7 +111,7 @@ class TIASound
           myDivideByValue = myCounter = 0;
         }
 
-        void set(uInt32 divideBy)
+        void set(uint32_t divideBy)
         {
           myDivideByValue = divideBy;
         }
@@ -128,25 +127,25 @@ class TIASound
         }
 
       private:
-        uInt32 myDivideByValue;
-        uInt32 myCounter;
+        uint32_t myDivideByValue;
+        uint32_t myCounter;
     };
 
   private:
-    uInt8 myAUDC[2];
-    uInt8 myAUDF[2];
-    uInt8 myAUDV[2];
+    uint8_t myAUDC[2];
+    uint8_t myAUDF[2];
+    uint8_t myAUDV[2];
 
     FreqDiv myFreqDiv[2];    // Frequency dividers
-    uInt8 myP4[2];           // 4-bit register LFSR (lower 4 bits used)
-    uInt8 myP5[2];           // 5-bit register LFSR (lower 5 bits used)
+    uint8_t myP4[2];           // 4-bit register LFSR (lower 4 bits used)
+    uint8_t myP5[2];           // 5-bit register LFSR (lower 5 bits used)
 
-    Int32  myOutputFrequency;
-    Int32  myTIAFrequency;
-    uInt32 myChannels;
-    Int32  myOutputCounter;
-    uInt32 myVolumePercentage;
-    uInt8  myVolumeClip;
+    int  myOutputFrequency;
+    int  myTIAFrequency;
+    uint32_t myChannels;
+    int  myOutputCounter;
+    uint32_t myVolumePercentage;
+    uint8_t  myVolumeClip;
 };
 
 #endif

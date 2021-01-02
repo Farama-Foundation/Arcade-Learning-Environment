@@ -19,7 +19,6 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 
-#include "emucore/bspf/bspf.hxx"
 
 #include "emucore/OSystem.hxx"
 #include "emucore/Settings.hxx"
@@ -43,13 +42,13 @@ bool SoundNull::load(Deserializer& in)
   if(in.getString() != soundDevice)
     return false;
 
-  uInt8 reg;
-  reg = (uInt8) in.getInt();
-  reg = (uInt8) in.getInt();
-  reg = (uInt8) in.getInt();
-  reg = (uInt8) in.getInt();
-  reg = (uInt8) in.getInt();
-  reg = (uInt8) in.getInt();
+  uint8_t reg;
+  reg = (uint8_t) in.getInt();
+  reg = (uint8_t) in.getInt();
+  reg = (uint8_t) in.getInt();
+  reg = (uint8_t) in.getInt();
+  reg = (uint8_t) in.getInt();
+  reg = (uint8_t) in.getInt();
 
   // myLastRegisterSetCycle
   in.getInt();
@@ -62,7 +61,7 @@ bool SoundNull::save(Serializer& out)
 {
   out.putString("TIASound");
 
-  uInt8 reg = 0;
+  uint8_t reg = 0;
   out.putInt(reg);
   out.putInt(reg);
   out.putInt(reg);

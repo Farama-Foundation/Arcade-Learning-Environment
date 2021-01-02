@@ -24,10 +24,10 @@
 #include "emucore/CartUA.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeUA::CartridgeUA(const uInt8* image)
+CartridgeUA::CartridgeUA(const uint8_t* image)
 {
   // Copy the ROM image into my buffer
-  for(uInt32 addr = 0; addr < 8192; ++addr)
+  for(uint32_t addr = 0; addr < 8192; ++addr)
   {
     myImage[addr] = image[addr];
   }
@@ -55,8 +55,8 @@ void CartridgeUA::reset()
 void CartridgeUA::install(System& system)
 {
   mySystem = &system;
-  uInt16 shift = mySystem->pageShift();
-  uInt16 mask = mySystem->pageMask();
+  uint16_t shift = mySystem->pageShift();
+  uint16_t mask = mySystem->pageMask();
 
   // Make sure the system we're being installed in has a page size that'll work
   assert((0x1000 & mask) == 0);
@@ -78,7 +78,7 @@ void CartridgeUA::install(System& system)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 CartridgeUA::peek(uInt16 address)
+uint8_t CartridgeUA::peek(uint16_t address)
 {
   address = address & 0x1FFF;
 
@@ -110,7 +110,7 @@ uInt8 CartridgeUA::peek(uInt16 address)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeUA::poke(uInt16 address, uInt8 value)
+void CartridgeUA::poke(uint16_t address, uint8_t value)
 {
   address = address & 0x1FFF;
 
@@ -172,7 +172,7 @@ bool CartridgeUA::load(Deserializer& in)
     if(in.getString() != cart)
       return false;
 
-    myCurrentBank = (uInt16)in.getInt();
+    myCurrentBank = (uint16_t)in.getInt();
   }
   catch(const char* msg)
   {
@@ -192,15 +192,15 @@ bool CartridgeUA::load(Deserializer& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeUA::bank(uInt16 bank)
+void CartridgeUA::bank(uint16_t bank)
 { 
   if(bankLocked) return;
 
   // Remember what bank we're in
   myCurrentBank = bank;
-  uInt16 offset = myCurrentBank * 4096;
-  uInt16 shift = mySystem->pageShift();
-//  uInt16 mask = mySystem->pageMask();
+  uint16_t offset = myCurrentBank * 4096;
+  uint16_t shift = mySystem->pageShift();
+//  uint16_t mask = mySystem->pageMask();
 
   // Setup the page access methods for the current bank
   System::PageAccess access;
@@ -208,7 +208,7 @@ void CartridgeUA::bank(uInt16 bank)
   access.directPokeBase = 0;
 
   // Map ROM image into the system
-  for(uInt32 address = 0x1000; address < 0x2000; address += (1 << shift))
+  for(uint32_t address = 0x1000; address < 0x2000; address += (1 << shift))
   {
     access.directPeekBase = &myImage[offset + (address & 0x0FFF)];
     mySystem->setPageAccess(address >> shift, access);
@@ -228,7 +228,7 @@ int CartridgeUA::bankCount()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool CartridgeUA::patch(uInt16 address, uInt8 value)
+bool CartridgeUA::patch(uint16_t address, uint8_t value)
 {
   address &= 0x0fff;
   myImage[myCurrentBank * 4096] = value;
@@ -237,7 +237,7 @@ bool CartridgeUA::patch(uInt16 address, uInt8 value)
 } 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8* CartridgeUA::getImage(int& size)
+uint8_t* CartridgeUA::getImage(int& size)
 {
   size = 8192;
   return &myImage[0];

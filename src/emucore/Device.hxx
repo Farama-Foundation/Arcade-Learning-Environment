@@ -23,7 +23,7 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "emucore/bspf/bspf.hxx"
+#include <cstdint>
 
 /**
   Abstract base class for devices which can be attached to a 6502
@@ -95,7 +95,7 @@ class Device
 
       @return The byte at the specified address
     */
-    virtual uInt8 peek(uInt16 address) = 0;
+    virtual uint8_t peek(uint16_t address) = 0;
 
     /**
       Change the byte at the specified address to the given value
@@ -103,7 +103,7 @@ class Device
       @param address The address where the value should be stored
       @param value The value to be stored at the address
     */
-    virtual void poke(uInt16 address, uInt8 value) = 0;
+    virtual void poke(uint16_t address, uint8_t value) = 0;
 
   protected:
     /// Pointer to the system the device is installed in or the null pointer

@@ -19,10 +19,11 @@
 #ifndef RANDOM_HXX
 #define RANDOM_HXX
 
-#include "emucore/bspf/bspf.hxx"
 
 class Serializer;
 class Deserializer;
+
+#include <cstdint>
 
 /**
   This Random class uses a Mersenne Twister to provide pseudorandom numbers.
@@ -38,7 +39,7 @@ class Random
 
       @param value The value to seed the random number generator with
     */
-    void seed(uInt32 value);
+    void seed(uint32_t value);
 
     /**
       Create a new random number generator
@@ -52,7 +53,7 @@ class Random
 
       @return A random number
     */
-    uInt32 next();
+    uint32_t next();
 
     /**
       Answer the next random number between 0 and 1 from the random number generator

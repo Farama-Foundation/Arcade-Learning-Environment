@@ -19,18 +19,20 @@
 #include "emucore/M6502.hxx"
 
 #include <mutex>
+#include <cstdint>
+#include <iostream>
 
 static std::once_flag bcd_table_init_once;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-M6502::M6502(uInt32 systemCyclesPerProcessorCycle)
+M6502::M6502(uint32_t systemCyclesPerProcessorCycle)
     : myExecutionStatus(0),
       mySystem(0),
       mySystemCyclesPerProcessorCycle(systemCyclesPerProcessorCycle)
 {
   // Compute the BCD lookup table
   std::call_once(bcd_table_init_once, []() {
-    for(uInt16 t = 0; t < 256; ++t)
+    for(uint16_t t = 0; t < 256; ++t)
     {
       ourBCDTable[0][t] = ((t >> 4) * 10) + (t & 0x0f);
       ourBCDTable[1][t] = (((t % 100) / 10) << 4) | (t % 10);
@@ -38,7 +40,7 @@ M6502::M6502(uInt32 systemCyclesPerProcessorCycle)
   });
 
   // Compute the System Cycle table
-  for(uInt16 t = 0; t < 256; ++t)
+  for(uint16_t t = 0; t < 256; ++t)
   {
     myInstructionSystemCycleTable[t] = ourInstructionProcessorCycleTable[t] *
         mySystemCyclesPerProcessorCycle;
@@ -74,7 +76,7 @@ void M6502::reset()
   myLastAccessWasRead = true;
 
   // Load PC from the reset vector
-  PC = (uInt16)mySystem->peek(0xfffc) | ((uInt16)mySystem->peek(0xfffd) << 8);
+  PC = (uint16_t)mySystem->peek(0xfffc) | ((uint16_t)mySystem->peek(0xfffd) << 8);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -96,15 +98,15 @@ void M6502::stop()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-M6502::AddressingMode M6502::addressingMode(uInt8 opcode) const
+M6502::AddressingMode M6502::addressingMode(uint8_t opcode) const
 {
   return ourAddressingModeTable[opcode];
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 M6502::PS() const
+uint8_t M6502::PS() const
 {
-  uInt8 ps = 0x20;
+  uint8_t ps = 0x20;
 
   if(N) 
     ps |= 0x80;
@@ -125,7 +127,7 @@ uInt8 M6502::PS() const
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void M6502::PS(uInt8 ps)
+void M6502::PS(uint8_t ps)
 {
   N = ps & 0x80;
   V = ps & 0x40;
@@ -185,7 +187,7 @@ std::ostream& operator<<(std::ostream& out, const M6502::AddressingMode& mode)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 M6502::ourBCDTable[2][256];
+uint8_t M6502::ourBCDTable[2][256];
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6502::AddressingMode M6502::ourAddressingModeTable[256] = {
@@ -271,7 +273,7 @@ M6502::AddressingMode M6502::ourAddressingModeTable[256] = {
   };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt32 M6502::ourInstructionProcessorCycleTable[256] = {
+uint32_t M6502::ourInstructionProcessorCycleTable[256] = {
 //  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
     7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,  // 0
     2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  // 1
