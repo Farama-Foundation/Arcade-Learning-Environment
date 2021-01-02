@@ -1,6 +1,5 @@
 target_sources(ale
   PRIVATE
-    Booster.cxx
     Cart.cxx
     Cart0840.cxx
     Cart2K.cxx

@@ -22,7 +22,6 @@
 #include <fstream>
 #include <ctime>
 
-#include "emucore/Booster.hxx"
 #include "emucore/Cart.hxx"
 #include "emucore/Console.hxx"
 #include "emucore/Control.hxx"
@@ -79,11 +78,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   bool swapPaddles = myProperties.get(Controller_SwapPaddles) == "YES";
 
   // Construct left controller
-  if(left == "BOOSTER-GRIP")
-  {
-    myControllers[leftPort] = new BoosterGrip(Controller::Left, *myEvent);
-  }
-  else if(left == "DRIVING")
+  if(left == "DRIVING")
   {
     myControllers[leftPort] = new Driving(Controller::Left, *myEvent);
   }
@@ -97,11 +92,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   }
  
   // Construct right controller
-  if(right == "BOOSTER-GRIP")
-  {
-    myControllers[rightPort] = new BoosterGrip(Controller::Right, *myEvent);
-  }
-  else if(right == "DRIVING")
+  if(right == "DRIVING")
   {
     myControllers[rightPort] = new Driving(Controller::Right, *myEvent);
   }

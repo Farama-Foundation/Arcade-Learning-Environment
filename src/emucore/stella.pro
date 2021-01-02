@@ -8466,17 +8466,6 @@
 "Cartridge.Rarity" "New Release"
 ""
 
-"Cartridge.MD5" "885b2002fa9d27502d84968d4656c4ca"
-"Cartridge.Manufacturer" "CBS Electronics"
-"Cartridge.ModelNo" "4L-2737"
-"Cartridge.Name" "Omega Race (1983) (CBS Electronics) [o1]"
-"Cartridge.Note" "Uses Booster Grip Controller; set right difficulty to 'A' to use Booster-Grip in both ports"
-"Cartridge.Rarity" "Uncommon"
-"Console.RightDifficulty" "A"
-"Controller.Left" "BOOSTER-GRIP"
-"Controller.Right" "BOOSTER-GRIP"
-""
-
 "Cartridge.MD5" "8885d0ce11c5b40c3a8a8d9ed28cefef"
 "Cartridge.Manufacturer" "Atari"
 "Cartridge.ModelNo" "CX2608 / 4975165"
@@ -9413,17 +9402,6 @@
 
 "Cartridge.MD5" "9945a22f60bbaf6d04a8d73b3cf3db75"
 "Cartridge.Name" "Kung Fu Master (1984) (Activision) (PAL) [a1][!]"
-""
-
-"Cartridge.MD5" "9947f1ebabb56fd075a96c6d37351efa"
-"Cartridge.Manufacturer" "CBS Electronics"
-"Cartridge.ModelNo" "4L-2737"
-"Cartridge.Name" "Omega Race (1983) (CBS Electronics)"
-"Cartridge.Note" "Set right difficulty to 'A' for Booster-Grip in both ports"
-"Cartridge.Rarity" "Uncommon"
-"Console.RightDifficulty" "A"
-"Controller.Left" "BOOSTER-GRIP"
-"Controller.Right" "BOOSTER-GRIP"
 ""
 
 "Cartridge.MD5" "99f7c6c26046bbe95f1c604b25da8360"
@@ -13423,14 +13401,6 @@
 "Cartridge.Manufacturer" "Technovision"
 "Cartridge.Name" "Nuts (Technovision) (PAL) [a1]"
 "Cartridge.Rarity" "Extremely Rare"
-""
-
-"Cartridge.MD5" "de7bca4e569ad9d3fd08ff1395e53d2d"
-"Cartridge.Manufacturer" "Thomas Jentzsch"
-"Cartridge.Name" "Thrust (V1.22) (2000) (TJ)"
-"Cartridge.Note" "Won't work with Stella < V1.2, supports Booster Grip"
-"Cartridge.Rarity" "New Release"
-"Controller.Left" "BOOSTER-GRIP"
 ""
 
 "Cartridge.MD5" "deb39482e77f984d4ce73be9fd8adabd"

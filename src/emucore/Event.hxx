@@ -47,9 +47,6 @@ class Event
       JoystickOneUp, JoystickOneDown, JoystickOneLeft,
       JoystickOneRight, JoystickOneFire,
 
-      BoosterGripZeroTrigger, BoosterGripZeroBooster,
-      BoosterGripOneTrigger, BoosterGripOneBooster,
-
       PaddleZeroResistance, PaddleZeroFire,
         PaddleZeroDecrease, PaddleZeroIncrease, PaddleZeroAnalog,
       PaddleOneResistance, PaddleOneFire,
