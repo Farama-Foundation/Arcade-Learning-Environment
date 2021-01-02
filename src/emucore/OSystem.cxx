@@ -35,7 +35,6 @@
 
 #include <time.h>
 
-#include "emucore/bspf/bspf.hxx"
 
 namespace fs = std::filesystem;
 
@@ -104,11 +103,11 @@ void OSystem::resetRNGSeed() {
   // We seed the random number generator. The 'time' seed is somewhat redundant, since the
   // rng defaults to time. But we'll do it anyway.
   if (mySettings->getInt("random_seed") == 0) {
-    myRandGen.seed((uInt32)time(NULL));
+    myRandGen.seed((uint32_t)time(NULL));
   } else {
     int seed = mySettings->getInt("random_seed");
     assert(seed >= 0);
-    myRandGen.seed((uInt32)seed);
+    myRandGen.seed((uint32_t)seed);
   }
 }
 
@@ -123,7 +122,7 @@ bool OSystem::loadState(Deserializer& in) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void OSystem::setFramerate(uInt32 framerate)
+void OSystem::setFramerate(uint32_t framerate)
 {
   myDisplayFrameRate = framerate;
 }
@@ -171,7 +170,7 @@ bool OSystem::createConsole(const fs::path& romfile)
     myRomFile = romfile.string();
 
   // Open the cartridge image and read it in
-  uInt8* image = nullptr;
+  uint8_t* image = nullptr;
   int size = -1;
   std::string md5;
   if(openROM(myRomFile, md5, &image, &size))
@@ -236,14 +235,14 @@ void OSystem::deleteConsole()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::openROM(const fs::path& rom, std::string& md5, uInt8** image, int* size)
+bool OSystem::openROM(const fs::path& rom, std::string& md5, uint8_t** image, int* size)
 {
   // Assume the file is either gzip'ed or not compressed at all
   gzFile f = gzopen(rom.string().c_str(), "rb");
   if(!f)
     return false;
 
-  *image = new uInt8[MAX_ROM_SIZE];
+  *image = new uint8_t[MAX_ROM_SIZE];
   *size = gzread(f, *image, MAX_ROM_SIZE);
   gzclose(f);
 
@@ -278,7 +277,7 @@ std::string OSystem::getROMInfo(const fs::path& romfile)
   std::ostringstream buf;
 
   // Open the cartridge image and read it in
-  uInt8* image = nullptr;
+  uint8_t* image = nullptr;
   int size = -1;
   std::string md5;
   if(openROM(romfile, md5, &image, &size))
@@ -303,7 +302,7 @@ std::string OSystem::getROMInfo(const fs::path& romfile)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::queryConsoleInfo(const uInt8* image, uInt32 size,
+bool OSystem::queryConsoleInfo(const uint8_t* image, uint32_t size,
                                const std::string& md5,
                                Cartridge** cart, Properties& props)
 {

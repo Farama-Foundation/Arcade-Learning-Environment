@@ -55,7 +55,7 @@ System::System()
 System::~System()
 {
   // Free the devices attached to me, since I own them
-  for(uInt32 i = 0; i < myNumberOfDevices; ++i)
+  for(uint32_t i = 0; i < myNumberOfDevices; ++i)
   {
     delete myDevices[i];
   }
@@ -74,7 +74,7 @@ void System::reset()
   resetCycles();
 
   // First we reset the devices attached to myself
-  for(uInt32 i = 0; i < myNumberOfDevices; ++i)
+  for(uint32_t i = 0; i < myNumberOfDevices; ++i)
   {
     myDevices[i]->reset();
   }
@@ -145,7 +145,7 @@ bool System::load(Deserializer& in)
     if(in.getString() != "System")
       return false;
 
-    myCycles = (uInt32) in.getInt();
+    myCycles = (uint32_t) in.getInt();
   }
   catch(char *msg)
   {
@@ -165,7 +165,7 @@ bool System::load(Deserializer& in)
 void System::resetCycles()
 {
   // First we let all of the device attached to me know about the reset
-  for(uInt32 i = 0; i < myNumberOfDevices; ++i)
+  for(uint32_t i = 0; i < myNumberOfDevices; ++i)
   {
     myDevices[i]->systemCyclesReset();
   }
@@ -175,7 +175,7 @@ void System::resetCycles()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void System::setPageAccess(uInt16 page, const PageAccess& access)
+void System::setPageAccess(uint16_t page, const PageAccess& access)
 {
   // Make sure the page is within range
   assert(page <= myNumberOfPages);
@@ -187,7 +187,7 @@ void System::setPageAccess(uInt16 page, const PageAccess& access)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const System::PageAccess& System::getPageAccess(uInt16 page)
+const System::PageAccess& System::getPageAccess(uint16_t page)
 {
   // Make sure the page is within range
   assert(page <= myNumberOfPages);
@@ -217,7 +217,7 @@ bool System::saveState(const std::string& md5sum, Serializer& out)
       return false;
 
     // Now save the state of each device
-    for(uInt32 i = 0; i < myNumberOfDevices; ++i)
+    for(uint32_t i = 0; i < myNumberOfDevices; ++i)
       if(!myDevices[i]->save(out))
         return false;
   }
@@ -258,7 +258,7 @@ bool System::loadState(const std::string& md5sum, Deserializer& in)
       return false;
 
     // Now load the state of each device
-    for(uInt32 i = 0; i < myNumberOfDevices; ++i)
+    for(uint32_t i = 0; i < myNumberOfDevices; ++i)
       if(!myDevices[i]->load(in))
         return false;
   }

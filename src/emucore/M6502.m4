@@ -28,14 +28,14 @@
 #endif
 
 define(M6502_ADC, `{
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -43,7 +43,7 @@ define(M6502_ADC, `{
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -92,7 +92,7 @@ define(M6502_ARR, `{
   }
   else
   {
-    uInt8 value = A & operand;
+    uint8_t value = A & operand;
 
     A = ((value >> 1) & 0x7f) | (C ? 0x80 : 0x00);
     N = C;
@@ -167,7 +167,7 @@ define(M6502_BRK, `{
   I = true;
 
   PC = peek(0xfffe);
-  PC |= ((uInt16)peek(0xffff) << 8);
+  PC |= ((uint16_t)peek(0xffff) << 8);
 }')
 
 define(M6502_CLC, `{
@@ -187,7 +187,7 @@ define(M6502_CLV, `{
 }')
 
 define(M6502_CMP, `{
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -195,7 +195,7 @@ define(M6502_CMP, `{
 }')
 
 define(M6502_CPX, `{
-  uInt16 value = (uInt16)X - (uInt16)operand;
+  uint16_t value = (uint16_t)X - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -203,7 +203,7 @@ define(M6502_CPX, `{
 }')
 
 define(M6502_CPY, `{
-  uInt16 value = (uInt16)Y - (uInt16)operand;
+  uint16_t value = (uint16_t)Y - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -211,17 +211,17 @@ define(M6502_CPY, `{
 }')
 
 define(M6502_DCP, `{
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
 }')
 
 define(M6502_DEC, `{
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -250,7 +250,7 @@ define(M6502_EOR, `{
 }')
 
 define(M6502_INC, `{
-  uInt8 value = operand + 1;
+  uint8_t value = operand + 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -273,15 +273,15 @@ define(M6502_ISB, `{
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -289,7 +289,7 @@ define(M6502_ISB, `{
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -309,7 +309,7 @@ define(M6502_JMP, `{
 }')
 
 define(M6502_JSR, `{
-  uInt8 low = peek(PC++);
+  uint8_t low = peek(PC++);
   peek(0x0100 + SP);
 
   // It seems that the 650x does not push the address of the next instruction
@@ -318,7 +318,7 @@ define(M6502_JSR, `{
   poke(0x0100 + SP--, PC >> 8);
   poke(0x0100 + SP--, PC & 0xff);
 
-  PC = low | ((uInt16)peek(PC++) << 8); 
+  PC = low | ((uint16_t)peek(PC++) << 8); 
 }')
 
 define(M6502_LAS, `{
@@ -412,7 +412,7 @@ define(M6502_PLP, `{
 }')
 
 define(M6502_RLA, `{
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -472,7 +472,7 @@ define(M6502_RORA, `{
 }')
 
 define(M6502_RRA, `{
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -483,10 +483,10 @@ define(M6502_RRA, `{
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -494,7 +494,7 @@ define(M6502_RRA, `{
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -508,13 +508,13 @@ define(M6502_RTI, `{
   peek(0x0100 + SP++);
   PS(peek(0x0100 + SP++));
   PC = peek(0x0100 + SP++);
-  PC |= ((uInt16)peek(0x0100 + SP) << 8);
+  PC |= ((uint16_t)peek(0x0100 + SP) << 8);
 }')
 
 define(M6502_RTS, `{
   peek(0x0100 + SP++);
   PC = peek(0x0100 + SP++);
-  PC |= ((uInt16)peek(0x0100 + SP) << 8);
+  PC |= ((uint16_t)peek(0x0100 + SP) << 8);
   peek(PC++);
 }')
 
@@ -523,15 +523,15 @@ define(M6502_SAX, `{
 }')
 
 define(M6502_SBC, `{
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -539,7 +539,7 @@ define(M6502_SBC, `{
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -555,7 +555,7 @@ define(M6502_SBC, `{
 }')
 
 define(M6502_SBX, `{
-  uInt16 value = (uInt16)(X & A) - (uInt16)operand;
+  uint16_t value = (uint16_t)(X & A) - (uint16_t)operand;
   X = (value & 0xff);
 
   notZ = X;

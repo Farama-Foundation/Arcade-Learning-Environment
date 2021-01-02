@@ -37,24 +37,24 @@ define(M6502_IMMEDIATE_READ, `{
 }')
 
 define(M6502_ABSOLUTE_READ, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
   operand = peek(operandAddress);
 }')
 
 define(M6502_ABSOLUTE_WRITE, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
 }')
 
 define(M6502_ABSOLUTE_READMODIFYWRITE, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
   operand = peek(operandAddress);
 }')
 
 define(M6502_ABSOLUTEX_READ, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
 
   // See if we need to add one cycle for indexing across a page boundary
@@ -68,20 +68,20 @@ define(M6502_ABSOLUTEX_READ, `{
 }')
 
 define(M6502_ABSOLUTEX_WRITE, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
   operandAddress += X; 
 }')
 
 define(M6502_ABSOLUTEX_READMODIFYWRITE, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
   operandAddress += X;
   operand = peek(operandAddress);
 }')
 
 define(M6502_ABSOLUTEY_READ, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
 
   // See if we need to add one cycle for indexing across a page boundary
@@ -95,13 +95,13 @@ define(M6502_ABSOLUTEY_READ, `{
 }')
 
 define(M6502_ABSOLUTEY_WRITE, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
   operandAddress += Y; 
 }')
 
 define(M6502_ABSOLUTEY_READMODIFYWRITE, `{
-  operandAddress = (uInt16)peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
   operandAddress += Y;
   operand = peek(operandAddress);
@@ -122,63 +122,63 @@ define(M6502_ZERO_READMODIFYWRITE, `{
 }')
 
 define(M6502_ZEROX_READ, `{
-  operandAddress = (uInt8)(peek(PC++) + X);
+  operandAddress = (uint8_t)(peek(PC++) + X);
   operand = peek(operandAddress); 
 }')
 
 define(M6502_ZEROX_WRITE, `{
-  operandAddress = (uInt8)(peek(PC++) + X);
+  operandAddress = (uint8_t)(peek(PC++) + X);
 }')
 
 define(M6502_ZEROX_READMODIFYWRITE, `{
-  operandAddress = (uInt8)(peek(PC++) + X);
+  operandAddress = (uint8_t)(peek(PC++) + X);
   operand = peek(operandAddress);
 }')
 
 define(M6502_ZEROY_READ, `{
-  operandAddress = (uInt8)(peek(PC++) + Y);
+  operandAddress = (uint8_t)(peek(PC++) + Y);
   operand = peek(operandAddress); 
 }')
 
 define(M6502_ZEROY_WRITE, `{
-  operandAddress = (uInt8)(peek(PC++) + Y);
+  operandAddress = (uint8_t)(peek(PC++) + Y);
 }')
 
 define(M6502_ZEROY_READMODIFYWRITE, `{
-  operandAddress = (uInt8)(peek(PC++) + Y);
+  operandAddress = (uint8_t)(peek(PC++) + Y);
   operand = peek(operandAddress);
 }')
 
 define(M6502_INDIRECT, `{
-  uInt16 addr = peek(PC) | ((uInt16)peek(PC + 1) << 8);
+  uint16_t addr = peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
 
   // Simulate the error in the indirect addressing mode!
-  uInt16 high = NOTSAMEPAGE(addr, addr + 1) ? (addr & 0xff00) : (addr + 1);
+  uint16_t high = NOTSAMEPAGE(addr, addr + 1) ? (addr & 0xff00) : (addr + 1);
 
-  operandAddress = peek(addr) | ((uInt16)peek(high) << 8);
+  operandAddress = peek(addr) | ((uint16_t)peek(high) << 8);
 }')
 
 define(M6502_INDIRECTX_READ, `{
-  uInt8 pointer = peek(PC++) + X;
-  operandAddress = peek(pointer) | ((uInt16)peek(pointer + 1) << 8);
+  uint8_t pointer = peek(PC++) + X;
+  operandAddress = peek(pointer) | ((uint16_t)peek(pointer + 1) << 8);
   operand = peek(operandAddress);
 }')
 
 define(M6502_INDIRECTX_WRITE, `{
-  uInt8 pointer = peek(PC++) + X;
-  operandAddress = peek(pointer) | ((uInt16)peek(pointer + 1) << 8);
+  uint8_t pointer = peek(PC++) + X;
+  operandAddress = peek(pointer) | ((uint16_t)peek(pointer + 1) << 8);
 }')
 
 define(M6502_INDIRECTX_READMODIFYWRITE, `{
-  uInt8 pointer = peek(PC++) + X;
-  operandAddress = peek(pointer) | ((uInt16)peek(pointer + 1) << 8);
+  uint8_t pointer = peek(PC++) + X;
+  operandAddress = peek(pointer) | ((uint16_t)peek(pointer + 1) << 8);
   operand = peek(operandAddress);
 }')
 
 define(M6502_INDIRECTY_READ, `{
-  uInt8 pointer = peek(PC++);
-  operandAddress = (uInt16)peek(pointer) | ((uInt16)peek(pointer + 1) << 8); 
+  uint8_t pointer = peek(PC++);
+  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8); 
 
   if(NOTSAMEPAGE(operandAddress, operandAddress + Y))
   {
@@ -190,14 +190,14 @@ define(M6502_INDIRECTY_READ, `{
 }')
 
 define(M6502_INDIRECTY_WRITE, `{
-  uInt8 pointer = peek(PC++);
-  operandAddress = (uInt16)peek(pointer) | ((uInt16)peek(pointer + 1) << 8); 
+  uint8_t pointer = peek(PC++);
+  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8); 
   operandAddress += Y;
 }')
 
 define(M6502_INDIRECTY_READMODIFYWRITE, `{
-  uInt8 pointer = peek(PC++);
-  operandAddress = (uInt16)peek(pointer) | ((uInt16)peek(pointer + 1) << 8); 
+  uint8_t pointer = peek(PC++);
+  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8); 
   operandAddress += Y;
   operand = peek(operandAddress);
 }')
@@ -206,7 +206,7 @@ define(M6502_INDIRECTY_READMODIFYWRITE, `{
 define(M6502_BCC, `{
   if(!C)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;
@@ -216,7 +216,7 @@ define(M6502_BCC, `{
 define(M6502_BCS, `{
   if(C)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;
@@ -226,7 +226,7 @@ define(M6502_BCS, `{
 define(M6502_BEQ, `{
   if(!notZ)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;
@@ -236,7 +236,7 @@ define(M6502_BEQ, `{
 define(M6502_BMI, `{
   if(N)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;
@@ -246,7 +246,7 @@ define(M6502_BMI, `{
 define(M6502_BNE, `{
   if(notZ)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;
@@ -256,7 +256,7 @@ define(M6502_BNE, `{
 define(M6502_BPL, `{
   if(!N)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;
@@ -266,7 +266,7 @@ define(M6502_BPL, `{
 define(M6502_BVC, `{
   if(!V)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;
@@ -276,7 +276,7 @@ define(M6502_BVC, `{
 define(M6502_BVS, `{
   if(V)
   {
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     mySystem->incrementCycles(NOTSAMEPAGE(PC, address) ?
         mySystemCyclesPerProcessorCycle << 1 : mySystemCyclesPerProcessorCycle);
     PC = address;

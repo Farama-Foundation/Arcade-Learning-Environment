@@ -23,7 +23,6 @@
 #include <string>
 
 #include "emucore/OSystem.hxx"
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Settings.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

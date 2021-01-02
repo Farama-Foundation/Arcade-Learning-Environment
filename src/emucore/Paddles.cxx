@@ -87,7 +87,7 @@ bool Paddles::read(DigitalPin pin)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Int32 Paddles::read(AnalogPin pin)
+int Paddles::read(AnalogPin pin)
 {
   switch(pin)
   {

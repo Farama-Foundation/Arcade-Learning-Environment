@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
+#include <iostream>
 
 #include "emucore/Props.hxx"
 
@@ -209,7 +210,7 @@ std::string Properties::readQuotedString(std::istream& in)
 void Properties::writeQuotedString(std::ostream& out, const std::string& s)
 {
   out.put('"');
-  for(uInt32 i = 0; i < s.length(); ++i)
+  for(uint32_t i = 0; i < s.length(); ++i)
   {
     if(s[i] == '\\')
     {

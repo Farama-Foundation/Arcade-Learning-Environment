@@ -25,16 +25,16 @@
 #include "emucore/CartFASC.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeFASC::CartridgeFASC(const uInt8* image, Random& rng)
+CartridgeFASC::CartridgeFASC(const uint8_t* image, Random& rng)
 {
   // Copy the ROM image into my buffer
-  for(uInt32 addr = 0; addr < 12288; ++addr)
+  for(uint32_t addr = 0; addr < 12288; ++addr)
   {
     myImage[addr] = image[addr];
   }
 
   // Initialize RAM with random values
-  for(uInt32 i = 0; i < 256; ++i)
+  for(uint32_t i = 0; i < 256; ++i)
   {
     myRAM[i] = rng.next();
   }
@@ -62,15 +62,15 @@ void CartridgeFASC::reset()
 void CartridgeFASC::install(System& system)
 {
   mySystem = &system;
-  uInt16 shift = mySystem->pageShift();
-  uInt16 mask = mySystem->pageMask();
+  uint16_t shift = mySystem->pageShift();
+  uint16_t mask = mySystem->pageMask();
 
   // Make sure the system we're being installed in has a page size that'll work
   assert(((0x1100 & mask) == 0) && ((0x1200 & mask) == 0));
 
   // Set the page accessing methods for the hot spots
   System::PageAccess access;
-  for(uInt32 i = (0x1FF8 & ~mask); i < 0x2000; i += (1 << shift))
+  for(uint32_t i = (0x1FF8 & ~mask); i < 0x2000; i += (1 << shift))
   {
     access.directPeekBase = 0;
     access.directPokeBase = 0;
@@ -79,7 +79,7 @@ void CartridgeFASC::install(System& system)
   }
 
   // Set the page accessing method for the RAM writing pages
-  for(uInt32 j = 0x1000; j < 0x1100; j += (1 << shift))
+  for(uint32_t j = 0x1000; j < 0x1100; j += (1 << shift))
   {
     access.device = this;
     access.directPeekBase = 0;
@@ -88,7 +88,7 @@ void CartridgeFASC::install(System& system)
   }
  
   // Set the page accessing method for the RAM reading pages
-  for(uInt32 k = 0x1100; k < 0x1200; k += (1 << shift))
+  for(uint32_t k = 0x1100; k < 0x1200; k += (1 << shift))
   {
     access.device = this;
     access.directPeekBase = &myRAM[k & 0x00FF];
@@ -101,7 +101,7 @@ void CartridgeFASC::install(System& system)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 CartridgeFASC::peek(uInt16 address)
+uint8_t CartridgeFASC::peek(uint16_t address)
 {
   address = address & 0x0FFF;
 
@@ -134,7 +134,7 @@ uInt8 CartridgeFASC::peek(uInt16 address)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeFASC::poke(uInt16 address, uInt8)
+void CartridgeFASC::poke(uint16_t address, uint8_t)
 {
   address = address & 0x0FFF;
 
@@ -178,7 +178,7 @@ bool CartridgeFASC::save(Serializer& out)
 
     // The 256 bytes of RAM
     out.putInt(256);
-    for(uInt32 i = 0; i < 256; ++i)
+    for(uint32_t i = 0; i < 256; ++i)
       out.putInt(myRAM[i]);
   }
   catch(const char* msg)
@@ -205,11 +205,11 @@ bool CartridgeFASC::load(Deserializer& in)
     if(in.getString() != cart)
       return false;
 
-    myCurrentBank = (uInt16) in.getInt();
+    myCurrentBank = (uint16_t) in.getInt();
 
-    uInt32 limit = (uInt32) in.getInt();
-    for(uInt32 i = 0; i < limit; ++i)
-      myRAM[i] = (uInt8) in.getInt();
+    uint32_t limit = (uint32_t) in.getInt();
+    for(uint32_t i = 0; i < limit; ++i)
+      myRAM[i] = (uint8_t) in.getInt();
   }
   catch(const char* msg)
   {
@@ -229,15 +229,15 @@ bool CartridgeFASC::load(Deserializer& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeFASC::bank(uInt16 bank)
+void CartridgeFASC::bank(uint16_t bank)
 {
   if(bankLocked) return;
 
   // Remember what bank we're in
   myCurrentBank = bank;
-  uInt16 offset = myCurrentBank * 4096;
-  uInt16 shift = mySystem->pageShift();
-  uInt16 mask = mySystem->pageMask();
+  uint16_t offset = myCurrentBank * 4096;
+  uint16_t shift = mySystem->pageShift();
+  uint16_t mask = mySystem->pageMask();
 
   // Setup the page access methods for the current bank
   System::PageAccess access;
@@ -245,7 +245,7 @@ void CartridgeFASC::bank(uInt16 bank)
   access.directPokeBase = 0;
 
   // Map ROM image into the system
-  for(uInt32 address = 0x1200; address < (0x1FF8U & ~mask);
+  for(uint32_t address = 0x1200; address < (0x1FF8U & ~mask);
       address += (1 << shift))
   {
     access.directPeekBase = &myImage[offset + (address & 0x0FFF)];
@@ -266,7 +266,7 @@ int CartridgeFASC::bankCount()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool CartridgeFASC::patch(uInt16 address, uInt8 value)
+bool CartridgeFASC::patch(uint16_t address, uint8_t value)
 {
   address = address & 0x0FFF;
   myImage[myCurrentBank * 4096 + address] = value;
@@ -274,7 +274,7 @@ bool CartridgeFASC::patch(uInt16 address, uInt8 value)
 } 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8* CartridgeFASC::getImage(int& size)
+uint8_t* CartridgeFASC::getImage(int& size)
 {
   size = 12288;
   return &myImage[0];

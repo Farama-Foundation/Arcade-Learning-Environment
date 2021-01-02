@@ -19,8 +19,7 @@
 #include <vector>
 #include <string>
 
-// Include obscure header file for uInt32 definition
-#include "emucore/bspf/bspf.hxx"
+// Include obscure header file for uint32_t definition
 
 namespace ale {
 
@@ -32,27 +31,27 @@ class ColourPalette {
   void getRGB(int val, int& r, int& g, int& b) const;
 
   /** Converts a given palette value into packed RGB (format 0x00RRGGBB). */
-  uInt32 getRGB(int val) const;
+  uint32_t getRGB(int val) const;
 
   /** Returns the byte-sized grayscale value for this palette index. */
-  uInt8 getGrayscale(int val) const;
+  uint8_t getGrayscale(int val) const;
 
   /** Applies the current RGB palette to the src_buffer and returns the results in dst_buffer
    *  For each byte in src_buffer, three bytes are returned in dst_buffer
    *  8 bits => 24 bits
    */
-  void applyPaletteRGB(uInt8* dst_buffer, uInt8* src_buffer, size_t src_size);
+  void applyPaletteRGB(uint8_t* dst_buffer, uint8_t* src_buffer, size_t src_size);
   void applyPaletteRGB(std::vector<unsigned char>& dst_buffer,
-                       uInt8* src_buffer, size_t src_size);
+                       uint8_t* src_buffer, size_t src_size);
 
   /** Applies the current grayscale palette to the src_buffer and returns the results in dst_buffer
    *  For each byte in src_buffer, a single byte is returned in dst_buffer
    *  8 bits => 8 bits
    */
-  void applyPaletteGrayscale(uInt8* dst_buffer, uInt8* src_buffer,
+  void applyPaletteGrayscale(uint8_t* dst_buffer, uint8_t* src_buffer,
                              size_t src_size);
   void applyPaletteGrayscale(std::vector<unsigned char>& dst_buffer,
-                             uInt8* src_buffer, size_t src_size);
+                             uint8_t* src_buffer, size_t src_size);
 
   /** Loads all defined palettes with PAL color-loss data depending on 'state'.
    *  Sets the palette according to the given palette name.
@@ -68,14 +67,14 @@ class ColourPalette {
   void loadUserPalette(const std::string& paletteFile);
 
  private:
-  uInt32* m_palette;
+  uint32_t* m_palette;
 
   bool myUserPaletteDefined;
 
   // Table of RGB values for NTSC, PAL and SECAM - user-defined
-  uInt32 m_userNTSCPalette[256];
-  uInt32 m_userPALPalette[256];
-  uInt32 m_userSECAMPalette[256];
+  uint32_t m_userNTSCPalette[256];
+  uint32_t m_userPALPalette[256];
+  uint32_t m_userSECAMPalette[256];
 };
 
 }  // namespace ale

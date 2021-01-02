@@ -19,11 +19,11 @@
 #include <string>
 #include <sstream>
 #include <cstring>
+#include <iostream>
 
 #include "emucore/DefProps.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/PropsSet.hxx"
-#include "emucore/bspf/bspf.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 PropertiesSet::PropertiesSet()
@@ -191,7 +191,7 @@ void PropertiesSet::printNode(TreeNode *node) const
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt32 PropertiesSet::size() const
+uint32_t PropertiesSet::size() const
 {
   return mySize;
 }

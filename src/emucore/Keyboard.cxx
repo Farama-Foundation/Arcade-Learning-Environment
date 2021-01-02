@@ -76,7 +76,7 @@ bool Keyboard::read(DigitalPin pin)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Int32 Keyboard::read(AnalogPin pin)
+int Keyboard::read(AnalogPin pin)
 {
   // NOTE: maximumResistance = GND, while minimumResistance = +5V
 

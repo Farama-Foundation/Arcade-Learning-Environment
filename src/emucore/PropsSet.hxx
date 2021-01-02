@@ -19,7 +19,6 @@
 #ifndef PROPERTIES_SET_HXX
 #define PROPERTIES_SET_HXX
 
-#include "emucore/bspf/bspf.hxx"
 
 class Properties;
 
@@ -81,7 +80,7 @@ class PropertiesSet
 
       @return  The number of properties in the collection
     */
-    uInt32 size() const;
+    uint32_t size() const;
 
     /**
       Prints the contents of the PropertiesSet as a flat file.
@@ -126,7 +125,7 @@ class PropertiesSet
     TreeNode* myRoot;
 
     // The size of the properties bst (i.e. the number of properties in it)
-    uInt32 mySize;
+    uint32_t mySize;
 };
 
 #endif

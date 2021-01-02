@@ -62,7 +62,7 @@ bool Joystick::read(DigitalPin pin)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Int32 Joystick::read(AnalogPin)
+int Joystick::read(AnalogPin)
 {
   // Analog pins are not connect in joystick so we have infinite resistance 
   return maximumResistance;

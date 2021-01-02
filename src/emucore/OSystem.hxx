@@ -28,7 +28,6 @@ class PropertiesSet;
 #include "emucore/Settings.hxx"
 #include "emucore/Console.hxx"
 #include "emucore/Event.hxx"  //ALE 
-#include "emucore/bspf/bspf.hxx"
 #include "common/display_screen.h"
 #include "common/ColourPalette.hpp"
 #include "common/Log.hpp"
@@ -110,14 +109,14 @@ class OSystem
 
       @param framerate  The video framerate to use
     */
-    void setFramerate(uInt32 framerate);
+    void setFramerate(uint32_t framerate);
 
     /**
       Get the current framerate for the video system.
 
       @return  The video framerate currently in use
     */
-    inline uInt32 frameRate() const { return myDisplayFrameRate; }
+    inline uint32_t frameRate() const { return myDisplayFrameRate; }
 
     /**
       This method should be called to get the full path of the currently
@@ -160,7 +159,7 @@ class OSystem
       @param size   The amount of data read into the image array
       @return  False on any errors, else true
     */
-    bool openROM(const fs::path& rom, std::string& md5, uInt8** image, int* size);
+    bool openROM(const fs::path& rom, std::string& md5, uint8_t** image, int* size);
 
     /**
       Returns the random number generator for this emulator.
@@ -202,7 +201,7 @@ class OSystem
     Random myRandGen; 
 
     // Number of times per second to iterate through the main loop
-    uInt32 myDisplayFrameRate;
+    uint32_t myDisplayFrameRate;
 
   private:
     enum { kNumUIPalettes = 2 };
@@ -230,7 +229,7 @@ class OSystem
 
       @return Success or failure for a valid console
     */
-    bool queryConsoleInfo(const uInt8* image, uInt32 size, const std::string& md5,
+    bool queryConsoleInfo(const uint8_t* image, uint32_t size, const std::string& md5,
                           Cartridge** cart, Properties& props);
 
     // Copy constructor isn't supported by this class so make it private
