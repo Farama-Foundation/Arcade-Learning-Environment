@@ -46,8 +46,7 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   : myOSystem(osystem),
-    myProperties(props),
-    myUserPaletteDefined(false)
+    myProperties(props)
 {
   myControllers[0] = 0;
   myControllers[1] = 0;
@@ -126,8 +125,6 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
 
   // Remember what my media source is
   myMediaSource = tia;
-  myCart = cart;
-  myRiot = m6532;
 
   // Query some info about this console
   std::ostringstream buf;
@@ -181,200 +178,9 @@ Console::~Console()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::toggleFormat()
-{
-  int framerate = 60;
-  if(myDisplayFormat == "NTSC")
-  {
-    myDisplayFormat = "PAL";
-    myProperties.set(Display_Format, myDisplayFormat);
-    mySystem->reset();
-    framerate = 50;
-  }
-  else if(myDisplayFormat == "PAL")
-  {
-    myDisplayFormat = "PAL60";
-    myProperties.set(Display_Format, myDisplayFormat);
-    mySystem->reset();
-    framerate = 60;
-  }
-  else if(myDisplayFormat == "PAL60")
-  {
-    myDisplayFormat = "SECAM";
-    myProperties.set(Display_Format, myDisplayFormat);
-    mySystem->reset();
-    framerate = 50;
-  }
-  else if(myDisplayFormat == "SECAM")
-  {
-    myDisplayFormat = "NTSC";
-    myProperties.set(Display_Format, myDisplayFormat);
-    mySystem->reset();
-    framerate = 60;
-  }
-
-  myOSystem->colourPalette().setPalette(myOSystem->settings().getString("palette"), myDisplayFormat);
-  myOSystem->setFramerate(framerate);
-  myOSystem->sound().setFrameRate(framerate);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::togglePalette()
-{
-  std::string palette, message;
-  palette = myOSystem->settings().getString("palette");
-
-  if(palette == "standard")       // switch to z26
-  {
-    palette = "z26";
-    message = "Z26 palette";
-  }
-  else if(palette == "z26")       // switch to user or standard
-  {
-    // If we have a user-defined palette, it will come next in
-    // the sequence; otherwise loop back to the standard one
-    if(myUserPaletteDefined)
-    {
-      palette = "user";
-      message = "User-defined palette";
-    }
-    else
-    {
-      palette = "standard";
-      message = "Standard Stella palette";
-    }
-  }
-  else if(palette == "user")  // switch to standard
-  {
-    palette = "standard";
-    message = "Standard Stella palette";
-  }
-  else  // switch to standard mode if we get this far
-  {
-    palette = "standard";
-    message = "Standard Stella palette";
-  }
-
-  myOSystem->settings().setString("palette", palette);
-
-  myOSystem->colourPalette().setPalette(palette, myDisplayFormat);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::togglePhosphor()
-{
-  // MGB: This method is deprecated. 
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::setProperties(const Properties& props)
 {
   myProperties = props;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::initializeVideo(bool full)
-{
-  myOSystem->colourPalette().setPalette(myOSystem->settings().getString("palette"), myDisplayFormat);
-  myOSystem->setFramerate(getFrameRate());
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::initializeAudio()
-{
-  // Initialize the sound interface.
-  // The # of channels can be overridden in the AudioDialog box or on
-  // the commandline, but it can't be saved.
-  const std::string& sound = myProperties.get(Cartridge_Sound);
-  uint32_t channels = (sound == "STEREO" ? 2 : 1);
-
-  myOSystem->sound().close();
-  myOSystem->sound().setChannels(channels);
-  myOSystem->sound().setFrameRate(getFrameRate());
-  myOSystem->sound().initialize();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::changeYStart(int direction)
-{
-  int ystart = atoi(myProperties.get(Display_YStart).c_str());
-  std::ostringstream strval;
-  std::string message;
-
-  if(direction == +1)    // increase YStart
-  {
-    ystart++;
-    if(ystart > 64)
-    {
-      return;
-    }
-  }
-  else if(direction == -1)  // decrease YStart
-  {
-    ystart--;
-    if(ystart < 0)
-    {
-      return;
-    }
-  }
-  else
-    return;
-
-  strval << ystart;
-  myProperties.set(Display_YStart, strval.str());
-  ((TIA*)myMediaSource)->frameReset();
-
-  message = "YStart ";
-  message += strval.str();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::changeHeight(int direction)
-{
-  int height = atoi(myProperties.get(Display_Height).c_str());
-  std::ostringstream strval;
-  std::string message;
-
-  if(direction == +1)    // increase Height
-  {
-    height++;
-    if(height > 256)
-    {
-      return;
-    }
-  }
-  else if(direction == -1)  // decrease Height
-  {
-    height--;
-    if(height < 200)
-    {
-      return;
-    }
-  }
-  else
-    return;
-
-  strval << height;
-  myProperties.set(Display_Height, strval.str());
-  ((TIA*)myMediaSource)->frameReset();
-  initializeVideo();  // takes care of refreshing the screen
-
-  message = "Height ";
-  message += strval.str();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::toggleTIABit(TIA::TIABit bit, const std::string& bitname, bool show) const
-{
-  bool result = ((TIA*)myMediaSource)->toggleBit(bit);
-  std::string message = bitname + (result ? " enabled" : " disabled");
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::enableBits(bool enable) const
-{
-  ((TIA*)myMediaSource)->enableBits(enable);
-  std::string message = std::string("TIA bits") + (enable ? " enabled" : " disabled");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -397,9 +203,6 @@ uint32_t Console::getFrameRate() const
 
   return framerate;
 }
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Console::Console(const Console& console)
