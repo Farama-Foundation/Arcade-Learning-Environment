@@ -18,6 +18,7 @@
 
 #include <cassert>
 #include <sstream>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -36,6 +37,7 @@
 
 #include "emucore/bspf/bspf.hxx"
 
+namespace fs = std::filesystem;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem()
@@ -151,7 +153,7 @@ void OSystem::createSound()
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::createConsole(const std::string& romfile)
+bool OSystem::createConsole(const fs::path& romfile)
 {
   // Do a little error checking; it shouldn't be necessary
   if(myConsole) deleteConsole();
@@ -159,16 +161,14 @@ bool OSystem::createConsole(const std::string& romfile)
   bool retval = false; 
 
   // If a blank ROM has been given, we reload the current one (assuming one exists)
-  if(romfile == "")
-  {
-    if(myRomFile == "")
-    {
+  if (romfile.empty()) {
+    if (myRomFile.empty()) {
       ale::Logger::Error << "ERROR: Rom file not specified ..." << std::endl;
       return false;
     }
   }
   else
-    myRomFile = romfile;
+    myRomFile = romfile.string();
 
   // Open the cartridge image and read it in
   uInt8* image = nullptr;
@@ -236,10 +236,10 @@ void OSystem::deleteConsole()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::openROM(const std::string& rom, std::string& md5, uInt8** image, int* size)
+bool OSystem::openROM(const fs::path& rom, std::string& md5, uInt8** image, int* size)
 {
   // Assume the file is either gzip'ed or not compressed at all
-  gzFile f = gzopen(rom.c_str(), "rb");
+  gzFile f = gzopen(rom.string().c_str(), "rb");
   if(!f)
     return false;
 
@@ -260,22 +260,20 @@ bool OSystem::openROM(const std::string& rom, std::string& md5, uInt8** image, i
   std::string name = props.get(Cartridge_Name);
   if(name == "Untitled")
   {
-    // Get the filename from the rom pathname
-    std::string::size_type pos = rom.find_last_of(BSPF_PATH_SEPARATOR);
-    if(pos+1 != std::string::npos)
-    {
-      name = rom.substr(pos+1);
-      props.set(Cartridge_MD5, md5);
-      props.set(Cartridge_Name, name);
-      myPropSet->insert(props, false);
-    }
+    // Use the filename stem if we don't have this ROM in DefProps.
+    // Stem is just the filename excluding the extension.
+    // ROM is a valid file so we don't have to do extensive checks here
+    fs::path rom_path(rom);
+    props.set(Cartridge_MD5, md5);
+    props.set(Cartridge_Name, rom_path.stem().string());
+    myPropSet->insert(props, false);
   }
 
   return true;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string OSystem::getROMInfo(const std::string& romfile)
+std::string OSystem::getROMInfo(const fs::path& romfile)
 {
   std::ostringstream buf;
 

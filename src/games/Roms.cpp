@@ -10,6 +10,8 @@
  * *****************************************************************************
  */
 
+#include <filesystem>
+
 #include "games/Roms.hpp"
 #include "games/RomUtils.hpp"
 
@@ -118,6 +120,8 @@
 #include "games/supported/WordZapper.hpp"
 #include "games/supported/YarsRevenge.hpp"
 #include "games/supported/Zaxxon.hpp"
+
+namespace fs = std::filesystem;
 
 namespace ale {
 
@@ -230,11 +234,9 @@ static const RomSettings* roms[] = {
 };
 /* looks for the RL wrapper corresponding to a particular rom filename,
  * and optionally md5. returns null if neither match */
-RomSettings* buildRomRLWrapper(const std::string& rom, const std::string rom_md5 = std::string()){
-  size_t slash_ind = rom.find_last_of("/\\");
-  std::string rom_str = rom.substr(slash_ind + 1);
-  size_t dot_idx = rom_str.find_first_of(".");
-  rom_str = rom_str.substr(0, dot_idx);
+RomSettings* buildRomRLWrapper(const fs::path& rom, const std::string rom_md5 = std::string()){
+  // Stem is filename excluding the extension.
+  std::string rom_str = rom.stem().string();
   std::transform(rom_str.begin(), rom_str.end(), rom_str.begin(), ::tolower);
 
   for (size_t i = 0; i < sizeof(roms) / sizeof(roms[0]); i++) {

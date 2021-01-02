@@ -21,6 +21,8 @@
 
 class PropertiesSet;
 
+#include <filesystem>
+
 #include "emucore/Sound.hxx"
 #include "common/SoundNull.hxx"
 #include "emucore/Settings.hxx"
@@ -30,6 +32,8 @@ class PropertiesSet;
 #include "common/display_screen.h"
 #include "common/ColourPalette.hpp"
 #include "common/Log.hpp"
+
+namespace fs = std::filesystem;
 
 /**
   This class provides an interface for accessing operating system specific
@@ -129,7 +133,7 @@ class OSystem
       @param romfile  The full pathname of the ROM to use
       @return  True on successful creation, otherwise false
     */
-    bool createConsole(const std::string& romfile = "");
+    bool createConsole(const fs::path& romfile = "");
 
     /**
       Deletes the currently defined console, if it exists.
@@ -144,7 +148,7 @@ class OSystem
       @param romfile  The full pathname of the ROM to use
       @return  Some information about this ROM
     */
-    std::string getROMInfo(const std::string& romfile);
+    std::string getROMInfo(const fs::path& romfile);
 
     /**
       Open the given ROM and return an array containing its contents.
@@ -156,7 +160,7 @@ class OSystem
       @param size   The amount of data read into the image array
       @return  False on any errors, else true
     */
-    bool openROM(const std::string& rom, std::string& md5, uInt8** image, int* size);
+    bool openROM(const fs::path& rom, std::string& md5, uInt8** image, int* size);
 
     /**
       Returns the random number generator for this emulator.

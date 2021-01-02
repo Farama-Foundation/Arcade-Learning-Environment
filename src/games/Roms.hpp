@@ -13,14 +13,17 @@
 #ifndef __ROMS_HPP__
 #define __ROMS_HPP__
 
+#include <filesystem>
 #include <string>
 
 #include "games/RomSettings.hpp"
 
+namespace fs = std::filesystem;
+
 namespace ale {
 
 // looks for the RL wrapper corresponding to a particular rom title
-RomSettings* buildRomRLWrapper(const std::string& rom, const std::string md5);
+RomSettings* buildRomRLWrapper(const fs::path& rom, const std::string md5);
 
 }  // namespace ale
 
