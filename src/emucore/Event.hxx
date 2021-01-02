@@ -59,16 +59,6 @@ class Event
       PaddleThreeResistance, PaddleThreeFire,
         PaddleThreeDecrease, PaddleThreeIncrease, PaddleThreeAnalog,
 
-      KeyboardZero1, KeyboardZero2, KeyboardZero3,
-      KeyboardZero4, KeyboardZero5, KeyboardZero6,
-      KeyboardZero7, KeyboardZero8, KeyboardZero9,
-      KeyboardZeroStar, KeyboardZero0, KeyboardZeroPound,
-
-      KeyboardOne1, KeyboardOne2, KeyboardOne3,
-      KeyboardOne4, KeyboardOne5, KeyboardOne6,
-      KeyboardOne7, KeyboardOne8, KeyboardOne9,
-      KeyboardOneStar, KeyboardOne0, KeyboardOnePound,
-
       DrivingZeroClockwise, DrivingZeroCounterClockwise, DrivingZeroValue, 
       DrivingZeroFire,
       DrivingOneClockwise, DrivingOneCounterClockwise, DrivingOneValue,

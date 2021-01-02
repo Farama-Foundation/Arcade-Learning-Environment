@@ -29,7 +29,6 @@
 #include "emucore/Driving.hxx"
 #include "emucore/Event.hxx"
 #include "emucore/Joystick.hxx"
-#include "emucore/Keyboard.hxx"
 #include "emucore/M6502Hi.hxx"
 #include "emucore/M6502Low.hxx"
 #include "emucore/M6532.hxx"
@@ -88,10 +87,6 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   {
     myControllers[leftPort] = new Driving(Controller::Left, *myEvent);
   }
-  else if((left == "KEYBOARD") || (left == "KEYPAD"))
-  {
-    myControllers[leftPort] = new Keyboard(Controller::Left, *myEvent);
-  }
   else if(left == "PADDLES")
   {
     myControllers[leftPort] = new Paddles(Controller::Left, *myEvent, swapPaddles);
@@ -109,10 +104,6 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   else if(right == "DRIVING")
   {
     myControllers[rightPort] = new Driving(Controller::Right, *myEvent);
-  }
-  else if((right == "KEYBOARD") || (right == "KEYPAD"))
-  {
-    myControllers[rightPort] = new Keyboard(Controller::Right, *myEvent);
   }
   else if(right == "PADDLES")
   {
