@@ -36,8 +36,7 @@ class Event
     */
     enum Type
     {
-      NoType,
-      ConsoleOn, ConsoleOff, ConsoleColor, ConsoleBlackWhite,
+      ConsoleColor, ConsoleBlackWhite,
       ConsoleLeftDifficultyA, ConsoleLeftDifficultyB,
       ConsoleRightDifficultyA, ConsoleRightDifficultyB,
       ConsoleSelect, ConsoleReset,
@@ -55,13 +54,6 @@ class Event
         PaddleTwoDecrease, PaddleTwoIncrease, PaddleTwoAnalog,
       PaddleThreeResistance, PaddleThreeFire,
         PaddleThreeDecrease, PaddleThreeIncrease, PaddleThreeAnalog,
-
-      ChangeState, LoadState, SaveState, TakeSnapshot, Quit,
-      PauseMode, MenuMode, CmdMenuMode, LauncherMode,
-      Fry, VolumeDecrease, VolumeIncrease,
-
-      UIUp, UIDown, UILeft, UIRight, UIHome, UIEnd, UIPgUp, UIPgDown,
-      UISelect, UINavPrev, UINavNext, UIOK, UICancel,
 
       LastType
     };

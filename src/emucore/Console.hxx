@@ -181,11 +181,6 @@ class Console
     void initializeAudio();
 
     /**
-      "Fry" the Atari (mangle memory/TIA contents)
-    */
-    void fry() const;
-
-    /**
       Change the "Display.YStart" variable.
 
       @param direction +1 indicates increase, -1 indicates decrease.
