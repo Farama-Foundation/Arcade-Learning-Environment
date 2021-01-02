@@ -73,8 +73,7 @@ class Controller
     */
     enum Type
     {
-      Paddles, Joystick,
-      TrakBall
+      Paddles, Joystick
     };
 
   public:
