@@ -27,7 +27,6 @@ target_sources(ale
     Control.cxx
     Deserializer.cxx
     Device.cxx
-    Driving.cxx
     Event.cxx
     Joystick.cxx
     M6502.cxx
