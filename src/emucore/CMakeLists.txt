@@ -1,6 +1,5 @@
 target_sources(ale
   PRIVATE
-    AtariVox.cxx
     Booster.cxx
     Cart.cxx
     Cart0840.cxx
@@ -47,7 +46,6 @@ target_sources(ale
     Random.cxx
     Serializer.cxx
     Settings.cxx
-    SpeakJet.cxx
     Switches.cxx
     System.cxx
     TIA.cxx
