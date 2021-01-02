@@ -64,7 +64,7 @@ void DisplayScreen::display_screen() {
   // Convert the media sources frame into the screen matrix representation
   int xciel = int(xratio) + 1;
   int yciel = int(yratio) + 1;
-  uInt8* pi_curr_frame_buffer = media_source->currentFrameBuffer();
+  uint8_t* pi_curr_frame_buffer = media_source->currentFrameBuffer();
   int y, x, r, g, b;
   SDL_Rect rect;
   for (int i = 0; i < screen_width * screen_height; i++) {

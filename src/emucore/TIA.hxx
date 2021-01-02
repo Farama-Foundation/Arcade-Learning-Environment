@@ -25,7 +25,6 @@ class Serializer;
 class Deserializer;
 class Settings;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Sound.hxx"
 #include "emucore/Device.hxx"
 #include "emucore/MediaSrc.hxx"
@@ -117,7 +116,7 @@ class TIA : public Device , public MediaSource
 
       @return The byte at the specified address
     */
-    virtual uInt8 peek(uInt16 address);
+    virtual uint8_t peek(uint16_t address);
 
     /**
       Change the byte at the specified address to the given value
@@ -125,7 +124,7 @@ class TIA : public Device , public MediaSource
       @param address The address where the value should be stored
       @param value The value to be stored at the address
     */
-    virtual void poke(uInt16 address, uInt8 value);
+    virtual void poke(uint16_t address, uint8_t value);
 
   public:
     /**
@@ -139,28 +138,28 @@ class TIA : public Device , public MediaSource
 
       @return Pointer to the current frame buffer
     */
-    uInt8* currentFrameBuffer() const { return myCurrentFrameBuffer; }
+    uint8_t* currentFrameBuffer() const { return myCurrentFrameBuffer; }
 
     /**
       Answers the previous frame buffer
 
       @return Pointer to the previous frame buffer
     */
-    uInt8* previousFrameBuffer() const { return myPreviousFrameBuffer; }
+    uint8_t* previousFrameBuffer() const { return myPreviousFrameBuffer; }
 
     /**
       Answers the height of the frame buffer
 
       @return The frame's height
     */
-    uInt32 height() const;
+    uint32_t height() const;
 
     /**
       Answers the width of the frame buffer
 
       @return The frame's width
     */
-    uInt32 width() const;
+    uint32_t width() const;
 
     /**
       Answers the total number of scanlines the media source generated
@@ -169,14 +168,14 @@ class TIA : public Device , public MediaSource
 
       @return The total number of scanlines generated
     */
-    uInt32 scanlines() const;
+    uint32_t scanlines() const;
 
     /**
       Answers the current color clock we've gotten to on this scanline.
 
       @return The current color clock
     */
-    uInt32 clocksThisLine() const;
+    uint32_t clocksThisLine() const;
 
     /**
       Sets the sound device for the TIA.
@@ -211,7 +210,7 @@ class TIA : public Device , public MediaSource
 
       @param mode  Whether to enable or disable all bits
     */
-    void enableBits(bool mode) { for(uInt8 i = 0; i < 6; ++i) myBitEnabled[i] = mode; }
+    void enableBits(bool mode) { for(uint8_t i = 0; i < 6; ++i) myBitEnabled[i] = mode; }
 
   private:
     // Compute the ball mask table
@@ -237,10 +236,10 @@ class TIA : public Device , public MediaSource
 
   private:
     // Update the current frame buffer up to one scanline
-    void updateFrameScanline(uInt32 clocksToUpdate, uInt32 hpos);
+    void updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos);
    
     // Update the current frame buffer to the specified color clock
-    void updateFrame(Int32 clock);
+    void updateFrame(int clock);
 
     // Waste cycles until the current scanline is finished
     void waitHorizontalSync();
@@ -282,70 +281,70 @@ class TIA : public Device , public MediaSource
     int myFrameCounter;
 
     // Pointer to the current frame buffer
-    uInt8* myCurrentFrameBuffer;
+    uint8_t* myCurrentFrameBuffer;
 
     // Pointer to the previous frame buffer
-    uInt8* myPreviousFrameBuffer;
+    uint8_t* myPreviousFrameBuffer;
 
     // Pointer to the next pixel that will be drawn in the current frame buffer
-    uInt8* myFramePointer;
+    uint8_t* myFramePointer;
 
     // Indicates where the scanline should start being displayed
-    uInt32 myFrameXStart;
+    uint32_t myFrameXStart;
 
     // Indicates the width of the scanline 
-    uInt32 myFrameWidth;
+    uint32_t myFrameWidth;
 
     // Indicated what scanline the frame should start being drawn at
-    uInt32 myFrameYStart;
+    uint32_t myFrameYStart;
 
     // Indicates the height of the frame in scanlines
-    uInt32 myFrameHeight;
+    uint32_t myFrameHeight;
 
   private:
     // Indicates offset in scanlines when display should begin
      // (aka the Display.YStart property)
-    uInt32 myYStart;
+    uint32_t myYStart;
 
      // Height of display (aka Display.Height)
-    uInt32 myHeight;
+    uint32_t myHeight;
 
     // Indicates offset in color clocks when display should begin
-    uInt32 myStartDisplayOffset;
+    uint32_t myStartDisplayOffset;
 
     // Indicates offset in color clocks when display should stop
-    uInt32 myStopDisplayOffset;
+    uint32_t myStopDisplayOffset;
 
   private:
     // Indicates color clocks when the current frame began
-    Int32 myClockWhenFrameStarted;
+    int myClockWhenFrameStarted;
 
     // Indicates color clocks when frame should begin to be drawn
-    Int32 myClockStartDisplay;
+    int myClockStartDisplay;
 
     // Indicates color clocks when frame should stop being drawn
-    Int32 myClockStopDisplay;
+    int myClockStopDisplay;
 
     // Indicates color clocks when the frame was last updated
-    Int32 myClockAtLastUpdate;
+    int myClockAtLastUpdate;
 
     // Indicates how many color clocks remain until the end of 
     // current scanline.  This value is valid during the 
     // displayed portion of the frame.
-    Int32 myClocksToEndOfScanLine;
+    int myClocksToEndOfScanLine;
 
     // Indicates the total number of scanlines generated by the last frame
-    Int32 myScanlineCountForLastFrame;
+    int myScanlineCountForLastFrame;
 
     // Indicates the current scanline during a partial frame.
-    Int32 myCurrentScanline;
+    int myCurrentScanline;
 
     // Indicates the maximum number of scanlines to be generated for a frame
-    Int32 myMaximumNumberOfScanlines;
+    int myMaximumNumberOfScanlines;
 
   private:
     // Color clock when VSYNC ending causes a new frame to be started
-    Int32 myVSYNCFinishClock; 
+    int myVSYNCFinishClock; 
 
   private:
     enum
@@ -361,36 +360,36 @@ class TIA : public Device , public MediaSource
     };
 
     // Bitmap of the objects that should be considered while drawing
-    uInt8 myEnabledObjects;
+    uint8_t myEnabledObjects;
 
   private:
-    uInt8 myVSYNC;        // Holds the VSYNC register value
-    uInt8 myVBLANK;       // Holds the VBLANK register value
+    uint8_t myVSYNC;        // Holds the VSYNC register value
+    uint8_t myVBLANK;       // Holds the VBLANK register value
 
-    uInt8 myNUSIZ0;       // Number and size of player 0 and missle 0
-    uInt8 myNUSIZ1;       // Number and size of player 1 and missle 1
+    uint8_t myNUSIZ0;       // Number and size of player 0 and missle 0
+    uint8_t myNUSIZ1;       // Number and size of player 1 and missle 1
 
-    uInt8 myPlayfieldPriorityAndScore;
-    uInt32 myColor[4];
-    uInt8 myPriorityEncoder[2][256];
+    uint8_t myPlayfieldPriorityAndScore;
+    uint32_t myColor[4];
+    uint8_t myPriorityEncoder[2][256];
 
-    uInt32& myCOLUBK;       // Background color register (replicated 4 times)
-    uInt32& myCOLUPF;       // Playfield color register (replicated 4 times)
-    uInt32& myCOLUP0;       // Player 0 color register (replicated 4 times)
-    uInt32& myCOLUP1;       // Player 1 color register (replicated 4 times)
+    uint32_t& myCOLUBK;       // Background color register (replicated 4 times)
+    uint32_t& myCOLUPF;       // Playfield color register (replicated 4 times)
+    uint32_t& myCOLUP0;       // Player 0 color register (replicated 4 times)
+    uint32_t& myCOLUP1;       // Player 1 color register (replicated 4 times)
 
-    uInt8 myCTRLPF;       // Playfield control register
+    uint8_t myCTRLPF;       // Playfield control register
 
     bool myREFP0;         // Indicates if player 0 is being reflected
     bool myREFP1;         // Indicates if player 1 is being reflected
 
-    uInt32 myPF;          // Playfield graphics (19-12:PF2 11-4:PF1 3-0:PF0)
+    uint32_t myPF;          // Playfield graphics (19-12:PF2 11-4:PF1 3-0:PF0)
 
-    uInt8 myGRP0;         // Player 0 graphics register
-    uInt8 myGRP1;         // Player 1 graphics register
+    uint8_t myGRP0;         // Player 0 graphics register
+    uint8_t myGRP1;         // Player 1 graphics register
     
-    uInt8 myDGRP0;        // Player 0 delayed graphics register
-    uInt8 myDGRP1;        // Player 1 delayed graphics register
+    uint8_t myDGRP0;        // Player 0 delayed graphics register
+    uint8_t myDGRP1;        // Player 1 delayed graphics register
 
     bool myENAM0;         // Indicates if missle 0 is enabled
     bool myENAM1;         // Indicates if missle 0 is enabled
@@ -398,11 +397,11 @@ class TIA : public Device , public MediaSource
     bool myENABL;         // Indicates if the ball is enabled
     bool myDENABL;        // Indicates if the virtically delayed ball is enabled
 
-    Int8 myHMP0;          // Player 0 horizontal motion register
-    Int8 myHMP1;          // Player 1 horizontal motion register
-    Int8 myHMM0;          // Missle 0 horizontal motion register
-    Int8 myHMM1;          // Missle 1 horizontal motion register
-    Int8 myHMBL;          // Ball horizontal motion register
+    int8_t myHMP0;          // Player 0 horizontal motion register
+    int8_t myHMP1;          // Player 1 horizontal motion register
+    int8_t myHMM0;          // Missle 0 horizontal motion register
+    int8_t myHMM1;          // Missle 1 horizontal motion register
+    int8_t myHMBL;          // Ball horizontal motion register
 
     bool myVDELP0;        // Indicates if player 0 is being virtically delayed
     bool myVDELP1;        // Indicates if player 1 is being virtically delayed
@@ -411,65 +410,65 @@ class TIA : public Device , public MediaSource
     bool myRESMP0;        // Indicates if missle 0 is reset to player 0
     bool myRESMP1;        // Indicates if missle 1 is reset to player 1
 
-    uInt16 myCollision;    // Collision register
+    uint16_t myCollision;    // Collision register
 
     // Note that these position registers contain the color clock 
     // on which the object's serial output should begin (0 to 159)
-    Int16 myPOSP0;         // Player 0 position register
-    Int16 myPOSP1;         // Player 1 position register
-    Int16 myPOSM0;         // Missle 0 position register
-    Int16 myPOSM1;         // Missle 1 position register
-    Int16 myPOSBL;         // Ball position register
+    int16_t myPOSP0;         // Player 0 position register
+    int16_t myPOSP1;         // Player 1 position register
+    int16_t myPOSM0;         // Missle 0 position register
+    int16_t myPOSM1;         // Missle 1 position register
+    int16_t myPOSBL;         // Ball position register
 
   private:
     // Graphics for Player 0 that should be displayed.  This will be
     // reflected if the player is being reflected.
-    uInt8 myCurrentGRP0;
+    uint8_t myCurrentGRP0;
 
     // Graphics for Player 1 that should be displayed.  This will be
     // reflected if the player is being reflected.
-    uInt8 myCurrentGRP1;
+    uint8_t myCurrentGRP1;
 
     // It's VERY important that the BL, M0, M1, P0 and P1 current
-    // mask pointers are always on a uInt32 boundary.  Otherwise,
+    // mask pointers are always on a uint32_t boundary.  Otherwise,
     // the TIA code will fail on a good number of CPUs.
 
     // Pointer to the currently active mask array for the ball
-    const uInt8* myCurrentBLMask;
+    const uint8_t* myCurrentBLMask;
 
     // Pointer to the currently active mask array for missle 0
-    const uInt8* myCurrentM0Mask;
+    const uint8_t* myCurrentM0Mask;
 
     // Pointer to the currently active mask array for missle 1
-    const uInt8* myCurrentM1Mask;
+    const uint8_t* myCurrentM1Mask;
 
     // Pointer to the currently active mask array for player 0
-    const uInt8* myCurrentP0Mask;
+    const uint8_t* myCurrentP0Mask;
 
     // Pointer to the currently active mask array for player 1
-    const uInt8* myCurrentP1Mask;
+    const uint8_t* myCurrentP1Mask;
 
     // Pointer to the currently active mask array for the playfield
-    const uInt32* myCurrentPFMask;
+    const uint32_t* myCurrentPFMask;
 
     // Audio values. Only used by TIADebug.
-    uInt8 myAUDV0;
-    uInt8 myAUDV1;
-    uInt8 myAUDC0;
-    uInt8 myAUDC1;
-    uInt8 myAUDF0;
-    uInt8 myAUDF1;
+    uint8_t myAUDV0;
+    uint8_t myAUDV1;
+    uint8_t myAUDC0;
+    uint8_t myAUDC1;
+    uint8_t myAUDF0;
+    uint8_t myAUDF1;
 
   private:
     // Indicates when the dump for paddles was last set
-    Int32 myDumpDisabledCycle;
+    int myDumpDisabledCycle;
 
     // Indicates if the dump is current enabled for the paddles
     bool myDumpEnabled;
 
   private:
     // Color clock when last HMOVE occured
-    Int32 myLastHMOVEClock;
+    int myLastHMOVEClock;
 
     // Indicates if HMOVE blanks are currently enabled
     bool myHMOVEBlankEnabled;
@@ -481,7 +480,7 @@ class TIA : public Device , public MediaSource
     bool myM0CosmicArkMotionEnabled;
 
     // Counter used for TIA M0 "bug" 
-    uInt32 myM0CosmicArkCounter;
+    uint32_t myM0CosmicArkCounter;
 
     // Answers whether specified bits (from TIABit) are enabled or disabled
     bool myBitEnabled[6];
@@ -491,38 +490,38 @@ class TIA : public Device , public MediaSource
 
   private:
     // Ball mask table (entries are true or false)
-    static uInt8 ourBallMaskTable[4][4][320];
+    static uint8_t ourBallMaskTable[4][4][320];
 
     // Used to set the collision register to the correct value
-    static uInt16 ourCollisionTable[64];
+    static uint16_t ourCollisionTable[64];
 
     // A mask table which can be used when an object is disabled
-    static const uInt8 ourDisabledMaskTable[640];
+    static const uint8_t ourDisabledMaskTable[640];
 
     // Indicates the update delay associated with poking at a TIA address
-    static const Int16 ourPokeDelayTable[64];
+    static const int16_t ourPokeDelayTable[64];
 
     // Missle mask table (entries are true or false)
-    static uInt8 ourMissleMaskTable[4][8][4][320];
+    static uint8_t ourMissleMaskTable[4][8][4][320];
 
     // Used to convert value written in a motion register into 
     // its internal representation
-    static const Int32 ourCompleteMotionTable[76][16];
+    static const int ourCompleteMotionTable[76][16];
 
     // Indicates if HMOVE blanks should occur for the corresponding cycle
     static const bool ourHMOVEBlankEnableCycles[76];
 
     // Player mask table
-    static uInt8 ourPlayerMaskTable[4][2][8][320];
+    static uint8_t ourPlayerMaskTable[4][2][8][320];
 
     // Indicates if player is being reset during delay, display or other times
-    static Int8 ourPlayerPositionResetWhenTable[8][160][160];
+    static int8_t ourPlayerPositionResetWhenTable[8][160][160];
 
     // Used to reflect a players graphics
-    static uInt8 ourPlayerReflectTable[256];
+    static uint8_t ourPlayerReflectTable[256];
 
     // Playfield mask table for reflected and non-reflected playfields
-    static uInt32 ourPlayfieldTable[2][160];
+    static uint32_t ourPlayfieldTable[2][160];
 
   private:
     // Copy constructor isn't supported by this class so make it private
@@ -536,7 +535,7 @@ class TIA : public Device , public MediaSource
     bool fastUpdate;
    
     // Updates the frame's scanline but not the frame buffer 
-    void updateFrameScanlineFast(uInt32 clocksToUpdate, uInt32 hpos);
+    void updateFrameScanlineFast(uint32_t clocksToUpdate, uint32_t hpos);
 
 };
 

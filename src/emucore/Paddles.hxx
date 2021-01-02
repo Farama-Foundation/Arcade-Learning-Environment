@@ -19,7 +19,6 @@
 #ifndef PADDLES_HXX
 #define PADDLES_HXX
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Control.hxx"
 #include "emucore/Event.hxx"
 
@@ -62,7 +61,7 @@ class Paddles : public Controller
       @param pin The pin of the controller jack to read
       @return The resistance at the specified pin
     */
-    virtual Int32 read(AnalogPin pin);
+    virtual int read(AnalogPin pin);
 
     /**
       Write the given value to the specified digital pin for this

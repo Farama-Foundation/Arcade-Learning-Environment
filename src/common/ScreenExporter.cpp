@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include "common/Log.hpp"
 
@@ -30,10 +31,10 @@ namespace ale {
 // MGB: These methods originally belonged to ExportScreen. Possibly these should be returned to
 // their own class, rather than be static methods. They are here to avoid exposing the gritty
 // details of PNG generation.
-static void writePNGChunk(std::ofstream& out, const char* type, uInt8* data,
+static void writePNGChunk(std::ofstream& out, const char* type, uint8_t* data,
                           int size) {
   // Stuff the length/type into the buffer
-  uInt8 temp[8];
+  uint8_t temp[8];
   temp[0] = size >> 24;
   temp[1] = size >> 16;
   temp[2] = size >> 8;
@@ -47,7 +48,7 @@ static void writePNGChunk(std::ofstream& out, const char* type, uInt8* data,
   out.write((const char*)temp, 8);
 
   // Append the actual data
-  uInt32 crc = crc32(0, temp + 4, 4);
+  uint32_t crc = crc32(0, temp + 4, 4);
   if (size > 0) {
     out.write((const char*)data, size);
     crc = crc32(crc, data, size);
@@ -66,11 +67,11 @@ static void writePNGHeader(std::ofstream& out, const ALEScreen& screen,
   int width = doubleWidth ? screen.width() * 2 : screen.width();
   int height = screen.height();
   // PNG file header
-  uInt8 header[8] = {137, 80, 78, 71, 13, 10, 26, 10};
+  uint8_t header[8] = {137, 80, 78, 71, 13, 10, 26, 10};
   out.write((const char*)header, sizeof(header));
 
   // PNG IHDR
-  uInt8 ihdr[13];
+  uint8_t ihdr[13];
   ihdr[0] = (width >> 24) & 0xFF; // width
   ihdr[1] = (width >> 16) & 0xFF;
   ihdr[2] = (width >> 8) & 0xFF;
@@ -99,8 +100,8 @@ static void writePNGData(std::ofstream& out, const ALEScreen& screen,
   // Fill the buffer with scanline data
   int rowbytes = width * 3;
 
-  std::vector<uInt8> buffer((rowbytes + 1) * height, 0);
-  uInt8* buf_ptr = &buffer[0];
+  std::vector<uint8_t> buffer((rowbytes + 1) * height, 0);
+  uint8_t* buf_ptr = &buffer[0];
 
   for (int i = 0; i < height; i++) {
     *buf_ptr++ = 0; // first byte of row is filter type
@@ -128,7 +129,7 @@ static void writePNGData(std::ofstream& out, const ALEScreen& screen,
 
   // Compress the data with zlib
   uLongf compmemsize = (uLongf)((height * (width + 1) * 3 + 1) + 12);
-  std::vector<uInt8> compmem(compmemsize, 0);
+  std::vector<uint8_t> compmem(compmemsize, 0);
 
   if ((compress(&compmem[0], &compmemsize, &buffer[0],
                 height * (width * 3 + 1)) != Z_OK)) {

@@ -277,14 +277,14 @@ case 0x69:
   operand = peek(PC++);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -292,7 +292,7 @@ case 0x69:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -308,14 +308,14 @@ case 0x65:
   operand = peek(peek(PC++));
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -323,7 +323,7 @@ case 0x65:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -336,20 +336,20 @@ break;
 
 case 0x75:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -357,7 +357,7 @@ case 0x75:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -370,19 +370,19 @@ break;
 
 case 0x6d:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -390,7 +390,7 @@ case 0x6d:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -403,21 +403,21 @@ break;
 
 case 0x7d:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -425,7 +425,7 @@ case 0x7d:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -438,21 +438,21 @@ break;
 
 case 0x79:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -460,7 +460,7 @@ case 0x79:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -473,22 +473,22 @@ break;
 
 case 0x61:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -496,7 +496,7 @@ case 0x61:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -509,22 +509,22 @@ break;
 
 case 0x71:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -532,7 +532,7 @@ case 0x71:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -600,7 +600,7 @@ break;
 
 case 0x35:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
@@ -614,8 +614,8 @@ break;
 
 case 0x2d:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -627,9 +627,9 @@ break;
 
 case 0x3d:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
@@ -642,9 +642,9 @@ break;
 
 case 0x39:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -657,11 +657,11 @@ break;
 
 case 0x21:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
@@ -673,10 +673,10 @@ break;
 
 case 0x31:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -724,7 +724,7 @@ case 0x6b:
   }
   else
   {
-    uInt8 value = A & operand;
+    uint8_t value = A & operand;
 
     A = ((value >> 1) & 0x7f) | (C ? 0x80 : 0x00);
     N = C;
@@ -806,7 +806,7 @@ break;
 case 0x0e:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -824,9 +824,9 @@ break;
 
 case 0x1e:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -852,7 +852,7 @@ case 0x90:
   if(!C)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -869,7 +869,7 @@ case 0xb0:
   if(C)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -886,7 +886,7 @@ case 0xf0:
   if(!notZ)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -908,8 +908,8 @@ break;
 
 case 0x2C:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -928,7 +928,7 @@ case 0x30:
   if(N)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -945,7 +945,7 @@ case 0xD0:
   if(notZ)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -962,7 +962,7 @@ case 0x10:
   if(!N)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -984,7 +984,7 @@ case 0x00:
   I = true;
 
   PC = peek(0xfffe);
-  PC |= ((uInt16)peek(0xffff) << 8);
+  PC |= ((uint16_t)peek(0xffff) << 8);
 }
 break;
 
@@ -997,7 +997,7 @@ case 0x50:
   if(!V)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -1014,7 +1014,7 @@ case 0x70:
   if(V)
   {
     peek(PC);
-    uInt16 address = PC + (Int8)operand;
+    uint16_t address = PC + (int8_t)operand;
     if(NOTSAMEPAGE(PC, address))
       peek((PC & 0xFF00) | (address & 0x00FF));
     PC = address;
@@ -1068,7 +1068,7 @@ case 0xc9:
   operand = peek(PC++);
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1081,7 +1081,7 @@ case 0xc5:
   operand = peek(peek(PC++));
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1091,13 +1091,13 @@ break;
 
 case 0xd5:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1107,12 +1107,12 @@ break;
 
 case 0xcd:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1122,14 +1122,14 @@ break;
 
 case 0xdd:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1139,14 +1139,14 @@ break;
 
 case 0xd9:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1156,15 +1156,15 @@ break;
 
 case 0xc1:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1174,15 +1174,15 @@ break;
 
 case 0xd1:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
 {
-  uInt16 value = (uInt16)A - (uInt16)operand;
+  uint16_t value = (uint16_t)A - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1196,7 +1196,7 @@ case 0xe0:
   operand = peek(PC++);
 }
 {
-  uInt16 value = (uInt16)X - (uInt16)operand;
+  uint16_t value = (uint16_t)X - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1209,7 +1209,7 @@ case 0xe4:
   operand = peek(peek(PC++));
 }
 {
-  uInt16 value = (uInt16)X - (uInt16)operand;
+  uint16_t value = (uint16_t)X - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1219,12 +1219,12 @@ break;
 
 case 0xec:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
-  uInt16 value = (uInt16)X - (uInt16)operand;
+  uint16_t value = (uint16_t)X - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1238,7 +1238,7 @@ case 0xc0:
   operand = peek(PC++);
 }
 {
-  uInt16 value = (uInt16)Y - (uInt16)operand;
+  uint16_t value = (uint16_t)Y - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1251,7 +1251,7 @@ case 0xc4:
   operand = peek(peek(PC++));
 }
 {
-  uInt16 value = (uInt16)Y - (uInt16)operand;
+  uint16_t value = (uint16_t)Y - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1261,12 +1261,12 @@ break;
 
 case 0xcc:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
-  uInt16 value = (uInt16)Y - (uInt16)operand;
+  uint16_t value = (uint16_t)Y - (uint16_t)operand;
 
   notZ = value;
   N = value & 0x0080;
@@ -1278,15 +1278,15 @@ break;
 case 0xcf:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
@@ -1295,18 +1295,18 @@ break;
 
 case 0xdf:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
@@ -1315,18 +1315,18 @@ break;
 
 case 0xdb:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
@@ -1340,10 +1340,10 @@ case 0xc7:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
@@ -1359,10 +1359,10 @@ case 0xd7:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
@@ -1371,19 +1371,19 @@ break;
 
 case 0xc3:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
@@ -1392,19 +1392,19 @@ break;
 
 case 0xd3:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
-  uInt16 value2 = (uInt16)A - (uInt16)value;
+  uint16_t value2 = (uint16_t)A - (uint16_t)value;
   notZ = value2;
   N = value2 & 0x0080;
   C = !(value2 & 0x0100);
@@ -1419,7 +1419,7 @@ case 0xc6:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1436,7 +1436,7 @@ case 0xd6:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1447,12 +1447,12 @@ break;
 case 0xce:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1462,15 +1462,15 @@ break;
 
 case 0xde:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand - 1;
+  uint8_t value = operand - 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1529,7 +1529,7 @@ break;
 
 case 0x55:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
@@ -1543,8 +1543,8 @@ break;
 
 case 0x4d:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -1556,9 +1556,9 @@ break;
 
 case 0x5d:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
@@ -1571,9 +1571,9 @@ break;
 
 case 0x59:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -1586,11 +1586,11 @@ break;
 
 case 0x41:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
@@ -1602,10 +1602,10 @@ break;
 
 case 0x51:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -1624,7 +1624,7 @@ case 0xe6:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand + 1;
+  uint8_t value = operand + 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1641,7 +1641,7 @@ case 0xf6:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand + 1;
+  uint8_t value = operand + 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1652,12 +1652,12 @@ break;
 case 0xee:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand + 1;
+  uint8_t value = operand + 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1667,15 +1667,15 @@ break;
 
 case 0xfe:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = operand + 1;
+  uint8_t value = operand + 1;
   poke(operandAddress, value);
 
   notZ = value;
@@ -1711,7 +1711,7 @@ break;
 case 0xef:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -1719,15 +1719,15 @@ case 0xef:
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -1735,7 +1735,7 @@ case 0xef:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1753,9 +1753,9 @@ break;
 
 case 0xff:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -1764,15 +1764,15 @@ case 0xff:
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -1780,7 +1780,7 @@ case 0xff:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1798,9 +1798,9 @@ break;
 
 case 0xfb:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -1809,15 +1809,15 @@ case 0xfb:
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -1825,7 +1825,7 @@ case 0xfb:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1851,15 +1851,15 @@ case 0xe7:
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -1867,7 +1867,7 @@ case 0xe7:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1895,15 +1895,15 @@ case 0xf7:
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -1911,7 +1911,7 @@ case 0xf7:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1929,11 +1929,11 @@ break;
 
 case 0xe3:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -1941,15 +1941,15 @@ case 0xe3:
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -1957,7 +1957,7 @@ case 0xe3:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1975,10 +1975,10 @@ break;
 
 case 0xf3:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -1987,15 +1987,15 @@ case 0xf3:
   operand = operand + 1;
   poke(operandAddress, operand);
 
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -2003,7 +2003,7 @@ case 0xf3:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -2023,7 +2023,7 @@ break;
 case 0x4c:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
 }
 {
   PC = operandAddress;
@@ -2032,14 +2032,14 @@ break;
 
 case 0x6c:
 {
-  uInt16 addr = peek(PC++);
-  addr |= ((uInt16)peek(PC++) << 8);
+  uint16_t addr = peek(PC++);
+  addr |= ((uint16_t)peek(PC++) << 8);
 
   // Simulate the error in the indirect addressing mode!
-  uInt16 high = NOTSAMEPAGE(addr, addr + 1) ? (addr & 0xff00) : (addr + 1);
+  uint16_t high = NOTSAMEPAGE(addr, addr + 1) ? (addr & 0xff00) : (addr + 1);
 
   operandAddress = peek(addr);
-  operandAddress |= ((uInt16)peek(high) << 8);
+  operandAddress |= ((uint16_t)peek(high) << 8);
 }
 {
   PC = operandAddress;
@@ -2049,7 +2049,7 @@ break;
 
 case 0x20:
 {
-  uInt8 low = peek(PC++);
+  uint8_t low = peek(PC++);
   peek(0x0100 + SP);
 
   // It seems that the 650x does not push the address of the next instruction
@@ -2058,16 +2058,16 @@ case 0x20:
   poke(0x0100 + SP--, PC >> 8);
   poke(0x0100 + SP--, PC & 0xff);
 
-  PC = low | ((uInt16)peek(PC++) << 8); 
+  PC = low | ((uint16_t)peek(PC++) << 8); 
 }
 break;
 
 
 case 0xbb:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2081,8 +2081,8 @@ break;
 
 case 0xaf:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -2095,9 +2095,9 @@ break;
 
 case 0xbf:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2123,7 +2123,7 @@ break;
 
 case 0xb7:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += Y;
   operand = peek(address); 
@@ -2138,11 +2138,11 @@ break;
 
 case 0xa3:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
@@ -2155,10 +2155,10 @@ break;
 
 case 0xb3:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2195,7 +2195,7 @@ break;
 
 case 0xb5:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
@@ -2209,8 +2209,8 @@ break;
 
 case 0xad:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -2222,9 +2222,9 @@ break;
 
 case 0xbd:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
@@ -2237,9 +2237,9 @@ break;
 
 case 0xb9:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2252,11 +2252,11 @@ break;
 
 case 0xa1:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
@@ -2268,10 +2268,10 @@ break;
 
 case 0xb1:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2307,7 +2307,7 @@ break;
 
 case 0xb6:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += Y;
   operand = peek(address); 
@@ -2321,8 +2321,8 @@ break;
 
 case 0xae:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -2334,9 +2334,9 @@ break;
 
 case 0xbe:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2372,7 +2372,7 @@ break;
 
 case 0xb4:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
@@ -2386,8 +2386,8 @@ break;
 
 case 0xac:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -2399,9 +2399,9 @@ break;
 
 case 0xbc:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
@@ -2470,7 +2470,7 @@ break;
 case 0x4e:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -2488,9 +2488,9 @@ break;
 
 case 0x5e:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -2566,7 +2566,7 @@ case 0x74:
 case 0xd4:
 case 0xf4:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
@@ -2577,8 +2577,8 @@ break;
 
 case 0x0c:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -2592,9 +2592,9 @@ case 0x7c:
 case 0xdc:
 case 0xfc:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
@@ -2627,7 +2627,7 @@ break;
 
 case 0x15:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
@@ -2641,8 +2641,8 @@ break;
 
 case 0x0d:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
@@ -2654,9 +2654,9 @@ break;
 
 case 0x1d:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
@@ -2669,9 +2669,9 @@ break;
 
 case 0x19:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2684,11 +2684,11 @@ break;
 
 case 0x01:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
@@ -2700,10 +2700,10 @@ break;
 
 case 0x11:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
@@ -2762,12 +2762,12 @@ break;
 case 0x2f:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -2779,15 +2779,15 @@ break;
 
 case 0x3f:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -2799,15 +2799,15 @@ break;
 
 case 0x3b:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -2824,7 +2824,7 @@ case 0x27:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -2843,7 +2843,7 @@ case 0x37:
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -2855,16 +2855,16 @@ break;
 
 case 0x23:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -2876,16 +2876,16 @@ break;
 
 case 0x33:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 value = (operand << 1) | (C ? 1 : 0);
+  uint8_t value = (operand << 1) | (C ? 1 : 0);
   poke(operandAddress, value);
 
   A &= value;
@@ -2959,7 +2959,7 @@ break;
 case 0x2e:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -2979,9 +2979,9 @@ break;
 
 case 0x3e:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -3063,7 +3063,7 @@ break;
 case 0x6e:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -3083,9 +3083,9 @@ break;
 
 case 0x7e:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -3108,12 +3108,12 @@ break;
 case 0x6f:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -3124,10 +3124,10 @@ case 0x6f:
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -3135,7 +3135,7 @@ case 0x6f:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -3148,15 +3148,15 @@ break;
 
 case 0x7f:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -3167,10 +3167,10 @@ case 0x7f:
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -3178,7 +3178,7 @@ case 0x7f:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -3191,15 +3191,15 @@ break;
 
 case 0x7b:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -3210,10 +3210,10 @@ case 0x7b:
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -3221,7 +3221,7 @@ case 0x7b:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -3239,7 +3239,7 @@ case 0x67:
   poke(operandAddress, operand);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -3250,10 +3250,10 @@ case 0x67:
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -3261,7 +3261,7 @@ case 0x67:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -3281,7 +3281,7 @@ case 0x77:
   poke(operandAddress, operand);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -3292,10 +3292,10 @@ case 0x77:
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -3303,7 +3303,7 @@ case 0x77:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -3316,16 +3316,16 @@ break;
 
 case 0x63:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -3336,10 +3336,10 @@ case 0x63:
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -3347,7 +3347,7 @@ case 0x63:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -3360,16 +3360,16 @@ break;
 
 case 0x73:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
   bool oldC = C;
 
   // Set carry flag according to the right-most bit
@@ -3380,10 +3380,10 @@ case 0x73:
 
   if(!D)
   {
-    Int16 sum = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t sum = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((sum > 127) || (sum < -128));
 
-    sum = (Int16)A + (Int16)operand + (C ? 1 : 0);
+    sum = (int16_t)A + (int16_t)operand + (C ? 1 : 0);
     A = sum;
     C = (sum > 0xff);
     notZ = A;
@@ -3391,7 +3391,7 @@ case 0x73:
   }
   else
   {
-    Int16 sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
+    int16_t sum = ourBCDTable[0][A] + ourBCDTable[0][operand] + (C ? 1 : 0);
 
     C = (sum > 99);
     A = ourBCDTable[1][sum & 0xff];
@@ -3411,7 +3411,7 @@ case 0x40:
   peek(0x0100 + SP++);
   PS(peek(0x0100 + SP++));
   PC = peek(0x0100 + SP++);
-  PC |= ((uInt16)peek(0x0100 + SP) << 8);
+  PC |= ((uint16_t)peek(0x0100 + SP) << 8);
 }
 break;
 
@@ -3423,7 +3423,7 @@ case 0x60:
 {
   peek(0x0100 + SP++);
   PC = peek(0x0100 + SP++);
-  PC |= ((uInt16)peek(0x0100 + SP) << 8);
+  PC |= ((uint16_t)peek(0x0100 + SP) << 8);
   peek(PC++);
 }
 break;
@@ -3432,7 +3432,7 @@ break;
 case 0x8f:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
 }
 {
   poke(operandAddress, A & X);
@@ -3461,11 +3461,11 @@ break;
 
 case 0x83:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
 }
 {
   poke(operandAddress, A & X);
@@ -3479,15 +3479,15 @@ case 0xeb:
   operand = peek(PC++);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3495,7 +3495,7 @@ case 0xeb:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3516,15 +3516,15 @@ case 0xe5:
   operand = peek(peek(PC++));
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3532,7 +3532,7 @@ case 0xe5:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3550,21 +3550,21 @@ break;
 
 case 0xf5:
 {
-  uInt8 address = peek(PC++);
+  uint8_t address = peek(PC++);
   peek(address);
   address += X;
   operand = peek(address); 
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3572,7 +3572,7 @@ case 0xf5:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3590,20 +3590,20 @@ break;
 
 case 0xed:
 {
-  uInt16 address = peek(PC++);
-  address |= ((uInt16)peek(PC++) << 8);
+  uint16_t address = peek(PC++);
+  address |= ((uint16_t)peek(PC++) << 8);
   operand = peek(address);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3611,7 +3611,7 @@ case 0xed:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3629,22 +3629,22 @@ break;
 
 case 0xfd:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + X));
   if((low + X) > 0xFF)
     operand = peek((high | low) + X);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3652,7 +3652,7 @@ case 0xfd:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3670,22 +3670,22 @@ break;
 
 case 0xf9:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3693,7 +3693,7 @@ case 0xf9:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3711,23 +3711,23 @@ break;
 
 case 0xe1:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
-  uInt16 address = peek(pointer++);
-  address |= ((uInt16)peek(pointer) << 8);
+  uint16_t address = peek(pointer++);
+  address |= ((uint16_t)peek(pointer) << 8);
   operand = peek(address);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3735,7 +3735,7 @@ case 0xe1:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3753,23 +3753,23 @@ break;
 
 case 0xf1:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  operand = peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  operand = peek(high | (uint8_t)(low + Y));
   if((low + Y) > 0xFF)
     operand = peek((high | low) + Y);
 }
 {
-  uInt8 oldA = A;
+  uint8_t oldA = A;
 
   if(!D)
   {
     operand = ~operand;
-    Int16 difference = (Int16)((Int8)A) + (Int16)((Int8)operand) + (C ? 1 : 0);
+    int16_t difference = (int16_t)((int8_t)A) + (int16_t)((int8_t)operand) + (C ? 1 : 0);
     V = ((difference > 127) || (difference < -128));
 
-    difference = ((Int16)A) + ((Int16)operand) + (C ? 1 : 0);
+    difference = ((int16_t)A) + ((int16_t)operand) + (C ? 1 : 0);
     A = difference;
     C = (difference > 0xff);
     notZ = A;
@@ -3777,7 +3777,7 @@ case 0xf1:
   }
   else
   {
-    Int16 difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3799,7 +3799,7 @@ case 0xcb:
   operand = peek(PC++);
 }
 {
-  uInt16 value = (uInt16)(X & A) - (uInt16)operand;
+  uint16_t value = (uint16_t)(X & A) - (uint16_t)operand;
   X = (value & 0xff);
 
   notZ = X;
@@ -3841,9 +3841,9 @@ break;
 
 case 0x9f:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
 }
 {
@@ -3855,10 +3855,10 @@ break;
 
 case 0x93:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
 }
 {
@@ -3871,9 +3871,9 @@ break;
 
 case 0x9b:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
 }
 {
@@ -3887,9 +3887,9 @@ break;
 
 case 0x9e:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
 }
 {
@@ -3902,9 +3902,9 @@ break;
 
 case 0x9c:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
 }
 {
@@ -3918,7 +3918,7 @@ break;
 case 0x0f:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -3937,9 +3937,9 @@ break;
 
 case 0x1f:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -3959,9 +3959,9 @@ break;
 
 case 0x1b:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -4021,11 +4021,11 @@ break;
 
 case 0x03:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -4044,10 +4044,10 @@ break;
 
 case 0x13:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -4069,7 +4069,7 @@ break;
 case 0x4f:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -4088,9 +4088,9 @@ break;
 
 case 0x5f:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -4110,9 +4110,9 @@ break;
 
 case 0x5b:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -4172,11 +4172,11 @@ break;
 
 case 0x43:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
   operand = peek(operandAddress);
   poke(operandAddress, operand);
 }
@@ -4195,10 +4195,10 @@ break;
 
 case 0x53:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
   operand = peek(operandAddress);
   poke(operandAddress, operand);
@@ -4240,7 +4240,7 @@ break;
 case 0x8d:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
 }
 {
   poke(operandAddress, A);
@@ -4249,9 +4249,9 @@ break;
 
 case 0x9d:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + X));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + X));
   operandAddress = (high | low) + X;
 }
 {
@@ -4261,9 +4261,9 @@ break;
 
 case 0x99:
 {
-  uInt16 low = peek(PC++);
-  uInt16 high = ((uInt16)peek(PC++) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint16_t low = peek(PC++);
+  uint16_t high = ((uint16_t)peek(PC++) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
 }
 {
@@ -4273,11 +4273,11 @@ break;
 
 case 0x81:
 {
-  uInt8 pointer = peek(PC++);
+  uint8_t pointer = peek(PC++);
   peek(pointer);
   pointer += X;
   operandAddress = peek(pointer++);
-  operandAddress |= ((uInt16)peek(pointer) << 8);
+  operandAddress |= ((uint16_t)peek(pointer) << 8);
 }
 {
   poke(operandAddress, A);
@@ -4286,10 +4286,10 @@ break;
 
 case 0x91:
 {
-  uInt8 pointer = peek(PC++);
-  uInt16 low = peek(pointer++);
-  uInt16 high = ((uInt16)peek(pointer) << 8);
-  peek(high | (uInt8)(low + Y));
+  uint8_t pointer = peek(PC++);
+  uint16_t low = peek(pointer++);
+  uint16_t high = ((uint16_t)peek(pointer) << 8);
+  peek(high | (uint8_t)(low + Y));
   operandAddress = (high | low) + Y;
 }
 {
@@ -4321,7 +4321,7 @@ break;
 case 0x8e:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
 }
 {
   poke(operandAddress, X);
@@ -4352,7 +4352,7 @@ break;
 case 0x8c:
 {
   operandAddress = peek(PC++);
-  operandAddress |= ((uInt16)peek(PC++) << 8);
+  operandAddress |= ((uint16_t)peek(PC++) << 8);
 }
 {
   poke(operandAddress, Y);

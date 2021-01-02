@@ -23,7 +23,6 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Cart.hxx"
 
 /**
@@ -41,7 +40,7 @@ class CartridgeF4 : public Cartridge
 
       @param image Pointer to the ROM image
     */
-    CartridgeF4(const uInt8* image);
+    CartridgeF4(const uint8_t* image);
  
     /**
       Destructor
@@ -90,7 +89,7 @@ class CartridgeF4 : public Cartridge
 
       @param bank The bank that should be installed in the system
     */
-    virtual void bank(uInt16 bank);
+    virtual void bank(uint16_t bank);
 
     /**
       Get the current bank.
@@ -111,7 +110,7 @@ class CartridgeF4 : public Cartridge
       @param value    The value to place into the address
       @return    Success or failure of the patch operation
     */
-    virtual bool patch(uInt16 address, uInt8 value);
+    virtual bool patch(uint16_t address, uint8_t value);
 
     /**
       Access the internal ROM image for this cartridge.
@@ -119,7 +118,7 @@ class CartridgeF4 : public Cartridge
       @param size  Set to the size of the internal ROM image data
       @return  A pointer to the internal ROM image data
     */
-    virtual uInt8* getImage(int& size);
+    virtual uint8_t* getImage(int& size);
 
   public:
     /**
@@ -127,7 +126,7 @@ class CartridgeF4 : public Cartridge
 
       @return The byte at the specified address
     */
-    virtual uInt8 peek(uInt16 address);
+    virtual uint8_t peek(uint16_t address);
 
     /**
       Change the byte at the specified address to the given value
@@ -135,14 +134,14 @@ class CartridgeF4 : public Cartridge
       @param address The address where the value should be stored
       @param value The value to be stored at the address
     */
-    virtual void poke(uInt16 address, uInt8 value);
+    virtual void poke(uint16_t address, uint8_t value);
 
   private:
     // Indicates which bank is currently active
-    uInt16 myCurrentBank;
+    uint16_t myCurrentBank;
 
     // The 16K ROM image of the cartridge
-    uInt8 myImage[32768];
+    uint8_t myImage[32768];
 };
 
 #endif

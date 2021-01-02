@@ -19,7 +19,7 @@
 #ifndef MD5_HXX
 #define MD5_HXX
 
-#include "emucore/bspf/bspf.hxx"
+#include <string>
 
 /**
   Get the MD5 Message-Digest of the specified message with the 
@@ -29,6 +29,6 @@
   @param length The length of the message
   @return The message-digest
 */
-std::string MD5(const uInt8* buffer, uInt32 length);
+std::string MD5(const uint8_t* buffer, uint32_t length);
 
 #endif

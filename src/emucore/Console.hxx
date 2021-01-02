@@ -26,7 +26,6 @@ class MediaSource;
 class Switches;
 class System;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Control.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/TIA.hxx"
@@ -223,7 +222,7 @@ class Console
       Returns the framerate based on a number of factors
       (whether 'framerate' is set, what display format is in use, etc)
     */
-    uInt32 getFrameRate() const;
+    uint32_t getFrameRate() const;
 
   private:
     // Pointer to the osystem object

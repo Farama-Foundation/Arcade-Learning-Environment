@@ -23,7 +23,6 @@ class System;
 class Serializer;
 class Deserializer;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Cart.hxx"
 #include "emucore/Random.hxx"
 
@@ -150,7 +149,7 @@ class CartridgeMC : public Cartridge
       @param size The size of the ROM image
       @param rng A random number generator used to populate the initial extra RAM
     */
-    CartridgeMC(const uInt8* image, uInt32 size, Random& rng);
+    CartridgeMC(const uint8_t* image, uint32_t size, Random& rng);
  
     /**
       Destructor
@@ -199,7 +198,7 @@ class CartridgeMC : public Cartridge
 
       @param bank The bank that should be installed in the system
     */
-    virtual void bank(uInt16 bank);
+    virtual void bank(uint16_t bank);
 
     /**
       Get the current bank.
@@ -220,7 +219,7 @@ class CartridgeMC : public Cartridge
       @param value    The value to place into the address
       @return    Success or failure of the patch operation
     */
-    virtual bool patch(uInt16 address, uInt8 value);
+    virtual bool patch(uint16_t address, uint8_t value);
 
     /**
       Access the internal ROM image for this cartridge.
@@ -228,7 +227,7 @@ class CartridgeMC : public Cartridge
       @param size  Set to the size of the internal ROM image data
       @return  A pointer to the internal ROM image data
     */
-    virtual uInt8* getImage(int& size);
+    virtual uint8_t* getImage(int& size);
 
   public:
     /**
@@ -236,7 +235,7 @@ class CartridgeMC : public Cartridge
 
       @return The byte at the specified address
     */
-    virtual uInt8 peek(uInt16 address);
+    virtual uint8_t peek(uint16_t address);
 
     /**
       Change the byte at the specified address to the given value
@@ -244,20 +243,20 @@ class CartridgeMC : public Cartridge
       @param address The address where the value should be stored
       @param value The value to be stored at the address
     */
-    virtual void poke(uInt16 address, uInt8 value);
+    virtual void poke(uint16_t address, uint8_t value);
 
   private:
     // Indicates which block is currently active for the four segments
-    uInt8 myCurrentBlock[4];
+    uint8_t myCurrentBlock[4];
 
     // Indicates if slot 3 is locked to block $FF or not
     bool mySlot3Locked;
 
     // Pointer to the 32K bytes of RAM for the cartridge
-    uInt8* myRAM;
+    uint8_t* myRAM;
 
     // Pointer to the 128K bytes of ROM for the cartridge
-    uInt8* myImage;
+    uint8_t* myImage;
 };
 
 #endif

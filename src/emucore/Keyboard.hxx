@@ -19,8 +19,9 @@
 #ifndef KEYBOARD_HXX
 #define KEYBOARD_HXX
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Control.hxx"
+
+#include <cstdint>
 
 /**
   The standard Atari 2600 keyboard controller
@@ -60,7 +61,7 @@ class Keyboard : public Controller
       @param pin The pin of the controller jack to read
       @return The resistance at the specified pin
     */
-    virtual Int32 read(AnalogPin pin);
+    virtual int read(AnalogPin pin);
 
     /**
       Write the given value to the specified digital pin for this
@@ -74,7 +75,7 @@ class Keyboard : public Controller
 
   private:
     // State of the output pins
-    uInt8 myPinState;
+    uint8_t myPinState;
 };
 
 #endif

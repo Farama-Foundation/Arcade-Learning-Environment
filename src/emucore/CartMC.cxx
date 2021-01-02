@@ -25,16 +25,16 @@
 #include "emucore/CartMC.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeMC::CartridgeMC(const uInt8* image, uInt32 size, Random& rng)
+CartridgeMC::CartridgeMC(const uint8_t* image, uint32_t size, Random& rng)
   : mySlot3Locked(false)
 {
-  uInt32 i;
+  uint32_t i;
 
   // Make sure size is reasonable
   assert(size <= 128 * 1024);
 
   // Allocate array for the cart's RAM
-  myRAM = new uInt8[32 * 1024];
+  myRAM = new uint8_t[32 * 1024];
 
   // Initialize RAM with random values
   for(i = 0; i < 32 * 1024; ++i)
@@ -43,7 +43,7 @@ CartridgeMC::CartridgeMC(const uInt8* image, uInt32 size, Random& rng)
   }
 
   // Allocate array for the ROM image
-  myImage = new uInt8[128 * 1024];
+  myImage = new uint8_t[128 * 1024];
 
   // Set the contents of the entire ROM to 0
   for(i = 0; i < 128 * 1024; ++i)
@@ -80,8 +80,8 @@ void CartridgeMC::reset()
 void CartridgeMC::install(System& system)
 {
   mySystem = &system;
-  uInt16 shift = mySystem->pageShift();
-  uInt16 mask = mySystem->pageMask();
+  uint16_t shift = mySystem->pageShift();
+  uint16_t mask = mySystem->pageMask();
 
   // Make sure the system we're being installed in has a page size that'll work
   assert(((0x1000 & mask) == 0) && ((0x1400 & mask) == 0) &&
@@ -95,7 +95,7 @@ void CartridgeMC::install(System& system)
   //       point Chris isn't sure if the hardware will allow it or not
   //
   System::PageAccess access;
-  for(uInt32 i = 0x00; i < 0x40; i += (1 << shift))
+  for(uint32_t i = 0x00; i < 0x40; i += (1 << shift))
   {
     access.directPeekBase = 0;
     access.directPokeBase = 0;
@@ -104,7 +104,7 @@ void CartridgeMC::install(System& system)
   }
 
   // Map the cartridge into the system
-  for(uInt32 j = 0x1000; j < 0x2000; j += (1 << shift))
+  for(uint32_t j = 0x1000; j < 0x2000; j += (1 << shift))
   {
     access.device = this;
     access.directPeekBase = 0;
@@ -114,7 +114,7 @@ void CartridgeMC::install(System& system)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 CartridgeMC::peek(uInt16 address)
+uint8_t CartridgeMC::peek(uint16_t address)
 {
   address = address & 0x1FFF;
 
@@ -138,7 +138,7 @@ uInt8 CartridgeMC::peek(uInt16 address)
   }
   else
   {
-    uInt8 block;
+    uint8_t block;
 
     if(mySlot3Locked && ((address & 0x0C00) == 0x0C00))
     {
@@ -153,7 +153,7 @@ uInt8 CartridgeMC::peek(uInt16 address)
     if(block & 0x80)
     {
       // ROM access
-      return myImage[(uInt32)(block & 0x7F) * 1024 + (address & 0x03FF)];
+      return myImage[(uint32_t)(block & 0x7F) * 1024 + (address & 0x03FF)];
     }
     else
     {
@@ -161,12 +161,12 @@ uInt8 CartridgeMC::peek(uInt16 address)
       if(address & 0x0200)
       {
         // Reading from the read port of the RAM block
-        return myRAM[(uInt32)(block & 0x3F) * 512 + (address & 0x01FF)];
+        return myRAM[(uint32_t)(block & 0x3F) * 512 + (address & 0x01FF)];
       }
       else
       {
         // Oops, reading from the write port of the RAM block!
-        myRAM[(uInt32)(block & 0x3F) * 512 + (address & 0x01FF)] = 0;
+        myRAM[(uint32_t)(block & 0x3F) * 512 + (address & 0x01FF)] = 0;
         return 0;
       }
     }
@@ -174,7 +174,7 @@ uInt8 CartridgeMC::peek(uInt16 address)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeMC::poke(uInt16 address, uInt8 value)
+void CartridgeMC::poke(uint16_t address, uint8_t value)
 {
   address = address & 0x1FFF;
 
@@ -198,7 +198,7 @@ void CartridgeMC::poke(uInt16 address, uInt8 value)
   }
   else
   {
-    uInt8 block;
+    uint8_t block;
 
     if(mySlot3Locked && ((address & 0x0C00) == 0x0C00))
     {
@@ -213,7 +213,7 @@ void CartridgeMC::poke(uInt16 address, uInt8 value)
     if(!(block & 0x80) && !(address & 0x0200))
     {
       // Handle the write to RAM
-      myRAM[(uInt32)(block & 0x3F) * 512 + (address & 0x01FF)] = value;
+      myRAM[(uint32_t)(block & 0x3F) * 512 + (address & 0x01FF)] = value;
     }
   }  
 }
@@ -221,7 +221,7 @@ void CartridgeMC::poke(uInt16 address, uInt8 value)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CartridgeMC::save(Serializer& out)
 {
-  uInt32 i;
+  uint32_t i;
   std::string cart = name();
 
   try
@@ -255,25 +255,25 @@ bool CartridgeMC::save(Serializer& out)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CartridgeMC::load(Deserializer& in)
 {
-  uInt32 i;
+  uint32_t i;
   std::string cart = name();
 
   try
   {
-    uInt32 limit;
+    uint32_t limit;
 
     if(in.getString() != cart)
       return false;
 
     // The currentBlock array
-    limit = (uInt32) in.getInt();
+    limit = (uint32_t) in.getInt();
     for(i = 0; i < limit; ++i)
-      myCurrentBlock[i] = (uInt8) in.getInt();
+      myCurrentBlock[i] = (uint8_t) in.getInt();
 
     // The 32K of RAM
-    limit = (uInt32) in.getInt();
+    limit = (uint32_t) in.getInt();
     for(i = 0; i < limit; ++i)
-      myRAM[i] = (uInt8) in.getInt();
+      myRAM[i] = (uint8_t) in.getInt();
   }
   catch(const char* msg)
   {
@@ -290,7 +290,7 @@ bool CartridgeMC::load(Deserializer& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeMC::bank(uInt16 b)
+void CartridgeMC::bank(uint16_t b)
 {
   // TODO: add support for debugger
 }
@@ -310,14 +310,14 @@ int CartridgeMC::bankCount()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool CartridgeMC::patch(uInt16 address, uInt8 value)
+bool CartridgeMC::patch(uint16_t address, uint8_t value)
 {
   // TODO: implement
   return false;
 } 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8* CartridgeMC::getImage(int& size)
+uint8_t* CartridgeMC::getImage(int& size)
 {
   size = 128 * 1024; // FIXME: keep track of original size
   return &myImage[0];

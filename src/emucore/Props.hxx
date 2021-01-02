@@ -19,7 +19,8 @@
 #ifndef PROPERTIES_HXX
 #define PROPERTIES_HXX
 
-#include "emucore/bspf/bspf.hxx"
+#include <string>
+#include <iostream>
 
 enum PropertyType {
   Cartridge_MD5,

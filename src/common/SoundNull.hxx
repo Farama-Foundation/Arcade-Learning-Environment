@@ -23,7 +23,6 @@ class OSystem;
 class Serializer;
 class Deserializer;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Sound.hxx"
 
 /**
@@ -62,14 +61,14 @@ class SoundNull : public Sound
 
       @param amount The amount the cycle counter is being adjusted by
     */
-    void adjustCycleCounter(Int32) { }
+    void adjustCycleCounter(int) { }
 
     /**
       Sets the number of channels (mono or stereo sound).
 
       @param channels The number of channels
     */
-    void setChannels(uInt32) { }
+    void setChannels(uint32_t) { }
 
     /**
       Sets the display framerate.  Sound generation for NTSC and PAL games
@@ -77,7 +76,7 @@ class SoundNull : public Sound
 
       @param framerate The base framerate depending on NTSC or PAL ROM
     */
-    void setFrameRate(uInt32) { }
+    void setFrameRate(uint32_t) { }
 
     /**
       Initializes the sound device.  This must be called before any
@@ -117,7 +116,7 @@ class SoundNull : public Sound
       @param value The value to save into the register
       @param cycle The system cycle at which the register is being updated
     */
-    void set(uInt16, uInt8, Int32) { }
+    void set(uint16_t, uint8_t, int) { }
 
     /**
       Sets the volume of the sound device to the specified level.  The
@@ -126,7 +125,7 @@ class SoundNull : public Sound
 
       @param percent The new volume percentage level for the sound device
     */
-    void setVolume(Int32) { }
+    void setVolume(int) { }
 
     /**
       Adjusts the volume of the sound device based on the given direction.
@@ -134,7 +133,7 @@ class SoundNull : public Sound
       @param direction  Increase or decrease the current volume by a predefined
                         amount based on the direction (1 = increase, -1 =decrease)
     */
-    void adjustVolume(Int8) { }
+    void adjustVolume(int8_t) { }
 
     /**
       * Tells the sound engine to record one frame's worth of sound.

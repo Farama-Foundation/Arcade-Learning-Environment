@@ -1,5 +1,3 @@
-add_subdirectory(bspf)
-
 target_sources(ale
   PRIVATE
     AtariVox.cxx

@@ -23,7 +23,6 @@ class M6502High;
 class Serializer;
 class Deserializer;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/M6502.hxx"
 
 /**
@@ -46,7 +45,7 @@ class M6502High : public M6502
 
       @param systemCyclesPerProcessorCycle The cycle multiplier
     */
-    M6502High(uInt32 systemCyclesPerProcessorCycle);
+    M6502High(uint32_t systemCyclesPerProcessorCycle);
 
     /**
       Destructor
@@ -62,7 +61,7 @@ class M6502High : public M6502
       @param number Indicates the number of instructions to execute
       @return true iff execution stops normally
     */
-    virtual bool execute(uInt32 number);
+    virtual bool execute(uint32_t number);
 
     /**
       Saves the current state of this device to the given Serializer.
@@ -93,7 +92,7 @@ class M6502High : public M6502
 
       @return The number of memory accesses to distinct memory locations
     */
-    uInt32 distinctAccesses() const
+    uint32_t distinctAccesses() const
     {
       return myNumberOfDistinctAccesses;
     }
@@ -111,7 +110,7 @@ class M6502High : public M6502
 
       @return The byte at the specified address
     */
-    inline uInt8 peek(uInt16 address);
+    inline uint8_t peek(uint16_t address);
 
     /**
       Change the byte at the specified address to the given value and
@@ -120,14 +119,14 @@ class M6502High : public M6502
       @param address The address where the value should be stored
       @param value The value to be stored at the address
     */
-    inline void poke(uInt16 address, uInt8 value);
+    inline void poke(uint16_t address, uint8_t value);
 
   private:
     // Indicates the numer of distinct memory accesses
-    uInt32 myNumberOfDistinctAccesses;
+    uint32_t myNumberOfDistinctAccesses;
 
     // Indicates the last address which was accessed
-    uInt16 myLastAddress;
+    uint16_t myLastAddress;
 };
 #endif
 

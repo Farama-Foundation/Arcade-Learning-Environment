@@ -17,6 +17,7 @@
 //============================================================================
 
 #include <cassert>
+#include <cstdint>
 
 #include "emucore/Event.hxx"
 #include "emucore/Driving.hxx"
@@ -38,13 +39,13 @@ Driving::~Driving()
 bool Driving::read(DigitalPin pin)
 {
   // Gray codes for clockwise rotation
-  static const uInt8 clockwise[] = { 0x03, 0x01, 0x00, 0x02 };
+  static const uint8_t clockwise[] = { 0x03, 0x01, 0x00, 0x02 };
 
   // Gray codes for counter-clockwise rotation
-  static const uInt8 counterclockwise[] = { 0x03, 0x02, 0x00, 0x01 };
+  static const uint8_t counterclockwise[] = { 0x03, 0x02, 0x00, 0x01 };
 
   // Delay used for moving through the gray code tables
-    const uInt32 delay = 20;
+    const uint32_t delay = 20;
 
   switch(pin)
   {
@@ -122,7 +123,7 @@ bool Driving::read(DigitalPin pin)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Int32 Driving::read(AnalogPin)
+int Driving::read(AnalogPin)
 {
   // Analog pins are not connect in driving controller so we have 
   // infinite resistance 

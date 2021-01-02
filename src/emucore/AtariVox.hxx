@@ -69,7 +69,7 @@ class AtariVox : public Controller
       @param pin The pin of the controller jack to read
       @return The resistance at the specified pin
     */
-    virtual Int32 read(AnalogPin pin);
+    virtual int read(AnalogPin pin);
 
     /**
       Write the given value to the specified digital pin for this
@@ -99,22 +99,22 @@ class AtariVox : public Controller
     SpeakJet *mySpeakJet;
 
     // State of the output pins
-    uInt8 myPinState;
+    uint8_t myPinState;
 
     // How many bits have been shifted into the shift register?
-    uInt8 myShiftCount;
+    uint8_t myShiftCount;
 
     // Shift register. Data comes in serially:
     // 1 start bit, always 0
     // 8 data bits, LSB first
     // 1 stop bit, always 1
-    uInt16 myShiftRegister;
+    uint16_t myShiftRegister;
 
     // When did the last data write start, in CPU cycles?
     // The real SpeakJet chip reads data at 19200 bits/sec. Alex's
     // driver code sends data at 62 CPU cycles per bit, which is
     // "close enough".
-    uInt32 myLastDataWriteCycle;
+    uint32_t myLastDataWriteCycle;
 };
 
 #endif

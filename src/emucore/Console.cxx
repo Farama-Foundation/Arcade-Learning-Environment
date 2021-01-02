@@ -320,7 +320,7 @@ void Console::initializeAudio()
   // The # of channels can be overridden in the AudioDialog box or on
   // the commandline, but it can't be saved.
   const std::string& sound = myProperties.get(Cartridge_Sound);
-  uInt32 channels = (sound == "STEREO" ? 2 : 1);
+  uint32_t channels = (sound == "STEREO" ? 2 : 1);
 
   myOSystem->sound().close();
   myOSystem->sound().setChannels(channels);
@@ -351,13 +351,13 @@ void Console::initializeAudio()
 void Console::fry() const
 {
   for (int ZPmem=0; ZPmem<0x100; ZPmem += myOSystem->rng().next() % 4)
-    mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uInt8)myOSystem->rng().next() % 256);
+    mySystem->poke(ZPmem, mySystem->peek(ZPmem) & (uint8_t)myOSystem->rng().next() % 256);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::changeYStart(int direction)
 {
-  Int32 ystart = atoi(myProperties.get(Display_YStart).c_str());
+  int ystart = atoi(myProperties.get(Display_YStart).c_str());
   std::ostringstream strval;
   std::string message;
 
@@ -391,7 +391,7 @@ void Console::changeYStart(int direction)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::changeHeight(int direction)
 {
-  Int32 height = atoi(myProperties.get(Display_Height).c_str());
+  int height = atoi(myProperties.get(Display_Height).c_str());
   std::ostringstream strval;
   std::string message;
 
@@ -438,7 +438,7 @@ void Console::enableBits(bool enable) const
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt32 Console::getFrameRate() const
+uint32_t Console::getFrameRate() const
 {
   // Set the correct framerate based on the format of the ROM
   // This can be overridden by changing the framerate in the

@@ -23,7 +23,8 @@
 class MediaSource;
 class Sound;
 
-#include "emucore/bspf/bspf.hxx"
+#include <cstdint>
+
 
 /**
   This class provides an interface for accessing graphics and audio data.
@@ -58,14 +59,14 @@ class MediaSource
 
       @return Pointer to the current frame buffer
     */
-    virtual uInt8* currentFrameBuffer() const = 0;
+    virtual uint8_t* currentFrameBuffer() const = 0;
 
     /**
       Answers the previous frame buffer
 
       @return Pointer to the previous frame buffer
     */
-    virtual uInt8* previousFrameBuffer() const = 0;
+    virtual uint8_t* previousFrameBuffer() const = 0;
 
   public:
     /**
@@ -73,14 +74,14 @@ class MediaSource
 
       @return The frame's height
     */
-    virtual uInt32 height() const = 0;
+    virtual uint32_t height() const = 0;
 
     /**
       Answers the width of the frame buffer
 
       @return The frame's width
     */
-    virtual uInt32 width() const = 0;
+    virtual uint32_t width() const = 0;
 
   public:
     /**
@@ -89,7 +90,7 @@ class MediaSource
 
       @return The total number of scanlines generated
     */
-    virtual uInt32 scanlines() const = 0;
+    virtual uint32_t scanlines() const = 0;
 
     /**
       Sets the sound device for the TIA.

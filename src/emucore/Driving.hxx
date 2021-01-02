@@ -22,7 +22,6 @@
 class Driving;
 class System;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Control.hxx"
 
 /**
@@ -64,7 +63,7 @@ class Driving : public Controller
       @param pin The pin of the controller jack to read
       @return The resistance at the specified pin
     */
-    virtual Int32 read(AnalogPin pin);
+    virtual int read(AnalogPin pin);
 
     /**
       Write the given value to the specified digital pin for this
@@ -78,7 +77,7 @@ class Driving : public Controller
 
   private:
     // Counter to iterate through the gray codes
-    uInt32 myCounter;
+    uint32_t myCounter;
 };
 #endif
 

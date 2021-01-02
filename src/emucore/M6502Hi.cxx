@@ -25,7 +25,7 @@
 #define debugStream ale::Logger::Info
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-M6502High::M6502High(uInt32 systemCyclesPerProcessorCycle)
+M6502High::M6502High(uint32_t systemCyclesPerProcessorCycle)
     : M6502(systemCyclesPerProcessorCycle)
 {
   myNumberOfDistinctAccesses = 0;
@@ -38,7 +38,7 @@ M6502High::~M6502High()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-inline uInt8 M6502High::peek(uInt16 address)
+inline uint8_t M6502High::peek(uint16_t address)
 {
   if(address != myLastAddress)
   {
@@ -47,13 +47,13 @@ inline uInt8 M6502High::peek(uInt16 address)
   }
   mySystem->incrementCycles(mySystemCyclesPerProcessorCycle);
 
-  uInt8 result = mySystem->peek(address);
+  uint8_t result = mySystem->peek(address);
   myLastAccessWasRead = true;
   return result;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-inline void M6502High::poke(uInt16 address, uInt8 value)
+inline void M6502High::poke(uint16_t address, uint8_t value)
 {
   if(address != myLastAddress)
   {
@@ -67,7 +67,7 @@ inline void M6502High::poke(uInt16 address, uInt8 value)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool M6502High::execute(uInt32 number)
+bool M6502High::execute(uint32_t number)
 {
   // Clear all of the execution status bits except for the fatal error bit
   myExecutionStatus &= FatalErrorBit;
@@ -77,8 +77,8 @@ bool M6502High::execute(uInt32 number)
   {
     for(; !myExecutionStatus && (number != 0); --number)
     {
-      uInt16 operandAddress = 0;
-      uInt8 operand = 0;
+      uint16_t operandAddress = 0;
+      uint8_t operand = 0;
 
 #ifdef DEBUG
       debugStream << "PC=" << hex << setw(4) << PC << " ";
@@ -162,7 +162,7 @@ void M6502High::interruptHandler()
     mySystem->poke(0x0100 + SP--, PS() & (~0x10));
     D = false;
     I = true;
-    PC = (uInt16)mySystem->peek(0xFFFE) | ((uInt16)mySystem->peek(0xFFFF) << 8);
+    PC = (uint16_t)mySystem->peek(0xFFFE) | ((uint16_t)mySystem->peek(0xFFFF) << 8);
   }
   else if(myExecutionStatus & NonmaskableInterruptBit)
   {
@@ -171,7 +171,7 @@ void M6502High::interruptHandler()
     mySystem->poke(0x0100 + SP--, (PC - 1) & 0x00ff);
     mySystem->poke(0x0100 + SP--, PS() & (~0x10));
     D = false;
-    PC = (uInt16)mySystem->peek(0xFFFA) | ((uInt16)mySystem->peek(0xFFFB) << 8);
+    PC = (uint16_t)mySystem->peek(0xFFFA) | ((uint16_t)mySystem->peek(0xFFFB) << 8);
   }
 
   // Clear the interrupt bits in myExecutionStatus
@@ -234,12 +234,12 @@ bool M6502High::load(Deserializer& in)
     if(in.getString() != CPU)
       return false;
 
-    A = (uInt8) in.getInt();    // Accumulator
-    X = (uInt8) in.getInt();    // X index register
-    Y = (uInt8) in.getInt();    // Y index register
-    SP = (uInt8) in.getInt();   // Stack Pointer
-    IR = (uInt8) in.getInt();   // Instruction register
-    PC = (uInt16) in.getInt();  // Program Counter
+    A = (uint8_t) in.getInt();    // Accumulator
+    X = (uint8_t) in.getInt();    // X index register
+    Y = (uint8_t) in.getInt();    // Y index register
+    SP = (uint8_t) in.getInt();   // Stack Pointer
+    IR = (uint8_t) in.getInt();   // Instruction register
+    PC = (uint16_t) in.getInt();  // Program Counter
 
     N = in.getBool();     // N flag for processor status register
     V = in.getBool();     // V flag for processor status register
@@ -249,12 +249,12 @@ bool M6502High::load(Deserializer& in)
     notZ = in.getBool();  // Z flag complement for processor status register
     C = in.getBool();     // C flag for processor status register
 
-    myExecutionStatus = (uInt8) in.getInt();
+    myExecutionStatus = (uint8_t) in.getInt();
 
     // Indicates the number of distinct memory accesses
-    myNumberOfDistinctAccesses = (uInt32) in.getInt();
+    myNumberOfDistinctAccesses = (uint32_t) in.getInt();
     // Indicates the last address which was accessed
-    myLastAddress = (uInt16) in.getInt();
+    myLastAddress = (uint16_t) in.getInt();
   }
   catch(char *msg)
   {

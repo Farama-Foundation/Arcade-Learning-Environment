@@ -39,10 +39,10 @@ Controller::Type Controller::type()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const Int32 Controller::maximumResistance = 0x7FFFFFFF;
+const int Controller::maximumResistance = 0x7FFFFFFF;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const Int32 Controller::minimumResistance = 0x00000000;
+const int Controller::minimumResistance = 0x00000000;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Controller::Controller(const Controller& c)

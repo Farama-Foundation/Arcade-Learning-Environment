@@ -66,7 +66,7 @@ SpeakJet::~SpeakJet()
 void SpeakJet::spawnThread()
 {
   ourInputSemaphore = SDL_CreateSemaphore(1); // 1==unlocked
-  uInt32 sem = SDL_SemValue(ourInputSemaphore);
+  uint32_t sem = SDL_SemValue(ourInputSemaphore);
   ale::Logger::Info << "before SDL_CreateThread(), sem==" << sem << endl;
   ourThread = SDL_CreateThread(thread, 0);
   sem = SDL_SemValue(ourInputSemaphore);
@@ -84,7 +84,7 @@ int SpeakJet::thread(void *data) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SpeakJet::write(uInt8 code)
+void SpeakJet::write(uint8_t code)
 {
   // TODO: clean up this mess.
   const char *rsynthPhones = xlatePhoneme(code);
@@ -96,7 +96,7 @@ void SpeakJet::write(uInt8 code)
     return;
   }
 
-  uInt32 sem = SDL_SemValue(ourInputSemaphore);
+  uint32_t sem = SDL_SemValue(ourInputSemaphore);
   ale::Logger::Info << "write() waiting on semaphore (value " << sem << ")" << endl;
   SDL_SemWait(ourInputSemaphore);
   ale::Logger::Info << "write() got semaphore" << endl;
@@ -117,7 +117,7 @@ void SpeakJet::speak()
   if(!ourInputCount)
     return;
 
-  uInt32 sem = SDL_SemValue(ourInputSemaphore);
+  uint32_t sem = SDL_SemValue(ourInputSemaphore);
   ale::Logger::Info << "speak() waiting on semaphore (value " << sem << ")" << endl;
   SDL_SemWait(ourInputSemaphore);
   ale::Logger::Info << "speak() got semaphore" << endl;
@@ -148,7 +148,7 @@ void SpeakJet::speak()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const char *SpeakJet::xlatePhoneme(uInt8 code)
+const char *SpeakJet::xlatePhoneme(uint8_t code)
 {
   if(code <= 6)
     return " ";
@@ -160,8 +160,8 @@ const char *SpeakJet::xlatePhoneme(uInt8 code)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 *SpeakJet::getSamples(int *count) {
-  static uInt8 contents[OUTPUT_BUFFER_SIZE];
+uint8_t *SpeakJet::getSamples(int *count) {
+  static uint8_t contents[OUTPUT_BUFFER_SIZE];
   SDL_sem *lock = myCurrentOutputBuffer->lock;
   SDL_SemWait(lock);
   *count = myCurrentOutputBuffer->items;
@@ -188,16 +188,16 @@ void *SpeakJet::save_sample(void *user_data,
   static long clip_max;
   static float peak;
   short shortSamp;
-  uInt8 output;
+  uint8_t output;
 
   darray_t *buf = (darray_t *) user_data;
   shortSamp = clip(&clip_max, sample, &peak);
   darray_short(buf, shortSamp);
 
   // Convert to 8-bit
-  // output = (uInt8)( (((float)shortSamp) + 32768.0) / 256.0 );
+  // output = (uint8_t)( (((float)shortSamp) + 32768.0) / 256.0 );
   double d = shortSamp + 32768.0;
-  output = (uInt8)(d/256.0);
+  output = (uint8_t)(d/256.0);
   ale::Logger::Info << "Output sample: " << ((int)(output)) << endl;
 
   // Put in buffer

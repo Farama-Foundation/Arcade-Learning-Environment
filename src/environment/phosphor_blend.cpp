@@ -31,8 +31,8 @@ void PhosphorBlend::process(ALEScreen& screen) {
   Console& console = m_osystem->console();
 
   // Fetch current and previous frame buffers from the emulator
-  uInt8* current_buffer = console.mediaSource().currentFrameBuffer();
-  uInt8* previous_buffer = console.mediaSource().previousFrameBuffer();
+  uint8_t* current_buffer = console.mediaSource().currentFrameBuffer();
+  uint8_t* previous_buffer = console.mediaSource().previousFrameBuffer();
 
   // Process each pixel in turn
   for (size_t i = 0; i < screen.arraySize(); i++) {
@@ -40,7 +40,7 @@ void PhosphorBlend::process(ALEScreen& screen) {
     int pv = previous_buffer[i];
 
     // Find out the corresponding rgb color
-    uInt32 rgb = m_avg_palette[cv][pv];
+    uint32_t rgb = m_avg_palette[cv][pv];
 
     // Set the corresponding pixel in the array
     screen.getArray()[i] = rgbToNTSC(rgb);
@@ -57,9 +57,9 @@ void PhosphorBlend::makeAveragePalette() {
       palette.getRGB(c1, r1, g1, b1);
       palette.getRGB(c2, r2, g2, b2);
 
-      uInt8 r = getPhosphor(r1, r2);
-      uInt8 g = getPhosphor(g1, g2);
-      uInt8 b = getPhosphor(b1, b2);
+      uint8_t r = getPhosphor(r1, r2);
+      uint8_t g = getPhosphor(g1, g2);
+      uint8_t b = getPhosphor(b1, b2);
       m_avg_palette[c1][c2] = makeRGB(r, g, b);
     }
   }
@@ -93,26 +93,26 @@ void PhosphorBlend::makeAveragePalette() {
   }
 }
 
-uInt8 PhosphorBlend::getPhosphor(uInt8 v1, uInt8 v2) {
+uint8_t PhosphorBlend::getPhosphor(uint8_t v1, uint8_t v2) {
   if (v1 < v2) {
     int tmp = v1;
     v1 = v2;
     v2 = tmp;
   }
 
-  uInt32 blendedValue = ((v1 - v2) * m_phosphor_blend_ratio) / 100 + v2;
+  uint32_t blendedValue = ((v1 - v2) * m_phosphor_blend_ratio) / 100 + v2;
   if (blendedValue > 255)
     return 255;
   else
-    return (uInt8)blendedValue;
+    return (uint8_t)blendedValue;
 }
 
-uInt32 PhosphorBlend::makeRGB(uInt8 r, uInt8 g, uInt8 b) {
+uint32_t PhosphorBlend::makeRGB(uint8_t r, uint8_t g, uint8_t b) {
   return (r << 16) | (g << 8) | b;
 }
 
 /** Converts a RGB value to an 8-bit format */
-uInt8 PhosphorBlend::rgbToNTSC(uInt32 rgb) {
+uint8_t PhosphorBlend::rgbToNTSC(uint32_t rgb) {
   int r = (rgb >> 16) & 0xFF;
   int g = (rgb >> 8) & 0xFF;
   int b = rgb & 0xFF;

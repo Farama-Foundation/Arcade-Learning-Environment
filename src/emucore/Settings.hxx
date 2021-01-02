@@ -25,7 +25,6 @@ class OSystem;
 #include <vector>
 #include <stdexcept>
 
-#include "emucore/bspf/bspf.hxx"
 
 /**
   This class provides an interface for accessing frontend specific settings.

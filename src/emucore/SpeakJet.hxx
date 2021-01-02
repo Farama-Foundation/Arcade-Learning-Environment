@@ -80,7 +80,6 @@
   @version $Id: SpeakJet.hxx,v 1.7 2007/01/01 18:04:50 stephena Exp $
 */
 
-#include "emucore/bspf/bspf.hxx"
 
 #include "SDL.h"
 #include <SDL_thread.h>
@@ -99,7 +98,7 @@ static darray_t rsynthSamples;
 // not SpeakJet phonemes).
 static char phonemeBuffer[INPUT_BUFFER_SIZE];
 // How many bytes are in the input buffer?
-static uInt16 ourInputCount;
+static uint16_t ourInputCount;
 
 
 class SpeakJet
@@ -127,7 +126,7 @@ class SpeakJet
 
       @param code The SpeakJet code being written to the emulated chip
     */
-    void write(uInt8 code);
+    void write(uint8_t code);
 
     /**
       Returns a buffer full of 8-bit samples. This should be called every
@@ -137,7 +136,7 @@ class SpeakJet
       @param count This will be set to the number of samples that are
                    returned. Value ranges from 0 to bufferSize.
     */
-    uInt8 *getSamples(int *count);
+    uint8_t *getSamples(int *count);
 
     /**
       Returns false if the phonemeBuffer is full, true otherwise.
@@ -215,7 +214,7 @@ class SpeakJet
   private:
     // Convert a SpeakJet phoneme into one or more rsynth phonemes.
     // Input range is 0 to 255, but not all codes are supported yet.
-    static const char *xlatePhoneme(uInt8 code);
+    static const char *xlatePhoneme(uint8_t code);
 
 };
 
@@ -225,14 +224,14 @@ struct SpeechBuffer
     SDL_sem *lock;
     SpeechBuffer *next;
     int items;
-    uInt8 contents[OUTPUT_BUFFER_SIZE];
+    uint8_t contents[OUTPUT_BUFFER_SIZE];
 };
 
 // For now, just a static array of them
 static SpeechBuffer outputBuffers[SPEECH_BUFFERS];
 
 static SpeechBuffer *ourCurrentWriteBuffer;
-static uInt8 ourCurrentWritePosition;
+static uint8_t ourCurrentWritePosition;
 
 #endif
 

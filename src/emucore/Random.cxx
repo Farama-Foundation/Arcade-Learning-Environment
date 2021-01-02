@@ -35,8 +35,8 @@ class Random::Impl {
     Impl();
 
     // Implementations of the methods defined in Random.hpp.
-    void seed(uInt32 value);
-    uInt32 next();
+    void seed(uint32_t value);
+    uint32_t next();
     double nextDouble();
 
   private:
@@ -44,7 +44,7 @@ class Random::Impl {
     friend class Random;
 
     // Seed to use for creating new random number generators
-    uInt32 m_seed;
+    uint32_t m_seed;
 
     // Random number generator 
     randgen_t m_randgen; 
@@ -56,14 +56,14 @@ Random::Impl::Impl()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Random::Impl::seed(uInt32 value)
+void Random::Impl::seed(uint32_t value)
 {
   m_seed = value;
   m_randgen.seed(m_seed);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt32 Random::Impl::next() 
+uint32_t Random::Impl::next() 
 {
   return m_randgen();
 }
@@ -89,13 +89,13 @@ Random::~Random() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Random::seed(uInt32 value)
+void Random::seed(uint32_t value)
 {
   m_pimpl->seed(value);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt32 Random::next()
+uint32_t Random::next()
 {
   return m_pimpl->next();
 }

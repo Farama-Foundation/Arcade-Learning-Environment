@@ -19,7 +19,6 @@
 #ifndef EVENT_HXX
 #define EVENT_HXX
 
-#include "emucore/bspf/bspf.hxx"
 
 class Event;
 
@@ -100,12 +99,12 @@ class Event
     /**
       Get the value associated with the event of the specified type
     */
-    virtual Int32 get(Type type) const;
+    virtual int get(Type type) const;
 
     /**
       Set the value associated with the event of the specified type
     */
-    virtual void set(Type type, Int32 value);
+    virtual void set(Type type, int value);
 
     /**
       Clears the event array (resets to initial state)
@@ -114,10 +113,10 @@ class Event
 
   protected:
     // Number of event types there are
-    const Int32 myNumberOfTypes;
+    const int myNumberOfTypes;
 
     // Array of values associated with each event type
-    Int32 myValues[LastType];
+    int myValues[LastType];
 };
 
 #endif

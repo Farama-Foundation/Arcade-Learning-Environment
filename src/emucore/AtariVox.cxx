@@ -61,7 +61,7 @@ bool AtariVox::read(DigitalPin pin)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Int32 AtariVox::read(AnalogPin)
+int AtariVox::read(AnalogPin)
 {
   // Analog pins are not connected in AtariVox, so we have infinite resistance 
   return maximumResistance;
@@ -73,7 +73,7 @@ void AtariVox::clockDataIn(bool value)
   // bool oldValue = myPinState & 0x01;
   myPinState = (myPinState & 0xfe) | value;
 
-  uInt32 cycle = mySystem->cycles();
+  uint32_t cycle = mySystem->cycles();
   if(DEBUG_ATARIVOX)
     ale::Logger::Info << "AtariVox: value "
                       << value
@@ -125,7 +125,7 @@ void AtariVox::shiftIn(bool value)
       ale::Logger::Warning << "AtariVox: bad stop bit" << endl;
     else
     {
-      uInt8 data = ((myShiftRegister >> 1) & 0xff);
+      uint8_t data = ((myShiftRegister >> 1) & 0xff);
       ale::Logger::Warning << "AtariVox: output byte " << ((int)(data)) << endl;
       mySpeakJet->write(data);
     }

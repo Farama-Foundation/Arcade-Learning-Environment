@@ -24,10 +24,10 @@
 #include "emucore/CartFE.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeFE::CartridgeFE(const uInt8* image)
+CartridgeFE::CartridgeFE(const uint8_t* image)
 {
   // Copy the ROM image into my buffer
-  for(uInt32 addr = 0; addr < 8192; ++addr)
+  for(uint32_t addr = 0; addr < 8192; ++addr)
   {
     myImage[addr] = image[addr];
   }
@@ -53,15 +53,15 @@ void CartridgeFE::reset()
 void CartridgeFE::install(System& system)
 {
   mySystem = &system;
-  uInt16 shift = mySystem->pageShift();
-  uInt16 mask = mySystem->pageMask();
+  uint16_t shift = mySystem->pageShift();
+  uint16_t mask = mySystem->pageMask();
 
   // Make sure the system we're being installed in has a page size that'll work
   assert((0x1000 & mask) == 0);
 
   // Map all of the accesses to call peek and poke
   System::PageAccess access;
-  for(uInt32 i = 0x1000; i < 0x2000; i += (1 << shift))
+  for(uint32_t i = 0x1000; i < 0x2000; i += (1 << shift))
   {
     access.directPeekBase = 0;
     access.directPokeBase = 0;
@@ -71,14 +71,14 @@ void CartridgeFE::install(System& system)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 CartridgeFE::peek(uInt16 address)
+uint8_t CartridgeFE::peek(uint16_t address)
 {
   // The bank is determined by A13 of the processor
   return myImage[(address & 0x0FFF) + (((address & 0x2000) == 0) ? 4096 : 0)];
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeFE::poke(uInt16, uInt8)
+void CartridgeFE::poke(uint16_t, uint8_t)
 {
 }
 
@@ -130,7 +130,7 @@ bool CartridgeFE::load(Deserializer& in)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeFE::bank(uInt16 b)
+void CartridgeFE::bank(uint16_t b)
 {
   // Doesn't support bankswitching in the normal sense
 }
@@ -149,14 +149,14 @@ int CartridgeFE::bankCount()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool CartridgeFE::patch(uInt16 address, uInt8 value)
+bool CartridgeFE::patch(uint16_t address, uint8_t value)
 {
   myImage[(address & 0x0FFF) + (((address & 0x2000) == 0) ? 4096 : 0)] = value;
   return true;
 } 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8* CartridgeFE::getImage(int& size)
+uint8_t* CartridgeFE::getImage(int& size)
 {
   size = 8192;
   return &myImage[0];

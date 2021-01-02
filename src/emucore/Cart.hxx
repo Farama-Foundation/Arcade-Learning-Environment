@@ -25,7 +25,6 @@ class Properties;
 class Settings;
 
 #include <fstream>
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/Device.hxx"
 #include "emucore/Random.hxx"
 #include "common/Log.hpp"
@@ -50,7 +49,7 @@ class Cartridge : public Device
       @param settings The settings associated with the system
       @return   Pointer to the new cartridge object allocated on the heap
     */
-    static Cartridge* create(const uInt8* image, uInt32 size, 
+    static Cartridge* create(const uint8_t* image, uint32_t size, 
         const Properties& props, const Settings& settings, Random& rng);
 
     /**
@@ -92,7 +91,7 @@ class Cartridge : public Device
     /**
       Set the specified bank.
     */
-    virtual void bank(uInt16 bank) = 0;
+    virtual void bank(uint16_t bank) = 0;
 
     /**
       Get the current bank.
@@ -113,7 +112,7 @@ class Cartridge : public Device
       @param value    The value to place into the address
       @return    Success or failure of the patch operation
     */
-    virtual bool patch(uInt16 address, uInt8 value) = 0;
+    virtual bool patch(uint16_t address, uint8_t value) = 0;
 
     /**
       Access the internal ROM image for this cartridge.
@@ -121,7 +120,7 @@ class Cartridge : public Device
       @param size  Set to the size of the internal ROM image data
       @return  A pointer to the internal ROM image data
     */
-    virtual uInt8* getImage(int& size) = 0;
+    virtual uint8_t* getImage(int& size) = 0;
 
   protected:
     // If bankLocked is true, ignore attempts at bankswitching. This is used
@@ -139,7 +138,7 @@ class Cartridge : public Device
       @param size   The size of the ROM image 
       @return The "best guess" for the cartridge type
     */
-    static std::string autodetectType(const uInt8* image, uInt32 size);
+    static std::string autodetectType(const uint8_t* image, uint32_t size);
 
     /**
       Search the image for the specified byte signature
@@ -152,49 +151,49 @@ class Cartridge : public Device
 
       @return  True if the signature was found at least 'minhits' time, else false
     */
-    static bool searchForBytes(const uInt8* image, uInt32 imagesize,
-                               const uInt8* signature, uInt32 sigsize,
-                               uInt32 minhits);
+    static bool searchForBytes(const uint8_t* image, uint32_t imagesize,
+                               const uint8_t* signature, uint32_t sigsize,
+                               uint32_t minhits);
 
     /**
       Returns true if the image is probably a SuperChip (256 bytes RAM)
     */
-    static bool isProbablySC(const uInt8* image, uInt32 size);
+    static bool isProbablySC(const uint8_t* image, uint32_t size);
 
     /**
       Returns true if the image is probably a 3F bankswitching cartridge
     */
-    static bool isProbably3F(const uInt8* image, uInt32 size);
+    static bool isProbably3F(const uint8_t* image, uint32_t size);
 
     /**
       Returns true if the image is probably a 3E bankswitching cartridge
     */
-    static bool isProbably3E(const uInt8* image, uInt32 size);
+    static bool isProbably3E(const uint8_t* image, uint32_t size);
 
     /**
       Returns true if the image is probably a E0 bankswitching cartridge
     */
-    static bool isProbablyE0(const uInt8* image, uInt32 size);
+    static bool isProbablyE0(const uint8_t* image, uint32_t size);
 
     /**
       Returns true if the image is probably a E7 bankswitching cartridge
     */
-    static bool isProbablyE7(const uInt8* image, uInt32 size);
+    static bool isProbablyE7(const uint8_t* image, uint32_t size);
 
     /**
       Returns true if the image is probably a UA bankswitching cartridge
     */
-    static bool isProbablyUA(const uInt8* image, uInt32 size);
+    static bool isProbablyUA(const uint8_t* image, uint32_t size);
 
     /**
       Returns true if the image is probably a CV bankswitching cartridge
     */
-    static bool isProbablyCV(const uInt8* image, uInt32 size);
+    static bool isProbablyCV(const uint8_t* image, uint32_t size);
 
     /**
       Returns true if the image is probably an FE bankswitching cartridge
     */
-    static bool isProbablyFE(const uInt8* image, uInt32 size);
+    static bool isProbablyFE(const uint8_t* image, uint32_t size);
 
   private:
     // Copy constructor isn't supported by cartridges so make it private

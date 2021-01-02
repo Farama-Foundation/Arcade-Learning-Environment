@@ -23,7 +23,6 @@ class Event;
 class Properties;
 class Switches;
 
-#include "emucore/bspf/bspf.hxx"
 
 /**
   This class represents the console switches of the game console.
@@ -53,14 +52,14 @@ class Switches
 
       @return The 8 bits which represent the state of the console switches
     */
-    uInt8 read();
+    uint8_t read();
 
   private:
     // Reference to the event object to use
     const Event& myEvent;
 
     // State of the console switches
-    uInt8 mySwitches;
+    uint8_t mySwitches;
 };
 #endif
 

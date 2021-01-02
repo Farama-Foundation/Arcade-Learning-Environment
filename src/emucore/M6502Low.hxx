@@ -23,7 +23,6 @@ class M6502Low;
 class Serializer;
 class Deserializer;
 
-#include "emucore/bspf/bspf.hxx"
 #include "emucore/M6502.hxx"
 
 /**
@@ -52,7 +51,7 @@ class M6502Low : public M6502
 
       @param systemCyclesPerProcessorCycle The cycle multiplier
     */
-    M6502Low(uInt32 systemCyclesPerProcessorCycle);
+    M6502Low(uint32_t systemCyclesPerProcessorCycle);
 
     /**
       Destructor
@@ -68,7 +67,7 @@ class M6502Low : public M6502
       @param number Indicates the number of instructions to execute
       @return true iff execution stops normally
     */
-    virtual bool execute(uInt32 number);
+    virtual bool execute(uint32_t number);
 
     /**
       Saves the current state of this device to the given Serializer.
@@ -105,7 +104,7 @@ class M6502Low : public M6502
 
       @return The byte at the specified address
     */
-    inline uInt8 peek(uInt16 address);
+    inline uint8_t peek(uint16_t address);
 
     /**
       Change the byte at the specified address to the given value
@@ -113,7 +112,7 @@ class M6502Low : public M6502
       @param address The address where the value should be stored
       @param value The value to be stored at the address
     */
-    inline void poke(uInt16 address, uInt8 value);
+    inline void poke(uint16_t address, uint8_t value);
 };
 #endif
 
