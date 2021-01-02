@@ -56,11 +56,6 @@ class Event
       PaddleThreeResistance, PaddleThreeFire,
         PaddleThreeDecrease, PaddleThreeIncrease, PaddleThreeAnalog,
 
-      DrivingZeroClockwise, DrivingZeroCounterClockwise, DrivingZeroValue, 
-      DrivingZeroFire,
-      DrivingOneClockwise, DrivingOneCounterClockwise, DrivingOneValue,
-      DrivingOneFire,
-      
       ChangeState, LoadState, SaveState, TakeSnapshot, Quit,
       PauseMode, MenuMode, CmdMenuMode, LauncherMode,
       Fry, VolumeDecrease, VolumeIncrease,

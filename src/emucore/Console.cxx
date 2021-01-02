@@ -25,7 +25,6 @@
 #include "emucore/Cart.hxx"
 #include "emucore/Console.hxx"
 #include "emucore/Control.hxx"
-#include "emucore/Driving.hxx"
 #include "emucore/Event.hxx"
 #include "emucore/Joystick.hxx"
 #include "emucore/M6502Hi.hxx"
@@ -78,11 +77,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   bool swapPaddles = myProperties.get(Controller_SwapPaddles) == "YES";
 
   // Construct left controller
-  if(left == "DRIVING")
-  {
-    myControllers[leftPort] = new Driving(Controller::Left, *myEvent);
-  }
-  else if(left == "PADDLES")
+  if(left == "PADDLES")
   {
     myControllers[leftPort] = new Paddles(Controller::Left, *myEvent, swapPaddles);
   }
@@ -92,11 +87,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   }
  
   // Construct right controller
-  if(right == "DRIVING")
-  {
-    myControllers[rightPort] = new Driving(Controller::Right, *myEvent);
-  }
-  else if(right == "PADDLES")
+  if(right == "PADDLES")
   {
     myControllers[rightPort] = new Paddles(Controller::Right, *myEvent, swapPaddles);
   }
