@@ -31,7 +31,6 @@ target_sources(ale
     Driving.cxx
     Event.cxx
     Joystick.cxx
-    Keyboard.cxx
     M6502.cxx
     M6502Hi.cxx
     M6502Low.cxx

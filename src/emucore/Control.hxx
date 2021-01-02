@@ -73,7 +73,7 @@ class Controller
     */
     enum Type
     {
-      BoosterGrip, Driving, Keyboard, Paddles, Joystick,
+      BoosterGrip, Driving, Paddles, Joystick,
       TrakBall
     };
 
