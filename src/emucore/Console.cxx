@@ -22,7 +22,6 @@
 #include <fstream>
 #include <ctime>
 
-#include "emucore/AtariVox.hxx"
 #include "emucore/Booster.hxx"
 #include "emucore/Cart.hxx"
 #include "emucore/Console.hxx"
@@ -119,12 +118,6 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   {
     myControllers[rightPort] = new Paddles(Controller::Right, *myEvent, swapPaddles);
   }
-#ifdef ATARIVOX_SUPPORT
-  else if(right == "ATARIVOX")
-  {
-    myControllers[rightPort] = new AtariVox(Controller::Right, *myEvent);
-  }
-#endif
   else
   {
     myControllers[rightPort] = new Joystick(Controller::Right, *myEvent);

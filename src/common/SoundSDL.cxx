@@ -407,26 +407,6 @@ void SoundSDL::callback(void* udata, uint8_t* stream, int len)
 {
   SoundSDL* sound = (SoundSDL*)udata;
   sound->processFragment(stream, (int)len);
-#ifdef ATARIVOX_SUPPORT
-  ale::Logger::Info << "SoundSDL::callback(): len==" << len << std::endl;
-
-  // See if we need sound from the AtariVox
-  AtariVox *vox = sound->myOSystem->console().atariVox();
-  if(vox)
-  {
-    // If so, mix 'em together (this is a crappy way to mix audio streams...)
-    uint8_t *s = stream;
-    for(int i=0; i<len/OUTPUT_BUFFER_SIZE; i++)
-    {
-      int count;
-      uint8_t *voxSamples = vox->getSpeakJet()->getSamples(&count);
-      if(!count)
-        break;
-      SDL_MixAudio(s, voxSamples, OUTPUT_BUFFER_SIZE, SDL_MIX_MAXVOLUME);
-      s += OUTPUT_BUFFER_SIZE;
-    }
-  }
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
