@@ -71,7 +71,7 @@ void ALEInterface::createOSystem(std::unique_ptr<OSystem>& theOSystem,
   theSettings = std::make_unique<Settings>(theOSystem.get());
 }
 
-void ALEInterface::loadSettings(const std::string& romfile,
+void ALEInterface::loadSettings(const fs::path& romfile,
                                 std::unique_ptr<OSystem>& theOSystem) {
   theOSystem->settings().validate();
   theOSystem->create();
@@ -85,7 +85,7 @@ void ALEInterface::loadSettings(const std::string& romfile,
     std::exit(1);
   } else if (theOSystem->createConsole(romfile)) {
     Logger::Info << "Running ROM file..." << std::endl;
-    theOSystem->settings().setString("rom_file", romfile);
+    theOSystem->settings().setString("rom_file", romfile.string());
   } else {
     Logger::Error << "Unable to create console for " << romfile << std::endl;
     std::exit(1);
@@ -117,7 +117,7 @@ ALEInterface::~ALEInterface() {}
 // Loads and initializes a game. After this call the game should be
 // ready to play. Resets the OSystem/Console/Environment/etc. This is
 // necessary after changing a setting.
-void ALEInterface::loadROM(std::string rom_file) {
+void ALEInterface::loadROM(fs::path rom_file) {
   assert(theOSystem.get());
   if (rom_file.empty()) {
     rom_file = theOSystem->romFile();
@@ -184,7 +184,7 @@ void ALEInterface::loadROM(std::string rom_file) {
 #endif
 }
 
-bool ALEInterface::isSupportedRom(const std::string& rom_file){
+bool ALEInterface::isSupportedRom(const fs::path& rom_file){
   if (!fs::exists(rom_file)) {
     throw std::runtime_error("ROM file doesn't exist");
   }
