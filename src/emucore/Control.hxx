@@ -74,7 +74,7 @@ class Controller
     enum Type
     {
       BoosterGrip, Driving, Keyboard, Paddles, Joystick,
-      TrakBall, AtariVox
+      TrakBall
     };
 
   public:

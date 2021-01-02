@@ -237,32 +237,6 @@ void M6532::poke(uint16_t addr, uint8_t value)
   else if((addr & 0x07) == 0x01)    // Port A Data Direction Register 
   {
     myDDRA = value;
-#ifdef ATARIVOX_SUPPORT
-     /*
-    20060608 bkw: Not the most elegant thing in the world...
-     When a bit in the DDR is set as input, +5V is placed on its output
-     pin. When it's set as output, either +5V or 0V (depending on the
-     contents of SWCHA) will be placed on the output pin.
-     The standard macros for the AtariVox use this fact to send data
-     to the port.
-
-     This code isn't 100% correct: it assumes the SWCHA bits are all 0.
-     This is good enough to emulate the AtariVox, if the programmer is
-     using SWACNT to do output (e.g. the SPKOUT macro from speakjet.inc)
-     and if he's leaving SWCHA alone.
-
-     The inaccuracy here means that wrongly-written code will still
-     be able to drive the emulated AtariVox, even though it wouldn't
-     work on real hardware.
-     */
-    Controller &c = myConsole.controller(Controller::Right);
-     if(c.type() == Controller::AtariVox) {
-      c.write(Controller::One, !(value & 0x01));
-      c.write(Controller::Two, !(value & 0x02));
-      c.write(Controller::Three, !(value & 0x04));
-      c.write(Controller::Four, !(value & 0x08));
-     }
-#endif
   }
   else if((addr & 0x07) == 0x02)    // Port B I/O Register (Console switches)
   {

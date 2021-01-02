@@ -31,7 +31,6 @@ class System;
 #include "emucore/TIA.hxx"
 #include "emucore/Cart.hxx"
 #include "emucore/M6532.hxx"
-#include "emucore/AtariVox.hxx"
 
 /**
   This class represents the entire game console.
@@ -211,10 +210,6 @@ class Console
     void togglePFBit() const { toggleTIABit(TIA::PF, "PF"); }
     void enableBits(bool enable) const;
 
-#ifdef ATARIVOX_SUPPORT
-    AtariVox *atariVox() { return vox; }
-#endif
-
   private:
     void toggleTIABit(TIA::TIABit bit, const std::string& bitname, bool show = true) const;
 
@@ -252,10 +247,6 @@ class Console
     // Pointer to the 6532 (aka RIOT) (the debugger needs it)
     // A RIOT of my own! (...with apologies to The Clash...)
     M6532 *myRiot;
-
-#ifdef ATARIVOX_SUPPORT
-    AtariVox *vox;
-#endif
 
     // The currently defined display format (NTSC/PAL/PAL60)
     std::string myDisplayFormat;
