@@ -8,7 +8,7 @@
   regenerated and the application recompiled.
 */
 
-#define DEF_PROPS_SIZE 2722
+#define DEF_PROPS_SIZE 2676
 
 static const char* DefProps[DEF_PROPS_SIZE][21] = {
   { "000509d1ed2b8d30a9d94be1b3b5febb", "", "", "Jungle Jane (2003) (Greg Zumwalt) (Pitfall! Hack)", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" }, 
