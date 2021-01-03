@@ -29,15 +29,14 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/Settings.hxx"
 #include "emucore/System.hxx"
-#include "emucore/OSystem.hxx"
 
 #include "common/SoundSDL.hxx"
 #include "common/Log.hpp"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SoundSDL::SoundSDL(OSystem* osystem)
-  : Sound(osystem),
-    myIsEnabled(osystem->settings().getBool("sound")),
+SoundSDL::SoundSDL(Settings* settings)
+  : Sound(settings),
+    myIsEnabled(settings->getBool("sound")),
     myIsInitializedFlag(false),
     myLastRegisterSetCycle(0),
     myDisplayFrameRate(60),
@@ -48,9 +47,9 @@ SoundSDL::SoundSDL(OSystem* osystem)
     myNumRecordSamplesNeeded(0)
 {
 
-    if (osystem->settings().getString("record_sound_filename").size() > 0) {
+    if (mySettings->getString("record_sound_filename").size() > 0) {
       
-        std::string filename = osystem->settings().getString("record_sound_filename");
+        std::string filename = mySettings->getString("record_sound_filename");
         mySoundExporter.reset(new ale::sound::SoundExporter(filename, myNumChannels));
     }
 }
@@ -66,7 +65,7 @@ SoundSDL::~SoundSDL()
 void SoundSDL::setEnabled(bool state)
 {
   myIsEnabled = state;
-  myOSystem->settings().setBool("sound", state);
+  mySettings->setBool("sound", state);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -97,9 +96,9 @@ void SoundSDL::initialize()
     }
     else
     {
-      uint32_t fragsize = myOSystem->settings().getInt("fragsize");
-      int frequency = myOSystem->settings().getInt("freq");
-      int tiafreq   = myOSystem->settings().getInt("tiafreq");
+      uint32_t fragsize = mySettings->getInt("fragsize");
+      int frequency = mySettings->getInt("freq");
+      int tiafreq   = mySettings->getInt("tiafreq");
 
       SDL_AudioSpec desired;
       desired.freq   = frequency;
@@ -141,11 +140,11 @@ void SoundSDL::initialize()
       myTIASound.tiaFrequency(tiafreq);
       myTIASound.channels(myHardwareSpec.channels);
 
-      bool clipvol = myOSystem->settings().getBool("clipvol");
+      bool clipvol = mySettings->getBool("clipvol");
       myTIASound.clipVolume(clipvol);
 
       // Adjust volume to that defined in settings
-      myVolume = myOSystem->settings().getInt("volume");
+      myVolume = mySettings->getInt("volume");
       setVolume(myVolume);
     }
   }
@@ -212,7 +211,7 @@ void SoundSDL::setVolume(int percent)
   {
     if((percent >= 0) && (percent <= 100))
     {
-      myOSystem->settings().setInt("volume", percent);
+      mySettings->setInt("volume", percent);
       SDL_LockAudio();
       myVolume = percent;
       myTIASound.volume(percent);
@@ -238,12 +237,6 @@ void SoundSDL::adjustVolume(int8_t direction)
     return;
 
   setVolume(percent);
-
-  // Now show an onscreen message
-  // strval << percent;
-  // message = "Volume set to ";
-  // message += strval.str();
-  // myOSystem->frameBuffer().showMessage(message);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

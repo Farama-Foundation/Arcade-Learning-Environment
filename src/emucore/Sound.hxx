@@ -19,7 +19,7 @@
 #ifndef SOUND_HXX
 #define SOUND_HXX
 
-class OSystem;
+class Settings;
 class Serializer;
 class Deserializer;
 
@@ -38,7 +38,7 @@ class Sound
       Create a new sound object.  The init method must be invoked before
       using the object.
     */
-    Sound(OSystem* osystem) { myOSystem = osystem; }
+    Sound(Settings* settings) { mySettings = settings; }
 
     /**
       Destructor
@@ -156,8 +156,8 @@ public:
     virtual bool save(Serializer& out) = 0;
 
   protected:
-    // The OSystem for this sound object
-    OSystem* myOSystem;
+    // The emulator Settings
+    Settings* mySettings;
 };
 
 #endif
