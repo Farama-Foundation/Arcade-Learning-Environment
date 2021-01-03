@@ -281,7 +281,7 @@ void SoundSDL::set(uint16_t addr, uint8_t value, int cycle)
   // the sound to "scale" correctly, we have to know the games real frame 
   // rate (e.g., 50 or 60) and the currently emulated frame rate. We use these
   // values to "scale" the time before the register change occurs.
-  delta = delta * (myDisplayFrameRate / (double)myOSystem->frameRate());
+  delta = delta * (myDisplayFrameRate / (double)myDisplayFrameRate);
   RegWrite info;
   info.addr = addr;
   info.value = value;
