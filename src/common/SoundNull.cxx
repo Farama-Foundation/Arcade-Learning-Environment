@@ -20,13 +20,12 @@
 #include "emucore/Deserializer.hxx"
 
 
-#include "emucore/OSystem.hxx"
 #include "emucore/Settings.hxx"
 #include "common/SoundNull.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SoundNull::SoundNull(OSystem* osystem)
-    : Sound(osystem)
+SoundNull::SoundNull(Settings* settings)
+    : Sound(settings)
 {
 }
 

@@ -19,6 +19,7 @@
 #ifndef CONSOLE_HXX
 #define CONSOLE_HXX
 
+class OSystem;
 class Console;
 class Controller;
 class Event;

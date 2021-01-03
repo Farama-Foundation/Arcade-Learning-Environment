@@ -21,7 +21,7 @@
 
 #ifdef SOUND_SUPPORT
 
-class OSystem;
+class Settings;
 
 #include "SDL.h"
 
@@ -46,7 +46,7 @@ class SoundSDL : public Sound
       Create a new sound object.  The init method must be invoked before
       using the object.
     */
-    SoundSDL(OSystem* osystem);
+    SoundSDL(Settings* settings);
  
     /**
       Destructor
