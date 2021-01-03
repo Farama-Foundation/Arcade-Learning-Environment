@@ -115,7 +115,7 @@ void SoundSDL::initialize()
 
       if(SDL_OpenAudio(&desired, &myHardwareSpec) < 0)
       {
-        ale::Logger::Warning << "WARNING: Couldn't open SDL audio system! " << st::endl;
+        ale::Logger::Warning << "WARNING: Couldn't open SDL audio system! " << std::endl;
         ale::Logger::Warning << "         " << SDL_GetError() << std::endl;
         return;
       }
@@ -225,7 +225,7 @@ void SoundSDL::setVolume(int percent)
 void SoundSDL::adjustVolume(int8_t direction)
 {
   std::ostringstream strval;
-  st::string message;
+  std::string message;
 
   int percent = myVolume;
 
