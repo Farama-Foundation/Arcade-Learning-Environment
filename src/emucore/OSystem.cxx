@@ -138,15 +138,15 @@ void OSystem::createSound()
 #ifdef SOUND_SUPPORT
   // If requested (& supported), enable sound
   if (mySettings->getBool("sound") == true) {
-      mySound = new SoundSDL(this);
+      mySound = new SoundSDL(mySettings);
       mySound->initialize();
   }
   else {
-      mySound = new SoundNull(this);
+      mySound = new SoundNull(mySettings);
   }
 #else
   mySettings->setBool("sound", false);
-  mySound = new SoundNull(this);
+  mySound = new SoundNull(mySettings);
 #endif
 }
 

@@ -19,7 +19,7 @@
 #ifndef SOUND_NULL_HXX
 #define SOUND_NULL_HXX
 
-class OSystem;
+class Settings;
 class Serializer;
 class Deserializer;
 
@@ -39,7 +39,7 @@ class SoundNull : public Sound
       Create a new sound object.  The init method must be invoked before
       using the object.
     */
-    SoundNull(OSystem* osystem);
+    SoundNull(Settings* settings);
 
     /**
       Destructor
