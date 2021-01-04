@@ -152,26 +152,6 @@ class OSystem
     */
     bool openROM(const fs::path& rom, std::string& md5, uint8_t** image, int* size);
 
-    /**
-      Returns the random number generator for this emulator.
-    */
-    Random& rng() { return myRandGen; }
-
-    /**
-      Resets the seed for our random number generator.
-    */
-    void resetRNGSeed();
-
-    /** 
-      Serializes the OSystem state.
-    */
-    bool saveState(Serializer& out);
-
-    /** 
-      Deserializes the OSystem state.
-    */
-    bool loadState(Deserializer& in);
-
   protected:
     // Global Event object  //ALE 
     Event* myEvent;
@@ -190,9 +170,6 @@ class OSystem
 
     // Pointer to the (currently defined) Console object
     Console* myConsole;
-
-    // Random number generator shared across the emulator's components
-    Random myRandGen; 
 
     // Number of times per second to iterate through the main loop
     uint32_t myDisplayFrameRate;

@@ -17,15 +17,15 @@
 //============================================================================
 
 #include <cassert>
+#include <cstring>
 
-#include "emucore/Random.hxx"
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartCV.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeCV::CartridgeCV(const uint8_t* image, uint32_t size, Random& rng)
+CartridgeCV::CartridgeCV(const uint8_t* image, uint32_t size)
 {
   uint32_t addr;
   if(size == 2048)
@@ -34,12 +34,6 @@ CartridgeCV::CartridgeCV(const uint8_t* image, uint32_t size, Random& rng)
     for(uint32_t addr = 0; addr < 2048; ++addr)
     {
       myImage[addr] = image[addr];
-    }
-
-    // Initialize RAM with random values
-    for(uint32_t i = 0; i < 1024; ++i)
-    {
-      myRAM[i] = rng.next();
     }
   }
   else if(size == 4096)
@@ -53,12 +47,8 @@ CartridgeCV::CartridgeCV(const uint8_t* image, uint32_t size, Random& rng)
       myImage[addr] = image[addr + 2048];
     }
 
-    // Copy the RAM image into my buffer
-    for(addr = 0; addr < 1024; ++addr)
-    {
-      myRAM[addr] = image[addr];
-    }
-
+    myInitialRAM = new uint8_t[1024];
+    std::memcpy(myInitialRAM, image, 1024);
   }
 }
 
@@ -76,6 +66,14 @@ const char* CartridgeCV::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeCV::reset()
 {
+  if (myInitialRAM) {
+    // Copy the RAM image into my buffer
+    std::memcpy(myRAM, myInitialRAM, 1024);
+  } else {
+    // Initialize RAM with random values
+    for(uint32_t i = 0; i < 1024; ++i)
+      myRAM[i] = mySystem->rng().next();
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

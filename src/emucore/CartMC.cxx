@@ -18,41 +18,32 @@
 
 #include <cassert>
 
-#include "emucore/Random.hxx"
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartMC.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeMC::CartridgeMC(const uint8_t* image, uint32_t size, Random& rng)
+CartridgeMC::CartridgeMC(const uint8_t* image, uint32_t size)
   : mySlot3Locked(false)
 {
-  uint32_t i;
-
   // Make sure size is reasonable
   assert(size <= 128 * 1024);
 
   // Allocate array for the cart's RAM
   myRAM = new uint8_t[32 * 1024];
 
-  // Initialize RAM with random values
-  for(i = 0; i < 32 * 1024; ++i)
-  {
-    myRAM[i] = rng.next();
-  }
-
   // Allocate array for the ROM image
   myImage = new uint8_t[128 * 1024];
 
   // Set the contents of the entire ROM to 0
-  for(i = 0; i < 128 * 1024; ++i)
+  for(uint32_t i = 0; i < 128 * 1024; ++i)
   {
     myImage[i] = 0;
   }
 
   // Copy the ROM image to the end of the ROM buffer
-  for(i = 0; i < size; ++i)
+  for(uint32_t i = 0; i < size; ++i)
   {
     myImage[128 * 1024 - size + i] = image[i];
   }
@@ -74,6 +65,9 @@ const char* CartridgeMC::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeMC::reset()
 {
+  // Initialize RAM with random values
+  for(uint32_t i = 0; i < 32 * 1024; ++i)
+    myRAM[i] = mySystem->rng().next();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

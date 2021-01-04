@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `isSupportedROM(path)` to check if a ROM file is supported by the ALE
 - Added new games: Atlantis2, Backgammon, BasicMath, Blackjack, Casino, Crossbow, DarkChambers, Earthworld, Entombed, ET, FlagCapture, Hangman, HauntedHouse, HumanCannonball, Klax, MarioBros, MiniatureGolf, Othello, Pacman, Pitfall2, SpaceWar, Superman, Surround, TicTacToe3D, VideoCheckers, VideoChess, VideoCube, WordZapper (thanks @tkoppe)
 - Added (additional) mode/difficulty settings for: Lost Luggage, Turmoil, Tron Dead Discs, Pong, Mr. Do, King Kong, Frogger, Adventure (thanks @tkoppe)
+- Added `cloneState(include_rng)` which will eventually replace `cloneSystemState` (behind the scenes `cloneSystemState` is equivalent to `cloneState(include_rng=True)`).
 
 ### Changed
 - Rewrote SDL support using SDL2 primitives
@@ -38,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed RL-GLUE support
 - Removed ALE CLI interface
 - Removed Java interface
+- Removed `ALEInterface::load()`, `ALEInterface::save()`. If you require this stack functionality it's easy to implement on your own using `ALEInterface::cloneState(include_rng)`
 - Removed os-dependent filesystem code in favour of C++17 `std::fs`
 - Removed human control mode
 - Removed old makefile build system in favour of CMake

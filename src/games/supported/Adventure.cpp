@@ -125,7 +125,7 @@ void AdventureSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (m < 3) {
-    Random& rng = environment->getSystemRng();
+    Random& rng = environment->getEnvironmentRNG();
     // Read the mode we are currently in.
     unsigned char mode = (readRam(&system, 0xDD) >> 1) & 0x03;
 

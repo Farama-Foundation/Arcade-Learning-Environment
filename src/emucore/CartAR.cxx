@@ -21,28 +21,19 @@
 #include <cassert>
 
 #include "emucore/M6502Hi.hxx"
-#include "emucore/Random.hxx"
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartAR.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeAR::CartridgeAR(const uint8_t* image, uint32_t size, bool fastbios, Random& rng)
+CartridgeAR::CartridgeAR(const uint8_t* image, uint32_t size, bool fastbios)
   : my6502(0)
 {
-  uint32_t i;
-
   // Create a load image buffer and copy the given image
   myLoadImages = new uint8_t[size];
   myNumberOfLoadImages = size / 8448;
   std::memcpy(myLoadImages, image, size);
-
-  // Initialize RAM with random values
-  for(i = 0; i < 6 * 1024; ++i)
-  {
-    myImage[i] = rng.next();
-  }
 
   // Initialize SC BIOS ROM
   initializeROM(fastbios);
@@ -63,6 +54,10 @@ const char* CartridgeAR::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeAR::reset()
 {
+  // Initialize RAM with random values
+  for(uint32_t i = 0; i < 6 * 1024; ++i)
+    myImage[i] = mySystem->rng().next();
+
   myPower = true;
   myPowerRomCycle = mySystem->cycles();
   myWriteEnabled = false;

@@ -25,9 +25,11 @@ class TIA;
 class NullDevice;
 class Serializer;
 class Deserializer;
+class Settings;
 
 #include "emucore/Device.hxx"
 #include "emucore/NullDev.hxx"
+#include "emucore/Random.hxx"
 
 #include <string>
 
@@ -57,7 +59,7 @@ class System
       Create a new system with an addressing space of 2^13 bytes and
       pages of 2^6 bytes.
     */
-    System();
+    System(Settings& settings);
 
     /**
       Destructor
@@ -154,6 +156,15 @@ class System
     TIA& tia()
     {
       return *myTIA;
+    }
+
+    /**
+      Answer the random generator attached to the system.
+      @return The random generator
+    */
+    Random& rng()
+    {
+      return myRandom;
     }
 
     /**
@@ -377,6 +388,10 @@ class System
 
     // TIA device attached to the system or the null pointer
     TIA* myTIA;
+
+    // Many devices need a source of random numbers, usually for emulating
+    // unknown/undefined behaviour
+    Random myRandom;
 
     // Number of system cycles executed since the last reset
     uint32_t myCycles;

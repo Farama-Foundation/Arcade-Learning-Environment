@@ -24,7 +24,6 @@ class Serializer;
 class Deserializer;
 
 #include "emucore/Cart.hxx"
-#include "emucore/Random.hxx"
 
 /**
   Cartridge class used for Commavid's extra-RAM games.
@@ -43,9 +42,8 @@ class CartridgeCV : public Cartridge
       Create a new cartridge using the specified image
 
       @param image Pointer to the ROM image
-      @param rng A random number generator used to populate the initial extra RAM
     */
-    CartridgeCV(const uint8_t* image, uint32_t size, Random& rng);
+    CartridgeCV(const uint8_t* image, uint32_t size);
 
     /**
       Destructor
@@ -147,6 +145,10 @@ class CartridgeCV : public Cartridge
 
     // The 1024 bytes of RAM
     uint8_t myRAM[1024];
+
+    // Pointer to the initial RAM data from the cart
+    // This doesn't always exist, so we don't pre-allocate it
+    uint8_t* myInitialRAM;
 };
 
 #endif

@@ -332,23 +332,34 @@ class ALGymEnv(gym.Env, utils.EzPickle):
         mapping = dict(zip(keys, values))
         return [mapping[action] for action in self._action_set]
 
-    def clone_state(self) -> ALEState:
+    def clone_state(self, include_rng=False) -> ALEState:
         """Clone emulator state w/o system state. Restoring this state will
         *not* give an identical environment. For complete cloning and restoring
         of the full state, see `{clone,restore}_full_state()`."""
-        return self.ale.cloneState()
+        return self.ale.cloneState(include_rng)
 
-    def restore_state(self, state) -> None:
+    def restore_state(self, state: ALEState) -> None:
         """Restore emulator state w/o system state."""
         self.ale.restoreState(state)
 
     def clone_full_state(self) -> ALEState:
-        """Clone emulator state w/ system state including pseudorandomness.
-        Restoring this state will give an identical environment."""
+        """Deprecated method which would clone the emulator and system state."""
+        logger.warn(
+            "clone_full_state() is deprecated and will be removed in a future release of `ale-py`. "
+            "Please use clone_state() which now returns the full emulator state. "
+            "The only source of stochasticity is `repeat_action_probability` and can be set to `0` "
+            "for fully deterministic emulation."
+        )
         return self.ale.cloneSystemState()
 
-    def restore_full_state(self, state) -> None:
+    def restore_full_state(self, state: ALEState) -> None:
         """Restore emulator state w/ system state including pseudorandomness."""
+        logger.warn(
+            "restore_full_state() is deprecated and will be removed in a future release of `ale-py`. "
+            "Please use restore_state(state) which now restores the full emulator state. "
+            "The only source of stochasticity is `repeat_action_probability` and can be set to `0` "
+            "for fully deterministic emulation."
+        )
         self.ale.restoreSystemState(state)
 
     @property

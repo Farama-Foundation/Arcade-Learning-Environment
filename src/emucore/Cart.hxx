@@ -26,7 +26,6 @@ class Settings;
 
 #include <fstream>
 #include "emucore/Device.hxx"
-#include "emucore/Random.hxx"
 #include "common/Log.hpp"
 
 /**
@@ -50,7 +49,7 @@ class Cartridge : public Device
       @return   Pointer to the new cartridge object allocated on the heap
     */
     static Cartridge* create(const uint8_t* image, uint32_t size, 
-        const Properties& props, const Settings& settings, Random& rng);
+        const Properties& props, const Settings& settings);
 
     /**
       Create a new cartridge

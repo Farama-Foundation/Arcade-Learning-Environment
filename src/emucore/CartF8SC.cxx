@@ -18,25 +18,18 @@
 
 #include <cassert>
 
-#include "emucore/Random.hxx"
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartF8SC.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeF8SC::CartridgeF8SC(const uint8_t* image, Random& rng)
+CartridgeF8SC::CartridgeF8SC(const uint8_t* image)
 {
   // Copy the ROM image into my buffer
   for(uint32_t addr = 0; addr < 8192; ++addr)
   {
     myImage[addr] = image[addr];
-  }
-
-  // Initialize RAM with random values
-  for(uint32_t i = 0; i < 128; ++i)
-  {
-    myRAM[i] = rng.next();
   }
 }
 
@@ -54,6 +47,10 @@ const char* CartridgeF8SC::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeF8SC::reset()
 {
+  // Initialize RAM with random values
+  for(uint32_t i = 0; i < 128; ++i)
+    myRAM[i] = mySystem->rng().next();
+
   // Upon reset we switch to bank 1
   bank(1);
 }

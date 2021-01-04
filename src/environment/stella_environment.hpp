@@ -25,13 +25,14 @@
 #include "environment/stella_environment_wrapper.hpp"
 #include "emucore/Event.hxx"
 #include "emucore/OSystem.hxx"
+#include "emucore/System.hxx"
+#include "emucore/Random.hxx"
 #include "common/Constants.h"
 #include "games/RomSettings.hpp"
 #include "common/Log.hpp"
 #include "common/ScreenExporter.hpp"
 
 #include <cstddef>
-#include <stack>
 #include <memory>
 
 namespace ale {
@@ -43,21 +44,13 @@ class StellaEnvironment {
   /** Resets the system to its start state. */
   void reset();
 
-  /** Save/restore the environment state onto the stack. */
-  void save();
-  void load();
-
-  /** Returns a copy of the current emulator state. Note that this doesn't include
-   *  pseudorandomness, so that clone/restoreState are suitable for planning. */
-  ALEState cloneState();
+  /** Returns a copy of the current environment state. Note that by default this **does**
+   * include the PNRG for sticky actions. You can optionally include the PRNG by setting
+   * `include_rng` to true. For planning you probably want to disable
+   * sticky actions. The emulator is fully deterministic. */
+  ALEState cloneState(bool include_rng = false);
   /** Restores a previously saved copy of the state. */
   void restoreState(const ALEState&);
-
-  /** Returns a copy of the current emulator state. This includes RNG state information, and
-   *  more generally should lead to exactly reproducibility. */
-  ALEState cloneSystemState();
-  /** Restores a previously saved copy of the state, including RNG state information. */
-  void restoreSystemState(const ALEState&);
 
   /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
    *  and performs one simulation step in Stella. Returns the resultant reward. When
@@ -99,7 +92,7 @@ class StellaEnvironment {
   int getFrameNumber() const { return m_state.getFrameNumber(); }
   int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
-  Random& getSystemRng() { return m_osystem->rng(); }
+  Random& getEnvironmentRNG() { return m_random; }
 
   // Returns the current difficulty switch setting in use by the environment.
   difficulty_t getDifficulty() const { return m_state.getDifficulty(); }
@@ -133,9 +126,8 @@ class StellaEnvironment {
   OSystem* m_osystem;
   RomSettings* m_settings;
   PhosphorBlend m_phosphor_blend; // For performing phosphor colour averaging, if so desired
+  Random m_random; // Environment random number generator, used for sticky actions
   std::string m_cartridge_md5; // Necessary for saving and loading emulator state
-
-  std::stack<ALEState> m_saved_states; // States are saved on a stack
 
   ALEState m_state;   // Current environment state
   ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)

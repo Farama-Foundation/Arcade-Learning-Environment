@@ -199,17 +199,6 @@ def test_is_rom_supported(ale, test_rom_path, random_rom_path):
     with pytest.raises(RuntimeError) as exc_info:
         ale.isSupportedROM("notfound")
 
-def test_save_load_state(tetris):
-    state = tetris.cloneState()
-    tetris.saveState()
-
-    for _ in range(10):
-        tetris.act(0)
-
-    assert tetris.cloneState() != state
-    tetris.loadState()
-    assert tetris.cloneState() == state
-
 
 def test_clone_restore_state(tetris):
     state = tetris.cloneState()
@@ -222,15 +211,137 @@ def test_clone_restore_state(tetris):
     assert tetris.cloneState() == state
 
 
-def test_clone_restore_system_state(tetris):
-    state = tetris.cloneSystemState()
+def test_clone_restore_state_determinism(ale, test_rom_path):
+    ale.setInt("random_seed", 0)
+    ale.setFloat("repeat_action_probability", 0.0)
+    ale.loadROM(test_rom_path)
+    ale.reset_game()
 
-    for _ in range(10):
-        tetris.act(0)
+    num_actions = 100
+    action_set = ale.getLegalActionSet()
+    seq = list(map(lambda x: x % len(action_set), range(num_actions)))
 
-    assert tetris.cloneSystemState() != state
-    tetris.restoreSystemState(state)
-    assert tetris.cloneSystemState() == state
+    def _get_states(seq_):
+        states = []
+        for action in seq_:
+            ale.act(action)
+            states.append(ale.cloneState())
+            if ale.game_over():
+                ale.reset()
+        return states
+
+    ale.reset_game()
+    first_run = _get_states(seq)
+    second_run = _get_states(seq)
+
+    all_equal = True
+    for first, second in zip(first_run, second_run):
+        all_equal &= first == second
+    assert not all_equal
+
+
+def test_clone_restore_state_stochasticity(ale, test_rom_path):
+    ale.setInt("random_seed", 0)
+    ale.setFloat("repeat_action_probability", 0.25)
+    ale.loadROM(test_rom_path)
+    ale.reset_game()
+
+    num_actions = 100
+    action_set = ale.getLegalActionSet()
+    seq = list(map(lambda x: x % len(action_set), range(num_actions)))
+
+    def _get_states(seq_):
+        states = []
+        for action in seq_:
+            ale.act(action)
+            states.append(ale.cloneState())
+            if ale.game_over():
+                ale.reset()
+        return states
+
+    ale.reset_game()
+    first_run = _get_states(seq)
+    second_run = _get_states(seq)
+
+    all_equal = True
+    for first, second in zip(first_run, second_run):
+        all_equal &= first == second
+    assert not all_equal
+
+
+def test_clone_restore_state_include_rng(ale, test_rom_path):
+    ale.setInt("random_seed", 0)
+    ale.setFloat("repeat_action_probability", 0.25)
+    ale.loadROM(test_rom_path)
+    ale.reset_game()
+
+    num_actions = 100
+    action_set = ale.getLegalActionSet()
+    seq = list(map(lambda x: x % len(action_set), range(num_actions)))
+
+    def _get_states(seq_):
+        states = []
+        for action in seq_:
+            ale.act(action)
+            states.append(ale.cloneState())
+            if ale.game_over():
+                ale.reset()
+        return states
+
+    _get_states(seq[:num_actions//2])
+    without_rng = ale.cloneState()
+    with_rng = ale.cloneState(include_rng=True)
+    second_half = _get_states(seq[num_actions//2:])
+
+    ale.restoreState(without_rng)
+    second_half_without_rng = _get_states(seq[num_actions//2:])
+
+    ale.restoreState(with_rng)
+    second_half_with_rng = _get_states(seq[num_actions//2:])
+
+    def _all_equal(first, second):
+        all_equal = True
+        for first_, second_ in zip(first, second):
+            all_equal &= first_ == second_
+        return all_equal
+
+    assert _all_equal(second_half, second_half_with_rng)
+    assert not _all_equal(second_half, second_half_without_rng)
+
+
+def test_clone_restore_system_state(ale, test_rom_path):
+    ale.setInt("random_seed", 0)
+    ale.setFloat("repeat_action_probability", 0.25)
+    ale.loadROM(test_rom_path)
+    ale.reset_game()
+
+    num_actions = 100
+    action_set = ale.getLegalActionSet()
+    seq = list(map(lambda x: x % len(action_set), range(num_actions)))
+    for action in seq:
+        ale.act(action)
+        if ale.game_over():
+            ale.reset()
+    system = ale.cloneSystemState()
+
+    states = []
+    for action in seq:
+        ale.act(action)
+        states.append(ale.cloneSystemState())
+        if ale.game_over():
+            ale.reset()
+
+    ale.restoreSystemState(system)
+
+    new_states = []
+    for action in seq:
+        ale.act(action)
+        new_states.append(ale.cloneSystemState())
+        if ale.game_over():
+            ale.reset()
+
+    for first, second in zip(states, new_states):
+        assert first == second
 
 
 def test_state_pickle(tetris):

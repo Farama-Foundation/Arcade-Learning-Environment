@@ -19,10 +19,12 @@
 #define __ALE_STATE_HPP__
 
 #include <string>
+#include <optional>
 
 #include "common/Constants.h"
 #include "emucore/OSystem.hxx"
 #include "emucore/Event.hxx"
+#include "emucore/Random.hxx"
 #include "common/Log.hpp"
 
 namespace ale {
@@ -98,15 +100,13 @@ class ALEState {
   friend class StellaEnvironment;
 
   // The two methods below are meant to be used by StellaEnvironment.
-  /** Restores the environment to a previously saved state. If load_system == true, we also
-   *  restore system-specific information (such as the RNG state). */
-  void load(OSystem* osystem, RomSettings* settings, std::string md5,
-            const ALEState& rhs, bool load_system);
+  // Restores the environment to a previously saved state.
+  void load(OSystem* osystem, RomSettings* settings, Random* rng, std::string md5,
+            const ALEState& rhs);
 
   /** Returns a "copy" of the current state, including the information necessary to restore
-   *  the emulator. If save_system == true, this includes the RNG state. */
-  ALEState save(OSystem* osystem, RomSettings* settings, std::string md5,
-                bool save_system);
+   *  the emulator. The RNG can optionally be included in the state. */
+  ALEState save(OSystem* osystem, RomSettings* settings, std::optional<Random*> rng, std::string md5);
 
   /** Reset key presses */
   void resetKeys(Event* event_obj);

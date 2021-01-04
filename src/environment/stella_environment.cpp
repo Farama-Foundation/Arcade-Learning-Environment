@@ -19,6 +19,7 @@
 
 #include <sstream>
 #include <cstring>
+#include <optional>
 
 #include "emucore/System.hxx"
 
@@ -46,6 +47,18 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
   }
   m_num_reset_steps = 4;
   m_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
+
+  // Initialize RNG
+  int32_t seed;
+  if (m_osystem->settings().getInt("random_seed") == -1) {
+    seed = time(NULL);
+    m_random.seed((uint32_t)seed);
+  } else {
+    seed = m_osystem->settings().getInt("random_seed");
+    assert(seed >= 0);
+    m_random.seed((uint32_t)seed);
+  }
+  Logger::Info << "Random seed is " << seed << std::endl;
 
   // Set current mode to the ROM's default mode
   m_state.setCurrentMode(settings->getDefaultMode());
@@ -106,36 +119,13 @@ void StellaEnvironment::reset() {
   }
 }
 
-/** Save/restore the environment state. */
-void StellaEnvironment::save() {
-  // Store the current state into a new object
-  ALEState new_state = cloneState();
-  m_saved_states.push(new_state);
-}
-
-void StellaEnvironment::load() {
-  // Get the state on top of the stack
-  ALEState& target_state = m_saved_states.top();
-
-  // Deserialize it into 'm_state'
-  restoreState(target_state);
-  m_saved_states.pop();
-}
-
-ALEState StellaEnvironment::cloneState() {
-  return m_state.save(m_osystem, m_settings, m_cartridge_md5, false);
+ALEState StellaEnvironment::cloneState(bool include_rng) {
+  std::optional<Random*> rng = include_rng ? std::make_optional(&m_random) : std::nullopt;
+  return m_state.save(m_osystem, m_settings, rng, m_cartridge_md5);
 }
 
 void StellaEnvironment::restoreState(const ALEState& target_state) {
-  m_state.load(m_osystem, m_settings, m_cartridge_md5, target_state, false);
-}
-
-ALEState StellaEnvironment::cloneSystemState() {
-  return m_state.save(m_osystem, m_settings, m_cartridge_md5, true);
-}
-
-void StellaEnvironment::restoreSystemState(const ALEState& target_state) {
-  m_state.load(m_osystem, m_settings, m_cartridge_md5, target_state, true);
+  m_state.load(m_osystem, m_settings, &m_random, m_cartridge_md5, target_state);
 }
 
 void StellaEnvironment::noopIllegalActions(Action& player_a_action,
@@ -160,7 +150,7 @@ reward_t StellaEnvironment::act(Action player_a_action,
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
-  Random& rng = m_osystem->rng();
+  Random& rng = getEnvironmentRNG();
 
   // Apply the same action for a given number of times... note that act() will refuse to emulate
   //  past the terminal state

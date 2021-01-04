@@ -18,25 +18,18 @@
 
 #include <cassert>
 
-#include "emucore/Random.hxx"
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartF6SC.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeF6SC::CartridgeF6SC(const uint8_t* image, Random& rng)
+CartridgeF6SC::CartridgeF6SC(const uint8_t* image)
 {
   // Copy the ROM image into my buffer
   for(uint32_t addr = 0; addr < 16384; ++addr)
   {
     myImage[addr] = image[addr];
-  }
-
-  // Initialize RAM with random values
-  for(uint32_t i = 0; i < 128; ++i)
-  {
-    myRAM[i] = rng.next();
   }
 }
 
@@ -54,6 +47,10 @@ const char* CartridgeF6SC::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeF6SC::reset()
 {
+  // Initialize RAM with random values
+  for(uint32_t i = 0; i < 128; ++i)
+    myRAM[i] = mySystem->rng().next();
+
   // Upon reset we switch to bank 0
   bank(0);
 }

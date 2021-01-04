@@ -18,25 +18,18 @@
 
 #include <cassert>
 
-#include "emucore/Random.hxx"
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartE7.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeE7::CartridgeE7(const uint8_t* image, Random& rng)
+CartridgeE7::CartridgeE7(const uint8_t* image)
 {
   // Copy the ROM image into my buffer
   for(uint32_t addr = 0; addr < 16384; ++addr)
   {
     myImage[addr] = image[addr];
-  }
-
-  // Initialize RAM with random values
-  for(uint32_t i = 0; i < 2048; ++i)
-  {
-    myRAM[i] = rng.next();
   }
 }
 
@@ -54,6 +47,10 @@ const char* CartridgeE7::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeE7::reset()
 {
+  // Initialize RAM with random values
+  for(uint32_t i = 0; i < 2048; ++i)
+    myRAM[i] = mySystem->rng().next();
+
   // Install some default banks for the RAM and first segment
   bankRAM(0);
   bank(0);
