@@ -91,12 +91,6 @@ void ALEInterface::loadSettings(const fs::path& romfile,
     std::exit(1);
   }
 
-  // Must force the resetting of the OSystem's random seed, which is set before we change
-  // choose our random seed.
-  Logger::Info << "Random seed is "
-               << theOSystem->settings().getInt("random_seed") << std::endl;
-  theOSystem->resetRNGSeed();
-
   std::string currentDisplayFormat = theOSystem->console().getFormat();
   theOSystem->colourPalette().setPalette("standard", currentDisplayFormat);
 }
@@ -361,24 +355,20 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
 // Returns the current RAM content
 const ALERAM& ALEInterface::getRAM() { return environment->getRAM(); }
 
-// Saves the state of the system
-void ALEInterface::saveState() { environment->save(); }
-
-// Loads the state of the system
-void ALEInterface::loadState() { environment->load(); }
-
-ALEState ALEInterface::cloneState() { return environment->cloneState(); }
+ALEState ALEInterface::cloneState(bool include_rng) {
+  return environment->cloneState(include_rng);
+}
 
 void ALEInterface::restoreState(const ALEState& state) {
   return environment->restoreState(state);
 }
 
 ALEState ALEInterface::cloneSystemState() {
-  return environment->cloneSystemState();
+  return cloneState(true);
 }
 
 void ALEInterface::restoreSystemState(const ALEState& state) {
-  return environment->restoreSystemState(state);
+  return restoreState(state);
 }
 
 void ALEInterface::saveScreenPNG(const std::string& filename) {

@@ -161,26 +161,23 @@ class ALEInterface {
   // Returns the current RAM content
   const ALERAM& getRAM();
 
-  // Saves the state of the system
-  void saveState();
+  // This makes a copy of the environment state. By defualt this copy does *not* include pseudorandomness
+  // making it suitable for planning purposes. If `include_prng` is set to true, then the
+  // pseudorandom number generator is also serialized.
+  ALEState cloneState(bool include_rng = false);
 
-  // Loads the state of the system
-  void loadState();
-
-  // This makes a copy of the environment state. This copy does *not* include pseudorandomness,
-  // making it suitable for planning purposes. By contrast, see cloneSystemState.
-  ALEState cloneState();
-
-  // Reverse operation of cloneState(). This does not restore pseudorandomness, so that repeated
-  // calls to restoreState() in the stochastic controls setting will not lead to the same outcomes.
-  // By contrast, see restoreSystemState.
+  // Reverse operation of cloneState(). This will restore the ALEState, if it was
+  // cloned including the RNG then the RNG will be restored. Otherwise the current
+  // state of the RNG will be kept as is.
   void restoreState(const ALEState& state);
 
   // This makes a copy of the system & environment state, suitable for serialization. This includes
   // pseudorandomness and so is *not* suitable for planning purposes.
+  // This is equivalent to calling cloneState(true) but is maintained for backwards compatibility.
   ALEState cloneSystemState();
 
   // Reverse operation of cloneSystemState.
+  // This is maintained for backwards compatability and is equivalent to calling restoreState(state).
   void restoreSystemState(const ALEState& state);
 
   // Save the current screen as a png file

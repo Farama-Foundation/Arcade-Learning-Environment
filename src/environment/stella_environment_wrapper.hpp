@@ -33,7 +33,7 @@ class StellaEnvironmentWrapper {
   reward_t act(Action player_a_action, Action player_b_action);
   void softReset();
   void pressSelect(size_t num_steps = 1);
-  Random& getSystemRng();
+  Random& getEnvironmentRNG();
 
   StellaEnvironment& m_environment;
 };

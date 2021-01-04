@@ -25,18 +25,12 @@
 #include "emucore/CartF4SC.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CartridgeF4SC::CartridgeF4SC(const uint8_t* image, Random& rng)
+CartridgeF4SC::CartridgeF4SC(const uint8_t* image)
 {
   // Copy the ROM image into my buffer
   for(uint32_t addr = 0; addr < 32768; ++addr)
   {
     myImage[addr] = image[addr];
-  }
-
-  // Initialize RAM with random values
-  for(uint32_t i = 0; i < 128; ++i)
-  {
-    myRAM[i] = rng.next();
   }
 }
 
@@ -54,6 +48,10 @@ const char* CartridgeF4SC::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeF4SC::reset()
 {
+  // Initialize RAM with random values
+  for(uint32_t i = 0; i < 128; ++i)
+    myRAM[i] = mySystem->rng().next();
+
   // Upon reset we switch to bank 0
   bank(0);
 }

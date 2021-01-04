@@ -24,7 +24,6 @@ class Serializer;
 class Deserializer;
 
 #include "emucore/Cart.hxx"
-#include "emucore/Random.hxx"
 
 /**
   This is the cartridge class for M-Network bankswitched games.  
@@ -62,9 +61,8 @@ class CartridgeE7 : public Cartridge
       Create a new cartridge using the specified image
 
       @param image Pointer to the ROM image
-      @param rng A random number generator used to populate the initial extra RAM
     */
-    CartridgeE7(const uint8_t* image, Random& rng);
+    CartridgeE7(const uint8_t* image);
  
     /**
       Destructor

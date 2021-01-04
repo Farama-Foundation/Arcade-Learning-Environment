@@ -188,9 +188,7 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("getRAM", (void (ale::ALEPythonInterface::*)(
                          py::array_t<uint8_t, py::array::c_style>&)) &
                          ale::ALEPythonInterface::getRAM)
-      .def("saveState", &ale::ALEPythonInterface::saveState)
-      .def("loadState", &ale::ALEPythonInterface::loadState)
-      .def("cloneState", &ale::ALEPythonInterface::cloneState)
+      .def("cloneState", &ale::ALEPythonInterface::cloneState, py::kw_only(), py::arg("include_rng") = py::bool_(false))
       .def("restoreState", &ale::ALEPythonInterface::restoreState)
       .def("cloneSystemState", &ale::ALEPythonInterface::cloneSystemState)
       .def("restoreSystemState", &ale::ALEPythonInterface::restoreSystemState)

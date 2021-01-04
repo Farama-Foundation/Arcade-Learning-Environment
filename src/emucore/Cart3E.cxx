@@ -18,7 +18,6 @@
 
 #include <cassert>
 
-#include "emucore/Random.hxx"
 #include "emucore/System.hxx"
 #include "emucore/TIA.hxx"
 #include "emucore/Serializer.hxx"
@@ -26,7 +25,7 @@
 #include "emucore/Cart3E.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Cartridge3E::Cartridge3E(const uint8_t* image, uint32_t size, Random& rng)
+Cartridge3E::Cartridge3E(const uint8_t* image, uint32_t size)
   : mySize(size)
 {
   // Allocate array for the ROM image
@@ -36,12 +35,6 @@ Cartridge3E::Cartridge3E(const uint8_t* image, uint32_t size, Random& rng)
   for(uint32_t addr = 0; addr < mySize; ++addr)
   {
     myImage[addr] = image[addr];
-  }
-
-  // Initialize RAM with random values
-  for(uint32_t i = 0; i < 32768; ++i)
-  {
-    myRam[i] = rng.next();
   }
 }
 
@@ -60,6 +53,10 @@ const char* Cartridge3E::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Cartridge3E::reset()
 {
+  // Initialize RAM with random values
+  for(uint32_t i = 0; i < 32768; ++i)
+    myRam[i] = mySystem->rng().next();
+
   // We'll map bank 0 into the first segment upon reset
   bank(0);
 }

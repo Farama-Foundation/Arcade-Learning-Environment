@@ -24,7 +24,6 @@ class Serializer;
 class Deserializer;
 
 #include "emucore/Cart.hxx"
-#include "emucore/Random.hxx"
 
 /**
   Cartridge class used for Atari's 8K bankswitched games with
@@ -40,9 +39,8 @@ class CartridgeF8SC : public Cartridge
       Create a new cartridge using the specified image
 
       @param image Pointer to the ROM image
-      @param rng A random number generator used to populate the initial extra RAM
     */
-    CartridgeF8SC(const uint8_t* image, Random& rng);
+    CartridgeF8SC(const uint8_t* image);
  
     /**
       Destructor
