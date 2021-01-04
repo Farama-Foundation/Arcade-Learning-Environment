@@ -29,6 +29,7 @@
 #include "emucore/PropsSet.hxx"
 #include "emucore/Event.hxx"
 #include "emucore/OSystem.hxx"
+#include "emucore/System.hxx"
 
 #ifdef SDL_SUPPORT
   #include "common/ScreenSDL.hpp"
@@ -94,35 +95,8 @@ bool OSystem::create()
   // opened until needed, so this is non-blocking (on those systems
   // that only have a single sound device (no hardware mixing)
   createSound();
-  
-  // Seed RNG. This will likely get re-called, e.g. by the ALEInterface, but is needed
-  // by other interfaces.
-  resetRNGSeed();
 
   return true;
-}
-
-void OSystem::resetRNGSeed() {
-
-  // We seed the random number generator. The 'time' seed is somewhat redundant, since the
-  // rng defaults to time. But we'll do it anyway.
-  if (mySettings->getInt("random_seed") == 0) {
-    myRandGen.seed((uint32_t)time(NULL));
-  } else {
-    int seed = mySettings->getInt("random_seed");
-    assert(seed >= 0);
-    myRandGen.seed((uint32_t)seed);
-  }
-}
-
-bool OSystem::saveState(Serializer& out) {
-
-    // Here we serialize the RNG state.
-    return myRandGen.saveState(out);
-}
-
-bool OSystem::loadState(Deserializer& in) {
-    return myRandGen.loadState(in);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -321,7 +295,7 @@ bool OSystem::queryConsoleInfo(const uint8_t* image, uint32_t size,
     s = mySettings->getString("hmove");
     if(s != "") props.set(Emulation_HmoveBlanks, s);
 
-  *cart = Cartridge::create(image, size, props, *mySettings, myRandGen);
+  *cart = Cartridge::create(image, size, props, *mySettings);
   if(!*cart)
     return false;
 

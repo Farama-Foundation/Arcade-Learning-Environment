@@ -25,15 +25,20 @@
 #include "emucore/System.hxx"
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
+#include "emucore/Settings.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-System::System()
+System::System(Settings& settings)
   : myNumberOfDevices(0),
     myM6502(0),
     myTIA(0),
     myCycles(0),
     myDataBusState(0)
 {
+  // Seed RNG with fixed seed to enable full determinism
+  int32_t emulatorSeed = settings.getInt("system_random_seed");
+  myRandom.seed(emulatorSeed);
+
   // Allocate page table
   myPageAccessTable = new PageAccess[myNumberOfPages];
 
@@ -122,6 +127,7 @@ bool System::save(Serializer& out)
   {
     out.putString("System");
     out.putInt(myCycles);
+    myRandom.saveState(out);
   }
   catch(char *msg)
   {
@@ -146,6 +152,7 @@ bool System::load(Deserializer& in)
       return false;
 
     myCycles = (uint32_t) in.getInt();
+    myRandom.loadState(in);
   }
   catch(char *msg)
   {

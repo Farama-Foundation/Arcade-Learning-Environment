@@ -36,7 +36,7 @@ M6532::M6532(const Console& console)
 
   for(uint32_t t = 0; t < 128; ++t)
   {
-    myRAM[t] = myConsole.osystem().rng().next();
+    myRAM[t] = myConsole.system().rng().next();
   }
 
   // Initialize other data members
@@ -57,7 +57,7 @@ const char* M6532::name() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void M6532::reset()
 {
-  myTimer = 25 + (myConsole.osystem().rng().next() % 75);
+  myTimer = 25 + (myConsole.system().rng().next() % 75);
   myIntervalShift = 6;
   myCyclesWhenTimerSet = 0;
   myCyclesWhenInterruptReset = 0;

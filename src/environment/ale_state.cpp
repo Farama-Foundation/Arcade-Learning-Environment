@@ -21,6 +21,7 @@
 #include "emucore/Event.hxx"
 #include "emucore/Deserializer.hxx"
 #include "emucore/Serializer.hxx"
+#include "emucore/Random.hxx"
 #include "common/Constants.h"
 #include "games/RomSettings.hpp"
 
@@ -62,23 +63,19 @@ ALEState::ALEState(const std::string& serialized) {
 }
 
 /** Restores ALE to the given previously saved state. */
-void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5,
-                    const ALEState& rhs, bool load_system) {
+void ALEState::load(OSystem* osystem, RomSettings* settings, Random* rng, std::string md5,
+                    const ALEState& rhs) {
   assert(rhs.m_serialized_state.length() > 0);
 
   // Deserialize the stored string into the emulator state
   Deserializer deser(rhs.m_serialized_state);
 
-  // A primitive check to produce a meaningful error if this state does not contain osystem info.
-  if (deser.getBool() != load_system)
-    throw new std::runtime_error("Attempting to load an ALEState which does "
-                                 "not contain system information.");
-
   osystem->console().system().loadState(md5, deser);
-  // If we have osystem data, load it as well
-  if (load_system)
-    osystem->loadState(deser);
   settings->loadState(deser);
+  bool rng_included = deser.getBool();
+  if (rng_included) {
+    rng->loadState(deser);
+  }
 
   // Copy over other member variables
   m_left_paddle = rhs.m_left_paddle;
@@ -91,18 +88,17 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, std::string md5,
   m_difficulty = rhs.m_difficulty;
 }
 
-ALEState ALEState::save(OSystem* osystem, RomSettings* settings,
-                        std::string md5, bool save_system) {
+ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::optional<Random*> rng,
+                        std::string md5) {
   // Use the emulator's built-in serialization to save the state
   Serializer ser;
 
-  // We use 'save_system' as a check at load time.
-  ser.putBool(save_system);
-
   osystem->console().system().saveState(md5, ser);
-  if (save_system)
-    osystem->saveState(ser);
   settings->saveState(ser);
+  ser.putBool(rng.has_value());
+  if (rng.has_value()) {
+    rng.value()->saveState(ser);
+  }
 
   // Now make a copy of this state, also storing the emulator serialization
   return ALEState(*this, ser.get_str());

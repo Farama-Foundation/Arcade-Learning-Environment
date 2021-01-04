@@ -25,7 +25,6 @@ class Serializer;
 class Deserializer;
 
 #include "emucore/Cart.hxx"
-#include "emucore/Random.hxx"
 
 /**
   This is the cartridge class for Arcadia (aka Starpath) Supercharger 
@@ -48,9 +47,8 @@ class CartridgeAR : public Cartridge
       @param image     Pointer to the ROM image
       @param size      The size of the ROM image
       @param fastbios  Whether or not to quickly execute the BIOS code
-      @param rng       A random number generator used to populate the initial extra RAM
     */
-    CartridgeAR(const uint8_t* image, uint32_t size, bool fastbios, Random& rng);
+    CartridgeAR(const uint8_t* image, uint32_t size, bool fastbios);
 
     /**
       Destructor

@@ -387,6 +387,9 @@ void Settings::setDefaultSettings() {
 
     // Stella settings
     stringSettings.insert(std::pair<std::string, std::string>("cpu", "low")); // Reduce CPU emulation fidelity for speed
+    // Random seed for ale::stella::System.
+    // This random seed should be fixed to enable full determinism in the ALE
+    intSettings.insert(std::pair<std::string, int>("system_random_seed", 4753849));
 
     // Controller settings
     intSettings.insert(std::pair<std::string, int>("max_num_frames", 0));
@@ -403,7 +406,7 @@ void Settings::setDefaultSettings() {
 
     // Environment customization settings
     boolSettings.insert(std::pair<std::string, bool>("restricted_action_set", false));
-    intSettings.insert(std::pair<std::string, int>("random_seed", 0));
+    intSettings.insert(std::pair<std::string, int>("random_seed", -1));
     boolSettings.insert(std::pair<std::string, bool>("color_averaging", false));
     boolSettings.insert(std::pair<std::string, bool>("send_rgb", false));
     intSettings.insert(std::pair<std::string, int>("frame_skip", 1));
