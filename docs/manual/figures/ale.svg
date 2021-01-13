@@ -3,11 +3,6 @@
     #eyes > rect {
         fill: #535353;
     }
-    @media (prefers-color-scheme: dark) {
-        #eyes > rect {
-            fill: #fff;
-        }
-    }
   </style>
 
   <g id="body">

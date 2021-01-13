@@ -31,7 +31,7 @@ Quick Start
 You must have a valid C++17 compiler and the following dependencies installed (we recommend using [`vcpkg`](https://github.com/microsoft/vcpkg) on all platforms)
 
 ```sh
-vcpkg install zlib sdl
+vcpkg install zlib sdl1
 ```
 
 Note: `sdl` is optional but can be useful for display/audio support (i.e., `display_screen` and `sound` config options).
