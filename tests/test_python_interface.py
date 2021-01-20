@@ -46,10 +46,16 @@ def test_int_config(tetris):
     assert value == 10
 
 
+def test_num_active_players(tetris):
+    assert tetris.numPlayersActive() == 1
+
+
 def test_act(tetris):
     enum = tetris.getLegalActionSet()
     tetris.act(enum[0])  # NOOP
     tetris.act(0)  # integer instead of enum
+    rew = tetris.act([0]) # list
+    assert len(rew) == 1
 
 
 def test_game_over(tetris):
@@ -97,6 +103,9 @@ def test_get_minimal_action_set(tetris):
 def test_get_available_modes(tetris):
     modes = tetris.getAvailableModes()
     assert len(modes) == 1 and modes[0] == 0
+    assert tetris.getAvailableModes(1) == tetris.getAvailableModes()
+    assert tetris.getAvailableModes(2) == []
+    assert tetris.getAvailableModes(4) == []
 
 
 def test_set_mode(tetris):
@@ -132,6 +141,10 @@ def test_get_frame_number(tetris):
 
 def test_lives(tetris):
     assert tetris.lives() == 0
+
+
+def test_allLives(tetris):
+    assert tetris.allLives() == [0]
 
 
 def test_get_episode_frame_number(tetris):
