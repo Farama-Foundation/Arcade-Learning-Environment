@@ -57,10 +57,10 @@ class ALEState {
   //Apply the special select action
   void pressSelect(Event* event_obj);
 
-  /** Applies paddle actions. This actually modifies the game state by updating the paddle
-      *  resistances. */
-  void applyActionPaddles(Event* event_obj, int player_a_action,
-                          int player_b_action);
+  /** Applies paddle action for paddle for player pnm.
+   * This actually modifies the game state by updating the paddle
+   * resistances. */
+  void applyActionPaddle(Event* event_obj, int action, int pnum);
   /** Sets the joystick events. No effect until the emulator is run forward. */
   void setActionJoysticks(Event* event_obj, int player_a_action,
                           int player_b_action);
@@ -90,7 +90,16 @@ class ALEState {
   //Get the current mode we are in.
   game_mode_t getCurrentMode() const { return m_mode; }
 
+  //Save the number of players in the current mode.
+  void setNumActivePlayers(int value) { m_num_players = value; }
+
+  //Get the number of players in the current mode.
+  int getNumActivePlayers() const { return m_num_players; }
+
   std::string serialize();
+
+  /** Reset key presses */
+  void resetKeys(Event* event_obj);
 
  protected:
   // Let StellaEnvironment access these methods: they are needed for emulation purposes
@@ -107,17 +116,14 @@ class ALEState {
   ALEState save(OSystem* osystem, RomSettings* settings, std::string md5,
                 bool save_system);
 
-  /** Reset key presses */
-  void resetKeys(Event* event_obj);
-
   /** Sets the paddle to a given position */
-  void setPaddles(Event* event_obj, int left, int right);
+  void setPaddle(Event* event_obj, int paddle_val, int paddle_num);
 
   /** Set the paddle min/max values */
   void setPaddleLimits(int paddle_min_val, int paddle_max_val);
 
   /** Updates the paddle position by a delta amount. */
-  void updatePaddlePositions(Event* event_obj, int delta_x, int delta_y);
+  void updatePaddlePosition(Event* event_obj, int delta, int paddle_num);
 
   /** Calculates the Paddle resistance, based on the given x val */
   int calcPaddleResistance(int x_val);
@@ -126,8 +132,7 @@ class ALEState {
   void setDifficultySwitches(Event* event_obj, unsigned int value);
 
  private:
-  int m_left_paddle;               // Current value for the left-paddle
-  int m_right_paddle;              // Current value for the right-paddle
+  int m_paddle[4];                 // Current value for the paddles
 
   int m_paddle_min;                // Minimum value for paddle
   int m_paddle_max;                // Maximum value for paddle
@@ -139,6 +144,7 @@ class ALEState {
 
   game_mode_t m_mode;              // The current mode we are in
   difficulty_t m_difficulty;       // The current difficulty we are in
+  int m_num_players;                 // The number of players in the current mode
 };
 
 }  // namespace ale

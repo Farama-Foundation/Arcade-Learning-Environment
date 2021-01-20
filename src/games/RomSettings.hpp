@@ -125,6 +125,19 @@ class RomSettings {
   // By default, there is only one available difficulty.
   virtual DifficultyVect getAvailableDifficulties();
 
+  //two player methods. all fail when on a single player game
+  virtual reward_t getRewardP2() const;
+  virtual int livesP2();
+  virtual ModeVect get2PlayerModes();
+
+  // methods for 4 player games. all raise an error when called by default
+  virtual reward_t getRewardP3() const;
+  virtual reward_t getRewardP4() const;
+  virtual int livesP3();
+  virtual int livesP4();
+  virtual ModeVect get3PlayerModes();
+  virtual ModeVect get4PlayerModes();
+
  protected:
   // Helper function that checks if our settings support this given mode.
   bool isModeSupported(game_mode_t m);
