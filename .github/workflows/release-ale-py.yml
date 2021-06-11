@@ -20,7 +20,7 @@ jobs:
       run: |
         unzip ale-py.zip -d dist
     - name: Publish to PyPi
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
-        password: ${{ secrets.pypi_token }}
+        password: ${{ secrets.PYPI_TOKEN }}
