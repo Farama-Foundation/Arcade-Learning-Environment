@@ -238,11 +238,13 @@ def test_state_pickle(tetris):
 
     state = tetris.cloneState()
     file = os.path.join(tempfile.gettempdir(), "ale-state.p")
-    data = pickle.dump(state, open(file, "wb"))
+    with open(file, "wb") as fp:
+        data = pickle.dump(state, fp)
 
     tetris.reset_game()
     assert tetris.cloneState() != state
-    pickeled = pickle.load(open(file, "rb"))
+    with open(file, "rb") as fp:
+        pickeled = pickle.load(fp)
     assert pickeled == state
     tetris.restoreState(pickeled)
     assert tetris.cloneState() == state
