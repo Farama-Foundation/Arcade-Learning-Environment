@@ -230,9 +230,7 @@ int CartridgeUA::bankCount()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CartridgeUA::patch(uint16_t address, uint8_t value)
 {
-  address &= 0x0fff;
-  myImage[myCurrentBank * 4096] = value;
-  bank(myCurrentBank); // TODO: see if this is really necessary
+  myImage[(myCurrentBank << 12) + (address & 0x0fff)] = value;
   return true;
 } 
 
