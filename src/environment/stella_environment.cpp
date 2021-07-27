@@ -15,7 +15,7 @@
  *
  **************************************************************************** */
 
-#include "environment/stella_environment.hpp"
+#include "stella_environment.hpp"
 
 #include <sstream>
 #include <cstring>
@@ -30,8 +30,7 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
       m_phosphor_blend(osystem),
       m_screen(m_osystem->console().mediaSource().height(),
                m_osystem->console().mediaSource().width()),
-      m_player_a_action(PLAYER_A_NOOP),
-      m_player_b_action(PLAYER_B_NOOP) {
+      m_actions(4, PLAYER_A_NOOP) {
   // Determine whether this is a paddle-based game
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
       m_osystem->console().properties().get(Controller_Right) == "PADDLES") {
@@ -48,7 +47,7 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
   m_cartridge_md5 = m_osystem->console().properties().get(Cartridge_MD5);
 
   // Set current mode to the ROM's default mode
-  m_state.setCurrentMode(settings->getDefaultMode());
+  setMode(settings->getDefaultMode());
 
   m_max_num_frames_per_episode =
       m_osystem->settings().getInt("max_num_frames_per_episode");
@@ -102,7 +101,7 @@ void StellaEnvironment::reset() {
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
   for (size_t i = 0; i < startingActions.size(); i++) {
-    emulate(startingActions[i], PLAYER_B_NOOP);
+    emulate({startingActions[i], startingActions[i]});
   }
 }
 
@@ -138,50 +137,37 @@ void StellaEnvironment::restoreSystemState(const ALEState& target_state) {
   m_state.load(m_osystem, m_settings, m_cartridge_md5, target_state, true);
 }
 
-void StellaEnvironment::noopIllegalActions(Action& player_a_action,
-                                           Action& player_b_action) {
-  if (player_a_action < (Action)PLAYER_B_NOOP &&
-      !m_settings->isLegal(player_a_action)) {
-    player_a_action = (Action)PLAYER_A_NOOP;
+void StellaEnvironment::noopIllegalAction(Action& action) {
+  if ((!m_settings->isLegal(action) && action < (Action)PLAYER_B_NOOP) || action == RESET) {
+      action = PLAYER_A_NOOP;
   }
-  // Also drop RESET, which doesn't play nice with our clean notions of RL environments
-  else if (player_a_action == RESET)
-    player_a_action = (Action)PLAYER_A_NOOP;
-
-  if (player_b_action < (Action)RESET &&
-      !m_settings->isLegal((Action)((int)player_b_action - PLAYER_B_NOOP))) {
-    player_b_action = (Action)PLAYER_B_NOOP;
-  } else if (player_b_action == RESET)
-    player_b_action = (Action)PLAYER_B_NOOP;
 }
 
 reward_t StellaEnvironment::act(Action player_a_action,
                                 Action player_b_action) {
+  return act(std::vector<Action>{player_a_action,(Action)(player_b_action - PLAYER_B_NOOP)}).at(0);
+}
+
+std::vector<reward_t> StellaEnvironment::act(std::vector<Action> actions) {
   // Total reward received as we repeat the action
-  reward_t sum_rewards = 0;
+  std::vector<reward_t> sum_rewards(actions.size(),0);
 
   Random& rng = m_osystem->rng();
 
   // Apply the same action for a given number of times... note that act() will refuse to emulate
   //  past the terminal state
-  for (size_t i = 0; i < m_frame_skip; i++) {
-    // Stochastically drop actions, according to m_repeat_action_probability
-    if (rng.nextDouble() >= m_repeat_action_probability)
-      m_player_a_action = player_a_action;
-    // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
-    if (rng.nextDouble() >= m_repeat_action_probability)
-      m_player_b_action = player_b_action;
-
-    // If so desired, request one frame's worth of sound (this does nothing if recording
-    // is not enabled)
-    m_osystem->sound().recordNextFrame();
-
-    // Similarly record screen as needed
-    if (m_screen_exporter.get() != NULL)
-      m_screen_exporter->saveNext(m_screen);
-
-    // Use the stored actions, which may or may not have changed this frame
-    sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
+  for (size_t j = 0; j < m_frame_skip; j++) {
+    // Stochastically drop actions, according to mm_repeat_action_probability
+    for (size_t i = 0; i < 4; i++) {
+      if (i < actions.size()) {
+        if (rng.nextDouble() >= m_repeat_action_probability)
+          m_actions[i] = actions[i];
+      }
+      else {
+        m_actions[i] = PLAYER_A_NOOP;
+      }
+    }
+    oneStepAct(m_actions, sum_rewards);
   }
 
   return sum_rewards;
@@ -192,29 +178,48 @@ void StellaEnvironment::softReset() {
   emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
 
   // Reset previous actions to NOOP for correct action repeating
-  m_player_a_action = PLAYER_A_NOOP;
-  m_player_b_action = PLAYER_B_NOOP;
+  for (Action & a : m_actions) {
+    a = PLAYER_A_NOOP;
+  }
 }
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
  *  and performs one simulation step in Stella. */
-reward_t StellaEnvironment::oneStepAct(Action player_a_action,
-                                       Action player_b_action) {
+void StellaEnvironment::oneStepAct(std::vector<Action> actions,std::vector<reward_t> & rewards) {
   // Once in a terminal state, refuse to go any further (special actions must be handled
   //  outside of this environment; in particular reset() should be called rather than passing
   //  RESET or SYSTEM_RESET.
   if (isTerminal())
-    return 0;
+    return;
+
+  // If so desired, request one frame's worth of sound (this does nothing if recording
+  // is not enabled)
+  m_osystem->sound().recordNextFrame();
+
+  // Similarly record screen as needed
+  if (m_screen_exporter.get() != NULL)
+    m_screen_exporter->saveNext(m_screen);
 
   // Convert illegal actions into NOOPs; actions such as reset are always legal
-  noopIllegalActions(player_a_action, player_b_action);
+  for(Action & a : actions){
+    noopIllegalAction(a);
+  }
 
   // Emulate in the emulator
-  emulate(player_a_action, player_b_action);
+  emulate(actions);
   // Increment the number of frames seen so far
   m_state.incrementFrame();
 
-  return m_settings->getReward();
+  rewards.at(0) += m_settings->getReward();
+  if(rewards.size() > 1){
+    rewards.at(1) += m_settings->getRewardP2();
+  }
+  if(rewards.size() > 2){
+    rewards.at(2) += m_settings->getRewardP3();
+  }
+  if(rewards.size() > 3){
+    rewards.at(3) += m_settings->getRewardP4();
+  }
 }
 
 bool StellaEnvironment::isTerminal() const {
@@ -238,26 +243,57 @@ void StellaEnvironment::setDifficulty(difficulty_t value) {
   m_state.setDifficulty(value);
 }
 
+// helper function for setMode
+bool in_modes(const ModeVect & modes, game_mode_t m){
+  return std::find(modes.begin(), modes.end(), m) != modes.end();
+}
+
 void StellaEnvironment::setMode(game_mode_t value) {
+  int num_players;
+  if (in_modes(m_settings->getAvailableModes(), value)) {
+    num_players = 1;
+  }
+  else if (in_modes(m_settings->get2PlayerModes(), value)) {
+    num_players = 2;
+  }
+  else if(in_modes(m_settings->get4PlayerModes(), value)){
+    num_players = 4;
+  }
+  else {
+    throw std::runtime_error("Invalid game mode requested");
+  }
+  m_state.setNumActivePlayers(num_players);
   m_state.setCurrentMode(value);
 }
 
 void StellaEnvironment::emulate(Action player_a_action, Action player_b_action,
                                 size_t num_steps) {
+  emulate({player_a_action,(Action)(player_b_action - PLAYER_B_NOOP)},num_steps);
+}
+void StellaEnvironment::emulate(std::vector<Action> actions,
+                                size_t num_steps) {
   Event* event = m_osystem->event();
+  for(Action a : actions){
+    assert ((a < PLAYER_B_NOOP || a >= RESET) && "Actions in multiplayer cannot use the PLAYER_B actions. Rather, action lists should indicate the player by the position in the input vector");
+  }
 
   // Handle paddles separately: we have to manually update the paddle positions at each step
   if (m_use_paddles) {
     // Run emulator forward for 'num_steps'
     for (size_t t = 0; t < num_steps; t++) {
       // Update paddle position at every step
-      m_state.applyActionPaddles(event, player_a_action, player_b_action);
+      m_state.resetKeys(event);
+      for (size_t p = 0; p < actions.size(); p++) {
+        m_state.applyActionPaddle(event, actions[p], p);
+      }
 
       m_osystem->console().mediaSource().update();
       m_settings->step(m_osystem->console().system());
     }
   } else {
     // In joystick mode we only need to set the action events once
+    Action player_b_action = actions.size() >= 2 ? (Action)(actions[1] + PLAYER_B_NOOP) : PLAYER_B_NOOP;
+    Action player_a_action = actions.at(0);
     m_state.setActionJoysticks(event, player_a_action, player_b_action);
 
     for (size_t t = 0; t < num_steps; t++) {

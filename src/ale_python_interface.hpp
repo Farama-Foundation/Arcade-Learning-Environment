@@ -42,10 +42,6 @@ class ALEPythonInterface : public ALEInterface {
   py::array_t<pixel_t, py::array::c_style> getScreenRGB();
   py::array_t<pixel_t, py::array::c_style> getScreenGrayscale();
 
-  inline reward_t act(unsigned int action) {
-    return ALEInterface::act((Action)action);
-  }
-
   inline py::tuple getScreenDims() {
     const ALEScreen& screen = ALEInterface::getScreen();
     return py::make_tuple(screen.height(), screen.width());
@@ -67,6 +63,16 @@ class ALEPythonInterface : public ALEInterface {
 };
 
 } // namespace ale
+
+
+inline std::vector<ale::Action> convert(std::vector<uint32_t> a){
+  std::vector<ale::Action> v(a.size());
+  for (size_t i = 0; i < a.size(); i++) {
+    v[i] = (ale::Action)(a[i]);
+  }
+  return v;
+}
+
 
 PYBIND11_MODULE(ale_py, m) {
   m.attr("__version__") = py::str(ALE_VERSION);
@@ -138,13 +144,15 @@ PYBIND11_MODULE(ale_py, m) {
       .def("setFloat", &ale::ALEPythonInterface::setFloat)
       .def("loadROM", &ale::ALEPythonInterface::loadROM)
       .def_static("isSupportedRom", &ale::ALEPythonInterface::isSupportedRom)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
-                      ale::ALEInterface::act)
+      .def("act", [](ale::ALEPythonInterface & ale, uint32_t a){ return ale.act((ale::Action)(a)); })
+      .def("act", [](ale::ALEPythonInterface & ale, ale::Action a){ return ale.act(a); })
+      .def("act", [](ale::ALEPythonInterface & ale, std::vector<ale::Action> a){ return ale.act(a); })
+      .def("act", [](ale::ALEPythonInterface & ale, std::vector<uint32_t> a){ return ale.act(convert(a)); })
       .def("game_over", &ale::ALEPythonInterface::game_over)
       .def("reset_game", &ale::ALEPythonInterface::reset_game)
+      .def("numPlayersActive", &ale::ALEPythonInterface::numPlayersActive)
       .def("getAvailableModes", &ale::ALEPythonInterface::getAvailableModes)
+      .def("getAvailableModes", [](ale::ALEPythonInterface & ale){ return ale.getAvailableModes(); })
       .def("setMode", &ale::ALEPythonInterface::setMode)
       .def("getAvailableDifficulties",
            &ale::ALEPythonInterface::getAvailableDifficulties)
@@ -153,6 +161,7 @@ PYBIND11_MODULE(ale_py, m) {
       .def("getMinimalActionSet", &ale::ALEPythonInterface::getMinimalActionSet)
       .def("getFrameNumber", &ale::ALEPythonInterface::getFrameNumber)
       .def("lives", &ale::ALEPythonInterface::lives)
+      .def("allLives", &ale::ALEPythonInterface::allLives)
       .def("getEpisodeFrameNumber",
            &ale::ALEPythonInterface::getEpisodeFrameNumber)
       .def("getScreen", (void (ale::ALEPythonInterface::*)(
