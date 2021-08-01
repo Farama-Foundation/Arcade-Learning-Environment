@@ -16,12 +16,11 @@
 // $Id: SoundSDL.cxx,v 1.38 2007/07/27 13:49:16 stephena Exp $
 //============================================================================
 
-#ifdef SOUND_SUPPORT
+#ifdef SDL_SUPPORT
 
 #include <sstream>
 #include <cassert>
 #include <cmath>
-#include "SDL.h"
 
 #include "emucore/TIASnd.hxx"
 // #include "FrameBuffer.hxx"
@@ -30,6 +29,7 @@
 #include "emucore/Settings.hxx"
 #include "emucore/System.hxx"
 
+#include "common/SDL2.hpp"
 #include "common/SoundSDL.hxx"
 #include "common/Log.hpp"
 
@@ -583,4 +583,4 @@ void SoundSDL::RegWriteQueue::grow()
   myBuffer = buffer;
 }
 
-#endif  // SOUND_SUPPORT
+#endif  // SDL_SUPPORT

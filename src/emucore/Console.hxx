@@ -136,7 +136,6 @@ class Console
     */
     std::string getFormat() const { return myDisplayFormat; }
 
-  private:
     /**
       Returns the framerate based on a number of factors
       (whether 'framerate' is set, what display format is in use, etc)

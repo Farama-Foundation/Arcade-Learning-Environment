@@ -19,7 +19,8 @@
 
 #include <string>
 
-#include "common/display_screen.h"
+#include "common/Constants.h"
+#include "common/ColourPalette.hpp"
 #include "environment/ale_screen.hpp"
 
 namespace ale {
