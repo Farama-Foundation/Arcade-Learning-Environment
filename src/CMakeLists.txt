@@ -78,7 +78,7 @@ if (BUILD_PYTHON_LIB)
   add_library(ale-py MODULE ale_interface.cpp ale_python_interface.cpp)
   target_link_libraries(ale-py PUBLIC ale)
   target_link_libraries(ale-py PRIVATE pybind11::module)
-  set_target_properties(ale-py PROPERTIES OUTPUT_NAME ale_py
+  set_target_properties(ale-py PROPERTIES OUTPUT_NAME _ale_py
                                           PREFIX "${PYTHON_MODULE_PREFIX}"
                                           SUFFIX "${PYTHON_MODULE_EXTENSION}")
   # If we're dynamically loading SDL with Python we'll be building a wheel
