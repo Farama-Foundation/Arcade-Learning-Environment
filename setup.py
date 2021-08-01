@@ -49,6 +49,8 @@ class CMakeBuild(build_ext):
             f"-DCMAKE_BUILD_TYPE={config}",
             f"-DPython3_EXECUTABLE={sys.executable}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
+            "-DSDL_SUPPORT=ON",
+            "-DSDL_DYNLOAD=ON",
             "-DBUILD_CPP_LIB=OFF",
             "-DBUILD_PYTHON_LIB=ON"
         ]
@@ -137,6 +139,6 @@ if __name__ == '__main__':
     setup(
         version=parse_version('version.txt'),
         distclass=CMakeDistribution,
-        ext_modules=[CMakeExtension("ale_py")],
+        ext_modules=[CMakeExtension("ale_py._ale_py")],
         cmdclass={"build_ext": CMakeBuild}
     )

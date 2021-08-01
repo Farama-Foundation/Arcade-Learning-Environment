@@ -1,6 +1,10 @@
 import pytest
 
-import ale_py
+# Try to import native library before attempting ale_py
+try:
+    import _ale_py as ale_py
+except ImportError:
+    import ale_py
 
 
 @pytest.fixture
