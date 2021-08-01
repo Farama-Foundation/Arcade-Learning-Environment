@@ -176,6 +176,9 @@ reward_t StellaEnvironment::act(Action player_a_action,
     // is not enabled)
     m_osystem->sound().recordNextFrame();
 
+    // Render screen if we're displaying it
+    m_osystem->screen().render();
+
     // Similarly record screen as needed
     if (m_screen_exporter.get() != NULL)
       m_screen_exporter->saveNext(m_screen);

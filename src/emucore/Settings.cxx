@@ -55,7 +55,7 @@ void Settings::validate()
   std::string s;
   int i;
 
-#ifdef SOUND_SUPPORT
+#ifdef SDL_SUPPORT
   i = getInt("volume");
   if(i < 0 || i > 100)
     setInternal("volume", "100");
