@@ -33,7 +33,6 @@
 
 #include "emucore/OSystem.hxx"
 #include "games/Roms.hpp"
-#include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
 #include "common/ScreenExporter.hpp"
 #include "common/Log.hpp"

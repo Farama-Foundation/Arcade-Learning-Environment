@@ -6,7 +6,7 @@
 # ALE provided in doc/examples/sharedLibraryInterfaceWithModesExample.cpp
 import sys
 from random import randrange
-from ale_py import ALEInterface
+from ale_py import ALEInterface, SDL_SUPPORT
 
 if len(sys.argv) < 2:
     print(f"Usage: {sys.argv[0]} rom_file")
@@ -19,11 +19,8 @@ ale.setInt("random_seed", 123)
 # The default is already 0.25, this is just an example
 ale.setFloat("repeat_action_probability", 0.25)
 
-# Set USE_SDL to true to display the screen. ALE must be compilied
-# with SDL enabled for this to work. On OSX, pygame init is used to
-# proxy-call SDL_main.
-USE_SDL = False
-if USE_SDL:
+# Check if we can display the screen
+if SDL_SUPPORT:
     ale.setBool("sound", True)
     ale.setBool("display_screen", True)
 

@@ -168,20 +168,6 @@ void ALEInterface::loadROM(fs::path rom_file) {
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
   environment->reset();
-
-#ifndef __USE_SDL
-  if (theOSystem->p_display_screen != NULL) {
-    Logger::Error
-        << "Screen display requires directive __USE_SDL to be defined."
-        << std::endl;
-    Logger::Error << "Please recompile this code with flag '-D__USE_SDL'."
-                  << std::endl;
-    Logger::Error << "Also ensure ALE has been compiled with USE_SDL active "
-                     "(see ALE makefile)."
-                  << std::endl;
-    std::exit(1);
-  }
-#endif
 }
 
 bool ALEInterface::isSupportedRom(const fs::path& rom_file){
@@ -271,16 +257,7 @@ int ALEInterface::lives() {
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
 reward_t ALEInterface::act(Action action) {
-  reward_t reward = environment->act(action, PLAYER_B_NOOP);
-  if (theOSystem->p_display_screen != NULL) {
-    theOSystem->p_display_screen->display_screen();
-    while (theOSystem->p_display_screen->manual_control_engaged()) {
-      Action user_action = theOSystem->p_display_screen->getUserAction();
-      reward += environment->act(user_action, PLAYER_B_NOOP);
-      theOSystem->p_display_screen->display_screen();
-    }
-  }
-  return reward;
+  return environment->act(action, PLAYER_B_NOOP);
 }
 
 // Returns the vector of modes available for the current game.

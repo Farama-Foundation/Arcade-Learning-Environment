@@ -2,12 +2,13 @@ target_sources(ale
   PRIVATE
     ColourPalette.cpp
     Constants.cpp
-    display_screen.cpp
     Log.cpp
     Palettes.hpp
     ScreenExporter.cpp
     SoundExporter.cpp
     SoundNull.cxx
     SoundSDL.cxx
-    VideoModeList.hxx
+    SDL2.cpp
+    DynamicLoad.cpp
+    ScreenSDL.cpp
 )

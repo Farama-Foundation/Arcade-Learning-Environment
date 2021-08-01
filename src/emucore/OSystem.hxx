@@ -24,11 +24,11 @@ class PropertiesSet;
 #include <filesystem>
 
 #include "emucore/Sound.hxx"
+#include "emucore/Screen.hxx"
 #include "common/SoundNull.hxx"
 #include "emucore/Settings.hxx"
 #include "emucore/Console.hxx"
 #include "emucore/Event.hxx"  //ALE 
-#include "common/display_screen.h"
 #include "common/ColourPalette.hpp"
 #include "common/Log.hpp"
 
@@ -81,6 +81,13 @@ class OSystem
       @return The sound object
     */
     inline Sound& sound() const { return *mySound; }
+
+    /**
+      Get the screen object of the system
+
+      @return The screen object
+    */
+    inline Screen& screen() const { return *myScreen; }
 
     /**
       Get the settings object of the system
@@ -172,6 +179,9 @@ class OSystem
     // Pointer to the Sound object
     Sound* mySound;
 
+    // Pointer to the Screen object
+    Screen* myScreen;
+
     // Pointer to the Settings object
     Settings* mySettings;
 
@@ -192,9 +202,6 @@ class OSystem
 
   public: //ALE
     ale::ColourPalette &colourPalette() { return m_colour_palette; }
-
-  public:
-    ale::DisplayScreen* p_display_screen; //MHAUSKN
 
   private:
 

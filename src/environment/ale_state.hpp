@@ -20,6 +20,7 @@
 
 #include <string>
 
+#include "common/Constants.h"
 #include "emucore/OSystem.hxx"
 #include "emucore/Event.hxx"
 #include "common/Log.hpp"

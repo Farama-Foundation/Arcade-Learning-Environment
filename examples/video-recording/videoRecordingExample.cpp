@@ -19,11 +19,9 @@
 #include <ale_interface.hpp>
 #include <cstdlib>
 
-#ifndef __USE_SDL
-#error Video recording example is disabled as it requires SDL. Recompile with -DUSE_SDL=ON.
+#ifndef ALE_SDL_SUPPORT
+#error Video recording example is disabled as it requires SDL. Recompile with -DSDL_SUPPORT=ON.
 #else
-
-#include <SDL.h>
 
 using namespace std;
 
@@ -79,4 +77,4 @@ int main(int argc, char** argv) {
 
   return 0;
 }
-#endif  // __USE_SDL
+#endif  // ALE_SDL_SUPPORT

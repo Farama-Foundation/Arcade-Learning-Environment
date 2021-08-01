@@ -67,7 +67,7 @@ cmake ../ -DCMAKE_BUILD_TYPE=Release
 cmake --build . --target install
 ```
 
-There are optional flags `-DUSE_SDL=ON/OFF` to toggle SDL support (`OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
+There are optional flags `-DSDL_SUPPORT=ON/OFF` to toggle SDL support (`OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
 the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the pybind11 wrapper (`ON` by default).
 
 Finally you can link agaisnt the ALE in your own CMake project as follows
