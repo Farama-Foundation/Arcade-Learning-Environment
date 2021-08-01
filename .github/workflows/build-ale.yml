@@ -27,9 +27,9 @@ jobs:
     strategy:
       matrix:
         config: [
-          {"os": "ubuntu-latest", "deps": ["zlib"], "triplet": "x64-linux"},
-          {"os": "windows-latest", "deps": ["zlib"], "triplet": "x64-windows"},
-          {"os": "macos-latest", "deps": ["zlib"], "triplet": "x64-osx"}
+          {"os": "ubuntu-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-linux-mixed"},
+          {"os": "windows-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-windows"},
+          {"os": "macos-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-osx-mixed"}
         ]
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.config.triplet }}
@@ -61,7 +61,7 @@ jobs:
     - name: Install vcpkg dependencies
       if: steps.vcpkg-cache.outputs.cache-hit != 'true'
       run: |
-        vcpkg install ${{ join(matrix.config.deps, ' ') }} --triplet ${{ matrix.config.triplet }}
+        vcpkg install ${{ join(matrix.config.deps, ' ') }} --overlay-triplets cmake/custom-triplets --triplet ${{ matrix.config.triplet }}
 
     - name: Get pip cache info
       id: pip-cache-info
@@ -82,8 +82,9 @@ jobs:
 
     - name: Configure ALE
       run: |
+        cmake --version
         mkdir build; cd build
-        cmake ../ -DUSE_SDL=OFF -DPython3_EXECUTABLE=$(which python)
+        cmake ../ -DSDL_SUPPORT=ON -DPython3_EXECUTABLE=$(which python)
 
     - name: Build ALE
       working-directory: ./build
