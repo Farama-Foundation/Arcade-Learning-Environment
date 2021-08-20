@@ -1,10 +1,10 @@
 import pytest
 
-# Try to import native library before attempting ale_py
-try:
-    import _ale_py as ale_py
-except ImportError:
-    import ale_py
+from unittest.mock import patch
+
+from gym.envs.registration import registry, register, make
+
+import ale_py
 
 
 @pytest.fixture
@@ -26,3 +26,24 @@ def ale():
 def tetris(ale, test_rom_path):
     ale.loadROM(test_rom_path)
     yield ale
+
+
+@pytest.fixture
+def tetris_gym(request, test_rom_path):
+    with patch("ale_py.roms.TetrisTest", create=True, new_callable=lambda: test_rom_path):
+        register(
+            id="TetrisTest-v0",
+            entry_point="ale_py.gym.environment:ALGymEnv",
+            kwargs={"game": "tetris_test"},
+        )
+
+        kwargs = {}
+        if hasattr(request, 'param') and isinstance(request.param, dict):
+            kwargs.update(request.param)
+
+        if hasattr(request, 'param'):
+            print(request.param)
+
+        yield make("TetrisTest-v0", **kwargs)
+
+        del registry.env_specs["TetrisTest-v0"]
