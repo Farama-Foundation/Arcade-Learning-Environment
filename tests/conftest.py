@@ -1,7 +1,5 @@
-import pytest
-
 import os
-
+import pytest
 
 class Resources:
     def __init__(self, base_path):
@@ -12,8 +10,8 @@ class Resources:
 
 
 @pytest.fixture(scope="module")
-def resources(request):
-    return Resources(request.fspath.dirname)
+def resources():
+    return Resources(os.path.abspath(os.path.dirname(__file__)))
 
 
 from fixtures import *
