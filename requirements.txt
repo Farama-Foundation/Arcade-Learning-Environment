@@ -1,1 +1,4 @@
 numpy
+setuptools
+importlib-metadata; python_version < '3.8'
+importlib-resources

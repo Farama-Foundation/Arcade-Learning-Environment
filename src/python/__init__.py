@@ -1,8 +1,12 @@
 import platform
+import warnings
 import sys
 import os
 
 packagedir = os.path.abspath(os.path.dirname(__file__))
+
+# Make sure to adjust the filter to show DeprecationWarning
+warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
 
 if platform.system() == "Windows":
     try:

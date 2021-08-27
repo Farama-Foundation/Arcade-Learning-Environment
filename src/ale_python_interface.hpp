@@ -22,6 +22,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #include "ale_interface.hpp"
 #include "version.hpp"
@@ -138,7 +139,9 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("setBool", &ale::ALEPythonInterface::setBool)
       .def("setFloat", &ale::ALEPythonInterface::setFloat)
       .def("loadROM", &ale::ALEPythonInterface::loadROM)
+      .def("loadROM", &ale::ALEInterface::loadROM)
       .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
+      .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
       .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
                       ale::ALEPythonInterface::act)
       .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
