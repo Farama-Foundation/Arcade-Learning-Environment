@@ -37,7 +37,7 @@ jobs:
         CIBW_MANYLINUX_X86_64_IMAGE: "ghcr.io/jessefarebro/manylinux2014-vcpkg"
         CIBW_SKIP: "*i686* *win32* pp*"
         CIBW_ARCHS_MACOS: "x86_64"
-        CIBW_TEST_REQUIRES: "pytest"
+        CIBW_TEST_REQUIRES: "pytest gym"
         CIBW_TEST_COMMAND: "pytest {project}"
         CIBW_ENVIRONMENT: "ALE_BUILD_VERSION=${{ env.ALE_BUILD_VERSION }} MACOSX_DEPLOYMENT_TARGET='10.15' VCPKG_DEFAULT_TRIPLET=${{ matrix.config.triplet }}"
         CIBW_BEFORE_ALL: "vcpkg install ${{ join(matrix.config.deps, ' ') }} --triplet ${{ matrix.config.triplet }} --overlay-triplets cmake/custom-triplets --feature-flags=-compilertracking"
