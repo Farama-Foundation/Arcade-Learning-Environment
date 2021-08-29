@@ -7,17 +7,17 @@ on:
 
 jobs:
   build:
-    name: Build ALE Python on ${{ matrix.config.os }}
+    name: Build ALE Python for ${{ matrix.config.name }} ${{ matrix.config.arch }}
     defaults:
       run:
         shell: bash
     strategy:
       matrix:
-        config: [
-          {"os": "ubuntu-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-linux-mixed"},
-          {"os": "windows-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-windows"},
-          {"os": "macos-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-osx-mixed"}
-        ]
+        include:
+          - config: {"name": "Linux", "os": "ubuntu-latest", "deps": ["zlib", "sdl2"], "arch": "x86_64", "triplet": "x64-linux-mixed"}
+          - config: {"name": "Windows", "os": "windows-latest", "deps": ["zlib", "sdl2"], "arch": "AMD64", "triplet": "x64-windows"}
+          - config: {"name": "macOS", "os": "macos-latest", "deps": ["zlib", "sdl2"], "arch": "x86_64", "triplet": "x64-osx-mixed"}
+          - config: {"name": "macOS", "os": "macos-latest", "deps": ["zlib", "sdl2"], "arch": "arm64", "triplet": "arm64-osx-mixed"}
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/checkout@v2
@@ -32,15 +32,19 @@ jobs:
       run: echo "ALE_BUILD_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.0.0
+      uses: pypa/cibuildwheel@v2.1.1
       env:
         CIBW_MANYLINUX_X86_64_IMAGE: "ghcr.io/jessefarebro/manylinux2014-vcpkg"
-        CIBW_SKIP: "*i686* *win32* pp*"
-        CIBW_ARCHS_MACOS: "x86_64"
+        CIBW_SKIP: "*i686* *win32* pp* *cp310*"
+        CIBW_ARCHS: "${{ matrix.config.arch }}"
         CIBW_TEST_REQUIRES: "pytest gym"
         CIBW_TEST_COMMAND: "pytest {project}"
         CIBW_ENVIRONMENT: "ALE_BUILD_VERSION=${{ env.ALE_BUILD_VERSION }} MACOSX_DEPLOYMENT_TARGET='10.15' VCPKG_DEFAULT_TRIPLET=${{ matrix.config.triplet }}"
-        CIBW_BEFORE_ALL: "vcpkg install ${{ join(matrix.config.deps, ' ') }} --triplet ${{ matrix.config.triplet }} --overlay-triplets cmake/custom-triplets --feature-flags=-compilertracking"
+        CIBW_BEFORE_ALL: >
+          vcpkg install ${{ join(matrix.config.deps, ' ') }}
+          --overlay-triplets cmake/custom-triplets
+          --triplet ${{ matrix.config.triplet }}
+          --feature-flags=-compilertracking
 
     - name: Upload wheels
       uses: actions/upload-artifact@v2
