@@ -3,18 +3,21 @@ from collections import defaultdict, namedtuple
 from gym.envs.registration import register
 
 from ale_py.gym.environment import ALGymEnv
-from ale_py.roms.utils import normalize_rom_name
+from ale_py.roms.utils import rom_name_to_id, rom_id_to_name
 
 GymFlavour = namedtuple("GymFlavour", ["suffix", "env_kwargs", "kwargs"])
 GymConfig = namedtuple("GymConfig", ["version", "env_kwargs", "flavours"])
 
 
 def register_gym_configs(roms, obs_types, configs, prefix=""):
+    if len(prefix) > 0 and prefix[-1] != "/":
+        prefix += "/"
+
     for rom in roms:
         for obs_type in obs_types:
             for config in configs:
                 for flavour in config.flavours:
-                    name = normalize_rom_name(rom)
+                    name = rom_id_to_name(rom)
                     name = f"{name}-ram" if obs_type == "ram" else name
 
                     # Parse environment kwargs
@@ -162,3 +165,26 @@ def register_legacy_gym_envs():
     ]
 
     register_gym_configs(legacy_games, obs_types, versions)
+
+
+def register_gym_envs(prefix="ALE"):
+    import ale_py.roms as roms
+
+    all_games = list(map(rom_name_to_id, roms.__all__))
+    obs_types = ["rgb", "ram"]
+
+    # max_episode_steps is 108k frames which is 30 mins of gameplay.
+    # This corresponds to 108k / 5 = 21,600 steps
+    versions = [
+        GymConfig(
+            "v5",
+            {
+                "repeat_action_probability": 0.25,
+                "full_action_space": True,
+                "frameskip": 5,
+            },
+            [GymFlavour("", {}, {"max_episode_steps": 108000 // 5})],
+        )
+    ]
+
+    register_gym_configs(all_games, obs_types, versions, prefix=prefix)

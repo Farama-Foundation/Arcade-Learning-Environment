@@ -15,17 +15,39 @@ else:
 
 from typing import Callable, List, Union, Dict, Tuple
 
-from ale_py import ALEInterface
+from ale_py._ale_py import ALEInterface
 
 
-def normalize_rom_name(rom):
+def rom_id_to_name(rom):
+    """
+    Let the ROM ID be the ROM identifier in snakecase.
+        For example, `space_invaders`
+    The ROM name is the ROM ID in camelcase.
+        For example, `SpaceInvaders`
+
+    This function converts the ROM ID to the ROM name.
+        i.e., snakecase -> camelcase
+    """
     return rom.title().replace("_", "")
 
 
+def rom_name_to_id(rom):
+    """
+    Let the ROM ID be the ROM identifier in snakecase.
+        For example, `space_invaders`
+    The ROM name is the ROM ID in camelcase.
+        For example, `SpaceInvaders`
+
+    This function converts the ROM name to the ROM ID.
+        i.e., camelcase -> snakecase
+    """
+    return "".join(
+        map(lambda ch: "_" + ch.lower() if ch.isupper() else ch, rom)
+    ).lstrip("_")
+
+
 class SupportedPackage:
-    def __init__(
-        self, package: str
-    ):
+    def __init__(self, package: str):
         self.package = package
 
     @lru_cache(maxsize=None)
@@ -42,7 +64,7 @@ class SupportedPackage:
             # If the ROM is supported we normalize the name and add it to
             # the dictionary of ROMs
             if rom is not None:
-                roms[normalize_rom_name(rom)] = resource.resolve()
+                roms[rom_id_to_name(rom)] = resource.resolve()
             else:
                 unsupported.append(resolved)
 
@@ -50,10 +72,9 @@ class SupportedPackage:
 
     def __str__(self):
         return f"{self.package}"
-    
+
     def __repr__(self):
         return f"SupportedPackage[{self.package}]"
-
 
 
 class SupportedPlugin:
@@ -74,7 +95,7 @@ class SupportedPlugin:
                 path = pathlib.Path(path)
                 rom = ALEInterface.isSupportedROM(path)
                 if rom is not None:
-                    roms[normalize_rom_name(rom)] = path
+                    roms[rom_id_to_name(rom)] = path
                 else:
                     unsupported.append(path)
 
@@ -82,6 +103,6 @@ class SupportedPlugin:
 
     def __str__(self):
         return f"{self.group}"
-    
+
     def __repr__(self):
         return f"SupportedPlugin[{self.group}]"

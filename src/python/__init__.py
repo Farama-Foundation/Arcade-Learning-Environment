@@ -1,5 +1,6 @@
 import platform
 import warnings
+import importlib
 import sys
 import os
 
@@ -43,3 +44,7 @@ except importlib_metadata.PackageNotFoundError:
 
 # Import native shared library
 from ale_py._ale_py import *
+
+# if the user has loaded Gym we'll register our environment IDs
+if importlib.util.find_spec("gym") is not None:
+    import ale_py.gym
