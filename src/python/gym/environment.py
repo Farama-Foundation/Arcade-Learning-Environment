@@ -8,8 +8,9 @@ from gym.utils import seeding
 
 from typing import Optional, Union, Tuple, Dict, Any, List
 
-from ale_py import roms, ALEInterface, ALEState, Action, LoggerMode
-from ale_py.roms.utils import normalize_rom_name
+import ale_py.roms as roms
+from ale_py._ale_py import ALEInterface, ALEState, Action, LoggerMode
+from ale_py.roms.utils import rom_id_to_name
 
 
 class ALGymEnv(gym.Env, utils.EzPickle):
@@ -99,7 +100,7 @@ class ALGymEnv(gym.Env, utils.EzPickle):
         self.ale = ALEInterface()
         self.viewer = None
 
-        self._game = normalize_rom_name(game)
+        self._game = rom_id_to_name(game)
 
         self._game_mode = mode
         self._game_difficulty = difficulty
