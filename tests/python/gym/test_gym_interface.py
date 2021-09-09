@@ -11,17 +11,24 @@ from gym import spaces
 from gym.envs.registration import registry
 from gym.core import Env
 
-from ale_py.gym.utils import register_legacy_gym_envs, register_gym_configs
+from ale_py.gym.utils import (
+    register_legacy_gym_envs,
+    register_gym_configs,
+    register_gym_envs,
+)
 
 
 def test_register_legacy_env_id():
     prefix = "ALETest/"
 
     _original_register_gym_configs = register_gym_configs
+
     def _mocked_register_gym_configs(*args, **kwargs):
         return _original_register_gym_configs(*args, **kwargs, prefix=prefix)
 
-    with patch('ale_py.gym.utils.register_gym_configs', new=_mocked_register_gym_configs):
+    with patch(
+        "ale_py.gym.utils.register_gym_configs", new=_mocked_register_gym_configs
+    ):
         # Register internal IDs
         register_legacy_gym_envs()
 
@@ -91,13 +98,32 @@ def test_register_legacy_env_id():
             "YarsRevenge",
             "Zaxxon",
         ]
-        legacy_games = map(lambda game: f'{prefix}{game}', legacy_games)
+        legacy_games = map(lambda game: f"{prefix}{game}", legacy_games)
 
         obs_types = ["", "-ram"]
         suffixes = ["Deterministic", "NoFrameskip"]
         versions = ["-v0", "-v4"]
 
-        all_ids = set(map(''.join, product(legacy_games, obs_types, suffixes, versions)))
+        all_ids = set(
+            map("".join, product(legacy_games, obs_types, suffixes, versions))
+        )
+        assert all_ids.issubset(envids)
+
+
+def test_register_gym_envs(test_rom_path):
+    with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: test_rom_path):
+        # Register internal IDs
+        register_gym_envs()
+
+        # Check if we registered the proper environments
+        envids = set(map(lambda e: e.id, registry.all()))
+        games = ["ALE/Tetris"]
+
+        obs_types = ["", "-ram"]
+        suffixes = []
+        versions = ["-v5"]
+
+        all_ids = set(map("".join, product(games, obs_types, suffixes, versions)))
         assert all_ids.issubset(envids)
 
 
