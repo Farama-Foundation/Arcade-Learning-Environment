@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import shlex
 import subprocess
@@ -63,7 +64,13 @@ class CMakeBuild(build_ext):
             # Users can override the generator with CMAKE_GENERATOR in CMake
             # 3.15+.
             if not cmake_generator:
-                cmake_args += ["-GNinja"]
+                try:
+                    import ninja  # noqa: F401
+
+                    cmake_args += ["-GNinja"]
+                except ImportError:
+                    pass
+
         else:
             # Single config generators are handled "normally"
             single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
@@ -83,6 +90,13 @@ class CMakeBuild(build_ext):
                     f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{config.upper()}={extdir}"
                 ]
                 build_args += ["--config", config]
+
+        if sys.platform.startswith('darwin'):
+            # Cross-compile support for macOS - respect ARCHFLAGS if set
+            archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
+            if archs:
+                cmake_args += ["-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
+
 
         if self.distribution.cmake_options is not None:
             cmake_args += shlex.split(self.distribution.cmake_options)
