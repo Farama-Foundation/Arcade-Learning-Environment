@@ -34,12 +34,12 @@ It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe.""")
 # TODO Py38: Once 3.7 is deprecated use importlib.metadata to parse
 # version string from package.
 try:
-    import importlib.metadata as importlib_metadata
+    import importlib.metadata as metadata
 except ImportError:
-    import importlib_metadata
+    import importlib_metadata as metadata
 try:
-    __version__ = importlib_metadata.version(__package__)
-except importlib_metadata.PackageNotFoundError:
+    __version__ = metadata.version(__package__)
+except metadata.PackageNotFoundError:
     __version__ = "unknown"
 
 # Import native shared library
