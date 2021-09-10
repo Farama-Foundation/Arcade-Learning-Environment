@@ -5,7 +5,7 @@
     }
     @media (prefers-color-scheme: dark) {
         #eyes > rect {
-            fill: #fff;
+            fill: #e9ecef;
         }
     }
   </style>
