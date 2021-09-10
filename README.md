@@ -6,7 +6,7 @@ The Arcade Learning Environment
 
 ![Build Status](https://github.com/mgbellemare/Arcade-Learning-Environment/workflows/Build%20ALE/badge.svg)
 
-**The Arcade Learning Environment (ALE) is a simple object-oriented framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
+**The Arcade Learning Environment (ALE) is a simple framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
 It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io) and separates the details of emulation from agent design.
 This [video](https://www.youtube.com/watch?v=nzUiEkasXZI) depicts over 50 games currently supported in the ALE.
 
@@ -19,32 +19,26 @@ Features
 - Object-oriented framework with support to add agents and games.
 - Emulation core uncoupled from rendering and sound generation modules for fast
   emulation with minimal library dependencies.
-- Automatic extraction of game score and end-of-game signal for more than 50
+- Automatic extraction of game score and end-of-game signal for more than 100
   Atari 2600 games.
-- Multi-platform code (compiled and tested under macOS, Windows, and several Linux
-  distributions).
-- Python development is supported through [pybind11](https://github.com/pybind/pybind11).
-- Agents programmed in C++ have access to all features in the ALE.
+- Multi-platform code (compiled and tested under macOS, Windows, and several Linux distributions).
+- Python bindings through [pybind11](https://github.com/pybind/pybind11).
+- Native support for OpenAI Gym.
 - Visualization tools.
 
 Quick Start
 ===========
 
-You must have a valid C++17 compiler and the following dependencies installed (we recommend using [`vcpkg`](https://github.com/microsoft/vcpkg) on all platforms)
+The ALE currently supports three different interfaces: C++, Python, and OpenAI Gym.
 
-```sh
-vcpkg install zlib sdl1
-```
-
-Note: `sdl` is optional but can be useful for display/audio support (i.e., `display_screen` and `sound` config options).
 
 Python
 ------
 
-The package `ale-py` will be distributed via PyPi but for the time being Python users can install the ALE via
+You simply need to install the `ale-py` package distributed via PyPI:
 
-```sh
-pip install .
+```shell
+pip install ale-py
 ```
 Note: Make sure you're using an up to date version of `pip` or the install may fail.
 
@@ -54,11 +48,57 @@ You can now import the ALE in your Python projects with
 from ale_py import ALEInterface
 
 ale = ALEInterface()
-ale.loadROM(...)
 ```
+
+### ROM Management
+
+The ALE doesn't distribute ROMs but we do provide a couple tools for managing your ROMs. First is the command line tool `ale-import-roms`. You can simply specify a directory as the first argument to this tool and we'll import all supported ROMs by the ALE.
+
+```shell
+ale-import-roms roms/
+
+[SUPPORTED]       breakout   roms/breakout.bin
+[SUPPORTED]       freeway    roms/freeway.bin
+
+[NOT SUPPORTED]              roms/custom.bin
+
+Imported 2/3 ROMs
+```
+Furthermore, Python packages can expose ROMs for discovery using the special `ale-py.roms` entry point. For more details check out the example [python-rom-package](./examples/python-rom-package).
+
+Once you've imported a supported ROM you can simply import the path from the `ale-py.roms` package and load the ROM in the ALE:
+```py
+from ale_py.roms import Breakout
+
+ale.loadROM(Breakout)
+```
+
+## OpenAI Gym
+
+Gym support is included in `ale-py`. Simply install  the Python package using the instructions above. You can also install `gym[atari]` which also installs `ale-py` with Gym.
+
+As of Gym v0.20 and onwards all Atari environments are provided via `ale-py`. We do recommend using the new `v5` environments in the `ALE` namespace:
+
+```py
+import gym
+import ale_py
+
+env = gym.make('ALE/Breakout-v5')
+```
+The `v5` environments follow the latest methodology set out in [Revisiting the Arcade Learning Environment by Machado et al.](https://jair.org/index.php/jair/article/view/11182).
+
+The only major change difference from Gym's `AtariEnv` is that we'd recommend not using the `env.render()` method in favour of supplying the `render_mode` keyword argument during environment initialization. The `human` render mode will give you the advantage of: frame perfect rendering, audio support, and proper resolution scaling. For more information check out [docs/gym-interface.md](./docs/gym-interface.md).
 
 C++
 ---
+
+You must have a valid C++17 compiler and the following dependencies installed (we recommend using [`vcpkg`](https://github.com/microsoft/vcpkg) on all platforms)
+
+```sh
+vcpkg install zlib sdl2
+```
+
+Note: `sdl` is optional but can be useful for display/audio support (i.e., `display_screen` and `sound` config options).
 
 We use CMake as a first class citizen and you can use the ALE directly with any CMake project.
 To compile and install the ALE you can run
