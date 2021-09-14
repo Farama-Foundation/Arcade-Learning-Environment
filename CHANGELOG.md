@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.7.0] - 2021-09-14
 ### Added
 - Native support for OpenAI Gym
 - Native Python interface using pybind11 which results in a speedup for Python workloads as well as proper support for objects like `ALEState`
@@ -170,7 +172,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial ALE release.
 
 
-[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.1...HEAD
+[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.5.1...v0.5.2
