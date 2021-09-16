@@ -169,7 +169,13 @@ class AtariEnv(gym.Env, utils.EzPickle):
 
         if not hasattr(roms, self._game):
             raise error.Error(
-                f'Unable to find game "{self._game}", did you import {self._game} with ale-import-roms?'
+                f"We're Unable to find the game \"{self._game}\". Note: Gym no longer distributes ROMs. "
+                f"If you own a license to use the necessary ROMs for research purposes you can download them "
+                f"via `pip install gym[accept-rom-license]`. Otherwise, you should try importing \"{self._game}\" "
+                f"via the command `ale-import-roms`. If you believe this is a mistake perhaps your copy of \"{self._game}\" "
+                "is unsupported. To check if this is the case try providing the environment variable "
+                "`PYTHONWARNINGS=default::ImportWarning:ale_py.roms`. For more information see: "
+                "https://github.com/mgbellemare/Arcade-Learning-Environment#rom-management"
             )
         self.ale.loadROM(getattr(roms, self._game))
 
@@ -345,10 +351,8 @@ class AtariEnv(gym.Env, utils.EzPickle):
     def clone_full_state(self) -> ALEState:
         """Deprecated method which would clone the emulator and system state."""
         logger.warn(
-            "clone_full_state() is deprecated and will be removed in a future release of `ale-py`. "
-            "Please use clone_state() which now returns the full emulator state. "
-            "The only source of stochasticity is `repeat_action_probability` and can be set to `0` "
-            "for fully deterministic emulation."
+            "`clone_full_state()` is deprecated and will be removed in a future release of `ale-py`. "
+            "Please use `clone_state(include_rng=True)` which is equivalent to `clone_full_state`. "
         )
         return self.ale.cloneSystemState()
 
@@ -356,9 +360,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         """Restore emulator state w/ system state including pseudorandomness."""
         logger.warn(
             "restore_full_state() is deprecated and will be removed in a future release of `ale-py`. "
-            "Please use restore_state(state) which now restores the full emulator state. "
-            "The only source of stochasticity is `repeat_action_probability` and can be set to `0` "
-            "for fully deterministic emulation."
+            "Please use `restore_state(state)` which will restore the state regardless of being a full or partial state. "
         )
         self.ale.restoreSystemState(state)
 
