@@ -2,14 +2,14 @@ from collections import defaultdict, namedtuple
 
 from gym.envs.registration import register
 
-from ale_py.gym.environment import ALGymEnv
 from ale_py.roms.utils import rom_name_to_id, rom_id_to_name
+
 
 GymFlavour = namedtuple("GymFlavour", ["suffix", "env_kwargs", "kwargs"])
 GymConfig = namedtuple("GymConfig", ["version", "env_kwargs", "flavours"])
 
 
-def register_gym_configs(roms, obs_types, configs, prefix=""):
+def _register_gym_configs(roms, obs_types, configs, prefix=""):
     if len(prefix) > 0 and prefix[-1] != "/":
         prefix += "/"
 
@@ -48,7 +48,7 @@ def register_gym_configs(roms, obs_types, configs, prefix=""):
                     # Register the environment
                     register(
                         id=f"{prefix}{name}{flavour.suffix}-{config.version}",
-                        entry_point=ALGymEnv,
+                        entry_point='gym.envs.atari:AtariEnv',
                         kwargs=env_kwargs,
                         **kwargs,
                     )
@@ -120,7 +120,7 @@ def register_legacy_gym_envs():
         "zaxxon",
     ]
     obs_types = ["rgb", "ram"]
-    frameskip = defaultdict(lambda: 4, [("SpaceInvaders", 3)])
+    frameskip = defaultdict(lambda: 4, [("space_invaders", 3)])
 
     versions = [
         GymConfig(
@@ -164,10 +164,10 @@ def register_legacy_gym_envs():
         ),
     ]
 
-    register_gym_configs(legacy_games, obs_types, versions)
+    _register_gym_configs(legacy_games, obs_types, versions)
 
 
-def register_gym_envs(prefix="ALE"):
+def register_gym_envs():
     import ale_py.roms as roms
 
     all_games = list(map(rom_name_to_id, roms.__all__))
@@ -187,4 +187,4 @@ def register_gym_envs(prefix="ALE"):
         )
     ]
 
-    register_gym_configs(all_games, obs_types, versions, prefix=prefix)
+    _register_gym_configs(all_games, obs_types, versions)
