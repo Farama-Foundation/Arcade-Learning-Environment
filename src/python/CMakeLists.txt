@@ -43,7 +43,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/
 add_custom_command(TARGET ale-py POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E create_symlink
         ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_BINARY_DIR}/ale_py)
+        ${CMAKE_BINARY_DIR}/src/ale_py)
 
 
 # If we're dynamically loading SDL with Python we'll be building a wheel
