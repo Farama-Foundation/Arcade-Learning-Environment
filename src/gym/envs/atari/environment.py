@@ -13,7 +13,7 @@ from ale_py._ale_py import ALEInterface, ALEState, Action, LoggerMode
 from ale_py.roms.utils import rom_id_to_name
 
 
-class ALGymEnv(gym.Env, utils.EzPickle):
+class AtariEnv(gym.Env, utils.EzPickle):
     """
     (A)rcade (L)earning (Gym) (Env)ironment.
     A Gym wrapper around the Arcade Learning Environment (ALE).
@@ -336,7 +336,7 @@ class ALGymEnv(gym.Env, utils.EzPickle):
         """Clone emulator state w/o system state. Restoring this state will
         *not* give an identical environment. For complete cloning and restoring
         of the full state, see `{clone,restore}_full_state()`."""
-        return self.ale.cloneState(include_rng)
+        return self.ale.cloneState(include_rng=include_rng)
 
     def restore_state(self, state: ALEState) -> None:
         """Restore emulator state w/o system state."""

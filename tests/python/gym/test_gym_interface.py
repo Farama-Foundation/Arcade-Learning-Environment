@@ -1,6 +1,7 @@
 import pytest
 
 pytest.importorskip("gym")
+pytest.importorskip("gym.envs.atari")
 
 import numpy as np
 
@@ -11,9 +12,9 @@ from gym import spaces
 from gym.envs.registration import registry
 from gym.core import Env
 
-from ale_py.gym.utils import (
+from ale_py.gym import (
     register_legacy_gym_envs,
-    register_gym_configs,
+    _register_gym_configs,
     register_gym_envs,
 )
 
@@ -21,14 +22,12 @@ from ale_py.gym.utils import (
 def test_register_legacy_env_id():
     prefix = "ALETest/"
 
-    _original_register_gym_configs = register_gym_configs
+    _original_register_gym_configs = _register_gym_configs
 
     def _mocked_register_gym_configs(*args, **kwargs):
         return _original_register_gym_configs(*args, **kwargs, prefix=prefix)
 
-    with patch(
-        "ale_py.gym.utils.register_gym_configs", new=_mocked_register_gym_configs
-    ):
+    with patch("ale_py.gym._register_gym_configs", new=_mocked_register_gym_configs):
         # Register internal IDs
         register_legacy_gym_envs()
 
@@ -248,6 +247,54 @@ def test_gym_action_meaning(tetris_gym):
     ]
 
     assert tetris_gym.get_action_meanings() == action_meanings
+
+
+def test_gym_clone_state(tetris_gym):
+    tetris_gym.seed(0)
+    tetris_gym.reset()
+    # Smoke test for cloneFullState
+    tetris_gym.step(0)
+    state = tetris_gym.clone_full_state()
+    for _ in range(100):
+        tetris_gym.step(tetris_gym.action_space.sample())
+
+    tetris_gym.restore_full_state(state)
+    assert tetris_gym.clone_full_state() == state
+
+    tetris_gym.seed(0)
+    tetris_gym.reset()
+    # Smoke test for cloneFullState
+    tetris_gym.step(0)
+    state = tetris_gym.clone_state()
+    for _ in range(100):
+        tetris_gym.step(tetris_gym.action_space.sample())
+
+    tetris_gym.restore_state(state)
+    assert tetris_gym.clone_state() == state
+
+    tetris_gym.seed(0)
+    tetris_gym.reset()
+    # Smoke test for cloneFullState
+    tetris_gym.step(0)
+    state = tetris_gym.clone_state()
+    for _ in range(100):
+        tetris_gym.step(tetris_gym.action_space.sample())
+
+    tetris_gym.restore_state(state)
+    assert tetris_gym.clone_state() == state
+
+    tetris_gym.seed(0)
+    tetris_gym.reset()
+    # Smoke test for cloneFullState
+    tetris_gym.step(0)
+    state = tetris_gym.clone_state(include_rng=True)
+    full_state = tetris_gym.clone_full_state()
+    for _ in range(100):
+        tetris_gym.step(tetris_gym.action_space.sample())
+
+    tetris_gym.restore_state(state)
+    assert tetris_gym.clone_state(include_rng=True) == state
+    assert tetris_gym.clone_state(include_rng=True) == full_state
 
 
 @pytest.mark.parametrize("tetris_gym", [{"full_action_space": True}], indirect=True)
