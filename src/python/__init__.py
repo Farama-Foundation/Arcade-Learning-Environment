@@ -1,6 +1,5 @@
 import platform
 import warnings
-import importlib
 import sys
 import os
 
