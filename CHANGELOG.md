@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.7.1] - 2021-09-28
+### Added
+- Added `ale-import-roms --import-from-pkg {pkg}`
+- Use `gym.envs.atari` as a namespace package to maintain backwards compatability with the `AtariEnv` entry point.
+- The ALE now uses Gym's environment plugin system in `gym>=0.21` (https://github.com/openai/gym/pull/2383, https://github.com/openai/gym/pull/2409, https://github.com/openai/gym/pull/2411). Users no longer are required to import `ale_py` to use a `-v5` environment.
+
+### Changed
+- Silence unsupported ROMs warning behind `ImportError`. To view these errors you should now supply the environment variable `PYTHONWARNINGS=default::ImportWarning:ale_py.roms`.
+- Reworked ROM error messages to provide more helpful suggestions.
+- General metadata changes to the Python package.
+
+### Fixed
+- Add missing `std::` name qualifier when enabling SDL (@anadrome)
+- Fixed mandatory kwarg for `gym.envs.atari:AtariEnv.clone_state`.
+
+
 ## [0.7.0] - 2021-09-14
 ### Added
 - Native support for OpenAI Gym
@@ -172,7 +189,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial ALE release.
 
 
-[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.0...HEAD
+[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.5.2...v0.6.0
