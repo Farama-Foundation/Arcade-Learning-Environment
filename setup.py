@@ -151,6 +151,7 @@ if __name__ == '__main__':
     # Most config options are in `setup.cfg`. These are the
     # only dynamic options we need at build time.
     setup(
+        name="ale-py",
         version=parse_version('version.txt'),
         distclass=CMakeDistribution,
         ext_modules=[CMakeExtension("ale_py._ale_py")],
