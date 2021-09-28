@@ -1,8 +1,19 @@
 [build-system]
 requires = [
-    "setuptools>=42",
+    "setuptools>=58",
     "wheel",
-    "cmake>=3.14",
+    "cmake>=3.18",
     "ninja; sys_platform != 'win32' and platform_machine != 'arm64'",
 ]
 build-backend = "setuptools.build_meta"
+
+
+[tool.cibuildwheel]
+skip = "*-win32 *-manylinux_i686 pp* cp310-*"
+
+build-frontend = "build"
+
+test-extras = ["test"]
+test-command = "pytest {project}"
+
+manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014-vcpkg"
