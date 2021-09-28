@@ -190,7 +190,7 @@ bool OSystem::createConsole(const fs::path& romfile)
 #else
     ale::Logger::Info << "Setting `display_screen` is enabled "
                       << "but SDL_SUPPORT is disabled. To display the "
-                      << "screen SDL_SUPPORT must be enabled." << endl;
+                      << "screen SDL_SUPPORT must be enabled." << std::endl;
 #endif
   }
 
