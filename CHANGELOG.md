@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Package Tetris by Colin Hughes. This ROM is made publicly available by the author. This is useful for other open-source packages to be able to unit test agaisnt the ALE. (@tfboyd)
+
 ### Fixed
 - Fixed an issue with `isSupportedROM` on Windows which was causing incorrect ROM hashes.
 
