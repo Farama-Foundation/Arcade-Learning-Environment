@@ -81,13 +81,14 @@ As of Gym v0.20 and onwards all Atari environments are provided via `ale-py`. We
 
 ```py
 import gym
-import ale_py
 
 env = gym.make('ALE/Breakout-v5')
 ```
 The `v5` environments follow the latest methodology set out in [Revisiting the Arcade Learning Environment by Machado et al.](https://jair.org/index.php/jair/article/view/11182).
 
 The only major change difference from Gym's `AtariEnv` is that we'd recommend not using the `env.render()` method in favour of supplying the `render_mode` keyword argument during environment initialization. The `human` render mode will give you the advantage of: frame perfect rendering, audio support, and proper resolution scaling. For more information check out [docs/gym-interface.md](./docs/gym-interface.md).
+
+For more information on changes to the Atari environments in OpenAI Gym please check out [the following blog post](https://brosa.ca/blog/ale-release-v0.7).
 
 C++
 ---
