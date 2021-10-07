@@ -169,7 +169,7 @@ std::optional<std::string> ALEInterface::isSupportedROM(const fs::path& rom_file
     throw std::runtime_error("ROM file doesn't exist");
   }
 
-  std::ifstream fsnode(rom_file);
+  std::ifstream fsnode(rom_file, std::ios::binary);
   if (!fsnode.good()) {
     throw std::runtime_error("Failed to open rom file.");
   }
