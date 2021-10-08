@@ -1,10 +1,12 @@
 The Arcade Learning Environment
 <a href="#the-arcade-learning-environment">
-  <img align="right" src="docs/static/ale.svg" width=75 />
+  <img alt="Arcade Learning Environment" align="right" src="docs/static/ale.svg" width=75 />
 </a>
 ===============================
 
-![Build Status](https://github.com/mgbellemare/Arcade-Learning-Environment/workflows/Build%20ALE/badge.svg)
+[![Build ALE](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/build-ale.yml/badge.svg)](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/build-ale.yml)
+[![PyPI Version](https://img.shields.io/pypi/v/ale-py)](https://pypi.org/project/ale-py)
+
 
 **The Arcade Learning Environment (ALE) is a simple framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
 It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io) and separates the details of emulation from agent design.
