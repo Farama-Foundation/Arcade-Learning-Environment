@@ -15,6 +15,7 @@ jobs:
       matrix:
         include:
           - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64", "triplet": "x64-linux-mixed"}
+          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "arm64", "triplet": "arm64-linux-mixed"}
           - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64", "triplet": "x64-windows"}
           - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64", "triplet": "x64-osx-mixed"}
           - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64", "triplet": "arm64-osx-mixed"}
