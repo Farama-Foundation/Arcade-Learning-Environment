@@ -80,7 +80,7 @@ jobs:
 
     - name: Install pip dependencies
       run: |
-        python -m pip install .[test]
+        python -m pip install gym pytest cmake
 
     - name: Configure ALE
       run: |
