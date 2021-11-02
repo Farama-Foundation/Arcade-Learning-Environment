@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.7.2] - 2021-10-07
+## [0.7.3] — 2021-11-02
+### Added
+- Environment variable `ALE_PY_ROM_DIR` which if specified will search for ROMs in `${ALE_PY_ROM_DIR}/*.bin`. (@joshgreaves)
+
+## [0.7.2] — 2021-10-07
 ### Added
 - Package Tetris by Colin Hughes. This ROM is made publicly available by the author. This is useful for other open-source packages to be able to unit test agaisnt the ALE. (@tfboyd)
 - Python 3.10 prebuilt wheels
@@ -18,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Python 3.6 prebuilt wheels
 
 
-## [0.7.1] - 2021-09-28
+## [0.7.1] — 2021-09-28
 ### Added
 - Added `ale-import-roms --import-from-pkg {pkg}`
 - Use `gym.envs.atari` as a namespace package to maintain backwards compatability with the `AtariEnv` entry point.
@@ -34,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed mandatory kwarg for `gym.envs.atari:AtariEnv.clone_state`.
 
 
-## [0.7.0] - 2021-09-14
+## [0.7.0] — 2021-09-14
 ### Added
 - Native support for OpenAI Gym
 - Native Python interface using pybind11 which results in a speedup for Python workloads as well as proper support for objects like `ALEState`
@@ -83,14 +87,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Lots of code cleanups conforming to best practices (thanks @tkoeppe)
 
 
-## [0.6.1] - 2019-11-20
+## [0.6.1] — 2019-11-20
 ### Changed
 - Speedup of up to 30% by optimizing variable types (@qstanczyk)
 
 ### Fixed
 - Fixed switch fall-through with Gravitar lives detection (@lespeholt)
 
-## [0.6.0] - 2015-06-23
+## [0.6.0] — 2015-06-23
 ### Added
 - Support for modes and difficulties in Atari games (@mcmachado)
 - Frame maxpooling as a post-processing option (@skylian)
@@ -107,7 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed termination issues in Q*Bert
 
 
-## [0.5.2] - 2015-10-04
+## [0.5.2] — 2015-10-04
 ### Added
 - Routines for ALEState serialization (@Jragonmiris).
 
@@ -119,7 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Additional bug fixes.
 
 
-## [0.5.1] - 2015-07-07
+## [0.5.1] — 2015-07-07
 ### Added
 - Added RNG serialization capability.
 
@@ -131,7 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bug fixes from ALE 0.5.0.
 
 
-## [0.5.0] - 2015-06-22
+## [0.5.0] — 2015-06-22
 ### Added
 - Added action_repeat_stochasticity.
 - Added sound playback, visualization.
@@ -155,19 +159,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The flag 'disable_color_averaging' was renamed to 'color_averaging' and FALSE is its default value.
 
 
-## [0.4.4] - 2014-04-28
+## [0.4.4] — 2014-04-28
 ### Fixed
 - Fixed a memory issue in ALEScreen.
 
 
-## [0.4.3] - 2014-04-26
+## [0.4.3] — 2014-04-26
 ### Fixed
 - Fixed issues with frame numbers not being correctly updated.
 - Fixed a bug where total reward was not properly reported under frame skipping. 
 - Fixed a bug with ALEState's m_frame_number.
 
 
-## [0.4.2] - 2013-06-12
+## [0.4.2] — 2013-06-12
 ### Changed
 - Modified StellaEnvironment save/load interface to provide additional flexibility. 
 
@@ -175,7 +179,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Series of bug fixes from Matthew Hausknecht and community.
 
 
-## [0.4.1] - 2013-05-24
+## [0.4.1] — 2013-05-24
 ### Added
 - Added frame skipping support directly in StellaEnvironment.
 
@@ -186,7 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed RL-Glue syntax from OBSERVATION to OBSERVATIONS. Thanks to Angus MacIsaac for picking this bug up.
 
 
-## [0.4.0] - 2013-04-22
+## [0.4.0] — 2013-04-22
 ### Added
 - RL-Glue support
 - Shared library interface
@@ -196,11 +200,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Better documentation
 
 
-## 0.3.0 - 2012-07-22
+## 0.3.0 — 2012-07-22
 - Initial ALE release.
 
 
-[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.2...HEAD
+[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.3...HEAD
+[0.7.3]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.1...v0.7.0
