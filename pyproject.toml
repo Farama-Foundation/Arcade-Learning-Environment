@@ -9,11 +9,10 @@ build-backend = "setuptools.build_meta"
 
 
 [tool.cibuildwheel]
-skip = "*-win32 *-manylinux_i686 pp* cp36-*"
+skip = "*-win32 *-manylinux_i686 pp* cp36-* *-musllinux_*"
 
 build-frontend = "build"
 
-test-skip = "cp310-macosx*"
 test-extras = ["test"]
 test-command = "pytest {project}"
 

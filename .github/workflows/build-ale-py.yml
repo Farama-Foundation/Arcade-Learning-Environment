@@ -32,10 +32,10 @@ jobs:
       run: echo "ALE_BUILD_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.1.2
+      uses: pypa/cibuildwheel@v2.2.2
       env:
         CIBW_ARCHS: "${{ matrix.config.arch }}"
-        CIBW_ENVIRONMENT: "ALE_BUILD_VERSION=${{ env.ALE_BUILD_VERSION }} MACOSX_DEPLOYMENT_TARGET='10.15' VCPKG_DEFAULT_TRIPLET=${{ matrix.config.triplet }}"
+        CIBW_ENVIRONMENT: "ALE_BUILD_VERSION=${{ env.ALE_BUILD_VERSION }} MACOSX_DEPLOYMENT_TARGET='10.15' VCPKG_DEFAULT_TRIPLET=${{ matrix.config.triplet }} PIP_ONLY_BINARY='numpy'"
         CIBW_BEFORE_ALL: >
           vcpkg install zlib sdl2
           --overlay-triplets cmake/custom-triplets
