@@ -9,26 +9,37 @@ from typing import List, Union, Dict
 
 from ale_py.roms.utils import (
     SupportedPackage as _SupportedPackage,
-    SupportedPlugin as _SupportedPlugin,
+    SupportedEntryPoint as _SupportedEntryPoint,
+    SupportedDirectory as _SupportedDirectory,
 )
-
 
 # Precedence is as follows:
 #  1. Internal ROMs
 #  2. External ROMs
 #  3. ROMs from atari-py.roms
 #  4. ROMs from atari-py-roms.roms
-_SUPPORTED_PACKAGES: List[Union[_SupportedPackage, _SupportedPlugin]] = [
+_ROM_PLUGINS: List[
+    Union[_SupportedPackage, _SupportedEntryPoint, _SupportedDirectory]
+] = [
     _SupportedPackage("ale_py.roms"),
-    _SupportedPlugin("ale_py.roms"),
+    _SupportedEntryPoint("ale_py.roms"),
     _SupportedPackage("atari_py.atari_roms"),
     _SupportedPackage("atari_py_roms.atari_roms"),
 ]
 
+# Environment variable for ROM discovery.
+# ale-py will search for supported ROMs in:
+#   ${ALE_PY_ROM_DIR}/*.bin
+_ROM_DIRECTORY_ENV_KEY = "ALE_PY_ROM_DIR"
+_ROM_DIRECTORY_ENV_VALUE = os.environ.get(_ROM_DIRECTORY_ENV_KEY, None)
+
+if _ROM_DIRECTORY_ENV_VALUE is not None:
+    _ROM_PLUGINS.append(_SupportedDirectory(_ROM_DIRECTORY_ENV_VALUE))
+
 
 def _resolve_roms() -> List[str]:
     roms: Dict[str, pathlib.Path] = {}
-    for package in _SUPPORTED_PACKAGES:
+    for package in _ROM_PLUGINS:
 
         try:
             # Resolve supported / unsupported roms
@@ -77,8 +88,12 @@ def _resolve_roms() -> List[str]:
         except ModuleNotFoundError:
             pass
 
-    globals().update(roms)
-    return list(roms.keys())
+    return roms
 
 
-__all__ = _resolve_roms()
+_RESOLVED_ROMS = _resolve_roms()
+
+# Update module
+globals().update(_RESOLVED_ROMS)
+# Export resolved ROMs
+__all__ = list(_RESOLVED_ROMS.keys())

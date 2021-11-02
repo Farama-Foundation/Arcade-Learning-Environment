@@ -77,7 +77,7 @@ class SupportedPackage:
         return f"SupportedPackage[{self.package}]"
 
 
-class SupportedPlugin:
+class SupportedEntryPoint:
     def __init__(self, group: str):
         self.group = group
 
@@ -105,4 +105,30 @@ class SupportedPlugin:
         return f"{self.group}"
 
     def __repr__(self):
-        return f"SupportedPlugin[{self.group}]"
+        return f"SupportedEntryPoint[{self.group}]"
+
+
+class SupportedDirectory:
+    def __init__(self, directory: Union[str, pathlib.Path]):
+        self.directory = pathlib.Path(directory)
+
+    @lru_cache(maxsize=None)
+    def resolve(self) -> Tuple[Dict[str, pathlib.Path], List[pathlib.Path]]:
+        roms: Dict[str, pathlib.Path] = {}
+        unsupported: List[pathlib.Path] = []
+
+        # Iterate over all bin files in directory
+        for path in self.directory.glob("*.bin"):
+            rom = ALEInterface.isSupportedROM(path)
+            if rom is not None:
+                roms[rom_id_to_name(rom)] = path
+            else:
+                unsupported.append(path)
+
+        return roms, unsupported
+
+    def __str__(self):
+        return f"{self.directory}"
+
+    def __repr__(self):
+        return f"SupportedDirectory[{self.directory}]"
