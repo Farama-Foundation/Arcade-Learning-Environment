@@ -11,6 +11,7 @@ from itertools import product
 from gym import spaces
 from gym.envs.registration import registry
 from gym.core import Env
+from gym.utils.env_checker import check_env
 
 from ale_py.gym import (
     register_legacy_gym_envs,
@@ -300,3 +301,38 @@ def test_gym_clone_state(tetris_gym):
 @pytest.mark.parametrize("tetris_gym", [{"full_action_space": True}], indirect=True)
 def test_gym_action_space(tetris_gym):
     assert tetris_gym.action_space.n == 18
+
+
+def test_gym_reset_with_seed(tetris_gym):
+    tetris_gym.reset(seed=5)
+    first_state = tetris_gym.clone_state(include_rng=True)
+
+    tetris_gym.seed(5)
+    tetris_gym.reset()
+    second_state = tetris_gym.clone_state(include_rng=True)
+
+    assert first_state == second_state
+
+
+@pytest.mark.parametrize("tetris_gym", [{"render_mode": "rgb_array"}], indirect=True)
+def test_gym_reset_with_infos(tetris_gym):
+    pack = tetris_gym.reset(seed=0, return_info=True)
+
+    assert isinstance(pack, tuple)
+    assert len(pack) == 2
+
+    _, info = pack
+
+    assert isinstance(info, dict)
+    assert "seeds" in info
+    assert "lives" in info
+    assert "episode_frame_number" in info
+    assert "frame_number" in info
+    assert "rgb" in info
+
+
+def test_gym_compliance(tetris_gym):
+    try:
+        check_env(tetris_gym)
+    except Exception as ex:
+        pytest.fail(f"Gym compliance failed: {ex}")

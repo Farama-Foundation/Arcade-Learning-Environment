@@ -169,10 +169,10 @@ class AtariEnv(gym.Env, utils.EzPickle):
 
         if not hasattr(roms, self._game):
             raise error.Error(
-                f"We're Unable to find the game \"{self._game}\". Note: Gym no longer distributes ROMs. "
+                f'We\'re Unable to find the game "{self._game}". Note: Gym no longer distributes ROMs. '
                 f"If you own a license to use the necessary ROMs for research purposes you can download them "
-                f"via `pip install gym[accept-rom-license]`. Otherwise, you should try importing \"{self._game}\" "
-                f"via the command `ale-import-roms`. If you believe this is a mistake perhaps your copy of \"{self._game}\" "
+                f'via `pip install gym[accept-rom-license]`. Otherwise, you should try importing "{self._game}" '
+                f'via the command `ale-import-roms`. If you believe this is a mistake perhaps your copy of "{self._game}" '
                 "is unsupported. To check if this is the case try providing the environment variable "
                 "`PYTHONWARNINGS=default::ImportWarning:ale_py.roms`. For more information see: "
                 "https://github.com/mgbellemare/Arcade-Learning-Environment#rom-management"
@@ -206,7 +206,6 @@ class AtariEnv(gym.Env, utils.EzPickle):
         # Get action enum, terminal bool, metadata
         action = self._action_set[action_ind]
         terminal = self.ale.game_over()
-        metadata = {"lives": self.ale.lives()}
 
         # If frameskip is a length 2 tuple then it's stochastic
         # frameskip between [frameskip[0], frameskip[1]] uniformly.
@@ -222,18 +221,31 @@ class AtariEnv(gym.Env, utils.EzPickle):
         for _ in range(frameskip):
             reward += self.ale.act(action)
 
-        # Render rgb array
-        if self._render_mode == "rgb_array":
-            metadata["rgb"] = self.ale.getScreenRGB()
+        return self._get_obs(), reward, terminal, self._get_info()
 
-        return self._get_obs(), reward, terminal, metadata
-
-    def reset(self) -> np.ndarray:
+    def reset(
+        self, *, seed: Optional[int] = None, return_info: bool = False
+    ) -> Union[Tuple[np.ndarray, Dict[str, Any]], np.ndarray]:
         """
         Resets environment and returns initial observation.
         """
+        # Gym's new seeding API seeds on reset.
+        # This will cause the console to be recreated
+        # and loose all previous state, e.g., statistics, etc.
+        seeded_with = None
+        if seed is not None:
+            seeded_with = self.seed(seed)
+
         self.ale.reset_game()
-        return self._get_obs()
+        obs = self._get_obs()
+
+        if return_info:
+            info = self._get_info()
+            if seeded_with is not None:
+                info["seeds"] = seeded_with
+            return obs, info
+        else:
+            return obs
 
     def render(self, mode: str) -> None:
         """
@@ -285,6 +297,18 @@ class AtariEnv(gym.Env, utils.EzPickle):
             return self.ale.getScreenGrayscale()
         else:
             raise error.Error(f"Unrecognized observation type: {self._obs_type}")
+
+    def _get_info(self) -> Dict[str, Any]:
+        info = {
+            "lives": self.ale.lives(),
+            "episode_frame_number": self.ale.getEpisodeFrameNumber(),
+            "frame_number": self.ale.getFrameNumber(),
+        }
+
+        if self._render_mode == "rgb_array":
+            info["rgb"] = self.ale.getScreenRGB()
+
+        return info
 
     def get_keys_to_action(self) -> Dict[Tuple[int], Action]:
         """
