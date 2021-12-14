@@ -174,16 +174,16 @@ def register_gym_envs():
     obs_types = ["rgb", "ram"]
 
     # max_episode_steps is 108k frames which is 30 mins of gameplay.
-    # This corresponds to 108k / 5 = 21,600 steps
+    # This corresponds to 108k / 4 = 27,000 steps
     versions = [
         GymConfig(
             "v5",
             {
                 "repeat_action_probability": 0.25,
-                "full_action_space": True,
-                "frameskip": 5,
+                "full_action_space": False,
+                "frameskip": 4,
             },
-            [GymFlavour("", {}, {"max_episode_steps": 108000 // 5})],
+            [GymFlavour("", {}, {"max_episode_steps": 108000 // 4})],
         )
     ]
 

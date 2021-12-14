@@ -28,9 +28,9 @@ class AtariEnv(gym.Env, utils.EzPickle):
         mode: Optional[int] = None,
         difficulty: Optional[int] = None,
         obs_type: str = "rgb",
-        frameskip: Union[Tuple[int, int], int] = 5,
+        frameskip: Union[Tuple[int, int], int] = 4,
         repeat_action_probability: float = 0.25,
-        full_action_space: bool = True,
+        full_action_space: bool = False,
         render_mode: str = None,
     ) -> None:
         """
