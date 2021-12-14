@@ -14,10 +14,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64", "triplet": "x64-linux-mixed"}
-          - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64", "triplet": "x64-windows"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64", "triplet": "x64-osx-mixed"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64", "triplet": "arm64-osx-mixed"}
+          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
+          - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}
+          - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
+          - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/checkout@v2
@@ -28,19 +28,10 @@ jobs:
       env:
         GITHUB_CR_TOKEN: ${{ secrets.CR_TOKEN }}
 
-    - name: Tag release
-      run: echo "ALE_BUILD_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
-
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.2.2
+      uses: pypa/cibuildwheel@v2.3.1
       env:
         CIBW_ARCHS: "${{ matrix.config.arch }}"
-        CIBW_ENVIRONMENT: "ALE_BUILD_VERSION=${{ env.ALE_BUILD_VERSION }} MACOSX_DEPLOYMENT_TARGET='10.15' VCPKG_DEFAULT_TRIPLET=${{ matrix.config.triplet }} PIP_ONLY_BINARY='numpy'"
-        CIBW_BEFORE_ALL: >
-          vcpkg install zlib sdl2
-          --overlay-triplets cmake/custom-triplets
-          --triplet ${{ matrix.config.triplet }}
-          --feature-flags=-compilertracking
 
     - name: Upload wheels
       uses: actions/upload-artifact@v2

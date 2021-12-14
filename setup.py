@@ -12,7 +12,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 class CMakeDistribution(Distribution):
     global_options = Distribution.global_options
-    global_options += [("cmake-options=", None, "Additional semicolon-separated cmake options.")]
+    global_options += [
+        ("cmake-options=", None, "Additional semicolon-separated cmake options.")
+    ]
 
     def __init__(self, attrs=None):
         self.cmake_options = None
@@ -53,7 +55,7 @@ class CMakeBuild(build_ext):
             "-DSDL_SUPPORT=ON",
             "-DSDL_DYNLOAD=ON",
             "-DBUILD_CPP_LIB=OFF",
-            "-DBUILD_PYTHON_LIB=ON"
+            "-DBUILD_PYTHON_LIB=ON",
         ]
         build_args = []
 
@@ -91,12 +93,11 @@ class CMakeBuild(build_ext):
                 ]
                 build_args += ["--config", config]
 
-        if sys.platform.startswith('darwin'):
+        if sys.platform.startswith("darwin"):
             # Cross-compile support for macOS - respect ARCHFLAGS if set
             archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
             if archs:
                 cmake_args += ["-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
-
 
         if self.distribution.cmake_options is not None:
             cmake_args += shlex.split(self.distribution.cmake_options)
@@ -124,36 +125,55 @@ def parse_version(version_file):
     """
     Parse version from `version_file`.
 
-    If `ALE_BUILD_VERSION` is specified this version overrides that in
-    `version_file`.
+    If we're running on CI, i.e., CIBUILDWHEEL is set, then we'll parse
+    the version from `GITHUB_REF` using the official semver regex.
 
-    If `ALE_BUILD_VERSION` is not specified the git sha will be appended
-    to the version identifier.
+    If we're not running in CI we'll append the current git SHA to the
+    version identifier.
 
-    raises AssertionError: If `ALE_BUILD_VERSION` doesn't start with the version
-        specified in `version_file`
+    raises AssertionError: If `${GITHUB_REF#/v/*/}` doesn't start with
+        the version specified in `version_file`.
     """
-    version = open(version_file).read().strip()
+    semver_regex = r"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"
+    semver_prog = re.compile(semver_regex)
 
-    if os.getenv('ALE_BUILD_VERSION'):
-        assert os.getenv('ALE_BUILD_VERSION').startswith(version)
-        version = os.getenv('ALE_BUILD_VERSION')
+    with open(version_file, "r") as fp:
+        version = fp.read().strip()
+        assert semver_prog.match(version) is not None
+
+    if os.getenv("CIBUILDWHEEL") is not None:
+        ci_ref = os.getenv("GITHUB_REF")
+        assert ci_ref is not None, "Github ref not found, are we running in CI?"
+
+        ci_version_match = semver_prog.search(ci_ref)
+        assert ci_version_match is not None, f"Couldn't match semver in {ci_ref}"
+
+        ci_version = ci_version_match.group(0)
+        assert ci_version.startswith(
+            version
+        ), f"{ci_version} not prefixed with {version}"
+
+        version = ci_version
     else:
-        sha = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=here).decode('ascii').strip()
+        sha = (
+            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=here)
+            .decode("ascii")
+            .strip()
+        )
         version += f"+{sha}"
 
     return version
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Allow for running `pip wheel` from other directories
     here and os.chdir(here)
     # Most config options are in `setup.cfg`. These are the
     # only dynamic options we need at build time.
     setup(
         name="ale-py",
-        version=parse_version('version.txt'),
+        version=parse_version("version.txt"),
         distclass=CMakeDistribution,
         ext_modules=[CMakeExtension("ale_py._ale_py")],
-        cmdclass={"build_ext": CMakeBuild}
+        cmdclass={"build_ext": CMakeBuild},
     )
