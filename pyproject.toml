@@ -9,11 +9,37 @@ build-backend = "setuptools.build_meta"
 
 
 [tool.cibuildwheel]
-skip = "*-win32 *-manylinux_i686 pp* cp36-* *-musllinux_*"
+# Skip 32-bit wheels, PyPy & musllinux
+skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
 
+# Test configuration
 test-extras = ["test"]
 test-command = "pytest {project}"
 
-manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014-vcpkg"
+# vcpkg manylinux images
+manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014_x86_64-vcpkg"
+
+[tool.cibuildwheel.linux]
+environment-pass = ["GITHUB_REF"]
+
+# macOS x86-64
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx_x86_64"
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "10.15" }
+
+# macOS arm64
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx_arm64"
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "10.15" }
+
+# Windows x64
+[[tool.cibuildwheel.overrides]]
+select = "*-win_amd64"
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows", VCPKG_FEATURE_FLAGS = "-compilertracking" }
+
+# Linux x86-64 (manylinux)
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux_x86_64"
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-linux-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
