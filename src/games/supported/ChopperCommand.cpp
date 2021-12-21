@@ -50,7 +50,20 @@ void ChopperCommandSettings::step(const System& system) {
   // update terminal status
   m_lives = readRam(&system, 0xE4) & 0xF;
   m_terminal = (m_lives == 0);
-  m_is_started = (readRam(&system, 0xC2) == 1);
+  /*
+   * Memory address 0xC2 indicates whether the Chopper is pointed
+   * left or right on the screen.
+   *  - If the value is 0x00 we're looking left.
+   *  - If the value ix 0x01 we are looking right.
+   * At the beginning of the game when we're selecting the game mode
+   * we are always facing left, therefore, 0xC2 == 0x00.
+   * When the game starts the chopper is initialized facing
+   * right, i.e., 0xC2 == 0x01. We know if the game has started
+   * if at any point 0xC2 == 0x01 so we can just OR the LSB of 0xC2
+   * to keep track of whether the game has started or not.
+   *
+   * */
+  m_is_started |= readRam(&system, 0xC2) & 0x1;
 }
 
 /* is end of game */
