@@ -8,7 +8,7 @@ from functools import lru_cache
 # importlib_resources doesn't suffer from this bug.
 import importlib_resources as resources
 
-if sys.version_info < (3, 8):
+if sys.version_info < (3, 10):
     import importlib_metadata as metadata
 else:
     import importlib.metadata as metadata
@@ -87,7 +87,7 @@ class SupportedEntryPoint:
         unsupported: List[pathlib.Path] = []
 
         # Iterate over all entrypoints in this group
-        for external in metadata.entry_points().get(self.group, []):
+        for external in metadata.entry_points(group=self.group):
             # We load the external load ROM function and
             # update the ROM dict with the result
             external_fn: Callable[[], List[Union[pathlib.Path, str]]] = external.load()
