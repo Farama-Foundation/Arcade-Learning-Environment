@@ -1,7 +1,27 @@
 cmake_minimum_required (VERSION 3.14)
 
+# Build the C++ shared library
+option(BUILD_CPP_LIB "Build C++ Interface" ON)
+
+# Build the native Python bindings using pybind11
+option(BUILD_PYTHON_LIB "Build Python Interface" ON)
+
+# Enable SDL for screen and audio support
+option(SDL_SUPPORT "Enable SDL support" OFF)
+# Append VCPKG manifest feature
+if(SDL_SUPPORT)
+  list(APPEND VCPKG_MANIFEST_FEATURES "sdl")
+endif()
+
 # Set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
+# Overlay VCPKG custom triplets
+if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
+  set(VCPKG_OVERLAY_TRIPLETS
+      "${CMAKE_MODULE_PATH}/custom-triplets"
+      CACHE STRING "")
+endif()
 
 # Discover VCPKG default triplet
 if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)

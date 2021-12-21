@@ -1,7 +1,3 @@
-option(BUILD_PYTHON_LIB "Build Python Interface" ON)
-option(BUILD_CPP_LIB "Build C++ Interface" ON)
-option(SDL_SUPPORT "Enable SDL support" OFF)
-
 # Include src/ and cmake binary directory (for version.hpp)
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 

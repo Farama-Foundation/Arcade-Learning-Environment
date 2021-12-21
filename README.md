@@ -95,15 +95,9 @@ For more information on changes to the Atari environments in OpenAI Gym please c
 C++
 ---
 
-You must have a valid C++17 compiler and the following dependencies installed (we recommend using [`vcpkg`](https://github.com/microsoft/vcpkg) on all platforms)
+The following instructions will assume you have a valid C++17 compiler and [`vcpkg`](https://github.com/microsoft/vcpkg) installed.
 
-```sh
-vcpkg install zlib sdl2
-```
-
-Note: `sdl` is optional but can be useful for display/audio support (i.e., `display_screen` and `sound` config options).
-
-We use CMake as a first class citizen and you can use the ALE directly with any CMake project.
+We use CMake as a first class citizen, and you can use the ALE directly with any CMake project.
 To compile and install the ALE you can run
 
 ```sh
@@ -112,10 +106,10 @@ cmake ../ -DCMAKE_BUILD_TYPE=Release
 cmake --build . --target install
 ```
 
-There are optional flags `-DSDL_SUPPORT=ON/OFF` to toggle SDL support (`OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
+There are optional flags `-DSDL_SUPPORT=ON/OFF` to toggle SDL support (i.e., `display_screen` and `sound` support; `OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
 the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the pybind11 wrapper (`ON` by default).
 
-Finally you can link agaisnt the ALE in your own CMake project as follows
+Finally, you can link agaisnt the ALE in your own CMake project as follows
 
 ```cmake
 find_package(ale REQUIRED)

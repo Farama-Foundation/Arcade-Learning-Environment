@@ -29,9 +29,9 @@ jobs:
     strategy:
       matrix:
         config: [
-          {"os": "ubuntu-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-linux-mixed"},
-          {"os": "windows-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-windows"},
-          {"os": "macos-latest", "deps": ["zlib", "sdl2"], "triplet": "x64-osx-mixed"}
+          {"os": "ubuntu-latest", "triplet": "x64-linux-mixed"},
+          {"os": "windows-latest", "triplet": "x64-windows"},
+          {"os": "macos-latest", "triplet": "x64-osx-mixed"}
         ]
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.config.triplet }}
@@ -43,40 +43,6 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: "3.x"
-
-    - name: Get vcpkg cache info
-      id: vcpkg-cache-info
-      run: |
-        echo "::set-output name=root::$VCPKG_INSTALLATION_ROOT"
-        echo "::set-output name=sha::$(git -C $VCPKG_INSTALLATION_ROOT rev-parse --short HEAD)"
-
-    - name: Cache vcpkg dependencies
-      id: vcpkg-cache
-      uses: actions/cache@v2
-      with:
-        path: ${{ steps.vcpkg-cache-info.outputs.root }}/installed/${{ matrix.config.triplet }}
-        key: |
-          vcpkg-${{ matrix.config.triplet }}-${{ join(matrix.config.deps, '-') }}-${{ steps.vcpkg-cache-info.outputs.sha }}
-        restore-keys: |
-          vcpkg-${{ matrix.config.triplet }}-${{ join(matrix.config.deps, '-') }}-
-
-    - name: Install vcpkg dependencies
-      if: steps.vcpkg-cache.outputs.cache-hit != 'true'
-      run: |
-        vcpkg install ${{ join(matrix.config.deps, ' ') }} --overlay-triplets cmake/custom-triplets --triplet ${{ matrix.config.triplet }}
-
-    - name: Get pip cache info
-      id: pip-cache-info
-      run: echo "::set-output name=dir::$(python -m pip cache dir)"
-
-    - name: Cache pip dependencies
-      id: pip-cache
-      uses: actions/cache@v2
-      with:
-        path: ${{ steps.pip-cache-info.outputs.dir }}
-        key: ${{ matrix.config.os }}-pip-${{ hashFiles('**/setup.cfg') }}
-        restore-keys: |
-          ${{ matrix.config.os }}-pip-
 
     - name: Install pip dependencies
       run: |
