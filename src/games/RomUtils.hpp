@@ -18,9 +18,9 @@
 #ifndef __ROMUTILS_HPP__
 #define __ROMUTILS_HPP__
 
-class System;
-
 namespace ale {
+
+class System;
 
 // reads a byte at a RAM location between 0 and 0x7f also mapped to [0x80, 0xff]
 extern int readRam(const System* system, int offset);

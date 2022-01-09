@@ -44,9 +44,9 @@
 #include "emucore/Settings.hxx"
 #include "environment/stella_environment_wrapper.hpp"
 
-class System;
-
 namespace ale {
+
+class System;
 
 // rom support interface
 class RomSettings {
