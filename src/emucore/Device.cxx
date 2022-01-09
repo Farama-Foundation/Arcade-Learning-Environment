@@ -18,6 +18,8 @@
 
 #include "emucore/Device.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Device::Device()
     : mySystem(0)
@@ -34,4 +36,6 @@ void Device::systemCyclesReset()
 {
   // By default I do nothing when my system resets its cycle counter
 }
+
+}  // namespace ale
 

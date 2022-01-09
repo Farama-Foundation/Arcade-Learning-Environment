@@ -19,6 +19,8 @@
 #include "emucore/Deserializer.hxx"
 #include <sstream>
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Deserializer::Deserializer(const std::string stream_str):
 myStream(stream_str) {
@@ -80,3 +82,5 @@ bool Deserializer::getBool(void)
 
   return result;
 }
+
+}  // namespace ale

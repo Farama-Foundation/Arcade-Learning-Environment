@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEFASC_HXX
 #define CARTRIDGEFASC_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for CBS' RAM Plus cartridges.  There are
@@ -146,5 +150,7 @@ class CartridgeFASC : public Cartridge
     // The 256 bytes of RAM on the cartridge
     uint8_t myRAM[256];
 };
+
+}  // namespace ale
 
 #endif

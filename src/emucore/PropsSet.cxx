@@ -25,6 +25,8 @@
 #include "emucore/Props.hxx"
 #include "emucore/PropsSet.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 PropertiesSet::PropertiesSet()
   : myRoot(NULL),
@@ -195,3 +197,5 @@ uint32_t PropertiesSet::size() const
 {
   return mySize;
 }
+
+}  // namespace ale

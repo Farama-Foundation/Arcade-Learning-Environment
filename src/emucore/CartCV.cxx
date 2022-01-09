@@ -24,6 +24,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartCV.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeCV::CartridgeCV(const uint8_t* image, uint32_t size)
 {
@@ -217,3 +219,5 @@ uint8_t* CartridgeCV::getImage(int& size)
   size = 2048;
   return &myImage[0];
 }
+
+}  // namespace ale

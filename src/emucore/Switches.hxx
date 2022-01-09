@@ -19,6 +19,8 @@
 #ifndef SWITCHES_HXX
 #define SWITCHES_HXX
 
+namespace ale {
+
 class Event;
 class Properties;
 class Switches;
@@ -61,5 +63,8 @@ class Switches
     // State of the console switches
     uint8_t mySwitches;
 };
+
+}  // namespace ale
+
 #endif
 

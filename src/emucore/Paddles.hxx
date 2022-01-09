@@ -22,6 +22,8 @@
 #include "emucore/Control.hxx"
 #include "emucore/Event.hxx"
 
+namespace ale {
+
 /**
   The standard Atari 2600 pair of paddle controllers.
 
@@ -78,5 +80,7 @@ class Paddles : public Controller
     // testing at runtime
     Event::Type myPinEvents[4][2];
 };
+
+}  // namespace ale
 
 #endif

@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEF6_HXX
 #define CARTRIDGEF6_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for Atari's 16K bankswitched games.  There
@@ -143,5 +147,7 @@ class CartridgeF6 : public Cartridge
     // The 16K ROM image of the cartridge
     uint8_t myImage[16384];
 };
+
+}  // namespace ale
 
 #endif

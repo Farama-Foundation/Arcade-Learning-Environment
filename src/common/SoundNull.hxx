@@ -19,11 +19,15 @@
 #ifndef SOUND_NULL_HXX
 #define SOUND_NULL_HXX
 
+namespace ale {
 class Settings;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Sound.hxx"
+
+namespace ale {
 
 /**
   This class implements a Null sound object, where-by sound generation
@@ -157,5 +161,7 @@ public:
     */
     bool save(Serializer& out);
 };
+
+}  // namespace ale
 
 #endif

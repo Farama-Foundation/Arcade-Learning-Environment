@@ -24,6 +24,8 @@
 
 #include "emucore/Props.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Properties::Properties()
 {
@@ -329,3 +331,5 @@ const char* Properties::ourPropertyNames[LastPropType] = {
   "Display.PPBlend",
   "Emulation.HmoveBlanks"
 };
+
+}  // namespace ale

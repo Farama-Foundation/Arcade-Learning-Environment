@@ -19,11 +19,15 @@
 #ifndef M6502LOW_HXX
 #define M6502LOW_HXX
 
+namespace ale {
 class M6502Low;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/M6502.hxx"
+
+namespace ale {
 
 /**
   This class provides a low compatibility 6502 microprocessor emulator.  
@@ -114,5 +118,8 @@ class M6502Low : public M6502
     */
     inline void poke(uint16_t address, uint8_t value);
 };
+
+}  // namespace ale
+
 #endif
 

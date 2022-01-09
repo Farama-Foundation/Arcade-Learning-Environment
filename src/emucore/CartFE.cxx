@@ -23,6 +23,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartFE.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeFE::CartridgeFE(const uint8_t* image)
 {
@@ -161,3 +163,5 @@ uint8_t* CartridgeFE::getImage(int& size)
   size = 8192;
   return &myImage[0];
 }
+
+}  // namespace ale

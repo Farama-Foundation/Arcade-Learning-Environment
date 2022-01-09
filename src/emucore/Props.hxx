@@ -22,6 +22,8 @@
 #include <string>
 #include <iostream>
 
+namespace ale {
+
 enum PropertyType {
   Cartridge_MD5,
   Cartridge_Manufacturer,
@@ -177,5 +179,7 @@ class Properties
     // The text strings associated with each property type
     static const char* ourPropertyNames[LastPropType];
 };
+
+}  // namespace ale
 
 #endif

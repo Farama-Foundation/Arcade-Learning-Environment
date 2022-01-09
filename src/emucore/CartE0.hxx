@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEE0_HXX
 #define CARTRIDGEE0_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   This is the cartridge class for Parker Brothers' 8K games.  In 
@@ -170,5 +174,7 @@ class CartridgeE0 : public Cartridge
     // The 8K ROM image of the cartridge
     uint8_t myImage[8192];
 };
+
+}  // namespace ale
 
 #endif

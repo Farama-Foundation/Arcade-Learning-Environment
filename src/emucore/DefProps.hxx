@@ -1,6 +1,8 @@
 #ifndef DEF_PROPS_HXX
 #define DEF_PROPS_HXX
 
+namespace ale {
+
 /**
   This code is generated using the 'create_props.pl' script,
   located in the src/tools directory.  All properties changes
@@ -2688,5 +2690,7 @@ static const char* DefProps[DEF_PROPS_SIZE][21] = {
   { "ffe51989ba6da2c6ae5a12d277862e16", "Atari", "CX2627 / 6699841", "Human Cannonball (AKA Cannon Man) (1978) (Atari) [o1]", "", "Uncommon", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" }, 
   { "ffebb0070689b9d322687edd9c0a2bae", "", "", "Spitfire Attack (1983) (Milton Bradley) [h1]", "", "", "", "", "", "", "", "", "", "", "", "", "28", "", "", "", "" }
 };
+
+}  // namespace ale
 
 #endif

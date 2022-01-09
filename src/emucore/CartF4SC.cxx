@@ -24,6 +24,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartF4SC.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF4SC::CartridgeF4SC(const uint8_t* image)
 {
@@ -243,3 +245,5 @@ uint8_t* CartridgeF4SC::getImage(int& size)
   size = 32768;
   return &myImage[0];
 }
+
+}  // namespace ale

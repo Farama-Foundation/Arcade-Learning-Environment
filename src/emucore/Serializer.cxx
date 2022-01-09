@@ -19,6 +19,8 @@
 #include "emucore/Serializer.hxx"
 
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Serializer::Serializer(void) {
     myStream.clear();
@@ -67,4 +69,6 @@ void Serializer::putBool(bool b)
 {
     putInt(b ? TruePattern: FalsePattern);
 }
+
+}  // namespace ale
 

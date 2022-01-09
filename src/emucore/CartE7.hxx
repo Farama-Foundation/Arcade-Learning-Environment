@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEE7_HXX
 #define CARTRIDGEE7_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   This is the cartridge class for M-Network bankswitched games.  
@@ -179,5 +183,7 @@ class CartridgeE7 : public Cartridge
     // The 2048 bytes of RAM
     uint8_t myRAM[2048];
 };
+
+}  // namespace ale
 
 #endif

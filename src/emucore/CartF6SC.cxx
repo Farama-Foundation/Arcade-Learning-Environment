@@ -23,6 +23,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartF6SC.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF6SC::CartridgeF6SC(const uint8_t* image)
 {
@@ -288,3 +290,5 @@ uint8_t* CartridgeF6SC::getImage(int& size)
   size = 16384;
   return &myImage[0];
 }
+
+}  // namespace ale

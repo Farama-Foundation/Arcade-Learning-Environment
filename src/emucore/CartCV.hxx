@@ -19,11 +19,15 @@
 #ifndef CARTRIDGECV_HXX
 #define CARTRIDGECV_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for Commavid's extra-RAM games.
@@ -150,5 +154,7 @@ class CartridgeCV : public Cartridge
     // This doesn't always exist, so we don't pre-allocate it
     uint8_t* myInitialRAM;
 };
+
+}  // namespace ale
 
 #endif

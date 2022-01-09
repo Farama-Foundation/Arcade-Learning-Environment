@@ -23,6 +23,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartFASC.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeFASC::CartridgeFASC(const uint8_t* image)
 {
@@ -276,3 +278,5 @@ uint8_t* CartridgeFASC::getImage(int& size)
   size = 12288;
   return &myImage[0];
 }
+
+}  // namespace ale

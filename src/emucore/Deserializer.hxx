@@ -21,6 +21,8 @@
 
 #include <sstream>
 
+namespace ale {
+
 /**
  This class implements a Deserializer device, whereby data is
  deserialized from an input binary file in a system-independent
@@ -77,5 +79,7 @@ class Deserializer {
             FalsePattern = 0xbad1bad2
         };
     };
+
+}  // namespace ale
 
 #endif

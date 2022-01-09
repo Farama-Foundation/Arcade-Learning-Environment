@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace ale {
+
 /**
   Get the MD5 Message-Digest of the specified message with the 
   given length.  The digest consists of 32 hexadecimal digits.
@@ -30,5 +32,7 @@
   @return The message-digest
 */
 std::string MD5(const uint8_t* buffer, uint32_t length);
+
+}  // namespace ale
 
 #endif

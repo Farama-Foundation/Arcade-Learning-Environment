@@ -24,6 +24,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/Cart3F.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge3F::Cartridge3F(const uint8_t* image, uint32_t size)
   : mySize(size)
@@ -241,3 +243,5 @@ uint8_t* Cartridge3F::getImage(int& size)
   size = mySize;
   return &myImage[0];
 }
+
+}  // namespace ale

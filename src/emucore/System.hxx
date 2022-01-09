@@ -19,6 +19,7 @@
 #ifndef SYSTEM_HXX
 #define SYSTEM_HXX
 
+namespace ale {
 class Device;
 class M6502;
 class TIA;
@@ -26,12 +27,15 @@ class NullDevice;
 class Serializer;
 class Deserializer;
 class Settings;
+}  // namespace ale
 
 #include "emucore/Device.hxx"
 #include "emucore/NullDev.hxx"
 #include "emucore/Random.hxx"
 
 #include <string>
+
+namespace ale {
 
 /**
   This class represents a system consisting of a 6502 microprocessor
@@ -420,5 +424,7 @@ inline uint8_t System::getDataBusState() const
 {
   return myDataBusState;
 }
+
+}  // namespace ale
 
 #endif

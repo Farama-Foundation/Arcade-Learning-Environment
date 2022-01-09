@@ -27,6 +27,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/Settings.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 System::System(Settings& settings)
   : myNumberOfDevices(0),
@@ -307,3 +309,5 @@ void System::unlockDataBus()
 {
   myDataBusLocked = false;
 }
+
+}  // namespace ale

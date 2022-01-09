@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEMB_HXX
 #define CARTRIDGEMB_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for Dynacom Megaboy
@@ -150,5 +154,7 @@ class CartridgeMB : public Cartridge
     // The 64K ROM image of the cartridge
     uint8_t myImage[65536];
 };
+
+}  // namespace ale
 
 #endif

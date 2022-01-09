@@ -21,7 +21,9 @@
 
 #ifdef SDL_SUPPORT
 
+namespace ale {
 class Settings;
+}  // namespace ale
 
 #include "emucore/Sound.hxx"
 #include "emucore/MediaSrc.hxx"
@@ -31,6 +33,8 @@ class Settings;
 // If desired, we save sound to disk
 #include "common/SoundExporter.hpp"
 #include <memory>
+
+namespace ale {
 
 /**
   This class implements the sound API for SDL.
@@ -289,6 +293,8 @@ class SoundSDL : public Sound
 
     std::unique_ptr<ale::sound::SoundExporter> mySoundExporter;
 };
+
+}  // namespace ale
 
 #endif  // SDL_SUPPORT
 #endif

@@ -21,6 +21,8 @@
 
 #include "emucore/Control.hxx"
 
+namespace ale {
+
 /**
   The standard Atari 2600 joystick controller.
 
@@ -71,5 +73,7 @@ class Joystick : public Controller
     */
     virtual void write(DigitalPin pin, bool value);
 };
+
+}  // namespace ale
 
 #endif

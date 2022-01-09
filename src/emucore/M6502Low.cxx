@@ -22,6 +22,8 @@
 
 #include <iostream>
 
+namespace ale {
+
 #define debugStream std::cerr
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -250,3 +252,5 @@ const char* M6502Low::name() const
 {
   return "M6502Low";
 }
+
+}  // namespace ale

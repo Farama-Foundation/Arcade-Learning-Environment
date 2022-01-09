@@ -22,6 +22,8 @@
 
 #include <iostream>
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullDevice::NullDevice()
 {
@@ -73,3 +75,5 @@ bool NullDevice::load(Deserializer& in)
 {
   return true;
 }
+
+}  // namespace ale

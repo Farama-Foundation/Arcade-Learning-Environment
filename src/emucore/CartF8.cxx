@@ -23,6 +23,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartF8.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF8::CartridgeF8(const uint8_t* image, bool swapbanks)
 {
@@ -233,3 +235,5 @@ uint8_t* CartridgeF8::getImage(int& size)
   size = 8192;
   return &myImage[0];
 }
+
+}  // namespace ale

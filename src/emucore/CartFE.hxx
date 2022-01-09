@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEFE_HXX
 #define CARTRIDGEFE_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Bankswitching method used by Activison's Robot Tank and Decathlon.
@@ -152,5 +156,7 @@ class CartridgeFE : public Cartridge
     // The 8K ROM image of the cartridge
     uint8_t myImage[8192];
 };
+
+}  // namespace ale
 
 #endif

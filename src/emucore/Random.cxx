@@ -25,6 +25,8 @@
 #include <random>
 #include <sstream>
 
+namespace ale {
+
 // Implementation of Random's random number generator wrapper. 
 class Random::Impl {
   
@@ -124,3 +126,5 @@ bool Random::loadState(Deserializer& deser) {
 
   return true;
 }
+
+}  // namespace ale

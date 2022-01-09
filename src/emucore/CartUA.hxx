@@ -19,12 +19,16 @@
 #ifndef CARTRIDGEUA_HXX
 #define CARTRIDGEUA_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
 #include "emucore/System.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for UA Limited's 8K bankswitched games.  There
@@ -147,5 +151,7 @@ class CartridgeUA : public Cartridge
     // Previous Device's page access
     System::PageAccess myHotSpotPageAccess;
 };
+
+}  // namespace ale
 
 #endif

@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEF6SC_HXX
 #define CARTRIDGEF6SC_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for Atari's 16K bankswitched games with
@@ -146,5 +150,7 @@ class CartridgeF6SC : public Cartridge
     // The 128 bytes of RAM
     uint8_t myRAM[128];
 };
+
+}  // namespace ale
 
 #endif

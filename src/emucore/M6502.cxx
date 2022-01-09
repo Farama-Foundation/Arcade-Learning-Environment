@@ -24,6 +24,8 @@
 
 static std::once_flag bcd_table_init_once;
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6502::M6502(uint32_t systemCyclesPerProcessorCycle)
     : myExecutionStatus(0),
@@ -343,3 +345,5 @@ const char* M6502::ourInstructionMnemonicTable[256] = {
   "BEQ",  "SBC",  "n/a",  "isb",  "nop",  "SBC",  "INC",  "isb",    // 0xF?
   "SED",  "SBC",  "nop",  "isb",  "nop",  "SBC",  "INC",  "isb"
 };
+
+}  // namespace ale

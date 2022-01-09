@@ -19,6 +19,7 @@
 #ifndef EVENT_HXX
 #define EVENT_HXX
 
+namespace ale {
 
 class Event;
 
@@ -92,5 +93,7 @@ class Event
     // Array of values associated with each event type
     int myValues[LastType];
 };
+
+}  // namespace ale
 
 #endif

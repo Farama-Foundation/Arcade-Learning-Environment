@@ -19,15 +19,19 @@
 #ifndef TIA_HXX
 #define TIA_HXX
 
+namespace ale {
 class Console;
 class System;
 class Serializer;
 class Deserializer;
 class Settings;
+}  // namespace ale
 
 #include "emucore/Sound.hxx"
 #include "emucore/Device.hxx"
 #include "emucore/MediaSrc.hxx"
+
+namespace ale {
 
 /**
   This class is a device that emulates the Television Interface Adapator 
@@ -538,5 +542,7 @@ class TIA : public Device , public MediaSource
     void updateFrameScanlineFast(uint32_t clocksToUpdate, uint32_t hpos);
 
 };
+
+}  // namespace ale
 
 #endif

@@ -23,6 +23,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartUA.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeUA::CartridgeUA(const uint8_t* image)
 {
@@ -240,3 +242,5 @@ uint8_t* CartridgeUA::getImage(int& size)
   size = 8192;
   return &myImage[0];
 }
+
+}  // namespace ale

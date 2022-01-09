@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEDCP_HXX
 #define CARTRIDGEDCP_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for Pitfall II.  There are two 4K program banks, a 
@@ -193,5 +197,7 @@ class CartridgeDPC : public Cartridge
     // Fractional DPC music OSC clocks unused during the last update
     double myFractionalClocks;
 };
+
+}  // namespace ale
 
 #endif

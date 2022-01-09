@@ -33,6 +33,8 @@
 #include "common/SoundSDL.hxx"
 #include "common/Log.hpp"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundSDL::SoundSDL(Settings* settings)
   : Sound(settings),
@@ -582,5 +584,7 @@ void SoundSDL::RegWriteQueue::grow()
   delete[] myBuffer;
   myBuffer = buffer;
 }
+
+}  // namespace ale
 
 #endif  // SDL_SUPPORT

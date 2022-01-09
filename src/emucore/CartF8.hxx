@@ -19,11 +19,15 @@
 #ifndef CARTRIDGEF8_HXX
 #define CARTRIDGEF8_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   Cartridge class used for Atari's 8K bankswitched games.  There
@@ -147,5 +151,7 @@ class CartridgeF8 : public Cartridge
     // The 8K ROM image of the cartridge
     uint8_t myImage[8192];
 };
+
+}  // namespace ale
 
 #endif

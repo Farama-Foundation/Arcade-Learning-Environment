@@ -22,6 +22,8 @@
 
 #include "common/Log.hpp"
 
+namespace ale {
+
 #define debugStream ale::Logger::Info
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -275,3 +277,5 @@ const char* M6502High::name() const
 {
   return "M6502High";
 }
+
+}  // namespace ale

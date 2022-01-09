@@ -20,10 +20,14 @@
 #define RANDOM_HXX
 
 
+namespace ale {
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include <cstdint>
+
+namespace ale {
 
 /**
   This Random class uses a Mersenne Twister to provide pseudorandom numbers.
@@ -78,5 +82,8 @@ class Random
     class Impl;
     Impl *m_pimpl;
 };
+
+}  // namespace ale
+
 #endif
 

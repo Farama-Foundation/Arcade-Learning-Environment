@@ -16,6 +16,8 @@
 #ifndef SCREEN_HXX
 #define SCREEN_HXX
 
+namespace ale {
+
 class OSystem;
 
 class Screen
@@ -30,5 +32,7 @@ class Screen
   protected:
     OSystem* myOSystem;
 };
+
+}  // namespace ale
 
 #endif

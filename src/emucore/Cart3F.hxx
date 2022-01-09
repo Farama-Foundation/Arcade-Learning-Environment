@@ -19,11 +19,15 @@
 #ifndef CARTRIDGE3F_HXX
 #define CARTRIDGE3F_HXX
 
+namespace ale {
 class System;
 class Serializer;
 class Deserializer;
+}  // namespace ale
 
 #include "emucore/Cart.hxx"
+
+namespace ale {
 
 /**
   This is the cartridge class for Tigervision's bankswitched 
@@ -153,5 +157,7 @@ class Cartridge3F : public Cartridge
     // Size of the ROM image
     uint32_t mySize;
 };
+
+}  // namespace ale
 
 #endif

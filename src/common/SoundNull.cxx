@@ -23,6 +23,8 @@
 #include "emucore/Settings.hxx"
 #include "common/SoundNull.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundNull::SoundNull(Settings* settings)
     : Sound(settings)
@@ -73,3 +75,5 @@ bool SoundNull::save(Serializer& out)
 
   return true;
 }
+
+}  // namespace ale

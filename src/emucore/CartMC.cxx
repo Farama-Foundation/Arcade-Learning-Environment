@@ -23,6 +23,8 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartMC.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeMC::CartridgeMC(const uint8_t* image, uint32_t size)
   : mySlot3Locked(false)
@@ -316,3 +318,5 @@ uint8_t* CartridgeMC::getImage(int& size)
   size = 128 * 1024; // FIXME: keep track of original size
   return &myImage[0];
 }
+
+}  // namespace ale

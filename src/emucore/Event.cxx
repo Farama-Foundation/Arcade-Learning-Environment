@@ -18,6 +18,8 @@
 
 #include "emucore/Event.hxx"
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Event::Event()
   : myNumberOfTypes(Event::LastType)
@@ -60,3 +62,5 @@ void Event::clear()
       myValues[i] = 0;
   }
 }
+
+}  // namespace ale

@@ -43,6 +43,8 @@
 
 namespace fs = std::filesystem;
 
+namespace ale {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem()
   : 
@@ -314,3 +316,5 @@ OSystem& OSystem::operator = (const OSystem&)
 
   return *this;
 }
+
+}  // namespace ale

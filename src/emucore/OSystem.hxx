@@ -19,7 +19,9 @@
 #ifndef OSYSTEM_HXX
 #define OSYSTEM_HXX
 
+namespace ale {
 class PropertiesSet;
+}  // namespace ale
 
 #include <filesystem>
 
@@ -33,6 +35,8 @@ class PropertiesSet;
 #include "common/Log.hpp"
 
 namespace fs = std::filesystem;
+
+namespace ale {
 
 /**
   This class provides an interface for accessing operating system specific
@@ -204,5 +208,7 @@ class OSystem
     // Assignment operator isn't supported by this class so make it private
     OSystem& operator = (const OSystem&);
 };
+
+}  // namespace ale
 
 #endif
