@@ -46,7 +46,9 @@
 
 namespace ale {
 
+namespace stella{
 class System;
+}
 
 // rom support interface
 class RomSettings {
@@ -61,7 +63,7 @@ class RomSettings {
   // This method is called with the collection of settings that will be used to
   // create the Stella emulator for the environment. Overriders may modify these
   // settings when this is needed for the correct behavior of the ROM in Stella.
-  virtual void modifyEnvironmentSettings(Settings& settings) {}
+  virtual void modifyEnvironmentSettings(stella::Settings& settings) {}
 
   // is end of game
   virtual bool isTerminal() const = 0;
@@ -82,13 +84,13 @@ class RomSettings {
   virtual bool isMinimal(const Action& a) const = 0;
 
   // process the latest information from ALE
-  virtual void step(const System& system) = 0;
+  virtual void step(const stella::System& system) = 0;
 
   // saves the state of the rom settings
-  virtual void saveState(Serializer& ser) = 0;
+  virtual void saveState(stella::Serializer& ser) = 0;
 
   // loads the state of the rom settings
-  virtual void loadState(Deserializer& ser) = 0;
+  virtual void loadState(stella::Deserializer& ser) = 0;
 
   // is an action legal (default: yes)
   virtual bool isLegal(const Action& a) const;
@@ -115,7 +117,7 @@ class RomSettings {
   // Set the mode of the game. The given mode must be
   // one returned by the previous function.
   virtual void setMode(
-      game_mode_t, System& system,
+      game_mode_t, stella::System& system,
       std::unique_ptr<StellaEnvironmentWrapper> environment);
 
   // Return the default mode for the game.

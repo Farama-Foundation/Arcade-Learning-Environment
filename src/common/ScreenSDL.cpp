@@ -24,6 +24,7 @@
 using namespace std;
 
 namespace ale {
+using namespace stella;
 
 ScreenSDL::ScreenSDL(OSystem* osystem) :
   Screen(osystem),

@@ -20,9 +20,13 @@
 #define SOUND_NULL_HXX
 
 namespace ale {
+namespace stella {
+
 class Settings;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Sound.hxx"
@@ -36,14 +40,14 @@ namespace ale {
   @author Stephen Anthony
   @version $Id: SoundNull.hxx,v 1.6 2007/01/01 18:04:40 stephena Exp $
 */
-class SoundNull : public Sound
+class SoundNull : public stella::Sound
 {
   public:
     /**
       Create a new sound object.  The init method must be invoked before
       using the object.
     */
-    SoundNull(Settings* settings);
+    SoundNull(stella::Settings* settings);
 
     /**
       Destructor
@@ -151,7 +155,7 @@ public:
       @param in The deserializer device to load from.
       @return The result of the load.  True on success, false on failure.
     */
-    bool load(Deserializer& in);
+    bool load(stella::Deserializer& in);
 
     /**
       Saves the current state of this device to the given Serializer.
@@ -159,7 +163,7 @@ public:
       @param out The serializer device to save to.
       @return The result of the save.  True on success, false on failure.
     */
-    bool save(Serializer& out);
+    bool save(stella::Serializer& out);
 };
 
 }  // namespace ale

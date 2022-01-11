@@ -24,6 +24,7 @@
 #include "common/SoundNull.hxx"
 
 namespace ale {
+using namespace stella;   // Settings, Serializer, Deserializer
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundNull::SoundNull(Settings* settings)

@@ -34,6 +34,7 @@
 #include "common/Log.hpp"
 
 namespace ale {
+using namespace stella;   // Settings, Serializer, Deserializer
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundSDL::SoundSDL(Settings* settings)

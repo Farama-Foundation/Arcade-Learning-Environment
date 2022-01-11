@@ -3,6 +3,7 @@
 #include "environment/stella_environment.hpp"
 
 namespace ale {
+using namespace stella;   // Random
 
 StellaEnvironmentWrapper::StellaEnvironmentWrapper(
     StellaEnvironment& environment)
