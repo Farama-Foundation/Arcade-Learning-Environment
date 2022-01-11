@@ -15,6 +15,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 LaserGatesSettings::LaserGatesSettings() { reset(); }
 

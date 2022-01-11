@@ -29,6 +29,7 @@
 #include "common/Constants.h"
 
 namespace ale {
+using namespace stella;
 
 KlaxSettings::KlaxSettings() { reset(); }
 

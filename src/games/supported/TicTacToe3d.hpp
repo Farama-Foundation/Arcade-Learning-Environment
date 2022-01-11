@@ -50,11 +50,11 @@ public:
 
   bool isMinimal(const Action& a) const override;
 
-  void step(const System& system) override;
+  void step(const stella::System& system) override;
 
-  void saveState(Serializer& ser) override;
+  void saveState(stella::Serializer& ser) override;
 
-  void loadState(Deserializer& ser) override;
+  void loadState(stella::Deserializer& ser) override;
 
   DifficultyVect getAvailableDifficulties() override;
 
@@ -64,7 +64,7 @@ public:
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
-  void setMode(game_mode_t, System& system,
+  void setMode(game_mode_t, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
 private:

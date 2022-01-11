@@ -41,6 +41,7 @@ void process_board_state(unsigned char state, unsigned char& num_black_pieces,
 }  // namespace
 
 namespace ale {
+using namespace stella;
 
 VideoCheckersSettings::VideoCheckersSettings() { reset(); }
 

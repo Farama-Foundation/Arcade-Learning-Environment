@@ -59,13 +59,13 @@ class RoadRunnerSettings : public RomSettings {
   bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system) override;
+  void step(const stella::System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser) override;
+  void saveState(stella::Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser) override;
+  void loadState(stella::Deserializer& ser) override;
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
 

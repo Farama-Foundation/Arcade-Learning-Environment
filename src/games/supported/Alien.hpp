@@ -62,13 +62,13 @@ class AlienSettings : public RomSettings {
   bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system) override;
+  void step(const stella::System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser) override;
+  void saveState(stella::Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser) override;
+  void loadState(stella::Deserializer& ser) override;
 
   int lives() override { return m_lives; }
 
@@ -78,7 +78,7 @@ class AlienSettings : public RomSettings {
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
-  void setMode(game_mode_t, System& system,
+  void setMode(game_mode_t, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
   // returns a list of difficulties that the game can be played in
@@ -87,7 +87,7 @@ class AlienSettings : public RomSettings {
 
  private:
   // special code to read digits for Alien
-  int getDigit(const System& system, int address) const;
+  int getDigit(const stella::System& system, int address) const;
 
   bool m_terminal;
   reward_t m_reward;
