@@ -23,6 +23,7 @@
 #include <iostream>
 
 namespace ale {
+namespace stella {
 
 enum PropertyType {
   Cartridge_MD5,
@@ -180,6 +181,7 @@ class Properties
     static const char* ourPropertyNames[LastPropType];
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

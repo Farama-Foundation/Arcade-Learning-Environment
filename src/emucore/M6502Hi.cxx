@@ -23,6 +23,7 @@
 #include "common/Log.hpp"
 
 namespace ale {
+namespace stella {
 
 #define debugStream ale::Logger::Info
 
@@ -278,4 +279,5 @@ const char* M6502High::name() const
   return "M6502High";
 }
 
+}  // namespace stella
 }  // namespace ale

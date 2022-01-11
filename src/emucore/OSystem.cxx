@@ -44,6 +44,7 @@
 namespace fs = std::filesystem;
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem()
@@ -317,4 +318,5 @@ OSystem& OSystem::operator = (const OSystem&)
   return *this;
 }
 
+}  // namespace stella
 }  // namespace ale

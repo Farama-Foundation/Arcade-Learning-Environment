@@ -24,6 +24,7 @@
 #include "emucore/CartMC.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeMC::CartridgeMC(const uint8_t* image, uint32_t size)
@@ -319,4 +320,5 @@ uint8_t* CartridgeMC::getImage(int& size)
   return &myImage[0];
 }
 
+}  // namespace stella
 }  // namespace ale

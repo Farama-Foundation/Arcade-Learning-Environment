@@ -20,11 +20,15 @@
 #define TIA_HXX
 
 namespace ale {
+namespace stella {
+
 class Console;
 class System;
 class Serializer;
 class Deserializer;
 class Settings;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Sound.hxx"
@@ -32,6 +36,7 @@ class Settings;
 #include "emucore/MediaSrc.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   This class is a device that emulates the Television Interface Adapator 
@@ -543,6 +548,7 @@ class TIA : public Device , public MediaSource
 
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

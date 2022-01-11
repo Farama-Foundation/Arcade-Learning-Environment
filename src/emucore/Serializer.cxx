@@ -20,6 +20,7 @@
 
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Serializer::Serializer(void) {
@@ -70,5 +71,6 @@ void Serializer::putBool(bool b)
     putInt(b ? TruePattern: FalsePattern);
 }
 
+}  // namespace stella
 }  // namespace ale
 

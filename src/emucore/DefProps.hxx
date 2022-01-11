@@ -2,6 +2,7 @@
 #define DEF_PROPS_HXX
 
 namespace ale {
+namespace stella {
 
 /**
   This code is generated using the 'create_props.pl' script,
@@ -2691,6 +2692,7 @@ static const char* DefProps[DEF_PROPS_SIZE][21] = {
   { "ffebb0070689b9d322687edd9c0a2bae", "", "", "Spitfire Attack (1983) (Milton Bradley) [h1]", "", "", "", "", "", "", "", "", "", "", "", "", "28", "", "", "", "" }
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

@@ -20,6 +20,7 @@
 #define CONTROLLER_HXX
 
 namespace ale {
+namespace stella {
 
 class Controller;
 class Event;
@@ -176,6 +177,7 @@ class Controller
     Controller& operator = (const Controller&);
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

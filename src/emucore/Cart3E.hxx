@@ -20,14 +20,19 @@
 #define CARTRIDGE3E_HXX
 
 namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Cart.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   This is the cartridge class for Tigervision's bankswitched
@@ -184,6 +189,7 @@ class Cartridge3E : public Cartridge
     uint32_t mySize;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

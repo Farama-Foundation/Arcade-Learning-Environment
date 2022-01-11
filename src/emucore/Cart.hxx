@@ -20,10 +20,14 @@
 #define CARTRIDGE_HXX
 
 namespace ale {
+namespace stella {
+
 class Cartridge;
 class System;
 class Properties;
 class Settings;
+
+}  // namespace stella
 }  // namespace ale
 
 #include <fstream>
@@ -31,6 +35,7 @@ class Settings;
 #include "common/Log.hpp"
 
 namespace ale {
+namespace stella {
 
 /**
   A cartridge is a device which contains the machine code for a 
@@ -206,6 +211,7 @@ class Cartridge : public Device
     Cartridge& operator = (const Cartridge&);
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

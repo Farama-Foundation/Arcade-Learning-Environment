@@ -20,15 +20,20 @@
 #define CARTRIDGEAR_HXX
 
 namespace ale {
+namespace stella {
+
 class M6502High;
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Cart.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   This is the cartridge class for Arcadia (aka Starpath) Supercharger 
@@ -208,6 +213,7 @@ class CartridgeAR : public Cartridge
     uint16_t myCurrentBank;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

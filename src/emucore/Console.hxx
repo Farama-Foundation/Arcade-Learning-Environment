@@ -20,6 +20,8 @@
 #define CONSOLE_HXX
 
 namespace ale {
+namespace stella {
+
 class OSystem;
 class Console;
 class Controller;
@@ -27,6 +29,8 @@ class Event;
 class MediaSource;
 class Switches;
 class System;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Control.hxx"
@@ -35,6 +39,7 @@ class System;
 #include "emucore/Cart.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   This class represents the entire game console.
@@ -176,6 +181,7 @@ class Console
 
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

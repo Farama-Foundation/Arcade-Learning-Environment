@@ -20,6 +20,7 @@
 #define SWITCHES_HXX
 
 namespace ale {
+namespace stella {
 
 class Event;
 class Properties;
@@ -64,6 +65,7 @@ class Switches
     uint8_t mySwitches;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

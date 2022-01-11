@@ -17,6 +17,7 @@
 #define SCREEN_HXX
 
 namespace ale {
+namespace stella {
 
 class OSystem;
 
@@ -33,6 +34,7 @@ class Screen
     OSystem* myOSystem;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

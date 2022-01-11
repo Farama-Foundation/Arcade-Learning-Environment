@@ -28,6 +28,7 @@
 #include "emucore/Settings.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 System::System(Settings& settings)
@@ -310,4 +311,5 @@ void System::unlockDataBus()
   myDataBusLocked = false;
 }
 
+}  // namespace stella
 }  // namespace ale

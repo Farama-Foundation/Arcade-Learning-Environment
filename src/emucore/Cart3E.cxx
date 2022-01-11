@@ -25,6 +25,7 @@
 #include "emucore/Cart3E.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge3E::Cartridge3E(const uint8_t* image, uint32_t size)
@@ -306,4 +307,5 @@ uint8_t* Cartridge3E::getImage(int& size)
   return &myImage[0];
 }
 
+}  // namespace stella
 }  // namespace ale

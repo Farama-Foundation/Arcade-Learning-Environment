@@ -20,7 +20,11 @@
 #define SETTINGS_HXX
 
 namespace ale {
+namespace stella {
+
 class OSystem;
+
+}  // namespace stella
 }  // namespace ale
 
 #include <map>
@@ -29,6 +33,7 @@ class OSystem;
 
 
 namespace ale {
+namespace stella {
 
 /**
   This class provides an interface for accessing frontend specific settings.
@@ -207,6 +212,7 @@ class Settings
     SettingsArray myExternalSettings;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

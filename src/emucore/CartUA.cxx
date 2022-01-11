@@ -24,6 +24,7 @@
 #include "emucore/CartUA.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeUA::CartridgeUA(const uint8_t* image)
@@ -243,4 +244,5 @@ uint8_t* CartridgeUA::getImage(int& size)
   return &myImage[0];
 }
 
+}  // namespace stella
 }  // namespace ale

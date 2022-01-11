@@ -20,14 +20,19 @@
 #define NULLDEVICE_HXX
 
 namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Device.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   Class that represents a "null" device.  The basic idea is that a
@@ -105,5 +110,6 @@ class NullDevice : public Device
 };
 #endif
 
+}  // namespace stella
 }  // namespace ale
 

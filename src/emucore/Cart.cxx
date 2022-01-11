@@ -50,6 +50,7 @@
 #include "emucore/Settings.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge* Cartridge::create(const uint8_t* image, uint32_t size,
@@ -474,4 +475,5 @@ Cartridge& Cartridge::operator = (const Cartridge&)
   return *this;
 }
 
+}  // namespace stella
 }  // namespace ale

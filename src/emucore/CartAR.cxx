@@ -27,6 +27,7 @@
 #include "emucore/CartAR.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeAR::CartridgeAR(const uint8_t* image, uint32_t size, bool fastbios)
@@ -595,4 +596,5 @@ uint8_t* CartridgeAR::getImage(int& size)
   return &myLoadImages[0];
 }
 
+}  // namespace stella
 }  // namespace ale

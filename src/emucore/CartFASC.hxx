@@ -20,14 +20,19 @@
 #define CARTRIDGEFASC_HXX
 
 namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Cart.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   Cartridge class used for CBS' RAM Plus cartridges.  There are
@@ -151,6 +156,7 @@ class CartridgeFASC : public Cartridge
     uint8_t myRAM[256];
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

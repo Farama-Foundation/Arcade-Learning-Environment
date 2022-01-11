@@ -25,6 +25,7 @@
 static std::once_flag bcd_table_init_once;
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6502::M6502(uint32_t systemCyclesPerProcessorCycle)
@@ -346,4 +347,5 @@ const char* M6502::ourInstructionMnemonicTable[256] = {
   "SED",  "SBC",  "nop",  "isb",  "nop",  "SBC",  "INC",  "isb"
 };
 
+}  // namespace stella
 }  // namespace ale

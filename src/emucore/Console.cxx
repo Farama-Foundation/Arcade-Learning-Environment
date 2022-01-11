@@ -44,6 +44,7 @@
 #include "common/Log.hpp"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
@@ -223,4 +224,5 @@ Console& Console::operator = (const Console&)
   return *this;
 }
 
+}  // namespace stella
 }  // namespace ale

@@ -20,7 +20,11 @@
 #define OSYSTEM_HXX
 
 namespace ale {
+namespace stella {
+
 class PropertiesSet;
+
+}  // namespace stella
 }  // namespace ale
 
 #include <filesystem>
@@ -37,6 +41,7 @@ class PropertiesSet;
 namespace fs = std::filesystem;
 
 namespace ale {
+namespace stella {
 
 /**
   This class provides an interface for accessing operating system specific
@@ -209,6 +214,7 @@ class OSystem
     OSystem& operator = (const OSystem&);
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

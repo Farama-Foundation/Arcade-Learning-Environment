@@ -20,15 +20,20 @@
 #define CARTRIDGEUA_HXX
 
 namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Cart.hxx"
 #include "emucore/System.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   Cartridge class used for UA Limited's 8K bankswitched games.  There
@@ -152,6 +157,7 @@ class CartridgeUA : public Cartridge
     System::PageAccess myHotSpotPageAccess;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

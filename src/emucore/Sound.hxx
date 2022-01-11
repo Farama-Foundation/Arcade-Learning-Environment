@@ -20,6 +20,7 @@
 #define SOUND_HXX
 
 namespace ale {
+namespace stella {
   
 class Settings;
 class Serializer;
@@ -162,6 +163,7 @@ public:
     Settings* mySettings;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

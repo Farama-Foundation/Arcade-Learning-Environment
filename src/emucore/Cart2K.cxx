@@ -24,6 +24,7 @@
 #include "emucore/Cart2K.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge2K::Cartridge2K(const uint8_t* image)
@@ -165,4 +166,5 @@ uint8_t* Cartridge2K::getImage(int& size)
   return &myImage[0];
 }
 
+}  // namespace stella
 }  // namespace ale

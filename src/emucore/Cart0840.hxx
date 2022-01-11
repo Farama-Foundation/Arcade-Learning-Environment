@@ -20,14 +20,19 @@
 #define CARTRIDGE0840_HXX
 
 namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Cart.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   Cartridge class used for 0840 "Econobanking" 8K bankswitched games.  There
@@ -140,6 +145,7 @@ class Cartridge0840 : public Cartridge
     virtual void poke(uint16_t address, uint8_t value);
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

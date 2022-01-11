@@ -20,6 +20,8 @@
 #define SYSTEM_HXX
 
 namespace ale {
+namespace stella {
+
 class Device;
 class M6502;
 class TIA;
@@ -27,6 +29,8 @@ class NullDevice;
 class Serializer;
 class Deserializer;
 class Settings;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Device.hxx"
@@ -36,6 +40,7 @@ class Settings;
 #include <string>
 
 namespace ale {
+namespace stella {
 
 /**
   This class represents a system consisting of a 6502 microprocessor
@@ -425,6 +430,7 @@ inline uint8_t System::getDataBusState() const
   return myDataBusState;
 }
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

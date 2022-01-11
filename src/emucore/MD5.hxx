@@ -22,6 +22,7 @@
 #include <string>
 
 namespace ale {
+namespace stella {
 
 /**
   Get the MD5 Message-Digest of the specified message with the 
@@ -33,6 +34,7 @@ namespace ale {
 */
 std::string MD5(const uint8_t* buffer, uint32_t length);
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

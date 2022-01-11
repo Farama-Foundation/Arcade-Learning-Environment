@@ -29,6 +29,7 @@
 #include "common/Log.hpp"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6532::M6532(const Console& console)
@@ -385,5 +386,6 @@ M6532& M6532::operator = (const M6532&)
   return *this;
 }
 
+}  // namespace stella
 }  // namespace ale
  

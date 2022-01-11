@@ -22,6 +22,7 @@
 #include <sstream>
 
 namespace ale {
+namespace stella {
 
 /**
  This class implements a Deserializer device, whereby data is
@@ -80,6 +81,7 @@ class Deserializer {
         };
     };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

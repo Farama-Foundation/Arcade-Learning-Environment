@@ -22,6 +22,7 @@
 #include <sstream>
 
 namespace ale {
+namespace stella {
 
 /**
   This class implements a Serializer device, whereby data is
@@ -96,6 +97,7 @@ class Serializer
     };
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

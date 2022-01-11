@@ -20,6 +20,7 @@
 #include "emucore/Control.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Controller::Controller(Jack jack, const Event& event, Type type)
@@ -62,4 +63,5 @@ Controller& Controller::operator = (const Controller&)
   return *this;
 }
 
+}  // namespace stella
 }  // namespace ale

@@ -20,14 +20,19 @@
 #define CARTRIDGEFE_HXX
 
 namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Cart.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   Bankswitching method used by Activison's Robot Tank and Decathlon.
@@ -157,6 +162,7 @@ class CartridgeFE : public Cartridge
     uint8_t myImage[8192];
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

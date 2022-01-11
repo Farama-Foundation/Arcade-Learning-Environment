@@ -24,6 +24,7 @@
 #include "emucore/Cart4A50.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge4A50::Cartridge4A50(const uint8_t* image)
@@ -104,4 +105,5 @@ uint8_t* Cartridge4A50::getImage(int& size)
   return 0;
 }
 
+}  // namespace stella
 }  // namespace ale

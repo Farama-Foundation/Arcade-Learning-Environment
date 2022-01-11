@@ -20,14 +20,19 @@
 #define CARTRIDGEDCP_HXX
 
 namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/Cart.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   Cartridge class used for Pitfall II.  There are two 4K program banks, a 
@@ -198,6 +203,7 @@ class CartridgeDPC : public Cartridge
     double myFractionalClocks;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

@@ -20,6 +20,7 @@
 #define PROPERTIES_SET_HXX
 
 namespace ale {
+namespace stella {
 
 
 class Properties;
@@ -130,6 +131,7 @@ class PropertiesSet
     uint32_t mySize;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

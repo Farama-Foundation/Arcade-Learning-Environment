@@ -23,6 +23,7 @@
 #include <iostream>
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullDevice::NullDevice()
@@ -76,4 +77,5 @@ bool NullDevice::load(Deserializer& in)
   return true;
 }
 
+}  // namespace stella
 }  // namespace ale

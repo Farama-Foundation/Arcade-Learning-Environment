@@ -25,6 +25,7 @@
 #include "emucore/CartF4SC.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF4SC::CartridgeF4SC(const uint8_t* image)
@@ -246,4 +247,5 @@ uint8_t* CartridgeF4SC::getImage(int& size)
   return &myImage[0];
 }
 
+}  // namespace stella
 }  // namespace ale

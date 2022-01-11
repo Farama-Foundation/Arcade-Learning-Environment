@@ -25,6 +25,7 @@
 #include "emucore/Props.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Properties::Properties()
@@ -332,4 +333,5 @@ const char* Properties::ourPropertyNames[LastPropType] = {
   "Emulation.HmoveBlanks"
 };
 
+}  // namespace stella
 }  // namespace ale

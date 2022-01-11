@@ -20,14 +20,19 @@
 #define M6502LOW_HXX
 
 namespace ale {
+namespace stella {
+
 class M6502Low;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/M6502.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   This class provides a low compatibility 6502 microprocessor emulator.  
@@ -119,6 +124,7 @@ class M6502Low : public M6502
     inline void poke(uint16_t address, uint8_t value);
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

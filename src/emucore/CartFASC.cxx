@@ -24,6 +24,7 @@
 #include "emucore/CartFASC.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeFASC::CartridgeFASC(const uint8_t* image)
@@ -279,4 +280,5 @@ uint8_t* CartridgeFASC::getImage(int& size)
   return &myImage[0];
 }
 
+}  // namespace stella
 }  // namespace ale

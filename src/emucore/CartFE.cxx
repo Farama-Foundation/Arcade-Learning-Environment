@@ -24,6 +24,7 @@
 #include "emucore/CartFE.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeFE::CartridgeFE(const uint8_t* image)
@@ -164,4 +165,5 @@ uint8_t* CartridgeFE::getImage(int& size)
   return &myImage[0];
 }
 
+}  // namespace stella
 }  // namespace ale

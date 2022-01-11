@@ -20,14 +20,19 @@
 #define M6502HIGH_HXX
 
 namespace ale {
+namespace stella {
+
 class M6502High;
 class Serializer;
 class Deserializer;
+
+}  // namespace stella
 }  // namespace ale
 
 #include "emucore/M6502.hxx"
 
 namespace ale {
+namespace stella {
 
 /**
   This class provides a high compatibility 6502 microprocessor emulator.  
@@ -133,6 +138,7 @@ class M6502High : public M6502
     uint16_t myLastAddress;
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif

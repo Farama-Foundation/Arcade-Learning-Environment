@@ -26,6 +26,7 @@
 #include "emucore/Settings.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
@@ -448,4 +449,5 @@ void Settings::verifyVariableExistence(std::map<std::string, ValueType> dict, st
     }
 }
 
+}  // namespace stella
 }  // namespace ale

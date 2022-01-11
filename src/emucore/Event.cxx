@@ -19,6 +19,7 @@
 #include "emucore/Event.hxx"
 
 namespace ale {
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Event::Event()
@@ -63,4 +64,5 @@ void Event::clear()
   }
 }
 
+}  // namespace stella
 }  // namespace ale

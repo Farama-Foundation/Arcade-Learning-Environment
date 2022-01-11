@@ -20,6 +20,7 @@
 #define EVENT_HXX
 
 namespace ale {
+namespace stella {
 
 class Event;
 
@@ -94,6 +95,7 @@ class Event
     int myValues[LastType];
 };
 
+}  // namespace stella
 }  // namespace ale
 
 #endif
