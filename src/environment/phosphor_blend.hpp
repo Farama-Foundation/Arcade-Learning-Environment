@@ -24,7 +24,7 @@ namespace ale {
 
 class PhosphorBlend {
  public:
-  PhosphorBlend(OSystem*);
+  PhosphorBlend(stella::OSystem*);
 
   void process(ALEScreen& screen);
 
@@ -36,7 +36,7 @@ class PhosphorBlend {
   uint8_t rgbToNTSC(uint32_t rgb);
 
  private:
-  OSystem* m_osystem;
+  stella::OSystem* m_osystem;
 
   uint8_t m_rgb_ntsc[64][64][64];
 

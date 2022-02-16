@@ -30,6 +30,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 std::int8_t readPieces(const System* system, int offset) {
   int value = readRam(system, offset);

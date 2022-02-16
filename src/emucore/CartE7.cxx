@@ -23,6 +23,9 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartE7.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeE7::CartridgeE7(const uint8_t* image)
 {
@@ -317,3 +320,6 @@ uint8_t* CartridgeE7::getImage(int& size)
   size = 16384;
   return &myImage[0];
 }
+
+}  // namespace stella
+}  // namespace ale

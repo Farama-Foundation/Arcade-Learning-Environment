@@ -49,6 +49,9 @@
 #include "emucore/Props.hxx"
 #include "emucore/Settings.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge* Cartridge::create(const uint8_t* image, uint32_t size,
     const Properties& properties, const Settings& settings)
@@ -471,3 +474,6 @@ Cartridge& Cartridge::operator = (const Cartridge&)
   assert(false);
   return *this;
 }
+
+}  // namespace stella
+}  // namespace ale

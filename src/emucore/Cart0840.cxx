@@ -23,6 +23,9 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/Cart0840.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Cartridge0840::Cartridge0840(const uint8_t* image)
 {
@@ -101,3 +104,6 @@ uint8_t* Cartridge0840::getImage(int& size)
   size = 0;
   return 0;
 }
+
+}  // namespace stella
+}  // namespace ale

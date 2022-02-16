@@ -28,6 +28,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 Pitfall2Settings::Pitfall2Settings() { reset(); }
 

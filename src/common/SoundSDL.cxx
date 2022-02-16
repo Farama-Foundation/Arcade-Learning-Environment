@@ -33,6 +33,9 @@
 #include "common/SoundSDL.hxx"
 #include "common/Log.hpp"
 
+namespace ale {
+using namespace stella;   // Settings, Serializer, Deserializer
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SoundSDL::SoundSDL(Settings* settings)
   : Sound(settings),
@@ -582,5 +585,7 @@ void SoundSDL::RegWriteQueue::grow()
   delete[] myBuffer;
   myBuffer = buffer;
 }
+
+}  // namespace ale
 
 #endif  // SDL_SUPPORT

@@ -26,6 +26,7 @@
 #include "games/RomSettings.hpp"
 
 namespace ale {
+using namespace stella;   // System, Event, Deserializer, Serializer, Random
 
 /** Default constructor - loads settings from system */
 ALEState::ALEState()

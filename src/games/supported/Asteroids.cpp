@@ -30,6 +30,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 AsteroidsSettings::AsteroidsSettings() { reset(); }
 

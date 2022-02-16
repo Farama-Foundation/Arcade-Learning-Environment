@@ -49,15 +49,15 @@ class OthelloSettings : public RomSettings {
 
   virtual bool isMinimal(const Action& a) const;
 
-  virtual void step(const System& system);
+  virtual void step(const stella::System& system);
 
-  virtual void saveState(Serializer& ser);
+  virtual void saveState(stella::Serializer& ser);
 
-  virtual void loadState(Deserializer& ser);
+  virtual void loadState(stella::Deserializer& ser);
 
   virtual ModeVect getAvailableModes();
 
-  virtual void setMode(game_mode_t m, System& system,
+  virtual void setMode(game_mode_t m, stella::System& system,
                        std::unique_ptr<StellaEnvironmentWrapper> environment);
 
   virtual DifficultyVect getAvailableDifficulties();

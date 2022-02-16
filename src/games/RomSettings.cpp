@@ -21,6 +21,7 @@
 #include <algorithm>
 
 namespace ale {
+using namespace stella;   // System
 
 RomSettings::RomSettings() {}
 

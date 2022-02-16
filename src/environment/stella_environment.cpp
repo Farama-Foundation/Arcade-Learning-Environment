@@ -24,6 +24,7 @@
 #include "emucore/System.hxx"
 
 namespace ale {
+using namespace stella;   // OSystem, Random
 
 StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
     : m_osystem(osystem),

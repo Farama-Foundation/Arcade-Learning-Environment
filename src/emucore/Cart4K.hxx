@@ -19,11 +19,20 @@
 #ifndef CARTRIDGE4K_HXX
 #define CARTRIDGE4K_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   This is the standard Atari 4K cartridge.  These cartridges are 
@@ -140,5 +149,8 @@ class Cartridge4K : public Cartridge
     // The 4K ROM image for the cartridge
     uint8_t myImage[4096];
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

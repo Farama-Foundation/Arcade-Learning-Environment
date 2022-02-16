@@ -36,6 +36,9 @@
 
 static std::once_flag tia_init_once;
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TIA::TIA(const Console& console, Settings& settings)
     : myConsole(console),
@@ -3557,3 +3560,5 @@ inline void TIA::updateFrameScanlineFast(uint32_t clocksToUpdate, uint32_t hpos)
   myFramePointer = ending;
 }
 
+}  // namespace stella
+}  // namespace ale

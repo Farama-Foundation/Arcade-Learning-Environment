@@ -19,6 +19,9 @@
 #include <cassert>
 #include "emucore/Control.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Controller::Controller(Jack jack, const Event& event, Type type)
   : myJack(jack),
@@ -59,3 +62,6 @@ Controller& Controller::operator = (const Controller&)
   assert(false);
   return *this;
 }
+
+}  // namespace stella
+}  // namespace ale

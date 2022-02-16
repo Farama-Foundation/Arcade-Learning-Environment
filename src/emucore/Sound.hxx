@@ -19,6 +19,9 @@
 #ifndef SOUND_HXX
 #define SOUND_HXX
 
+namespace ale {
+namespace stella {
+  
 class Settings;
 class Serializer;
 class Deserializer;
@@ -159,5 +162,8 @@ public:
     // The emulator Settings
     Settings* mySettings;
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

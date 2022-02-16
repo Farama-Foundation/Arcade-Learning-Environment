@@ -28,6 +28,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 FlagCaptureSettings::FlagCaptureSettings() { reset(); }
 

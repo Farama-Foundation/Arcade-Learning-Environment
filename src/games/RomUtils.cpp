@@ -20,6 +20,7 @@
 #include "emucore/System.hxx"
 
 namespace ale {
+using namespace stella;   // System
 
 /* reads a byte at a memory location between 0 and 128 */
 int readRam(const System* system, int offset) {

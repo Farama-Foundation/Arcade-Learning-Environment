@@ -17,6 +17,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 JourneyEscapeSettings::JourneyEscapeSettings() { reset(); }
 

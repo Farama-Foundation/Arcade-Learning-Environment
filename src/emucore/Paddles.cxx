@@ -19,6 +19,9 @@
 #include "emucore/Event.hxx"
 #include "emucore/Paddles.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Paddles::Paddles(Jack jack, const Event& event, bool swap)
   : Controller(jack, event, Controller::Paddles)
@@ -109,3 +112,6 @@ void Paddles::write(DigitalPin, bool)
 {
   // Writing doesn't do anything to the paddles...
 }
+
+}  // namespace stella
+}  // namespace ale

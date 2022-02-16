@@ -20,6 +20,9 @@
 #include "emucore/TIASnd.hxx"
 #include <cassert>
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TIASound::TIASound(int outputFrequency, int tiaFrequency, uint32_t channels)
   : myOutputFrequency(outputFrequency),
@@ -382,3 +385,6 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
     }
   }
 }
+
+}  // namespace stella
+}  // namespace ale

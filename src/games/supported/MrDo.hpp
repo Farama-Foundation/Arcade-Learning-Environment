@@ -44,13 +44,13 @@ class MrDoSettings : public RomSettings {
   bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system) override;
+  void step(const stella::System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser) override;
+  void saveState(stella::Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser) override;
+  void loadState(stella::Deserializer& ser) override;
 
   // Mr. Do requires the fire action to start the game
   ActionVect getStartingActions() override;
@@ -59,7 +59,7 @@ class MrDoSettings : public RomSettings {
 
   ModeVect getAvailableModes() override;
 
-  void setMode(game_mode_t m, System& system,
+  void setMode(game_mode_t m, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
  private:

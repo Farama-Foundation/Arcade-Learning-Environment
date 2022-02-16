@@ -19,6 +19,7 @@
 #include "emucore/Console.hxx"
 
 namespace ale {
+using namespace stella;   // OSystem
 
 PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
   // Taken from default Stella settings

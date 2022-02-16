@@ -19,6 +19,9 @@
 #include <cassert>
 #include "emucore/MediaSrc.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MediaSource::MediaSource()
 {
@@ -42,3 +45,5 @@ MediaSource& MediaSource::operator = (const MediaSource&)
   return *this;
 }
 
+}  // namespace stella
+}  // namespace ale

@@ -28,9 +28,9 @@
 
 namespace ale {
 
-class ScreenSDL : public Screen {
+class ScreenSDL : public stella::Screen {
 public:
-    ScreenSDL(OSystem* osystem);
+    ScreenSDL(stella::OSystem* osystem);
     virtual ~ScreenSDL();
 
     // Displays the current frame buffer from the mediasource.
@@ -51,8 +51,8 @@ private:
     uint32_t screenWidth, screenHeight;
 
     // ALE primitives
-    MediaSource* mediaSource;
-    Sound* sound;
+    stella::MediaSource* mediaSource;
+    stella::Sound* sound;
     ColourPalette* colourPalette;
 
     // SDL Primitives

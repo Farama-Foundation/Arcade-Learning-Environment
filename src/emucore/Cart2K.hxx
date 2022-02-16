@@ -19,11 +19,20 @@
 #ifndef CARTRIDGE2K_HXX
 #define CARTRIDGE2K_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   This is the standard Atari 2K cartridge.  These cartridges 
@@ -141,5 +150,8 @@ class Cartridge2K : public Cartridge
     // The 2k ROM image for the cartridge
     uint8_t myImage[2048];
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

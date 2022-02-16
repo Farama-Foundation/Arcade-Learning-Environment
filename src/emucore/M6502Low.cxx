@@ -22,6 +22,9 @@
 
 #include <iostream>
 
+namespace ale {
+namespace stella {
+
 #define debugStream std::cerr
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -250,3 +253,6 @@ const char* M6502Low::name() const
 {
   return "M6502Low";
 }
+
+}  // namespace stella
+}  // namespace ale

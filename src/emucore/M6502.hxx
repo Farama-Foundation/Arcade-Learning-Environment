@@ -19,12 +19,21 @@
 #ifndef M6502_HXX
 #define M6502_HXX
 
+namespace ale {
+namespace stella {
+
 class M6502;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/System.hxx"
 #include <cstdint>
+
+namespace ale {
+namespace stella {
 
 /**
   This is an abstract base class for classes that emulate the
@@ -251,5 +260,8 @@ class M6502
 
     int myTotalInstructionCount;
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

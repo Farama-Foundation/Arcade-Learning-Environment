@@ -27,6 +27,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 TicTacToe3dSettings::TicTacToe3dSettings() { reset(); }
 

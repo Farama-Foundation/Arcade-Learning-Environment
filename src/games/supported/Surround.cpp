@@ -31,6 +31,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 SurroundSettings::SurroundSettings() { reset(); }
 

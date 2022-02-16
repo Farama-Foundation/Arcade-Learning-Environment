@@ -19,11 +19,20 @@
 #ifndef CARTRIDGEF8_HXX
 #define CARTRIDGEF8_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   Cartridge class used for Atari's 8K bankswitched games.  There
@@ -147,5 +156,8 @@ class CartridgeF8 : public Cartridge
     // The 8K ROM image of the cartridge
     uint8_t myImage[8192];
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

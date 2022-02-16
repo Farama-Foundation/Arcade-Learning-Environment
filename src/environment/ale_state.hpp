@@ -55,17 +55,17 @@ class ALEState {
   /** Returns true if the two states contain the same saved information */
   bool equals(ALEState& state);
 
-  void resetPaddles(Event*);
+  void resetPaddles(stella::Event*);
 
   //Apply the special select action
-  void pressSelect(Event* event_obj);
+  void pressSelect(stella::Event* event_obj);
 
   /** Applies paddle actions. This actually modifies the game state by updating the paddle
       *  resistances. */
-  void applyActionPaddles(Event* event_obj, int player_a_action,
+  void applyActionPaddles(stella::Event* event_obj, int player_a_action,
                           int player_b_action);
   /** Sets the joystick events. No effect until the emulator is run forward. */
-  void setActionJoysticks(Event* event_obj, int player_a_action,
+  void setActionJoysticks(stella::Event* event_obj, int player_a_action,
                           int player_b_action);
 
   void incrementFrame(int steps = 1);
@@ -101,30 +101,30 @@ class ALEState {
 
   // The two methods below are meant to be used by StellaEnvironment.
   // Restores the environment to a previously saved state.
-  void load(OSystem* osystem, RomSettings* settings, Random* rng, std::string md5,
+  void load(stella::OSystem* osystem, RomSettings* settings, stella::Random* rng, std::string md5,
             const ALEState& rhs);
 
   /** Returns a "copy" of the current state, including the information necessary to restore
    *  the emulator. The RNG can optionally be included in the state. */
-  ALEState save(OSystem* osystem, RomSettings* settings, std::optional<Random*> rng, std::string md5);
+  ALEState save(stella::OSystem* osystem, RomSettings* settings, std::optional<stella::Random*> rng, std::string md5);
 
   /** Reset key presses */
-  void resetKeys(Event* event_obj);
+  void resetKeys(stella::Event* event_obj);
 
   /** Sets the paddle to a given position */
-  void setPaddles(Event* event_obj, int left, int right);
+  void setPaddles(stella::Event* event_obj, int left, int right);
 
   /** Set the paddle min/max values */
   void setPaddleLimits(int paddle_min_val, int paddle_max_val);
 
   /** Updates the paddle position by a delta amount. */
-  void updatePaddlePositions(Event* event_obj, int delta_x, int delta_y);
+  void updatePaddlePositions(stella::Event* event_obj, int delta_x, int delta_y);
 
   /** Calculates the Paddle resistance, based on the given x val */
   int calcPaddleResistance(int x_val);
 
   /** Applies the current difficulty setting, which is effectively part of the action */
-  void setDifficultySwitches(Event* event_obj, unsigned int value);
+  void setDifficultySwitches(stella::Event* event_obj, unsigned int value);
 
  private:
   int m_left_paddle;               // Current value for the left-paddle

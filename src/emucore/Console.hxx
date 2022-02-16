@@ -19,6 +19,9 @@
 #ifndef CONSOLE_HXX
 #define CONSOLE_HXX
 
+namespace ale {
+namespace stella {
+
 class OSystem;
 class Console;
 class Controller;
@@ -27,10 +30,16 @@ class MediaSource;
 class Switches;
 class System;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Control.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/TIA.hxx"
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   This class represents the entire game console.
@@ -171,5 +180,8 @@ class Console
     std::string myAboutString;
 
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

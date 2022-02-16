@@ -55,6 +55,7 @@
 namespace fs = std::filesystem;
 
 namespace ale {
+using namespace stella;
 
 // Display ALE welcome message
 std::string ALEInterface::welcomeMessage() {

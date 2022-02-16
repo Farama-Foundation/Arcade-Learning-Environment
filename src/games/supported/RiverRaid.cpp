@@ -30,6 +30,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 RiverRaidSettings::RiverRaidSettings() {
   m_ram_vals_to_digits[0] = 0;

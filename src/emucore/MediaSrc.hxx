@@ -20,11 +20,19 @@
 #define MEDIASOURCE_HXX
 
 
+namespace ale {
+namespace stella {
+
 class MediaSource;
 class Sound;
 
+}  // namespace stella
+}  // namespace ale
+
 #include <cstdint>
 
+namespace ale {
+namespace stella {
 
 /**
   This class provides an interface for accessing graphics and audio data.
@@ -104,5 +112,8 @@ class MediaSource
     // Assignment operator isn't supported by this class so make it private
     MediaSource& operator = (const MediaSource&);
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

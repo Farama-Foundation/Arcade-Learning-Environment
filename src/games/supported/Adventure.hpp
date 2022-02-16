@@ -58,13 +58,13 @@ class AdventureSettings : public RomSettings {
   bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system) override;
+  void step(const stella::System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser) override;
+  void saveState(stella::Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser) override;
+  void loadState(stella::Deserializer& ser) override;
 
   int lives() override { return 1; }
 
@@ -73,7 +73,7 @@ class AdventureSettings : public RomSettings {
 
   // Set the game mode.
   // The given mode must be one returned by the previous function.
-  void setMode(game_mode_t, System& system,
+  void setMode(game_mode_t, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
   // Return the supported difficulty settings for the game.
