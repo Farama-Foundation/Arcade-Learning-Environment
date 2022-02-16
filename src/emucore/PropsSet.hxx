@@ -19,6 +19,9 @@
 #ifndef PROPERTIES_SET_HXX
 #define PROPERTIES_SET_HXX
 
+namespace ale {
+namespace stella {
+
 
 class Properties;
 
@@ -127,5 +130,8 @@ class PropertiesSet
     // The size of the properties bst (i.e. the number of properties in it)
     uint32_t mySize;
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

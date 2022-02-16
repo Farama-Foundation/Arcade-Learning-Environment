@@ -23,6 +23,9 @@
 #include "emucore/Serializer.hxx"
 #include "emucore/Deserializer.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeDPC::CartridgeDPC(const uint8_t* image, uint32_t size)
 {
@@ -609,3 +612,6 @@ uint8_t* CartridgeDPC::getImage(int& size)
 
   return &myImageCopy[0];
 }
+
+}  // namespace stella
+}  // namespace ale

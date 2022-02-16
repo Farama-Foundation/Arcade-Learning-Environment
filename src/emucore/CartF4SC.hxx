@@ -19,11 +19,20 @@
 #ifndef CARTRIDGEF4SC_HXX
 #define CARTRIDGEF4SC_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   Cartridge class used for Atari's 32K bankswitched games with
@@ -146,5 +155,8 @@ class CartridgeF4SC : public Cartridge
     // The 128 bytes of RAM
     uint8_t myRAM[128];
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

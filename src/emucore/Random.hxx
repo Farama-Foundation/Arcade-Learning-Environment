@@ -20,10 +20,19 @@
 #define RANDOM_HXX
 
 
+namespace ale {
+namespace stella {
+
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include <cstdint>
+
+namespace ale {
+namespace stella {
 
 /**
   This Random class uses a Mersenne Twister to provide pseudorandom numbers.
@@ -78,5 +87,9 @@ class Random
     class Impl;
     Impl *m_pimpl;
 };
+
+}  // namespace stella
+}  // namespace ale
+
 #endif
 

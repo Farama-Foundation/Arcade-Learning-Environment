@@ -25,6 +25,9 @@
 #include "emucore/OSystem.hxx"
 #include "emucore/Settings.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Settings::Settings(OSystem* osystem) : myOSystem(osystem) {
     // Add this settings object to the OSystem
@@ -445,3 +448,6 @@ void Settings::verifyVariableExistence(std::map<std::string, ValueType> dict, st
       throw std::runtime_error("The key " + key + " you are trying to set does not exist or has incorrect value type.\n");
     }
 }
+
+}  // namespace stella
+}  // namespace ale

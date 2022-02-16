@@ -19,11 +19,20 @@
 #ifndef CARTRIDGEMC_HXX
 #define CARTRIDGEMC_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   This is the cartridge class for Chris Wilkson's Megacart.  It does not 
@@ -256,5 +265,8 @@ class CartridgeMC : public Cartridge
     // Pointer to the 128K bytes of ROM for the cartridge
     uint8_t* myImage;
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

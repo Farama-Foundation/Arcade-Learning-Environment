@@ -19,11 +19,20 @@
 #ifndef CARTRIDGEE0_HXX
 #define CARTRIDGEE0_HXX
 
+namespace ale {
+namespace stella { 
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   This is the cartridge class for Parker Brothers' 8K games.  In 
@@ -170,5 +179,8 @@ class CartridgeE0 : public Cartridge
     // The 8K ROM image of the cartridge
     uint8_t myImage[8192];
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

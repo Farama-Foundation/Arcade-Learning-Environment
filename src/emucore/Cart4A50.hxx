@@ -19,11 +19,20 @@
 #ifndef CARTRIDGE4A50_HXX
 #define CARTRIDGE4A50_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   This is the standard Atari 4K cartridge.  These cartridges are 
@@ -136,5 +145,8 @@ class Cartridge4A50 : public Cartridge
     */
     virtual void poke(uint16_t address, uint8_t value);
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

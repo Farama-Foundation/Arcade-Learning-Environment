@@ -62,13 +62,13 @@ class DoubleDunkSettings : public RomSettings {
   bool isMinimal(const Action& a) const override;
 
   // process the latest information from ALE
-  void step(const System& system) override;
+  void step(const stella::System& system) override;
 
   // saves the state of the rom settings
-  void saveState(Serializer& ser) override;
+  void saveState(stella::Serializer& ser) override;
 
   // loads the state of the rom settings
-  void loadState(Deserializer& ser) override;
+  void loadState(stella::Deserializer& ser) override;
 
   ActionVect getStartingActions() override;
 
@@ -80,7 +80,7 @@ class DoubleDunkSettings : public RomSettings {
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
-  void setMode(game_mode_t, System& system,
+  void setMode(game_mode_t, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
  private:
@@ -90,17 +90,17 @@ class DoubleDunkSettings : public RomSettings {
 
   // this game has a menu that allows to define various yes/no options
   // this function goes to the next option in the menu
-  void goDown(System& system,
+  void goDown(stella::System& system,
               std::unique_ptr<StellaEnvironmentWrapper>& environment);
 
   // once we are at the proper option in the menu,
   // if we want to enable it all we have to do is to go right
-  void activateOption(System& system, unsigned int bitOfInterest,
+  void activateOption(stella::System& system, unsigned int bitOfInterest,
                       std::unique_ptr<StellaEnvironmentWrapper>& environment);
 
   // once we are at the proper optio in the menu,
   // if we want to disable it all we have to do is to go left
-  void deactivateOption(System& system, unsigned int bitOfInterest,
+  void deactivateOption(stella::System& system, unsigned int bitOfInterest,
                         std::unique_ptr<StellaEnvironmentWrapper>& environment);
 };
 

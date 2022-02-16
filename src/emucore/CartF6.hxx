@@ -19,11 +19,20 @@
 #ifndef CARTRIDGEF6_HXX
 #define CARTRIDGEF6_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Cart.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   Cartridge class used for Atari's 16K bankswitched games.  There
@@ -143,5 +152,8 @@ class CartridgeF6 : public Cartridge
     // The 16K ROM image of the cartridge
     uint8_t myImage[16384];
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

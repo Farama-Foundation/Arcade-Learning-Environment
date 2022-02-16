@@ -21,6 +21,9 @@
 
 #include <sstream>
 
+namespace ale {
+namespace stella {
+
 /**
   This class implements a Serializer device, whereby data is
   serialized and sent to an output binary file in a system-
@@ -93,5 +96,8 @@ class Serializer
       FalsePattern = 0xbad1bad2
     };
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

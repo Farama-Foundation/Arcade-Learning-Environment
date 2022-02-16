@@ -19,13 +19,22 @@
 #ifndef M6532_HXX
 #define M6532_HXX
 
+namespace ale {
+namespace stella {
+
 class Console;
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include "emucore/Device.hxx"
 #include "emucore/Random.hxx"
+
+namespace ale {
+namespace stella {
 
 /**
   RIOT
@@ -143,5 +152,9 @@ class M6532 : public Device
     // Assignment operator isn't supported by this class so make it private
     M6532& operator = (const M6532&);
 };
+
+}  // namespace stella
+}  // namespace ale
+
 #endif
 

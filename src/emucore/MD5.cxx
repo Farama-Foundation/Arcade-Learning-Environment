@@ -44,6 +44,9 @@
  documentation and/or software.
 */
 
+namespace ale {
+namespace stella {
+
 // Setup the types used by the MD5 routines
 typedef unsigned char* POINTER;
 typedef uint16_t UINT2;
@@ -344,3 +347,6 @@ std::string MD5(const uint8_t* buffer, uint32_t length)
 
   return result;
 }
+
+}  // namespace stella
+}  // namespace ale

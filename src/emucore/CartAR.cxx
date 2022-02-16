@@ -26,6 +26,9 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartAR.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeAR::CartridgeAR(const uint8_t* image, uint32_t size, bool fastbios)
   : my6502(0)
@@ -592,3 +595,6 @@ uint8_t* CartridgeAR::getImage(int& size)
   size = myNumberOfLoadImages * 8448;
   return &myLoadImages[0];
 }
+
+}  // namespace stella
+}  // namespace ale

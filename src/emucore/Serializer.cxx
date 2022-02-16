@@ -19,6 +19,9 @@
 #include "emucore/Serializer.hxx"
 
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Serializer::Serializer(void) {
     myStream.clear();
@@ -67,4 +70,7 @@ void Serializer::putBool(bool b)
 {
     putInt(b ? TruePattern: FalsePattern);
 }
+
+}  // namespace stella
+}  // namespace ale
 

@@ -20,6 +20,9 @@
 #include "emucore/Event.hxx"
 #include "emucore/Joystick.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Joystick::Joystick(Jack jack, const Event& event)
   : Controller(jack, event, Controller::Joystick)
@@ -73,3 +76,6 @@ void Joystick::write(DigitalPin, bool)
 {
   // Writing doesn't do anything to the joystick...
 }
+
+}  // namespace stella
+}  // namespace ale

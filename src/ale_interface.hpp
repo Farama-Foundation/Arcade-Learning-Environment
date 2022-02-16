@@ -193,8 +193,8 @@ class ALEInterface {
   ScreenExporter* createScreenExporter(const std::string& path) const;
 
  public:
-  std::unique_ptr<OSystem> theOSystem;
-  std::unique_ptr<Settings> theSettings;
+  std::unique_ptr<stella::OSystem> theOSystem;
+  std::unique_ptr<stella::Settings> theSettings;
   std::unique_ptr<RomSettings> romSettings;
   std::unique_ptr<StellaEnvironment> environment;
   int max_num_frames; // Maximum number of frames for each episode
@@ -205,10 +205,10 @@ class ALEInterface {
   // Display ALE welcome message
   static std::string welcomeMessage();
   static void disableBufferedIO();
-  static void createOSystem(std::unique_ptr<OSystem>& theOSystem,
-                            std::unique_ptr<Settings>& theSettings);
+  static void createOSystem(std::unique_ptr<stella::OSystem>& theOSystem,
+                            std::unique_ptr<stella::Settings>& theSettings);
   static void loadSettings(const fs::path& romfile,
-                           std::unique_ptr<OSystem>& theOSystem);
+                           std::unique_ptr<stella::OSystem>& theOSystem);
 };
 
 }  // namespace ale

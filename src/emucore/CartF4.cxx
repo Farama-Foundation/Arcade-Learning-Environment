@@ -23,6 +23,9 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartF4.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeF4::CartridgeF4(const uint8_t* image)
 {
@@ -207,3 +210,6 @@ uint8_t* CartridgeF4::getImage(int& size)
   size = 32768;
   return &myImage[0];
 }
+
+}  // namespace stella
+}  // namespace ale

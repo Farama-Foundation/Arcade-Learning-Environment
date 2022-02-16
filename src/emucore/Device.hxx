@@ -19,11 +19,20 @@
 #ifndef DEVICE_HXX
 #define DEVICE_HXX
 
+namespace ale {
+namespace stella {
+
 class System;
 class Serializer;
 class Deserializer;
 
+}  // namespace stella
+}  // namespace ale
+
 #include <cstdint>
+
+namespace ale {
+namespace stella {
 
 /**
   Abstract base class for devices which can be attached to a 6502
@@ -109,5 +118,8 @@ class Device
     /// Pointer to the system the device is installed in or the null pointer
     System* mySystem;
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

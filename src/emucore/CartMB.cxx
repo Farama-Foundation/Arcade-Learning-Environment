@@ -23,6 +23,9 @@
 #include "emucore/Deserializer.hxx"
 #include "emucore/CartMB.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeMB::CartridgeMB(const uint8_t* image)
 {
@@ -213,3 +216,6 @@ uint8_t* CartridgeMB::getImage(int& size)
   size = 65536;
   return &myImage[0];
 }
+
+}  // namespace stella
+}  // namespace ale

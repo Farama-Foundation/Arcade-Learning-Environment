@@ -20,6 +20,9 @@
 #include "emucore/Props.hxx"
 #include "emucore/Switches.hxx"
 
+namespace ale {
+namespace stella {
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 Switches::Switches(const Event& event, const Properties& properties)
     : myEvent(event),
@@ -108,4 +111,7 @@ uint8_t Switches::read()
 
   return mySwitches;
 }
+
+}  // namespace stella
+}  // namespace ale
 

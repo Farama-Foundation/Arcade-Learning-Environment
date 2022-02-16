@@ -28,6 +28,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 BasicMathSettings::BasicMathSettings() { reset(); }
 

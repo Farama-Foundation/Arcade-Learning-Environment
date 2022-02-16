@@ -34,6 +34,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 PacmanSettings::PacmanSettings() { reset(); }
 

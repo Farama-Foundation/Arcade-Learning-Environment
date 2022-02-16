@@ -33,6 +33,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 Atlantis2Settings::Atlantis2Settings() { reset(); }
 

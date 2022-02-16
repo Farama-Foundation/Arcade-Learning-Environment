@@ -17,6 +17,7 @@
 #include "games/RomUtils.hpp"
 
 namespace ale {
+using namespace stella;
 
 FreewaySettings::FreewaySettings() {
   m_reward = 0;

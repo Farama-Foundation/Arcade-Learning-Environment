@@ -19,12 +19,21 @@
 #ifndef SETTINGS_HXX
 #define SETTINGS_HXX
 
+namespace ale {
+namespace stella {
+
 class OSystem;
+
+}  // namespace stella
+}  // namespace ale
 
 #include <map>
 #include <vector>
 #include <stdexcept>
 
+
+namespace ale {
+namespace stella {
 
 /**
   This class provides an interface for accessing frontend specific settings.
@@ -202,5 +211,8 @@ class Settings
     // program exit.
     SettingsArray myExternalSettings;
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

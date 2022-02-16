@@ -19,6 +19,8 @@
 #ifndef TIASOUND_HXX
 #define TIASOUND_HXX
 
+namespace ale {
+namespace stella {
 
 /**
   This class implements a fairly accurate emulation of the TIA sound
@@ -147,5 +149,8 @@ class TIASound
     uint32_t myVolumePercentage;
     uint8_t  myVolumeClip;
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

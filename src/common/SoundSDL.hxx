@@ -21,7 +21,13 @@
 
 #ifdef SDL_SUPPORT
 
+namespace ale {
+namespace stella {
+
 class Settings;
+
+}  // namespace stella
+}  // namespace ale
 
 #include "emucore/Sound.hxx"
 #include "emucore/MediaSrc.hxx"
@@ -32,20 +38,22 @@ class Settings;
 #include "common/SoundExporter.hpp"
 #include <memory>
 
+namespace ale {
+
 /**
   This class implements the sound API for SDL.
 
   @author Stephen Anthony and Bradford W. Mott
   @version $Id: SoundSDL.hxx,v 1.18 2007/01/01 18:04:40 stephena Exp $
 */
-class SoundSDL : public Sound
+class SoundSDL : public stella::Sound
 {
   public:
     /**
       Create a new sound object.  The init method must be invoked before
       using the object.
     */
-    SoundSDL(Settings* settings);
+    SoundSDL(stella::Settings* settings);
  
     /**
       Destructor
@@ -152,7 +160,7 @@ class SoundSDL : public Sound
       @param in The deserializer device to load from.
       @return The result of the load.  True on success, false on failure.
     */
-    bool load(Deserializer& in);
+    bool load(stella::Deserializer& in);
 
     /**
       Saves the current state of this device to the given Serializer.
@@ -160,7 +168,7 @@ class SoundSDL : public Sound
       @param out The serializer device to save to.
       @return The result of the save.  True on success, false on failure.
     */
-    bool save(Serializer& out);
+    bool save(stella::Serializer& out);
 
   protected:
     /**
@@ -248,7 +256,7 @@ class SoundSDL : public Sound
 
   private:
     // TIASound emulation object
-    TIASound myTIASound;
+    stella::TIASound myTIASound;
 
     // Indicates if the sound subsystem is to be initialized
     bool myIsEnabled;
@@ -289,6 +297,8 @@ class SoundSDL : public Sound
 
     std::unique_ptr<ale::sound::SoundExporter> mySoundExporter;
 };
+
+}  // namespace ale
 
 #endif  // SDL_SUPPORT
 #endif

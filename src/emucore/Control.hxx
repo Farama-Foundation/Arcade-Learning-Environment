@@ -19,6 +19,9 @@
 #ifndef CONTROLLER_HXX
 #define CONTROLLER_HXX
 
+namespace ale {
+namespace stella {
+
 class Controller;
 class Event;
 class System;
@@ -173,5 +176,8 @@ class Controller
     // Assignment operator isn't supported by controllers so make it private
     Controller& operator = (const Controller&);
 };
+
+}  // namespace stella
+}  // namespace ale
 
 #endif

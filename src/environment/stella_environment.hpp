@@ -39,7 +39,7 @@ namespace ale {
 
 class StellaEnvironment {
  public:
-  StellaEnvironment(OSystem* system, RomSettings* settings);
+  StellaEnvironment(stella::OSystem* system, RomSettings* settings);
 
   /** Resets the system to its start state. */
   void reset();
@@ -96,7 +96,7 @@ class StellaEnvironment {
   int getFrameNumber() const { return m_state.getFrameNumber(); }
   int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
-  Random& getEnvironmentRNG() { return m_random; }
+  stella::Random& getEnvironmentRNG() { return m_random; }
 
   // Returns the current difficulty switch setting in use by the environment.
   difficulty_t getDifficulty() const { return m_state.getDifficulty(); }
@@ -127,10 +127,10 @@ class StellaEnvironment {
   void processRAM();
 
  private:
-  OSystem* m_osystem;
+  stella::OSystem* m_osystem;
   RomSettings* m_settings;
   PhosphorBlend m_phosphor_blend; // For performing phosphor colour averaging, if so desired
-  Random m_random; // Environment random number generator, used for sticky actions
+  stella::Random m_random; // Environment random number generator, used for sticky actions
   std::string m_cartridge_md5; // Necessary for saving and loading emulator state
 
   ALEState m_state;   // Current environment state
