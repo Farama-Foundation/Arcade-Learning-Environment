@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.4] - 2022-02-16
+### Added
+- Proper C++ namespacing for the ALE and Stella (@tuero)
+- vcpkg manifest. You can now install dependencies via `cmake`.
+- Support for the new Gym (0.22) `reset` API, i.e., the `seed` and `return_info` keyword arguments.
+- Moved cibuildwheel config from Github Actions to pyproject.toml.
+
+### Fixed
+- Fixed a bug with the terminal signal in ChopperCommand #434
+- Fixed warnings with `importlib-metadata` on Python < 3.9.
+- Reverted the Gym `v5` defaults to align with the post-DQN literature. That is, moving from a frameskip of 5 -> 4, and full action set -> minimal action set.
+
 ## [0.7.3] — 2021-11-02
 ### Added
 - Environment variable `ALE_PY_ROM_DIR` which if specified will search for ROMs in `${ALE_PY_ROM_DIR}/*.bin`. (@joshgreaves)
@@ -204,7 +216,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial ALE release.
 
 
-[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.3...HEAD
+[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.4...HEAD
+[0.7.4]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.0...v0.7.1
