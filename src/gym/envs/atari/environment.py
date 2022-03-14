@@ -20,7 +20,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
     """
 
     # No render modes
-    metadata = {"render.modes": ["human", "rgb_array"]}
+    metadata = {"render_modes": ["human", "rgb_array"]}
 
     def __init__(
         self,
