@@ -1,12 +1,71 @@
 [build-system]
 requires = [
-    "setuptools>=58",
+    "setuptools>=61",
     "wheel",
     "cmake~=3.20.5",
     "ninja; sys_platform != 'win32' and platform_machine != 'arm64'",
 ]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "ale-py"
+description = "The Arcade Learning Environment (ALE) - a platform for AI research."
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "GPLv2"}
+keywords = ["reinforcement-learning", "arcade-learning-environment", "atari"]
+authors = [
+  {name = "Marc G. Bellemare"},
+  {name = "Yavar Naddaf"},
+  {name = "Joel Veness"},
+  {name = "Michael Bowling"},
+]
+maintainers = [
+  {name = "Jesse Farebrother", email = "jfarebro@cs.mcgill.ca"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy",
+  "importlib-metadata>=4.10.0; python_version < '3.10'",
+  "importlib-resources",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "gym",
+]
+
+[project.urls]
+homepage = "https://github.com/mgbellemare/Arcade-Learning-Environment"
+documentation = "https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/docs"
+changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
+
+[project.scripts]
+ale-import-roms = "ale_py.scripts.import_roms:main"
+
+[project.entry-points."gym.envs"]
+ALE = "ale_py.gym:register_gym_envs"
+__internal__ = "ale_py.gym:register_legacy_gym_envs"
+
+[tool.setuptools]
+packages = [
+  "ale_py",
+  "ale_py.roms",
+  "ale_py.scripts",
+  "gym.envs.atari"
+]
+package-dir = {ale_py = "src/python", gym = "src/gym"}
+package-data = {"ale_py.roms" = ["*.bin"]}
 
 [tool.cibuildwheel]
 # Skip 32-bit wheels, PyPy & musllinux
