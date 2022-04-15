@@ -1,12 +1,11 @@
+from typing import Optional, Union, Tuple, Dict, Any, List
+
 import numpy as np
 import gym
 import gym.logger as logger
 
 from gym import error, spaces
 from gym import utils
-from gym.utils import seeding
-
-from typing import Optional, Union, Tuple, Dict, Any, List
 
 import ale_py.roms as roms
 from ale_py._ale_py import ALEInterface, ALEState, Action, LoggerMode
@@ -74,11 +73,26 @@ class AtariEnv(gym.Env, utils.EzPickle):
             raise error.Error(
                 f"Invalid observation type: {obs_type}. Expecting: rgb, grayscale, ram."
             )
-        if not (
-            isinstance(frameskip, int)
-            or (isinstance(frameskip, tuple) and len(frameskip) == 2)
-        ):
-            raise error.Error(f"Invalid frameskip type: {frameskip}")
+
+        if type(frameskip) not in (int, tuple):
+            raise error.Error(f"Invalid frameskip type: {type(frameskip)}.")
+        if isinstance(frameskip, int) and frameskip <= 0:
+            raise error.Error(
+                f"Invalid frameskip of {frameskip}, frameskip must be positive."
+            )
+        elif isinstance(frameskip, tuple) and len(frameskip) != 2:
+            raise error.Error(
+                f"Invalid stochastic frameskip length of {len(frameskip)}, expected length 2."
+            )
+        elif isinstance(frameskip, tuple) and frameskip[0] > frameskip[1]:
+            raise error.Error(
+                f"Invalid stochastic frameskip, lower bound is greater than upper bound."
+            )
+        elif isinstance(frameskip, tuple) and frameskip[0] <= 0:
+            raise error.Error(
+                f"Invalid stochastic frameskip lower bound is greater than upper bound."
+            )
+
         if render_mode is not None and render_mode not in {"rgb_array", "human"}:
             raise error.Error(
                 f"Render mode {render_mode} not supported (rgb_array, human)."
@@ -98,7 +112,6 @@ class AtariEnv(gym.Env, utils.EzPickle):
 
         # Initialize ALE
         self.ale = ALEInterface()
-        self.viewer = None
 
         self._game = rom_id_to_name(game)
 
@@ -162,10 +175,13 @@ class AtariEnv(gym.Env, utils.EzPickle):
         Returns:
             tuple[int, int] => (np seed, ALE seed)
         """
-        self.np_random, seed1 = seeding.np_random(seed)
-        seed2 = seeding.hash_seed(seed1 + 1) % 2 ** 31
+        ss = np.random.SeedSequence(seed)
+        seed1, seed2 = ss.generate_state(n_words=2)
 
-        self.ale.setInt("random_seed", seed2)
+        self.np_random = np.random.default_rng(seed1)
+        # ALE only takes signed integers for `setInt`, it'll get converted back
+        # to unsigned in StellaEnvironment.
+        self.ale.setInt("random_seed", seed2.astype(np.int32))
 
         if not hasattr(roms, self._game):
             raise error.Error(
@@ -212,7 +228,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         if isinstance(self._frameskip, int):
             frameskip = self._frameskip
         elif isinstance(self._frameskip, tuple):
-            frameskip = self.np_random.randint(*self._frameskip)
+            frameskip = self.np_random.integers(*self._frameskip)
         else:
             raise error.Error(f"Invalid frameskip type: {self._frameskip}")
 
@@ -224,7 +240,11 @@ class AtariEnv(gym.Env, utils.EzPickle):
         return self._get_obs(), reward, terminal, self._get_info()
 
     def reset(
-        self, *, seed: Optional[int] = None, return_info: bool = False
+        self,
+        *,
+        seed: Optional[int] = None,
+        return_info: bool = False,
+        options: Optional[Dict[str, Any]] = None,
     ) -> Union[Tuple[np.ndarray, Dict[str, Any]], np.ndarray]:
         """
         Resets environment and returns initial observation.
@@ -247,7 +267,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         else:
             return obs
 
-    def render(self, mode: str) -> None:
+    def render(self, mode: str) -> Any:
         """
         Render is not supported by ALE. We use a paradigm similar to
         Gym3 which allows you to specify `render_mode` during construction.
@@ -257,32 +277,27 @@ class AtariEnv(gym.Env, utils.EzPickle):
         will display the ALE and maintain the proper interval to match the
         FPS target set by the ROM.
         """
-        img = self.ale.getScreenRGB()
         if mode == "rgb_array":
-            return img
+            return self.ale.getScreenRGB()
         elif mode == "human":
-            from gym.envs.classic_control import rendering
-
-            if self.viewer is None:
-                logger.warn(
-                    (
-                        "We strongly suggest supplying `render_mode` when "
-                        "constructing your environment, e.g., gym.make(ID, render_mode='human'). "
-                        "Using `render_mode` provides access to proper scaling, audio support, "
-                        "and proper framerates."
-                    )
+            raise error.Error(
+                (
+                    "render(mode='human') is deprecated. Please supply `render_mode` when "
+                    "constructing your environment, e.g., gym.make(ID, render_mode='human'). "
+                    "The new `render_mode` keyword argument supports DPI scaling, "
+                    "audio, and native framerates."
                 )
-                self.viewer = rendering.SimpleImageViewer()
-            self.viewer.imshow(img)
-            return self.viewer.isopen
+            )
+        else:
+            raise error.Error(
+                f"Invalid render mode `{mode}`. Supported modes: `rgb_array`."
+            )
 
     def close(self) -> None:
         """
         Cleanup any leftovers by the environment
         """
-        if self.viewer is not None:
-            self.viewer.close()
-            self.viewer = None
+        pass
 
     def _get_obs(self) -> np.ndarray:
         """

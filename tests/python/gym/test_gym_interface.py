@@ -1,23 +1,24 @@
+# fmt: off
 import pytest
 
 pytest.importorskip("gym")
 pytest.importorskip("gym.envs.atari")
-
-import numpy as np
-
-from unittest.mock import patch
-from itertools import product
-
-from gym import spaces
-from gym.envs.registration import registry
-from gym.core import Env
-from gym.utils.env_checker import check_env
 
 from ale_py.gym import (
     register_legacy_gym_envs,
     _register_gym_configs,
     register_gym_envs,
 )
+from gym import error
+from gym.utils.env_checker import check_env
+from gym.core import Env
+from gym.envs.registration import registry
+from gym.envs.atari.environment import AtariEnv
+from gym import spaces
+from itertools import product
+from unittest.mock import patch
+import numpy as np
+# fmt: on
 
 
 def test_register_legacy_env_id():
@@ -123,7 +124,8 @@ def test_register_gym_envs(test_rom_path):
         suffixes = []
         versions = ["-v5"]
 
-        all_ids = set(map("".join, product(games, obs_types, suffixes, versions)))
+        all_ids = set(map("".join, product(
+            games, obs_types, suffixes, versions)))
         assert all_ids.issubset(envids)
 
 
@@ -329,6 +331,18 @@ def test_gym_reset_with_infos(tetris_gym):
     assert "episode_frame_number" in info
     assert "frame_number" in info
     assert "rgb" in info
+
+
+@pytest.mark.parametrize("frameskip", [0, -1, 4.0, (-1, 5), (0, 5), (5, 2), (1, 2, 3)])
+def test_frameskip_warnings(test_rom_path, frameskip):
+    with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: test_rom_path):
+        with pytest.raises(error.Error):
+            AtariEnv('Tetris', frameskip=frameskip)
+
+
+def test_render_exception(tetris_gym):
+    with pytest.raises(error.Error):
+        tetris_gym.render(mode="human")
 
 
 def test_gym_compliance(tetris_gym):
