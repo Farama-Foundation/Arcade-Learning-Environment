@@ -99,7 +99,7 @@ def test_legacy_env_specs():
     """
     for spec in specs:
         assert spec in registry.env_specs
-        kwargs = registry.env_specs[spec]._kwargs
+        kwargs = registry.env_specs[spec].kwargs
         max_episode_steps = registry.env_specs[spec].max_episode_steps
 
         # Assert necessary parameters are set
