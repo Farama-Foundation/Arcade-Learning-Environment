@@ -1,24 +1,12 @@
 import os
 import re
 import sys
-import shlex
 import subprocess
 
-from setuptools import setup, Extension, Distribution
+from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
 here = os.path.abspath(os.path.dirname(__file__))
-
-
-class CMakeDistribution(Distribution):
-    global_options = Distribution.global_options
-    global_options += [
-        ("cmake-options=", None, "Additional semicolon-separated cmake options.")
-    ]
-
-    def __init__(self, attrs=None):
-        self.cmake_options = None
-        super().__init__(attrs)
 
 
 class CMakeExtension(Extension):
@@ -99,9 +87,6 @@ class CMakeBuild(build_ext):
             if archs:
                 cmake_args += ["-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
 
-        if self.distribution.cmake_options is not None:
-            cmake_args += shlex.split(self.distribution.cmake_options)
-
         # Set CMAKE_BUILD_PARALLEL_LEVEL to control the parallel build level
         # across all generators.
         if "CMAKE_BUILD_PARALLEL_LEVEL" not in os.environ:
@@ -173,7 +158,6 @@ if __name__ == "__main__":
     setup(
         name="ale-py",
         version=parse_version("version.txt"),
-        distclass=CMakeDistribution,
         ext_modules=[CMakeExtension("ale_py._ale_py")],
         cmdclass={"build_ext": CMakeBuild},
     )
