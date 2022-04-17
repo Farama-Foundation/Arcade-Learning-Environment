@@ -1,0 +1,107 @@
+name: CI
+on:
+  push:
+    tags-ignore:
+      - "*.*"
+    paths-ignore:
+      - "docs/**"
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v2.0.3
+
+  tests:
+    name: ${{ matrix.runs-on }} • py${{ matrix.python }}
+    needs: pre-commit
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-latest
+            python: '3.7'
+            triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.8'
+            triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.9'
+            triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.10'
+            triplet: x64-linux-mixed
+
+          - runs-on: macos-latest
+            python: '3.7'
+            triplet: x64-osx-mixed
+          - runs-on: macos-latest
+            python: '3.8'
+            triplet: x64-osx-mixed
+          - runs-on: macos-latest
+            python: '3.9'
+            triplet: x64-osx-mixed
+          - runs-on: macos-latest
+            python: '3.10'
+            triplet: x64-osx-mixed
+
+          - runs-on: windows-latest
+            python: '3.7'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.8'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.9'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.10'
+            triplet: x64-windows
+    env:
+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.x"
+
+    - name: Install pip dependencies
+      run: |
+        python -m pip install --user --upgrade -r tests/requirements.txt
+
+    - uses: microsoft/setup-msbuild@v1.1
+      if: runner.os == 'Windows'
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgGitCommitId: "aebb363eaa0b658beb19cbefdd5aa2f9cbc14f1e"
+        # There's a permissions issue with the cache
+        # https://github.com/microsoft/vcpkg/issues/20121
+        doNotCache: true
+
+    - name: Configure
+      run: |
+        cmake --version
+        mkdir build && cd build
+        cmake ../ -DSDL_SUPPORT=ON -DPython3_EXECUTABLE=$(which python)
+
+    - name: Build
+      working-directory: build
+      run: cmake --build . --config Debug --parallel 2
+
+    - name: Test
+      working-directory: build
+      run: ctest -C Debug --progress -VV

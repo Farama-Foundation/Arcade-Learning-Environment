@@ -2,7 +2,7 @@
 requires = [
     "setuptools>=61",
     "wheel",
-    "cmake~=3.20.5",
+    "cmake~=3.22",
     "ninja; sys_platform != 'win32' and platform_machine != 'arm64'",
 ]
 build-backend = "setuptools.build_meta"
@@ -41,8 +41,8 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 test = [
-  "pytest",
-  "gym",
+  "pytest>=7.0",
+  "gym~=0.23",
 ]
 
 [project.urls]
@@ -66,6 +66,12 @@ packages = [
 ]
 package-dir = {ale_py = "src/python", gym = "src/gym"}
 package-data = {"ale_py.roms" = ["*.bin"]}
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --ignore vcpkg --ignore build"
+testpaths = ["tests"]
+norecursedirs = ["vcpkg", "build"]
 
 [tool.cibuildwheel]
 # Skip 32-bit wheels, PyPy & musllinux

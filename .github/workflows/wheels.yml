@@ -1,4 +1,4 @@
-name: Build ALE Python
+name: Wheels
 
 on:
   push:
@@ -7,31 +7,48 @@ on:
 
 jobs:
   build:
-    name: Build ALE Python for ${{ matrix.config.name }} ${{ matrix.config.arch }}
+    name: ${{ matrix.runs-on }} • ${{ matrix.arch }}
     defaults:
       run:
         shell: bash
     strategy:
       matrix:
         include:
-          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
-          - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
-    runs-on: ${{ matrix.config.os }}
+          - runs-on: ubuntu-latest
+            arch: x86_64
+          - runs-on: windows-latest
+            arch: AMD64
+          - runs-on: macos-latest
+            arch: x86_64
+          - runs-on: macos-latest
+            arch: arm64
+    runs-on: ${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v2
 
-    - name: Docker Login
-      if: matrix.config.os == 'ubuntu-latest'
+    - name: Setup Docker
+      if: runner.os == 'Linux'
       run: docker login ghcr.io --username "${GITHUB_ACTOR}" --password "${GITHUB_CR_TOKEN}"
       env:
         GITHUB_CR_TOKEN: ${{ secrets.CR_TOKEN }}
 
+    - name: Setup msbuild
+      if: runner.os == 'Windows'
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Setup vcpkg
+      if: runner.os == 'macOS'  || runner.os == 'Windows'
+      uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgGitCommitId: "aebb363eaa0b658beb19cbefdd5aa2f9cbc14f1e"
+        # There's a permissions issue with the cache
+        # https://github.com/microsoft/vcpkg/issues/20121
+        doNotCache: true
+
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.3.1
+      uses: pypa/cibuildwheel@v2.4.0
       env:
-        CIBW_ARCHS: "${{ matrix.config.arch }}"
+        CIBW_ARCHS: "${{ matrix.arch }}"
 
     - name: Upload wheels
       uses: actions/upload-artifact@v2
@@ -41,7 +58,7 @@ jobs:
 
 
   pypi:
-    name: Deploy ALE Python to PyPi test
+    name: Deploy wheels to PyPi test
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -61,10 +78,11 @@ jobs:
           password: ${{ secrets.PYPI_TEST_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
           packages_dir: wheels/
+          print_hash: true
 
 
   release:
-    name: Stage ALE Python to Github releases
+    name: Stage wheels to Github releases
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -74,7 +92,7 @@ jobs:
 
       - name: Create wheel archive
         run: |
-          zip --junk-paths ale-py wheels/*
+          zip --junk-paths wheels wheels/*
 
       - name: Create release
         id: create_release
@@ -93,6 +111,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./ale-py.zip
-          asset_name: ale-py.zip
+          asset_path: ./wheels.zip
+          asset_name: wheels.zip
           asset_content_type: application/zip
