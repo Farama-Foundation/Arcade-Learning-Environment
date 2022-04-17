@@ -11,8 +11,8 @@
       "dependencies": [ "sdl2" ]
     }
   },
-  "builtin-baseline": "9349a6a56c7dec7e8b8846f80d83e335aad86c7e",
+  "builtin-baseline": "aebb363eaa0b658beb19cbefdd5aa2f9cbc14f1e",
   "overrides": [
-    { "name": "sdl2", "version": "2.0.14" }
+    { "name": "sdl2", "version": "2.0.16" }
   ]
 }
