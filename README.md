@@ -4,7 +4,7 @@ The Arcade Learning Environment
 </a>
 ===============================
 
-[![Build ALE](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/build-ale.yml/badge.svg)](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/build-ale.yml)
+[![Continuous Integration](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/ci.yml/badge.svg)](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/ci.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/ale-py)](https://pypi.org/project/ale-py)
 
 
