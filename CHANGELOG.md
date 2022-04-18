@@ -179,13 +179,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.3] — 2014-04-26
 ### Fixed
 - Fixed issues with frame numbers not being correctly updated.
-- Fixed a bug where total reward was not properly reported under frame skipping. 
+- Fixed a bug where total reward was not properly reported under frame skipping.
 - Fixed a bug with ALEState's m_frame_number.
 
 
 ## [0.4.2] — 2013-06-12
 ### Changed
-- Modified StellaEnvironment save/load interface to provide additional flexibility. 
+- Modified StellaEnvironment save/load interface to provide additional flexibility.
 
 ### Fixed
 - Series of bug fixes from Matthew Hausknecht and community.

@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -36,12 +36,12 @@ namespace ale {
 namespace stella {
 
 /**
-  This is the cartridge class for Arcadia (aka Starpath) Supercharger 
-  games.  Christopher Salomon provided most of the technical details 
+  This is the cartridge class for Arcadia (aka Starpath) Supercharger
+  games.  Christopher Salomon provided most of the technical details
   used in creating this class.  A good description of the Supercharger
   is provided in the Cuttle Cart's manual.
 
-  The Supercharger has four 2K banks.  There are three banks of RAM 
+  The Supercharger has four 2K banks.  There are three banks of RAM
   and one bank of ROM.  All 6K of the RAM can be read and written.
 
   @author  Bradford W. Mott
@@ -186,7 +186,7 @@ class CartridgeAR : public Cartridge
     // The 256 byte header for the current 8448 byte load
     uint8_t myHeader[256];
 
-    // All of the 8448 byte loads associated with the game 
+    // All of the 8448 byte loads associated with the game
     uint8_t* myLoadImages;
 
     // Indicates how many 8448 loads there are

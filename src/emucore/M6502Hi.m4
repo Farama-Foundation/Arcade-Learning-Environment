@@ -120,7 +120,7 @@ define(M6502_ZEROX_READ, `{
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }')
 
 define(M6502_ZEROX_WRITE, `{
@@ -141,7 +141,7 @@ define(M6502_ZEROY_READ, `{
   uint8_t address = peek(PC++);
   peek(address);
   address += Y;
-  operand = peek(address); 
+  operand = peek(address);
 }')
 
 define(M6502_ZEROY_WRITE, `{
@@ -311,4 +311,3 @@ define(M6502_BVS, `{
     PC = address;
   }
 }')
-

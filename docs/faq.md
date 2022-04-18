@@ -17,7 +17,7 @@ If you're using the Python interface you can use the command line utility `ale-i
 
 ### I want to be able to extract from the game the number of lives my agent still has. How can I do it?
 
-Previous versions of ALE did not support this. We started to support such feature since version 
+Previous versions of ALE did not support this. We started to support such feature since version
 0.5.0, through the use of the function `lives()`. We strongly encourage RL researchers not utilize the loss of life signal for episode termination, and if you do to clearly report the setting used.
 
 

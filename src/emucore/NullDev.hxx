@@ -37,8 +37,8 @@ namespace stella {
 /**
   Class that represents a "null" device.  The basic idea is that a
   null device is installed in a 6502 based system anywhere there are
-  holes in the address space (i.e. no real device attached). 
- 
+  holes in the address space (i.e. no real device attached).
+
   @author  Bradford W. Mott
   @version $Id: NullDev.hxx,v 1.5 2007/01/01 18:04:51 stephena Exp $
 */
@@ -112,4 +112,3 @@ class NullDevice : public Device
 
 }  // namespace stella
 }  // namespace ale
-

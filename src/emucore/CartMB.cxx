@@ -208,7 +208,7 @@ bool CartridgeMB::patch(uint16_t address, uint8_t value)
   address = address & 0x0FFF;
   myImage[myCurrentBank * 4096 + address] = value;
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeMB::getImage(int& size)

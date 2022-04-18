@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -32,7 +32,7 @@ class Properties;
   and least likely to change.  A change in MD5 would mean a change in
   the game rom image (essentially a different game) and this would
   necessitate a new entry in the stella.pro file anyway.
-  
+
   @author  Stephen Anthony
 */
 class PropertiesSet

@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -35,8 +35,8 @@ namespace ale {
 namespace stella {
 
 /**
-  Cartridge class used for Pitfall II.  There are two 4K program banks, a 
-  2K display bank, and the DPC chip.  For complete details on the DPC chip 
+  Cartridge class used for Pitfall II.  There are two 4K program banks, a
+  2K display bank, and the DPC chip.  For complete details on the DPC chip
   see David P. Crane's United States Patent Number 4,644,495.
 
   @author  Bradford W. Mott
@@ -51,7 +51,7 @@ class CartridgeDPC : public Cartridge
       @param image Pointer to the ROM image
     */
     CartridgeDPC(const uint8_t* image, uint32_t size);
- 
+
     /**
       Destructor
     */
@@ -154,12 +154,12 @@ class CartridgeDPC : public Cartridge
     virtual void poke(uint16_t address, uint8_t value);
 
   private:
-    /** 
+    /**
       Clocks the random number generator to move it to its next state
     */
     void clockRandomNumberGenerator();
 
-    /** 
+    /**
       Updates any data fetchers in music mode based on the number of
       CPU cycles which have passed since the last update.
     */

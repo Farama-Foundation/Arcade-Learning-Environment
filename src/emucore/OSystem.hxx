@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -34,7 +34,7 @@ class PropertiesSet;
 #include "common/SoundNull.hxx"
 #include "emucore/Settings.hxx"
 #include "emucore/Console.hxx"
-#include "emucore/Event.hxx"  //ALE 
+#include "emucore/Event.hxx"  //ALE
 #include "common/ColourPalette.hpp"
 #include "common/Log.hpp"
 
@@ -73,12 +73,12 @@ class OSystem
     /**
       Adds the specified settings object to the system.
 
-      @param settings The settings object to add 
+      @param settings The settings object to add
     */
     void attach(Settings* settings) { mySettings = settings; }
 
-    /**  //ALE 
-      Get the event object of the system  
+    /**  //ALE
+      Get the event object of the system
 
       @return The event object
     */
@@ -162,7 +162,7 @@ class OSystem
     bool openROM(const fs::path& rom, std::string& md5, uint8_t** image, int* size);
 
   protected:
-    // Global Event object  //ALE 
+    // Global Event object  //ALE
     Event* myEvent;
 
     // Pointer to the Sound object

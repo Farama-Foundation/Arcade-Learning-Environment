@@ -69,7 +69,7 @@ class Device
 
     /**
       Notification method invoked by the system right before the
-      system resets its cycle counter to zero.  It may be necessary 
+      system resets its cycle counter to zero.  It may be necessary
       to override this method for devices that remember cycle counts.
     */
     virtual void systemCyclesReset();

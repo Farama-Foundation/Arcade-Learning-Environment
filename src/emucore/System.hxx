@@ -49,7 +49,7 @@ namespace stella {
   into 2^m byte pages (1 <= m <= n), where a page is the smallest unit
   a device can use when installing itself in the system.
 
-  In general the addressing space will be 8192 (2^13) bytes for a 
+  In general the addressing space will be 8192 (2^13) bytes for a
   6507 based system and 65536 (2^16) bytes for a 6502 based system.
 
   TODO: To allow for dynamic code generation we probably need to
@@ -100,7 +100,7 @@ class System
 
   public:
     /**
-      Attach the specified device and claim ownership of it.  The device 
+      Attach the specified device and claim ownership of it.  The device
       will be asked to install itself.
 
       @param device The device to attach to the system
@@ -116,7 +116,7 @@ class System
     void attach(M6502* m6502);
 
     /**
-      Attach the specified TIA device and claim ownership of it.  The device 
+      Attach the specified TIA device and claim ownership of it.  The device
       will be asked to install itself.
 
       @param tia The TIA device to attach to the system
@@ -177,8 +177,8 @@ class System
     }
 
     /**
-      Get the null device associated with the system.  Every system 
-      has a null device associated with it that's used by pages which 
+      Get the null device associated with the system.  Every system
+      has a null device associated with it that's used by pages which
       aren't mapped to "real" devices.
 
       @return The null device associated with the system
@@ -217,7 +217,7 @@ class System
     {
       return myPageMask;
     }
- 
+
   public:
     /**
       Get the number of system cycles which have passed since the last
@@ -225,9 +225,9 @@ class System
 
       @return The number of system cycles which have passed
     */
-    uint32_t cycles() const 
-    { 
-      return myCycles; 
+    uint32_t cycles() const
+    {
+      return myCycles;
     }
 
     /**
@@ -235,15 +235,15 @@ class System
 
       @param amount The amount to add to the system cycles counter
     */
-    void incrementCycles(uint32_t amount) 
-    { 
-      myCycles += amount; 
+    void incrementCycles(uint32_t amount)
+    {
+      myCycles += amount;
     }
 
     /**
       Reset the system cycle count to zero.  The first thing that
-      happens is that all devices are notified of the reset by invoking 
-      their systemCyclesReset method then the system cycle count is 
+      happens is that all devices are notified of the reset by invoking
+      their systemCyclesReset method then the system cycle count is
       reset to zero.
     */
     void resetCycles();
@@ -254,7 +254,7 @@ class System
       state is the last data that was accessed by the system.
 
       @return the data bus state
-    */  
+    */
     uint8_t getDataBusState() const;
 
     /**
@@ -331,7 +331,7 @@ class System
       /**
         Pointer to a block of memory or the null pointer.  The null pointer
         indicates that the device's peek method should be invoked for reads
-        to this page, while other values are the base address of an array 
+        to this page, while other values are the base address of an array
         to directly access for reads to this page.
       */
       uint8_t* directPeekBase;
@@ -339,13 +339,13 @@ class System
       /**
         Pointer to a block of memory or the null pointer.  The null pointer
         indicates that the device's poke method should be invoked for writes
-        to this page, while other values are the base address of an array 
+        to this page, while other values are the base address of an array
         to directly access for pokes to this page.
       */
       uint8_t* directPokeBase;
 
       /**
-        Pointer to the device associated with this page or to the system's 
+        Pointer to the device associated with this page or to the system's
         null device if the page hasn't been mapped to a device
       */
       Device* device;
@@ -366,7 +366,7 @@ class System
       @return The accessing methods used by the page
     */
     const PageAccess& getPageAccess(uint16_t page);
- 
+
   private:
     // Log base 2 of the addressing space size.
     static constexpr uint16_t myAddressingSpace = 13;
@@ -379,7 +379,7 @@ class System
 
     // Mask to apply to an address to obtain its page offset
     static constexpr uint16_t myPageMask = (1 << myPageSize) - 1;
- 
+
     // Number of pages in the system
     static constexpr uint16_t myNumberOfPages = 1 << (myAddressingSpace - myPageSize);
 
@@ -406,7 +406,7 @@ class System
     uint32_t myCycles;
 
     // Null device to use for page which are not installed
-    NullDevice myNullDevice; 
+    NullDevice myNullDevice;
 
     // The current state of the Data Bus
     uint8_t myDataBusState;

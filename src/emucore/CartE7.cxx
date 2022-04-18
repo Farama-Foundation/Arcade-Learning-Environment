@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -131,14 +131,14 @@ void CartridgeE7::poke(uint16_t address, uint8_t)
     bankRAM(address & 0x0003);
   }
 
-  // NOTE: This does not handle writing to RAM, however, this 
+  // NOTE: This does not handle writing to RAM, however, this
   // function should never be called for RAM because of the
   // way page accessing has been setup
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeE7::bankRAM(uint16_t bank)
-{ 
+{
   // Remember what bank we're in
   myCurrentRAM = bank;
   uint16_t offset = bank << 8;
@@ -246,7 +246,7 @@ bool CartridgeE7::load(Deserializer& in)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeE7::bank(uint16_t slice)
-{ 
+{
   if(bankLocked) return;
 
   // Remember what bank we're in
@@ -312,7 +312,7 @@ bool CartridgeE7::patch(uint16_t address, uint8_t value)
   myImage[(myCurrentSlice[address >> 11] << 11) + (address & 0x07FF)] = value;
   bank(myCurrentSlice[0]);
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeE7::getImage(int& size)

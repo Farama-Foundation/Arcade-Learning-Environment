@@ -111,19 +111,19 @@ uint8_t M6502::PS() const
 {
   uint8_t ps = 0x20;
 
-  if(N) 
+  if(N)
     ps |= 0x80;
-  if(V) 
+  if(V)
     ps |= 0x40;
-  if(B) 
+  if(B)
     ps |= 0x10;
-  if(D) 
+  if(D)
     ps |= 0x08;
-  if(I) 
+  if(I)
     ps |= 0x04;
-  if(!notZ) 
+  if(!notZ)
     ps |= 0x02;
-  if(C) 
+  if(C)
     ps |= 0x01;
 
   return ps;
@@ -309,7 +309,7 @@ const char* M6502::ourInstructionMnemonicTable[256] = {
 
   "BMI",  "AND",  "n/a",  "rla",  "nop",  "AND",  "ROL",  "rla",    // 0x3?
   "SEC",  "AND",  "nop",  "rla",  "nop",  "AND",  "ROL",  "rla",
-  
+
   "RTI",  "EOR",  "n/a",  "sre",  "nop",  "EOR",  "LSR",  "sre",    // 0x4?
   "PHA",  "EOR",  "LSRA", "asr",  "JMP",  "EOR",  "LSR",  "sre",
 

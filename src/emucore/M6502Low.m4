@@ -70,7 +70,7 @@ define(M6502_ABSOLUTEX_READ, `{
 define(M6502_ABSOLUTEX_WRITE, `{
   operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
-  operandAddress += X; 
+  operandAddress += X;
 }')
 
 define(M6502_ABSOLUTEX_READMODIFYWRITE, `{
@@ -97,7 +97,7 @@ define(M6502_ABSOLUTEY_READ, `{
 define(M6502_ABSOLUTEY_WRITE, `{
   operandAddress = (uint16_t)peek(PC) | ((uint16_t)peek(PC + 1) << 8);
   PC += 2;
-  operandAddress += Y; 
+  operandAddress += Y;
 }')
 
 define(M6502_ABSOLUTEY_READMODIFYWRITE, `{
@@ -123,7 +123,7 @@ define(M6502_ZERO_READMODIFYWRITE, `{
 
 define(M6502_ZEROX_READ, `{
   operandAddress = (uint8_t)(peek(PC++) + X);
-  operand = peek(operandAddress); 
+  operand = peek(operandAddress);
 }')
 
 define(M6502_ZEROX_WRITE, `{
@@ -137,7 +137,7 @@ define(M6502_ZEROX_READMODIFYWRITE, `{
 
 define(M6502_ZEROY_READ, `{
   operandAddress = (uint8_t)(peek(PC++) + Y);
-  operand = peek(operandAddress); 
+  operand = peek(operandAddress);
 }')
 
 define(M6502_ZEROY_WRITE, `{
@@ -178,7 +178,7 @@ define(M6502_INDIRECTX_READMODIFYWRITE, `{
 
 define(M6502_INDIRECTY_READ, `{
   uint8_t pointer = peek(PC++);
-  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8); 
+  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8);
 
   if(NOTSAMEPAGE(operandAddress, operandAddress + Y))
   {
@@ -191,13 +191,13 @@ define(M6502_INDIRECTY_READ, `{
 
 define(M6502_INDIRECTY_WRITE, `{
   uint8_t pointer = peek(PC++);
-  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8); 
+  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8);
   operandAddress += Y;
 }')
 
 define(M6502_INDIRECTY_READMODIFYWRITE, `{
   uint8_t pointer = peek(PC++);
-  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8); 
+  operandAddress = (uint16_t)peek(pointer) | ((uint16_t)peek(pointer + 1) << 8);
   operandAddress += Y;
   operand = peek(operandAddress);
 }')
@@ -282,5 +282,3 @@ define(M6502_BVS, `{
     PC = address;
   }
 }')
-
-

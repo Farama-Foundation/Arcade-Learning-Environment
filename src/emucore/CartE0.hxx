@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -20,7 +20,7 @@
 #define CARTRIDGEE0_HXX
 
 namespace ale {
-namespace stella { 
+namespace stella {
 
 class System;
 class Serializer;
@@ -35,14 +35,14 @@ namespace ale {
 namespace stella {
 
 /**
-  This is the cartridge class for Parker Brothers' 8K games.  In 
-  this bankswitching scheme the 2600's 4K cartridge address space 
+  This is the cartridge class for Parker Brothers' 8K games.  In
+  this bankswitching scheme the 2600's 4K cartridge address space
   is broken into four 1K segments.  The desired 1K slice of the
   ROM is selected by accessing 1FE0 to 1FE7 for the first 1K.
-  1FE8 to 1FEF selects the slice for the second 1K, and 1FF0 to 
-  1FF8 selects the slice for the third 1K.   The last 1K segment 
+  1FE8 to 1FEF selects the slice for the second 1K, and 1FF0 to
+  1FF8 selects the slice for the third 1K.   The last 1K segment
   always points to the last 1K of the ROM image.
-  
+
   @author  Bradford W. Mott
   @version $Id: CartE0.hxx,v 1.9 2007/01/14 16:17:53 stephena Exp $
 */
@@ -55,7 +55,7 @@ class CartridgeE0 : public Cartridge
       @param image Pointer to the ROM image
     */
     CartridgeE0(const uint8_t* image);
- 
+
     /**
       Destructor
     */

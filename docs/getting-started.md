@@ -42,7 +42,7 @@ The C++ library requires:
 * A C++17 compiler
 * CMake 3.14+
 * zlib
-* (Optional) SDL 2 for display/audio support 
+* (Optional) SDL 2 for display/audio support
 
 SDL support allows for displaying the console's screen and enabling audio output. For example, *without* SDL support you'll still be able to train your agents, but you won't be able to visualize the resulting policy. It might be preferable to disable SDL support when compiled on a cluster but enable SDL locally. Note: SDL support defaults to **OFF**.
 

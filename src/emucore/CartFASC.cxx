@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -35,7 +35,7 @@ CartridgeFASC::CartridgeFASC(const uint8_t* image)
     myImage[addr] = image[addr];
   }
 }
- 
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeFASC::~CartridgeFASC()
 {
@@ -86,7 +86,7 @@ void CartridgeFASC::install(System& system)
     access.directPokeBase = &myRAM[j & 0x00FF];
     mySystem->setPageAccess(j >> shift, access);
   }
- 
+
   // Set the page accessing method for the RAM reading pages
   for(uint32_t k = 0x1100; k < 0x1200; k += (1 << shift))
   {
@@ -271,7 +271,7 @@ bool CartridgeFASC::patch(uint16_t address, uint8_t value)
   address = address & 0x0FFF;
   myImage[myCurrentBank * 4096 + address] = value;
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeFASC::getImage(int& size)

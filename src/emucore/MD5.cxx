@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -10,7 +10,7 @@
 //
 // Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
 //
-// This file is derived from the RSA Data Security, Inc. MD5 Message-Digest 
+// This file is derived from the RSA Data Security, Inc. MD5 Message-Digest
 // Algorithm.  See the header below for copyright information.
 //
 // See the file "license" for information on usage and redistribution of
@@ -22,24 +22,24 @@
 #include "emucore/MD5.hxx"
 
 /*
- Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All 
+ Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
  rights reserved.
 
  License to copy and use this software is granted provided that it
  is identified as the "RSA Data Security, Inc. MD5 Message-Digest
  Algorithm" in all material mentioning or referencing this software
  or this function.
- 
+
  License is also granted to make and use derivative works provided
  that such works are identified as "derived from the RSA Data
  Security, Inc. MD5 Message-Digest Algorithm" in all material
  mentioning or referencing the derived work.
- 
+
  RSA Data Security, Inc. makes no representations concerning either
  the merchantability of this software or the suitability of this
  software for any particular purpose. It is provided "as is"
  without express or implied warranty of any kind.
- 
+
  These notices must be retained in any copies of any part of this
  documentation and/or software.
 */
@@ -53,7 +53,7 @@ typedef uint16_t UINT2;
 typedef uint32_t UINT4;
 
 // MD5 context.
-typedef struct 
+typedef struct
 {
   UINT4 state[4];                                   /* state (ABCD) */
   UINT4 count[2];        /* number of bits, modulo 2^64 (lsb first) */
@@ -139,7 +139,7 @@ static void MD5Init(MD5_CTX* context)
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block, and updating the
 // context.
-static void MD5Update(MD5_CTX* context, const unsigned char* input, 
+static void MD5Update(MD5_CTX* context, const unsigned char* input,
     unsigned int inputLen)
 {
   unsigned int i, index, partLen;

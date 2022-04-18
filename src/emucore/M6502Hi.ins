@@ -117,8 +117,8 @@
 // $Id: M6502Hi.ins,v 1.2 2005/06/16 01:11:28 stephena Exp $
 //============================================================================
 
-/** 
-  Code and cases to emulate each of the 6502 instruction 
+/**
+  Code and cases to emulate each of the 6502 instruction
 
   @author  Bradford W. Mott
   @version $Id: M6502Hi.ins,v 1.2 2005/06/16 01:11:28 stephena Exp $
@@ -339,7 +339,7 @@ case 0x75:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   uint8_t oldA = A;
@@ -603,7 +603,7 @@ case 0x35:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   A &= operand;
@@ -735,8 +735,8 @@ case 0x6b:
     {
       A = (A & 0xf0) | ((A + 0x06) & 0x0f);
     }
-    
-    if(((value & 0xf0) + (value & 0x10)) > 0x50) 
+
+    if(((value & 0xf0) + (value & 0x10)) > 0x50)
     {
       A = (A + 0x60) & 0xff;
       C = 1;
@@ -1094,7 +1094,7 @@ case 0xd5:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   uint16_t value = (uint16_t)A - (uint16_t)operand;
@@ -1532,7 +1532,7 @@ case 0x55:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   A ^= operand;
@@ -1735,7 +1735,7 @@ case 0xef:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1780,7 +1780,7 @@ case 0xff:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1825,7 +1825,7 @@ case 0xfb:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1867,7 +1867,7 @@ case 0xe7:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1911,7 +1911,7 @@ case 0xf7:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -1957,7 +1957,7 @@ case 0xe3:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -2003,7 +2003,7 @@ case 0xf3:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -2058,7 +2058,7 @@ case 0x20:
   poke(0x0100 + SP--, PC >> 8);
   poke(0x0100 + SP--, PC & 0xff);
 
-  PC = low | ((uint16_t)peek(PC++) << 8); 
+  PC = low | ((uint16_t)peek(PC++) << 8);
 }
 break;
 
@@ -2126,7 +2126,7 @@ case 0xb7:
   uint8_t address = peek(PC++);
   peek(address);
   address += Y;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   A = operand;
@@ -2198,7 +2198,7 @@ case 0xb5:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   A = operand;
@@ -2310,7 +2310,7 @@ case 0xb6:
   uint8_t address = peek(PC++);
   peek(address);
   address += Y;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   X = operand;
@@ -2375,7 +2375,7 @@ case 0xb4:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   Y = operand;
@@ -2569,7 +2569,7 @@ case 0xf4:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
 }
@@ -2630,7 +2630,7 @@ case 0x15:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   A |= operand;
@@ -3495,7 +3495,7 @@ case 0xeb:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3532,7 +3532,7 @@ case 0xe5:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3553,7 +3553,7 @@ case 0xf5:
   uint8_t address = peek(PC++);
   peek(address);
   address += X;
-  operand = peek(address); 
+  operand = peek(address);
 }
 {
   uint8_t oldA = A;
@@ -3572,7 +3572,7 @@ case 0xf5:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3611,7 +3611,7 @@ case 0xed:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3652,7 +3652,7 @@ case 0xfd:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3693,7 +3693,7 @@ case 0xf9:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3735,7 +3735,7 @@ case 0xe1:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3777,7 +3777,7 @@ case 0xf1:
   }
   else
   {
-    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand] 
+    int16_t difference = ourBCDTable[0][A] - ourBCDTable[0][operand]
         - (C ? 0 : 1);
 
     if(difference < 0)
@@ -3849,7 +3849,7 @@ case 0x9f:
 {
   // NOTE: There are mixed reports on the actual operation
   // of this instruction!
-  poke(operandAddress, A & X & (((operandAddress >> 8) & 0xff) + 1)); 
+  poke(operandAddress, A & X & (((operandAddress >> 8) & 0xff) + 1));
 }
 break;
 
@@ -3864,7 +3864,7 @@ case 0x93:
 {
   // NOTE: There are mixed reports on the actual operation
   // of this instruction!
-  poke(operandAddress, A & X & (((operandAddress >> 8) & 0xff) + 1)); 
+  poke(operandAddress, A & X & (((operandAddress >> 8) & 0xff) + 1));
 }
 break;
 
@@ -3880,7 +3880,7 @@ case 0x9b:
   // NOTE: There are mixed reports on the actual operation
   // of this instruction!
   SP = A & X;
-  poke(operandAddress, A & X & (((operandAddress >> 8) & 0xff) + 1)); 
+  poke(operandAddress, A & X & (((operandAddress >> 8) & 0xff) + 1));
 }
 break;
 
@@ -3895,7 +3895,7 @@ case 0x9e:
 {
   // NOTE: There are mixed reports on the actual operation
   // of this instruction!
-  poke(operandAddress, X & (((operandAddress >> 8) & 0xff) + 1)); 
+  poke(operandAddress, X & (((operandAddress >> 8) & 0xff) + 1));
 }
 break;
 
@@ -3910,7 +3910,7 @@ case 0x9c:
 {
   // NOTE: There are mixed reports on the actual operation
   // of this instruction!
-  poke(operandAddress, Y & (((operandAddress >> 8) & 0xff) + 1)); 
+  poke(operandAddress, Y & (((operandAddress >> 8) & 0xff) + 1));
 }
 break;
 
@@ -4428,5 +4428,3 @@ case 0x98:
   N = A & 0x80;
 }
 break;
-
-

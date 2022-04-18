@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -141,10 +141,10 @@ inline void CartridgeDPC::clockRandomNumberGenerator()
 
   // Using bits 7, 5, 4, & 3 of the shift register compute the input
   // bit for the shift register
-  uint8_t bit = f[((myRandomNumber >> 3) & 0x07) | 
+  uint8_t bit = f[((myRandomNumber >> 3) & 0x07) |
       ((myRandomNumber & 0x80) ? 0x08 : 0x00)];
 
-  // Update the shift register 
+  // Update the shift register
   myRandomNumber = (myRandomNumber << 1) | bit;
 }
 
@@ -208,7 +208,7 @@ uint8_t CartridgeDPC::peek(uint16_t address)
   address = address & 0x0FFF;
 
   // Clock the random number generator.  This should be done for every
-  // cartridge access, however, we're only doing it for the DPC and 
+  // cartridge access, however, we're only doing it for the DPC and
   // hot-spot accesses to save time.
   clockRandomNumberGenerator();
 
@@ -280,7 +280,7 @@ uint8_t CartridgeDPC::peek(uint16_t address)
       {
         result = myDisplayImage[2047 - myCounters[index]] & myFlags[index];
         break;
-      } 
+      }
 
       // DFx flag
       case 0x07:
@@ -331,14 +331,14 @@ void CartridgeDPC::poke(uint16_t address, uint8_t value)
   address = address & 0x0FFF;
 
   // Clock the random number generator.  This should be done for every
-  // cartridge access, however, we're only doing it for the DPC and 
+  // cartridge access, however, we're only doing it for the DPC and
   // hot-spot accesses to save time.
   clockRandomNumberGenerator();
 
   if((address >= 0x0040) && (address < 0x0080))
   {
     // Get the index of the data fetcher that's being accessed
-    uint32_t index = address & 0x07;    
+    uint32_t index = address & 0x07;
     uint32_t function = (address >> 3) & 0x07;
 
     switch(function)
@@ -407,7 +407,7 @@ void CartridgeDPC::poke(uint16_t address, uint8_t value)
       {
         break;
       }
-    } 
+    }
   }
   else
   {
@@ -555,7 +555,7 @@ bool CartridgeDPC::load(Deserializer& in)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeDPC::bank(uint16_t bank)
-{ 
+{
   if(bankLocked) return;
 
   // Remember what bank we're in
@@ -596,7 +596,7 @@ bool CartridgeDPC::patch(uint16_t address, uint8_t value)
   address = address & 0x0FFF;
   myProgramImage[myCurrentBank * 4096 + address] = value;
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeDPC::getImage(int& size)

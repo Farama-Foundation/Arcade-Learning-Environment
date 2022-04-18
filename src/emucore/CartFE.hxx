@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -39,14 +39,14 @@ namespace stella {
 
   Kevin Horton describes FE as follows:
 
-    Used only on two carts (Robot Tank and Decathlon).  These 
-    carts are very weird.  It does not use accesses to the stack 
-    like was previously thought.  Instead, if you watch the called 
-    addresses very carefully, you can see that they are either Dxxx 
-    or Fxxx.  This determines the bank to use.  Just monitor A13 of 
-    the processor and use it to determine your bank! :-)  Of course 
-    the 6507 in the 2600 does not have an A13, so the cart must have 
-    an extra bit in the ROM matrix to tell when to switch banks.  
+    Used only on two carts (Robot Tank and Decathlon).  These
+    carts are very weird.  It does not use accesses to the stack
+    like was previously thought.  Instead, if you watch the called
+    addresses very carefully, you can see that they are either Dxxx
+    or Fxxx.  This determines the bank to use.  Just monitor A13 of
+    the processor and use it to determine your bank! :-)  Of course
+    the 6507 in the 2600 does not have an A13, so the cart must have
+    an extra bit in the ROM matrix to tell when to switch banks.
     There is *no* way to determine which bank you want to be in from
     monitoring the bus.
 
@@ -62,7 +62,7 @@ class CartridgeFE : public Cartridge
       @param image Pointer to the ROM image
     */
     CartridgeFE(const uint8_t* image);
- 
+
     /**
       Destructor
     */

@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -45,7 +45,7 @@ M6532::M6532(const Console& console)
   // Initialize other data members
   reset();
 }
- 
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 M6532::~M6532()
 {
@@ -56,7 +56,7 @@ const char* M6532::name() const
 {
   return "M6532";
 }
- 
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void M6532::reset()
 {
@@ -91,7 +91,7 @@ void M6532::install(System& system)
 
   // Make sure the system we're being installed in has a page size that'll work
   assert((0x1080 & mask) == 0);
-  
+
   // All accesses are to this device
   System::PageAccess access;
   access.device = this;
@@ -109,7 +109,7 @@ void M6532::install(System& system)
       }
       else
       {
-        access.directPeekBase = 0; 
+        access.directPeekBase = 0;
         access.directPokeBase = 0;
         mySystem->setPageAccess(address >> shift, access);
       }
@@ -147,7 +147,7 @@ uint8_t M6532::peek(uint16_t addr)
       return value;
     }
 
-    case 0x01:    // Port A Data Direction Register 
+    case 0x01:    // Port A Data Direction Register
     {
       return myDDRA;
     }
@@ -172,7 +172,7 @@ uint8_t M6532::peek(uint16_t addr)
       // See if the timer has expired yet?
       if(timer >= 0)
       {
-        return (uint8_t)timer; 
+        return (uint8_t)timer;
       }
       else
       {
@@ -187,7 +187,7 @@ uint8_t M6532::peek(uint16_t addr)
 
         if(myTimerReadAfterInterrupt)
         {
-          int offset = myCyclesWhenInterruptReset - 
+          int offset = myCyclesWhenInterruptReset -
               (myCyclesWhenTimerSet + (myTimer << myIntervalShift));
 
           timer = (int)myTimer - (int)(delta >> myIntervalShift) - offset;
@@ -211,7 +211,7 @@ uint8_t M6532::peek(uint16_t addr)
     }
 
     default:
-    {    
+    {
 #ifdef DEBUG_ACCESSES
       ale::Logger::Error << "BAD M6532 Peek: " << hex << addr << std::endl;
 #endif
@@ -231,13 +231,13 @@ void M6532::poke(uint16_t addr, uint8_t value)
     myConsole.controller(Controller::Left).write(Controller::Two, a & 0x20);
     myConsole.controller(Controller::Left).write(Controller::Three, a & 0x40);
     myConsole.controller(Controller::Left).write(Controller::Four, a & 0x80);
-    
+
     myConsole.controller(Controller::Right).write(Controller::One, a & 0x01);
     myConsole.controller(Controller::Right).write(Controller::Two, a & 0x02);
     myConsole.controller(Controller::Right).write(Controller::Three, a & 0x04);
     myConsole.controller(Controller::Right).write(Controller::Four, a & 0x08);
   }
-  else if((addr & 0x07) == 0x01)    // Port A Data Direction Register 
+  else if((addr & 0x07) == 0x01)    // Port A Data Direction Register
   {
     myDDRA = value;
   }
@@ -250,7 +250,7 @@ void M6532::poke(uint16_t addr, uint8_t value)
 //        myDDRB = value;
     return;
   }
-  else if((addr & 0x17) == 0x14)    // Write timer divide by 1 
+  else if((addr & 0x17) == 0x14)    // Write timer divide by 1
   {
     myTimer = value;
     myIntervalShift = 0;
@@ -388,4 +388,3 @@ M6532& M6532::operator = (const M6532&)
 
 }  // namespace stella
 }  // namespace ale
- 

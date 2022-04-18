@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -56,7 +56,7 @@ class Console
 
       @param osystem  The OSystem object to use
       @param cart     The cartridge to use with this console
-      @param props    The properties for the cartridge  
+      @param props    The properties for the cartridge
     */
     Console(OSystem* osystem, Cartridge* cart, const Properties& props);
 
@@ -66,7 +66,7 @@ class Console
       @param console The object to copy
     */
     Console(const Console& console);
- 
+
     /**
       Destructor
     */
@@ -113,8 +113,8 @@ class Console
 
     /**
       Returns the OSystem for this emulator.
-      
-      @return The OSystem. 
+
+      @return The OSystem.
     */
     OSystem& osystem() const { return *myOSystem; }
 
@@ -161,7 +161,7 @@ class Console
     // Pointer to the event object to use
     Event* myEvent;
 
-    // Pointer to the media source object 
+    // Pointer to the media source object
     MediaSource* myMediaSource;
 
     // Properties for the game
@@ -169,8 +169,8 @@ class Console
 
     // Pointer to the switches on the front of the console
     Switches* mySwitches;
- 
-    // Pointer to the 6502 based system being emulated 
+
+    // Pointer to the 6502 based system being emulated
     System* mySystem;
 
     // The currently defined display format (NTSC/PAL/PAL60)

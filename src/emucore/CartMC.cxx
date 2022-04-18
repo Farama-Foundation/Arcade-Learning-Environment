@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -84,8 +84,8 @@ void CartridgeMC::install(System& system)
   assert(((0x1000 & mask) == 0) && ((0x1400 & mask) == 0) &&
       ((0x1800 & mask) == 0) && ((0x1C00 & mask) == 0));
 
-  // Set the page accessing methods for the hot spots in the TIA.  For 
-  // correct emulation I would need to chain any accesses below 0x40 to 
+  // Set the page accessing methods for the hot spots in the TIA.  For
+  // correct emulation I would need to chain any accesses below 0x40 to
   // the TIA but for now I'll just forget about them.
   //
   // TODO: These TIA accesses may need to be chained, however, at this
@@ -167,7 +167,7 @@ uint8_t CartridgeMC::peek(uint16_t address)
         return 0;
       }
     }
-  }  
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -212,7 +212,7 @@ void CartridgeMC::poke(uint16_t address, uint8_t value)
       // Handle the write to RAM
       myRAM[(uint32_t)(block & 0x3F) * 512 + (address & 0x01FF)] = value;
     }
-  }  
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -311,7 +311,7 @@ bool CartridgeMC::patch(uint16_t address, uint8_t value)
 {
   // TODO: implement
   return false;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeMC::getImage(int& size)

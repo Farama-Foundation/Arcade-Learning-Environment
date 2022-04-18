@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -35,7 +35,7 @@ namespace ale {
 namespace stella {
 
 /**
-  This is the standard Atari 4K cartridge.  These cartridges are 
+  This is the standard Atari 4K cartridge.  These cartridges are
   not bankswitched.
 
   @author  Bradford W. Mott
@@ -50,7 +50,7 @@ class Cartridge4K : public Cartridge
       @param image Pointer to the ROM image
     */
     Cartridge4K(const uint8_t* image);
- 
+
     /**
       Destructor
     */

@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -173,7 +173,7 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
           case 0x01:    // 4 bit poly
           {
             // Clock P4 as a standard 4-bit LSFR taps at bits 3 & 2
-            myP4[c] = (myP4[c] & 0x0f) ? 
+            myP4[c] = (myP4[c] & 0x0f) ?
                 ((myP4[c] << 1) | (((myP4[c] & 0x08) ? 1 : 0) ^
                 ((myP4[c] & 0x04) ? 1 : 0))) : 1;
             break;
@@ -190,7 +190,7 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
             if((myP5[c] & 0x0f) == 0x08)
             {
               // Clock P4 as a standard 4-bit LSFR taps at bits 3 & 2
-              myP4[c] = (myP4[c] & 0x0f) ? 
+              myP4[c] = (myP4[c] & 0x0f) ?
                   ((myP4[c] << 1) | (((myP4[c] & 0x08) ? 1 : 0) ^
                   ((myP4[c] & 0x04) ? 1 : 0))) : 1;
             }
@@ -208,7 +208,7 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
             if(myP5[c] & 0x10)
             {
               // Clock P4 as a standard 4-bit LSFR taps at bits 3 & 2
-              myP4[c] = (myP4[c] & 0x0f) ? 
+              myP4[c] = (myP4[c] & 0x0f) ?
                   ((myP4[c] << 1) | (((myP4[c] & 0x08) ? 1 : 0) ^
                   ((myP4[c] & 0x04) ? 1 : 0))) : 1;
             }
@@ -217,14 +217,14 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
 
           case 0x04:    // div 2
           {
-            // Clock P4 toggling the lower bit (divide by 2) 
+            // Clock P4 toggling the lower bit (divide by 2)
             myP4[c] = (myP4[c] << 1) | ((myP4[c] & 0x01) ? 0 : 1);
             break;
           }
 
           case 0x05:    // div 2
           {
-            // Clock P4 toggling the lower bit (divide by 2) 
+            // Clock P4 toggling the lower bit (divide by 2)
             myP4[c] = (myP4[c] << 1) | ((myP4[c] & 0x01) ? 0 : 1);
             break;
           }
@@ -239,7 +239,7 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
             // This does the divide-by 31 with length 13:18
             if((myP5[c] & 0x0f) == 0x08)
             {
-              // Clock P4 toggling the lower bit (divide by 2) 
+              // Clock P4 toggling the lower bit (divide by 2)
               myP4[c] = (myP4[c] << 1) | ((myP4[c] & 0x01) ? 0 : 1);
             }
             break;
@@ -255,7 +255,7 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
             // P5 clocks the 4 bit register
             if(myP5[c] & 0x10)
             {
-              // Clock P4 toggling the lower bit (divide by 2) 
+              // Clock P4 toggling the lower bit (divide by 2)
               myP4[c] = (myP4[c] << 1) | ((myP4[c] & 0x01) ? 0 : 1);
             }
             break;
@@ -360,13 +360,13 @@ void TIASound::process(uint8_t* buffer, uint32_t samples)
     }
 
     myOutputCounter += myOutputFrequency;
-  
+
     if(myChannels == 1)
     {
       // Handle mono sample generation
       while((samples > 0) && (myOutputCounter >= myTIAFrequency))
       {
-        *(buffer++) = (((myP4[0] & 8) ? v0 : 0) + 
+        *(buffer++) = (((myP4[0] & 8) ? v0 : 0) +
             ((myP4[1] & 8) ? v1 : 0)) + myVolumeClip;
         myOutputCounter -= myTIAFrequency;
         samples--;

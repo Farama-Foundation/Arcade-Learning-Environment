@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -141,7 +141,7 @@ void CartridgeE0::poke(uint16_t address, uint8_t)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeE0::segmentZero(uint16_t slice)
-{ 
+{
   // Remember the new slice
   myCurrentSlice[0] = slice;
   uint16_t offset = slice << 10;
@@ -161,7 +161,7 @@ void CartridgeE0::segmentZero(uint16_t slice)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeE0::segmentOne(uint16_t slice)
-{ 
+{
   // Remember the new slice
   myCurrentSlice[1] = slice;
   uint16_t offset = slice << 10;
@@ -181,7 +181,7 @@ void CartridgeE0::segmentOne(uint16_t slice)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeE0::segmentTwo(uint16_t slice)
-{ 
+{
   // Remember the new slice
   myCurrentSlice[2] = slice;
   uint16_t offset = slice << 10;
@@ -280,7 +280,7 @@ bool CartridgeE0::patch(uint16_t address, uint8_t value)
   address = address & 0x0FFF;
   myImage[(myCurrentSlice[address >> 10] << 10) + (address & 0x03FF)] = value;
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeE0::getImage(int& size)

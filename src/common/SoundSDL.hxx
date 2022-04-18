@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -54,7 +54,7 @@ class SoundSDL : public stella::Sound
       using the object.
     */
     SoundSDL(stella::Settings* settings);
- 
+
     /**
       Destructor
     */
@@ -151,7 +151,7 @@ class SoundSDL : public stella::Sound
     /**
       * Tells the sound engine to record one frame's worth of sound.
       */
-    void recordNextFrame(); 
+    void recordNextFrame();
 
   public:
     /**
@@ -293,7 +293,7 @@ class SoundSDL : public stella::Sound
     static void callback(void* udata, uint8_t* stream, int len);
 
     // Keeps track of how many samples we still need to record
-    int myNumRecordSamplesNeeded; 
+    int myNumRecordSamplesNeeded;
 
     std::unique_ptr<ale::sound::SoundExporter> mySoundExporter;
 };

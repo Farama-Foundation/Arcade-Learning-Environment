@@ -153,7 +153,10 @@ def test_get_episode_frame_number(tetris):
 def test_get_screen_dims(tetris):
     dims = tetris.getScreenDims()
     assert isinstance(dims, tuple)
-    assert dims == (210, 160,)
+    assert dims == (
+        210,
+        160,
+    )
 
 
 def test_get_screen_rgb(tetris):
@@ -297,16 +300,16 @@ def test_clone_restore_state_include_rng(ale, test_rom_path):
                 ale.reset()
         return states
 
-    _get_states(seq[:num_actions//2])
+    _get_states(seq[: num_actions // 2])
     without_rng = ale.cloneState()
     with_rng = ale.cloneState(include_rng=True)
-    second_half = _get_states(seq[num_actions//2:])
+    second_half = _get_states(seq[num_actions // 2 :])
 
     ale.restoreState(without_rng)
-    second_half_without_rng = _get_states(seq[num_actions//2:])
+    second_half_without_rng = _get_states(seq[num_actions // 2 :])
 
     ale.restoreState(with_rng)
-    second_half_with_rng = _get_states(seq[num_actions//2:])
+    second_half_with_rng = _get_states(seq[num_actions // 2 :])
 
     def _all_equal(first, second):
         all_equal = True
@@ -371,8 +374,8 @@ def test_state_pickle(tetris):
     assert tetris.cloneState() == state
     os.remove(file)
 
-@pytest.mark.skipif(ale_py.SDL_SUPPORT is False,
-                    reason="SDL is disabled")
+
+@pytest.mark.skipif(ale_py.SDL_SUPPORT is False, reason="SDL is disabled")
 def test_display_screen(ale, test_rom_path):
     os.environ["SDL_VIDEODRIVER"] = "dummy"
     ale.setBool("display_screen", True)
@@ -380,8 +383,9 @@ def test_display_screen(ale, test_rom_path):
     ale.loadROM(test_rom_path)
     for _ in range(10):
         ale.act(0)
-    del os.environ['SDL_VIDEODRIVER']
+    del os.environ["SDL_VIDEODRIVER"]
     assert True
+
 
 def test_set_logger(ale):
     ale.setLoggerMode(ale_py.LoggerMode.Info)
