@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -34,7 +34,7 @@
 #include "emucore/Paddles.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/PropsSet.hxx"
-#include "emucore/Settings.hxx" 
+#include "emucore/Settings.hxx"
 #include "emucore/Sound.hxx"
 #include "emucore/Switches.hxx"
 #include "emucore/System.hxx"
@@ -57,7 +57,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySwitches = 0;
   mySystem = 0;
   myEvent = 0;
-  
+
   myEvent = myOSystem->event();
 
   // Setup the controllers based on properties
@@ -87,7 +87,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   {
     myControllers[leftPort] = new Joystick(Controller::Left, *myEvent);
   }
- 
+
   // Construct right controller
   if(right == "PADDLES")
   {

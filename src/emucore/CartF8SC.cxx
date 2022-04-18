@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -86,7 +86,7 @@ void CartridgeF8SC::install(System& system)
     access.directPokeBase = &myRAM[j & 0x007F];
     mySystem->setPageAccess(j >> shift, access);
   }
- 
+
   // Set the page accessing method for the RAM reading pages
   for(uint32_t k = 0x1080; k < 0x1100; k += (1 << shift))
   {
@@ -113,12 +113,12 @@ uint8_t CartridgeF8SC::peek(uint16_t address)
         // Set the current bank to the lower 4k bank
         bank(0);
         break;
-  
+
       case 0x0FF9:
         // Set the current bank to the upper 4k bank
         bank(1);
         break;
-  
+
       default:
         break;
     }
@@ -143,12 +143,12 @@ void CartridgeF8SC::poke(uint16_t address, uint8_t)
         // Set the current bank to the lower 4k bank
         bank(0);
         break;
-  
+
       case 0x0FF9:
         // Set the current bank to the upper 4k bank
         bank(1);
         break;
-  
+
       default:
         break;
     }
@@ -224,7 +224,7 @@ bool CartridgeF8SC::load(Deserializer& in)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CartridgeF8SC::bank(uint16_t bank)
-{ 
+{
   if(bankLocked) return;
 
   // Remember what bank we're in
@@ -265,7 +265,7 @@ bool CartridgeF8SC::patch(uint16_t address, uint8_t value)
   address = address & 0x0FFF;
   myImage[myCurrentBank * 4096 + address] = value;
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeF8SC::getImage(int& size)

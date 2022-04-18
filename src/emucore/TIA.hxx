@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -39,12 +39,12 @@ namespace ale {
 namespace stella {
 
 /**
-  This class is a device that emulates the Television Interface Adapator 
-  found in the Atari 2600 and 7800 consoles.  The Television Interface 
-  Adapator is an integrated circuit designed to interface between an 
-  eight bit microprocessor and a television video modulator. It converts 
-  eight bit parallel data into serial outputs for the color, luminosity, 
-  and composite sync required by a video modulator.  
+  This class is a device that emulates the Television Interface Adapator
+  found in the Atari 2600 and 7800 consoles.  The Television Interface
+  Adapator is an integrated circuit designed to interface between an
+  eight bit microprocessor and a television video modulator. It converts
+  eight bit parallel data into serial outputs for the color, luminosity,
+  and composite sync required by a video modulator.
 
   This class outputs the serial data into a frame buffer which can then
   be displayed on screen.
@@ -64,7 +64,7 @@ class TIA : public Device , public MediaSource
       @param settings The settings object for this TIA device
     */
     TIA(const Console& console, Settings& settings);
- 
+
     /**
       Destructor
     */
@@ -246,7 +246,7 @@ class TIA : public Device , public MediaSource
   private:
     // Update the current frame buffer up to one scanline
     void updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos);
-   
+
     // Update the current frame buffer to the specified color clock
     void updateFrame(int clock);
 
@@ -301,7 +301,7 @@ class TIA : public Device , public MediaSource
     // Indicates where the scanline should start being displayed
     uint32_t myFrameXStart;
 
-    // Indicates the width of the scanline 
+    // Indicates the width of the scanline
     uint32_t myFrameWidth;
 
     // Indicated what scanline the frame should start being drawn at
@@ -337,8 +337,8 @@ class TIA : public Device , public MediaSource
     // Indicates color clocks when the frame was last updated
     int myClockAtLastUpdate;
 
-    // Indicates how many color clocks remain until the end of 
-    // current scanline.  This value is valid during the 
+    // Indicates how many color clocks remain until the end of
+    // current scanline.  This value is valid during the
     // displayed portion of the frame.
     int myClocksToEndOfScanLine;
 
@@ -353,7 +353,7 @@ class TIA : public Device , public MediaSource
 
   private:
     // Color clock when VSYNC ending causes a new frame to be started
-    int myVSYNCFinishClock; 
+    int myVSYNCFinishClock;
 
   private:
     enum
@@ -396,7 +396,7 @@ class TIA : public Device , public MediaSource
 
     uint8_t myGRP0;         // Player 0 graphics register
     uint8_t myGRP1;         // Player 1 graphics register
-    
+
     uint8_t myDGRP0;        // Player 0 delayed graphics register
     uint8_t myDGRP1;        // Player 1 delayed graphics register
 
@@ -421,7 +421,7 @@ class TIA : public Device , public MediaSource
 
     uint16_t myCollision;    // Collision register
 
-    // Note that these position registers contain the color clock 
+    // Note that these position registers contain the color clock
     // on which the object's serial output should begin (0 to 159)
     int16_t myPOSP0;         // Player 0 position register
     int16_t myPOSP1;         // Player 1 position register
@@ -488,7 +488,7 @@ class TIA : public Device , public MediaSource
     // TIA M0 "bug" used for stars in Cosmic Ark flag
     bool myM0CosmicArkMotionEnabled;
 
-    // Counter used for TIA M0 "bug" 
+    // Counter used for TIA M0 "bug"
     uint32_t myM0CosmicArkCounter;
 
     // Answers whether specified bits (from TIABit) are enabled or disabled
@@ -513,7 +513,7 @@ class TIA : public Device , public MediaSource
     // Missle mask table (entries are true or false)
     static uint8_t ourMissleMaskTable[4][8][4][320];
 
-    // Used to convert value written in a motion register into 
+    // Used to convert value written in a motion register into
     // its internal representation
     static const int ourCompleteMotionTable[76][16];
 
@@ -542,8 +542,8 @@ class TIA : public Device , public MediaSource
   /** ALE-specific */
   private:
     bool fastUpdate;
-   
-    // Updates the frame's scanline but not the frame buffer 
+
+    // Updates the frame's scanline but not the frame buffer
     void updateFrameScanlineFast(uint32_t clocksToUpdate, uint32_t hpos);
 
 };

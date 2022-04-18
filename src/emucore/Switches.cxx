@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -23,7 +23,7 @@
 namespace ale {
 namespace stella {
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Switches::Switches(const Event& event, const Properties& properties)
     : myEvent(event),
       mySwitches(0xFF)
@@ -56,12 +56,12 @@ Switches::Switches(const Event& event, const Properties& properties)
   }
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Switches::~Switches()
 {
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t Switches::read()
 {
   if(myEvent.get(Event::ConsoleColor) != 0)
@@ -77,7 +77,7 @@ uint8_t Switches::read()
   {
     mySwitches |= 0x80;
   }
-  else if(myEvent.get(Event::ConsoleRightDifficultyB) != 0) 
+  else if(myEvent.get(Event::ConsoleRightDifficultyB) != 0)
   {
     mySwitches &= ~0x80;
   }
@@ -95,7 +95,7 @@ uint8_t Switches::read()
   {
     mySwitches &= ~0x02;
   }
-  else 
+  else
   {
     mySwitches |= 0x02;
   }
@@ -104,7 +104,7 @@ uint8_t Switches::read()
   {
     mySwitches &= ~0x01;
   }
-  else 
+  else
   {
     mySwitches |= 0x01;
   }
@@ -114,4 +114,3 @@ uint8_t Switches::read()
 
 }  // namespace stella
 }  // namespace ale
-

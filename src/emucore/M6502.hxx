@@ -41,7 +41,7 @@ namespace stella {
   has a 64K addressing space.
 
   @author  Bradford W. Mott
-  @version $Id: M6502.hxx,v 1.20 2007/01/01 18:04:51 stephena Exp $ 
+  @version $Id: M6502.hxx,v 1.20 2007/01/01 18:04:51 stephena Exp $
 */
 class M6502
 {
@@ -49,7 +49,7 @@ class M6502
     /**
       Enumeration of the 6502 addressing modes
     */
-    enum AddressingMode 
+    enum AddressingMode
     {
       Absolute, AbsoluteX, AbsoluteY, Immediate, Implied,
       Indirect, IndirectX, IndirectY, Invalid, Relative,
@@ -58,8 +58,8 @@ class M6502
 
   public:
     /**
-      Create a new 6502 microprocessor with the specified cycle 
-      multiplier.  The cycle multiplier is the number of system cycles 
+      Create a new 6502 microprocessor with the specified cycle
+      multiplier.  The cycle multiplier is the number of system cycles
       per processor cycle.
 
       @param systemCyclesPerProcessorCycle The cycle multiplier
@@ -81,7 +81,7 @@ class M6502
     virtual void install(System& system);
 
     /**
-      Reset the processor to its power-on state.  This method should not 
+      Reset the processor to its power-on state.  This method should not
       be invoked until the entire 6502 system is constructed and installed
       since it involves reading the reset vector from memory.
     */
@@ -141,8 +141,8 @@ class M6502
     virtual bool execute(uint32_t number) = 0;
 
     /**
-      Tell the processor to stop executing instructions.  Invoking this 
-      method while the processor is executing instructions will stop 
+      Tell the processor to stop executing instructions.  Invoking this
+      method while the processor is executing instructions will stop
       execution as soon as possible.
     */
     void stop();
@@ -157,7 +157,7 @@ class M6502
     {
       return myExecutionStatus & FatalErrorBit;
     }
-  
+
     /**
       Get the 16-bit value of the Program Counter register.
 
@@ -169,7 +169,7 @@ class M6502
       Answer true iff the last memory access was a read.
 
       @return true iff last access was a read.
-    */ 
+    */
     bool lastAccessWasRead() const { return myLastAccessWasRead; }
 
   public:
@@ -212,9 +212,9 @@ class M6502
     bool notZ;  // Z flag complement for processor status register
     bool C;     // C flag for processor status register
 
-    /** 
-      Bit fields used to indicate that certain conditions need to be 
-      handled such as stopping execution, fatal errors, maskable interrupts 
+    /**
+      Bit fields used to indicate that certain conditions need to be
+      handled such as stopping execution, fatal errors, maskable interrupts
       and non-maskable interrupts
     */
     uint8_t myExecutionStatus;
@@ -222,22 +222,22 @@ class M6502
     /**
       Constants used for setting bits in myExecutionStatus
     */
-    enum 
+    enum
     {
       StopExecutionBit = 0x01,
       FatalErrorBit = 0x02,
       MaskableInterruptBit = 0x04,
       NonmaskableInterruptBit = 0x08
     };
-  
+
     /// Pointer to the system the processor is installed in or the null pointer
     System* mySystem;
 
-    /// Indicates the number of system cycles per processor cycle 
+    /// Indicates the number of system cycles per processor cycle
     const uint32_t mySystemCyclesPerProcessorCycle;
 
     /// Table of system cycles for each instruction
-    uint32_t myInstructionSystemCycleTable[256]; 
+    uint32_t myInstructionSystemCycleTable[256];
 
     /// Indicates if the last memory access was a read or not
     bool myLastAccessWasRead;
@@ -250,7 +250,7 @@ class M6502
     static uint8_t ourBCDTable[2][256];
 
     /**
-      Table of instruction processor cycle times.  In some cases additional 
+      Table of instruction processor cycle times.  In some cases additional
       cycles will be added during the execution of an instruction.
     */
     static uint32_t ourInstructionProcessorCycleTable[256];

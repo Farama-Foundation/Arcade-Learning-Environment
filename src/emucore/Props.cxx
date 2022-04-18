@@ -118,7 +118,7 @@ void Properties::load(std::istream& in)
       continue;
 
     // End of this record
-    if(line == "\"\"") 
+    if(line == "\"\"")
       break;
 
     one = line.find("\"", 0);
@@ -135,7 +135,7 @@ void Properties::load(std::istream& in)
     key = line.substr(one + 1, two - one - 1);
     value = line.substr(three + 1, four - three - 1);
 
-    // Set the property 
+    // Set the property
     PropertyType type = getPropertyType(key);
     set(type, value);
   }

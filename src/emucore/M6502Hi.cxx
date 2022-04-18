@@ -123,7 +123,7 @@ bool M6502High::execute(uint32_t number)
     }
 
     // See if we need to handle an interrupt
-    if((myExecutionStatus & MaskableInterruptBit) || 
+    if((myExecutionStatus & MaskableInterruptBit) ||
         (myExecutionStatus & NonmaskableInterruptBit))
     {
       // Yes, so handle the interrupt

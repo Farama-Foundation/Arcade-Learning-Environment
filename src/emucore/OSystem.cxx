@@ -48,7 +48,7 @@ namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OSystem::OSystem()
-  : 
+  :
     myEvent(NULL),
     mySound(NULL),
     myScreen(NULL),
@@ -73,7 +73,7 @@ OSystem::~OSystem()
   if (myPropSet != NULL)
     delete myPropSet;
   if (myEvent != NULL)
-    delete myEvent; 
+    delete myEvent;
   if (myScreen != NULL) {
       delete myScreen;
   }
@@ -138,7 +138,7 @@ bool OSystem::createConsole(const fs::path& romfile)
   // Do a little error checking; it shouldn't be necessary
   if(myConsole) deleteConsole();
 
-  bool retval = false; 
+  bool retval = false;
 
   // If a blank ROM has been given, we reload the current one (assuming one exists)
   if (romfile.empty()) {
@@ -206,7 +206,7 @@ void OSystem::deleteConsole()
   if(myConsole)
   {
     mySound->close();
-    delete myConsole;  
+    delete myConsole;
     myConsole = NULL;
   }
 
@@ -261,7 +261,7 @@ bool OSystem::queryConsoleInfo(const uint8_t* image, uint32_t size,
   // Get a valid set of properties, including any entered on the commandline
   std::string s;
   myPropSet->getMD5(md5, props);
-  
+
     s = mySettings->getString("type");
     if(s != "") props.set(Cartridge_Type, s);
     s = mySettings->getString("channels");

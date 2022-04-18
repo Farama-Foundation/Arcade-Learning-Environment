@@ -25,7 +25,7 @@
 #include "emucore/CartCV.hxx"
 
 namespace ale {
-namespace stella { 
+namespace stella {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeCV::CartridgeCV(const uint8_t* image, uint32_t size)
@@ -212,7 +212,7 @@ bool CartridgeCV::patch(uint16_t address, uint8_t value)
 {
   myImage[address & 0x07FF] = value;
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* CartridgeCV::getImage(int& size)

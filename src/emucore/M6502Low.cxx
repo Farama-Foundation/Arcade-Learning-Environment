@@ -80,7 +80,7 @@ bool M6502Low::execute(uint32_t number)
 #endif
 
       // Update system cycles
-      mySystem->incrementCycles(myInstructionSystemCycleTable[IR]); 
+      mySystem->incrementCycles(myInstructionSystemCycleTable[IR]);
 
       // Call code to execute the instruction
       switch(IR)
@@ -109,7 +109,7 @@ bool M6502Low::execute(uint32_t number)
     }
 
     // See if we need to handle an interrupt
-    if((myExecutionStatus & MaskableInterruptBit) || 
+    if((myExecutionStatus & MaskableInterruptBit) ||
         (myExecutionStatus & NonmaskableInterruptBit))
     {
       // Yes, so handle the interrupt

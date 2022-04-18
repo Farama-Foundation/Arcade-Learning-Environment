@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -205,7 +205,7 @@ bool Cartridge3E::load(Deserializer& in)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Cartridge3E::bank(uint16_t bank)
-{ 
+{
   if(bankLocked) return;
 
   if(bank < 256)
@@ -221,15 +221,15 @@ void Cartridge3E::bank(uint16_t bank)
       // around to a valid bank number
       myCurrentBank = bank % (mySize / 2048);
     }
-  
+
     uint32_t offset = myCurrentBank * 2048;
     uint16_t shift = mySystem->pageShift();
-  
+
     // Setup the page access methods for the current bank
     System::PageAccess access;
     access.device = this;
     access.directPokeBase = 0;
-  
+
     // Map ROM image into the system
     for(uint32_t address = 0x1000; address < 0x1800; address += (1 << shift))
     {
@@ -246,12 +246,12 @@ void Cartridge3E::bank(uint16_t bank)
     uint32_t offset = bank * 1024;
     uint16_t shift = mySystem->pageShift();
     uint32_t address;
-  
+
     // Setup the page access methods for the current bank
     System::PageAccess access;
     access.device = this;
     access.directPokeBase = 0;
-  
+
     // Map read-port RAM image into the system
     for(address = 0x1000; address < 0x1400; address += (1 << shift))
     {
@@ -298,7 +298,7 @@ bool Cartridge3E::patch(uint16_t address, uint8_t value)
     myImage[(address & 0x07FF) + mySize - 2048] = value;
   }
   return true;
-} 
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uint8_t* Cartridge3E::getImage(int& size)

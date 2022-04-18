@@ -48,7 +48,7 @@ def _register_gym_configs(roms, obs_types, configs, prefix=""):
                     # Register the environment
                     register(
                         id=f"{prefix}{name}{flavour.suffix}-{config.version}",
-                        entry_point='gym.envs.atari:AtariEnv',
+                        entry_point="gym.envs.atari:AtariEnv",
                         kwargs=env_kwargs,
                         **kwargs,
                     )

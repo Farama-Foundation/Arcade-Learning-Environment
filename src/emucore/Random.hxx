@@ -41,7 +41,7 @@ namespace stella {
 class Random
 {
   public:
-    
+
     /**
       Class method which allows you to set the seed that'll be used
       for created new instances of this class
@@ -54,7 +54,7 @@ class Random
       Create a new random number generator
     */
     Random();
-   
+
     ~Random();
 
     /**
@@ -76,14 +76,14 @@ class Random
     */
     bool saveState(Serializer& out);
 
-    /** 
+    /**
       Deserializes the RNG state.
     */
     bool loadState(Deserializer& in);
 
     private:
-    
-    // Actual rng (implementation hidden away from the header to avoid depending on rng libraries). 
+
+    // Actual rng (implementation hidden away from the header to avoid depending on rng libraries).
     class Impl;
     Impl *m_pimpl;
 };
@@ -92,4 +92,3 @@ class Random
 }  // namespace ale
 
 #endif
-

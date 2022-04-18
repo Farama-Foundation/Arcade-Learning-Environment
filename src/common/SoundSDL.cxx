@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -51,7 +51,7 @@ SoundSDL::SoundSDL(Settings* settings)
 {
 
     if (mySettings->getString("record_sound_filename").size() > 0) {
-      
+
         std::string filename = mySettings->getString("record_sound_filename");
         mySoundExporter.reset(new ale::sound::SoundExporter(filename, myNumChannels));
     }
@@ -270,11 +270,11 @@ void SoundSDL::set(uint16_t addr, uint8_t value, int cycle)
 
   // First, calulate how many seconds would have past since the last
   // register write on a real 2600
-  double delta = (((double)(cycle - myLastRegisterSetCycle)) / 
+  double delta = (((double)(cycle - myLastRegisterSetCycle)) /
       (1193191.66666667));
 
   // Now, adjust the time based on the frame rate the user has selected. For
-  // the sound to "scale" correctly, we have to know the games real frame 
+  // the sound to "scale" correctly, we have to know the games real frame
   // rate (e.g., 50 or 60) and the currently emulated frame rate. We use these
   // values to "scale" the time before the register change occurs.
   delta = delta * (myDisplayFrameRate / (double)myDisplayFrameRate);
@@ -300,7 +300,7 @@ void SoundSDL::processFragment(uint8_t* stream, int length)
   length = length / channels;
 
   // If there are excessive items on the queue then we'll remove some
-  if(myRegWriteQueue.duration() > 
+  if(myRegWriteQueue.duration() >
       (myFragmentSizeLogBase2 / myDisplayFrameRate))
   {
     double removed = 0.0;
@@ -354,10 +354,10 @@ void SoundSDL::processFragment(uint8_t* stream, int length)
           // round the count passed to process up if needed.
           double samples = (myHardwareSpec.freq * info.delta);
 //        myTIASound.process(stream + (uint32_t)position, (uint32_t)samples +
-//            (uint32_t)(position + samples) - 
+//            (uint32_t)(position + samples) -
 //            ((uint32_t)position + (uint32_t)samples));
           myTIASound.process(stream + ((uint32_t)position * channels),
-              (uint32_t)samples + (uint32_t)(position + samples) - 
+              (uint32_t)samples + (uint32_t)(position + samples) -
               ((uint32_t)position + (uint32_t)samples));
 
           position += samples;
@@ -385,14 +385,14 @@ void SoundSDL::processFragment(uint8_t* stream, int length)
 
      mySoundExporter->addSamples(stream, length);
      // Consume this many samples
-     myNumRecordSamplesNeeded -= length; 
+     myNumRecordSamplesNeeded -= length;
   }
 }
 
 
 void SoundSDL::recordNextFrame() {
 
-    // Grow the required samples by a frame's worth 
+    // Grow the required samples by a frame's worth
     if (mySoundExporter.get() != NULL)
         myNumRecordSamplesNeeded += ale::sound::SoundExporter::SamplesPerFrame;
 }

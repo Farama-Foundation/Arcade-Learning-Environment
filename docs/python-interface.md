@@ -1,6 +1,6 @@
-# Python Interface 
+# Python Interface
 
-Aside from a few minor differences, the Python interface mirrors the C++ interface. For example, the following implements a random agent: 
+Aside from a few minor differences, the Python interface mirrors the C++ interface. For example, the following implements a random agent:
 
 ```python
 import sys

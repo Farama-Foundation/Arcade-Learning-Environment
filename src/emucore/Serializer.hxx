@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -35,7 +35,7 @@ namespace stella {
 
   @author  Stephen Anthony
   @version $Id: Serializer.hxx,v 1.12 2007/01/01 18:04:49 stephena Exp $
-  
+
   Revised for ALE on Sep 20, 2009
   The new version uses a stringstream (not a file stream)
 */
@@ -58,7 +58,7 @@ class Serializer
       Closes the current output stream.
     */
     void close(void);
-    
+
     bool isOpen(void) {return true;}
 
     /**
@@ -83,7 +83,7 @@ class Serializer
     void putBool(bool b);
 
     // Accessor for myStream
-    // TODO: don't copy the whole streams. 
+    // TODO: don't copy the whole streams.
     std::string get_str(void) const {
         return myStream.str();
     }

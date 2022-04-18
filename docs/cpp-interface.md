@@ -10,7 +10,7 @@ To instantiate the Arcade Learning Environment it is enough to write:
 ale::ALEInterface ale;
 ```
 
-Once the environment is initialized, it is now possible to set its arguments. This is done with the 
+Once the environment is initialized, it is now possible to set its arguments. This is done with the
 functions `setBool()`, `setInt()`, `setFloat()`. For example, to set the environment's seed we write:
 
 ```cpp
@@ -24,7 +24,7 @@ ale.loadROM("asterix.bin");
 ```
 
 There are two different action sets provided by ALE: the "legal" set and the "minimal"
-set. Save for a few rare exceptions, the legal action set consists of all 18 actions for all games, including duplicates and actions with no effect. On the other hand, the minimal action set for a game contains only 
+set. Save for a few rare exceptions, the legal action set consists of all 18 actions for all games, including duplicates and actions with no effect. On the other hand, the minimal action set for a game contains only
 the actions that have some effect on that game. The `getLegalActionSet` and `getMinimalActionSet` methods provide the desired action sets:
 
 ```cpp
@@ -58,11 +58,11 @@ int main(int argc, char** argv) {
 
     float totalReward = 0.0;
     while (!ale.game_over()) {
-        Action a = legal_actions[std::rand() % legal_actions.size()];    
+        Action a = legal_actions[std::rand() % legal_actions.size()];
         float reward = ale.act(a);
         totalReward += reward;
 
-        std::cout << "The episode ended with score: " << totalReward 
+        std::cout << "The episode ended with score: " << totalReward
             << std::endl;
     }
 

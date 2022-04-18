@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -148,7 +148,7 @@ int Settings::getInt(const std::string& key, bool strict) const {
     int idx = -1;
     if((idx = getInternalPos(key)) != -1) {
         return (int) atoi(myInternalSettings[idx].value.c_str());
-    } else { 
+    } else {
         if((idx = getExternalPos(key)) != -1) {
             return (int) atoi(myExternalSettings[idx].value.c_str());
         } else {
@@ -169,7 +169,7 @@ float Settings::getFloat(const std::string& key, bool strict) const {
     int idx = -1;
     if((idx = getInternalPos(key)) != -1) {
         return (float) atof(myInternalSettings[idx].value.c_str());
-    } else { 
+    } else {
         if((idx = getExternalPos(key)) != -1) {
             return (float) atof(myExternalSettings[idx].value.c_str());
         } else {
@@ -231,7 +231,7 @@ const std::string& Settings::getString(const std::string& key, bool strict) cons
             exit(-1);
         } else {
             static std::string EmptyString("");
-            return EmptyString; 
+            return EmptyString;
         }
     }
 }

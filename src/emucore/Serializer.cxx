@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -25,7 +25,7 @@ namespace stella {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Serializer::Serializer(void) {
     myStream.clear();
-    
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -48,7 +48,7 @@ void Serializer::putInt(int value)
     unsigned char buf[4];
     for(int i = 0; i < 4; ++i)
         buf[i] = (value >> (i<<3)) & 0xff;
-    
+
     myStream.write((char*)buf, 4);
     if(myStream.bad())
         throw "Serializer: file write failed";
@@ -60,7 +60,7 @@ void Serializer::putString(const std::string& str)
     int len = str.length();
     putInt(len);
     myStream.write(str.data(), (std::streamsize)len);
-    
+
     if(myStream.bad())
         throw "Serializer: file write failed";
 }
@@ -73,4 +73,3 @@ void Serializer::putBool(bool b)
 
 }  // namespace stella
 }  // namespace ale
-

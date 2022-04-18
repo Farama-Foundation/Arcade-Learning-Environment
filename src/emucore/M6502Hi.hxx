@@ -35,9 +35,9 @@ namespace ale {
 namespace stella {
 
 /**
-  This class provides a high compatibility 6502 microprocessor emulator.  
+  This class provides a high compatibility 6502 microprocessor emulator.
   The memory accesses and cycle counts it generates are valid at the
-  sub-instruction level and "false" reads are generated (such as the ones 
+  sub-instruction level and "false" reads are generated (such as the ones
   produced by the Indirect,X addressing when it crosses a page boundary).
   This provides provides better compatibility for hardware that has side
   effects and for games which are very time sensitive.
@@ -49,7 +49,7 @@ class M6502High : public M6502
 {
   public:
     /**
-      Create a new high compatibility 6502 microprocessor with the 
+      Create a new high compatibility 6502 microprocessor with the
       specified cycle multiplier.
 
       @param systemCyclesPerProcessorCycle The cycle multiplier
@@ -142,4 +142,3 @@ class M6502High : public M6502
 }  // namespace ale
 
 #endif
-

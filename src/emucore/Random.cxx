@@ -28,13 +28,13 @@
 namespace ale {
 namespace stella {
 
-// Implementation of Random's random number generator wrapper. 
+// Implementation of Random's random number generator wrapper.
 class Random::Impl {
-  
+
   typedef std::mt19937 randgen_t;
 
   public:
-    
+
     Impl();
 
     // Implementations of the methods defined in Random.hpp.
@@ -43,14 +43,14 @@ class Random::Impl {
     double nextDouble();
 
   private:
-   
+
     friend class Random;
 
     // Seed to use for creating new random number generators
     uint32_t m_seed;
 
-    // Random number generator 
-    randgen_t m_randgen; 
+    // Random number generator
+    randgen_t m_randgen;
 };
 
 Random::Impl::Impl()
@@ -66,7 +66,7 @@ void Random::Impl::seed(uint32_t value)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uint32_t Random::Impl::next() 
+uint32_t Random::Impl::next()
 {
   return m_randgen();
 }
@@ -79,7 +79,7 @@ double Random::Impl::nextDouble()
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Random::Random() :
-    m_pimpl(new Random::Impl()) 
+    m_pimpl(new Random::Impl())
 {
 }
 
@@ -110,7 +110,7 @@ double Random::nextDouble()
 }
 
 bool Random::saveState(Serializer& ser) {
-  // The mt19937 object's serialization of choice is into a string. 
+  // The mt19937 object's serialization of choice is into a string.
   std::ostringstream oss;
   oss << m_pimpl->m_randgen;
 

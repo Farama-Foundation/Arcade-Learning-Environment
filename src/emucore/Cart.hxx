@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -38,9 +38,9 @@ namespace ale {
 namespace stella {
 
 /**
-  A cartridge is a device which contains the machine code for a 
+  A cartridge is a device which contains the machine code for a
   game and handles any bankswitching performed by the cartridge.
- 
+
   @author  Bradford W. Mott
   @version $Id: Cart.hxx,v 1.19 2007/06/14 13:47:50 stephena Exp $
 */
@@ -52,19 +52,19 @@ class Cartridge : public Device
       type of cartridge created depends on the properties object.
 
       @param image    A pointer to the ROM image
-      @param size     The size of the ROM image 
+      @param size     The size of the ROM image
       @param props    The properties associated with the game
       @param settings The settings associated with the system
       @return   Pointer to the new cartridge object allocated on the heap
     */
-    static Cartridge* create(const uint8_t* image, uint32_t size, 
+    static Cartridge* create(const uint8_t* image, uint32_t size,
         const Properties& props, const Settings& settings);
 
     /**
       Create a new cartridge
     */
     Cartridge();
- 
+
     /**
       Destructor
     */
@@ -82,8 +82,8 @@ class Cartridge : public Device
     */
     bool save(std::ofstream& out);
 
-    /** MGB: Added to drop warning on overloaded save() method. */  
-    virtual bool save(Serializer& out) = 0; 
+    /** MGB: Added to drop warning on overloaded save() method. */
+    virtual bool save(Serializer& out) = 0;
 
     /**
       Lock/unlock bankswitching capability.
@@ -143,7 +143,7 @@ class Cartridge : public Device
       Try to auto-detect the bankswitching type of the cartridge
 
       @param image  A pointer to the ROM image
-      @param size   The size of the ROM image 
+      @param size   The size of the ROM image
       @return The "best guess" for the cartridge type
     */
     static std::string autodetectType(const uint8_t* image, uint32_t size);
@@ -152,7 +152,7 @@ class Cartridge : public Device
       Search the image for the specified byte signature
 
       @param image      A pointer to the ROM image
-      @param imagesize  The size of the ROM image 
+      @param imagesize  The size of the ROM image
       @param signature  The byte sequence to search for
       @param sigsize    The number of bytes in the signature
       @param minhits    The minimum number of times a signature is to be found

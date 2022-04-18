@@ -124,8 +124,7 @@ def test_register_gym_envs(test_rom_path):
         suffixes = []
         versions = ["-v5"]
 
-        all_ids = set(map("".join, product(
-            games, obs_types, suffixes, versions)))
+        all_ids = set(map("".join, product(games, obs_types, suffixes, versions)))
         assert all_ids.issubset(envids)
 
 
@@ -337,7 +336,7 @@ def test_gym_reset_with_infos(tetris_gym):
 def test_frameskip_warnings(test_rom_path, frameskip):
     with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: test_rom_path):
         with pytest.raises(error.Error):
-            AtariEnv('Tetris', frameskip=frameskip)
+            AtariEnv("Tetris", frameskip=frameskip)
 
 
 def test_render_exception(tetris_gym):

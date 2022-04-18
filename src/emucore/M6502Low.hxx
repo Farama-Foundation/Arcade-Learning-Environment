@@ -35,19 +35,19 @@ namespace ale {
 namespace stella {
 
 /**
-  This class provides a low compatibility 6502 microprocessor emulator.  
-  The memory accesses and cycle updates of this emulator are not 100% 
+  This class provides a low compatibility 6502 microprocessor emulator.
+  The memory accesses and cycle updates of this emulator are not 100%
   accurate as shown below:
 
-    1. Only memory accesses which are actually needed are done 
+    1. Only memory accesses which are actually needed are done
        (i.e. no "false" reads and writes are performed)
 
     2. Cycle counts are updated at the beginning of the instruction
        execution and not valid at the sub-instruction level
 
-  If speed is the most important issue then use this class, however, if 
+  If speed is the most important issue then use this class, however, if
   better compatibility is neccessary use one of the other 6502 classes.
-  
+
   @author  Bradford W. Mott
   @version $Id: M6502Low.hxx,v 1.7 2007/01/01 18:04:51 stephena Exp $
 */
@@ -55,7 +55,7 @@ class M6502Low : public M6502
 {
   public:
     /**
-      Create a new low compatibility 6502 microprocessor with the specified 
+      Create a new low compatibility 6502 microprocessor with the specified
       cycle multiplier.
 
       @param systemCyclesPerProcessorCycle The cycle multiplier
@@ -109,7 +109,7 @@ class M6502Low : public M6502
 
   protected:
     /*
-      Get the byte at the specified address 
+      Get the byte at the specified address
 
       @return The byte at the specified address
     */
@@ -128,4 +128,3 @@ class M6502Low : public M6502
 }  // namespace ale
 
 #endif
-

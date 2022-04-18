@@ -2,7 +2,7 @@
 
 ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
 Instructions on how to install the SDL library, as well as enabling SDL support within ALE can be found in the section [Getting Started](./getting-started.md).
-Screen display can be enabled using the boolean option `display_screen` (default: `false`), 
+Screen display can be enabled using the boolean option `display_screen` (default: `false`),
 and sound playback using the boolean option `sound` (default: `false`).
 
 ##  Recording Movies
@@ -57,7 +57,7 @@ Once frames and/or sound have been recorded, they may be joined into a video usi
 
 ```bash
 # -r frame_rate
-# -i input 
+# -i input
 # -f format
 # -c:a audio_codec
 # -c:v video_codec

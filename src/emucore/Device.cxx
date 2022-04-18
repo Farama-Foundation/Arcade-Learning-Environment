@@ -40,4 +40,3 @@ void Device::systemCyclesReset()
 
 }  // namespace stella
 }  // namespace ale
-

@@ -28,7 +28,7 @@ The following regular actions are defined by the `Action` enum in [`common/Const
 | 17     | **`DOWNLEFTFIRE`** | Execute **`DOWN`** and **`LEFT`** and **`FIRE`** |
 | 40     | **`RESET`**<sup>1</sup> | Toggles the Atari 2600 reset switch, **not** used for resetting the environment |
 
-<small>1</small>: Note that the **`RESET`** action toggles the Atari 2600 reset switch, rather than reset the 
+<small>1</small>: Note that the **`RESET`** action toggles the Atari 2600 reset switch, rather than reset the
 environment, and as such is ignored by most interfaces.
 
 Note: There are two main types of controllers on the Atari 2600 console. The [joystick controller](https://en.wikipedia.org/wiki/Atari_CX40_joystick) and the [paddle controller](https://en.wikipedia.org/wiki/Paddle_\(game_controller\)). For paddle controllers all **`*RIGHT*`** actions correspond to a Δ-movment to the right on the wheel, and all **`*LEFT*`** actions correspond to a Δ-movement to the left.
@@ -36,10 +36,10 @@ Note: There are two main types of controllers on the Atari 2600 console. The [jo
 
 ##  Terminal States
 
-Once the end of episode is reached (a terminal state in RL terminology), no further emulation 
-takes place until the appropriate reset command is sent. This command is distinct from the Atari 
+Once the end of episode is reached (a terminal state in RL terminology), no further emulation
+takes place until the appropriate reset command is sent. This command is distinct from the Atari
 2600 reset. This "system reset" avoids odd situations where the player can reset the game
-through button presses, or where the game normally resets itself after a number of frames. This 
+through button presses, or where the game normally resets itself after a number of frames. This
 makes for a cleaner environment interface. The interfaces described here all provide a system reset command or method.
 
 ## Color Averaging
@@ -51,21 +51,21 @@ This behaviour can be turned on using `setBool` with the `color_averaging` key.
 
 ## Action Repeat Stochasticity
 
-Beginning with ALE 0.5.0, there is now an option (enabled by default) to add 
+Beginning with ALE 0.5.0, there is now an option (enabled by default) to add
 _action repeat stochasticity_ to the environment. With probability 𝗉 (default: 𝗉 = 0.25),
 the previously executed action is executed again during the next frame, ignoring the agent's
 actual choice. This value can be modified using the option `action_repeat_probability`.
 The default value was chosen as the highest value for which human play-testers
 were unable to detect any delay or control lag. ([Machado et al. 2018](#references-machado18)).
 
-The motivation for introducing action repeat stochasticity was to help separate _trajectory optimization_ research from _robust controller optimization_, the latter often being the 
-desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use 
+The motivation for introducing action repeat stochasticity was to help separate _trajectory optimization_ research from _robust controller optimization_, the latter often being the
+desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use
 the default stochasticity level in their agents, and clearly report the setting used.
 
 ## Minimal Action Set
 
 It may sometimes be convenient to restrict the agent to a smaller action set. This can be
-accomplished by querying the `RomSettings` class using the method 
+accomplished by querying the `RomSettings` class using the method
 `getMinimalActionSet`. This then returns a set of actions judged "minimal" to play a given
 game. Due to the potentially high impact of this setting on performance, we encourage researchers
 to clearly report the method used in their experiments.

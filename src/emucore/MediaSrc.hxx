@@ -1,8 +1,8 @@
 //============================================================================
 //
-//   SSSS    tt          lll  lll       
-//  SS  SS   tt           ll   ll        
-//  SS     tttttt  eeee   ll   ll   aaaa 
+//   SSSS    tt          lll  lll
+//  SS  SS   tt           ll   ll
+//  SS     tttttt  eeee   ll   ll   aaaa
 //   SSSS    tt   ee  ee  ll   ll      aa
 //      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
 //  SS  SS   tt   ee      ll   ll  aa  aa
@@ -47,7 +47,7 @@ class MediaSource
       Create a new media source
     */
     MediaSource();
- 
+
     /**
       Destructor
     */
@@ -55,7 +55,7 @@ class MediaSource
 
   public:
     /**
-      This method should be called at an interval corresponding to the 
+      This method should be called at an interval corresponding to the
       desired frame rate to update the media source.  Invoking this method
       will update the graphics buffer and generate the corresponding audio
       samples.
