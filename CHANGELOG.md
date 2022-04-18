@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.5] - 2022-04-18
+### Added
+- Added validation for Gym's frameskip values.
+- Made ROM loading more robust with module-level `__getattr__` and `__dir__`.
+- Added `py.typed` to the Python module's root directory to support type checkers.
+- Bumped SDL to v2.0.16.
+
+### Fixed
+- Fixed Gym render mode metadata. (@vwxyzjn)
+- Fixed Gym warnings about `seeding.hash_seed` and `random.randint`.
+- Fixed build infrastructure issues from the migration to `setuptools>=0.61`.
+
+### Removed
+- Removed Gym's `.render(mode='human')`. Gym now uses the `render_mode` keyword argument in the environment constructor.
+
+
 ## [0.7.4] - 2022-02-16
 ### Added
 - Proper C++ namespacing for the ALE and Stella (@tuero)
@@ -216,7 +232,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial ALE release.
 
 
-[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.4...HEAD
+[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.5...HEAD
+[0.7.5]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.1...v0.7.2
