@@ -189,22 +189,22 @@ std::optional<std::string> ALEInterface::isSupportedROM(const fs::path& rom_file
 }
 
 // Get the value of a setting.
-const std::string& ALEInterface::getStringInplace(const std::string& key) {
+const std::string& ALEInterface::getStringInplace(const std::string& key) const {
   assert(theSettings.get());
   return theSettings->getString(key);
 }
-std::string ALEInterface::getString(const std::string& key) {
+std::string ALEInterface::getString(const std::string& key) const {
   return getStringInplace(key);
 }
-int ALEInterface::getInt(const std::string& key) {
+int ALEInterface::getInt(const std::string& key) const {
   assert(theSettings.get());
   return theSettings->getInt(key);
 }
-bool ALEInterface::getBool(const std::string& key) {
+bool ALEInterface::getBool(const std::string& key) const {
   assert(theSettings.get());
   return theSettings->getBool(key);
 }
-float ALEInterface::getFloat(const std::string& key) {
+float ALEInterface::getFloat(const std::string& key) const {
   assert(theSettings.get());
   return theSettings->getFloat(key);
 }

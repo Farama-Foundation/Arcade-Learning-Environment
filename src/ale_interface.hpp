@@ -58,16 +58,16 @@ class ALEInterface {
   ALEInterface(bool display_screen);
 
   // Get the value of a setting.
-  std::string getString(const std::string& key);
-  int getInt(const std::string& key);
-  bool getBool(const std::string& key);
-  float getFloat(const std::string& key);
+  std::string getString(const std::string& key) const;
+  int getInt(const std::string& key) const;
+  bool getBool(const std::string& key) const;
+  float getFloat(const std::string& key) const;
 
   // getStringInplace is a version of getString that returns a reference to the
   // actual, stored settings string object, without making a copy. The reference
   // is only valid until the next call of any of the setter functions below, so
   // this function must be used with care.
-  const std::string& getStringInplace(const std::string& key);
+  const std::string& getStringInplace(const std::string& key) const;
 
   // Set the value of a setting. loadRom() must be called before the
   // setting will take effect.
