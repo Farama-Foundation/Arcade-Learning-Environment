@@ -260,7 +260,7 @@ reward_t ALEInterface::act(Action action) {
 
 // Returns the vector of modes available for the current game.
 // This should be called only after the rom is loaded.
-ModeVect ALEInterface::getAvailableModes() {
+ModeVect ALEInterface::getAvailableModes() const {
   return romSettings->getAvailableModes();
 }
 
@@ -279,7 +279,7 @@ void ALEInterface::setMode(game_mode_t m) {
 
 //Returns the vector of difficulties available for the current game.
 //This should be called only after the rom is loaded.
-DifficultyVect ALEInterface::getAvailableDifficulties() {
+DifficultyVect ALEInterface::getAvailableDifficulties() const {
   return romSettings->getAvailableDifficulties();
 }
 
@@ -297,7 +297,7 @@ void ALEInterface::setDifficulty(difficulty_t m) {
 
 // Returns the vector of legal actions. This should be called only
 // after the rom is loaded.
-ActionVect ALEInterface::getLegalActionSet() {
+ActionVect ALEInterface::getLegalActionSet() const {
   if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
   } else {
@@ -307,7 +307,7 @@ ActionVect ALEInterface::getLegalActionSet() {
 
 // Returns the vector of the minimal set of actions needed to play
 // the game.
-ActionVect ALEInterface::getMinimalActionSet() {
+ActionVect ALEInterface::getMinimalActionSet() const {
   if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
   } else {
@@ -316,7 +316,7 @@ ActionVect ALEInterface::getMinimalActionSet() {
 }
 
 // Returns the frame number since the loading of the ROM
-int ALEInterface::getFrameNumber() { return environment->getFrameNumber(); }
+int ALEInterface::getFrameNumber() const { return environment->getFrameNumber(); }
 
 // Returns the frame number since the start of the current episode
 int ALEInterface::getEpisodeFrameNumber() const {
@@ -324,12 +324,12 @@ int ALEInterface::getEpisodeFrameNumber() const {
 }
 
 // Returns the current game screen
-const ALEScreen& ALEInterface::getScreen() { return environment->getScreen(); }
+const ALEScreen& ALEInterface::getScreen() const { return environment->getScreen(); }
 
 //This method should receive an empty vector to fill it with
 //the grayscale colours
 void ALEInterface::getScreenGrayscale(
-    std::vector<unsigned char>& grayscale_output_buffer) {
+    std::vector<unsigned char>& grayscale_output_buffer) const {
   size_t w = environment->getScreen().width();
   size_t h = environment->getScreen().height();
   size_t screen_size = w * h;
@@ -342,7 +342,7 @@ void ALEInterface::getScreenGrayscale(
 //This method should receive a vector to fill it with
 //the RGB colours. The first positions contain the red colours,
 //followed by the green colours and then the blue colours
-void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
+void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) const {
   size_t w = environment->getScreen().width();
   size_t h = environment->getScreen().height();
   size_t screen_size = w * h;
@@ -354,7 +354,7 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) {
 }
 
 // Returns the current RAM content
-const ALERAM& ALEInterface::getRAM() { return environment->getRAM(); }
+const ALERAM& ALEInterface::getRAM() const { return environment->getRAM(); }
 
 // Set byte at memory address
 void ALEInterface::setRAM(size_t memory_index, byte_t value) {

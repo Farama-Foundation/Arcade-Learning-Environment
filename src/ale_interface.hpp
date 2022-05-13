@@ -96,7 +96,7 @@ class ALEInterface {
 
   // Returns the vector of modes available for the current game.
   // This should be called only after the rom is loaded.
-  ModeVect getAvailableModes();
+  ModeVect getAvailableModes() const;
 
   // Sets the mode of the game.
   // The mode must be an available mode (otherwise it throws an exception).
@@ -119,7 +119,7 @@ class ALEInterface {
   //   2         left B/right A
   //   3         left A/right B
   //   4         left A/right A
-  DifficultyVect getAvailableDifficulties();
+  DifficultyVect getAvailableDifficulties() const;
 
   // Sets the difficulty of the game.
   // The difficulty must be an available mode (otherwise it throws an exception).
@@ -131,14 +131,14 @@ class ALEInterface {
 
   // Returns the vector of legal actions. This should be called only
   // after the rom is loaded.
-  ActionVect getLegalActionSet();
+  ActionVect getLegalActionSet() const;
 
   // Returns the vector of the minimal set of actions needed to play
   // the game.
-  ActionVect getMinimalActionSet();
+  ActionVect getMinimalActionSet() const;
 
   // Returns the frame number since the loading of the ROM
-  int getFrameNumber();
+  int getFrameNumber() const;
 
   // The remaining number of lives.
   int lives();
@@ -147,19 +147,19 @@ class ALEInterface {
   int getEpisodeFrameNumber() const;
 
   // Returns the current game screen
-  const ALEScreen& getScreen();
+  const ALEScreen& getScreen() const;
 
   //This method should receive an empty vector to fill it with
   //the grayscale colours
-  void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer);
+  void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer) const;
 
   //This method should receive a vector to fill it with
   //the RGB colours. The first positions contain the red colours,
   //followed by the green colours and then the blue colours
-  void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer);
+  void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) const;
 
   // Returns the current RAM content
-  const ALERAM& getRAM();
+  const ALERAM& getRAM() const;
 
   // Set byte at memory address. This can be useful to change the environment
   // for example if you were trying to learn a causal model of RAM locations.
