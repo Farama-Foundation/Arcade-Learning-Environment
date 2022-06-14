@@ -1,7 +1,7 @@
-import sys
+import abc
 import pathlib
-
-from functools import lru_cache
+import sys
+from typing import Callable, Dict, List, Tuple, Union
 
 # TODO: importlib.resources.files has a bug that raises
 # a TypeError when there's no __init__.py file in the package dir.
@@ -13,12 +13,10 @@ if sys.version_info < (3, 10):
 else:
     import importlib.metadata as metadata
 
-from typing import Callable, List, Union, Dict, Tuple
-
 from ale_py._ale_py import ALEInterface
 
 
-def rom_id_to_name(rom):
+def rom_id_to_name(rom) -> str:
     """
     Let the ROM ID be the ROM identifier in snakecase.
         For example, `space_invaders`
@@ -31,7 +29,7 @@ def rom_id_to_name(rom):
     return rom.title().replace("_", "")
 
 
-def rom_name_to_id(rom):
+def rom_name_to_id(rom) -> str:
     """
     Let the ROM ID be the ROM identifier in snakecase.
         For example, `space_invaders`
@@ -46,11 +44,19 @@ def rom_name_to_id(rom):
     ).lstrip("_")
 
 
-class SupportedPackage:
+class RomPlugin(abc.ABC):
+    @abc.abstractmethod
+    def resolve(self) -> Tuple[Dict[str, pathlib.Path], List[pathlib.Path]]:
+        """
+        Resolve the ROMs supported by this plugin.
+        """
+        pass
+
+
+class SupportedPackage(RomPlugin):
     def __init__(self, package: str):
         self.package = package
 
-    @lru_cache(maxsize=None)
     def resolve(self) -> Tuple[Dict[str, pathlib.Path], List[pathlib.Path]]:
         roms: Dict[str, pathlib.Path] = {}
         unsupported: List[pathlib.Path] = []
@@ -70,18 +76,17 @@ class SupportedPackage:
 
         return roms, unsupported
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.package}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"SupportedPackage[{self.package}]"
 
 
-class SupportedEntryPoint:
+class SupportedEntryPoint(RomPlugin):
     def __init__(self, group: str):
         self.group = group
 
-    @lru_cache(maxsize=None)
     def resolve(self) -> Tuple[Dict[str, pathlib.Path], List[pathlib.Path]]:
         roms: Dict[str, pathlib.Path] = {}
         unsupported: List[pathlib.Path] = []
@@ -101,18 +106,17 @@ class SupportedEntryPoint:
 
         return roms, unsupported
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.group}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"SupportedEntryPoint[{self.group}]"
 
 
-class SupportedDirectory:
+class SupportedDirectory(RomPlugin):
     def __init__(self, directory: Union[str, pathlib.Path]):
         self.directory = pathlib.Path(directory)
 
-    @lru_cache(maxsize=None)
     def resolve(self) -> Tuple[Dict[str, pathlib.Path], List[pathlib.Path]]:
         roms: Dict[str, pathlib.Path] = {}
         unsupported: List[pathlib.Path] = []
@@ -127,8 +131,8 @@ class SupportedDirectory:
 
         return roms, unsupported
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.directory}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"SupportedDirectory[{self.directory}]"
