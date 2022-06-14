@@ -1,15 +1,12 @@
-from typing import Optional, Union, Tuple, Dict, Any, List
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-import numpy as np
+import ale_py
+import ale_py.roms as roms
+import ale_py.roms.utils as rom_utils
 import gym
 import gym.logger as logger
-
-from gym import error, spaces
-from gym import utils
-
-import ale_py.roms as roms
-from ale_py._ale_py import ALEInterface, ALEState, Action, LoggerMode
-from ale_py.roms.utils import rom_id_to_name
+import numpy as np
+from gym import error, spaces, utils
 
 
 class AtariEnv(gym.Env, utils.EzPickle):
@@ -30,7 +27,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         frameskip: Union[Tuple[int, int], int] = 4,
         repeat_action_probability: float = 0.25,
         full_action_space: bool = False,
-        render_mode: str = None,
+        render_mode: Optional[str] = None,
     ) -> None:
         """
         Initialize the ALE for Gym.
@@ -111,9 +108,9 @@ class AtariEnv(gym.Env, utils.EzPickle):
         )
 
         # Initialize ALE
-        self.ale = ALEInterface()
+        self.ale = ale_py.ALEInterface()
 
-        self._game = rom_id_to_name(game)
+        self._game = rom_utils.rom_id_to_name(game)
 
         self._game_mode = mode
         self._game_difficulty = difficulty
@@ -123,7 +120,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         self._render_mode = render_mode
 
         # Set logger mode to error only
-        self.ale.setLoggerMode(LoggerMode.Error)
+        self.ale.setLoggerMode(ale_py.LoggerMode.Error)
         # Config sticky action prob.
         self.ale.setFloat("repeat_action_probability", repeat_action_probability)
 
@@ -267,7 +264,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         else:
             return obs
 
-    def render(self, mode: str) -> Any:
+    def render(self, mode: str) -> np.ndarray:
         """
         Render is not supported by ALE. We use a paradigm similar to
         Gym3 which allows you to specify `render_mode` during construction.
@@ -325,7 +322,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
 
         return info
 
-    def get_keys_to_action(self) -> Dict[Tuple[int], Action]:
+    def get_keys_to_action(self) -> Dict[Tuple[int], ale_py.Action]:
         """
         Return keymapping -> actions for human play.
         """
@@ -336,24 +333,24 @@ class AtariEnv(gym.Env, utils.EzPickle):
         FIRE = ord(" ")
 
         mapping = {
-            Action.NOOP: (None,),
-            Action.UP: (UP,),
-            Action.FIRE: (FIRE,),
-            Action.DOWN: (DOWN,),
-            Action.LEFT: (LEFT,),
-            Action.RIGHT: (RIGHT,),
-            Action.UPFIRE: (UP, FIRE),
-            Action.DOWNFIRE: (DOWN, FIRE),
-            Action.LEFTFIRE: (LEFT, FIRE),
-            Action.RIGHTFIRE: (RIGHT, FIRE),
-            Action.UPLEFT: (UP, LEFT),
-            Action.UPRIGHT: (UP, RIGHT),
-            Action.DOWNLEFT: (DOWN, LEFT),
-            Action.DOWNRIGHT: (DOWN, RIGHT),
-            Action.UPLEFTFIRE: (UP, LEFT, FIRE),
-            Action.UPRIGHTFIRE: (UP, RIGHT, FIRE),
-            Action.DOWNLEFTFIRE: (DOWN, LEFT, FIRE),
-            Action.DOWNRIGHTFIRE: (DOWN, RIGHT, FIRE),
+            ale_py.Action.NOOP: (None,),
+            ale_py.Action.UP: (UP,),
+            ale_py.Action.FIRE: (FIRE,),
+            ale_py.Action.DOWN: (DOWN,),
+            ale_py.Action.LEFT: (LEFT,),
+            ale_py.Action.RIGHT: (RIGHT,),
+            ale_py.Action.UPFIRE: (UP, FIRE),
+            ale_py.Action.DOWNFIRE: (DOWN, FIRE),
+            ale_py.Action.LEFTFIRE: (LEFT, FIRE),
+            ale_py.Action.RIGHTFIRE: (RIGHT, FIRE),
+            ale_py.Action.UPLEFT: (UP, LEFT),
+            ale_py.Action.UPRIGHT: (UP, RIGHT),
+            ale_py.Action.DOWNLEFT: (DOWN, LEFT),
+            ale_py.Action.DOWNRIGHT: (DOWN, RIGHT),
+            ale_py.Action.UPLEFTFIRE: (UP, LEFT, FIRE),
+            ale_py.Action.UPRIGHTFIRE: (UP, RIGHT, FIRE),
+            ale_py.Action.DOWNLEFTFIRE: (DOWN, LEFT, FIRE),
+            ale_py.Action.DOWNRIGHTFIRE: (DOWN, RIGHT, FIRE),
         }
 
         # Map
@@ -372,22 +369,22 @@ class AtariEnv(gym.Env, utils.EzPickle):
         """
         Return the meaning of each integer action.
         """
-        keys = Action.__members__.values()
-        values = Action.__members__.keys()
+        keys = ale_py.Action.__members__.values()
+        values = ale_py.Action.__members__.keys()
         mapping = dict(zip(keys, values))
         return [mapping[action] for action in self._action_set]
 
-    def clone_state(self, include_rng=False) -> ALEState:
+    def clone_state(self, include_rng=False) -> ale_py.ALEState:
         """Clone emulator state w/o system state. Restoring this state will
         *not* give an identical environment. For complete cloning and restoring
         of the full state, see `{clone,restore}_full_state()`."""
         return self.ale.cloneState(include_rng=include_rng)
 
-    def restore_state(self, state: ALEState) -> None:
+    def restore_state(self, state: ale_py.ALEState) -> None:
         """Restore emulator state w/o system state."""
         self.ale.restoreState(state)
 
-    def clone_full_state(self) -> ALEState:
+    def clone_full_state(self) -> ale_py.ALEState:
         """Deprecated method which would clone the emulator and system state."""
         logger.warn(
             "`clone_full_state()` is deprecated and will be removed in a future release of `ale-py`. "
@@ -395,7 +392,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         )
         return self.ale.cloneSystemState()
 
-    def restore_full_state(self, state: ALEState) -> None:
+    def restore_full_state(self, state: ale_py.ALEState) -> None:
         """Restore emulator state w/ system state including pseudorandomness."""
         logger.warn(
             "restore_full_state() is deprecated and will be removed in a future release of `ale-py`. "

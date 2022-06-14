@@ -1,7 +1,7 @@
-import platform
-import warnings
-import sys
 import os
+import platform
+import sys
+import warnings
 
 packagedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -45,4 +45,6 @@ except metadata.PackageNotFoundError:
     __version__ = "unknown"
 
 # Import native shared library
-from ale_py._ale_py import *
+from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMode
+
+__all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
