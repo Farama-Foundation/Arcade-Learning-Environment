@@ -13,7 +13,7 @@ if sys.version_info < (3, 10):
 else:
     import importlib.metadata as metadata
 
-from ale_py._ale_py import ALEInterface
+import ale_py
 
 
 def rom_id_to_name(rom) -> str:
@@ -66,7 +66,7 @@ class SupportedPackage(RomPlugin):
             lambda file: file.suffix == ".bin", resources.files(self.package).iterdir()
         ):
             resolved = resource.resolve()
-            rom = ALEInterface.isSupportedROM(resolved)
+            rom = ale_py.ALEInterface.isSupportedROM(resolved)
             # If the ROM is supported we normalize the name and add it to
             # the dictionary of ROMs
             if rom is not None:
@@ -98,7 +98,7 @@ class SupportedEntryPoint(RomPlugin):
             external_fn: Callable[[], List[Union[pathlib.Path, str]]] = external.load()
             for path in external_fn():
                 path = pathlib.Path(path)
-                rom = ALEInterface.isSupportedROM(path)
+                rom = ale_py.ALEInterface.isSupportedROM(path)
                 if rom is not None:
                     roms[rom_id_to_name(rom)] = path
                 else:
@@ -123,7 +123,7 @@ class SupportedDirectory(RomPlugin):
 
         # Iterate over all bin files in directory
         for path in self.directory.glob("*.bin"):
-            rom = ALEInterface.isSupportedROM(path)
+            rom = ale_py.ALEInterface.isSupportedROM(path)
             if rom is not None:
                 roms[rom_id_to_name(rom)] = path
             else:
