@@ -170,7 +170,7 @@ def register_legacy_gym_envs():
 def register_gym_envs():
     import ale_py.roms as roms
 
-    all_games = list(map(rom_name_to_id, roms.__all__))
+    all_games = list(map(rom_name_to_id, dir(roms)))
     obs_types = ["rgb", "ram"]
 
     # max_episode_steps is 108k frames which is 30 mins of gameplay.

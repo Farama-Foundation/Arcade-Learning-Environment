@@ -1,39 +1,40 @@
+import functools
+import operator
 import os
-import warnings
 import pathlib
+import warnings
+from typing import Dict, List
 
-from functools import partial
-from operator import getitem
-
-from typing import List, Union, Dict
-
-from ale_py.roms.utils import SupportedPackage, SupportedEntryPoint, SupportedDirectory
+from ale_py.roms import utils
 
 # Precedence is as follows:
 #  1. Internal ROMs
 #  2. External ROMs
 #  3. ROMs from atari-py.roms
 #  4. ROMs from atari-py-roms.roms
-ROM_PLUGINS: List[Union[SupportedPackage, SupportedEntryPoint, SupportedDirectory]] = [
-    SupportedPackage("ale_py.roms"),
-    SupportedEntryPoint("ale_py.roms"),
-    SupportedPackage("atari_py.atari_roms"),
-    SupportedPackage("atari_py_roms.atari_roms"),
+_ROM_PLUGINS: List[utils.RomPlugin] = [
+    utils.SupportedPackage("ale_py.roms"),
+    utils.SupportedEntryPoint("ale_py.roms"),
+    utils.SupportedPackage("atari_py.atari_roms"),
+    utils.SupportedPackage("atari_py_roms.atari_roms"),
 ]
 
 # Environment variable for ROM discovery.
 # ale-py will search for supported ROMs in:
 #   ${ALE_PY_ROM_DIR}/*.bin
-ROM_DIRECTORY_ENV_KEY = "ALE_PY_ROM_DIR"
-ROM_DIRECTORY_ENV_VALUE = os.environ.get(ROM_DIRECTORY_ENV_KEY, None)
+_ROM_DIRECTORY_ENV_KEY = "ALE_PY_ROM_DIR"
+_ROM_DIRECTORY_ENV_VALUE = os.environ.get(_ROM_DIRECTORY_ENV_KEY, None)
 
-if ROM_DIRECTORY_ENV_VALUE is not None:
-    ROM_PLUGINS.append(SupportedDirectory(ROM_DIRECTORY_ENV_VALUE))
+if _ROM_DIRECTORY_ENV_VALUE is not None:
+    _ROM_PLUGINS.append(utils.SupportedDirectory(_ROM_DIRECTORY_ENV_VALUE))
 
 
-def resolve_roms() -> Dict[str, pathlib.Path]:
+@functools.lru_cache(maxsize=None)
+def _resolve_roms() -> Dict[str, pathlib.Path]:
+    global _ROM_PLUGINS
+
     roms: Dict[str, pathlib.Path] = {}
-    for package in ROM_PLUGINS:
+    for package in _ROM_PLUGINS:
 
         try:
             # Resolve supported / unsupported roms
@@ -51,12 +52,14 @@ def resolve_roms() -> Dict[str, pathlib.Path]:
             roms_delta = dict(
                 zip(
                     roms_delta_keys,
-                    map(partial(getitem, supported), roms_delta_keys),
+                    map(
+                        functools.partial(operator.getitem, supported), roms_delta_keys
+                    ),
                 )
             )
 
             if (
-                isinstance(package, SupportedPackage)
+                isinstance(package, utils.SupportedPackage)
                 and package.package.startswith("atari_py")
                 and len(roms_delta) > 0
             ):
@@ -85,19 +88,25 @@ def resolve_roms() -> Dict[str, pathlib.Path]:
     return roms
 
 
-# Resolve all ROMs
-ROMS = resolve_roms()
-__all__ = list(ROMS.keys())
+_ROMS = None
 
 
 def __dir__() -> List[str]:
-    return list(ROMS.keys())
+    global _ROMS
+
+    if _ROMS is None:
+        _ROMS = _resolve_roms()
+    return list(_ROMS.keys())
 
 
 def __getattr__(name: str) -> pathlib.Path:
-    if name not in ROMS:
+    global _ROMS
+
+    if _ROMS is None:
+        _ROMS = _resolve_roms()
+    if name not in _ROMS:
         raise AttributeError(
-            f"ROM {name} not found. Available ROMs: {','.join(__all__)}."
+            f"ROM {name} not found. Available ROMs: {','.join(__dir__())}."
         )
 
-    return ROMS[name]
+    return _ROMS[name]
