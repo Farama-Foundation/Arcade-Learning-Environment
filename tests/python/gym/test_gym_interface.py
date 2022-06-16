@@ -339,6 +339,16 @@ def test_frameskip_warnings(test_rom_path, frameskip):
             AtariEnv("Tetris", frameskip=frameskip)
 
 
+def test_terminal_signal(tetris_gym):
+    tetris_gym.reset()
+    while True:
+        _, _, terminal, _ = tetris_gym.step(tetris_gym.action_space.sample())
+        emulator_terminal = tetris_gym.ale.game_over()
+        assert emulator_terminal == terminal
+        if terminal:
+            break
+
+
 def test_render_exception(tetris_gym):
     with pytest.raises(error.Error):
         tetris_gym.render(mode="human")
