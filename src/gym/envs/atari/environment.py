@@ -218,7 +218,6 @@ class AtariEnv(gym.Env, utils.EzPickle):
         """
         # Get action enum, terminal bool, metadata
         action = self._action_set[action_ind]
-        terminal = self.ale.game_over()
 
         # If frameskip is a length 2 tuple then it's stochastic
         # frameskip between [frameskip[0], frameskip[1]] uniformly.
@@ -233,6 +232,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         reward = 0.0
         for _ in range(frameskip):
             reward += self.ale.act(action)
+        terminal = self.ale.game_over()
 
         return self._get_obs(), reward, terminal, self._get_info()
 
