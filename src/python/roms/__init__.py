@@ -1,9 +1,9 @@
 import functools
-import operator
 import os
 import pathlib
 import warnings
-from typing import Dict, List
+import threading
+from typing import Dict, List, Optional
 
 from ale_py.roms import utils
 
@@ -46,17 +46,7 @@ def _resolve_roms() -> Dict[str, pathlib.Path]:
             #     2) ROM priority holds. When you import ROMs they'll all come from
             #        a single source of truth.
             #
-            roms_delta_keys = list(
-                filter(lambda rom: rom not in roms, supported.keys())
-            )
-            roms_delta = dict(
-                zip(
-                    roms_delta_keys,
-                    map(
-                        functools.partial(operator.getitem, supported), roms_delta_keys
-                    ),
-                )
-            )
+            roms_delta = set(supported.items()) - set(roms.items())
 
             if (
                 isinstance(package, utils.SupportedPackage)
@@ -88,22 +78,29 @@ def _resolve_roms() -> Dict[str, pathlib.Path]:
     return roms
 
 
-_ROMS = None
+_ROMS: Optional[Dict[str, pathlib.Path]] = None
+# We'll protect agaisnt threading race conditions
+# NOTE: There still could be multiprocessing race conditions
+# that plugins will need to manage on their own.
+# e.g., downloading ROMs if they don't exist.
+_RESOLVING_LOCK = threading.Lock()
 
 
 def __dir__() -> List[str]:
-    global _ROMS
+    global _ROMS, _RESOLVING_LOCK
 
     if _ROMS is None:
-        _ROMS = _resolve_roms()
+        with _RESOLVING_LOCK:
+            _ROMS = _resolve_roms()
     return list(_ROMS.keys())
 
 
 def __getattr__(name: str) -> pathlib.Path:
-    global _ROMS
+    global _ROMS, _RESOLVING_LOCK
 
     if _ROMS is None:
-        _ROMS = _resolve_roms()
+        with _RESOLVING_LOCK:
+            _ROMS = _resolve_roms()
     if name not in _ROMS:
         raise AttributeError(
             f"ROM {name} not found. Available ROMs: {','.join(__dir__())}."
