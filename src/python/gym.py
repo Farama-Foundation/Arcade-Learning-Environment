@@ -1,5 +1,6 @@
 from collections import defaultdict, namedtuple
 
+import ale_py.roms as roms
 from ale_py.roms import utils as rom_utils
 
 from gym.envs.registration import register
@@ -167,8 +168,6 @@ def register_legacy_gym_envs():
 
 
 def register_gym_envs():
-    import ale_py.roms as roms
-
     all_games = list(map(rom_utils.rom_name_to_id, dir(roms)))
     obs_types = ["rgb", "ram"]
 
