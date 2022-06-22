@@ -30,3 +30,5 @@ doc/examples/*Example
 
 # Python
 *.pyc
+
+*.egg-info/

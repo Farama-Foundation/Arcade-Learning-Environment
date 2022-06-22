@@ -65,7 +65,7 @@ packages = [
   "gym.envs.atari"
 ]
 package-dir = {ale_py = "src/python", gym = "src/gym"}
-package-data = {"ale_py" = ["py.typed"], "ale_py.roms" = ["*.bin"]}
+package-data = {"ale_py" = ["py.typed"], "ale_py.roms" = ["*.bin", "md5.txt"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"
