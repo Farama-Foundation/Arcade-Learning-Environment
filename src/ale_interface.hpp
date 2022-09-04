@@ -89,7 +89,10 @@ class ALEInterface {
   reward_t act(Action action);
 
   // Indicates if the game has ended.
-  bool game_over() const;
+  bool game_over(bool with_truncation = true) const;
+
+  // Indicates if the episode has been truncated.
+  bool game_truncated() const;
 
   // Resets the game, but not the full system.
   void reset_game();

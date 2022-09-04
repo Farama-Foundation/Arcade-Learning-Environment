@@ -217,6 +217,15 @@ bool StellaEnvironment::isTerminal() const {
            m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));
 }
 
+bool StellaEnvironment::isGameTerminal() const {
+  return m_settings->isTerminal();
+}
+
+bool StellaEnvironment::isGameTruncated() const {
+  return (m_max_num_frames_per_episode > 0 &&
+          m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode);
+}
+
 void StellaEnvironment::pressSelect(size_t num_steps) {
   m_state.pressSelect(m_osystem->event());
   for (size_t t = 0; t < num_steps; t++) {

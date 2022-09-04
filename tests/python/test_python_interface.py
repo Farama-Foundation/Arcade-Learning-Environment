@@ -1,9 +1,10 @@
-import pytest
 import os
 import pickle
 import tempfile
-import numpy as np
+
 import ale_py
+import numpy as np
+import pytest
 
 
 def test_ale_version():
@@ -56,8 +57,23 @@ def test_game_over(tetris):
     assert not tetris.game_over()
     while not tetris.game_over():
         tetris.act(0)
+    assert tetris.game_over(with_truncation=False)
+    assert tetris.game_over(with_truncation=True)
     assert tetris.game_over()
 
+
+def test_game_over_truncation(ale, test_rom_path):
+    ale.setInt("max_num_frames_per_episode", 10)
+    ale.setInt("frame_skip", 1)
+    ale.loadROM(test_rom_path)
+    ale.reset_game()
+    for _ in range(10):
+        ale.act(0)
+
+    assert ale.getEpisodeFrameNumber() == 10
+    assert ale.game_over(with_truncation=True)
+    assert not ale.game_over(with_truncation=False)
+    assert ale.game_truncated()
 
 def test_get_ram(tetris):
     ram = tetris.getRAM()

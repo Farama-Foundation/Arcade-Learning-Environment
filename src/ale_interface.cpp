@@ -239,7 +239,12 @@ void ALEInterface::setFloat(const std::string& key, const float value) {
 void ALEInterface::reset_game() { environment->reset(); }
 
 // Indicates if the game has ended.
-bool ALEInterface::game_over() const { return environment->isTerminal(); }
+bool ALEInterface::game_over(bool with_truncation) const {
+  return with_truncation ? environment->isTerminal() : environment->isGameTerminal();
+}
+
+// Indicateds if the episode has been truncated.
+bool ALEInterface::game_truncated() const { return environment->isGameTruncated(); }
 
 // The remaining number of lives.
 int ALEInterface::lives() {
