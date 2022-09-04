@@ -66,6 +66,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
 
   m_max_num_frames_per_episode =
       m_osystem->settings().getInt("max_num_frames_per_episode");
+  m_max_lives = m_settings->lives();
+  m_truncate_on_loss_of_life = m_osystem->settings().getBool("truncate_on_loss_of_life");
   m_colour_averaging = m_osystem->settings().getBool("color_averaging");
 
   m_repeat_action_probability =
@@ -212,9 +214,7 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action,
 }
 
 bool StellaEnvironment::isTerminal() const {
-  return (m_settings->isTerminal() ||
-          (m_max_num_frames_per_episode > 0 &&
-           m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode));
+  return isGameTerminal() || isGameTruncated();
 }
 
 bool StellaEnvironment::isGameTerminal() const {
@@ -222,8 +222,17 @@ bool StellaEnvironment::isGameTerminal() const {
 }
 
 bool StellaEnvironment::isGameTruncated() const {
-  return (m_max_num_frames_per_episode > 0 &&
-          m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode);
+  bool truncate = false;
+
+  // Truncate if we've gone over our frame budget
+  if (m_max_num_frames_per_episode > 0)
+    truncate |= m_state.getEpisodeFrameNumber() >= m_max_num_frames_per_episode;
+
+  // Optionally truncate if we've lost a life
+  if (m_truncate_on_loss_of_life)
+    truncate |= m_settings->lives() < m_max_lives;
+
+  return truncate;
 }
 
 void StellaEnvironment::pressSelect(size_t num_steps) {
