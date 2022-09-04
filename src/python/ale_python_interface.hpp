@@ -146,7 +146,8 @@ PYBIND11_MODULE(_ale_py, m) {
                       ale::ALEPythonInterface::act)
       .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
                       ale::ALEInterface::act)
-      .def("game_over", &ale::ALEPythonInterface::game_over)
+      .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))
+      .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
       .def("reset_game", &ale::ALEPythonInterface::reset_game)
       .def("getAvailableModes", &ale::ALEPythonInterface::getAvailableModes)
       .def("setMode", &ale::ALEPythonInterface::setMode)

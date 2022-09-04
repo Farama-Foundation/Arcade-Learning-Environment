@@ -4,20 +4,22 @@ import pytest
 pytest.importorskip("gym")
 pytest.importorskip("gym.envs.atari")
 
-from ale_py.gym import (
-    register_legacy_gym_envs,
-    _register_gym_configs,
-    register_gym_envs,
-)
-from gym import error
-from gym.utils.env_checker import check_env
-from gym.core import Env
-from gym.envs.registration import registry
-from gym.envs.atari.environment import AtariEnv
-from gym import spaces
 from itertools import product
 from unittest.mock import patch
+
 import numpy as np
+from ale_py.gym import (
+    _register_gym_configs,
+    register_gym_envs,
+    register_legacy_gym_envs,
+)
+
+from gym import error, spaces
+from gym.core import Env
+from gym.envs.atari.environment import AtariEnv
+from gym.envs.registration import registry
+from gym.utils.env_checker import check_env
+
 # fmt: on
 
 
@@ -356,6 +358,6 @@ def test_render_exception(tetris_gym):
 
 def test_gym_compliance(tetris_gym):
     try:
-        check_env(tetris_gym)
+        check_env(tetris_gym.unwrapped)
     except Exception as ex:
         pytest.fail(f"Gym compliance failed: {ex}")

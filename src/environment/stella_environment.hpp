@@ -78,8 +78,16 @@ class StellaEnvironment {
    *  called */
   void setMode(game_mode_t value);
 
-  /** Returns true once we reach a terminal state */
+  /** Returns true if the ROM reported a terminal signal OR if the episode is truncated
+   * (i.e., isGameTerminal() || isTruncated()).
+   * This functions serves to be backwards compatible with previous versions of ALE. */
   bool isTerminal() const;
+
+  /** Returns true if the ROM reported a terminal signal */
+  bool isGameTerminal() const;
+
+  /** Returns true if the episode is truncated, i.e., max number of frames is reached */
+  bool isGameTruncated() const;
 
   /** Accessor methods for the environment state. */
   void setState(const ALEState& state);
