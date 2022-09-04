@@ -17,6 +17,7 @@
 
 #include "environment/stella_environment.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <cstring>
 #include <optional>
@@ -69,6 +70,9 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
   m_max_lives = m_settings->lives();
   m_truncate_on_loss_of_life = m_osystem->settings().getBool("truncate_on_loss_of_life");
   m_colour_averaging = m_osystem->settings().getBool("color_averaging");
+
+  m_reward_min = m_osystem->settings().getInt("reward_min");
+  m_reward_max = m_osystem->settings().getInt("reward_max");
 
   m_repeat_action_probability =
       m_osystem->settings().getFloat("repeat_action_probability");
@@ -180,7 +184,7 @@ reward_t StellaEnvironment::act(Action player_a_action,
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }
 
-  return sum_rewards;
+  return std::clamp(sum_rewards, m_reward_min, m_reward_max);
 }
 
 /** This functions emulates a push on the reset button of the console */

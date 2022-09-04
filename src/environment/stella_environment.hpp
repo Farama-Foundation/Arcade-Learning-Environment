@@ -156,6 +156,8 @@ class StellaEnvironment {
   std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
   int m_max_lives;                  // Maximum number of lives at the start of an episode.
   bool m_truncate_on_loss_of_life;  // Whether to truncate episodes on loss of life.
+  int m_reward_min;                // Minimum reward value
+  int m_reward_max;                // Maximum reward value
 
   // The last actions taken by our players
   Action m_player_a_action, m_player_b_action;
