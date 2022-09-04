@@ -19,6 +19,7 @@
 #include <cassert>
 #include <sstream>
 #include <fstream>
+#include <limits>
 #include <algorithm>
 #include <string>
 
@@ -417,6 +418,9 @@ void Settings::setDefaultSettings() {
     stringSettings.insert(std::pair<std::string, std::string>("rom_file", ""));
     // Whether to truncate an episode on loss of life.
     boolSettings.insert(std::pair<std::string, bool>("truncate_on_loss_of_life", false));
+    // Reward clipping settings
+    intSettings.insert(std::pair<std::string, int>("reward_min", std::numeric_limits<int>::min()));
+    intSettings.insert(std::pair<std::string, int>("reward_max", std::numeric_limits<int>::max()));
 
     // Record settings
     intSettings.insert(std::pair<std::string, int>("fragsize", 64)); // fragsize to 64 ensures proper sound sync
