@@ -87,10 +87,14 @@ test-requires = ["pytest", "git+https://github.com/openai/gym#egg=gym"]
 test-command = "pytest {project}"
 
 # vcpkg manylinux images
-manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014_x86_64-vcpkg"
+manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux_2_28_x86_64-vcpkg"
 
 [tool.cibuildwheel.linux]
 environment-pass = ["GITHUB_REF"]
+
+[[tool.cibuildwheel.overrides]]
+select = "cp3{7,8,9}-*"
+manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014_x86_64-vcpkg"
 
 # macOS x86-64
 [[tool.cibuildwheel.overrides]]
