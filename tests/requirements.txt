@@ -1,2 +1,3 @@
 pytest>=7.0
-gym~=0.23
+# TODO(jfarebro): Use master until v26 is released
+git+https://github.com/openai/gym#egg=gym

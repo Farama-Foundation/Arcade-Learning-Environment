@@ -75,6 +75,7 @@ def test_game_over_truncation(ale, test_rom_path):
     assert not ale.game_over(with_truncation=False)
     assert ale.game_truncated()
 
+
 def test_get_ram(tetris):
     ram = tetris.getRAM()
     preallocate = np.empty((tetris.getRAMSize()), dtype=np.uint8)

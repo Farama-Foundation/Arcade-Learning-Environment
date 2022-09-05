@@ -1,15 +1,29 @@
-from collections import defaultdict, namedtuple
+from collections import defaultdict
+from typing import Any, Callable, Mapping, NamedTuple, Sequence, Text, Union
 
 import ale_py.roms as roms
 from ale_py.roms import utils as rom_utils
 
 from gym.envs.registration import register
 
-GymFlavour = namedtuple("GymFlavour", ["suffix", "env_kwargs", "kwargs"])
-GymConfig = namedtuple("GymConfig", ["version", "env_kwargs", "flavours"])
+
+class GymFlavour(NamedTuple):
+    suffix: str
+    kwargs: Union[Mapping[Text, Any], Callable[[str], Mapping[Text, Any]]]
 
 
-def _register_gym_configs(roms, obs_types, configs, prefix=""):
+class GymConfig(NamedTuple):
+    version: str
+    kwargs: Mapping[Text, Any]
+    flavours: Sequence[GymFlavour]
+
+
+def _register_gym_configs(
+    roms: Sequence[str],
+    obs_types: Sequence[str],
+    configs: Sequence[GymConfig],
+    prefix: str = "",
+) -> None:
     if len(prefix) > 0 and prefix[-1] != "/":
         prefix += "/"
 
@@ -20,41 +34,31 @@ def _register_gym_configs(roms, obs_types, configs, prefix=""):
                     name = rom_utils.rom_id_to_name(rom)
                     name = f"{name}-ram" if obs_type == "ram" else name
 
-                    # Parse environment kwargs
-                    env_kwargs_config = config.env_kwargs
-                    if callable(env_kwargs_config):
-                        env_kwargs_config = env_kwargs_config(rom)
-
-                    env_kwargs_flavour = flavour.env_kwargs
-                    if callable(env_kwargs_flavour):
-                        env_kwargs_flavour = env_kwargs_flavour(rom)
-
-                    env_kwargs = dict(
-                        game=rom,
-                        obs_type=obs_type,
-                        **env_kwargs_config,
-                        **env_kwargs_flavour,
+                    # Parse config kwargs
+                    config_kwargs = (
+                        config.kwargs(rom) if callable(config.kwargs) else config.kwargs
                     )
-
-                    # Gym kwargs
-                    kwargs = flavour.kwargs
-                    if callable(kwargs):
-                        kwargs = kwargs(rom)
-
-                    assert (
-                        "frameskip" in env_kwargs
-                    ), "Frameskip required for max_episode_steps"
+                    # Parse flavour kwargs
+                    flavour_kwargs = (
+                        flavour.kwargs(rom)
+                        if callable(flavour.kwargs)
+                        else flavour.kwargs
+                    )
 
                     # Register the environment
                     register(
                         id=f"{prefix}{name}{flavour.suffix}-{config.version}",
-                        entry_point="gym.envs.atari:AtariEnv",
-                        kwargs=env_kwargs,
-                        **kwargs,
+                        entry_point="ale_py.env.gym:AtariEnv",
+                        kwargs=dict(
+                            game=rom,
+                            obs_type=obs_type,
+                            **config_kwargs,
+                            **flavour_kwargs,
+                        ),
                     )
 
 
-def register_legacy_gym_envs():
+def register_legacy_gym_envs() -> None:
     legacy_games = [
         "adventure",
         "air_raid",
@@ -124,42 +128,34 @@ def register_legacy_gym_envs():
 
     versions = [
         GymConfig(
-            "v0",
-            {"repeat_action_probability": 0.25, "full_action_space": False},
-            [
+            version="v0",
+            kwargs={
+                "repeat_action_probability": 0.25,
+                "full_action_space": False,
+                "max_num_frames_per_episode": 108_000,
+            },
+            flavours=[
                 # Default for v0 has 10k steps, no idea why...
-                GymFlavour("", {"frameskip": (2, 5)}, {"max_episode_steps": 10000}),
+                GymFlavour("", {"frameskip": (2, 5)}),
                 # Deterministic has 100k steps, close to the standard of 108k (30 mins gameplay)
-                GymFlavour(
-                    "Deterministic",
-                    lambda rom: {"frameskip": frameskip[rom]},
-                    {"max_episode_steps": 100000},
-                ),
+                GymFlavour("Deterministic", lambda rom: {"frameskip": frameskip[rom]}),
                 # NoFrameSkip imposes a max episode steps of frameskip * 100k, weird...
-                GymFlavour(
-                    "NoFrameskip",
-                    {"frameskip": 1},
-                    lambda rom: {"max_episode_steps": 100000 * frameskip[rom]},
-                ),
+                GymFlavour("NoFrameskip", {"frameskip": 1}),
             ],
         ),
         GymConfig(
-            "v4",
-            {"repeat_action_probability": 0.0, "full_action_space": False},
-            [
+            version="v4",
+            kwargs={
+                "repeat_action_probability": 0.0,
+                "full_action_space": False,
+                "max_num_frames_per_episode": 108_000,
+            },
+            flavours=[
                 # Unlike v0, v4 has 100k max episode steps
-                GymFlavour("", {"frameskip": (2, 5)}, {"max_episode_steps": 100000}),
-                GymFlavour(
-                    "Deterministic",
-                    lambda rom: {"frameskip": frameskip[rom]},
-                    {"max_episode_steps": 100000},
-                ),
+                GymFlavour("", {"frameskip": (2, 5)}),
+                GymFlavour("Deterministic", lambda rom: {"frameskip": frameskip[rom]}),
                 # Same weird frameskip * 100k max steps for v4?
-                GymFlavour(
-                    "NoFrameskip",
-                    {"frameskip": 1},
-                    lambda rom: {"max_episode_steps": 100000 * frameskip[rom]},
-                ),
+                GymFlavour("NoFrameskip", {"frameskip": 1}),
             ],
         ),
     ]
@@ -175,13 +171,14 @@ def register_gym_envs():
     # This corresponds to 108k / 4 = 27,000 steps
     versions = [
         GymConfig(
-            "v5",
-            {
+            version="v5",
+            kwargs={
                 "repeat_action_probability": 0.25,
                 "full_action_space": False,
                 "frameskip": 4,
+                "max_num_frames_per_episode": 108_000,
             },
-            [GymFlavour("", {}, {"max_episode_steps": 108000 // 4})],
+            flavours=[GymFlavour("", {})],
         )
     ]
 

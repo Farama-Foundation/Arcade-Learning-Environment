@@ -1,9 +1,9 @@
 import os
 import re
-import sys
 import subprocess
+import sys
 
-from setuptools import setup, Extension
+from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -53,11 +53,15 @@ class CMakeBuild(build_ext):
             # exported for Ninja to pick it up, which is a little tricky to do.
             # Users can override the generator with CMAKE_GENERATOR in CMake
             # 3.15+.
-            if not cmake_generator:
+            if not cmake_generator or cmake_generator == "Ninja":
                 try:
                     import ninja  # noqa: F401
 
-                    cmake_args += ["-GNinja"]
+                    ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
+                    cmake_args += [
+                        "-GNinja",
+                        f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
+                    ]
                 except ImportError:
                     pass
 
@@ -95,15 +99,12 @@ class CMakeBuild(build_ext):
             if hasattr(self, "parallel") and self.parallel:
                 build_args += [f"-j{self.parallel}"]
 
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
+        build_temp = os.path.join(self.build_temp, ext.name)
+        if not os.path.exists(build_temp):
+            os.makedirs(build_temp)
 
-        subprocess.check_call(
-            ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
-        )
-        subprocess.check_call(
-            ["cmake", "--build", "."] + build_args, cwd=self.build_temp
-        )
+        subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=build_temp)
+        subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=build_temp)
 
 
 def parse_version(version_file):
