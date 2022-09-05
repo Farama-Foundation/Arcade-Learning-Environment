@@ -48,6 +48,9 @@ jobs:
           - runs-on: ubuntu-latest
             python: '3.10'
             triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.11.0-rc.1'
+            triplet: x64-linux-mixed
 
           - runs-on: macos-latest
             python: '3.7'
@@ -61,6 +64,9 @@ jobs:
           - runs-on: macos-latest
             python: '3.10'
             triplet: x64-osx-mixed
+          - runs-on: macos-latest
+            python: '3.11.0-rc.1'
+            triplet: x64-osx-mixed
 
           - runs-on: windows-latest
             python: '3.7'
@@ -73,6 +79,9 @@ jobs:
             triplet: x64-windows
           - runs-on: windows-latest
             python: '3.10'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.11.0-rc.1'
             triplet: x64-windows
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
@@ -83,7 +92,7 @@ jobs:
 
     - uses: actions/setup-python@v2
       with:
-        python-version: "3.x"
+        python-version: ${{ matrix.python }}
 
     - name: Install test dependencies
       # TODO(jfarebro): There's a bug with Windows cmake and PEP517 builds via pip install.

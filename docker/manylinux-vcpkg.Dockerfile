@@ -1,4 +1,5 @@
-FROM quay.io/pypa/manylinux2014_x86_64
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
 
 LABEL org.opencontainers.image.source https://github.com/mgbellemare/Arcade-Learning-Environment
 
