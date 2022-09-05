@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2022-09-05
+
+### Added
+- Added compliance with the Gym v26 API. This includes multiple breaking changes to the Gym API. See the [Gym Release](https://github.com/openai/gym) for additional information.
+- Reworked the ROM plugin API resulting in reduced startup time when importing `ale_py.roms`.
+- Added a truncation API to the ALE interface to query whether an episode was truncated or terminated (`ale.game_over(with_truncation=true/false)` and `ale.game_truncated()`)
+- Added proper Gym truncation on max episode frames. This no longer relies on the `TimeLimit` wrapper with the new truncation API in Gym v26.
+- Added a setting for truncating on loss-of-life.
+- Added a setting for clamping rewards.
+- Added `const` keywords to attributes in `ale::ALEInterface` (#457) (@AlessioZanga).
+- Added explicit exports via `__all__` in ale-py so linting tools can better detect exports.
+- Added builds for Python 3.11.
+
+### Fixed
+- Moved the Gym environment entrypoint from `gym.envs.atari:AtariEnv` to `ale_py.env.gym:AtariEnv`. This resolves many issues with the namespace package but does break backwards compatability for some Gym code that relied on the entry point being prefixed with `gym.envs.atari`.
+
 ## [0.7.5] - 2022-04-18
 ### Added
 - Added validation for Gym's frameskip values.
@@ -232,7 +248,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial ALE release.
 
 
-[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.5...HEAD
+[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.5...v0.8.0
 [0.7.5]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.2...v0.7.3
