@@ -2,12 +2,12 @@
 import pytest
 
 pytest.importorskip("gym")
-pytest.importorskip("gym.envs.atari")
 
 from itertools import product
 from unittest.mock import patch
 
 import numpy as np
+from ale_py.env.gym import AtariEnv
 from ale_py.gym import (
     _register_gym_configs,
     register_gym_envs,
@@ -16,7 +16,6 @@ from ale_py.gym import (
 
 from gym import error, spaces
 from gym.core import Env
-from gym.envs.atari.environment import AtariEnv
 from gym.envs.registration import registry
 from gym.utils.env_checker import check_env
 
@@ -36,7 +35,7 @@ def test_register_legacy_env_id():
         register_legacy_gym_envs()
 
         # Check if we registered the proper environments
-        envids = set(map(lambda e: e.id, registry.all()))
+        envids = set(map(lambda e: e.id, registry.values()))
         legacy_games = [
             "Adventure",
             "AirRaid",
@@ -119,7 +118,7 @@ def test_register_gym_envs(test_rom_path):
         register_gym_envs()
 
         # Check if we registered the proper environments
-        envids = set(map(lambda e: e.id, registry.all()))
+        envids = set(map(lambda e: e.id, registry.values()))
         games = ["ALE/Tetris"]
 
         obs_types = ["", "-ram"]
@@ -137,10 +136,25 @@ def test_gym_make(tetris_gym):
 @pytest.mark.parametrize("tetris_gym", [{"render_mode": "rgb_array"}], indirect=True)
 def test_gym_render_kwarg(tetris_gym):
     tetris_gym.reset()
-    _, _, _, info = tetris_gym.step(0)
-    assert "rgb" in info
-    assert isinstance(info["rgb"], np.ndarray)
-    assert info["rgb"].shape[-1] == 3
+    _, _, _, _, info = tetris_gym.step(0)
+    assert "rgb" not in info
+    rgb_array = tetris_gym.render()
+    assert isinstance(rgb_array, np.ndarray)
+    assert rgb_array.shape[-1] == 3
+
+
+@pytest.mark.parametrize(
+    "tetris_gym", [{"max_num_frames_per_episode": 10, "frameskip": 1}], indirect=True
+)
+def test_gym_truncate_on_max_episode_steps(tetris_gym):
+    tetris_gym.reset()
+
+    is_truncated = False
+    for _ in range(9):
+        _, _, _, is_truncated, _ = tetris_gym.step(0)
+    assert not is_truncated
+    _, _, _, is_truncated, _ = tetris_gym.step(0)
+    assert is_truncated
 
 
 @pytest.mark.parametrize("tetris_gym", [{"mode": 0, "difficulty": 0}], indirect=True)
@@ -151,7 +165,7 @@ def test_gym_mode_difficulty_kwarg(tetris_gym):
 @pytest.mark.parametrize("tetris_gym", [{"obs_type": "ram"}], indirect=True)
 def test_gym_ram_obs(tetris_gym):
     tetris_gym.reset()
-    obs, _, _, _ = tetris_gym.step(0)
+    obs, _, _, _, _ = tetris_gym.step(0)
     space = tetris_gym.observation_space
 
     assert isinstance(space, spaces.Box)
@@ -167,7 +181,7 @@ def test_gym_ram_obs(tetris_gym):
 @pytest.mark.parametrize("tetris_gym", [{"obs_type": "grayscale"}], indirect=True)
 def test_gym_img_grayscale_obs(tetris_gym):
     tetris_gym.reset()
-    obs, _, _, _ = tetris_gym.step(0)
+    obs, _, _, _, _ = tetris_gym.step(0)
     space = tetris_gym.observation_space
 
     assert isinstance(space, spaces.Box)
@@ -184,7 +198,7 @@ def test_gym_img_grayscale_obs(tetris_gym):
 @pytest.mark.parametrize("tetris_gym", [{"obs_type": "rgb"}], indirect=True)
 def test_gym_img_rgb_obs(tetris_gym):
     tetris_gym.reset()
-    obs, _, _, _ = tetris_gym.step(0)
+    obs, _, _, _, _ = tetris_gym.step(0)
     space = tetris_gym.observation_space
 
     assert isinstance(space, spaces.Box)
@@ -317,9 +331,8 @@ def test_gym_reset_with_seed(tetris_gym):
     assert first_state == second_state
 
 
-@pytest.mark.parametrize("tetris_gym", [{"render_mode": "rgb_array"}], indirect=True)
 def test_gym_reset_with_infos(tetris_gym):
-    pack = tetris_gym.reset(seed=0, return_info=True)
+    pack = tetris_gym.reset(seed=0)
 
     assert isinstance(pack, tuple)
     assert len(pack) == 2
@@ -331,7 +344,6 @@ def test_gym_reset_with_infos(tetris_gym):
     assert "lives" in info
     assert "episode_frame_number" in info
     assert "frame_number" in info
-    assert "rgb" in info
 
 
 @pytest.mark.parametrize("frameskip", [0, -1, 4.0, (-1, 5), (0, 5), (5, 2), (1, 2, 3)])
@@ -344,7 +356,7 @@ def test_frameskip_warnings(test_rom_path, frameskip):
 def test_terminal_signal(tetris_gym):
     tetris_gym.reset()
     while True:
-        _, _, terminal, _ = tetris_gym.step(tetris_gym.action_space.sample())
+        _, _, terminal, _, _ = tetris_gym.step(tetris_gym.action_space.sample())
         emulator_terminal = tetris_gym.ale.game_over()
         assert emulator_terminal == terminal
         if terminal:

@@ -36,6 +36,7 @@ dependencies = [
   "numpy",
   "importlib-metadata>=4.10.0; python_version < '3.10'",
   "importlib-resources",
+  "typing-extensions; python_version < '3.11'"
 ]
 dynamic = ["version"]
 
@@ -61,8 +62,8 @@ __internal__ = "ale_py.gym:register_legacy_gym_envs"
 packages = [
   "ale_py",
   "ale_py.roms",
-  "ale_py.scripts",
-  "gym.envs.atari"
+  "ale_py.env",
+  "ale_py.scripts"
 ]
 package-dir = {ale_py = "src/python", gym = "src/gym"}
 package-data = {"ale_py" = ["py.typed"], "ale_py.roms" = ["*.bin", "md5.txt"]}
@@ -80,7 +81,9 @@ skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 build-frontend = "build"
 
 # Test configuration
-test-extras = ["test"]
+# test-extras = ["test"]
+# TODO(jfarebro): Temporarily use upstream Gym until v26 release.
+test-requires = ["pytest", "git+https://github.com/openai/gym#egg=gym"]
 test-command = "pytest {project}"
 
 # vcpkg manylinux images

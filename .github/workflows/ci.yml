@@ -1,5 +1,12 @@
 name: CI
 on:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
   push:
     tags-ignore:
       - "*.*"
@@ -78,13 +85,15 @@ jobs:
       with:
         python-version: "3.x"
 
-    - name: Install pip dependencies
+    - name: Install test dependencies
+      # TODO(jfarebro): There's a bug with Windows cmake and PEP517 builds via pip install.
+      # As a temporary workaround installing cmake outside of the isolated env seems to work.
       run: |
         python -m pip install --user --upgrade -r tests/requirements.txt
+        python -m pip install --user cmake
 
     - uses: microsoft/setup-msbuild@v1.1
       if: runner.os == 'Windows'
-    - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10
       with:
         vcpkgGitCommitId: "aebb363eaa0b658beb19cbefdd5aa2f9cbc14f1e"
@@ -92,16 +101,15 @@ jobs:
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
 
-    - name: Configure
-      run: |
-        cmake --version
-        mkdir build && cd build
-        cmake ../ -DSDL_SUPPORT=ON -DPython3_EXECUTABLE=$(which python)
-
     - name: Build
-      working-directory: build
-      run: cmake --build . --config Debug --parallel 2
+      run: python -m pip install --user --verbose .
 
     - name: Test
-      working-directory: build
-      run: ctest -C Debug --progress -VV
+      run: python -m pytest
+
+    # Enable tmate debugging of manually-triggered workflows if the input option was provided
+    - name: Setup SSH debug session on failure
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled && failure() }}
+      with:
+        limit-access-to-actor: true

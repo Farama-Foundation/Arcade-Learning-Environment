@@ -63,7 +63,6 @@ endif()
 # Python Library
 if (BUILD_PYTHON_LIB)
   add_subdirectory(python)
-  add_subdirectory(gym)
 endif()
 
 # Install cpp-lib and CMake config & pkg-config

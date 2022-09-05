@@ -1,11 +1,10 @@
 import pytest
 
 pytest.importorskip("gym")
-pytest.importorskip("gym.envs.atari")
-
-from gym.envs.registration import registry
 
 from itertools import product
+
+from gym.envs.registration import registry
 
 
 def test_legacy_env_specs():
@@ -98,9 +97,8 @@ def test_legacy_env_specs():
     -Deterministic: frameskip = 4 or 3 for space_invaders
     """
     for spec in specs:
-        assert spec in registry.env_specs
-        kwargs = registry.env_specs[spec].kwargs
-        max_episode_steps = registry.env_specs[spec].max_episode_steps
+        assert spec in registry
+        kwargs = registry[spec].kwargs
 
         # Assert necessary parameters are set
         assert "frameskip" in kwargs
@@ -119,15 +117,15 @@ def test_legacy_env_specs():
         else:
             assert kwargs["obs_type"] == "rgb"
 
+        assert kwargs["max_num_frames_per_episode"] == 108_000
+
         if "NoFrameskip" in spec:
             assert kwargs["frameskip"] == 1
             steps = 300000 if "SpaceInvaders" in spec else 400000
-            assert max_episode_steps == steps
         elif "Deterministic" in spec:
             assert isinstance(kwargs["frameskip"], int)
             frameskip = 3 if "SpaceInvaders" in spec else 4
             assert kwargs["frameskip"] == frameskip
-            assert max_episode_steps == 100000
         else:
             assert isinstance(kwargs["frameskip"], tuple) and kwargs["frameskip"] == (
                 2,
@@ -137,9 +135,5 @@ def test_legacy_env_specs():
         assert spec.endswith("v0") or spec.endswith("v4")
         if spec.endswith("v0"):
             assert kwargs["repeat_action_probability"] == 0.25
-            if "NoFrameskip" not in spec and "Deterministic" not in spec:
-                assert max_episode_steps == 10000
         elif spec.endswith("v4"):
             assert kwargs["repeat_action_probability"] == 0.0
-            if "NoFrameskip" not in spec and "Deterministic" not in spec:
-                assert max_episode_steps == 100000

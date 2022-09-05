@@ -1,12 +1,26 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+import sys
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import ale_py
 import ale_py.roms as roms
 import ale_py.roms.utils as rom_utils
+import numpy as np
+
 import gym
 import gym.logger as logger
-import numpy as np
 from gym import error, spaces, utils
+
+if sys.version_info < (3, 11):
+    from typing_extensions import NotRequired, TypedDict
+else:
+    from typing import NotRequired, TypedDict
+
+
+class AtariEnvStepMetadata(TypedDict):
+    lives: int
+    episode_frame_number: int
+    frame_number: int
+    seeds: NotRequired[Sequence[int]]
 
 
 class AtariEnv(gym.Env, utils.EzPickle):
@@ -27,6 +41,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         frameskip: Union[Tuple[int, int], int] = 4,
         repeat_action_probability: float = 0.25,
         full_action_space: bool = False,
+        max_num_frames_per_episode: Optional[int] = None,
         render_mode: Optional[str] = None,
     ) -> None:
         """
@@ -43,6 +58,9 @@ class AtariEnv(gym.Env, utils.EzPickle):
           repeat_action_probability: int =>
               Probability to repeat actions, see Machado et al., 2018
           full_action_space: bool => Use full action space?
+          max_num_frames_per_episode: int => Max number of frame per epsiode.
+              Once `max_num_frames_per_episode` is reached the episode is
+              truncated.
           render_mode: str => One of { 'human', 'rgb_array' }.
               If `human` we'll interactively display the screen and enable
               game sounds. This will lock emulation to the ROMs specified FPS
@@ -104,6 +122,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
             frameskip,
             repeat_action_probability,
             full_action_space,
+            max_num_frames_per_episode,
             render_mode,
         )
 
@@ -123,6 +142,9 @@ class AtariEnv(gym.Env, utils.EzPickle):
         self.ale.setLoggerMode(ale_py.LoggerMode.Error)
         # Config sticky action prob.
         self.ale.setFloat("repeat_action_probability", repeat_action_probability)
+
+        if max_num_frames_per_episode is not None:
+            self.ale.setInt("max_num_frames_per_episode", max_num_frames_per_episode)
 
         # If render mode is human we can display screen and sound
         if render_mode == "human":
@@ -197,12 +219,12 @@ class AtariEnv(gym.Env, utils.EzPickle):
         if self._game_difficulty is not None:
             self.ale.setDifficulty(self._game_difficulty)
 
-        return (
-            seed1,
-            seed2,
-        )
+        return seed1, seed2
 
-    def step(self, action_ind: int) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
+    def step(
+        self,
+        action_ind: int,
+    ) -> Tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
         """
         Perform one agent step, i.e., repeats `action` frameskip # of steps.
 
@@ -232,20 +254,21 @@ class AtariEnv(gym.Env, utils.EzPickle):
         reward = 0.0
         for _ in range(frameskip):
             reward += self.ale.act(action)
-        terminal = self.ale.game_over()
+        is_terminal = self.ale.game_over(with_truncation=False)
+        is_truncated = self.ale.game_truncated()
 
-        return self._get_obs(), reward, terminal, self._get_info()
+        return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
 
     def reset(
         self,
         *,
         seed: Optional[int] = None,
-        return_info: bool = False,
         options: Optional[Dict[str, Any]] = None,
-    ) -> Union[Tuple[np.ndarray, Dict[str, Any]], np.ndarray]:
+    ) -> Tuple[np.ndarray, AtariEnvStepMetadata]:
         """
         Resets environment and returns initial observation.
         """
+        del options
         # Gym's new seeding API seeds on reset.
         # This will cause the console to be recreated
         # and loose all previous state, e.g., statistics, etc.
@@ -256,15 +279,12 @@ class AtariEnv(gym.Env, utils.EzPickle):
         self.ale.reset_game()
         obs = self._get_obs()
 
-        if return_info:
-            info = self._get_info()
-            if seeded_with is not None:
-                info["seeds"] = seeded_with
-            return obs, info
-        else:
-            return obs
+        info = self._get_info()
+        if seeded_with is not None:
+            info["seeds"] = seeded_with
+        return obs, info
 
-    def render(self, mode: str) -> np.ndarray:
+    def render(self) -> Any:
         """
         Render is not supported by ALE. We use a paradigm similar to
         Gym3 which allows you to specify `render_mode` during construction.
@@ -274,27 +294,15 @@ class AtariEnv(gym.Env, utils.EzPickle):
         will display the ALE and maintain the proper interval to match the
         FPS target set by the ROM.
         """
-        if mode == "rgb_array":
+        if self._render_mode == "rgb_array":
             return self.ale.getScreenRGB()
-        elif mode == "human":
-            raise error.Error(
-                (
-                    "render(mode='human') is deprecated. Please supply `render_mode` when "
-                    "constructing your environment, e.g., gym.make(ID, render_mode='human'). "
-                    "The new `render_mode` keyword argument supports DPI scaling, "
-                    "audio, and native framerates."
-                )
-            )
+        elif self._render_mode == "human":
+            pass
         else:
             raise error.Error(
-                f"Invalid render mode `{mode}`. Supported modes: `rgb_array`."
+                f"Invalid render mode `{self._render_mode}`. "
+                "Supported modes: `human`, `rgb_array`."
             )
-
-    def close(self) -> None:
-        """
-        Cleanup any leftovers by the environment
-        """
-        pass
 
     def _get_obs(self) -> np.ndarray:
         """
@@ -310,17 +318,12 @@ class AtariEnv(gym.Env, utils.EzPickle):
         else:
             raise error.Error(f"Unrecognized observation type: {self._obs_type}")
 
-    def _get_info(self) -> Dict[str, Any]:
-        info = {
+    def _get_info(self) -> AtariEnvStepMetadata:
+        return {
             "lives": self.ale.lives(),
             "episode_frame_number": self.ale.getEpisodeFrameNumber(),
             "frame_number": self.ale.getFrameNumber(),
         }
-
-        if self._render_mode == "rgb_array":
-            info["rgb"] = self.ale.getScreenRGB()
-
-        return info
 
     def get_keys_to_action(self) -> Dict[Tuple[int], ale_py.Action]:
         """
