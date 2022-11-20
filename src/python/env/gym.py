@@ -125,7 +125,6 @@ class AtariEnv(gym.Env, utils.EzPickle):
             max_num_frames_per_episode,
             render_mode,
         )
-
         # Initialize ALE
         self.ale = ale_py.ALEInterface()
 
@@ -416,3 +415,10 @@ class AtariEnv(gym.Env, utils.EzPickle):
         Return Gym's observation space.
         """
         return self._obs_space
+
+    @property
+    def render_mode(self) -> str:
+        """
+        Attribute render_mode to comply Gym API.
+        """
+        return self._render_mode
