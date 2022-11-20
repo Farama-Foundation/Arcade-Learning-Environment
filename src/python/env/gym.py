@@ -125,6 +125,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
             max_num_frames_per_episode,
             render_mode,
         )
+
         # Initialize ALE
         self.ale = ale_py.ALEInterface()
 
