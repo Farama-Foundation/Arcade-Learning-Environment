@@ -52,7 +52,7 @@ class VideoChessSettings : public RomSettings {
   reward_t getReward() const override;
 
   // the rom-name
-  const char* rom() const override { return "videochess"; }
+  const char* rom() const override { return "video_chess"; }
 
   // The md5 checksum of the ROM that this game supports
   const char* md5() const override { return "f0b7db930ca0e548c41a97160b9f6275"; }

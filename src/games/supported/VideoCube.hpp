@@ -40,7 +40,7 @@ class VideoCubeSettings : public RomSettings {
 
   reward_t getReward() const override;
 
-  const char* rom() const override { return "videocube"; }
+  const char* rom() const override { return "video_cube"; }
 
   // The md5 checksum of the ROM that this game supports
   const char* md5() const override { return "3f540a30fdee0b20aed7288e4a5ea528"; }
