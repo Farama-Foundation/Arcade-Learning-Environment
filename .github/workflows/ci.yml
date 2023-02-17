@@ -105,7 +105,7 @@ jobs:
       if: runner.os == 'Windows'
     - uses: lukka/run-vcpkg@v10
       with:
-        vcpkgGitCommitId: "aebb363eaa0b658beb19cbefdd5aa2f9cbc14f1e"
+        vcpkgGitCommitId: "9aa0d66373ce3a6868d12353d0d4960db0d4bd18"
         # There's a permissions issue with the cache
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
