@@ -36,6 +36,12 @@ jobs:
       if: runner.os == 'Windows'
       uses: microsoft/setup-msbuild@v1.1
 
+    # TODO(jfarebro): 02/16/2023 - There's a bug where pkg-config isn't installed on the macOS
+    # runner. See: https://github.com/actions/runner-images/pull/7125
+    - name: Install pkg-config on macOS
+      if: runner.os == 'macOS'
+      run: brew install pkg-config
+
     - name: Setup vcpkg
       if: runner.os == 'macOS'  || runner.os == 'Windows'
       uses: lukka/run-vcpkg@v10
