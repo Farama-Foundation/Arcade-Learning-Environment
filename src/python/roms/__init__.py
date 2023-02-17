@@ -3,7 +3,6 @@ import logging
 import os
 import pathlib
 import sys
-import threading
 import warnings
 from typing import List, Optional
 
