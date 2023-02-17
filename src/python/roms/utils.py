@@ -1,3 +1,8 @@
+import re
+
+_ROM_NAME_TO_ID_RE = re.compile(r"([0-9]*[A-Z][a-z]*(\d*$)?)")
+
+
 def rom_id_to_name(rom: str) -> str:
     """
     Let the ROM ID be the ROM identifier in snakecase.
@@ -21,6 +26,4 @@ def rom_name_to_id(rom: str) -> str:
     This function converts the ROM name to the ROM ID.
         i.e., camelcase -> snakecase
     """
-    return "".join(
-        map(lambda ch: "_" + ch.lower() if ch.isupper() else ch, rom)
-    ).lstrip("_")
+    return _ROM_NAME_TO_ID_RE.sub(r"\1_", rom).lower().rstrip("_")
