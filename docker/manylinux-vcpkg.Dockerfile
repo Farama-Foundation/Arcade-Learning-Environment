@@ -10,6 +10,8 @@ RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg
 ENV VCPKG_INSTALLATION_ROOT="/opt/vcpkg"
 ENV PATH="${PATH}:/opt/vcpkg"
 
-RUN bootstrap-vcpkg.sh && \
+RUN mkdir -p /root/.vcpkg && touch /root/.vcpkg/vcpkg.path.txt
+
+RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate install && \
     vcpkg integrate bash

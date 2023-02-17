@@ -3,7 +3,7 @@ group "default" {
 }
 
 variable "MANYLINUX_VERSION" {
-    default = "2_28"
+    default = "2014"
 }
 
 variable "MANYLINUX_ARCH" {
@@ -11,9 +11,9 @@ variable "MANYLINUX_ARCH" {
 }
 
 target "manylinux-vcpkg" {
-    tags = ["ghcr.io/jessefarebro/manylinux_${MANYLINUX_VERSION}_${MANYLINUX_ARCH}-vcpkg"]
+    tags = ["ghcr.io/jessefarebro/manylinux${MANYLINUX_VERSION}_${MANYLINUX_ARCH}-vcpkg"]
     dockerfile = "manylinux-vcpkg.Dockerfile"
     args = {
-        BASE_IMAGE = "quay.io/pypa/manylinux_${MANYLINUX_VERSION}_${MANYLINUX_ARCH}"
+        BASE_IMAGE = "quay.io/pypa/manylinux${MANYLINUX_VERSION}_${MANYLINUX_ARCH}"
     }
 }
