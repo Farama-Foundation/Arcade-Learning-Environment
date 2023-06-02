@@ -16,8 +16,6 @@
 // $Id: Switches.cxx,v 1.7 2007/01/01 18:04:50 stephena Exp $
 //============================================================================
 
-#include <cstdint>
-
 #include "emucore/Event.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/Switches.hxx"
