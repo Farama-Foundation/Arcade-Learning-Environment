@@ -30,9 +30,6 @@ using namespace stella;   // OSystem, Random
 StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
     : m_osystem(osystem),
       m_settings(settings),
-      m_phosphor_blend(osystem),
-      m_screen(m_osystem->console().mediaSource().height(),
-               m_osystem->console().mediaSource().width()),
       m_player_a_action(PLAYER_A_NOOP),
       m_player_b_action(PLAYER_B_NOOP) {
   // Determine whether this is a paddle-based game
@@ -69,7 +66,6 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
       m_osystem->settings().getInt("max_num_frames_per_episode");
   m_max_lives = m_settings->lives();
   m_truncate_on_loss_of_life = m_osystem->settings().getBool("truncate_on_loss_of_life");
-  m_colour_averaging = m_osystem->settings().getBool("color_averaging");
 
   m_reward_min = m_osystem->settings().getInt("reward_min");
   m_reward_max = m_osystem->settings().getInt("reward_max");
@@ -90,7 +86,12 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
 
     // Create the screen exporter
     m_screen_exporter.reset(
-        new ScreenExporter(m_osystem->colourPalette(), recordDir));
+        new ScreenExporter(
+          m_osystem->console().mediaSource(),
+          m_osystem->colourPalette(),
+          recordDir
+        )
+    );
   }
 }
 
@@ -178,7 +179,7 @@ reward_t StellaEnvironment::act(Action player_a_action,
 
     // Similarly record screen as needed
     if (m_screen_exporter.get() != NULL)
-      m_screen_exporter->saveNext(m_screen);
+      m_screen_exporter->saveNext();
 
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
@@ -244,8 +245,6 @@ void StellaEnvironment::pressSelect(size_t num_steps) {
   for (size_t t = 0; t < num_steps; t++) {
     m_osystem->console().mediaSource().update();
   }
-  processScreen();
-  processRAM();
   emulate(PLAYER_A_NOOP, PLAYER_B_NOOP);
   m_state.incrementFrame();
 }
@@ -281,10 +280,6 @@ void StellaEnvironment::emulate(Action player_a_action, Action player_b_action,
       m_settings->step(m_osystem->console().system());
     }
   }
-
-  // Parse screen and RAM into their respective data structures
-  processScreen();
-  processRAM();
 }
 
 /** Accessor methods for the environment state. */
@@ -297,27 +292,8 @@ std::unique_ptr<StellaEnvironmentWrapper> StellaEnvironment::getWrapper() {
       new StellaEnvironmentWrapper(*this));
 }
 
-void StellaEnvironment::processScreen() {
-  if (m_colour_averaging) {
-    // Perform phosphor averaging; the blender stores its result in the given screen
-    m_phosphor_blend.process(m_screen);
-  } else {
-    // Copy screen over and we're done!
-    std::memcpy(m_screen.getArray(),
-           m_osystem->console().mediaSource().currentFrameBuffer(),
-           m_screen.arraySize());
-  }
-}
-
-void StellaEnvironment::processRAM() {
-  // Copy RAM over
-  for (size_t i = 0; i < m_ram.size(); i++)
-    *m_ram.byte(i) = m_osystem->console().system().peek(i + 0x80);
-}
-
-void StellaEnvironment::setRAM(size_t memory_index, byte_t value) {
+void StellaEnvironment::setRAM(size_t memory_index, uint8_t value) {
   m_osystem->console().system().poke(memory_index + 0x80, value);
-  *m_ram.byte(memory_index) = value;
 }
 
 }  // namespace ale
