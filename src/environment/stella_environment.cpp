@@ -17,6 +17,7 @@
 
 #include "environment/stella_environment.hpp"
 
+#include <cassert>
 #include <algorithm>
 #include <sstream>
 #include <cstring>
