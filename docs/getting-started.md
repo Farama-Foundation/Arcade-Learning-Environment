@@ -4,11 +4,11 @@
 
 The Python interface `ale-py` supports the following configurations:
 
-| Platform | Architechture | Python Version |
-| :------: | :-----------: | :------------: |
-| Linux ([manylinux2014](https://www.python.org/dev/peps/pep-0571/)) | x64 | 3.6+ |
-| macOS | x64, arm64 | 3.6+ |
-| Windows | AMD64 | 3.6+ |
+|                              Platform                              | Architechture | Python Version |
+|:------------------------------------------------------------------:|:-------------:|:--------------:|
+| Linux ([manylinux2014](https://www.python.org/dev/peps/pep-0571/)) |      x64      |      3.6+      |
+|                               macOS                                |  x64, arm64   |      3.6+      |
+|                              Windows                               |     AMD64     |      3.6+      |
 
 
 To install the Python interface from PyPi simply run:
