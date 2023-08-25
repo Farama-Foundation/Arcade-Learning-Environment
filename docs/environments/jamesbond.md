@@ -4,7 +4,7 @@ title: Jamesbond
 
 # Jamesbond
 
-```{figure} ../../_static/videos/atari/jamesbond.gif
+```{figure} ../_static/videos/environments/jamesbond.gif
 :width: 120px
 :name: Jamesbond
 ```

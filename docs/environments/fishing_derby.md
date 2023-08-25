@@ -4,7 +4,7 @@ title: FishingDerby
 
 # FishingDerby
 
-```{figure} ../../_static/videos/atari/fishing_derby.gif
+```{figure} ../_static/videos/environments/fishing_derby.gif
 :width: 120px
 :name: FishingDerby
 ```

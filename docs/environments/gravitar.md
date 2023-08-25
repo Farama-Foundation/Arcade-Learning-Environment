@@ -4,7 +4,7 @@ title: Gravitar
 
 # Gravitar
 
-```{figure} ../../_static/videos/atari/gravitar.gif
+```{figure} ../_static/videos/environments/gravitar.gif
 :width: 120px
 :name: Gravitar
 ```

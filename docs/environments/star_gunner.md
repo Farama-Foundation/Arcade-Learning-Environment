@@ -4,7 +4,7 @@ title: StarGunner
 
 # StarGunner
 
-```{figure} ../../_static/videos/atari/star_gunner.gif
+```{figure} ../_static/videos/environments/star_gunner.gif
 :width: 120px
 :name: StarGunner
 ```

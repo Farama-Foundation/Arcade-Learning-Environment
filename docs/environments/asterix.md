@@ -4,7 +4,7 @@ title: Asterix
 
 # Asterix
 
-```{figure} ../../_static/videos/atari/asterix.gif
+```{figure} ../_static/videos/environments/asterix.gif
 :width: 120px
 :name: Asterix
 ```

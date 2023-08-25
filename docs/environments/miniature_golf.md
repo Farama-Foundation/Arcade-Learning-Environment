@@ -4,7 +4,7 @@ title: MiniatureGolf
 
 # MiniatureGolf
 
-```{figure} ../../_static/videos/atari/miniature_golf.gif
+```{figure} ../_static/videos/environments/miniature_golf.gif
 :width: 120px
 :name: MiniatureGolf
 ```

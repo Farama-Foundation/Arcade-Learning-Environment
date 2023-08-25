@@ -4,7 +4,7 @@ title: Boxing
 
 # Boxing
 
-```{figure} ../../_static/videos/atari/boxing.gif
+```{figure} ../_static/videos/environments/boxing.gif
 :width: 120px
 :name: Boxing
 ```

@@ -4,7 +4,7 @@ title: Asteroids
 
 # Asteroids
 
-```{figure} ../../_static/videos/atari/asteroids.gif
+```{figure} ../_static/videos/environments/asteroids.gif
 :width: 120px
 :name: Asteroids
 ```

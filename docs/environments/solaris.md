@@ -4,7 +4,7 @@ title: Solaris
 
 # Solaris
 
-```{figure} ../../_static/videos/atari/solaris.gif
+```{figure} ../_static/videos/environments/solaris.gif
 :width: 120px
 :name: Solaris
 ```

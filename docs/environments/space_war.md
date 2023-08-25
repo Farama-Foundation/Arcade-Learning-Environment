@@ -4,7 +4,7 @@ title: SpaceWar
 
 # SpaceWar
 
-```{figure} ../../_static/videos/atari/space_war.gif
+```{figure} ../_static/videos/environments/space_war.gif
 :width: 120px
 :name: SpaceWar
 ```

@@ -4,7 +4,7 @@ title: Darkchambers
 
 # Darkchambers
 
-```{figure} ../../_static/videos/atari/darkchambers.gif
+```{figure} ../_static/videos/environments/darkchambers.gif
 :width: 120px
 :name: Darkchambers
 ```

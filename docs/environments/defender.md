@@ -4,7 +4,7 @@ title: Defender
 
 # Defender
 
-```{figure} ../../_static/videos/atari/defender.gif
+```{figure} ../_static/videos/environments/defender.gif
 :width: 120px
 :name: Defender
 ```

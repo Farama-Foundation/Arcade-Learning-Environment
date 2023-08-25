@@ -4,7 +4,7 @@ title: RoadRunner
 
 # RoadRunner
 
-```{figure} ../../_static/videos/atari/road_runner.gif
+```{figure} ../_static/videos/environments/road_runner.gif
 :width: 120px
 :name: RoadRunner
 ```

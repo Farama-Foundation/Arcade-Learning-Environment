@@ -4,7 +4,7 @@ title: Frostbite
 
 # Frostbite
 
-```{figure} ../../_static/videos/atari/frostbite.gif
+```{figure} ../_static/videos/environments/frostbite.gif
 :width: 120px
 :name: Frostbite
 ```

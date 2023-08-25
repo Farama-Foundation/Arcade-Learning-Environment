@@ -4,7 +4,7 @@ title: Kaboom
 
 # Kaboom
 
-```{figure} ../../_static/videos/atari/kaboom.gif
+```{figure} ../_static/videos/environments/kaboom.gif
 :width: 120px
 :name: Kaboom
 ```

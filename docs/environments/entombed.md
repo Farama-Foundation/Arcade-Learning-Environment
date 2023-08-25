@@ -4,7 +4,7 @@ title: Entombed
 
 # Entombed
 
-```{figure} ../../_static/videos/atari/entombed.gif
+```{figure} ../_static/videos/environments/entombed.gif
 :width: 120px
 :name: Entombed
 ```

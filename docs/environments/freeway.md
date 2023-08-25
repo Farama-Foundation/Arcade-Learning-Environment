@@ -4,7 +4,7 @@ title: Freeway
 
 # Freeway
 
-```{figure} ../../_static/videos/atari/freeway.gif
+```{figure} ../_static/videos/environments/freeway.gif
 :width: 120px
 :name: Freeway
 ```

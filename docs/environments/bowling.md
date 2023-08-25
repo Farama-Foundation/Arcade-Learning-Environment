@@ -4,7 +4,7 @@ title: Bowling
 
 # Bowling
 
-```{figure} ../../_static/videos/atari/bowling.gif
+```{figure} ../_static/videos/environments/bowling.gif
 :width: 120px
 :name: Bowling
 ```

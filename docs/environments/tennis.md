@@ -4,7 +4,7 @@ title: Tennis
 
 # Tennis
 
-```{figure} ../../_static/videos/atari/tennis.gif
+```{figure} ../_static/videos/environments/tennis.gif
 :width: 120px
 :name: Tennis
 ```

@@ -4,7 +4,7 @@ title: Klax
 
 # Klax
 
-```{figure} ../../_static/videos/atari/klax.gif
+```{figure} ../_static/videos/environments/klax.gif
 :width: 120px
 :name: Klax
 ```

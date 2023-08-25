@@ -4,7 +4,7 @@ title: BankHeist
 
 # BankHeist
 
-```{figure} ../../_static/videos/atari/bank_heist.gif
+```{figure} ../_static/videos/environments/bank_heist.gif
 :width: 120px
 :name: BankHeist
 ```

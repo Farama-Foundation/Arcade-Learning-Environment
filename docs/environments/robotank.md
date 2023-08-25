@@ -4,7 +4,7 @@ title: Robotank
 
 # Robotank
 
-```{figure} ../../_static/videos/atari/robotank.gif
+```{figure} ../_static/videos/environments/robotank.gif
 :width: 120px
 :name: Robotank
 ```

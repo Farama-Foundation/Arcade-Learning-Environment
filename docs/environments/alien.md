@@ -4,18 +4,18 @@ title: Alien
 
 # Alien
 
-```{figure} ../../_static/videos/atari/alien.gif
+```{figure} ../_static/videos/environments/alien.gif
 :width: 120px
 :name: Alien
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Alien-v5")` |
+| Import            | `gymnasium.make("ALE/Alien-v5")`  |
 
 For more Alien variants with different observation and action spaces, see the variants section.
 

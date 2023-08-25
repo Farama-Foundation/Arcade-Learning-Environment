@@ -4,7 +4,7 @@ title: Seaquest
 
 # Seaquest
 
-```{figure} ../../_static/videos/atari/seaquest.gif
+```{figure} ../_static/videos/environments/seaquest.gif
 :width: 120px
 :name: Seaquest
 ```

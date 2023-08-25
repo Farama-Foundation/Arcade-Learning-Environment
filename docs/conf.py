@@ -16,9 +16,6 @@
 
 # -- Project information -----------------------------------------------------
 import os
-import re
-
-import sphinx_gallery.gen_rst
 
 import ale_py
 
@@ -66,22 +63,6 @@ autoclass_content = "both"
 autodoc_preserve_defaults = True
 
 
-# This function removes the content before the parameters in the __init__ function.
-# This content is often not useful for the website documentation as it replicates
-# the class docstring.
-def remove_lines_before_parameters(app, what, name, obj, options, lines):
-    if what == "class":
-        # ":param" represents args values
-        first_idx_to_keep = next(
-            (i for i, line in enumerate(lines) if line.startswith(":param")), 0
-        )
-        lines[:] = lines[first_idx_to_keep:]
-
-
-def setup(app):
-    app.connect("autodoc-process-docstring", remove_lines_before_parameters)
-
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -93,11 +74,11 @@ html_baseurl = "https://ale.farama.org"
 html_copy_source = False
 html_favicon = "_static/img/favicon.png"
 html_theme_options = {
-    "light_logo": "img/ale_black.svg",
-    "dark_logo": "img/ale_white.svg",
-    "gtag": "TODO",
-    "description": "TODO",
-    "image": "img/todo-github.png",
+    "light_logo": "img/ale.svg",
+    "dark_logo": "img/ale.svg",
+    # "gtag": "TODO",
+    "description": "The Arcade Learning Environment (ALE) -- a platform for AI research.",
+    "image": "img/ale.svg",
     "versioning": True,
     "source_repository": "https://github.com/Farama-Foundation/arcade-Learning-Environment/",
     "source_branch": "main",

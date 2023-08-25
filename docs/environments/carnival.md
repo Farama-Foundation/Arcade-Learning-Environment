@@ -4,7 +4,7 @@ title: Carnival
 
 # Carnival
 
-```{figure} ../../_static/videos/atari/carnival.gif
+```{figure} ../_static/videos/environments/carnival.gif
 :width: 120px
 :name: Carnival
 ```

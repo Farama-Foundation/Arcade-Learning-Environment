@@ -4,7 +4,7 @@ title: Atlantis2
 
 # Atlantis2
 
-```{figure} ../../_static/videos/atari/atlantis2.gif
+```{figure} ../_static/videos/environments/atlantis2.gif
 :width: 120px
 :name: Atlantis2
 ```

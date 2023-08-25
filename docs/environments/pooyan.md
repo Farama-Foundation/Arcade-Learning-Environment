@@ -4,7 +4,7 @@ title: Pooyan
 
 # Pooyan
 
-```{figure} ../../_static/videos/atari/pooyan.gif
+```{figure} ../_static/videos/environments/pooyan.gif
 :width: 120px
 :name: Pooyan
 ```

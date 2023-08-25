@@ -4,7 +4,7 @@ title: ElevatorAction
 
 # ElevatorAction
 
-```{figure} ../../_static/videos/atari/elevator_action.gif
+```{figure} ../_static/videos/environments/elevator_action.gif
 :width: 120px
 :name: ElevatorAction
 ```

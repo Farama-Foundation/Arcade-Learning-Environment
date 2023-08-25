@@ -4,7 +4,7 @@ title: MsPacman
 
 # MsPacman
 
-```{figure} ../../_static/videos/atari/ms_pacman.gif
+```{figure} ../_static/videos/environments/ms_pacman.gif
 :width: 120px
 :name: MsPacman
 ```

@@ -4,7 +4,7 @@ title: Hero
 
 # Hero
 
-```{figure} ../../_static/videos/atari/hero.gif
+```{figure} ../_static/videos/environments/hero.gif
 :width: 120px
 :name: Hero
 ```

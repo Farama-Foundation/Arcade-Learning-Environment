@@ -4,7 +4,7 @@ title: Atlantis
 
 # Atlantis
 
-```{figure} ../../_static/videos/atari/atlantis.gif
+```{figure} ../_static/videos/environments/atlantis.gif
 :width: 120px
 :name: Atlantis
 ```

@@ -38,7 +38,7 @@ env.close()
 :caption: Introduction
 
 getting-started
-environment-spec
+env-spec
 environments
 multi-agent-environments
 faq
@@ -54,8 +54,6 @@ python-interface
 gym-interface
 visualization
 ```
-
-
 
 ```{toctree}
 :hidden:

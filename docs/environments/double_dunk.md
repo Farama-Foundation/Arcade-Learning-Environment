@@ -4,7 +4,7 @@ title: DoubleDunk
 
 # DoubleDunk
 
-```{figure} ../../_static/videos/atari/double_dunk.gif
+```{figure} ../_static/videos/environments/double_dunk.gif
 :width: 120px
 :name: DoubleDunk
 ```

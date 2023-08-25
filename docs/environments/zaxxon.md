@@ -4,7 +4,7 @@ title: Zaxxon
 
 # Zaxxon
 
-```{figure} ../../_static/videos/atari/zaxxon.gif
+```{figure} ../_static/videos/environments/zaxxon.gif
 :width: 120px
 :name: Zaxxon
 ```

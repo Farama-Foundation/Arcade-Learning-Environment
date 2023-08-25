@@ -4,7 +4,7 @@ title: Riverraid
 
 # Riverraid
 
-```{figure} ../../_static/videos/atari/riverraid.gif
+```{figure} ../_static/videos/environments/riverraid.gif
 :width: 120px
 :name: Riverraid
 ```

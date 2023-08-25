@@ -4,7 +4,7 @@ title: KeystoneKapers
 
 # KeystoneKapers
 
-```{figure} ../../_static/videos/atari/keystone_kapers.gif
+```{figure} ../_static/videos/environments/keystone_kapers.gif
 :width: 120px
 :name: KeystoneKapers
 ```

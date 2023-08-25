@@ -4,7 +4,7 @@ title: CrazyClimber
 
 # CrazyClimber
 
-```{figure} ../../_static/videos/atari/crazy_climber.gif
+```{figure} ../_static/videos/environments/crazy_climber.gif
 :width: 120px
 :name: CrazyClimber
 ```

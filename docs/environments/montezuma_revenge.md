@@ -4,7 +4,7 @@ title: MontezumaRevenge
 
 # MontezumaRevenge
 
-```{figure} ../../_static/videos/atari/montezuma_revenge.gif
+```{figure} ../_static/videos/environments/montezuma_revenge.gif
 :width: 120px
 :name: MontezumaRevenge
 ```

@@ -4,7 +4,7 @@ title: SirLancelot
 
 # SirLancelot
 
-```{figure} ../../_static/videos/atari/sir_lancelot.gif
+```{figure} ../_static/videos/environments/sir_lancelot.gif
 :width: 120px
 :name: SirLancelot
 ```

@@ -4,7 +4,7 @@ title: KingKong
 
 # KingKong
 
-```{figure} ../../_static/videos/atari/king_kong.gif
+```{figure} ../_static/videos/environments/king_kong.gif
 :width: 120px
 :name: KingKong
 ```

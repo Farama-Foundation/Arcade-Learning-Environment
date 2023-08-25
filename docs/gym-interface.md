@@ -4,7 +4,6 @@ The ALE now natively supports OpenAI Gym. If you create any of the legacy Atari 
 
 ```py
 import gym
-import ale_py
 
 env = gym.make('ALE/Breakout-v5')
 ```

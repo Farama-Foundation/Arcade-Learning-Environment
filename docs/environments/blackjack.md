@@ -4,7 +4,7 @@ title: Blackjack
 
 # Blackjack
 
-```{figure} ../../_static/videos/atari/blackjack.gif
+```{figure} ../_static/videos/environments/blackjack.gif
 :width: 120px
 :name: Blackjack
 ```

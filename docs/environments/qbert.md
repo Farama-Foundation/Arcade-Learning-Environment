@@ -4,7 +4,7 @@ title: Qbert
 
 # Qbert
 
-```{figure} ../../_static/videos/atari/qbert.gif
+```{figure} ../_static/videos/environments/qbert.gif
 :width: 120px
 :name: Qbert
 ```

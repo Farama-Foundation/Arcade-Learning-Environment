@@ -4,7 +4,7 @@ title: DemonAttack
 
 # DemonAttack
 
-```{figure} ../../_static/videos/atari/demon_attack.gif
+```{figure} ../_static/videos/environments/demon_attack.gif
 :width: 120px
 :name: DemonAttack
 ```

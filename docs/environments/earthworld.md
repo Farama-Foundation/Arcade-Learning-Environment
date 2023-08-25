@@ -4,7 +4,7 @@ title: Earthworld
 
 # Earthworld
 
-```{figure} ../../_static/videos/atari/earthworld.gif
+```{figure} ../_static/videos/environments/earthworld.gif
 :width: 120px
 :name: Earthworld
 ```

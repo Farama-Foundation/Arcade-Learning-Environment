@@ -1,4 +1,4 @@
-# Citing
+# Cite ALE
 
 If you use the ALE in your research, we ask that you please cite the following.
 

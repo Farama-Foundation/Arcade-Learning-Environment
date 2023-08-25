@@ -4,7 +4,7 @@ title: LostLuggage
 
 # LostLuggage
 
-```{figure} ../../_static/videos/atari/lost_luggage.gif
+```{figure} ../_static/videos/environments/lost_luggage.gif
 :width: 120px
 :name: LostLuggage
 ```

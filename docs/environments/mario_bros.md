@@ -4,7 +4,7 @@ title: MarioBros
 
 # MarioBros
 
-```{figure} ../../_static/videos/atari/mario_bros.gif
+```{figure} ../_static/videos/environments/mario_bros.gif
 :width: 120px
 :name: MarioBros
 ```

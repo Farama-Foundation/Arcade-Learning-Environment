@@ -39,7 +39,7 @@ The Atari environments are based off the [Arcade Learning Environment](https://g
     :file: multi-agent-environments/list.html
 ```
 
-### Installation
+## Installation
 
 The unique dependencies for this set of environments can be installed via:
 
@@ -49,7 +49,7 @@ pip install pettingzoo[atari]
 
 Install ROMs using [AutoROM](https://github.com/Farama-Foundation/AutoROM), or specify the path to your Atari rom using the `rom_path` argument (see [Common Parameters](#common-parameters)).
 
-### Usage
+## Usage
 
 To launch a [Space Invaders](https://pettingzoo.farama.org/environments/multi-agent-environments/space_invaders/) environment with agents taking random actions:
 ``` python
@@ -67,18 +67,18 @@ for agent in env.agent_iter():
 env.close()
 ```
 
-### Games Overview
+## Games Overview
 
-Most games have two players, with the exception of Warlords and a couple of Pong variations which have four players.
+Most games have two players, except for Warlords and a couple of Pong variations which have four players.
 
-### Environment Details
+## Environment Details
 
 The ALE has been studied extensively and a few notable problems have been identified:
 
 * **Determinism**: The Atari console is deterministic, and so agents can theoretically memorize precise sequences of actions that will maximize the end score. This is not ideal, so we encourage the use of [SuperSuit's](https://github.com/Farama-Foundation/SuperSuit) `sticky_actions` wrapper (example below). This is the recommended approach of  *"Machado et al. (2018), "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents"*
 * **Frame flickering**: Atari games often do not render every sprite every frame due to hardware restrictions. Instead, sprites (such as the knights in Joust) are sometimes rendered every other frame or even (in Wizard of Wor) every 3 frames. The standard way of handling this computing the pixel-wise maximum of the previous 2 observations (see example below for implementation).
 
-### Preprocessing
+## Preprocessing
 
 We encourage the use of the [supersuit](https://github.com/Farama-Foundation/SuperSuit) library for preprocessing. The unique dependencies for this set of environments can be installed via:
 
@@ -112,7 +112,7 @@ env = supersuit.resize_v1(env, 84, 84)
 env = supersuit.frame_stack_v1(env, 4)
 ```
 
-### Common Parameters
+## Common Parameters
 
 All the Atari environments have the following environment parameters:
 
@@ -140,7 +140,7 @@ If this is not specified (has value `None`), then the library looks for roms
 installed at the default AutoROM path.
 
 
-### Citation
+## Citation
 
 Multiplayer games within the Arcade Learning Environment were introduced in:
 

@@ -4,7 +4,7 @@ title: WordZapper
 
 # WordZapper
 
-```{figure} ../../_static/videos/atari/word_zapper.gif
+```{figure} ../_static/videos/environments/word_zapper.gif
 :width: 120px
 :name: WordZapper
 ```

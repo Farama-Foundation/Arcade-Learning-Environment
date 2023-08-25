@@ -4,7 +4,7 @@ title: BattleZone
 
 # BattleZone
 
-```{figure} ../../_static/videos/atari/battle_zone.gif
+```{figure} ../_static/videos/environments/battle_zone.gif
 :width: 120px
 :name: BattleZone
 ```

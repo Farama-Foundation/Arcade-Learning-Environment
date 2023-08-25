@@ -4,7 +4,7 @@ title: Breakout
 
 # Breakout
 
-```{figure} ../../_static/videos/atari/breakout.gif
+```{figure} ../_static/videos/environments/breakout.gif
 :width: 120px
 :name: Breakout
 ```

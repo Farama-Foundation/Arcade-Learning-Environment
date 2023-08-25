@@ -4,7 +4,7 @@ title: KungFuMaster
 
 # KungFuMaster
 
-```{figure} ../../_static/videos/atari/kung_fu_master.gif
+```{figure} ../_static/videos/environments/kung_fu_master.gif
 :width: 120px
 :name: KungFuMaster
 ```

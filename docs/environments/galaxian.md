@@ -4,7 +4,7 @@ title: Galaxian
 
 # Galaxian
 
-```{figure} ../../_static/videos/atari/galaxian.gif
+```{figure} ../_static/videos/environments/galaxian.gif
 :width: 120px
 :name: Galaxian
 ```

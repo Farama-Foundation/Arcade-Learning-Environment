@@ -4,7 +4,7 @@ title: TimePilot
 
 # TimePilot
 
-```{figure} ../../_static/videos/atari/time_pilot.gif
+```{figure} ../_static/videos/environments/time_pilot.gif
 :width: 120px
 :name: TimePilot
 ```

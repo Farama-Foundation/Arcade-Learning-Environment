@@ -4,7 +4,7 @@ title: IceHockey
 
 # IceHockey
 
-```{figure} ../../_static/videos/atari/ice_hockey.gif
+```{figure} ../_static/videos/environments/ice_hockey.gif
 :width: 120px
 :name: IceHockey
 ```
