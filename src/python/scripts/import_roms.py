@@ -1,6 +1,7 @@
 import argparse
 import pathlib
 import shutil
+import sys
 import warnings
 from typing import Optional
 
@@ -65,7 +66,7 @@ def main() -> None:
 
         if not romdir.exists():
             print(f"Path {romdir} doesn't exist.")
-            exit(1)
+            sys.exit(1)
     elif args.import_from_pkg:
         if "." in args.import_from_pkg:
             root, subpackage = args.import_from_pkg.split(".", maxsplit=1)
@@ -76,13 +77,13 @@ def main() -> None:
                 romdir = path.resolve()
                 if not romdir.exists():
                     print(f"Unable to find path {subpackage} in module {root}.")
-                    exit(1)
+                    sys.exit(1)
         except ModuleNotFoundError:
             print(f"Unable to find module {root}.")
-            exit(1)
+            sys.exit(1)
         except Exception as e:
             print(f"Unknown error {str(e)}.")
-            exit(1)
+            sys.exit(1)
 
     with warnings.catch_warnings():
         warnings.filterwarnings(
