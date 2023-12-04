@@ -1,10 +1,10 @@
 import sys
 import pathlib
 
-if sys.version_info < (3, 8):
-    import importlib_resources as resources
-else:
+if sys.version_info >= (3, 9):
     import importlib.resources as resources
+else:
+    import importlib_resources as resources
 
 from typing import List
 
