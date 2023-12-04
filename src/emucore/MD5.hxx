@@ -20,6 +20,7 @@
 #define MD5_HXX
 
 #include <string>
+#include <cstdint>
 
 namespace ale {
 namespace stella {

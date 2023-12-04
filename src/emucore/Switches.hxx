@@ -19,6 +19,8 @@
 #ifndef SWITCHES_HXX
 #define SWITCHES_HXX
 
+#include <cstdint>
+
 namespace ale {
 namespace stella {
 

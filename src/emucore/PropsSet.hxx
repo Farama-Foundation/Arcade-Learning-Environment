@@ -19,6 +19,8 @@
 #ifndef PROPERTIES_SET_HXX
 #define PROPERTIES_SET_HXX
 
+#include <cstdint>
+
 namespace ale {
 namespace stella {
 
