@@ -20,6 +20,7 @@
 #include <string>
 
 // Include obscure header file for uint32_t definition
+#include <cstdint>
 
 namespace ale {
 
