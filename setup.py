@@ -142,11 +142,14 @@ def parse_version(version_file):
         version = ci_version
     else:
         sha = (
-            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=here)
-            .decode("ascii")
+            subprocess.run(
+                ["git", "rev-parse", "--short", "HEAD"], capture_output=True, cwd=here
+            )
+            .stdout.decode("ascii")
             .strip()
         )
-        version += f"+{sha}"
+        if sha:
+            version += f"+{sha}"
 
     return version
 
