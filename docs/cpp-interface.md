@@ -70,4 +70,4 @@ int main(int argc, char** argv) {
 }
 ```
 
-Compilling with the shared library can be done by appending `-lale` or by using `find_package(ale)` and linking to the cmake target `ale::ale-lib`. See [examples/cpp-agent](https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/examples/cpp-agent) for a detailed example, including compilation. If any errors arise make sure to check out the [FAQ](./faq.md).
+Compilling with the shared library can be done by appending `-lale` or by using `find_package(ale)` and linking to the cmake target `ale::ale-lib`. See [examples/cpp-interface](https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/examples/cpp-interface) for a detailed example, including compilation. If any errors arise make sure to check out the [FAQ](./faq.md).
