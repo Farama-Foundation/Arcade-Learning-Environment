@@ -6,7 +6,11 @@ import warnings
 from typing import Optional
 
 import ale_py
-import importlib_resources as resources
+
+if sys.version_info >= (3, 9):
+    import importlib.resources as resources
+else:
+    import importlib_resources as resources
 
 
 def import_roms(
