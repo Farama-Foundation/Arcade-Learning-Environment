@@ -18,6 +18,7 @@
 
 #ifndef TIASOUND_HXX
 #define TIASOUND_HXX
+#include <cstdint>
 
 namespace ale {
 namespace stella {
