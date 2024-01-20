@@ -6,27 +6,27 @@ This section provides additional information regarding the environment implement
 
 The following regular actions are defined by the `Action` enum in [`common/Constants.h`](https://github.com/mgbellemare/Arcade-Learning-Environment/blob/master/src/common/Constants.h). These can also be accessed in Python through the enum object `ale_py.Action`. These actions are interpreted by ALE as follows:
 
-| Index | Action | Description |
-| ---   | ---    | ---         |
-| 0     | **`NOOP`**   | No operation, do nothing. |
-| 1     | **`FIRE`**   | Press the fire button without updating the joystick position |
-| 2     | **`UP`**    | Apply a Δ-movement upwards on the joystick |
-| 3     | **`RIGHT`**    | Apply a Δ-movement rightward on the joystick |
-| 4     | **`LEFT`** | Apply a Δ-movement leftward on the joystick |
-| 5     | **`DOWN`** | Apply a Δ-movement downward on the joystick |
-| 6     | **`UPRIGHT`** | Execute **`UP`** and **`RIGHT`** |
-| 7     | **`UPLEFT`** | Execute **`UP`** and **`LEFT`** |
-| 8     | **`DOWNRIGHT`** | Execute **`DOWN`** and **`RIGHT`** |
-| 9     | **`DOWNLEFT`** | Execute **`DOWN`** and **`LEFT`** |
-| 10     | **`UPFIRE`** | Execute **`UP`** and **`FIRE`** |
-| 11     | **`RIGHTFIRE`** | Execute **`RIGHT`** and **`FIRE`** |
-| 12     | **`LEFTFIRE`** | Execute **`LEFT`** and **`FIRE`** |
-| 13     | **`DOWNFIRE`** | Execute **`DOWN`** and **`FIRE`** |
-| 14     | **`UPRIGHTFIRE`** | Execute **`UP`** and **`RIGHT`** and **`FIRE`** |
-| 15     | **`UPLEFTFIRE`** | Execute **`UP`** and **`LEFT`** and **`FIRE`** |
-| 16     | **`DOWNRIGHTFIRE`** | Execute **`DOWN`** and **`RIGHT`** and **`FIRE`** |
-| 17     | **`DOWNLEFTFIRE`** | Execute **`DOWN`** and **`LEFT`** and **`FIRE`** |
-| 40     | **`RESET`**<sup>1</sup> | Toggles the Atari 2600 reset switch, **not** used for resetting the environment |
+| Index | Action                  | Description                                                                     |
+|-------|-------------------------|---------------------------------------------------------------------------------|
+| 0     | **`NOOP`**              | No operation, do nothing.                                                       |
+| 1     | **`FIRE`**              | Press the fire button without updating the joystick position                    |
+| 2     | **`UP`**                | Apply a Δ-movement upwards on the joystick                                      |
+| 3     | **`RIGHT`**             | Apply a Δ-movement rightward on the joystick                                    |
+| 4     | **`LEFT`**              | Apply a Δ-movement leftward on the joystick                                     |
+| 5     | **`DOWN`**              | Apply a Δ-movement downward on the joystick                                     |
+| 6     | **`UPRIGHT`**           | Execute **`UP`** and **`RIGHT`**                                                |
+| 7     | **`UPLEFT`**            | Execute **`UP`** and **`LEFT`**                                                 |
+| 8     | **`DOWNRIGHT`**         | Execute **`DOWN`** and **`RIGHT`**                                              |
+| 9     | **`DOWNLEFT`**          | Execute **`DOWN`** and **`LEFT`**                                               |
+| 10    | **`UPFIRE`**            | Execute **`UP`** and **`FIRE`**                                                 |
+| 11    | **`RIGHTFIRE`**         | Execute **`RIGHT`** and **`FIRE`**                                              |
+| 12    | **`LEFTFIRE`**          | Execute **`LEFT`** and **`FIRE`**                                               |
+| 13    | **`DOWNFIRE`**          | Execute **`DOWN`** and **`FIRE`**                                               |
+| 14    | **`UPRIGHTFIRE`**       | Execute **`UP`** and **`RIGHT`** and **`FIRE`**                                 |
+| 15    | **`UPLEFTFIRE`**        | Execute **`UP`** and **`LEFT`** and **`FIRE`**                                  |
+| 16    | **`DOWNRIGHTFIRE`**     | Execute **`DOWN`** and **`RIGHT`** and **`FIRE`**                               |
+| 17    | **`DOWNLEFTFIRE`**      | Execute **`DOWN`** and **`LEFT`** and **`FIRE`**                                |
+| 40    | **`RESET`**<sup>1</sup> | Toggles the Atari 2600 reset switch, **not** used for resetting the environment |
 
 <small>1</small>: Note that the **`RESET`** action toggles the Atari 2600 reset switch, rather than reset the
 environment, and as such is ignored by most interfaces.

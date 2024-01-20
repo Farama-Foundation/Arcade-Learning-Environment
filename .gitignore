@@ -32,3 +32,6 @@ doc/examples/*Example
 *.pyc
 
 *.egg-info/
+
+# Docs
+/docs/_build/
