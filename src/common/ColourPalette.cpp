@@ -69,6 +69,8 @@ uint8_t ColourPalette::getGrayscale(int val) const {
 
 uint32_t ColourPalette::getRGB(int val) const { return m_palette[val]; }
 
+uint8_t ColourPalette::convertRGBToGrayscale(uint32_t rgb) const { return (uint8_t) convertGrayscale(rgb); }
+
 void ColourPalette::applyPaletteRGB(uint8_t* dst_buffer, uint8_t* src_buffer,
                                     std::size_t src_size) {
   uint8_t* p = src_buffer;

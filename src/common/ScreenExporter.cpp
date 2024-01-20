@@ -62,10 +62,10 @@ static void writePNGChunk(std::ofstream& out, const char* type, uint8_t* data,
   out.write((const char*)temp, 4);
 }
 
-static void writePNGHeader(std::ofstream& out, const ALEScreen& screen,
+static void writePNGHeader(std::ofstream& out, const stella::MediaSource& media,
                            bool doubleWidth = true) {
-  int width = doubleWidth ? screen.width() * 2 : screen.width();
-  int height = screen.height();
+  int width = doubleWidth ? media.width() * 2 : media.width();
+  int height = media.height();
   // PNG file header
   uint8_t header[8] = {137, 80, 78, 71, 13, 10, 26, 10};
   out.write((const char*)header, sizeof(header));
@@ -88,12 +88,12 @@ static void writePNGHeader(std::ofstream& out, const ALEScreen& screen,
   writePNGChunk(out, "IHDR", ihdr, sizeof(ihdr));
 }
 
-static void writePNGData(std::ofstream& out, const ALEScreen& screen,
+static void writePNGData(std::ofstream& out, const stella::MediaSource& media,
                          const ColourPalette& palette,
                          bool doubleWidth = true) {
-  int dataWidth = screen.width();
+  int dataWidth = media.width();
   int width = doubleWidth ? dataWidth * 2 : dataWidth;
-  int height = screen.height();
+  int height = media.height();
 
   // If so desired, double the width
 
@@ -101,6 +101,7 @@ static void writePNGData(std::ofstream& out, const ALEScreen& screen,
   int rowbytes = width * 3;
 
   std::vector<uint8_t> buffer((rowbytes + 1) * height, 0);
+  uint8_t* currentFrameBuffer = media.currentFrameBuffer();
   uint8_t* buf_ptr = &buffer[0];
 
   for (int i = 0; i < height; i++) {
@@ -108,7 +109,7 @@ static void writePNGData(std::ofstream& out, const ALEScreen& screen,
     for (int j = 0; j < dataWidth; j++) {
       int r, g, b;
 
-      palette.getRGB(screen.getArray()[i * dataWidth + j], r, g, b);
+      palette.getRGB(currentFrameBuffer[i * dataWidth + j], r, g, b);
       // Double the pixel width, if so desired
       int jj = doubleWidth ? 2 * j : j;
 
@@ -147,15 +148,14 @@ static void writePNGEnd(std::ofstream& out) {
   writePNGChunk(out, "IEND", 0, 0);
 }
 
-ScreenExporter::ScreenExporter(ColourPalette& palette)
-    : m_palette(palette), m_frame_number(0), m_frame_field_width(6) {}
+ScreenExporter::ScreenExporter(stella::MediaSource& media, ColourPalette& palette)
+    : m_media(media), m_palette(palette), m_frame_number(0), m_frame_field_width(6) {}
 
-ScreenExporter::ScreenExporter(ColourPalette& palette, const std::string& path)
-    : m_palette(palette), m_frame_number(0), m_frame_field_width(6),
+ScreenExporter::ScreenExporter(stella::MediaSource& media, ColourPalette& palette, const std::string& path)
+    : m_media(media), m_palette(palette), m_frame_number(0), m_frame_field_width(6),
       m_path(path) {}
 
-void ScreenExporter::save(const ALEScreen& screen,
-                          const std::string& filename) const {
+void ScreenExporter::save(const std::string& filename) const {
   // Open file for writing
   std::ofstream out(filename.c_str(), std::ios_base::binary);
   if (!out.good()) {
@@ -165,14 +165,14 @@ void ScreenExporter::save(const ALEScreen& screen,
   }
 
   // Now write the PNG proper
-  writePNGHeader(out, screen, true);
-  writePNGData(out, screen, m_palette, true);
+  writePNGHeader(out, m_media, true);
+  writePNGData(out, m_media, m_palette, true);
   writePNGEnd(out);
 
   out.close();
 }
 
-void ScreenExporter::saveNext(const ALEScreen& screen) {
+void ScreenExporter::saveNext() {
   // Must have specified a directory.
   assert(!m_path.empty());
 
@@ -185,7 +185,7 @@ void ScreenExporter::saveNext(const ALEScreen& screen) {
       << m_frame_number << ".png";
 
   // Save the png
-  save(screen, oss.str());
+  save(oss.str());
 
   m_frame_number++;
 }

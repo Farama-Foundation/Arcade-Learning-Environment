@@ -34,10 +34,14 @@
 #include "emucore/OSystem.hxx"
 #include "games/Roms.hpp"
 #include "environment/stella_environment.hpp"
+#include "environment/frame_processor.hpp"
 #include "common/ScreenExporter.hpp"
 #include "common/Log.hpp"
 #include "version.hpp"
 
+#include <cstdint>
+#include <vector>
+#include <array>
 #include <string>
 #include <optional>
 #include <memory>
@@ -149,24 +153,21 @@ class ALEInterface {
   // Returns the frame number since the start of the current episode
   int getEpisodeFrameNumber() const;
 
-  // Returns the current game screen
-  const ALEScreen& getScreen() const;
-
   //This method should receive an empty vector to fill it with
   //the grayscale colours
-  void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer) const;
+  void getScreenGrayscale(std::vector<uint8_t>& grayscale_output_buffer) const;
 
   //This method should receive a vector to fill it with
   //the RGB colours. The first positions contain the red colours,
   //followed by the green colours and then the blue colours
-  void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) const;
+  void getScreenRGB(std::vector<uint8_t>& output_rgb_buffer) const;
 
   // Returns the current RAM content
-  const ALERAM& getRAM() const;
+  void getRAM(std::array<uint8_t, 128>& output_ram_buffer) const;
 
   // Set byte at memory address. This can be useful to change the environment
   // for example if you were trying to learn a causal model of RAM locations.
-  void setRAM(size_t memory_index, byte_t value);
+  void setRAM(size_t memory_index, uint8_t value);
 
   // This makes a copy of the environment state. By defualt this copy does *not* include pseudorandomness
   // making it suitable for planning purposes. If `include_prng` is set to true, then the
@@ -200,6 +201,7 @@ class ALEInterface {
   std::unique_ptr<stella::Settings> theSettings;
   std::unique_ptr<RomSettings> romSettings;
   std::unique_ptr<StellaEnvironment> environment;
+  std::unique_ptr<FrameProcessor> frameProcessor;
   int max_num_frames; // Maximum number of frames for each episode
 
  public:

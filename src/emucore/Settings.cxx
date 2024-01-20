@@ -412,6 +412,8 @@ void Settings::setDefaultSettings() {
     boolSettings.insert(std::pair<std::string, bool>("restricted_action_set", false));
     intSettings.insert(std::pair<std::string, int>("random_seed", -1));
     boolSettings.insert(std::pair<std::string, bool>("color_averaging", false));
+    boolSettings.insert(std::pair<std::string, bool>("frame_average", false));
+    boolSettings.insert(std::pair<std::string, bool>("frame_max", false));
     boolSettings.insert(std::pair<std::string, bool>("send_rgb", false));
     intSettings.insert(std::pair<std::string, int>("frame_skip", 1));
     floatSettings.insert(std::pair<std::string, float>("repeat_action_probability", 0.25));

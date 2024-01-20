@@ -18,10 +18,7 @@
 #ifndef __STELLA_ENVIRONMENT_HPP__
 #define __STELLA_ENVIRONMENT_HPP__
 
-#include "environment/ale_ram.hpp"
-#include "environment/ale_screen.hpp"
 #include "environment/ale_state.hpp"
-#include "environment/phosphor_blend.hpp"
 #include "environment/stella_environment_wrapper.hpp"
 #include "emucore/Event.hxx"
 #include "emucore/OSystem.hxx"
@@ -93,13 +90,9 @@ class StellaEnvironment {
   void setState(const ALEState& state);
   const ALEState& getState() const;
 
-  /** Returns the current screen after processing (e.g. colour averaging) */
-  const ALEScreen& getScreen() const { return m_screen; }
-
   /** Accessor methods for RAM. `setRAM` can be useful to alter the environment.
    *  For example, learning a causal model of RAM transitions, changing environment dynamics, etc. */
-  void setRAM(size_t memory_index, byte_t value);
-  const ALERAM& getRAM() const { return m_ram; }
+  void setRAM(size_t memory_index, uint8_t value);
 
   int getFrameNumber() const { return m_state.getFrameNumber(); }
   int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
@@ -129,27 +122,18 @@ class StellaEnvironment {
    *   from the minimal set of actions. */
   void noopIllegalActions(Action& player_a_action, Action& player_b_action);
 
-  /** Processes the current emulator screen and saves it in m_screen */
-  void processScreen();
-  /** Processes the emulator RAM and saves it in m_ram */
-  void processRAM();
-
  private:
   stella::OSystem* m_osystem;
   RomSettings* m_settings;
-  PhosphorBlend m_phosphor_blend; // For performing phosphor colour averaging, if so desired
   stella::Random m_random; // Environment random number generator, used for sticky actions
   std::string m_cartridge_md5; // Necessary for saving and loading emulator state
 
   ALEState m_state;   // Current environment state
-  ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)
-  ALERAM m_ram;       // The current ALE RAM
 
   bool m_use_paddles; // Whether this game uses paddles
 
   /** Parameters loaded from Settings. */
   int m_num_reset_steps;             // Number of RESET frames per reset
-  bool m_colour_averaging;           // Whether to average frames
   int m_max_num_frames_per_episode;  // Maxmimum number of frames per episode
   size_t m_frame_skip;               // How many frames to emulate per act()
   float m_repeat_action_probability; // Stochasticity of the environment

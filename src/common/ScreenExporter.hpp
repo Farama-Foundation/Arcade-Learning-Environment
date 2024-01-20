@@ -21,26 +21,27 @@
 
 #include "common/Constants.h"
 #include "common/ColourPalette.hpp"
-#include "environment/ale_screen.hpp"
+#include "emucore/MediaSrc.hxx"
 
 namespace ale {
 
 class ScreenExporter {
  public:
   /** Creates a new ScreenExporter which can be used to save screens using save(filename). */
-  ScreenExporter(ColourPalette& palette);
+  ScreenExporter(stella::MediaSource& media, ColourPalette& palette);
 
   /** Creates a new ScreenExporter which will save frames successively in the directory provided.
    *  Frames are sequentially named with 6 digits, starting at 000000. */
-  ScreenExporter(ColourPalette& palette, const std::string& path);
+  ScreenExporter(stella::MediaSource& media, ColourPalette& palette, const std::string& path);
 
   /** Save the given screen to the given filename. No paths are created. */
-  void save(const ALEScreen& screen, const std::string& filename) const;
+  void save(const std::string& filename) const;
 
   /** Save the given screen according to our own internal numbering. */
-  void saveNext(const ALEScreen& screen);
+  void saveNext();
 
  private:
+  stella::MediaSource& m_media;
   ColourPalette& m_palette;
 
   /** The next frame number. */

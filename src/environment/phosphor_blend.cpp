@@ -21,22 +21,25 @@
 namespace ale {
 using namespace stella;   // OSystem
 
-PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
+PhosphorBlend::PhosphorBlend(ColourPalette& palette) : FrameProcessor(palette) {
   // Taken from default Stella settings
   m_phosphor_blend_ratio = 77;
 
   makeAveragePalette();
 }
 
-void PhosphorBlend::process(ALEScreen& screen) {
-  Console& console = m_osystem->console();
-
+void PhosphorBlend::processGrayscale(
+  stella::MediaSource& media,
+  uint8_t* out
+) {
   // Fetch current and previous frame buffers from the emulator
-  uint8_t* current_buffer = console.mediaSource().currentFrameBuffer();
-  uint8_t* previous_buffer = console.mediaSource().previousFrameBuffer();
+  uint8_t* current_buffer = media.currentFrameBuffer();
+  uint8_t* previous_buffer = media.previousFrameBuffer();
+
+  const uint32_t buffer_size = media.width() * media.height();
 
   // Process each pixel in turn
-  for (size_t i = 0; i < screen.arraySize(); i++) {
+  for (size_t i = 0; i < buffer_size; i++) {
     int cv = current_buffer[i];
     int pv = previous_buffer[i];
 
@@ -44,19 +47,43 @@ void PhosphorBlend::process(ALEScreen& screen) {
     uint32_t rgb = m_avg_palette[cv][pv];
 
     // Set the corresponding pixel in the array
-    screen.getArray()[i] = rgbToNTSC(rgb);
+    out[i] = m_palette.convertRGBToGrayscale(rgb);
   }
 }
-void PhosphorBlend::makeAveragePalette() {
-  ColourPalette& palette = m_osystem->colourPalette();
 
+
+void PhosphorBlend::processRGB(
+  stella::MediaSource& media,
+  uint8_t* out
+) {
+  // Fetch current and previous frame buffers from the emulator
+  uint8_t* current_buffer = media.currentFrameBuffer();
+  uint8_t* previous_buffer = media.previousFrameBuffer();
+
+  const uint32_t buffer_size = media.width() * media.height();
+
+  // Process each pixel in turn
+  for (size_t i = 0; i < buffer_size; i++) {
+    int cv = current_buffer[i];
+    int pv = previous_buffer[i];
+
+    // Find out the corresponding rgb color
+    uint32_t rgb = m_avg_palette[cv][pv];
+
+    *out = (uint8_t)(rgb >> 16); out++;
+    *out = (uint8_t)(rgb >> 8); out++;
+    *out = (uint8_t)(rgb >> 0); out++;
+  }
+}
+
+void PhosphorBlend::makeAveragePalette() {
   // Precompute the average RGB values for phosphor-averaged colors c1 and c2.
   for (int c1 = 0; c1 < 256; c1 += 2) {
     for (int c2 = 0; c2 < 256; c2 += 2) {
       int r1, g1, b1;
       int r2, g2, b2;
-      palette.getRGB(c1, r1, g1, b1);
-      palette.getRGB(c2, r2, g2, b2);
+      m_palette.getRGB(c1, r1, g1, b1);
+      m_palette.getRGB(c2, r2, g2, b2);
 
       uint8_t r = getPhosphor(r1, r2);
       uint8_t g = getPhosphor(g1, g2);
@@ -79,7 +106,7 @@ void PhosphorBlend::makeAveragePalette() {
         for (int c1 = 0; c1 < 256; c1 += 2) {
           // Get the RGB corresponding to c1
           int r1, g1, b1;
-          palette.getRGB(c1, r1, g1, b1);
+          m_palette.getRGB(c1, r1, g1, b1);
 
           int dist = abs(r1 - r) + abs(g1 - g) + abs(b1 - b);
           if (dist < minDist) {

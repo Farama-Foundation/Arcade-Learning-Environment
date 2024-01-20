@@ -36,21 +36,19 @@ class ALEPythonInterface : public ALEInterface {
  public:
   using ALEInterface::ALEInterface;
 
-  void getScreen(py::array_t<pixel_t, py::array::c_style>& buffer);
-  void getScreenRGB(py::array_t<pixel_t, py::array::c_style>& buffer);
-  void getScreenGrayscale(py::array_t<pixel_t, py::array::c_style>& buffer);
+  void getScreenRGB(py::array_t<uint8_t, py::array::c_style>& buffer);
+  void getScreenGrayscale(py::array_t<uint8_t, py::array::c_style>& buffer);
 
-  py::array_t<pixel_t, py::array::c_style> getScreen();
-  py::array_t<pixel_t, py::array::c_style> getScreenRGB();
-  py::array_t<pixel_t, py::array::c_style> getScreenGrayscale();
+  py::array_t<uint8_t, py::array::c_style> getScreenRGB();
+  py::array_t<uint8_t, py::array::c_style> getScreenGrayscale();
 
   inline reward_t act(unsigned int action) {
     return ALEInterface::act((Action)action);
   }
 
   inline py::tuple getScreenDims() {
-    const ALEScreen& screen = ALEInterface::getScreen();
-    return py::make_tuple(screen.height(), screen.width());
+    stella::MediaSource &media = theOSystem->console().mediaSource();
+    return py::make_tuple(media.height(), media.width());
   }
 
   // Implicitely cast std::string -> fs::path
@@ -63,7 +61,7 @@ class ALEPythonInterface : public ALEInterface {
     return ALEInterface::isSupportedROM(rom_file);
   }
 
-  inline uint32_t getRAMSize() { return ALEInterface::getRAM().size(); }
+  inline uint32_t getRAMSize() { return 128; }
   const py::array_t<uint8_t, py::array::c_style> getRAM();
   void getRAM(py::array_t<uint8_t, py::array::c_style>& buffer);
 };
@@ -160,25 +158,19 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("lives", &ale::ALEPythonInterface::lives)
       .def("getEpisodeFrameNumber",
            &ale::ALEPythonInterface::getEpisodeFrameNumber)
-      .def("getScreen", (void (ale::ALEPythonInterface::*)(
-                            py::array_t<ale::pixel_t, py::array::c_style>&)) &
-                            ale::ALEPythonInterface::getScreen)
-      .def("getScreen", (py::array_t<ale::pixel_t, py::array::c_style>(
-                            ale::ALEPythonInterface::*)()) &
-                            ale::ALEPythonInterface::getScreen)
       .def("getScreenRGB",
            (void (ale::ALEPythonInterface::*)(
-               py::array_t<ale::pixel_t, py::array::c_style>&)) &
+               py::array_t<uint8_t, py::array::c_style>&)) &
                ale::ALEPythonInterface::getScreenRGB)
-      .def("getScreenRGB", (py::array_t<ale::pixel_t, py::array::c_style>(
+      .def("getScreenRGB", (py::array_t<uint8_t, py::array::c_style>(
                                ale::ALEPythonInterface::*)()) &
                                ale::ALEPythonInterface::getScreenRGB)
       .def("getScreenGrayscale",
            (void (ale::ALEPythonInterface::*)(
-               py::array_t<ale::pixel_t, py::array::c_style>&)) &
+               py::array_t<uint8_t, py::array::c_style>&)) &
                ale::ALEPythonInterface::getScreenGrayscale)
       .def("getScreenGrayscale",
-           (py::array_t<ale::pixel_t, py::array::c_style>(
+           (py::array_t<uint8_t, py::array::c_style>(
                ale::ALEPythonInterface::*)()) &
                ale::ALEPythonInterface::getScreenGrayscale)
       .def("getScreenDims", &ale::ALEPythonInterface::getScreenDims)
