@@ -207,28 +207,6 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         if self._game_difficulty is not None:
             self.ale.setDifficulty(self._game_difficulty)
 
-
-    def reset( # pyright: ignore[reportIncompatibleMethodOverride]
-        self,
-        *,
-        seed: Optional[int] = None,
-        options: Optional[dict[str, Any]] = None,
-    ) -> tuple[np.ndarray, AtariEnvStepMetadata]:
-        """Resets environment and returns initial observation."""
-        # sets the seeds if it's specified for both ALE and frameskip np
-        # we only want to do this when commanded to so we don't reset all previous states, statistics, etc.
-        seeded_with = self.seed_game(seed) if seed else None
-        self.load_game()
-
-        self.ale.reset_game()
-
-        obs = self._get_obs()
-        info = self._get_info()
-        if seeded_with is not None:
-            info["seeds"] = seeded_with
-
-        return obs, info
-
     def step( # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         action: int,
@@ -263,6 +241,27 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         is_truncated = self.ale.game_truncated()
 
         return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
+
+    def reset( # pyright: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        seed: Optional[int] = None,
+        options: Optional[dict[str, Any]] = None,
+    ) -> tuple[np.ndarray, AtariEnvStepMetadata]:
+        """Resets environment and returns initial observation."""
+        # sets the seeds if it's specified for both ALE and frameskip np
+        # we only want to do this when commanded to so we don't reset all previous states, statistics, etc.
+        seeded_with = self.seed_game(seed) if seed else None
+        self.load_game()
+
+        self.ale.reset_game()
+
+        obs = self._get_obs()
+        info = self._get_info()
+        if seeded_with is not None:
+            info["seeds"] = seeded_with
+
+        return obs, info
 
     def render(self) -> Optional[np.ndarray]:
         """
