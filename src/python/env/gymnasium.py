@@ -251,8 +251,10 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         """Resets environment and returns initial observation."""
         # sets the seeds if it's specified for both ALE and frameskip np
         # we only want to do this when commanded to so we don't reset all previous states, statistics, etc.
-        seeded_with = self.seed_game(seed) if seed else None
-        self.load_game()
+        seeded_with = None
+        if seed is not None:
+            seeded_with = self.seed_game(seed)
+            self.load_game()
 
         self.ale.reset_game()
 
