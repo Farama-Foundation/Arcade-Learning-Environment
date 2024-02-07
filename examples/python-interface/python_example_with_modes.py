@@ -6,7 +6,8 @@
 # ALE provided in doc/examples/sharedLibraryInterfaceWithModesExample.cpp
 import sys
 from random import randrange
-from ale_py import ALEInterface, SDL_SUPPORT
+
+from ale_py import SDL_SUPPORT, ALEInterface
 
 if len(sys.argv) < 2:
     print(f"Usage: {sys.argv[0]} rom_file")

@@ -3,8 +3,6 @@ import platform
 import sys
 import warnings
 
-packagedir = os.path.abspath(os.path.dirname(__file__))
-
 # Make sure to adjust the filter to show DeprecationWarning
 warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
 
@@ -16,8 +14,8 @@ if platform.system() == "Windows":
         ctypes.CDLL("msvcp140.dll")
     except OSError:
         raise OSError(
-            """Microsoft Visual C++ Redistribution Pack is not installed.
-It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
+            "Microsoft Visual C++ Redistribution Pack is not installed. \n"
+            "It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."
         )
 
     # Loading DLLs on Windows is kind of a disaster
@@ -25,6 +23,7 @@ It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
     # with user defined search paths. This kind of acts like
     # $ORIGIN or @loader_path on Unix / macOS.
     # This way we guarantee we load OUR DLLs.
+    packagedir = os.path.abspath(os.path.dirname(__file__))
     if sys.version_info.major == 3 and sys.version_info.minor >= 8:
         os.add_dll_directory(packagedir)
     else:
@@ -45,6 +44,12 @@ except metadata.PackageNotFoundError:
     __version__ = "unknown"
 
 # Import native shared library
-from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMode
+from ale_py._ale_py import (SDL_SUPPORT, Action, ALEInterface, ALEState,
+                            LoggerMode)
 
 __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
+
+
+from .register_gymnasium import register_gymnasium
+
+register_gymnasium()
