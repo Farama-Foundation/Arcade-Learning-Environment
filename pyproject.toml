@@ -53,7 +53,7 @@ changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/mas
 [tool.setuptools]
 packages = ["ale_py", "ale_py.roms"]
 package-dir = {ale_py = "src/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["*.bin", "md5.txt"]}
+package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["*.bin", "md5.json"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"
