@@ -33,16 +33,16 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
+  "gymnasium",
   "importlib-metadata>=4.10.0; python_version < '3.10'",
   "importlib-resources; python_version < '3.9'",
-  "typing-extensions; python_version < '3.11'"
+  "typing-extensions; python_version < '3.11'",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 test = [
   "pytest>=7.0",
-  "gymnasium",
 ]
 
 [project.urls]

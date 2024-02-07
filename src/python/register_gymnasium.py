@@ -1,6 +1,7 @@
-from typing import Any, Callable, Mapping, NamedTuple, Sequence
 from collections import defaultdict
-from ale_py.roms.utils import rom_id_to_name
+from typing import Any, Callable, Mapping, NamedTuple, Sequence
+
+from ale_py.roms import rom_id_to_name
 from gymnasium.envs.registration import register
 
 ALL_ATARI_GAMES = (
@@ -174,6 +175,7 @@ LEGACY_ATARI_GAMES = (
     "zaxxon",
 )
 
+
 class GymFlavour(NamedTuple):
     """A Gymnasium Flavour."""
 
@@ -265,9 +267,7 @@ def register_gymnasium():
             ],
         ),
     ]
-    _register_configs(
-        LEGACY_ATARI_GAMES, obs_types=("rgb", "ram"), configs=configs
-    )
+    _register_configs(LEGACY_ATARI_GAMES, obs_types=("rgb", "ram"), configs=configs)
 
     # max_episode_steps is 108k frames which is 30 mins of gameplay.
     # This corresponds to 108k / 4 = 27,000 steps

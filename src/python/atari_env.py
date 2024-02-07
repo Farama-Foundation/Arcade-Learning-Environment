@@ -4,14 +4,13 @@ import sys
 from typing import Any, Literal, Optional, Sequence, Union
 
 import ale_py
-from ale_py import roms
-from ale_py.roms.utils import rom_id_to_name, rom_name_to_id
-from gymnasium.utils import seeding
-import numpy as np
-
 import gymnasium
 import gymnasium.logger as logger
+import numpy as np
+from ale_py import roms
+from ale_py.roms import rom_id_to_name, rom_name_to_id
 from gymnasium import error, spaces, utils
+from gymnasium.utils import seeding
 
 if sys.version_info < (3, 11):
     from typing_extensions import NotRequired, TypedDict
@@ -190,16 +189,6 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def load_game(self) -> None:
         """This function initializes the ROM and sets the corresponding mode and difficulty."""
-        if not hasattr(roms, self._game):
-            raise error.Error(
-                f'We\'re Unable to find the game "{self._game}". Note: Gym no longer distributes ROMs. '
-                f"If you own a license to use the necessary ROMs for research purposes you can download them "
-                f'via `pip install gym[accept-rom-license]`. Otherwise, you should try importing "{self._game}" '
-                f'via the command `ale-import-roms`. If you believe this is a mistake perhaps your copy of "{self._game}" '
-                "is unsupported. To check if this is the case try providing the environment variable "
-                "`PYTHONWARNINGS=default::ImportWarning:ale_py.roms`. For more information see: "
-                "https://github.com/mgbellemare/Arcade-Learning-Environment#rom-management"
-            )
         self.ale.loadROM(getattr(roms, self._game))
 
         if self._game_mode is not None:
@@ -207,7 +196,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         if self._game_difficulty is not None:
             self.ale.setDifficulty(self._game_difficulty)
 
-    def step( # pyright: ignore[reportIncompatibleMethodOverride]
+    def step(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         action: int,
     ) -> tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
@@ -242,7 +231,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
         return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
 
-    def reset( # pyright: ignore[reportIncompatibleMethodOverride]
+    def reset(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         *,
         seed: Optional[int] = None,
