@@ -7,7 +7,8 @@ import warnings
 from typing import List, Optional
 
 from ale_py import ALEInterface
-from ale_py.roms import plugins, utils
+from ale_py.roms.utils import rom_id_to_name, rom_name_to_id
+from ale_py.roms.plugins import Package, EntryPoint, Directory, Plugin
 
 # pylint: disable=g-import-not-at-top
 if sys.version_info >= (3, 9):
@@ -21,11 +22,11 @@ else:
 #  2. External ROMs
 #  3. ROMs from atari-py.roms
 #  4. ROMs from atari-py-roms.roms
-_ROM_PLUGIN_REGISTRY: List[plugins.Plugin] = [
-    plugins.Package("ale_py.roms"),
-    plugins.EntryPoint("ale_py.roms"),
-    plugins.Package("atari_py.atari_roms"),
-    plugins.Package("atari_py_roms.atari_roms"),
+_ROM_PLUGIN_REGISTRY: List[Plugin] = [
+    Package("ale_py.roms"),
+    EntryPoint("ale_py.roms"),
+    Package("atari_py.atari_roms"),
+    Package("atari_py_roms.atari_roms"),
 ]
 
 # Environment variable for ROM discovery.
@@ -35,13 +36,13 @@ _ROM_DIRECTORY_ENV_KEY = "ALE_PY_ROM_DIR"
 _ROM_DIRECTORY_ENV_VALUE = os.environ.get(_ROM_DIRECTORY_ENV_KEY, None)
 
 if _ROM_DIRECTORY_ENV_VALUE is not None:
-    _ROM_PLUGIN_REGISTRY.append(plugins.Directory(_ROM_DIRECTORY_ENV_VALUE))
+    _ROM_PLUGIN_REGISTRY.append(Directory(_ROM_DIRECTORY_ENV_VALUE))
 
 
 def _resolve_rom(name: str) -> Optional[pathlib.Path]:
     """Resolve a ROM path from the ROM registry."""
     for package in _ROM_PLUGIN_REGISTRY:
-        rom_id = utils.rom_name_to_id(name)
+        rom_id = rom_name_to_id(name)
 
         # Resolve ROM from package
         try:
@@ -73,7 +74,7 @@ def _resolve_rom(name: str) -> Optional[pathlib.Path]:
             continue
 
         # Deprecation warning for atari-py
-        if isinstance(package, plugins.Package) and package.package.startswith(
+        if isinstance(package, Package) and package.package.startswith(
             "atari_py"
         ):
             warnings.warn(
@@ -105,7 +106,7 @@ def __dir__() -> List[str]:
             lambda line: line.strip() and not line.startswith("#"), fp.readlines()
         )
         roms = [pathlib.Path(rom) for _, rom in map(str.split, lines)]
-        return [utils.rom_id_to_name(rom.stem) for rom in roms]
+        return [rom_id_to_name(rom.stem) for rom in roms]
 
 
 @functools.lru_cache(maxsize=None)
@@ -130,9 +131,9 @@ def __getattr__(name: str) -> pathlib.Path:
     return path
 
 
-def register_plugin(plugin: plugins.Plugin, *, index: int = 0) -> None:
+def register_plugin(plugin: Plugin, *, index: int = 0) -> None:
     """Register a ROM plugin."""
-    if not issubclass(type(plugin), plugins.Plugin):
+    if not issubclass(type(plugin), Plugin):
         raise ValueError(f"{repr(plugin)} is not a valid ROM plugin.")
     _ROM_PLUGIN_REGISTRY.insert(index, plugin)
     __getattr__.cache_clear()

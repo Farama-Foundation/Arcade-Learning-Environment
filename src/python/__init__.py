@@ -16,8 +16,8 @@ if platform.system() == "Windows":
         ctypes.CDLL("msvcp140.dll")
     except OSError:
         raise OSError(
-            """Microsoft Visual C++ Redistribution Pack is not installed.
-It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
+            "Microsoft Visual C++ Redistribution Pack is not installed. \n"
+            "It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."
         )
 
     # Loading DLLs on Windows is kind of a disaster
@@ -50,5 +50,5 @@ from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMo
 __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
 
-from .register_gymnasium import register_gymnasium_envs
-register_gymnasium_envs()
+from .register_gymnasium import register_gymnasium
+register_gymnasium()
