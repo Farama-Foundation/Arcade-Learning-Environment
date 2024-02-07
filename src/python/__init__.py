@@ -3,8 +3,6 @@ import platform
 import sys
 import warnings
 
-packagedir = os.path.abspath(os.path.dirname(__file__))
-
 # Make sure to adjust the filter to show DeprecationWarning
 warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
 
@@ -25,6 +23,7 @@ if platform.system() == "Windows":
     # with user defined search paths. This kind of acts like
     # $ORIGIN or @loader_path on Unix / macOS.
     # This way we guarantee we load OUR DLLs.
+    packagedir = os.path.abspath(os.path.dirname(__file__))
     if sys.version_info.major == 3 and sys.version_info.minor >= 8:
         os.add_dll_directory(packagedir)
     else:

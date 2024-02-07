@@ -1,7 +1,6 @@
 from collections import defaultdict
 from typing import Any, Callable, Mapping, NamedTuple, Sequence
 
-from ale_py.roms import rom_id_to_name
 from gymnasium.envs.registration import register
 
 ALL_ATARI_GAMES = (
@@ -202,7 +201,8 @@ def _register_configs(
         for obs_type in obs_types:
             for config in configs:
                 for flavour in config.flavours:
-                    name = rom_id_to_name(rom)
+                    # convert snake to pascal, ie: space_invaders -> SpaceInvaders
+                    name = rom.title().replace("_", "")
                     if obs_type == "ram":
                         name = f"{name}-ram"
 

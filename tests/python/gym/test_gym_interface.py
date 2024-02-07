@@ -8,12 +8,8 @@ from unittest.mock import patch
 
 import numpy as np
 from ale_py.env.gym import AtariEnv
-from ale_py.gym import (
-    _register_gym_configs,
-    register_gym_envs,
-    register_legacy_gym_envs,
-)
-
+from ale_py.gym import (_register_gym_configs, register_gym_envs,
+                        register_legacy_gym_envs)
 from gym import error, spaces
 from gym.core import Env
 from gym.envs.registration import registry

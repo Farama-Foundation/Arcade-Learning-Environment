@@ -8,7 +8,6 @@ import gymnasium
 import gymnasium.logger as logger
 import numpy as np
 from ale_py import roms
-from ale_py.roms import rom_id_to_name, rom_name_to_id
 from gymnasium import error, spaces, utils
 from gymnasium.utils import seeding
 
@@ -126,8 +125,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         # Initialize ALE
         self.ale = ale_py.ALEInterface()
 
-        self._game = rom_id_to_name(game)
-
+        self._game = game
         self._game_mode = mode
         self._game_difficulty = difficulty
 
