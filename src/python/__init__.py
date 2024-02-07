@@ -48,3 +48,7 @@ except metadata.PackageNotFoundError:
 from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMode
 
 __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
+
+
+from .register_gymnasium import register_gymnasium_envs
+register_gymnasium_envs()
