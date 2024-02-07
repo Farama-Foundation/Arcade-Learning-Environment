@@ -142,8 +142,6 @@ ale
 build
 doc/examples/*Example
 
-## Generic
-
 # Emacs temp files
 *~
 .*
@@ -157,9 +155,6 @@ doc/examples/*Example
 *.lo
 *.o
 *.d
-
-# Compiled Dynamic libraries
-*.so
 
 # Compiled Static libraries
 *.lai
