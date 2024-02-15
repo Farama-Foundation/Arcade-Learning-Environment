@@ -33,7 +33,7 @@ def tetris_gym(request, test_rom_path):
     ):
         register(
             id="TetrisTest-v0",
-            entry_point="ale_py.env.gym:AtariEnv",
+            entry_point="ale_py.gym_env:AtariEnv",
             kwargs={"game": "tetris_test"},
         )
 

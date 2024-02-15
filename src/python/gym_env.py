@@ -8,9 +8,8 @@ import ale_py.roms as roms
 import ale_py.roms.utils as rom_utils
 import numpy as np
 
-import gym_registration
-import gym_registration.logger as logger
-from gym_registration import error, spaces, utils
+import gym
+from gym import error, spaces, utils, logger
 
 if sys.version_info < (3, 11):
     from typing_extensions import NotRequired, TypedDict
