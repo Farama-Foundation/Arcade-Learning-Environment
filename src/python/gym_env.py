@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -6,9 +8,9 @@ import ale_py.roms as roms
 import ale_py.roms.utils as rom_utils
 import numpy as np
 
-import gym
-import gym.logger as logger
-from gym import error, spaces, utils
+import gym_registration
+import gym_registration.logger as logger
+from gym_registration import error, spaces, utils
 
 if sys.version_info < (3, 11):
     from typing_extensions import NotRequired, TypedDict

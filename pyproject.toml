@@ -54,14 +54,13 @@ changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/mas
 ale-import-roms = "ale_py.scripts.import_roms:main"
 
 [project.entry-points."gym.envs"]
-ALE = "ale_py.gym:register_gym_envs"
-__internal__ = "ale_py.gym:register_legacy_gym_envs"
+ALE = "ale_py.gym_registration:register_gym_envs"
+__internal__ = "ale_py.gym_registration:register_legacy_gym_envs"
 
 [tool.setuptools]
 packages = [
   "ale_py",
   "ale_py.roms",
-  "ale_py.env",
   "ale_py.scripts"
 ]
 package-dir = {ale_py = "src/python", gym = "src/gym"}
