@@ -30,7 +30,10 @@ def test_register_legacy_env_id():
     def _mocked_register_gym_configs(*args, **kwargs):
         return _original_register_gym_configs(*args, **kwargs, prefix=prefix)
 
-    with patch("ale_py.gym_registration._register_gym_configs", new=_mocked_register_gym_configs):
+    with patch(
+        "ale_py.gym_registration._register_gym_configs",
+        new=_mocked_register_gym_configs,
+    ):
         # Register internal IDs
         register_legacy_gym_envs()
 
