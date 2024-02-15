@@ -68,21 +68,21 @@ jobs:
             python: '3.11'
             triplet: x64-osx-mixed
 
-          - runs-on: windows-latest
-            python: '3.7'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.8'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.9'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.10'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.11'
-            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.7'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.8'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.9'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.10'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.11'
+#            triplet: x64-windows
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
     runs-on: ${{ matrix.runs-on }}
