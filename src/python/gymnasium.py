@@ -293,7 +293,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             "frame_number": self.ale.getFrameNumber(),
         }
 
-    def get_keys_to_action(self) -> dict[tuple[int], ale_py.Action]:
+    def get_keys_to_action(self) -> dict[tuple[int, ...], ale_py.Action]:
         """
         Return keymapping -> actions for human play.
         """
