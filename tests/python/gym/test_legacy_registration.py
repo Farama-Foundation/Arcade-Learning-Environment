@@ -1,10 +1,8 @@
-import pytest
-
-pytest.importorskip("gym")
 
 from itertools import product
-
-from gym.envs.registration import registry
+import gymnasium
+import ale_py
+gymnasium.register_envs(ale_py)
 
 
 def test_legacy_env_specs():
@@ -97,8 +95,8 @@ def test_legacy_env_specs():
     -Deterministic: frameskip = 4 or 3 for space_invaders
     """
     for spec in specs:
-        assert spec in registry
-        kwargs = registry[spec].kwargs
+        assert spec in gymnasium.registry
+        kwargs = gymnasium.registry[spec].kwargs
 
         # Assert necessary parameters are set
         assert "frameskip" in kwargs

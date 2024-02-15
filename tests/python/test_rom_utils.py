@@ -3,7 +3,7 @@ from ale_py.roms.utils import rom_id_to_name, rom_name_to_id
 
 
 @pytest.mark.parametrize(
-    "id, expected",
+    "rom_id, expected",
     [
         ("breakout", "Breakout"),
         ("tic_tac_toe_3d", "TicTacToe3D"),
@@ -12,12 +12,12 @@ from ale_py.roms.utils import rom_id_to_name, rom_name_to_id
         ("video_cube", "VideoCube"),
     ],
 )
-def test_rom_id_to_name(id: str, expected: str):
-    assert rom_id_to_name(id) == expected
+def test_rom_id_to_name(rom_id, expected: str):
+    assert rom_id_to_name(rom_id) == expected
 
 
 @pytest.mark.parametrize(
-    "name, expected",
+    "rom_name, expected",
     [
         ("Breakout", "breakout"),
         ("SpaceInvaders", "space_invaders"),
@@ -27,5 +27,5 @@ def test_rom_id_to_name(id: str, expected: str):
         ("VideoCube", "video_cube"),
     ],
 )
-def test_rom_name_to_id(name: str, expected: str):
-    assert rom_name_to_id(name) == expected
+def test_rom_name_to_id(rom_name, expected: str):
+    assert rom_name_to_id(rom_name) == expected

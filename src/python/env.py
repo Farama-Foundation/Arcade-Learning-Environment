@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Literal, Optional, Sequence, Union
+from typing import Any, Literal, Optional, Union
 
 import ale_py
 import gymnasium
-import gymnasium.logger as logger
 import numpy as np
 from ale_py import roms
 from gymnasium import error, spaces, utils
@@ -21,7 +20,7 @@ class AtariEnvStepMetadata(TypedDict):
     lives: int
     episode_frame_number: int
     frame_number: int
-    seeds: NotRequired[Sequence[int]]
+    seeds: NotRequired[tuple[int, int]]
 
 
 class AtariEnv(gymnasium.Env, utils.EzPickle):
@@ -30,12 +29,12 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
     A Gym wrapper around the Arcade Learning Environment (ALE).
     """
 
-    # No render modes
-    metadata = {"render_modes": ["human", "rgb_array"]}
+    # FPS can differ per ROM, therefore, dynamically collect the fps once the game is loaded
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
 
     def __init__(
         self,
-        game: str = "pong",
+        game: str,
         mode: Optional[int] = None,
         difficulty: Optional[int] = None,
         obs_type: Literal["rgb", "grayscale", "ram"] = "rgb",
@@ -44,7 +43,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         full_action_space: bool = False,
         max_num_frames_per_episode: Optional[int] = None,
         render_mode: Optional[Literal["human", "rgb_array"]] = None,
-    ) -> None:
+    ):
         """
         Initialize the ALE for Gymnasium.
         Default parameters are taken from Machado et al., 2018.
@@ -111,15 +110,15 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
         utils.EzPickle.__init__(
             self,
-            game,
-            mode,
-            difficulty,
-            obs_type,
-            frameskip,
-            repeat_action_probability,
-            full_action_space,
-            max_num_frames_per_episode,
-            render_mode,
+            game=game,
+            mode=mode,
+            difficulty=difficulty,
+            obs_type=obs_type,
+            frameskip=frameskip,
+            repeat_action_probability=repeat_action_probability,
+            full_action_space=full_action_space,
+            max_num_frames_per_episode=max_num_frames_per_episode,
+            render_mode=render_mode,
         )
 
         # Initialize ALE
@@ -194,6 +193,31 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         if self._game_difficulty is not None:
             self.ale.setDifficulty(self._game_difficulty)
 
+    def reset(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        seed: Optional[int] = None,
+        options: Optional[dict[str, Any]] = None,
+    ) -> tuple[np.ndarray, AtariEnvStepMetadata]:
+        """Resets environment and returns initial observation."""
+        super().reset(seed=seed, options=options)
+
+        # sets the seeds if it's specified for both ALE and frameskip np
+        # we only want to do this when commanded to, so we don't reset all previous states, statistics, etc.
+        seeded_with = None
+        if seed is not None:
+            seeded_with = self.seed_game(seed)
+            self.load_game()
+
+        self.ale.reset_game()
+
+        obs = self._get_obs()
+        info = self._get_info()
+        if seeded_with is not None:
+            info["seeds"] = seeded_with
+
+        return obs, info
+
     def step(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         action: int,
@@ -229,29 +253,6 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
         return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
 
-    def reset(  # pyright: ignore[reportIncompatibleMethodOverride]
-        self,
-        *,
-        seed: Optional[int] = None,
-        options: Optional[dict[str, Any]] = None,
-    ) -> tuple[np.ndarray, AtariEnvStepMetadata]:
-        """Resets environment and returns initial observation."""
-        # sets the seeds if it's specified for both ALE and frameskip np
-        # we only want to do this when commanded to so we don't reset all previous states, statistics, etc.
-        seeded_with = None
-        if seed is not None:
-            seeded_with = self.seed_game(seed)
-            self.load_game()
-
-        self.ale.reset_game()
-
-        obs = self._get_obs()
-        info = self._get_info()
-        if seeded_with is not None:
-            info["seeds"] = seeded_with
-
-        return obs, info
-
     def render(self) -> Optional[np.ndarray]:
         """
         Render is not supported by ALE. We use a paradigm similar to
@@ -274,7 +275,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def _get_obs(self) -> np.ndarray:
         """
-        Retreives the current observation.
+        Retrieves the current observation.
         This is dependent on `self._obs_type`.
         """
         if self._obs_type == "ram":
@@ -344,7 +345,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         mapping = dict(zip(keys, values))
         return [mapping[action] for action in self._action_set]
 
-    def clone_state(self, include_rng=False) -> ale_py.ALEState:
+    def clone_state(self, include_rng: bool = False) -> ale_py.ALEState:
         """Clone emulator state w/o system state. Restoring this state will
         *not* give an identical environment. For complete cloning and restoring
         of the full state, see `{clone,restore}_full_state()`."""
@@ -353,19 +354,3 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
     def restore_state(self, state: ale_py.ALEState) -> None:
         """Restore emulator state w/o system state."""
         self.ale.restoreState(state)
-
-    def clone_full_state(self) -> ale_py.ALEState:
-        """Deprecated method which would clone the emulator and system state."""
-        logger.warn(
-            "`clone_full_state()` is deprecated and will be removed in a future release of `ale-py`. "
-            "Please use `clone_state(include_rng=True)` which is equivalent to `clone_full_state`. "
-        )
-        return self.ale.cloneSystemState()
-
-    def restore_full_state(self, state: ale_py.ALEState) -> None:
-        """Restore emulator state w/ system state including pseudorandomness."""
-        logger.warn(
-            "restore_full_state() is deprecated and will be removed in a future release of `ale-py`. "
-            "Please use `restore_state(state)` which will restore the state regardless of being a full or partial state. "
-        )
-        self.ale.restoreSystemState(state)
