@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from typing import Any, Callable, Mapping, NamedTuple, Sequence, Text, Union
 
@@ -48,7 +50,7 @@ def _register_gym_configs(
                     # Register the environment
                     register(
                         id=f"{prefix}{name}{flavour.suffix}-{config.version}",
-                        entry_point="ale_py.env.gym:AtariEnv",
+                        entry_point="ale_py.gym_env:AtariEnv",
                         kwargs=dict(
                             game=rom,
                             obs_type=obs_type,

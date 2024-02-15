@@ -7,8 +7,8 @@ from itertools import product
 from unittest.mock import patch
 
 import numpy as np
-from ale_py.env.gym import AtariEnv
-from ale_py.gym import (
+from ale_py.gym_env import AtariEnv
+from ale_py.gym_registration import (
     _register_gym_configs,
     register_gym_envs,
     register_legacy_gym_envs,
@@ -30,7 +30,10 @@ def test_register_legacy_env_id():
     def _mocked_register_gym_configs(*args, **kwargs):
         return _original_register_gym_configs(*args, **kwargs, prefix=prefix)
 
-    with patch("ale_py.gym._register_gym_configs", new=_mocked_register_gym_configs):
+    with patch(
+        "ale_py.gym_registration._register_gym_configs",
+        new=_mocked_register_gym_configs,
+    ):
         # Register internal IDs
         register_legacy_gym_envs()
 
