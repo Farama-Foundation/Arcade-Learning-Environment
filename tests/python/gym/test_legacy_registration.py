@@ -1,7 +1,7 @@
-
 from itertools import product
 import gymnasium
 import ale_py
+
 gymnasium.register_envs(ale_py)
 
 

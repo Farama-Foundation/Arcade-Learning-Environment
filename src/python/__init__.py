@@ -46,21 +46,19 @@ except metadata.PackageNotFoundError:
 
 # Import native shared library
 from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMode
-__all__ = [
-    "Action",
-    "ALEInterface", "ALEState",
-    "LoggerMode",
-    "SDL_SUPPORT"
-]
+
+__all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
 
 try:
     import gymnasium
 
     from ale_py.env import AtariEnv, AtariEnvStepMetadata
+
     __all__ += ["AtariEnv", "AtariEnvStepMetadata"]
 
     from ale_py.registration import register_v0_v4_envs, register_v5_envs
+
     register_v0_v4_envs()
     register_v5_envs()
 except ImportError:
