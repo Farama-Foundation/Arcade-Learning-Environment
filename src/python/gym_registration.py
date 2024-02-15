@@ -1,22 +1,21 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Any, Callable, Mapping, NamedTuple, Sequence, Text, Union
+from typing import Any, Callable, Mapping, NamedTuple, Sequence
 
 import ale_py.roms as roms
 from ale_py.roms import utils as rom_utils
-
 from gym.envs.registration import register
 
 
 class GymFlavour(NamedTuple):
     suffix: str
-    kwargs: Union[Mapping[Text, Any], Callable[[str], Mapping[Text, Any]]]
+    kwargs: Mapping[str, Any] | Callable[[str], Mapping[str, Any]]
 
 
 class GymConfig(NamedTuple):
     version: str
-    kwargs: Mapping[Text, Any]
+    kwargs: Mapping[str, Any]
     flavours: Sequence[GymFlavour]
 
 

@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Sequence
 
 import ale_py
 import ale_py.roms as roms
 import ale_py.roms.utils as rom_utils
-import numpy as np
-
 import gym
-from gym import error, spaces, utils, logger
+import numpy as np
+from gym import error, logger, spaces, utils
 
 if sys.version_info < (3, 11):
     from typing_extensions import NotRequired, TypedDict
@@ -36,14 +35,14 @@ class AtariEnv(gym.Env, utils.EzPickle):
     def __init__(
         self,
         game: str = "pong",
-        mode: Optional[int] = None,
-        difficulty: Optional[int] = None,
+        mode: int | None = None,
+        difficulty: int | None = None,
         obs_type: str = "rgb",
-        frameskip: Union[Tuple[int, int], int] = 4,
+        frameskip: tuple[int, int] | int = 4,
         repeat_action_probability: float = 0.25,
         full_action_space: bool = False,
-        max_num_frames_per_episode: Optional[int] = None,
-        render_mode: Optional[str] = None,
+        max_num_frames_per_episode: int | None = None,
+        render_mode: str | None = None,
     ) -> None:
         """
         Initialize the ALE for Gym.
@@ -59,7 +58,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
           repeat_action_probability: int =>
               Probability to repeat actions, see Machado et al., 2018
           full_action_space: bool => Use full action space?
-          max_num_frames_per_episode: int => Max number of frame per epsiode.
+          max_num_frames_per_episode: int => Max number of frame per episode.
               Once `max_num_frames_per_episode` is reached the episode is
               truncated.
           render_mode: str => One of { 'human', 'rgb_array' }.
@@ -102,11 +101,11 @@ class AtariEnv(gym.Env, utils.EzPickle):
             )
         elif isinstance(frameskip, tuple) and frameskip[0] > frameskip[1]:
             raise error.Error(
-                f"Invalid stochastic frameskip, lower bound is greater than upper bound."
+                "Invalid stochastic frameskip, lower bound is greater than upper bound."
             )
         elif isinstance(frameskip, tuple) and frameskip[0] <= 0:
             raise error.Error(
-                f"Invalid stochastic frameskip lower bound is greater than upper bound."
+                "Invalid stochastic frameskip lower bound is greater than upper bound."
             )
 
         if render_mode is not None and render_mode not in {"rgb_array", "human"}:
@@ -181,7 +180,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
         else:
             raise error.Error(f"Unrecognized observation type: {self._obs_type}")
 
-    def seed(self, seed: Optional[int] = None) -> Tuple[int, int]:
+    def seed(self, seed: int | None = None) -> tuple[int, int]:
         """
         Seeds both the internal numpy rng for stochastic frame skip
         as well as the ALE RNG.
@@ -225,7 +224,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
     def step(
         self,
         action_ind: int,
-    ) -> Tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
+    ) -> tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
         """
         Perform one agent step, i.e., repeats `action` frameskip # of steps.
 
@@ -263,9 +262,9 @@ class AtariEnv(gym.Env, utils.EzPickle):
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        options: Optional[Dict[str, Any]] = None,
-    ) -> Tuple[np.ndarray, AtariEnvStepMetadata]:
+        seed: int | None = None,
+        options: dict[str, Any] | None = None,
+    ) -> tuple[np.ndarray, AtariEnvStepMetadata]:
         """
         Resets environment and returns initial observation.
         """
@@ -307,7 +306,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
 
     def _get_obs(self) -> np.ndarray:
         """
-        Retreives the current observation.
+        Retrieves the current observation.
         This is dependent on `self._obs_type`.
         """
         if self._obs_type == "ram":
@@ -326,7 +325,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
             "frame_number": self.ale.getFrameNumber(),
         }
 
-    def get_keys_to_action(self) -> Dict[Tuple[int], ale_py.Action]:
+    def get_keys_to_action(self) -> dict[tuple[int], ale_py.Action]:
         """
         Return keymapping -> actions for human play.
         """
@@ -369,7 +368,7 @@ class AtariEnv(gym.Env, utils.EzPickle):
             )
         )
 
-    def get_action_meanings(self) -> List[str]:
+    def get_action_meanings(self) -> list[str]:
         """
         Return the meaning of each integer action.
         """

@@ -1,7 +1,3 @@
-import pytest
-
-pytest.importorskip("gym")
-
 from itertools import product
 
 from gym.envs.registration import registry
@@ -121,7 +117,7 @@ def test_legacy_env_specs():
 
         if "NoFrameskip" in spec:
             assert kwargs["frameskip"] == 1
-            steps = 300000 if "SpaceInvaders" in spec else 400000
+            # steps = 300000 if "SpaceInvaders" in spec else 400000
         elif "Deterministic" in spec:
             assert isinstance(kwargs["frameskip"], int)
             frameskip = 3 if "SpaceInvaders" in spec else 4

@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 
@@ -13,6 +14,3 @@ class Resources:
 @pytest.fixture(scope="module")
 def resources():
     return Resources(os.path.abspath(os.path.dirname(__file__)))
-
-
-from fixtures import *

@@ -1,19 +1,15 @@
 # fmt: off
-import pytest
-
-pytest.importorskip("gym")
-
 from itertools import product
 from unittest.mock import patch
 
 import numpy as np
+import pytest
 from ale_py.gym_env import AtariEnv
 from ale_py.gym_registration import (
     _register_gym_configs,
     register_gym_envs,
     register_legacy_gym_envs,
 )
-
 from gym import error, spaces
 from gym.core import Env
 from gym.envs.registration import registry

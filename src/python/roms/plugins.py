@@ -5,8 +5,6 @@ import sys
 import warnings
 from typing import Optional, Union
 
-from ale_py.roms import utils
-
 # pylint: disable=g-import-not-at-top
 if sys.version_info < (3, 10):
     import importlib_metadata as metadata

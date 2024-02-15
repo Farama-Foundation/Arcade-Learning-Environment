@@ -41,7 +41,7 @@ def import_roms(
         print(f"\033[92m{'[SUPPORTED]': <15}\033[0m {rom: >20} {identifier: >30}")
 
     print("\n")
-    # Print unsuported
+    # Print unsupported
     for path in unsupported:
         identifier = str(path) if pkg is None else f"{pkg}/{path.name}"
         print(f"\033[91m{'[NOT SUPPORTED]': <15}\033[0m {'': >20} {identifier: >30}")
