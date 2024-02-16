@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import ale_py
 import pytest
-from gym.envs.registration import make, register, registry
+import gymnasium
 
 
 @pytest.fixture
@@ -29,11 +29,11 @@ def tetris(ale, test_rom_path):
 @pytest.fixture
 def tetris_gym(request, test_rom_path):
     with patch(
-        "ale_py.roms.TetrisTest", create=True, new_callable=lambda: test_rom_path
+        "ale_py.roms.tetris_test", create=True, new_callable=lambda: test_rom_path
     ):
-        register(
+        gymnasium.register(
             id="TetrisTest-v0",
-            entry_point="ale_py.gym_env:AtariEnv",
+            entry_point="ale_py.env:AtariEnv",
             kwargs={"game": "tetris_test"},
         )
 
@@ -44,6 +44,6 @@ def tetris_gym(request, test_rom_path):
         if hasattr(request, "param"):
             print(request.param)
 
-        yield make("TetrisTest-v0", **kwargs)
+        yield gymnasium.make("TetrisTest-v0", **kwargs)
 
-        del registry["TetrisTest-v0"]
+        del gymnasium.registry["TetrisTest-v0"]

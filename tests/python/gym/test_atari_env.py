@@ -1,44 +1,40 @@
-# fmt: off
+import warnings
+
 import pytest
 
-pytest.importorskip("gym")
 
 from itertools import product
 from unittest.mock import patch
 
 import numpy as np
-from ale_py.gym_env import AtariEnv
-from ale_py.gym_registration import (
-    _register_gym_configs,
-    register_gym_envs,
-    register_legacy_gym_envs,
+from ale_py.env import AtariEnv
+from ale_py.registration import (
+    _register_rom_configs,
+    register_v5_envs,
+    register_v0_v4_envs,
 )
 
-from gym import error, spaces
-from gym.core import Env
-from gym.envs.registration import registry
-from gym.utils.env_checker import check_env
-
-# fmt: on
+import gymnasium
+from gymnasium.utils.env_checker import check_env
 
 
 def test_register_legacy_env_id():
     prefix = "ALETest/"
 
-    _original_register_gym_configs = _register_gym_configs
+    _original_register_gym_configs = _register_rom_configs
 
     def _mocked_register_gym_configs(*args, **kwargs):
         return _original_register_gym_configs(*args, **kwargs, prefix=prefix)
 
     with patch(
-        "ale_py.gym_registration._register_gym_configs",
+        "ale_py.registration._register_rom_configs",
         new=_mocked_register_gym_configs,
     ):
         # Register internal IDs
-        register_legacy_gym_envs()
+        register_v0_v4_envs()
 
         # Check if we registered the proper environments
-        envids = set(map(lambda e: e.id, registry.values()))
+        envids = set(map(lambda e: e.id, gymnasium.registry.values()))
         legacy_games = [
             "Adventure",
             "AirRaid",
@@ -118,10 +114,10 @@ def test_register_legacy_env_id():
 def test_register_gym_envs(test_rom_path):
     with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: test_rom_path):
         # Register internal IDs
-        register_gym_envs()
+        # register_v5_envs()
 
         # Check if we registered the proper environments
-        envids = set(map(lambda e: e.id, registry.values()))
+        envids = set(map(lambda e: e.id, gymnasium.registry.values()))
         games = ["ALE/Tetris"]
 
         obs_types = ["", "-ram"]
@@ -133,7 +129,7 @@ def test_register_gym_envs(test_rom_path):
 
 
 def test_gym_make(tetris_gym):
-    assert isinstance(tetris_gym, Env)
+    assert isinstance(tetris_gym, gymnasium.Env)
 
 
 @pytest.mark.parametrize("tetris_gym", [{"render_mode": "rgb_array"}], indirect=True)
@@ -171,7 +167,7 @@ def test_gym_ram_obs(tetris_gym):
     obs, _, _, _, _ = tetris_gym.step(0)
     space = tetris_gym.observation_space
 
-    assert isinstance(space, spaces.Box)
+    assert isinstance(space, gymnasium.spaces.Box)
     assert np.all(space.low == 0)
     assert np.all(space.high == 255)
     assert space.shape == (128,)
@@ -187,7 +183,7 @@ def test_gym_img_grayscale_obs(tetris_gym):
     obs, _, _, _, _ = tetris_gym.step(0)
     space = tetris_gym.observation_space
 
-    assert isinstance(space, spaces.Box)
+    assert isinstance(space, gymnasium.spaces.Box)
     assert np.all(space.low == 0)
     assert np.all(space.high == 255)
     assert len(space.shape) == 2
@@ -204,7 +200,7 @@ def test_gym_img_rgb_obs(tetris_gym):
     obs, _, _, _, _ = tetris_gym.step(0)
     space = tetris_gym.observation_space
 
-    assert isinstance(space, spaces.Box)
+    assert isinstance(space, gymnasium.spaces.Box)
     assert np.all(space.low == 0)
     assert np.all(space.high == 255)
     assert len(space.shape) == 3
@@ -239,7 +235,7 @@ def test_gym_keys_to_action(tetris_gym):
         (32, 100, 115): 16,
         (32, 97, 115): 17,
     }
-    keys_to_actions = tetris_gym.get_keys_to_action()
+    keys_to_actions = tetris_gym.unwrapped.get_keys_to_action()
 
     assert keys_full_action_space == keys_to_actions
 
@@ -267,24 +263,14 @@ def test_gym_action_meaning(tetris_gym):
         "DOWNLEFTFIRE",
     ]
 
-    assert tetris_gym.get_action_meanings() == action_meanings
+    assert tetris_gym.unwrapped.get_action_meanings() == action_meanings
 
 
 def test_gym_clone_state(tetris_gym):
-    tetris_gym.seed(0)
-    tetris_gym.reset()
-    # Smoke test for cloneFullState
-    tetris_gym.step(0)
-    state = tetris_gym.clone_full_state()
-    for _ in range(100):
-        tetris_gym.step(tetris_gym.action_space.sample())
+    tetris_gym = tetris_gym.unwrapped
 
-    tetris_gym.restore_full_state(state)
-    assert tetris_gym.clone_full_state() == state
-
-    tetris_gym.seed(0)
-    tetris_gym.reset()
-    # Smoke test for cloneFullState
+    tetris_gym.reset(seed=0)
+    # Smoke test for clone_state
     tetris_gym.step(0)
     state = tetris_gym.clone_state()
     for _ in range(100):
@@ -292,46 +278,11 @@ def test_gym_clone_state(tetris_gym):
 
     tetris_gym.restore_state(state)
     assert tetris_gym.clone_state() == state
-
-    tetris_gym.seed(0)
-    tetris_gym.reset()
-    # Smoke test for cloneFullState
-    tetris_gym.step(0)
-    state = tetris_gym.clone_state()
-    for _ in range(100):
-        tetris_gym.step(tetris_gym.action_space.sample())
-
-    tetris_gym.restore_state(state)
-    assert tetris_gym.clone_state() == state
-
-    tetris_gym.seed(0)
-    tetris_gym.reset()
-    # Smoke test for cloneFullState
-    tetris_gym.step(0)
-    state = tetris_gym.clone_state(include_rng=True)
-    full_state = tetris_gym.clone_full_state()
-    for _ in range(100):
-        tetris_gym.step(tetris_gym.action_space.sample())
-
-    tetris_gym.restore_state(state)
-    assert tetris_gym.clone_state(include_rng=True) == state
-    assert tetris_gym.clone_state(include_rng=True) == full_state
 
 
 @pytest.mark.parametrize("tetris_gym", [{"full_action_space": True}], indirect=True)
 def test_gym_action_space(tetris_gym):
     assert tetris_gym.action_space.n == 18
-
-
-def test_gym_reset_with_seed(tetris_gym):
-    tetris_gym.reset(seed=5)
-    first_state = tetris_gym.clone_state(include_rng=True)
-
-    tetris_gym.seed(5)
-    tetris_gym.reset()
-    second_state = tetris_gym.clone_state(include_rng=True)
-
-    assert first_state == second_state
 
 
 def test_gym_reset_with_infos(tetris_gym):
@@ -352,7 +303,7 @@ def test_gym_reset_with_infos(tetris_gym):
 @pytest.mark.parametrize("frameskip", [0, -1, 4.0, (-1, 5), (0, 5), (5, 2), (1, 2, 3)])
 def test_frameskip_warnings(test_rom_path, frameskip):
     with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: test_rom_path):
-        with pytest.raises(error.Error):
+        with pytest.raises(gymnasium.error.Error):
             AtariEnv("Tetris", frameskip=frameskip)
 
 
@@ -360,19 +311,22 @@ def test_terminal_signal(tetris_gym):
     tetris_gym.reset()
     while True:
         _, _, terminal, _, _ = tetris_gym.step(tetris_gym.action_space.sample())
-        emulator_terminal = tetris_gym.ale.game_over()
+        emulator_terminal = tetris_gym.unwrapped.ale.game_over()
         assert emulator_terminal == terminal
         if terminal:
             break
 
 
 def test_render_exception(tetris_gym):
-    with pytest.raises(error.Error):
+    with pytest.raises(TypeError):
         tetris_gym.render(mode="human")
+
+    with pytest.raises(TypeError):
+        tetris_gym.unwrapped.render(mode="human")
 
 
 def test_gym_compliance(tetris_gym):
-    try:
-        check_env(tetris_gym.unwrapped)
-    except Exception as ex:
-        pytest.fail(f"Gym compliance failed: {ex}")
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        check_env(tetris_gym.unwrapped, skip_render_check=True)
+
+    assert len(caught_warnings) == 0, [w.message for w in caught_warnings]

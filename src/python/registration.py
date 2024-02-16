@@ -6,26 +6,26 @@ from typing import Any, Callable, Mapping, NamedTuple, Sequence, Text, Union
 import ale_py.roms as roms
 from ale_py.roms import utils as rom_utils
 
-from gym.envs.registration import register
+import gymnasium
 
 
-class GymFlavour(NamedTuple):
+class EnvFlavour(NamedTuple):
     suffix: str
     kwargs: Union[Mapping[Text, Any], Callable[[str], Mapping[Text, Any]]]
 
 
-class GymConfig(NamedTuple):
+class EnvConfig(NamedTuple):
     version: str
     kwargs: Mapping[Text, Any]
-    flavours: Sequence[GymFlavour]
+    flavours: Sequence[EnvFlavour]
 
 
-def _register_gym_configs(
+def _register_rom_configs(
     roms: Sequence[str],
     obs_types: Sequence[str],
-    configs: Sequence[GymConfig],
+    configs: Sequence[EnvConfig],
     prefix: str = "",
-) -> None:
+):
     if len(prefix) > 0 and prefix[-1] != "/":
         prefix += "/"
 
@@ -48,9 +48,9 @@ def _register_gym_configs(
                     )
 
                     # Register the environment
-                    register(
+                    gymnasium.register(
                         id=f"{prefix}{name}{flavour.suffix}-{config.version}",
-                        entry_point="ale_py.gym_env:AtariEnv",
+                        entry_point="ale_py.env:AtariEnv",
                         kwargs=dict(
                             game=rom,
                             obs_type=obs_type,
@@ -60,7 +60,7 @@ def _register_gym_configs(
                     )
 
 
-def register_legacy_gym_envs() -> None:
+def register_v0_v4_envs():
     legacy_games = [
         "adventure",
         "air_raid",
@@ -129,7 +129,7 @@ def register_legacy_gym_envs() -> None:
     frameskip = defaultdict(lambda: 4, [("space_invaders", 3)])
 
     versions = [
-        GymConfig(
+        EnvConfig(
             version="v0",
             kwargs={
                 "repeat_action_probability": 0.25,
@@ -138,14 +138,14 @@ def register_legacy_gym_envs() -> None:
             },
             flavours=[
                 # Default for v0 has 10k steps, no idea why...
-                GymFlavour("", {"frameskip": (2, 5)}),
+                EnvFlavour("", {"frameskip": (2, 5)}),
                 # Deterministic has 100k steps, close to the standard of 108k (30 mins gameplay)
-                GymFlavour("Deterministic", lambda rom: {"frameskip": frameskip[rom]}),
+                EnvFlavour("Deterministic", lambda rom: {"frameskip": frameskip[rom]}),
                 # NoFrameSkip imposes a max episode steps of frameskip * 100k, weird...
-                GymFlavour("NoFrameskip", {"frameskip": 1}),
+                EnvFlavour("NoFrameskip", {"frameskip": 1}),
             ],
         ),
-        GymConfig(
+        EnvConfig(
             version="v4",
             kwargs={
                 "repeat_action_probability": 0.0,
@@ -154,25 +154,25 @@ def register_legacy_gym_envs() -> None:
             },
             flavours=[
                 # Unlike v0, v4 has 100k max episode steps
-                GymFlavour("", {"frameskip": (2, 5)}),
-                GymFlavour("Deterministic", lambda rom: {"frameskip": frameskip[rom]}),
+                EnvFlavour("", {"frameskip": (2, 5)}),
+                EnvFlavour("Deterministic", lambda rom: {"frameskip": frameskip[rom]}),
                 # Same weird frameskip * 100k max steps for v4?
-                GymFlavour("NoFrameskip", {"frameskip": 1}),
+                EnvFlavour("NoFrameskip", {"frameskip": 1}),
             ],
         ),
     ]
 
-    _register_gym_configs(legacy_games, obs_types, versions)
+    _register_rom_configs(legacy_games, obs_types, versions)
 
 
-def register_gym_envs():
+def register_v5_envs():
     all_games = list(map(rom_utils.rom_name_to_id, dir(roms)))
     obs_types = ["rgb", "ram"]
 
     # max_episode_steps is 108k frames which is 30 mins of gameplay.
     # This corresponds to 108k / 4 = 27,000 steps
     versions = [
-        GymConfig(
+        EnvConfig(
             version="v5",
             kwargs={
                 "repeat_action_probability": 0.25,
@@ -180,8 +180,8 @@ def register_gym_envs():
                 "frameskip": 4,
                 "max_num_frames_per_episode": 108_000,
             },
-            flavours=[GymFlavour("", {})],
+            flavours=[EnvFlavour("", {})],
         )
     ]
 
-    _register_gym_configs(all_games, obs_types, versions)
+    _register_rom_configs(all_games, obs_types, versions)
