@@ -123,7 +123,7 @@ def parse_version(version_file):
     semver_regex = r"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"
     semver_prog = re.compile(semver_regex)
 
-    with open(version_file, "r") as fp:
+    with open(version_file) as fp:
         version = fp.read().strip()
         assert semver_prog.match(version) is not None
 

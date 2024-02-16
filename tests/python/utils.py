@@ -1,18 +1,23 @@
+import os
 from unittest.mock import patch
 
 import ale_py
-import pytest
 import gymnasium
+import pytest
 
 
 @pytest.fixture
-def test_rom_path(resources):
-    yield resources["tetris.bin"]
+def test_rom_path():
+    yield os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "..", "resources", "tetris.bin"
+    )
 
 
 @pytest.fixture
-def random_rom_path(resources):
-    yield resources["random.bin"]
+def random_rom_path():
+    yield os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "..", "resources", "random.bin"
+    )
 
 
 @pytest.fixture
@@ -27,7 +32,7 @@ def tetris(ale, test_rom_path):
 
 
 @pytest.fixture
-def tetris_gym(request, test_rom_path):
+def tetris_env(request, test_rom_path):
     with patch(
         "ale_py.roms.tetris_test", create=True, new_callable=lambda: test_rom_path
     ):
