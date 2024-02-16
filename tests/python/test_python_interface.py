@@ -5,6 +5,7 @@ import tempfile
 import ale_py
 import numpy as np
 import pytest
+from utils import ale, random_rom_path, test_rom_path, tetris  # noqa: F401
 
 
 def test_ale_version():
