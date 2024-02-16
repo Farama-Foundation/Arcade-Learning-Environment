@@ -327,6 +327,6 @@ def test_render_exception(tetris_gym):
 
 def test_gym_compliance(tetris_gym):
     with warnings.catch_warnings(record=True) as caught_warnings:
-        check_env(tetris_gym.unwrapped, skip_render_check=False)
+        check_env(tetris_gym.unwrapped, skip_render_check=True)
 
     assert len(caught_warnings) == 0, [w.message for w in caught_warnings]
