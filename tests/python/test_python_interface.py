@@ -225,7 +225,7 @@ def test_save_screen_png(tetris):
 def test_is_rom_supported(ale, test_rom_path, random_rom_path):
     assert ale.isSupportedROM(test_rom_path)
     assert ale.isSupportedROM(random_rom_path) is None
-    with pytest.raises(RuntimeError) as exc_info:
+    with pytest.raises(RuntimeError):
         ale.isSupportedROM("notfound")
 
 
@@ -380,7 +380,7 @@ def test_state_pickle(tetris):
     state = tetris.cloneState()
     file = os.path.join(tempfile.gettempdir(), "ale-state.p")
     with open(file, "wb") as fp:
-        data = pickle.dump(state, fp)
+        pickle.dump(state, fp)
 
     tetris.reset_game()
     assert tetris.cloneState() != state

@@ -1,20 +1,12 @@
 import warnings
-
-import pytest
-
-
 from itertools import product
 from unittest.mock import patch
 
-import numpy as np
-from ale_py.env import AtariEnv
-from ale_py.registration import (
-    _register_rom_configs,
-    register_v5_envs,
-    register_v0_v4_envs,
-)
-
 import gymnasium
+import numpy as np
+import pytest
+from ale_py.env import AtariEnv
+from ale_py.registration import _register_rom_configs, register_v0_v4_envs
 from gymnasium.utils.env_checker import check_env
 
 

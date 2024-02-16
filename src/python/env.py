@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal
 
 import ale_py
 import gymnasium
@@ -35,14 +35,14 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
     def __init__(
         self,
         game: str,
-        mode: Optional[int] = None,
-        difficulty: Optional[int] = None,
+        mode: int | None = None,
+        difficulty: int | None = None,
         obs_type: Literal["rgb", "grayscale", "ram"] = "rgb",
-        frameskip: Union[tuple[int, int], int] = 4,
+        frameskip: tuple[int, int] | int = 4,
         repeat_action_probability: float = 0.25,
         full_action_space: bool = False,
-        max_num_frames_per_episode: Optional[int] = None,
-        render_mode: Optional[Literal["human", "rgb_array"]] = None,
+        max_num_frames_per_episode: int | None = None,
+        render_mode: Literal["human", "rgb_array"] | None = None,
     ):
         """
         Initialize the ALE for Gymnasium.
@@ -96,11 +96,11 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             )
         elif isinstance(frameskip, tuple) and frameskip[0] > frameskip[1]:
             raise error.Error(
-                f"Invalid stochastic frameskip, lower bound is greater than upper bound."
+                "Invalid stochastic frameskip, lower bound is greater than upper bound."
             )
         elif isinstance(frameskip, tuple) and frameskip[0] <= 0:
             raise error.Error(
-                f"Invalid stochastic frameskip lower bound is greater than upper bound."
+                "Invalid stochastic frameskip lower bound is greater than upper bound."
             )
 
         if render_mode is not None and render_mode not in {"rgb_array", "human"}:
@@ -176,7 +176,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         else:
             raise error.Error(f"Unrecognized observation type: {self._obs_type}")
 
-    def seed_game(self, seed: Optional[int] = None) -> tuple[int, int]:
+    def seed_game(self, seed: int | None = None) -> tuple[int, int]:
         """Seeds the internal and ALE RNG."""
         ss = np.random.SeedSequence(seed)
         np_seed, ale_seed = ss.generate_state(n_words=2)
@@ -196,8 +196,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
     def reset(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         *,
-        seed: Optional[int] = None,
-        options: Optional[dict[str, Any]] = None,
+        seed: int | None = None,
+        options: dict[str, Any] | None = None,
     ) -> tuple[np.ndarray, AtariEnvStepMetadata]:
         """Resets environment and returns initial observation."""
         super().reset(seed=seed, options=options)
@@ -253,7 +253,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
         return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
 
-    def render(self) -> Optional[np.ndarray]:
+    def render(self) -> np.ndarray | None:
         """
         Render is not supported by ALE. We use a paradigm similar to
         Gym3 which allows you to specify `render_mode` during construction.

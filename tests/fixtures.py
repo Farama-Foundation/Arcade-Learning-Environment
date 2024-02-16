@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 import ale_py
-import pytest
 import gymnasium
+import pytest
 
 
 @pytest.fixture

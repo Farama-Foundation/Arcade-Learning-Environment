@@ -1,6 +1,7 @@
 from itertools import product
-import gymnasium
+
 import ale_py
+import gymnasium
 
 gymnasium.register_envs(ale_py)
 
@@ -119,7 +120,6 @@ def test_legacy_env_specs():
 
         if "NoFrameskip" in spec:
             assert kwargs["frameskip"] == 1
-            steps = 300000 if "SpaceInvaders" in spec else 400000
         elif "Deterministic" in spec:
             assert isinstance(kwargs["frameskip"], int)
             frameskip = 3 if "SpaceInvaders" in spec else 4
