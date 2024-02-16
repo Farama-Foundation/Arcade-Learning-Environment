@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 name = "ale-py"
 description = "The Arcade Learning Environment (ALE) - a platform for AI research."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = {text = "GPLv2"}
 keywords = ["reinforcement-learning", "arcade-learning-environment", "atari"]
 authors = [
@@ -73,12 +73,6 @@ norecursedirs = ["vcpkg", "build"]
 skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
-
-# Test configuration
-# test-extras = ["test"]
-# TODO(jfarebro): Temporarily use upstream Gym until v26 release.
-test-requires = ["pytest", "git+https://github.com/openai/gym#egg=gym"]
-test-command = "pytest {project}"
 
 # vcpkg manylinux images
 manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014_x86_64-vcpkg"

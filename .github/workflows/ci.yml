@@ -37,9 +37,6 @@ jobs:
       matrix:
         include:
           - runs-on: ubuntu-latest
-            python: '3.7'
-            triplet: x64-linux-mixed
-          - runs-on: ubuntu-latest
             python: '3.8'
             triplet: x64-linux-mixed
           - runs-on: ubuntu-latest
@@ -53,9 +50,6 @@ jobs:
             triplet: x64-linux-mixed
 
           - runs-on: macos-latest
-            python: '3.7'
-            triplet: x64-osx-mixed
-          - runs-on: macos-latest
             python: '3.8'
             triplet: x64-osx-mixed
           - runs-on: macos-latest
@@ -68,9 +62,6 @@ jobs:
             python: '3.11'
             triplet: x64-osx-mixed
 
-#          - runs-on: windows-latest
-#            python: '3.7'
-#            triplet: x64-windows
 #          - runs-on: windows-latest
 #            python: '3.8'
 #            triplet: x64-windows
