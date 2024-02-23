@@ -4,7 +4,6 @@ from collections import defaultdict
 from typing import Any, Callable, Mapping, NamedTuple, Sequence
 
 import ale_py.roms as roms
-
 import gymnasium
 
 

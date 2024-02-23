@@ -4,10 +4,9 @@ import sys
 from typing import Any, Literal
 
 import ale_py
+import gymnasium
 import numpy as np
 from ale_py import roms
-
-import gymnasium
 from gymnasium import error, spaces, utils
 from gymnasium.utils import seeding
 

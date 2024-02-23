@@ -41,7 +41,9 @@ def _download_roms():
         ), f"File {rom_name} not supported. Please report this to a dev."
 
         # extract the rom file from the archive
-        rom_bytes = tar_fp.extractfile(member).read()  # pyright: ignore[reportOptionalMemberAccess]
+        rom_bytes = tar_fp.extractfile(
+            member
+        ).read()  # pyright: ignore[reportOptionalMemberAccess]
 
         # get hash
         md5 = hashlib.md5()
