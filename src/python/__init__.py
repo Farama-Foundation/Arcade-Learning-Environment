@@ -60,5 +60,6 @@ try:
 
     register_v0_v4_envs()
     register_v5_envs()
-except ImportError:
+except ImportError as e:
+    print(e)
     pass

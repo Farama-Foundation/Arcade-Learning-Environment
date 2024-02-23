@@ -13,7 +13,7 @@ import requests
 # Extract each valid ROM into each dir in installation_dirs
 def _download_roms():
     # this is a map of {rom.bin : md5 checksum}
-    all_roms = json.load(open(Path(__file__).parent / "md5.yaml"))
+    all_roms = json.load(open(Path(__file__).parent / "md5.json"))
 
     # use requests to download the base64 file
     url = "https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64"
@@ -31,10 +31,14 @@ def _download_roms():
         if not (member.isfile() and member.name.endswith(".bin")):
             continue
 
+        # grab the rom name from the member name
+        # by default, the roms have the hierarchy ROM/rom_name/rom_name.bin
+        rom_name = member.name.split("/")[-1]
+
         # assert that this member.name should be supported
         assert (
-            member.name in all_roms
-        ), f"File {member.name} not supported. Please report this to a dev."
+            rom_name in all_roms
+        ), f"File {rom_name} not supported. Please report this to a dev."
 
         # extract the rom file from the archive
         rom_bytes = tar_fp.extractfile(member).read()  # pyright: ignore[reportOptionalMemberAccess]
@@ -46,14 +50,14 @@ def _download_roms():
 
         # assert that the hash matches
         assert (
-            md5_hash == all_roms[member.name]
-        ), f"Rom {member.name}'s hash does not match what was expected. Please report this to a dev."
+            md5_hash == all_roms[rom_name]
+        ), f"Rom {rom_name}'s hash does not match what was expected. Please report this to a dev."
 
         # save this rom
-        rom_path = Path(__file__).parent / member.name
+        rom_path = Path(__file__).parent / rom_name
         open(rom_path, "wb").write(rom_bytes)
 
-        print(f"Downloaded and unpacked {member.name}.")
+        print(f"Downloaded and unpacked {rom_name}.")
 
 
 def get_rom_path(name: str) -> Path | None:
@@ -62,8 +66,8 @@ def get_rom_path(name: str) -> Path | None:
     bin_file = f"{name}.bin"
     bin_path = Path(__file__).parent / bin_file
 
-    # check if it exists within the md5.yaml
-    all_roms = json.load(open(Path(__file__).parent / "md5.yaml"))
+    # check if it exists within the md5.json
+    all_roms = json.load(open(Path(__file__).parent / "md5.json"))
     if bin_file not in all_roms:
         warnings.warn(f"Rom {name} not supported.")
         return None
@@ -80,5 +84,5 @@ def get_rom_path(name: str) -> Path | None:
 
 def get_all_rom_ids() -> list[str]:
     """Returns a list of all available rom_ids, ie: ['tetris', 'pong', 'zaxxon', ...]."""
-    all_roms = json.load(open(Path(__file__).parent / "md5.yaml"))
+    all_roms = json.load(open(Path(__file__).parent / "md5.json"))
     return [key.split(".")[0] for key in all_roms.keys()]

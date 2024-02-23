@@ -61,7 +61,7 @@ def _register_rom_configs(
 
                     # Register the environment
                     gymnasium.register(
-                        id=f"{prefix}{name}{flavour.suffix}-{config.version}",
+                        id=f"ALE/{prefix}{name}{flavour.suffix}-{config.version}",
                         entry_point="ale_py.env:AtariEnv",
                         kwargs=dict(
                             game=rom,
