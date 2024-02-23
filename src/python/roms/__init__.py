@@ -59,8 +59,6 @@ def _download_roms():
         rom_path = Path(__file__).parent / rom_name
         open(rom_path, "wb").write(rom_bytes)
 
-        print(f"Downloaded and unpacked {rom_name}.")
-
 
 def get_rom_path(name: str) -> Path | None:
     """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
