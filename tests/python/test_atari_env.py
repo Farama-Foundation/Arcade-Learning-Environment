@@ -10,12 +10,6 @@ from ale_py.registration import _register_rom_configs, register_v0_v4_envs
 from gymnasium.utils.env_checker import check_env
 from utils import test_rom_path, tetris_env  # noqa: F401
 
-all_v5_envs = [
-    _id
-    for _id in gymnasium.registry.keys()
-    if (_id.startswith("ALE/") and (_id.endswith("-v5")))
-]
-
 
 @pytest.mark.parametrize(
     "env_id",
