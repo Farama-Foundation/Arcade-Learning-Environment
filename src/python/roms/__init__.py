@@ -11,7 +11,7 @@ from pathlib import Path
 import requests
 
 
-@functools.cache
+@functools.lru_cache(maxsize=1)
 def _get_all_rom_hashes() -> dict[str, str]:
     # this is a map of {rom.bin : md5 checksum}
     with open(Path(__file__).parent / "md5.json") as f:
