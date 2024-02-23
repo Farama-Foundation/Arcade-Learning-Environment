@@ -5,8 +5,8 @@ doc/examples/*Example
 
 # Don't save roms in repo
 *.tar.gz
-src/python/roms/*.bin
-!src/python/roms/tetris.bin
+*.bin
+!tetris.bin
 
 # Auto-generated dependency files
 .deps
