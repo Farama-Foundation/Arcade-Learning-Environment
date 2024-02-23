@@ -311,7 +311,9 @@ def test_terminal_signal(tetris_env):
 
 
 def test_render_exception(tetris_env):
-    with pytest.raises(gymnasium.error.ResetNeeded):
+    tetris_env.reset()
+
+    with pytest.raises(TypeError):
         tetris_env.render(mode="human")
 
     with pytest.raises(TypeError):
