@@ -105,7 +105,7 @@ jobs:
         doNotCache: true
 
     - name: Build
-      run: python -m pip install --user --verbose .[test]
+      run: python -m pip install --verbose .[test]
 
     - name: Download and extract roms
       run: ale-accept-license-install-roms
