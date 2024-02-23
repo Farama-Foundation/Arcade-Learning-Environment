@@ -31,7 +31,7 @@ def _download_roms():
         if not (member.isfile() and member.name.endswith(".bin")):
             continue
 
-        # grab the rom name from the member name
+        # grab the rom name from the member name, ie: `pong.bin`
         # by default, the roms have the hierarchy ROM/rom_name/rom_name.bin
         rom_name = member.name.split("/")[-1]
 
