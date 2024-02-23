@@ -4,10 +4,11 @@ import sys
 from typing import Any, Literal, Optional, Sequence, Union
 
 import ale_py
-import gymnasium
-import gymnasium.logger as logger
 import numpy as np
 from ale_py import roms
+
+import gymnasium
+import gymnasium.logger as logger
 from gymnasium import error, spaces, utils
 from gymnasium.utils import seeding
 
@@ -50,7 +51,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         Default parameters are taken from Machado et al., 2018.
 
         Args:
-          game: str => Game to initialize env with.
+          game: str => Game to initialize env with, in snake_case.
           mode: Optional[int] => Game mode, see Machado et al., 2018
           difficulty: Optional[int] => Game difficulty,see Machado et al., 2018
           obs_type: str => Observation type in { 'rgb', 'grayscale', 'ram' }
@@ -97,11 +98,11 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             )
         elif isinstance(frameskip, tuple) and frameskip[0] > frameskip[1]:
             raise error.Error(
-                f"Invalid stochastic frameskip, lower bound is greater than upper bound."
+                f"Invalid stochastic frameskip, lower bound ({frameskip[0]}) is greater than upper bound ({frameskip[1]})."
             )
         elif isinstance(frameskip, tuple) and frameskip[0] <= 0:
             raise error.Error(
-                f"Invalid stochastic frameskip lower bound is greater than upper bound."
+                f"Invalid stochastic frameskip lower bound ({frameskip[0]}) is greater than upper bound."
             )
 
         if render_mode is not None and render_mode not in {"rgb_array", "human"}:
@@ -187,7 +188,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def load_game(self) -> None:
         """This function initializes the ROM and sets the corresponding mode and difficulty."""
-        self.ale.loadROM(getattr(roms, self._game))
+        self.ale.loadROM(roms.get_rom_path(self._game))
 
         if self._game_mode is not None:
             self.ale.setMode(self._game_mode)

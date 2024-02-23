@@ -1,141 +1,84 @@
-import functools
-import logging
-import os
-import pathlib
-import sys
+from __future__ import annotations
+
+import base64
+import hashlib
+import json
+import tarfile
 import warnings
-from typing import List, Optional
+from pathlib import Path
 
-from ale_py import ALEInterface
-from ale_py.roms import plugins, utils
-
-# pylint: disable=g-import-not-at-top
-if sys.version_info >= (3, 9):
-    import importlib.resources as resources
-else:
-    import importlib_resources as resources
-# pylint: enable=g-import-not-at-top
-
-# Precedence is as follows:
-#  1. Internal ROMs
-#  2. External ROMs
-#  3. ROMs from atari-py.roms
-#  4. ROMs from atari-py-roms.roms
-_ROM_PLUGIN_REGISTRY: List[plugins.Plugin] = [
-    plugins.Package("ale_py.roms"),
-    plugins.EntryPoint("ale_py.roms"),
-    plugins.Package("atari_py.atari_roms"),
-    plugins.Package("atari_py_roms.atari_roms"),
-]
-
-# Environment variable for ROM discovery.
-# ale-py will search for supported ROMs in:
-#   ${ALE_PY_ROM_DIR}/*.bin
-_ROM_DIRECTORY_ENV_KEY = "ALE_PY_ROM_DIR"
-_ROM_DIRECTORY_ENV_VALUE = os.environ.get(_ROM_DIRECTORY_ENV_KEY, None)
-
-if _ROM_DIRECTORY_ENV_VALUE is not None:
-    _ROM_PLUGIN_REGISTRY.append(plugins.Directory(_ROM_DIRECTORY_ENV_VALUE))
+import requests
 
 
-def _resolve_rom(name: str) -> Optional[pathlib.Path]:
-    """Resolve a ROM path from the ROM registry."""
-    for package in _ROM_PLUGIN_REGISTRY:
-        rom_id = utils.rom_name_to_id(name)
+# Extract each valid ROM into each dir in installation_dirs
+def _download_roms():
+    # this is a map of {rom.bin : md5 checksum}
+    all_roms = json.load(open(Path(__file__).parent / "md5.yaml"))
 
-        # Resolve ROM from package
-        try:
-            rom_path = package.resolve(rom_id)
-        except ModuleNotFoundError:
+    # use requests to download the base64 file
+    url = "https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64"
+    r = requests.get(url, allow_redirects=False)
+
+    # decode the b64 into the tar.gz and save it
+    tar_gz = base64.b64decode(r.content)
+    save_path = Path(__file__).parent / "Roms.tar.gz"
+    open(save_path, "wb").write(tar_gz)
+
+    # iterate through each file in the tar
+    tar_fp = tarfile.open(name=save_path)
+    for member in tar_fp.getmembers():
+        # ignore if this is not a valid bin file
+        if not (member.isfile() and member.name.endswith(".bin")):
             continue
 
-        # Failed to resolve ROM
-        if rom_path is None:
-            logging.debug(f"{package} did not resolve {rom_id}.")
-            continue
+        # assert that this member.name should be supported
+        assert (
+            member.name in all_roms
+        ), f"File {member.name} not supported. Please report this to a dev."
 
-        # ROM isn't supported
-        resolved_id = ALEInterface.isSupportedROM(rom_path)
-        if resolved_id is None:
-            warnings.warn(
-                f"{package} contains unsupported ROM: {rom_path}",
-                category=ImportWarning,
-                stacklevel=2,
-            )
-            continue
+        # extract the rom file from the archive
+        rom_bytes = tar_fp.extractfile(member).read()  # pyright: ignore[reportOptionalMemberAccess]
 
-        # If the ROMs resolved differently
-        if resolved_id != rom_id:
-            warnings.warn(
-                f"{package} contains ROM {rom_id} which doesn't resolve to {resolved_id}. "
-                "This is most likely caused by a filename mismatch.",
-            )
-            continue
+        # get hash
+        md5 = hashlib.md5()
+        md5.update(rom_bytes)
+        md5_hash = md5.hexdigest()
 
-        # Deprecation warning for atari-py
-        if isinstance(package, plugins.Package) and package.package.startswith(
-            "atari_py"
-        ):
-            warnings.warn(
-                "Automatic importing of atari-py roms won't be supported in future releases of ale-py. "
-                "Please migrate over to using `ale-import-roms` OR an ALE-supported ROM package. "
-                "To make this warning disappear you can run "
-                f"`ale-import-roms --import-from-pkg {package.package}`. "
-                "For more information see: https://github.com/mgbellemare/Arcade-Learning-Environment#rom-management",
-                category=DeprecationWarning,
-                stacklevel=2,
-            )
+        # assert that the hash matches
+        assert (
+            md5_hash == all_roms[member.name]
+        ), f"Rom {member.name}'s hash does not match what was expected. Please report this to a dev."
 
-        return rom_path
-    # Return None if we couldn't resolve the ROM from any package
-    return None
+        # save this rom
+        rom_path = Path(__file__).parent / member.name
+        open(rom_path, "wb").write(rom_bytes)
+
+        print(f"Downloaded and unpacked {member.name}.")
 
 
-@functools.lru_cache(maxsize=None)
-def __dir__() -> List[str]:
-    """Return the ROM directory, i.e., a list of all supported ROMs."""
-    md5s = resources.files(__name__).joinpath("md5.txt")
-    if not md5s.exists():
-        raise FileNotFoundError(
-            "ROM md5 resource couldn't be found. "
-            "Are you running from a development environment? "
-        )
-    with md5s.open() as fp:
-        lines = filter(
-            lambda line: line.strip() and not line.startswith("#"), fp.readlines()
-        )
-        roms = [pathlib.Path(rom) for _, rom in map(str.split, lines)]
-        return [utils.rom_id_to_name(rom.stem) for rom in roms]
+def get_rom_path(name: str) -> Path | None:
+    """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
+    # the theoretical location of the binary rom file
+    bin_file = f"{name}.bin"
+    bin_path = Path(__file__).parent / bin_file
+
+    # check if it exists within the md5.yaml
+    all_roms = json.load(open(Path(__file__).parent / "md5.yaml"))
+    if bin_file not in all_roms:
+        warnings.warn(f"Rom {name} not supported.")
+        return None
+
+    if bin_path.exists():
+        # if the path exists, just return it
+        return bin_path
+    else:
+        # if it doesn't exist, we need to install the roms, then return it
+        print(f"Could not find rom {name}, downloading roms to device...")
+        _download_roms()
+        return bin_path
 
 
-@functools.lru_cache(maxsize=None)
-def __getattr__(name: str) -> pathlib.Path:
-    """Return the path to a ROM."""
-    roms = __dir__()
-    if name not in roms:
-        raise AttributeError(f"No ROM named {name}. Supported ROMs: {', '.join(roms)}")
-
-    path = _resolve_rom(name)
-    if path is None:
-        raise AttributeError(
-            f"Failed to resolve ROM `{name}` from plugins "
-            f"{', '.join(map(lambda plugin: f'`{repr(plugin)}`', _ROM_PLUGIN_REGISTRY))}. "
-            "If you own a license to use the necessary ROMs for research purposes you can download them "
-            f"via `pip install autorom[accept-rom-license]`. Otherwise, you should try importing `{name}` "
-            f"via the command `ale-import-roms`. If you believe this is a mistake perhaps your copy of `{name}` "
-            "is unsupported. To check if this is the case try providing the environment variable "
-            "`PYTHONWARNINGS=default::ImportWarning:ale_py.roms`. For more information see: "
-            "https://github.com/mgbellemare/Arcade-Learning-Environment#rom-management"
-        )
-    return path
-
-
-def register_plugin(plugin: plugins.Plugin, *, index: int = 0) -> None:
-    """Register a ROM plugin."""
-    if not issubclass(type(plugin), plugins.Plugin):
-        raise ValueError(f"{repr(plugin)} is not a valid ROM plugin.")
-    _ROM_PLUGIN_REGISTRY.insert(index, plugin)
-    __getattr__.cache_clear()
-
-
-__all__ = ["register_plugin"] + __dir__()
+def get_all_rom_ids() -> list[str]:
+    """Returns a list of all available rom_ids, ie: ['tetris', 'pong', 'zaxxon', ...]."""
+    all_roms = json.load(open(Path(__file__).parent / "md5.yaml"))
+    return [key.split(".")[0] for key in all_roms.keys()]
