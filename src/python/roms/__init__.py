@@ -32,7 +32,7 @@ def _download_roms():
             continue
 
         # grab the rom name from the member name, ie: `pong.bin`
-        # by default, the roms have the hierarchy ROM/rom_name/rom_name.bin
+        # member.name is ROM/rom_name/rom_name.bin, so we just want the last thing
         rom_name = member.name.split("/")[-1]
 
         # assert that this member.name should be supported
