@@ -97,7 +97,7 @@ def __dir__() -> List[str]:
     md5s = resources.files(__name__).joinpath("md5.txt")
     if not md5s.exists():
         raise FileNotFoundError(
-            f"ROM md5 resource couldn't be found. "
+            "ROM md5 resource couldn't be found. "
             "Are you running from a development environment? "
         )
     with md5s.open() as fp:

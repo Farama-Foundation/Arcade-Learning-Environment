@@ -37,9 +37,6 @@ jobs:
       matrix:
         include:
           - runs-on: ubuntu-latest
-            python: '3.7'
-            triplet: x64-linux-mixed
-          - runs-on: ubuntu-latest
             python: '3.8'
             triplet: x64-linux-mixed
           - runs-on: ubuntu-latest
@@ -53,9 +50,6 @@ jobs:
             triplet: x64-linux-mixed
 
           - runs-on: macos-latest
-            python: '3.7'
-            triplet: x64-osx-mixed
-          - runs-on: macos-latest
             python: '3.8'
             triplet: x64-osx-mixed
           - runs-on: macos-latest
@@ -68,21 +62,18 @@ jobs:
             python: '3.11'
             triplet: x64-osx-mixed
 
-          - runs-on: windows-latest
-            python: '3.7'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.8'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.9'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.10'
-            triplet: x64-windows
-          - runs-on: windows-latest
-            python: '3.11'
-            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.8'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.9'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.10'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.11'
+#            triplet: x64-windows
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
     runs-on: ${{ matrix.runs-on }}
@@ -97,9 +88,7 @@ jobs:
     - name: Install test dependencies
       # TODO(jfarebro): There's a bug with Windows cmake and PEP517 builds via pip install.
       # As a temporary workaround installing cmake outside of the isolated env seems to work.
-      run: |
-        python -m pip install --user --upgrade -r tests/requirements.txt
-        python -m pip install --user cmake
+      run: python -m pip install --user cmake
 
     - uses: microsoft/setup-msbuild@v1.1
       if: runner.os == 'Windows'
@@ -116,7 +105,7 @@ jobs:
         doNotCache: true
 
     - name: Build
-      run: python -m pip install --user --verbose .
+      run: python -m pip install --user --verbose .[test]
 
     - name: Test
       run: python -m pytest

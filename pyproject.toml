@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 name = "ale-py"
 description = "The Arcade Learning Environment (ALE) - a platform for AI research."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = {text = "GPLv2"}
 keywords = ["reinforcement-learning", "arcade-learning-environment", "atari"]
 authors = [
@@ -42,7 +42,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 test = [
   "pytest>=7.0",
-  "gym~=0.23",
+  "gymnasium==1.0.0a1",
 ]
 
 [project.urls]
@@ -53,18 +53,13 @@ changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/mas
 [project.scripts]
 ale-import-roms = "ale_py.scripts.import_roms:main"
 
-[project.entry-points."gym.envs"]
-ALE = "ale_py.gym:register_gym_envs"
-__internal__ = "ale_py.gym:register_legacy_gym_envs"
-
 [tool.setuptools]
 packages = [
   "ale_py",
   "ale_py.roms",
-  "ale_py.env",
   "ale_py.scripts"
 ]
-package-dir = {ale_py = "src/python", gym = "src/gym"}
+package-dir = {ale_py = "src/python"}
 package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["*.bin", "md5.txt"]}
 
 [tool.pytest.ini_options]
@@ -78,12 +73,6 @@ norecursedirs = ["vcpkg", "build"]
 skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
-
-# Test configuration
-# test-extras = ["test"]
-# TODO(jfarebro): Temporarily use upstream Gym until v26 release.
-test-requires = ["pytest", "git+https://github.com/openai/gym#egg=gym"]
-test-command = "pytest {project}"
 
 # vcpkg manylinux images
 manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014_x86_64-vcpkg"
