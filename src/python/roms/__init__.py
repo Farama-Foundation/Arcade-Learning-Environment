@@ -29,45 +29,47 @@ def _download_roms() -> None:
     # decode the b64 into the tar.gz and save it
     tar_gz = base64.b64decode(r.content)
     save_path = Path(__file__).parent / "Roms.tar.gz"
-    open(save_path, "wb").write(tar_gz)
+    with open(save_path, "wb") as f:
+        f.write(tar_gz)
 
     # iterate through each file in the tar
-    tar_fp = tarfile.open(name=save_path)
-    for member in tar_fp.getmembers():
-        # ignore if this is not a valid bin file
-        if not (member.isfile() and member.name.endswith(".bin")):
-            continue
+    with tarfile.open(name=save_path) as tar_fp:
+        for member in tar_fp.getmembers():
+            # ignore if this is not a valid bin file
+            if not (member.isfile() and member.name.endswith(".bin")):
+                continue
 
-        # grab the rom name from the member name, ie: `pong.bin`
-        # member.name is ROM/rom_name/rom_name.bin, so we just want the last thing
-        rom_name = member.name.split("/")[-1]
+            # grab the rom name from the member name, ie: `pong.bin`
+            # member.name is ROM/rom_name/rom_name.bin, so we just want the last thing
+            rom_name = member.name.split("/")[-1]
 
-        # assert that this member.name should be supported
-        assert (
-            rom_name in all_roms
-        ), f"File {rom_name} not supported. Please report this to a dev."
+            # assert that this member.name should be supported
+            assert (
+                rom_name in all_roms
+            ), f"File {rom_name} not supported. Please report this to a dev."
 
-        # extract the rom file from the archive
-        rom_bytes = tar_fp.extractfile(
-            member
-        ).read()  # pyright: ignore[reportOptionalMemberAccess]
+            # extract the rom file from the archive
+            rom_bytes = tar_fp.extractfile(
+                member
+            ).read()  # pyright: ignore[reportOptionalMemberAccess]
 
-        # get hash
-        md5 = hashlib.md5()
-        md5.update(rom_bytes)
-        md5_hash = md5.hexdigest()
+            # get hash
+            md5 = hashlib.md5()
+            md5.update(rom_bytes)
+            md5_hash = md5.hexdigest()
 
-        # assert that the hash matches
-        assert md5_hash == all_roms[rom_name], (
-            f"Rom {rom_name}'s hash ({md5_hash}) does not match what was expected. "
-            "Please report this to a dev."
-        )
+            # assert that the hash matches
+            assert md5_hash == all_roms[rom_name], (
+                f"Rom {rom_name}'s hash ({md5_hash}) does not match what was expected. "
+                "Please report this to a dev."
+            )
 
-        # save this rom
-        rom_path = Path(__file__).parent / rom_name
-        open(rom_path, "wb").write(rom_bytes)
+            # save this rom
+            rom_path = Path(__file__).parent / rom_name
+            with open(rom_path, "wb") as rom_fp:
+                rom_fp.write(rom_bytes)
 
-        print(f"Downloaded and extracted {rom_name}.")
+            print(f"Downloaded and extracted {rom_name}.")
 
 
 def get_rom_path(name: str) -> Path | None:
