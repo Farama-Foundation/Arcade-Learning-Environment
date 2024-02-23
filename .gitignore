@@ -5,6 +5,7 @@ doc/examples/*Example
 
 # Don't save roms in repo
 *.bin
+!tetris.bin
 *.tar.gz
 
 # Auto-generated dependency files
