@@ -59,6 +59,8 @@ def _download_roms():
         rom_path = Path(__file__).parent / rom_name
         open(rom_path, "wb").write(rom_bytes)
 
+        print(f"Downloaded and extracted {rom_name}.")
+
 
 def get_rom_path(name: str) -> Path | None:
     """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
@@ -76,10 +78,13 @@ def get_rom_path(name: str) -> Path | None:
         # if the path exists, just return it
         return bin_path
     else:
-        # if it doesn't exist, we need to install the roms, then return it
-        print(f"Could not find rom {name}, downloading roms to device...")
-        _download_roms()
-        return bin_path
+        # if it doesn't exist, prompt the user to download it, just quit here.
+        print(
+            f"Looks like the rom {name} could not be found. "
+            "To install all roms, please run `ale-accept-license-install-roms` "
+            "to accept the license agreement and install all available roms."
+        )
+        exit()
 
 
 def get_all_rom_ids() -> list[str]:

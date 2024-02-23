@@ -52,13 +52,12 @@ documentation = "https://github.com/mgbellemare/Arcade-Learning-Environment/tree
 changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
 [project.scripts]
-ale-import-roms = "ale_py.scripts.import_roms:main"
+ale-accept-license-install-roms = "ale_py.roms:_download_roms"
 
 [tool.setuptools]
 packages = [
   "ale_py",
   "ale_py.roms",
-  "ale_py.scripts"
 ]
 package-dir = {ale_py = "src/python"}
 package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json"]}
