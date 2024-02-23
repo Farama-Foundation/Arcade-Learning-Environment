@@ -195,4 +195,4 @@ def register_v5_envs():
         )
     ]
 
-    _register_rom_configs(all_games, obs_types, versions, "ALE")
+    _register_rom_configs(all_games, obs_types, versions)
