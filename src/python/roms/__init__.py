@@ -10,8 +10,8 @@ from pathlib import Path
 import requests
 
 
-# Extract each valid ROM into each dir in installation_dirs
 def _download_roms():
+    """Downloads all roms in the form of a base64 file, then decodes it into a tar.gz, then extracts all the roms by matching it to the expected md5."""
     # this is a map of {rom.bin : md5 checksum}
     all_roms = json.load(open(Path(__file__).parent / "md5.json"))
 
