@@ -51,9 +51,6 @@ homepage = "https://github.com/mgbellemare/Arcade-Learning-Environment"
 documentation = "https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/docs"
 changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
-[project.scripts]
-ale-accept-license-install-roms = "ale_py.roms:_download_roms"
-
 [tool.setuptools]
 packages = [
   "ale_py",

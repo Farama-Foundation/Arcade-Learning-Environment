@@ -5,6 +5,7 @@ import functools
 import hashlib
 import json
 import tarfile
+import time
 import warnings
 from pathlib import Path
 
@@ -84,17 +85,17 @@ def get_rom_path(name: str) -> Path | None:
         warnings.warn(f"Rom {name} not supported.")
         return None
 
-    if bin_path.exists():
-        # if the path exists, just return it
-        return bin_path
-    else:
-        # if it doesn't exist, prompt the user to download it, just quit here.
+    # if the bin_path doesn't exist, we assume the user already has the license and just download the roms
+    if not bin_path.exists():
         print(
-            f"Looks like the rom {name} could not be found. "
-            "To install all roms, please run `ale-accept-license-install-roms` "
-            "to accept the license agreement and install all available roms."
+            f"Looks like the rom {name} could not be found, it may not have been downloaded. "
+            "\nWe will install all roms in the next 5 seconds, and we assume that you have accepted the license agreement beforehand. "
         )
-        exit()
+        time.sleep(5)
+        _download_roms()
+
+    # return the path
+    return bin_path
 
 
 def get_all_rom_ids() -> list[str]:
