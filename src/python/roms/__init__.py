@@ -15,7 +15,7 @@ def _get_all_rom_hashes() -> dict[str, str]:
         return json.load(f)
 
 
-def _download_roms() -> None:
+def _unpack_roms() -> None:
     """Unpacks all roms from the tar.gz file, then matches it to the expected md5 checksum."""
     all_roms = _get_all_rom_hashes()
 
@@ -69,9 +69,9 @@ def get_rom_path(name: str) -> Path | None:
         warnings.warn(f"Rom {name} not supported.")
         return None
 
-    # if the bin_path doesn't exist, we assume the user already has the license and just download the roms
+    # if the bin_path doesn't exist, we assume the user already has the license and just unpack the roms
     if not bin_path.exists():
-        _download_roms()
+        _unpack_roms()
 
     # return the path
     return bin_path
