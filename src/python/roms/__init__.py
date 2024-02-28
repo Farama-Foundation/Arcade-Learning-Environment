@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-import base64
 import functools
 import hashlib
 import json
 import tarfile
-import time
 import warnings
 from pathlib import Path
-
-import requests
 
 
 @functools.lru_cache(maxsize=1)
@@ -20,21 +16,11 @@ def _get_all_rom_hashes() -> dict[str, str]:
 
 
 def _download_roms() -> None:
-    """Downloads all roms in the form of a base64 file, then decodes it into a tar.gz, then extracts all the roms by matching it to the expected md5."""
+    """Unpacks all roms from the tar.gz file, then matches it to the expected md5 checksum."""
     all_roms = _get_all_rom_hashes()
 
-    # use requests to download the base64 file
-    url = "https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64"
-    r = requests.get(url, allow_redirects=False)
-
-    # decode the b64 into the tar.gz and save it
-    tar_gz = base64.b64decode(r.content)
-    save_path = Path(__file__).parent / "Roms.tar.gz"
-    with open(save_path, "wb") as f:
-        f.write(tar_gz)
-
     # iterate through each file in the tar
-    with tarfile.open(name=save_path) as tar_fp:
+    with tarfile.open(name=Path(__file__).parent / "Roms.tar.gz") as tar_fp:
         for member in tar_fp.getmembers():
             # ignore if this is not a valid bin file
             if not (member.isfile() and member.name.endswith(".bin")):
@@ -61,7 +47,7 @@ def _download_roms() -> None:
 
             # assert that the hash matches
             assert md5_hash == all_roms[rom_name], (
-                f"Rom {rom_name}'s hash ({md5_hash}) does not match what was expected. "
+                f"Rom {rom_name}'s hash ({md5_hash}) does not match what was expected ({all_roms[rom_name]}). "
                 "Please report this to a dev."
             )
 
@@ -69,8 +55,6 @@ def _download_roms() -> None:
             rom_path = Path(__file__).parent / rom_name
             with open(rom_path, "wb") as rom_fp:
                 rom_fp.write(rom_bytes)
-
-            print(f"Downloaded and extracted {rom_name}.")
 
 
 def get_rom_path(name: str) -> Path | None:
@@ -87,11 +71,6 @@ def get_rom_path(name: str) -> Path | None:
 
     # if the bin_path doesn't exist, we assume the user already has the license and just download the roms
     if not bin_path.exists():
-        print(
-            f"Looks like the rom {name} could not be found, it may not have been downloaded. "
-            "\nWe will install all roms in the next 5 seconds, and we assume that you have accepted the license agreement beforehand. "
-        )
-        time.sleep(5)
         _download_roms()
 
     # return the path

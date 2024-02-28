@@ -4,7 +4,6 @@ build
 doc/examples/*Example
 
 # Don't save roms in repo
-*.tar.gz
 *.bin
 !tetris.bin
 
