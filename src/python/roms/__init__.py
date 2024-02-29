@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import base64
 import functools
 import hashlib
 import json
 import tarfile
 import warnings
 from pathlib import Path
+
+import requests
 
 
 @functools.lru_cache(maxsize=1)
@@ -15,12 +18,27 @@ def _get_all_rom_hashes() -> dict[str, str]:
         return json.load(f)
 
 
-def _unpack_roms() -> None:
+def _download_roms() -> None:
     """Unpacks all roms from the tar.gz file, then matches it to the expected md5 checksum."""
     all_roms = _get_all_rom_hashes()
 
+    # load the b64 file
+    if (Path(__file__).parent / "Roms.tar.gz.b64").exists:
+        with open(Path(__file__).parent / "Roms.tar.gz.b64", "r") as f:
+            tar_gz_b64 = f.read()
+    else:
+        # fallback to plain url download in case something went wrong during build publish
+        url = "https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64"
+        tar_gz_b64 = requests.get(url, allow_redirects=False).content
+
+    # decode the b64 into the tar.gz and save it
+    tar_gz = base64.b64decode(tar_gz_b64)
+    save_path = Path(__file__).parent / "Roms.tar.gz"
+    with open(save_path, "wb") as f:
+        f.write(tar_gz)
+
     # iterate through each file in the tar
-    with tarfile.open(name=Path(__file__).parent / "Roms.tar.gz") as tar_fp:
+    with tarfile.open(name=save_path) as tar_fp:
         for member in tar_fp.getmembers():
             # ignore if this is not a valid bin file
             if not (member.isfile() and member.name.endswith(".bin")):
@@ -69,9 +87,10 @@ def get_rom_path(name: str) -> Path | None:
         warnings.warn(f"Rom {name} not supported.")
         return None
 
-    # if the bin_path doesn't exist, we assume the user already has the license and just unpack the roms
-    if not bin_path.exists():
-        _unpack_roms()
+    # if the bin_path doesn't exist, TELL SOMEONE PANIC THE WORLD IS ENDING
+    assert (
+        bin_path.exists()
+    ), f"Could not find the rom at {bin_path}, seems like rom download has gone wrong. Please let a dev know."
 
     # return the path
     return bin_path
