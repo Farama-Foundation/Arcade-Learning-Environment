@@ -18,6 +18,8 @@ jobs:
     - name: Unzip wheels asset
       run: |
         unzip wheels.zip -d dist
+    - name: Download tar.gz.b64
+      run: ./curl_tar_gz_b64.sh
     - name: Publish to PyPi
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
