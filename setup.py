@@ -156,7 +156,7 @@ def parse_version(version_file):
 
 if __name__ == "__main__":
     # Allow for running `pip wheel` from other directories
-    # here and os.chdir(here)
+    here and os.chdir(here)
     # Most config options are in `setup.cfg`. These are the
     # only dynamic options we need at build time.
     setup(
