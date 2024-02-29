@@ -20,7 +20,7 @@ def _unpack_roms() -> None:
     all_roms = _get_all_rom_hashes()
 
     # iterate through each file in the tar
-    with tarfile.open(name=Path(__file__).parent / "Roms.tar.gz") as tar_fp:
+    with tarfile.open(name=Path(__file__).parent / "Roms.tar.gz", "wb") as tar_fp:
         for member in tar_fp.getmembers():
             # ignore if this is not a valid bin file
             if not (member.isfile() and member.name.endswith(".bin")):
