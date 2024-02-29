@@ -24,7 +24,7 @@ def _download_roms() -> None:
 
     # load the b64 file
     if (Path(__file__).parent / "Roms.tar.gz.b64").exists:
-        with open(Path(__file__).parent / "Roms.tar.gz.b64", "r") as f:
+        with open(Path(__file__).parent / "Roms.tar.gz.b64") as f:
             tar_gz_b64 = f.read()
     else:
         # fallback to plain url download in case something went wrong during build publish
