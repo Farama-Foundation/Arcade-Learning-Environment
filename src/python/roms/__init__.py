@@ -9,7 +9,6 @@ import warnings
 from pathlib import Path
 
 
-
 @functools.lru_cache(maxsize=1)
 def _get_all_rom_hashes() -> dict[str, str]:
     # this is a map of {rom.bin : md5 checksum}
