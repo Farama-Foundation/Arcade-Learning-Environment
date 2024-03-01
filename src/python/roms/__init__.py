@@ -8,7 +8,6 @@ import tarfile
 import warnings
 from pathlib import Path
 
-import requests
 
 
 @functools.lru_cache(maxsize=1)
@@ -22,14 +21,10 @@ def _unpack_roms() -> None:
     """Unpacks all roms from the tar.gz file, then matches it to the expected md5 checksum."""
     all_roms = _get_all_rom_hashes()
 
-    # load the b64 file
-    if (Path(__file__).parent / "Roms.tar.gz.b64").exists:
-        with open(Path(__file__).parent / "Roms.tar.gz.b64") as f:
-            tar_gz_b64 = f.read()
-    else:
-        # fallback to plain url download in case something went wrong during build publish
-        url = "https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64"
-        tar_gz_b64 = requests.get(url, allow_redirects=False).content
+    # load the b64 file, this assumes that the b64 already exists
+    # if you are a dev seeing this, please run `./curl_tar_gz_b64.sh` in the root of this project.
+    with open(Path(__file__).parent / "Roms.tar.gz.b64") as f:
+        tar_gz_b64 = f.read()
 
     # decode the b64 into the tar.gz and save it
     tar_gz = base64.b64decode(tar_gz_b64)
