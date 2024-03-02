@@ -20,7 +20,10 @@ from utils import test_rom_path, tetris_env  # noqa: F401
     ],
 )
 def test_check_env(env_id):
-    if any(unsupported_game in env_id for unsupported_game in ["Warlords", "MazeCraze", "Joust", "Combat"]):
+    if any(
+        unsupported_game in env_id
+        for unsupported_game in ["Warlords", "MazeCraze", "Joust", "Combat"]
+    ):
         pytest.skip(env_id)
 
     with warnings.catch_warnings(record=True) as caught_warnings:
@@ -30,7 +33,10 @@ def test_check_env(env_id):
         env.close()
 
     for warning in caught_warnings:
-        if "is out of date. You should consider upgrading to version" not in warning.message.args[0]:
+        if (
+            "is out of date. You should consider upgrading to version"
+            not in warning.message.args[0]
+        ):
             raise ValueError(warning.message.args[0])
 
 
