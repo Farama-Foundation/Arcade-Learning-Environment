@@ -15,12 +15,18 @@ from utils import test_rom_path, tetris_env  # noqa: F401
     "env_id",
     [
         env_id
-        for env_id in gymnasium.registry.keys()
-        if (env_id.startswith("ALE/") and (env_id.endswith("-v5")))
+        for env_id, spec in gymnasium.registry.items()
+        if spec.entry_point == "ale_py.env:AtariEnv"
     ],
 )
 def test_check_env(env_id):
-    check_env(gymnasium.make(env_id))
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        env = gymnasium.make(env_id).unwrapped
+        check_env(env)
+
+        env.close()
+
+    assert len(caught_warnings) == 0
 
 
 def test_register_legacy_env_id():
