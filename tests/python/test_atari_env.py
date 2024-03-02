@@ -11,6 +11,18 @@ from gymnasium.utils.env_checker import check_env
 from utils import test_rom_path, tetris_env  # noqa: F401
 
 
+@pytest.mark.parametrize(
+    "env_id",
+    [
+        env_id
+        for env_id in gymnasium.registry.keys()
+        if (env_id.startswith("ALE/") and (env_id.endswith("-v5")))
+    ],
+)
+def test_check_env(env_id):
+    check_env(gymnasium.make(env_id))
+
+
 def test_register_legacy_env_id():
     prefix = "ALETest/"
 
@@ -311,6 +323,8 @@ def test_terminal_signal(tetris_env):
 
 
 def test_render_exception(tetris_env):
+    tetris_env.reset()
+
     with pytest.raises(TypeError):
         tetris_env.render(mode="human")
 

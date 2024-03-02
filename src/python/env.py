@@ -49,7 +49,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         Default parameters are taken from Machado et al., 2018.
 
         Args:
-          game: str => Game to initialize env with.
+          game: str => Game to initialize env with, in snake_case.
           mode: Optional[int] => Game mode, see Machado et al., 2018
           difficulty: Optional[int] => Game difficulty,see Machado et al., 2018
           obs_type: str => Observation type in { 'rgb', 'grayscale', 'ram' }
@@ -186,7 +186,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def load_game(self) -> None:
         """This function initializes the ROM and sets the corresponding mode and difficulty."""
-        self.ale.loadROM(getattr(roms, self._game))
+        self.ale.loadROM(roms.get_rom_path(self._game))
 
         if self._game_mode is not None:
             self.ale.setMode(self._game_mode)

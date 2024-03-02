@@ -50,17 +50,13 @@ homepage = "https://github.com/mgbellemare/Arcade-Learning-Environment"
 documentation = "https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/docs"
 changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
-[project.scripts]
-ale-import-roms = "ale_py.scripts.import_roms:main"
-
 [tool.setuptools]
 packages = [
   "ale_py",
   "ale_py.roms",
-  "ale_py.scripts"
 ]
 package-dir = {ale_py = "src/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["*.bin", "md5.txt"]}
+package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "Roms.tar.gz.b64"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"

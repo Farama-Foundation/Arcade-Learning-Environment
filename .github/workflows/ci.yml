@@ -104,8 +104,11 @@ jobs:
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
 
+    - name: Download tar.gz.b64
+      run: ./curl_tar_gz_b64.sh
+
     - name: Build
-      run: python -m pip install --user --verbose .[test]
+      run: python -m pip install --verbose .[test]
 
     - name: Test
       run: python -m pytest

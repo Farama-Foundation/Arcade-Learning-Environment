@@ -5,7 +5,6 @@ from typing import Any, Callable, Mapping, NamedTuple, Sequence
 
 import ale_py.roms as roms
 import gymnasium
-from ale_py.roms import utils as rom_utils
 
 
 class EnvFlavour(NamedTuple):
@@ -17,6 +16,19 @@ class EnvConfig(NamedTuple):
     version: str
     kwargs: Mapping[str, Any]
     flavours: Sequence[EnvFlavour]
+
+
+def _rom_id_to_name(rom: str) -> str:
+    """
+    Let the ROM ID be the ROM identifier in snake_case.
+        For example, `space_invaders`
+    The ROM name is the ROM ID in pascalcase.
+        For example, `SpaceInvaders`
+
+    This function converts the ROM ID to the ROM name.
+        i.e., snakecase -> pascalcase
+    """
+    return rom.title().replace("_", "")
 
 
 def _register_rom_configs(
@@ -32,7 +44,7 @@ def _register_rom_configs(
         for obs_type in obs_types:
             for config in configs:
                 for flavour in config.flavours:
-                    name = rom_utils.rom_id_to_name(rom)
+                    name = _rom_id_to_name(rom)
                     name = f"{name}-ram" if obs_type == "ram" else name
 
                     # Parse config kwargs
@@ -165,7 +177,7 @@ def register_v0_v4_envs():
 
 
 def register_v5_envs():
-    all_games = list(map(rom_utils.rom_name_to_id, dir(roms)))
+    all_games = roms.get_all_rom_ids()
     obs_types = ["rgb", "ram"]
 
     # max_episode_steps is 108k frames which is 30 mins of gameplay.
