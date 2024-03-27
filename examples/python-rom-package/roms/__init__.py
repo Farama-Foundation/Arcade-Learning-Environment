@@ -1,5 +1,5 @@
-import sys
 import pathlib
+import sys
 
 if sys.version_info >= (3, 9):
     import importlib.resources as resources
