@@ -20,11 +20,12 @@ add_library(ale OBJECT)
 
 # Dependencies
 find_package(ZLIB REQUIRED)
-find_package(Threads REQUIRED)
+# find_package(Threads REQUIRED)
 target_link_libraries(ale
   PRIVATE
     ZLIB::ZLIB
-    Threads::Threads)
+#    Threads::Threads
+)
 
 if(SDL_SUPPORT)
   option(SDL_DYNLOAD "Dynamically load SDL" OFF)
