@@ -17,6 +17,4 @@ curl "https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906e
 mv ${unpack_dir}/ROM/*/*.bin $target_dir
 
 # clean up
-rm $unpack_dir
-
-echo "Extraction complete."
+rm -r $unpack_dir
