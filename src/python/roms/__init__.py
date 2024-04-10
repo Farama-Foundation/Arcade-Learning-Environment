@@ -33,7 +33,7 @@ def get_rom_path(name: str) -> Path | None:
         md5_hash = md5.hexdigest()
 
         if md5_hash != bin_hashes[bin_file]:
-            raise IOError(
+            raise OSError(
                 f"The hash of {bin_file} does not match what was expected!\n"
                 f"Expected ({bin_hashes[bin_file]}),\n"
                 f"Obtained ({md5_hash})."
