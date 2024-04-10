@@ -56,7 +56,7 @@ packages = [
   "ale_py.roms",
 ]
 package-dir = {ale_py = "src/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "Roms.tar.gz.b64"]}
+package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"
