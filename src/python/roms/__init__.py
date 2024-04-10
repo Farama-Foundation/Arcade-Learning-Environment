@@ -14,6 +14,12 @@ def _get_expected_bin_hashes() -> dict[str, str]:
         return json.load(f)
 
 
+@functools.lru_cache(maxsize=1)
+def get_all_rom_ids() -> list[str]:
+    """Returns a list of all available rom_ids, ie: ['tetris', 'pong', 'zaxxon', ...]."""
+    return [key.split(".")[0] for key in _get_expected_bin_hashes().keys()]
+
+
 def get_rom_path(name: str) -> Path | None:
     """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
     # the theoretical location of the binary rom file
@@ -41,9 +47,3 @@ def get_rom_path(name: str) -> Path | None:
 
     # return the path
     return bin_path
-
-
-def get_all_rom_ids() -> list[str]:
-    """Returns a list of all available rom_ids, ie: ['tetris', 'pong', 'zaxxon', ...]."""
-    all_roms = _get_expected_bin_hashes()
-    return [key.split(".")[0] for key in all_roms.keys()]

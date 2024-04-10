@@ -104,8 +104,8 @@ jobs:
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
 
-    - name: Download tar.gz.b64
-      run: ./download_unpack_roms.sh
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
 
     - name: Build
       run: python -m pip install --verbose .[test]
