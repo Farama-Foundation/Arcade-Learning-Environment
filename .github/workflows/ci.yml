@@ -105,7 +105,7 @@ jobs:
         doNotCache: true
 
     - name: Download tar.gz.b64
-      run: ./curl_tar_gz_b64.sh
+      run: ./download_unpack_roms.sh
 
     - name: Build
       run: python -m pip install --verbose .[test]
