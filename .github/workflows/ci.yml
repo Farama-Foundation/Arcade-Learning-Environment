@@ -48,6 +48,9 @@ jobs:
           - runs-on: ubuntu-latest
             python: '3.11'
             triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.12'
+            triplet: x64-linux-mixed
 
           - runs-on: macos-latest
             python: '3.8'
@@ -61,6 +64,9 @@ jobs:
           - runs-on: macos-latest
             python: '3.11'
             triplet: x64-osx-mixed
+          - runs-on: macos-latest
+            python: '3.12'
+            triplet: x64-osx-mixed
 
 #          - runs-on: windows-latest
 #            python: '3.8'
@@ -73,6 +79,9 @@ jobs:
 #            triplet: x64-windows
 #          - runs-on: windows-latest
 #            python: '3.11'
+#            triplet: x64-windows
+#          - runs-on: windows-latest
+#            python: '3.12'
 #            triplet: x64-windows
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
