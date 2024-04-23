@@ -20,11 +20,11 @@ def get_all_rom_ids() -> list[str]:
     return [key.split(".")[0] for key in _get_expected_bin_hashes().keys()]
 
 
-def get_rom_path(name: str) -> Path | None:
+def get_rom_path(name: str, roms_dir: None | Path) -> Path | None:
     """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
     # the theoretical location of the binary rom file
     bin_file = f"{name}.bin"
-    bin_path = Path(__file__).parent / bin_file
+    bin_path = (roms_dir or Path(__file__).parent) / bin_file
 
     # check if it exists within the the hash dictionary
     bin_hashes = _get_expected_bin_hashes()

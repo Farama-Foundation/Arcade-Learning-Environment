@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import Any, Literal
 
 import ale_py
@@ -43,6 +44,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         full_action_space: bool = False,
         max_num_frames_per_episode: int | None = None,
         render_mode: Literal["human", "rgb_array"] | None = None,
+        roms_dir: None | Path = None,
     ):
         """
         Initialize the ALE for Gymnasium.
@@ -61,11 +63,14 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
           max_num_frames_per_episode: int => Max number of frame per epsiode.
               Once `max_num_frames_per_episode` is reached the episode is
               truncated.
-          render_mode: str => One of { 'human', 'rgb_array' }.
+          render_mode: Literal["human", "rgb_array"] => One of { 'human', 'rgb_array' }.
               If `human` we'll interactively display the screen and enable
               game sounds. This will lock emulation to the ROMs specified FPS
               If `rgb_array` we'll return the `rgb` key in step metadata with
               the current environment RGB frame.
+          roms_dir: Optional[Path] => An optional directory name specifying where the
+              roms are placed. This argument won't be needed if you've installed this
+              package using PyPI or any similar Python package management tool.
 
         Note:
           - The game must be installed, see ale-import-roms, or ale-py-roms.
@@ -132,6 +137,9 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self._obs_type = obs_type
         self.render_mode = render_mode
 
+        # optional roms_dir
+        self._roms_dir = roms_dir
+
         # Set logger mode to error only
         self.ale.setLoggerMode(ale_py.LoggerMode.Error)
         # Config sticky action prob.
@@ -186,7 +194,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def load_game(self) -> None:
         """This function initializes the ROM and sets the corresponding mode and difficulty."""
-        self.ale.loadROM(roms.get_rom_path(self._game))
+        self.ale.loadROM(roms.get_rom_path(self._game, self._roms_dir))
 
         if self._game_mode is not None:
             self.ale.setMode(self._game_mode)
