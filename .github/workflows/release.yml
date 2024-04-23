@@ -8,7 +8,8 @@ jobs:
   wheels:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+
     - uses: ./.github/actions/download-release-asset
       name: Download release wheels
       with:
@@ -18,6 +19,8 @@ jobs:
     - name: Unzip wheels asset
       run: |
         unzip wheels.zip -d dist
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
     - name: Publish to PyPi
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
