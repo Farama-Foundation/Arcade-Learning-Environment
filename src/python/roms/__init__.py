@@ -24,8 +24,8 @@ def get_all_rom_ids() -> list[str]:
 def get_rom_path(name: str) -> Path | None:
     """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
     # grab the roms_dir environment
-    if os.environ.get("ALE_ROMS_DIR"):
-        roms_dir = Path(os.environ["ALE_ROMS_DIR"])
+    if (_path := os.environ.get("ALE_ROMS_DIR")):
+        roms_dir = Path(_path)
         print(f"Loading roms from {roms_dir.absolute()}...")
     else:
         roms_dir = Path(__file__).parent
