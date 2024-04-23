@@ -1,9 +1,13 @@
 name: Wheels
 
 on:
-#  push:
-#    tags:
-#      - 'v*'
+  push:
+    tags-ignore:
+      - "*.*"
+    paths-ignore:
+      - "docs/**"
+    branches:
+      - "*"
   pull_request:
     branches:
       - "*"
