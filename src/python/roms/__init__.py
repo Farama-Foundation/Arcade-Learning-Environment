@@ -24,16 +24,18 @@ def get_all_rom_ids() -> list[str]:
 def get_rom_path(name: str) -> Path | None:
     """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
     # grab the roms_dir environment
-    if (_path := os.environ.get("ALE_ROMS_DIR")):
-        roms_dir = Path(_path)
+    if os_environ_path := os.environ.get("ALE_ROMS_DIR"):
+        roms_dir = Path(os_environ_path)
         print(f"Loading roms from {roms_dir.absolute()}...")
     else:
         roms_dir = Path(__file__).parent
 
     # make sure the roms dir exists
-    if not roms_dir.exists() or not roms_dir.is_dir():
+    if not roms_dir.exists():
+        raise NotADirectoryError(f"ROM directory {roms_dir.absolute()} doesn't exist")
+    elif not roms_dir.is_dir():
         raise NotADirectoryError(
-            f"This directory ({roms_dir.absolute()}) either doesn't exist or is not a directory, aborting."
+            f"ROM directory {roms_dir.absolute()} isn't a directory"
         )
 
     # the theoretical location of the binary rom file
