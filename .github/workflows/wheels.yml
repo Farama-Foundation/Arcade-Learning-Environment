@@ -18,9 +18,9 @@ jobs:
             arch: x86_64
           - runs-on: windows-latest
             arch: AMD64
-          - runs-on: macos-latest
+          - runs-on: macos-13
             arch: x86_64
-          - runs-on: macos-latest
+          - runs-on: macos-13
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -46,7 +46,7 @@ jobs:
       if: runner.os == 'macOS'  || runner.os == 'Windows'
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: "5b1214315250939257ef5d62ecdcbca18cf4fb1c"
+        vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
         # There's a permissions issue with the cache
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
