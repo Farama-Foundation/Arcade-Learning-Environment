@@ -1,33 +1,26 @@
-#name: CI
-#on:
-#  workflow_dispatch:
-#    inputs:
-#      debug_enabled:
-#        type: boolean
-#        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
-#        required: false
-#        default: false
-#  push:
-#    tags-ignore:
-#      - "*.*"
-#    paths-ignore:
-#      - "docs/**"
-#    branches:
-#      - "*"
-#  pull_request:
-#    branches:
-#      - "*"
-#
-#jobs:
-#  pre-commit:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v4
-#    - uses: actions/setup-python@v5
-#      with:
-#        python-version: '3.10'
-#    - uses: pre-commit/action@v3.0.1
-#
+name: CI
+on:
+  push:
+    tags-ignore:
+      - "*.*"
+    paths-ignore:
+      - "docs/**"
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - uses: pre-commit/action@v3.0.1
+
 #  tests:
 #    name: ${{ matrix.runs-on }} • py${{ matrix.python }}
 #    needs: pre-commit
