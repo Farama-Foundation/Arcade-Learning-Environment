@@ -54,19 +54,19 @@ jobs:
             python: '3.12'
             triplet: x64-linux-mixed
 
-          - runs-on: macos-latest
+          - runs-on: macos-13  # macos latest is macos-14-arm64 running on M1 chips which doesn't have python support
             python: '3.8'
             triplet: x64-osx-mixed
-          - runs-on: macos-latest
+          - runs-on: macos-13
             python: '3.9'
             triplet: x64-osx-mixed
-          - runs-on: macos-latest
+          - runs-on: macos-13
             python: '3.10'
             triplet: x64-osx-mixed
-          - runs-on: macos-latest
+          - runs-on: macos-13
             python: '3.11'
             triplet: x64-osx-mixed
-          - runs-on: macos-latest
+          - runs-on: macos-13
             python: '3.12'
             triplet: x64-osx-mixed
 
@@ -110,7 +110,7 @@ jobs:
       run: brew install pkg-config
     - uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: "5b1214315250939257ef5d62ecdcbca18cf4fb1c"
+        vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
         # There's a permissions issue with the cache
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
