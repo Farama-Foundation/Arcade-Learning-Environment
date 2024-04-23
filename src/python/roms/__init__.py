@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import hashlib
 import json
+import os
 import warnings
 from pathlib import Path
 
@@ -22,9 +23,24 @@ def get_all_rom_ids() -> list[str]:
 
 def get_rom_path(name: str) -> Path | None:
     """Expects name as a snake_case name, returns the full path of the .bin file if it's valid, otherwise returns None."""
+    # grab the roms_dir environment
+    if os_environ_path := os.environ.get("ALE_ROMS_DIR"):
+        roms_dir = Path(os_environ_path)
+        print(f"Loading roms from {roms_dir.absolute()}...")
+    else:
+        roms_dir = Path(__file__).parent
+
+    # make sure the roms dir exists
+    if not roms_dir.exists():
+        raise NotADirectoryError(f"ROM directory {roms_dir.absolute()} doesn't exist")
+    elif not roms_dir.is_dir():
+        raise NotADirectoryError(
+            f"ROM directory {roms_dir.absolute()} isn't a directory"
+        )
+
     # the theoretical location of the binary rom file
     bin_file = f"{name}.bin"
-    bin_path = Path(__file__).parent / bin_file
+    bin_path = roms_dir / bin_file
 
     # check if it exists within the the hash dictionary
     bin_hashes = _get_expected_bin_hashes()
