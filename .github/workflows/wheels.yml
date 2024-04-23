@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - "*"
 
 jobs:
   build:
@@ -87,36 +90,36 @@ jobs:
           print_hash: true
 
 
-  release:
-    name: Stage wheels to Github releases
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/download-artifact@v1
-        with:
-          name: wheels
-
-      - name: Create wheel archive
-        run: |
-          zip --junk-paths wheels wheels/*
-
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: ${{ contains(github.ref, '-') }}
-
-      - name: Upload artifacts to release
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./wheels.zip
-          asset_name: wheels.zip
-          asset_content_type: application/zip
+#  release:
+#    name: Stage wheels to Github releases
+#    runs-on: ubuntu-latest
+#    needs: build
+#    steps:
+#      - uses: actions/download-artifact@v1
+#        with:
+#          name: wheels
+#
+#      - name: Create wheel archive
+#        run: |
+#          zip --junk-paths wheels wheels/*
+#
+#      - name: Create release
+#        id: create_release
+#        uses: actions/create-release@v1.0.0
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.ref }}
+#          release_name: Release ${{ github.ref }}
+#          draft: true
+#          prerelease: ${{ contains(github.ref, '-') }}
+#
+#      - name: Upload artifacts to release
+#        uses: actions/upload-release-asset@v1.0.1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./wheels.zip
+#          asset_name: wheels.zip
+#          asset_content_type: application/zip
