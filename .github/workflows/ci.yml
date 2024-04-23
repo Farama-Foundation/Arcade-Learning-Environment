@@ -54,19 +54,19 @@ jobs:
             python: '3.12'
             triplet: x64-linux-mixed
 
-#          - runs-on: macos-13  # macos latest is macos-14-arm64 running on M1 chips which doesn't have python support
-#            python: '3.8'
-#            triplet: x64-osx-mixed
-#          - runs-on: macos-13
-#            python: '3.9'
-#            triplet: x64-osx-mixed
-#          - runs-on: macos-13
-#            python: '3.10'
-#            triplet: x64-osx-mixed
-#          - runs-on: macos-13
-#            python: '3.11'
-#            triplet: x64-osx-mixed
-          - runs-on: macos-latest
+          - runs-on: macos-12  # macos latest is macos-14-arm64 running on M1 chips which doesn't have python support
+            python: '3.8'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
+            python: '3.9'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
+            python: '3.10'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
+            python: '3.11'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
             python: '3.12'
             triplet: x64-osx-mixed
 
