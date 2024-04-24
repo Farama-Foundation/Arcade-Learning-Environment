@@ -33,11 +33,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Docker
-      if: runner.os == 'Linux'
-      run: docker login ghcr.io --username "${GITHUB_ACTOR}" --password "${GITHUB_CR_TOKEN}"
-      env:
-        GITHUB_CR_TOKEN: ${{ secrets.CR_TOKEN }}
+#    - name: Setup Docker
+#      if: runner.os == 'Linux'
+#      run: docker login ghcr.io --username "${GITHUB_ACTOR}" --password "${GITHUB_CR_TOKEN}"
+#      env:
+#        GITHUB_CR_TOKEN: ${{ secrets.CR_TOKEN }}
 
     - name: Setup msbuild
       if: runner.os == 'Windows'
