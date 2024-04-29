@@ -71,7 +71,7 @@ skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 build-frontend = "build"
 
 # vcpkg manylinux images
-manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014_x86_64-vcpkg"
+#manylinux-x86_64-image = "ghcr.io/jessefarebro/manylinux2014_x86_64-vcpkg"
 
 [tool.cibuildwheel.linux]
 environment-pass = ["GITHUB_REF"]
