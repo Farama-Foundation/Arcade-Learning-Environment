@@ -127,29 +127,29 @@ def parse_version(version_file):
         version = fp.read().strip()
         assert semver_prog.match(version) is not None
 
-    if os.getenv("CIBUILDWHEEL") is not None:
-        ci_ref = os.getenv("GITHUB_REF")
-        assert ci_ref is not None, "Github ref not found, are we running in CI?"
-
-        ci_version_match = semver_prog.search(ci_ref)
-        assert ci_version_match is not None, f"Couldn't match semver in {ci_ref}"
-
-        ci_version = ci_version_match.group(0)
-        assert ci_version.startswith(
-            version
-        ), f"{ci_version} not prefixed with {version}"
-
-        version = ci_version
-    else:
-        sha = (
-            subprocess.run(
-                ["git", "rev-parse", "--short", "HEAD"], capture_output=True, cwd=here
-            )
-            .stdout.decode("ascii")
-            .strip()
-        )
-        if sha:
-            version += f"+{sha}"
+    # if os.getenv("CIBUILDWHEEL") is not None:
+    #     ci_ref = os.getenv("GITHUB_REF")
+    #     assert ci_ref is not None, "Github ref not found, are we running in CI?"
+    #
+    #     ci_version_match = semver_prog.search(ci_ref)
+    #     assert ci_version_match is not None, f"Couldn't match semver in {ci_ref}"
+    #
+    #     ci_version = ci_version_match.group(0)
+    #     assert ci_version.startswith(
+    #         version
+    #     ), f"{ci_version} not prefixed with {version}"
+    #
+    #     version = ci_version
+    # else:
+    #     sha = (
+    #         subprocess.run(
+    #             ["git", "rev-parse", "--short", "HEAD"], capture_output=True, cwd=here
+    #         )
+    #         .stdout.decode("ascii")
+    #         .strip()
+    #     )
+    #     if sha:
+    #         version += f"+{sha}"
 
     return version
 
