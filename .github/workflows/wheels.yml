@@ -33,30 +33,23 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Docker
-      if: runner.os == 'Linux'
-      run: docker login ghcr.io
-      env:
-        GITHUB_CR_TOKEN: ${{ secrets.CR_TOKEN }}
-
-    - name: Setup msbuild
+    - uses: microsoft/setup-msbuild@v2
       if: runner.os == 'Windows'
-      uses: microsoft/setup-msbuild@v2
-
     # TODO(jfarebro): 02/16/2023 - There's a bug where pkg-config isn't installed on the macOS
     # runner. See: https://github.com/actions/runner-images/pull/7125
     - name: Install pkg-config on macOS
       if: runner.os == 'macOS'
       run: brew install pkg-config
 
-    - name: Setup vcpkg
-      if: runner.os == 'macOS'  || runner.os == 'Windows'
-      uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-vcpkg@v11
       with:
         vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
         # There's a permissions issue with the cache
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.12.0
@@ -68,7 +61,6 @@ jobs:
       with:
         name: wheels
         path: ./wheelhouse/*.whl
-
 
   pypi:
     name: Deploy wheels to PyPi test
