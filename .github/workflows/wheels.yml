@@ -40,7 +40,7 @@ jobs:
     - name: Install pkg-config on macOS
       if: runner.os == 'macOS'
       run: brew install pkg-config
-    - uses: Install pkg-config on Linux
+    - name: Install pkg-config on Linux
       if: runner.os == 'linux'
       run: apt-get install pkg-config
 
