@@ -21,14 +21,14 @@ jobs:
     strategy:
       matrix:
         include:
-#          - runs-on: ubuntu-latest
-#            arch: x86_64
-          - runs-on: windows-latest
-            arch: AMD64
-          - runs-on: macos-12
+          - runs-on: ubuntu-latest
             arch: x86_64
-          - runs-on: macos-12
-            arch: arm64
+#          - runs-on: windows-latest
+#            arch: AMD64
+#          - runs-on: macos-12
+#            arch: x86_64
+#          - runs-on: macos-12
+#            arch: arm64
     runs-on: ${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v4
@@ -40,6 +40,9 @@ jobs:
     - name: Install pkg-config on macOS
       if: runner.os == 'macOS'
       run: brew install pkg-config
+    - uses: Install pkg-config on Linux
+      if: runner.os == 'linux'
+      run: apt-get install pkg-config
 
     - uses: lukka/run-vcpkg@v11
       with:
@@ -81,9 +84,9 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_TEST_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
-          packages_dir: wheels/
-          print_hash: true
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: wheels/
+          print-hash: true
 
 
 #  release:
