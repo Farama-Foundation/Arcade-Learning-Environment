@@ -40,13 +40,18 @@ jobs:
       with:
         install: true
 
-    - name: Build Docker image with vcpkg and gdal
+    - name: Build Docker image with vcpkg
       if: runner.os == 'linux'
       # using build-push-action (without push) to make use of cache arguments
       uses: docker/build-push-action@v2
       with:
+        context: .
         file: .github/docker/manylinux-vcpkg.Dockerfile
         tags: manylinux-vcpkg:latest
+        push: false
+        load: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - uses: microsoft/setup-msbuild@v2
       if: runner.os == 'Windows'
