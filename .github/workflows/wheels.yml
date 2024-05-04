@@ -33,6 +33,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up Docker Buildx
+      if: runner.os == 'linux'
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        install: true
+
+    - name: Build Docker image with vcpkg and gdal
+      if: runner.os == 'linux'
+      # using build-push-action (without push) to make use of cache arguments
+      uses: docker/build-push-action@v2
+      with:
+        file: .github/docker/manylinux-vcpkg.Dockerfile
+        tags: manylinux-vcpkg:latest
+
     - uses: microsoft/setup-msbuild@v2
       if: runner.os == 'Windows'
     # TODO(jfarebro): 02/16/2023 - There's a bug where pkg-config isn't installed on the macOS
@@ -40,9 +55,6 @@ jobs:
     - name: Install pkg-config on macOS
       if: runner.os == 'macOS'
       run: brew install pkg-config
-    - name: Install pkg-config on Linux
-      if: runner.os == 'linux'
-      run: sudo apt-get install -y libsdl2-dev
 
     - uses: lukka/run-vcpkg@v11
       with:
