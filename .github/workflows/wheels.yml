@@ -84,6 +84,8 @@ jobs:
     name: Deploy wheels to PyPi test
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v1
         with:
