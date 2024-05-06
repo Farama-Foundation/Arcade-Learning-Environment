@@ -1,5 +1,12 @@
 name: CI
 on:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
   push:
     tags-ignore:
       - "*.*"
@@ -21,98 +28,98 @@ jobs:
         python-version: '3.10'
     - uses: pre-commit/action@v3.0.1
 
-#  tests:
-#    name: ${{ matrix.runs-on }} • py${{ matrix.python }}
-#    needs: pre-commit
-#    defaults:
-#      run:
-#        shell: bash
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        include:
-#          - runs-on: ubuntu-latest
-#            python: '3.8'
-#            triplet: x64-linux-mixed
-#          - runs-on: ubuntu-latest
-#            python: '3.9'
-#            triplet: x64-linux-mixed
-#          - runs-on: ubuntu-latest
-#            python: '3.10'
-#            triplet: x64-linux-mixed
-#          - runs-on: ubuntu-latest
-#            python: '3.11'
-#            triplet: x64-linux-mixed
-#          - runs-on: ubuntu-latest
-#            python: '3.12'
-#            triplet: x64-linux-mixed
-#
-#          - runs-on: macos-12  # macos latest is macos-14-arm64 running on M1 chips which doesn't have python support
-#            python: '3.8'
-#            triplet: x64-osx-mixed
-#          - runs-on: macos-12
-#            python: '3.9'
-#            triplet: x64-osx-mixed
-#          - runs-on: macos-12
-#            python: '3.10'
-#            triplet: x64-osx-mixed
-#          - runs-on: macos-12
-#            python: '3.11'
-#            triplet: x64-osx-mixed
-#          - runs-on: macos-12
-#            python: '3.12'
-#            triplet: x64-osx-mixed
-#
-#          - runs-on: windows-latest
-#            python: '3.8'
-#            triplet: x64-windows
-#          - runs-on: windows-latest
-#            python: '3.9'
-#            triplet: x64-windows
-#          - runs-on: windows-latest
-#            python: '3.10'
-#            triplet: x64-windows
-#          - runs-on: windows-latest
-#            python: '3.11'
-#            triplet: x64-windows
-#          - runs-on: windows-latest
-#            python: '3.12'
-#            triplet: x64-windows
-#    env:
-#      VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
-#    runs-on: ${{ matrix.runs-on }}
-#
-#    steps:
-#    - uses: actions/checkout@v4
-#
-#    - uses: actions/setup-python@v5
-#      with:
-#        python-version: ${{ matrix.python }}
-#
-#    - name: Install test dependencies
-#      # TODO(jfarebro): There's a bug with Windows cmake and PEP517 builds via pip install.
-#      # As a temporary workaround installing cmake outside of the isolated env seems to work.
-#      run: python -m pip install --user cmake
-#
-#    - uses: microsoft/setup-msbuild@v2
-#      if: runner.os == 'Windows'
-#    # TODO(jfarebro): 02/16/2023 - There's a bug where pkg-config isn't installed on the macOS
-#    # runner. See: https://github.com/actions/runner-images/pull/7125
-#    - name: Install pkg-config on macOS
-#      if: runner.os == 'macOS'
-#      run: brew install pkg-config
-#    - uses: lukka/run-vcpkg@v11
-#      with:
-#        vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
-#        # There's a permissions issue with the cache
-#        # https://github.com/microsoft/vcpkg/issues/20121
-#        doNotCache: true
-#
-#    - name: Download and unpack ROMs
-#      run: ./scripts/download_unpack_roms.sh
-#
-#    - name: Build
-#      run: python -m pip install --verbose .[test]
-#
-#    - name: Test
-#      run: python -m pytest
+  tests:
+    name: ${{ matrix.runs-on }} • py${{ matrix.python }}
+    needs: pre-commit
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-latest
+            python: '3.8'
+            triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.9'
+            triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.10'
+            triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.11'
+            triplet: x64-linux-mixed
+          - runs-on: ubuntu-latest
+            python: '3.12'
+            triplet: x64-linux-mixed
+
+          - runs-on: macos-12  # macos latest is macos-14-arm64 running on M1 chips which doesn't have python support
+            python: '3.8'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
+            python: '3.9'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
+            python: '3.10'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
+            python: '3.11'
+            triplet: x64-osx-mixed
+          - runs-on: macos-12
+            python: '3.12'
+            triplet: x64-osx-mixed
+
+          - runs-on: windows-latest
+            python: '3.8'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.9'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.10'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.11'
+            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.12'
+            triplet: x64-windows
+    env:
+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Install test dependencies
+      # TODO(jfarebro): There's a bug with Windows cmake and PEP517 builds via pip install.
+      # As a temporary workaround installing cmake outside of the isolated env seems to work.
+      run: python -m pip install --user cmake
+
+    - uses: microsoft/setup-msbuild@v2
+      if: runner.os == 'Windows'
+    # TODO(jfarebro): 02/16/2023 - There's a bug where pkg-config isn't installed on the macOS
+    # runner. See: https://github.com/actions/runner-images/pull/7125
+    - name: Install pkg-config on macOS
+      if: runner.os == 'macOS'
+      run: brew install pkg-config
+    - uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
+        # There's a permissions issue with the cache
+        # https://github.com/microsoft/vcpkg/issues/20121
+        doNotCache: true
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Build
+      run: python -m pip install --verbose .[test]
+
+    - name: Test
+      run: python -m pytest
