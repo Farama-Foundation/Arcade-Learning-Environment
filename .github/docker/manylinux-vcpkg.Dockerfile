@@ -1,7 +1,6 @@
-ARG BASE_IMAGE
-FROM ${BASE_IMAGE}
+FROM quay.io/pypa/manylinux2014_x86_64
 
-LABEL org.opencontainers.image.source https://github.com/mgbellemare/Arcade-Learning-Environment
+LABEL org.opencontainers.image.source https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
 RUN yum install -y curl unzip zip tar
 

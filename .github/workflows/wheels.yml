@@ -26,33 +26,44 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Docker
-      if: runner.os == 'Linux'
-      run: docker login ghcr.io --username "${GITHUB_ACTOR}" --password "${GITHUB_CR_TOKEN}"
-      env:
-        GITHUB_CR_TOKEN: ${{ secrets.CR_TOKEN }}
+    - name: Set up Docker Buildx
+      if: runner.os == 'linux'
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        install: true
 
-    - name: Setup msbuild
+    - name: Build Docker image with vcpkg
+      if: runner.os == 'linux'
+      # using build-push-action (without push) to make use of cache arguments
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: .github/docker/manylinux-vcpkg.Dockerfile
+        tags: manylinux-vcpkg:latest
+        push: false
+        load: true
+
+    - uses: microsoft/setup-msbuild@v2
       if: runner.os == 'Windows'
-      uses: microsoft/setup-msbuild@v2
-
     # TODO(jfarebro): 02/16/2023 - There's a bug where pkg-config isn't installed on the macOS
     # runner. See: https://github.com/actions/runner-images/pull/7125
     - name: Install pkg-config on macOS
       if: runner.os == 'macOS'
       run: brew install pkg-config
 
-    - name: Setup vcpkg
-      if: runner.os == 'macOS'  || runner.os == 'Windows'
-      uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-vcpkg@v11
       with:
         vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
         # There's a permissions issue with the cache
         # https://github.com/microsoft/vcpkg/issues/20121
         doNotCache: true
 
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.12.0
+      uses: pypa/cibuildwheel@v2.17.0
       env:
         CIBW_ARCHS: "${{ matrix.arch }}"
 
@@ -62,11 +73,12 @@ jobs:
         name: wheels
         path: ./wheelhouse/*.whl
 
-
   pypi:
     name: Deploy wheels to PyPi test
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v1
         with:
@@ -82,9 +94,9 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_TEST_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
-          packages_dir: wheels/
-          print_hash: true
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: wheels/
+          print-hash: true
 
 
   release:
