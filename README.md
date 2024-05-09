@@ -24,7 +24,7 @@ Features
 - Python bindings through [pybind11](https://github.com/pybind/pybind11).
 - Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
 - Visualization tools.
-- Atari roms are packaged within the pip package 
+- Atari roms are packaged within the pip package
 
 Quick Start
 ===========
@@ -53,7 +53,7 @@ reward = ale.act(0)  # noop
 screen_obs = ale.getScreenRGB()
 ```
 
-## Gymnasium 
+## Gymnasium
 
 For simplicity for installing ale-py with Gymnasium, `pip install "gymnasium[atari]"` shall install all necessary modules and ROMs. See Gymnasium [introductory page](https://gymnasium.farama.org/main/introduction/basic_usage/) for description of the API to interface with the environment.
 
@@ -61,12 +61,12 @@ For simplicity for installing ale-py with Gymnasium, `pip install "gymnasium[ata
 import gymnasium as gym
 
 env = gym.make('ALE/Breakout-v5', render_mode="human")  # remove render_mode in training
-obs, info = env.reset() 
+obs, info = env.reset()
 episode_over = False
 while not episode_over:
     action = policy(obs)  # to implement - use `env.action_space.sample()` for a random policy
     obs, reward, terminated, truncated, info = env.step(action)
-    
+
     episode_over = terminated or truncated
 env.close()
 ```

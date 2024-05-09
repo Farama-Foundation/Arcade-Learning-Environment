@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.0] - 2024-05-10
 
-Previously, ALE implemented only a [Gym](https://github.com/openai/gym) based environment, however, as Gym is no longer maintained (last commit was 18 months ago). We have updated `ale-py` to use [Gymnasium](http://github.com/farama-Foundation/gymnasium) (a maintained fork of Gym) as the sole backend environment implementation. For more information on Gymnasium’s API, see their [introduction page](https://gymnasium.farama.org/main/introduction/basic_usage/). 
+Previously, ALE implemented only a [Gym](https://github.com/openai/gym) based environment, however, as Gym is no longer maintained (last commit was 18 months ago). We have updated `ale-py` to use [Gymnasium](http://github.com/farama-Foundation/gymnasium) (a maintained fork of Gym) as the sole backend environment implementation. For more information on Gymnasium’s API, see their [introduction page](https://gymnasium.farama.org/main/introduction/basic_usage/).
 
 ```python
 import gymnasium as gym
@@ -26,7 +26,7 @@ while not episode_over:
 env.close()
 ```
 
-An important change in this update is that the Atari ROMs are packaged within the PyPI installation such that users no longer require AutoROM or `ale-import-roms` for downloading or loading ROMs. This should significantly simplify installing Atari for users. For users that wish to load ROMs from an alternative folder, use the `ALE_ROM_DIR` system environment variable to specify a folder directory. 
+An important change in this update is that the Atari ROMs are packaged within the PyPI installation such that users no longer require AutoROM or `ale-import-roms` for downloading or loading ROMs. This should significantly simplify installing Atari for users. For users that wish to load ROMs from an alternative folder, use the `ALE_ROM_DIR` system environment variable to specify a folder directory.
 
 Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py utilises where atari environments would be registered behind the scene. As a result, projects will need to import `ale_py`, to register all the atari environments, before an atari environment can be created with `gymnasium.make`. For example, see below
 
@@ -35,7 +35,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Replace interactive exit by sys.exit (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/498)
 - Fix C++ documentation example links(https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/501)
 - Add support for gcc 13 (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/503)
-- Unpin cmake dependency and remove wheel from build system (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/493) 
+- Unpin cmake dependency and remove wheel from build system (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/493)
 - Add missing imports for cstdint (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/486)
 - Allow installing without git (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/492)
 - Update to require `importlib-resources` for < 3.9  (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/491)
