@@ -20,6 +20,7 @@ authors = [
   {name = "Michael Bowling"},
 ]
 maintainers = [
+  { name = "Farama Foundation", email = "contact@farama.org" },
   {name = "Jesse Farebrother", email = "jfarebro@cs.mcgill.ca"},
 ]
 classifiers = [
@@ -27,7 +28,11 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
@@ -42,13 +47,13 @@ dynamic = ["version"]
 [project.optional-dependencies]
 test = [
   "pytest>=7.0",
-  "gymnasium==1.0.0a1",
+  "gymnasium>=1.0.0a1",
 ]
 
 [project.urls]
-homepage = "https://github.com/mgbellemare/Arcade-Learning-Environment"
-documentation = "https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/docs"
-changelog = "https://github.com/mgbellemare/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
+homepage = "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
+documentation = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/tree/master/docs"
+changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
 [tool.setuptools]
 packages = [
