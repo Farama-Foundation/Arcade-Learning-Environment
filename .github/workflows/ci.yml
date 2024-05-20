@@ -8,12 +8,8 @@ on:
         required: false
         default: false
   push:
-    tags-ignore:
-      - "*.*"
     paths-ignore:
       - "docs/**"
-    branches:
-      - "*"
   pull_request:
     branches:
       - "*"
