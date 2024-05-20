@@ -40,6 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # To minimise the computational resources, we only use a single python version and the final test-wheels for all python versions
           - runs-on: ubuntu-latest
             python: '3.8'
             triplet: x64-linux-mixed

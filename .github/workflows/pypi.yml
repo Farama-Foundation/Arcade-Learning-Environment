@@ -4,9 +4,9 @@
 
 name: Push wheels to pypi
 
-#on:
-#  [publish]
-on: [pull_request, push]
+on:
+  release:
+    types: [ published ]
 
 jobs:
   build-wheels:
@@ -94,6 +94,5 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
-          repository-url: https://test.pypi.org/legacy/
           packages-dir: wheels/
           print-hash: true
