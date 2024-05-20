@@ -20,13 +20,13 @@ def test_roms_register():
 
     registered_v0_roms = list(filter(lambda env_id: "v0" in env_id, registered_roms))
     registered_v4_roms = list(filter(lambda env_id: "v4" in env_id, registered_roms))
-    registered_v5_roms = list(filter(lambda env_id: "5" in env_id, registered_roms))
+    registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, registered_roms))
 
     assert (
-        len(registered_v0_roms) == 1
-    ), f"{len(registered_roms)}, {len(registered_v0_roms)}, {len(registered_v5_roms)}, {len(registered_v5_roms)}"
-    assert len(registered_v4_roms) == 1
-    assert len(registered_v5_roms) == 1
+        len(registered_v0_roms) == 372
+    ), f"{len(registered_roms)}, {len(registered_v0_roms)}, {len(registered_v4_roms)}, {len(registered_v5_roms)}"
+    assert len(registered_v4_roms) == 372
+    assert len(registered_v5_roms) == 216
 
     assert len(registered_roms) == len(registered_v0_roms) + len(
         registered_v4_roms
