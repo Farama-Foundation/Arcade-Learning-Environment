@@ -95,36 +95,28 @@ jobs:
           # ale_py-0.9.0-cp310-cp310-macosx_11_0_arm64.whl
           # ale_py-0.9.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
           # ale_py-0.9.0-cp310-cp310-win_amd64.whl
-          - runs-on: ubuntu-latest
-            arch: x86_64
+          - runs-on: ubuntu-latest  # arch: x86_64
             python: '3.8'
-            wheel_name: 'cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64'
-          - runs-on: ubuntu-latest
-            arch: x86_64
+            wheel-name: 'cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64'
+          - runs-on: ubuntu-latest  # arch: x86_64
             python: '3.12'
-            wheel_name: 'cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64'
-          - runs-on: windows-latest
-            arch: AMD64
+            wheel-name: 'cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64'
+          - runs-on: windows-latest  # arch: AMD64
             python: '3.8'
-            wheel_name: 'cp38-cp38-win_amd64'
-          - runs-on: windows-latest
-            arch: AMD64
+            wheel-name: 'cp38-cp38-win_amd64'
+          - runs-on: windows-latest  # arch: AMD64
             python: '3.12'
-            wheel_name: 'cp312-cp312-win_amd64'
-          - runs-on: macos-12
-            arch: x86_64
+            wheel-name: 'cp312-cp312-win_amd64'
+          - runs-on: macos-12  # arch: x86_64
             python: '3.8'
-            wheel_name: 'cp38-cp38-macosx_10_15_x86_64'
-          - runs-on: macos-12
-            arch: x86_64
+            wheel-name: 'cp38-cp38-macosx_10_15_x86_64'
+          - runs-on: macos-12  # arch: x86_64
             python: '3.12'
-            wheel_name: 'cp312-cp312-macosx_10_15_x86_64'
-          - runs-on: macos-12
-            arch: arm64
+            wheel-name: 'cp312-cp312-macosx_10_15_x86_64'
+          - runs-on: macos-14  # arch: arm64
             python: '3.8'
-            wheel_name: 'cp38-cp38-macosx_11_0_arm64'
-          - runs-on: macos-12
-            arch: arm64
+            wheel-name: 'cp38-cp38-macosx_11_0_arm64'
+          - runs-on: macos-14  # arch: arm64
             python: '3.12'
             wheel-name: 'cp312-cp312-macosx_11_0_arm64'
 
@@ -139,7 +131,6 @@ jobs:
         with:
           name: wheels
 
-      - run: ls
       - run: ls wheels/
 
       - name: Build
