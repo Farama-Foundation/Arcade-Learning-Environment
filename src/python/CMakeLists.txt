@@ -1,11 +1,17 @@
 find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
+set(PYBIND11_VER 2.12.0)
+
 include(FetchContent)
-FetchContent_Declare(
-    pybind11
-    GIT_REPOSITORY https://github.com/pybind/pybind11
-    GIT_TAG v2.10.0)
-FetchContent_MakeAvailable(pybind11)
+find_package(pybind11 ${PYBIND11_VER} QUIET)
+
+if(NOT pybind11_FOUND)
+    FetchContent_Declare(
+        pybind11
+        GIT_REPOSITORY https://github.com/pybind/pybind11
+        GIT_TAG v${PYBIND11_VER})
+    FetchContent_MakeAvailable(pybind11)
+endif()
 
 add_library(ale-py MODULE ale_python_interface.cpp)
 # Depend on the ALE and pybind11 module
