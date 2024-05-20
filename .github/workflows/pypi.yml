@@ -1,12 +1,15 @@
-name: Wheels
+# workflow on publish
+# 1. build the wheels for relevant systems
+# 2. download artifacts and upload to PyPI
+
+name: Push wheels to pypi
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [ published ]
 
 jobs:
-  build:
+  build-wheels:
     name: ${{ matrix.runs-on }} • ${{ matrix.arch }}
     defaults:
       run:
@@ -23,6 +26,7 @@ jobs:
           - runs-on: macos-12
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
+
     steps:
     - uses: actions/checkout@v4
 
@@ -73,62 +77,22 @@ jobs:
         name: wheels
         path: ./wheelhouse/*.whl
 
-  pypi:
-    name: Deploy wheels to PyPi test
+  push-pypi:
+    name: Deploy wheels to PyPi
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-wheels
     permissions:
       id-token: write
+
     steps:
       - uses: actions/download-artifact@v1
         with:
           name: wheels
-
-      - name: Append PyPi test SHA
-        run: |
-          find wheels -type f -exec sh -c \
-            "mv {} \$(echo {} | awk -F\"-\" '{OFS = FS; \$2 = \$2\"+${GITHUB_SHA::7}\"; print}')" \;
 
       - name: Publish to PyPi test
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.PYPI_TEST_TOKEN }}
-          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_TOKEN }}
           packages-dir: wheels/
           print-hash: true
-
-
-  release:
-    name: Stage wheels to Github releases
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/download-artifact@v1
-        with:
-          name: wheels
-
-      - name: Create wheel archive
-        run: |
-          zip --junk-paths wheels wheels/*
-
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: ${{ contains(github.ref, '-') }}
-
-      - name: Upload artifacts to release
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./wheels.zip
-          asset_name: wheels.zip
-          asset_content_type: application/zip

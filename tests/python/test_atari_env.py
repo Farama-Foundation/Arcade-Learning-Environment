@@ -11,6 +11,28 @@ from gymnasium.utils.env_checker import check_env
 from utils import test_rom_path, tetris_env  # noqa: F401
 
 
+def test_roms_register():
+    registered_roms = [
+        env_id
+        for env_id, spec in gymnasium.registry.items()
+        if spec.entry_point == "ale_py.env:AtariEnv"
+    ]
+
+    registered_v0_roms = list(filter(lambda env_id: "v0" in env_id, registered_roms))
+    registered_v4_roms = list(filter(lambda env_id: "v4" in env_id, registered_roms))
+    registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, registered_roms))
+
+    assert (
+        len(registered_v0_roms) == 372
+    ), f"{len(registered_roms)}, {len(registered_v0_roms)}, {len(registered_v4_roms)}, {len(registered_v5_roms)}"
+    assert len(registered_v4_roms) == 372
+    assert len(registered_v5_roms) == 216
+
+    assert len(registered_roms) == len(registered_v0_roms) + len(
+        registered_v4_roms
+    ) + len(registered_v5_roms)
+
+
 @pytest.mark.parametrize(
     "env_id",
     [
