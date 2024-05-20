@@ -1,12 +1,12 @@
-# workflow
+# workflow on publish
 # 1. build the wheels for relevant systems
-# 2. sbuild for tar.gz
-# 3. download artifacts and upload to PyPI
+# 2. download artifacts and upload to PyPI
 
 name: Push wheels to pypi
 
-on:
-  [publish]
+#on:
+#  [publish]
+on: [pull_request, push]
 
 jobs:
   build-wheels:
@@ -94,5 +94,6 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
           packages-dir: wheels/
           print-hash: true
