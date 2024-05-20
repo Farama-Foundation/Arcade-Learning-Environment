@@ -123,6 +123,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
 
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
@@ -131,6 +132,7 @@ jobs:
         with:
           name: wheels
 
+      - run: ls
       - run: ls wheels/
 
       - name: Build
