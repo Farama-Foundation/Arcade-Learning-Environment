@@ -57,7 +57,7 @@ jobs:
 #            python: '3.12'
 #            triplet: x64-linux-mixed
 
-          - runs-on: macos-12  # macos latest is macos-14-arm64 running on M1 chips which doesn't have python support
+          - runs-on: macos-13  # macos latest is macos-14-arm64 running on M1 chips which doesn't have python support
             python: '3.8'
             triplet: x64-osx-mixed
 #          - runs-on: macos-12
@@ -140,9 +140,9 @@ jobs:
             arch: x86_64
           - runs-on: windows-latest
             arch: AMD64
-          - runs-on: macos-12
+          - runs-on: macos-13
             arch: x86_64
-          - runs-on: macos-12
+          - runs-on: macos-14 # macos-14 is arm runner
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
@@ -240,19 +240,19 @@ jobs:
             python: '3.12'
             wheel-name: 'cp312-cp312-win_amd64'
 
-          - runs-on: macos-12  # arch: x86_64
+          - runs-on: macos-13  # arch: x86_64
             python: '3.8'
             wheel-name: 'cp38-cp38-macosx_10_15_x86_64'
-          - runs-on: macos-12  # arch: x86_64
+          - runs-on: macos-13  # arch: x86_64
             python: '3.9'
             wheel-name: 'cp39-cp39-macosx_10_15_x86_64'
-          - runs-on: macos-12  # arch: x86_64
+          - runs-on: macos-13  # arch: x86_64
             python: '3.10'
             wheel-name: 'cp310-cp310-macosx_10_15_x86_64'
-          - runs-on: macos-12  # arch: x86_64
+          - runs-on: macos-13  # arch: x86_64
             python: '3.11'
             wheel-name: 'cp311-cp311-macosx_10_15_x86_64'
-          - runs-on: macos-12  # arch: x86_64
+          - runs-on: macos-13  # arch: x86_64
             python: '3.12'
             wheel-name: 'cp312-cp312-macosx_10_15_x86_64'
 
