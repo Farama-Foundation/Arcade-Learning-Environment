@@ -41,6 +41,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         frameskip: tuple[int, int] | int = 4,
         repeat_action_probability: float = 0.25,
         full_action_space: bool = False,
+        continuous_actions: bool = False,
+        continuous_action_threshold: float = 0.5,
         max_num_frames_per_episode: int | None = None,
         render_mode: Literal["human", "rgb_array"] | None = None,
     ):
@@ -58,6 +60,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
           repeat_action_probability: int =>
               Probability to repeat actions, see Machado et al., 2018
           full_action_space: bool => Use full action space?
+          continuous_actions: bool => Use continuous actions?
+          continuous_action_threshold: float => threshold used for continuous actions.
           max_num_frames_per_episode: int => Max number of frame per epsiode.
               Once `max_num_frames_per_episode` is reached the episode is
               truncated.
@@ -117,6 +121,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             frameskip=frameskip,
             repeat_action_probability=repeat_action_probability,
             full_action_space=full_action_space,
+            continuous_actions=continuous_actions,
+            continuous_action_threshold=continuous_action_threshold,
             max_num_frames_per_episode=max_num_frames_per_episode,
             render_mode=render_mode,
         )
@@ -149,13 +155,24 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.seed_game()
         self.load_game()
 
-        # initialize action space
-        self._action_set = (
-            self.ale.getLegalActionSet()
-            if full_action_space
-            else self.ale.getMinimalActionSet()
-        )
-        self.action_space = spaces.Discrete(len(self._action_set))
+        self.continuous_actions = continuous_actions
+        self.continuous_action_threshold = continuous_action_threshold
+        if continuous_actions:
+          # We don't need action_set for continuous actions.
+          self._action_set = None
+          # Actions are radius, theta, and fire, where first two are the
+          # parameters of polar coordinates.
+          self._action_space = spaces.Box(
+                  np.array([0, -1, 0]).astype(np.float32),
+                  np.array([+1, +1, +1]).astype(np.float32),
+          )  # radius, theta, fire. First two are polar coordinates.
+        else:
+          self._action_set = (
+              self.ale.getLegalActionSet()
+              if full_action_space
+              else self.ale.getMinimalActionSet()
+          )
+          self._action_space = spaces.Discrete(len(self._action_set))
 
         # initialize observation space
         if self._obs_type == "ram":
@@ -252,6 +269,45 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         is_truncated = self.ale.game_truncated()
 
         return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
+
+    def continuousStep(
+        self,
+        r: float,
+        theta: float,
+        fire: float,
+    ) -> Tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
+      """Perform one agent step, i.e., repeats `action` frameskip # of steps.
+
+      Args:
+          r: float => radius of polar coordinate action
+          theta: float => angle of polar coordinate action
+          fire: float => continuous fire action
+
+      Returns:
+          Tuple[np.ndarray, float, bool, Dict[str, Any]] =>
+              observation, reward, terminal, metadata
+
+      Note: `metadata` contains the keys "lives" and "rgb" if
+            render_mode == 'rgb_array'.
+      """
+      # If frameskip is a length 2 tuple then it's stochastic
+      # frameskip between [frameskip[0], frameskip[1]] uniformly.
+      if isinstance(self._frameskip, int):
+        frameskip = self._frameskip
+      elif isinstance(self._frameskip, tuple):
+        frameskip = self.np_random.integers(*self._frameskip)
+      else:
+        raise error.Error(f"Invalid frameskip type: {self._frameskip}")
+
+      # Frameskip
+      reward = 0.0
+      for _ in range(frameskip):
+        reward += self.ale.actContinuous(r, theta, fire,
+                                         self.continuous_action_threshold)
+      is_terminal = self.ale.game_over(with_truncation=False)
+      is_truncated = self.ale.game_truncated()
+
+      return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
 
     def render(self) -> np.ndarray | None:
         """

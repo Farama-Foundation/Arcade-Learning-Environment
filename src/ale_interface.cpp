@@ -263,6 +263,16 @@ reward_t ALEInterface::act(Action action) {
   return environment->act(action, PLAYER_B_NOOP);
 }
 
+// Applies a continuous action to the game and returns the reward. It is the
+// user's responsibility to check if the game has ended and reset
+// when necessary - this method will keep pressing buttons on the
+// game over screen.
+reward_t ALEInterface::actContinuous(float r, float theta, float fire,
+                                     float continuous_action_threshold) {
+  return environment->actContinuous(r, theta, fire, 0.0, 0.0, 0.0,
+                                    continuous_action_threshold);
+}
+
 // Returns the vector of modes available for the current game.
 // This should be called only after the rom is loaded.
 ModeVect ALEInterface::getAvailableModes() const {

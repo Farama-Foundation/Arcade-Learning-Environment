@@ -13,6 +13,7 @@
 #include "environment/ale_state.hpp"
 
 #include <cassert>
+#include <cmath>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -287,6 +288,47 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
   }
 }
 
+void ALEState::applyActionPaddlesContinuous(
+    Event* event,
+    float player_a_r, float player_a_theta, float player_a_fire,
+    float player_b_r, float player_b_theta, float player_b_fire,
+    float continuous_action_threshold) {
+  // Reset keys
+  resetKeys(event);
+
+  // Convert polar coordinates to x/y position.
+  float a_x = player_a_r * cos(player_a_theta);
+  float a_y = player_a_r * sin(player_a_theta);
+  float b_x = player_b_r * cos(player_b_theta);
+  float b_y = player_b_r * sin(player_b_theta);
+
+  // First compute whether we should increase or decrease the paddle position
+  //  (for both left and right players)
+  int delta_a = 0;
+  if (a_x > continuous_action_threshold) {  // Right action.
+    delta_a = -PADDLE_DELTA;
+  } else if (a_x < continuous_action_threshold) {  // Left action.
+    delta_a = PADDLE_DELTA;
+  }
+  int delta_b = 0;
+  if (b_x > continuous_action_threshold) {  // Right action.
+    delta_b = -PADDLE_DELTA;
+  } else if (b_x < continuous_action_threshold) {  // Left action.
+    delta_b = PADDLE_DELTA;
+  }
+
+  // Now update the paddle positions
+  updatePaddlePositions(event, delta_a, delta_b);
+
+  // Now add the fire event
+  if (player_a_fire > continuous_action_threshold) {
+    event->set(Event::PaddleZeroFire, 1);
+  }
+  if (player_b_fire > continuous_action_threshold) {
+    event->set(Event::PaddleOneFire, 1);
+  }
+}
+
 void ALEState::pressSelect(Event* event) {
   resetKeys(event);
   event->set(Event::ConsoleSelect, 1);
@@ -495,6 +537,54 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action,
     default:
       Logger::Error << "Invalid Player B Action: " << player_b_action << "\n";
       std::exit(-1);
+  }
+}
+
+
+void ALEState::setActionJoysticksContinuous(
+    Event* event,
+    float player_a_r, float player_a_theta, float player_a_fire,
+    float player_b_r, float player_b_theta, float player_b_fire,
+    float continuous_action_threshold) {
+  // Reset keys
+  resetKeys(event);
+
+  // Convert polar coordinates to x/y position.
+  float a_x = player_a_r * cos(player_a_theta);
+  float a_y = player_a_r * sin(player_a_theta);
+  float b_x = player_b_r * cos(player_b_theta);
+  float b_y = player_b_r * sin(player_b_theta);
+
+  // Go through all possible events and add them if joystick position is there.
+  if (a_x < -continuous_action_threshold) {
+    event->set(Event::JoystickZeroLeft, 1);
+  }
+  if (a_x > continuous_action_threshold) {
+    event->set(Event::JoystickZeroRight, 1);
+  }
+  if (a_y < -continuous_action_threshold) {
+    event->set(Event::JoystickZeroDown, 1);
+  }
+  if (a_y > continuous_action_threshold) {
+    event->set(Event::JoystickZeroUp, 1);
+  }
+  if (player_a_fire > continuous_action_threshold) {
+    event->set(Event::JoystickZeroFire, 1);
+  }
+  if (b_x < -continuous_action_threshold) {
+    event->set(Event::JoystickOneLeft, 1);
+  }
+  if (b_x > continuous_action_threshold) {
+    event->set(Event::JoystickOneRight, 1);
+  }
+  if (b_y < -continuous_action_threshold) {
+    event->set(Event::JoystickOneDown, 1);
+  }
+  if (b_y > continuous_action_threshold) {
+    event->set(Event::JoystickOneUp, 1);
+  }
+  if (player_b_fire > continuous_action_threshold) {
+    event->set(Event::JoystickOneFire, 1);
   }
 }
 

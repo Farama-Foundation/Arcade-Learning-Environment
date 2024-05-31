@@ -60,6 +60,18 @@ class StellaEnvironment {
    */
   reward_t act(Action player_a_action, Action player_b_action);
 
+  /** Applies the given continuous actions (e.g. updating paddle positions when
+   * the paddle is used) and performs one simulation step in Stella. Returns the
+   * resultant reward. When frame skip is set to > 1, up the corresponding
+   * number of simulation steps are performed.  Note that the post-act() frame
+   * number might not correspond to the pre-act() frame number plus the frame
+   * skip.
+   */
+  reward_t actContinuous(
+      float player_a_r, float player_a_theta, float player_a_fire,
+      float player_b_r, float player_b_theta, float player_b_fire,
+      float continuous_action_threshold);
+
   /** This functions emulates a push on the reset button of the console */
   void softReset();
 
@@ -121,9 +133,22 @@ class StellaEnvironment {
   /** This applies an action exactly one time step. Helper function to act(). */
   reward_t oneStepAct(Action player_a_action, Action player_b_action);
 
+  /** This applies a continuous action exactly one time step.
+   *  Helper function to actContinuous().
+   */
+  reward_t oneStepActContinuous(
+      float player_a_r, float player_a_theta, float player_a_fire,
+      float player_b_r, float player_b_theta, float player_b_fire,
+      float continuous_action_threshold = 0.5);
+
+
   /** Actually emulates the emulator for a given number of steps. */
   void emulate(Action player_a_action, Action player_b_action,
                size_t num_steps = 1);
+  void emulateContinuous(
+      float player_a_r, float player_a_theta, float player_a_fire,
+      float player_b_r, float player_b_theta, float player_b_fire,
+      float continuous_action_threshold = 0.5, size_t num_steps = 1);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
    *   from the minimal set of actions. */
@@ -161,6 +186,9 @@ class StellaEnvironment {
 
   // The last actions taken by our players
   Action m_player_a_action, m_player_b_action;
+  float m_player_a_r, m_player_b_r;
+  float m_player_a_theta, m_player_b_theta;
+  float m_player_a_fire, m_player_b_fire;
 };
 
 }  // namespace ale
