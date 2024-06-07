@@ -76,6 +76,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
 
   m_repeat_action_probability =
       m_osystem->settings().getFloat("repeat_action_probability");
+  m_continuous_action_threshold =
+      m_osystem->settings().getFloat("continuous_action_threshold");
 
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
@@ -189,8 +191,7 @@ reward_t StellaEnvironment::act(Action player_a_action,
 
 reward_t StellaEnvironment::actContinuous(
     float player_a_r, float player_a_theta, float player_a_fire,
-    float player_b_r, float player_b_theta, float player_b_fire,
-    float continuous_action_threshold) {
+    float player_b_r, float player_b_theta, float player_b_fire) {
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
@@ -225,8 +226,7 @@ reward_t StellaEnvironment::actContinuous(
 
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepActContinuous(m_player_a_r, m_player_a_theta, m_player_a_fire,
-                                        m_player_b_r, m_player_b_theta, m_player_b_fire,
-                                        continuous_action_threshold);
+                                        m_player_b_r, m_player_b_theta, m_player_b_fire);
   }
 
   return sum_rewards;
@@ -266,8 +266,7 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action,
  * the paddle is used) and performs one simulation step in Stella. */
 reward_t StellaEnvironment::oneStepActContinuous(
     float player_a_r, float player_a_theta, float player_a_fire,
-    float player_b_r, float player_b_theta, float player_b_fire,
-    float continuous_action_threshold) {
+    float player_b_r, float player_b_theta, float player_b_fire) {
   // Once in a terminal state, refuse to go any further (special actions must be handled
   //  outside of this environment; in particular reset() should be called rather than passing
   //  RESET or SYSTEM_RESET.
@@ -279,8 +278,7 @@ reward_t StellaEnvironment::oneStepActContinuous(
 
   // Emulate in the emulator
   emulateContinuous(player_a_r, player_a_theta, player_a_fire,
-                    player_b_r, player_b_theta, player_b_fire,
-                    continuous_action_threshold);
+                    player_b_r, player_b_theta, player_b_fire);
   // Increment the number of frames seen so far
   m_state.incrementFrame();
 
@@ -360,7 +358,7 @@ void StellaEnvironment::emulate(Action player_a_action, Action player_b_action,
 void StellaEnvironment::emulateContinuous(
     float player_a_r, float player_a_theta, float player_a_fire,
     float player_b_r, float player_b_theta, float player_b_fire,
-    float continuous_action_threshold, size_t num_steps) {
+    size_t num_steps) {
   Event* event = m_osystem->event();
 
   // Handle paddles separately: we have to manually update the paddle positions at each step
@@ -372,7 +370,7 @@ void StellaEnvironment::emulateContinuous(
           event,
           player_a_r, player_a_theta, player_a_fire,
           player_b_r, player_b_theta, player_b_fire,
-          continuous_action_threshold);
+          m_continuous_action_threshold);
 
       m_osystem->console().mediaSource().update();
       m_settings->step(m_osystem->console().system());
@@ -382,7 +380,7 @@ void StellaEnvironment::emulateContinuous(
     m_state.setActionJoysticksContinuous(
         event, player_a_r, player_a_theta, player_a_fire,
         player_b_r, player_b_theta, player_b_fire,
-        continuous_action_threshold);
+        m_continuous_action_threshold);
 
     for (size_t t = 0; t < num_steps; t++) {
       m_osystem->console().mediaSource().update();

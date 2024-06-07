@@ -267,10 +267,8 @@ reward_t ALEInterface::act(Action action) {
 // user's responsibility to check if the game has ended and reset
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
-reward_t ALEInterface::actContinuous(float r, float theta, float fire,
-                                     float continuous_action_threshold) {
-  return environment->actContinuous(r, theta, fire, 0.0, 0.0, 0.0,
-                                    continuous_action_threshold);
+reward_t ALEInterface::actContinuous(float r, float theta, float fire) {
+  return environment->actContinuous(r, theta, fire, 0.0, 0.0, 0.0);
 }
 
 // Returns the vector of modes available for the current game.

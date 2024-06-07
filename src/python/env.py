@@ -142,6 +142,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.ale.setLoggerMode(ale_py.LoggerMode.Error)
         # Config sticky action prob.
         self.ale.setFloat("repeat_action_probability", repeat_action_probability)
+        # Config continuous action threshold (if using continuous actions).
+        self.ale.setFloat("continuous_action_threshold", continuous_action_threshold)
 
         if max_num_frames_per_episode is not None:
             self.ale.setInt("max_num_frames_per_episode", max_num_frames_per_episode)
@@ -302,8 +304,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
       # Frameskip
       reward = 0.0
       for _ in range(frameskip):
-        reward += self.ale.actContinuous(r, theta, fire,
-                                         self.continuous_action_threshold)
+        reward += self.ale.actContinuous(r, theta, fire)
       is_terminal = self.ale.game_over(with_truncation=False)
       is_truncated = self.ale.game_truncated()
 

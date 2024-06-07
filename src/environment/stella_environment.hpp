@@ -69,8 +69,7 @@ class StellaEnvironment {
    */
   reward_t actContinuous(
       float player_a_r, float player_a_theta, float player_a_fire,
-      float player_b_r, float player_b_theta, float player_b_fire,
-      float continuous_action_threshold);
+      float player_b_r, float player_b_theta, float player_b_fire);
 
   /** This functions emulates a push on the reset button of the console */
   void softReset();
@@ -138,8 +137,7 @@ class StellaEnvironment {
    */
   reward_t oneStepActContinuous(
       float player_a_r, float player_a_theta, float player_a_fire,
-      float player_b_r, float player_b_theta, float player_b_fire,
-      float continuous_action_threshold = 0.5);
+      float player_b_r, float player_b_theta, float player_b_fire);
 
 
   /** Actually emulates the emulator for a given number of steps. */
@@ -148,7 +146,7 @@ class StellaEnvironment {
   void emulateContinuous(
       float player_a_r, float player_a_theta, float player_a_fire,
       float player_b_r, float player_b_theta, float player_b_fire,
-      float continuous_action_threshold = 0.5, size_t num_steps = 1);
+      size_t num_steps = 1);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
    *   from the minimal set of actions. */
@@ -178,6 +176,7 @@ class StellaEnvironment {
   int m_max_num_frames_per_episode;  // Maxmimum number of frames per episode
   size_t m_frame_skip;               // How many frames to emulate per act()
   float m_repeat_action_probability; // Stochasticity of the environment
+  float m_continuous_action_threshold; // Continuous action threshold
   std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
   int m_max_lives;                  // Maximum number of lives at the start of an episode.
   bool m_truncate_on_loss_of_life;  // Whether to truncate episodes on loss of life.
