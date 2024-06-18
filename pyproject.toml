@@ -60,7 +60,7 @@ packages = [
   "ale_py",
   "ale_py.roms",
 ]
-package-dir = {ale_py = "src/python"}
+package-dir = {ale_py = "src/ale/python"}
 package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
 
 [tool.pytest.ini_options]
