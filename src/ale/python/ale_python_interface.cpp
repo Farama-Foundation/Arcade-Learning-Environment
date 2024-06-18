@@ -14,7 +14,7 @@
  *
  **************************************************************************** */
 
-#include "ale/ale_python_interface.hpp"
+#include "ale_python_interface.hpp"
 
 namespace ale {
 

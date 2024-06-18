@@ -31,7 +31,7 @@
 
 namespace ale {
 using namespace stella;
-#include "ale/stdio.h"
+#include "stdio.h"
 
 WizardOfWorSettings::WizardOfWorSettings() { reset(); }
 

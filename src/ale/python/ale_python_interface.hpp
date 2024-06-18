@@ -25,7 +25,7 @@
 #include <pybind11/stl/filesystem.h>
 
 #include "ale/ale_interface.hpp"
-#include "ale/version.hpp"
+#include "version.hpp"
 
 namespace py = pybind11;
 using namespace py::literals;

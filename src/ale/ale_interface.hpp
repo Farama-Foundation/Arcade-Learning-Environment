@@ -36,7 +36,7 @@
 #include "ale/environment/stella_environment.hpp"
 #include "ale/common/ScreenExporter.hpp"
 #include "ale/common/Log.hpp"
-#include "ale/version.hpp"
+#include "version.hpp"
 
 #include <string>
 #include <optional>
