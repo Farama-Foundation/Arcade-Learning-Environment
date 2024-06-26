@@ -221,6 +221,22 @@ def test_gym_ram_obs(tetris_env):
     assert obs.shape == (128,)
 
 
+def test_ram_obs():
+    env = gymnasium.make("ALE/Breakout-v5", obs_type="ram")
+
+    obs, _ = env.reset()
+    print(obs)
+    print(np.unique(obs))
+    assert len(np.unique(obs)) > 1, np.unique(obs)
+
+    obs, *_ = env.step(env.action_space.sample())
+    print(obs)
+    print(np.unique(obs))
+    assert len(np.unique(obs)) > 1, np.unique(obs)
+
+    env.close()
+
+
 @pytest.mark.parametrize("tetris_env", [{"obs_type": "grayscale"}], indirect=True)
 def test_gym_img_grayscale_obs(tetris_env):
     tetris_env.reset()
