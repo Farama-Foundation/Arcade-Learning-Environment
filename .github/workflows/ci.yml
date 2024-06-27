@@ -111,6 +111,7 @@ jobs:
     - name: Install pkg-config on macOS
       if: runner.os == 'macOS'
       run: brew install pkg-config
+
     - uses: lukka/run-vcpkg@v11
       with:
         vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
