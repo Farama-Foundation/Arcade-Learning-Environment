@@ -5,7 +5,9 @@ LABEL org.opencontainers.image.source https://github.com/Farama-Foundation/Arcad
 RUN yum install -y curl unzip zip tar pkgconfig
 
 RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg
+RUN cd vcpkg
 RUN git reset --hard 8150939b69720adc475461978e07c2d2bf5fb76e
+RUN cd ..
 
 ENV VCPKG_INSTALLATION_ROOT="/opt/vcpkg"
 ENV PATH="${PATH}:/opt/vcpkg"
