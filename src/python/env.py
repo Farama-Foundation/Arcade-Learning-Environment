@@ -239,14 +239,14 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def step(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
-        action: int | tuple,
+        action: int | np.ndarray,
     ) -> tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
         """
         Perform one agent step, i.e., repeats `action` frameskip # of steps.
 
         Args:
-            action_ind: int | tuple => Action index to execute, or tuple of floats
-                if continuous.
+            action_ind: int | np.ndarray => Action index to execute, or numpy
+                array of floats if continuous.
 
         Returns:
             tuple[np.ndarray, float, bool, bool, Dict[str, Any]] =>
