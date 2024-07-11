@@ -87,7 +87,7 @@ class ALEInterface {
   // when necessary - this method will keep pressing buttons on the
   // game over screen.
   reward_t act(Action action);
-  
+
   // Applies a continuous action to the game and returns the reward. It is the
   // user's responsibility to check if the game has ended and reset
   // when necessary - this method will keep pressing buttons on the

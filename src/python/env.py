@@ -160,21 +160,21 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
         if continuous:
-          # We don't need action_set for continuous actions.
-          self._action_set = None
-          # Actions are radius, theta, and fire, where first two are the
-          # parameters of polar coordinates.
-          self._action_space = spaces.Box(
-                  np.array([0, -1, 0]).astype(np.float32),
-                  np.array([+1, +1, +1]).astype(np.float32),
-          )  # radius, theta, fire. First two are polar coordinates.
+            # We don't need action_set for continuous actions.
+            self._action_set = None
+            # Actions are radius, theta, and fire, where first two are the
+            # parameters of polar coordinates.
+            self._action_space = spaces.Box(
+                np.array([0, -1, 0]).astype(np.float32),
+                np.array([+1, +1, +1]).astype(np.float32),
+            )  # radius, theta, fire. First two are polar coordinates.
         else:
-          self._action_set = (
-              self.ale.getLegalActionSet()
-              if full_action_space
-              else self.ale.getMinimalActionSet()
-          )
-          self._action_space = spaces.Discrete(len(self._action_set))
+            self._action_set = (
+                self.ale.getLegalActionSet()
+                if full_action_space
+                else self.ale.getMinimalActionSet()
+            )
+            self._action_space = spaces.Discrete(len(self._action_set))
 
         # initialize observation space
         if self._obs_type == "ram":
@@ -270,7 +270,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             if self.continuous:
                 action = tuple(action)
                 if len(action) != 3:
-                    raise ValueError('Actions must have 3-dimensions.')
+                    raise ValueError("Actions must have 3-dimensions.")
 
                 r, theta, fire = action
                 reward += self.ale.actContinuous(r, theta, fire)
