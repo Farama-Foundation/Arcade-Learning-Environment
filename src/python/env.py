@@ -164,7 +164,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             self._action_set = None
             # Actions are radius, theta, and fire, where first two are the
             # parameters of polar coordinates.
-            self._action_space = spaces.Box(
+            self.action_space = spaces.Box(
                 np.array([0, -1, 0]).astype(np.float32),
                 np.array([+1, +1, +1]).astype(np.float32),
             )  # radius, theta, fire. First two are polar coordinates.
@@ -174,7 +174,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                 if full_action_space
                 else self.ale.getMinimalActionSet()
             )
-            self._action_space = spaces.Discrete(len(self._action_set))
+            self.action_space = spaces.Discrete(len(self._action_set))
 
         # initialize observation space
         if self._obs_type == "ram":
