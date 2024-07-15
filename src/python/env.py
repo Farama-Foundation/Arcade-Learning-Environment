@@ -270,7 +270,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             if self.continuous:
                 action = tuple(action)
                 if len(action) != 3:
-                    raise ValueError("Actions must have 3-dimensions.")
+                    raise error.Error("Actions must have 3-dimensions.")
 
                 r, theta, fire = action
                 reward += self.ale.actContinuous(r, theta, fire)
