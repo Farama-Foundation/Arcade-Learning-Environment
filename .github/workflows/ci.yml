@@ -156,7 +156,6 @@ jobs:
         uses: docker/setup-buildx-action@v1
         with:
           install: true
-
       - name: Build Docker image with vcpkg
         if: runner.os == 'linux'
         # using build-push-action (without push) to make use of cache arguments
@@ -177,6 +176,7 @@ jobs:
         run: brew install pkg-config
 
       - uses: lukka/run-vcpkg@v11
+        if: runner.os != 'linux'
         with:
           vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
           # There's a permissions issue with the cache
@@ -202,6 +202,7 @@ jobs:
     needs: [build-wheels, build-scratch]
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
