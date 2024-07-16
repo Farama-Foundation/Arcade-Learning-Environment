@@ -287,8 +287,9 @@ jobs:
 
       - run: ls wheels/
 
-      - name: list content
-        run: unzip wheels/ale_py-0.9.1-${{ matrix.wheel-name }}.whl unzipped-${{ matrix.wheel-name }}/
+      - run: mkdir unzipped-${{ matrix.wheel-name }}
+      - run: unzip wheels/ale_py-0.9.1-${{ matrix.wheel-name }}.whl -d unzipped-${{ matrix.wheel-name }}/
+      - run: ls unzippped-${{ matrix.wheel-name }}/ -a
 
       - name: Build
         # wildcarding doesn't work for some reason, therefore, update the project version here
