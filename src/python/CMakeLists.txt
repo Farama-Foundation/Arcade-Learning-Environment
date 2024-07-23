@@ -1,5 +1,6 @@
 find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
+if(POLICY CMP0148) cmake_policy(SET CMP0148 OLD) endif()
 include(FetchContent)
 FetchContent_Declare(
     pybind11
