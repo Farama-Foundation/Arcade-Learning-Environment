@@ -1,8 +1,9 @@
 find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
-set(PYBIND11_VER 2.12.0)
+set(PYBIND11_VER 2.13.1)
 
 include(FetchContent)
+set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 ${PYBIND11_VER} QUIET)
 
 if(NOT pybind11_FOUND)

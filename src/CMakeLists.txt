@@ -102,7 +102,7 @@ if (UNIX AND BUILD_CPP_LIB)
 
   # Configure installable cmake config
   configure_package_config_file(
-    ${CMAKE_MODULE_PATH}/${PROJECT_NAME}-config.cmake.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/${PROJECT_NAME}-config.cmake.in
     ${PROJECT_NAME}-config.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 

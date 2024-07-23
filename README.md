@@ -43,10 +43,10 @@ Note: Make sure you're using an up-to-date version of `pip` or the installation 
 
 You can now import the ALE in your Python projects with providing a direct interface to Stella for interacting with games
 ```python
-from ale_py import ALEInterface
+from ale_py import ALEInterface, roms
 
 ale = ALEInterface()
-ale.loadROM("Breakout")
+ale.loadROM(roms.get_rom_path("Breakout"))
 ale.reset_game()
 
 reward = ale.act(0)  # noop
