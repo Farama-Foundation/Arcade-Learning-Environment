@@ -186,6 +186,9 @@ jobs:
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
 
+      - name: Use cmake
+        run: cmake --version
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.17.0
         env:
