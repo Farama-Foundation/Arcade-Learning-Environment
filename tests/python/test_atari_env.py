@@ -334,8 +334,12 @@ def test_continuous_action_space(tetris_env):
     assert isinstance(tetris_env.action_space, gymnasium.spaces.Box)
     assert len(tetris_env.action_space.shape) == 1
     assert tetris_env.action_space.shape[0] == 3
-    np.testing.assert_array_equal(tetris_env.action_space.low, np.array([0., -1., 0.]))
-    np.testing.assert_array_equal(tetris_env.action_space.high, np.array([1., 1., 1.]))
+    np.testing.assert_array_equal(
+        tetris_env.action_space.low, np.array([0.0, -1.0, 0.0])
+    )
+    np.testing.assert_array_equal(
+        tetris_env.action_space.high, np.array([1.0, 1.0, 1.0])
+    )
 
 
 @pytest.mark.parametrize("tetris_env", [{"continuous": True}], indirect=True)
@@ -348,14 +352,14 @@ def test_continuous_action_sample(tetris_env):
 @pytest.mark.parametrize("tetris_env", [{"continuous": True}], indirect=True)
 def test_continuous_step_with_correct_dimensions(tetris_env):
     tetris_env.reset(seed=0)
-    tetris_env.step([0., -0.5, 0.5])
+    tetris_env.step([0.0, -0.5, 0.5])
 
 
 @pytest.mark.parametrize("tetris_env", [{"continuous": True}], indirect=True)
 def test_continuous_step_fails_with_wrong_dimensions(tetris_env):
     tetris_env.reset(seed=0)
     with pytest.raises(gymnasium.error.Error):
-        tetris_env.step([0., 1.])
+        tetris_env.step([0.0, 1.0])
 
 
 def test_gym_reset_with_infos(tetris_env):
