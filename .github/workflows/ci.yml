@@ -111,7 +111,6 @@ jobs:
     - name: Install pkg-config on macOS
       if: runner.os == 'macOS'
       run: brew install pkg-config
-
     - uses: lukka/run-vcpkg@v11
       with:
         vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
@@ -156,6 +155,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
         with:
           install: true
+
       - name: Build Docker image with vcpkg
         if: runner.os == 'linux'
         # using build-push-action (without push) to make use of cache arguments
@@ -186,9 +186,6 @@ jobs:
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
 
-      - name: Use cmake
-        run: cmake --version
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.17.0
         env:
@@ -205,7 +202,6 @@ jobs:
     needs: [build-wheels, build-scratch]
 
     strategy:
-      fail-fast: false
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
@@ -290,9 +286,6 @@ jobs:
           name: wheels
 
       - run: ls wheels/
-
-      - run: mkdir unzipped-${{ matrix.wheel-name }}
-      - run: unzip wheels/ale_py-0.9.1-${{ matrix.wheel-name }}.whl -d unzipped-${{ matrix.wheel-name }}/
 
       - name: Build
         # wildcarding doesn't work for some reason, therefore, update the project version here
