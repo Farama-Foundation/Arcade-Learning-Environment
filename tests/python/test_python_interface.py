@@ -88,7 +88,7 @@ def test_get_ram(tetris):
         tetris.getRAM(preallocate)
     assert exc_info.type == TypeError
 
-    preallocate = np.empty((1), dtype=np.uint8)
+    preallocate = np.empty(1, dtype=np.uint8)
     with pytest.raises(RuntimeError) as exc_info:
         tetris.getRAM(preallocate)
     assert exc_info.type == RuntimeError

@@ -57,6 +57,7 @@ jobs:
       run: brew install pkg-config
 
     - uses: lukka/run-vcpkg@v11
+      if: runner.os != 'linux'
       with:
         vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
         # There's a permissions issue with the cache
