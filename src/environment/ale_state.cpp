@@ -307,13 +307,13 @@ void ALEState::applyActionPaddlesContinuous(
   int delta_a = 0;
   if (a_x > continuous_action_threshold) {  // Right action.
     delta_a = -PADDLE_DELTA;
-  } else if (a_x < continuous_action_threshold) {  // Left action.
+  } else if (a_x < -continuous_action_threshold) {  // Left action.
     delta_a = PADDLE_DELTA;
   }
   int delta_b = 0;
   if (b_x > continuous_action_threshold) {  // Right action.
     delta_b = -PADDLE_DELTA;
-  } else if (b_x < continuous_action_threshold) {  // Left action.
+  } else if (b_x < -continuous_action_threshold) {  // Left action.
     delta_b = PADDLE_DELTA;
   }
 
