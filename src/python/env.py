@@ -271,7 +271,9 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                 if len(action) != 3:
                     raise error.Error("Actions must have 3-dimensions.")
 
-                r, theta, fire = action.tolist()
+                if isinstance(action, np.ndarray):
+                    action = action.tolist()
+                r, theta, fire = action
                 reward += self.ale.actContinuous(r, theta, fire)
             else:
                 reward += self.ale.act(self._action_set[action])
