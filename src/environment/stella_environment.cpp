@@ -76,6 +76,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
 
   m_repeat_action_probability =
       m_osystem->settings().getFloat("repeat_action_probability");
+  m_continuous_action_threshold =
+      m_osystem->settings().getFloat("continuous_action_threshold");
 
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
@@ -187,6 +189,49 @@ reward_t StellaEnvironment::act(Action player_a_action,
   return std::clamp(sum_rewards, m_reward_min, m_reward_max);
 }
 
+reward_t StellaEnvironment::actContinuous(
+    float player_a_r, float player_a_theta, float player_a_fire,
+    float player_b_r, float player_b_theta, float player_b_fire) {
+  // Total reward received as we repeat the action
+  reward_t sum_rewards = 0;
+
+  Random& rng = getEnvironmentRNG();
+
+  // Apply the same action for a given number of times... note that act() will refuse to emulate
+  //  past the terminal state
+  for (size_t i = 0; i < m_frame_skip; i++) {
+    // Stochastically drop actions, according to m_repeat_action_probability
+    if (rng.nextDouble() >= m_repeat_action_probability) {
+      m_player_a_r = player_a_r;
+      m_player_a_theta = player_a_theta;
+      m_player_a_fire = player_a_fire;
+    }
+    // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
+    if (rng.nextDouble() >= m_repeat_action_probability) {
+      m_player_b_r = player_b_r;
+      m_player_b_theta = player_b_theta;
+      m_player_b_fire = player_b_fire;
+    }
+
+    // If so desired, request one frame's worth of sound (this does nothing if recording
+    // is not enabled)
+    m_osystem->sound().recordNextFrame();
+
+    // Render screen if we're displaying it
+    m_osystem->screen().render();
+
+    // Similarly record screen as needed
+    if (m_screen_exporter.get() != NULL)
+      m_screen_exporter->saveNext(m_screen);
+
+    // Use the stored actions, which may or may not have changed this frame
+    sum_rewards += oneStepActContinuous(m_player_a_r, m_player_a_theta, m_player_a_fire,
+                                        m_player_b_r, m_player_b_theta, m_player_b_fire);
+  }
+
+  return sum_rewards;
+}
+
 /** This functions emulates a push on the reset button of the console */
 void StellaEnvironment::softReset() {
   emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
@@ -211,6 +256,29 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action,
 
   // Emulate in the emulator
   emulate(player_a_action, player_b_action);
+  // Increment the number of frames seen so far
+  m_state.incrementFrame();
+
+  return m_settings->getReward();
+}
+
+/** Applies the given continuous actions (e.g. updating paddle positions when
+ * the paddle is used) and performs one simulation step in Stella. */
+reward_t StellaEnvironment::oneStepActContinuous(
+    float player_a_r, float player_a_theta, float player_a_fire,
+    float player_b_r, float player_b_theta, float player_b_fire) {
+  // Once in a terminal state, refuse to go any further (special actions must be handled
+  //  outside of this environment; in particular reset() should be called rather than passing
+  //  RESET or SYSTEM_RESET.
+  if (isTerminal())
+    return 0;
+
+  // Convert illegal actions into NOOPs; actions such as reset are always legal
+  //noopIllegalActions(player_a_action, player_b_action);
+
+  // Emulate in the emulator
+  emulateContinuous(player_a_r, player_a_theta, player_a_fire,
+                    player_b_r, player_b_theta, player_b_fire);
   // Increment the number of frames seen so far
   m_state.incrementFrame();
 
@@ -275,6 +343,44 @@ void StellaEnvironment::emulate(Action player_a_action, Action player_b_action,
   } else {
     // In joystick mode we only need to set the action events once
     m_state.setActionJoysticks(event, player_a_action, player_b_action);
+
+    for (size_t t = 0; t < num_steps; t++) {
+      m_osystem->console().mediaSource().update();
+      m_settings->step(m_osystem->console().system());
+    }
+  }
+
+  // Parse screen and RAM into their respective data structures
+  processScreen();
+  processRAM();
+}
+
+void StellaEnvironment::emulateContinuous(
+    float player_a_r, float player_a_theta, float player_a_fire,
+    float player_b_r, float player_b_theta, float player_b_fire,
+    size_t num_steps) {
+  Event* event = m_osystem->event();
+
+  // Handle paddles separately: we have to manually update the paddle positions at each step
+  if (m_use_paddles) {
+    // Run emulator forward for 'num_steps'
+    for (size_t t = 0; t < num_steps; t++) {
+      // Update paddle position at every step
+      m_state.applyActionPaddlesContinuous(
+          event,
+          player_a_r, player_a_theta, player_a_fire,
+          player_b_r, player_b_theta, player_b_fire,
+          m_continuous_action_threshold);
+
+      m_osystem->console().mediaSource().update();
+      m_settings->step(m_osystem->console().system());
+    }
+  } else {
+    // In joystick mode we only need to set the action events once
+    m_state.setActionJoysticksContinuous(
+        event, player_a_r, player_a_theta, player_a_fire,
+        player_b_r, player_b_theta, player_b_fire,
+        m_continuous_action_threshold);
 
     for (size_t t = 0; t < num_steps; t++) {
       m_osystem->console().mediaSource().update();

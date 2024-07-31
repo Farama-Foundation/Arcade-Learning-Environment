@@ -415,6 +415,7 @@ void Settings::setDefaultSettings() {
     boolSettings.insert(std::pair<std::string, bool>("send_rgb", false));
     intSettings.insert(std::pair<std::string, int>("frame_skip", 1));
     floatSettings.insert(std::pair<std::string, float>("repeat_action_probability", 0.25));
+    floatSettings.insert(std::pair<std::string, float>("continuous_action_threshold", 0.5));
     stringSettings.insert(std::pair<std::string, std::string>("rom_file", ""));
     // Whether to truncate an episode on loss of life.
     boolSettings.insert(std::pair<std::string, bool>("truncate_on_loss_of_life", false));

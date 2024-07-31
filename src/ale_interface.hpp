@@ -88,6 +88,12 @@ class ALEInterface {
   // game over screen.
   reward_t act(Action action);
 
+  // Applies a continuous action to the game and returns the reward. It is the
+  // user's responsibility to check if the game has ended and reset
+  // when necessary - this method will keep pressing buttons on the
+  // game over screen.
+  reward_t actContinuous(float r, float theta, float fire);
+
   // Indicates if the game has ended.
   bool game_over(bool with_truncation = true) const;
 

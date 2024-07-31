@@ -41,6 +41,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         frameskip: tuple[int, int] | int = 4,
         repeat_action_probability: float = 0.25,
         full_action_space: bool = False,
+        continuous: bool = False,
+        continuous_action_threshold: float = 0.5,
         max_num_frames_per_episode: int | None = None,
         render_mode: Literal["human", "rgb_array"] | None = None,
     ):
@@ -58,6 +60,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
           repeat_action_probability: int =>
               Probability to repeat actions, see Machado et al., 2018
           full_action_space: bool => Use full action space?
+          continuous: bool => Use continuous actions?
+          continuous_action_threshold: float => threshold used for continuous actions.
           max_num_frames_per_episode: int => Max number of frame per epsiode.
               Once `max_num_frames_per_episode` is reached the episode is
               truncated.
@@ -117,6 +121,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             frameskip=frameskip,
             repeat_action_probability=repeat_action_probability,
             full_action_space=full_action_space,
+            continuous=continuous,
+            continuous_action_threshold=continuous_action_threshold,
             max_num_frames_per_episode=max_num_frames_per_episode,
             render_mode=render_mode,
         )
@@ -136,6 +142,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.ale.setLoggerMode(ale_py.LoggerMode.Error)
         # Config sticky action prob.
         self.ale.setFloat("repeat_action_probability", repeat_action_probability)
+        # Config continuous action threshold (if using continuous actions).
+        self.ale.setFloat("continuous_action_threshold", continuous_action_threshold)
 
         if max_num_frames_per_episode is not None:
             self.ale.setInt("max_num_frames_per_episode", max_num_frames_per_episode)
@@ -149,13 +157,24 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.seed_game()
         self.load_game()
 
-        # initialize action space
-        self._action_set = (
-            self.ale.getLegalActionSet()
-            if full_action_space
-            else self.ale.getMinimalActionSet()
-        )
-        self.action_space = spaces.Discrete(len(self._action_set))
+        self.continuous = continuous
+        self.continuous_action_threshold = continuous_action_threshold
+        if continuous:
+            # We don't need action_set for continuous actions.
+            self._action_set = None
+            # Actions are radius, theta, and fire, where first two are the
+            # parameters of polar coordinates.
+            self.action_space = spaces.Box(
+                np.array([0, -np.pi, 0]).astype(np.float32),
+                np.array([+1, +np.pi, +1]).astype(np.float32),
+            )  # radius, theta, fire. First two are polar coordinates.
+        else:
+            self._action_set = (
+                self.ale.getLegalActionSet()
+                if full_action_space
+                else self.ale.getMinimalActionSet()
+            )
+            self.action_space = spaces.Discrete(len(self._action_set))
 
         # initialize observation space
         if self._obs_type == "ram":
@@ -220,13 +239,14 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def step(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
-        action: int,
+        action: int | np.ndarray,
     ) -> tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
         """
         Perform one agent step, i.e., repeats `action` frameskip # of steps.
 
         Args:
-            action_ind: int => Action index to execute
+            action_ind: int | np.ndarray => Action index to execute, or numpy
+                array of floats if continuous.
 
         Returns:
             tuple[np.ndarray, float, bool, bool, Dict[str, Any]] =>
@@ -247,7 +267,16 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         # Frameskip
         reward = 0.0
         for _ in range(frameskip):
-            reward += self.ale.act(self._action_set[action])
+            if self.continuous:
+                if len(action) != 3:
+                    raise error.Error("Actions must have 3-dimensions.")
+
+                if isinstance(action, np.ndarray):
+                    action = action.tolist()
+                r, theta, fire = action
+                reward += self.ale.actContinuous(r, theta, fire)
+            else:
+                reward += self.ale.act(self._action_set[action])
         is_terminal = self.ale.game_over(with_truncation=False)
         is_truncated = self.ale.game_truncated()
 
