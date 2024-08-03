@@ -152,8 +152,8 @@ void StellaEnvironment::noopIllegalActions(Action& player_a_action,
     player_b_action = (Action)PLAYER_B_NOOP;
 }
 
-reward_t StellaEnvironment::act(Action player_a_action, float paddle_a_strength,
-                                Action player_b_action, float paddle_b_strength) {
+reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
+                                float paddle_a_strength, float paddle_b_strength) {
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
@@ -201,8 +201,8 @@ void StellaEnvironment::softReset() {
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
  *  and performs one simulation step in Stella. */
-reward_t StellaEnvironment::oneStepAct(Action player_a_action, float paddle_a_strength,
-                                       float player_b_action, float paddle_b_strength) {
+reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_action,
+                                       float paddle_a_strength, float paddle_b_strength) {
   // Once in a terminal state, refuse to go any further (special actions must be handled
   //  outside of this environment; in particular reset() should be called rather than passing
   //  RESET or SYSTEM_RESET.
@@ -263,8 +263,8 @@ void StellaEnvironment::setMode(game_mode_t value) {
 }
 
 void StellaEnvironment::emulate(
-  Action player_a_action, float paddle_a_strength,
-  Action player_b_action, float paddle_b_strength,
+  Action player_a_action, Action player_b_action,
+  float paddle_a_strength, float paddle_b_strength,
   size_t num_steps
 ) {
   Event* event = m_osystem->event();

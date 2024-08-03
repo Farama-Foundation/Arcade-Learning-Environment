@@ -58,8 +58,8 @@ class StellaEnvironment {
    *  Note that the post-act() frame number might not correspond to the pre-act() frame
    *  number plus the frame skip.
    */
-  reward_t act(Action player_a_action, float paddle_a_strength,
-               Action player_b_action, float paddle_b_strength);
+  reward_t act(Action player_a_action, Action player_b_action,
+               float paddle_a_strength = 1.0, float paddle_b_strength = 1.0);
 
   /** Applies the given continuous actions (e.g. updating paddle positions when
    * the paddle is used) and performs one simulation step in Stella. Returns the
@@ -128,12 +128,12 @@ class StellaEnvironment {
 
  private:
   /** This applies an action exactly one time step. Helper function to act(). */
-  reward_t oneStepAct(Action player_a_action, float paddle_a_strength,
-                      Action player_b_action, float paddle_b_strength);
+  reward_t oneStepAct(Action player_a_action, Action player_b_action,
+                      float paddle_a_strength, float paddle_b_strength);
 
   /** Actually emulates the emulator for a given number of steps. */
-  void emulate(Action player_a_action, float paddle_a_strength,
-               Action player_b_action, float paddle_b_strength,
+  void emulate(Action player_a_action, Action player_b_action,
+               float paddle_a_strength, float paddle_b_strength,
                size_t num_steps = 1);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
