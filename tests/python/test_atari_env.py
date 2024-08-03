@@ -16,6 +16,7 @@ _ACCEPTABLE_WARNING_SNIPPETS = [
     "we recommend using a symmetric and normalized space",
 ]
 
+
 def test_roms_register():
     registered_roms = [
         env_id

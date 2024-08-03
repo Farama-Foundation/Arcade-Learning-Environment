@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from functools import lru_cache
 import sys
+from functools import lru_cache
 from typing import Any, Literal
 from warnings import warn
 
@@ -280,15 +280,13 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             action_idx = self.map_action_idx(
                 left_center_right=(
                     -int(x < self.continuous_action_threshold)
-                        +int(x > self.continuous_action_threshold)
+                    + int(x > self.continuous_action_threshold)
                 ),
                 down_center_up=(
                     -int(y < self.continuous_action_threshold)
-                        +int(y > self.continuous_action_threshold)
+                    + int(y > self.continuous_action_threshold)
                 ),
-                fire=(
-                    action[-1] > self.continuous_action_threshold
-                ),
+                fire=(action[-1] > self.continuous_action_threshold),
             )
 
             strength = action[0]
@@ -383,13 +381,12 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         #   (key, key, ...) -> action_idx
         # where action_idx is the integer value of the action enum
         #
-        return {
-            tuple(sorted(mapping[act_idx])): act_idx
-            for act_idx in self.action_set
-        }
+        return {tuple(sorted(mapping[act_idx])): act_idx for act_idx in self.action_set}
 
     @lru_cache(18)
-    def map_action_idx(self, left_center_right: int, down_center_up: int, fire: bool) -> int:
+    def map_action_idx(
+        self, left_center_right: int, down_center_up: int, fire: bool
+    ) -> int:
         """
         Return an action idx given unit actions for underlying env.
         """
