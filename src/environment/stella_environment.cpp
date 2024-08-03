@@ -107,7 +107,7 @@ void StellaEnvironment::reset() {
   int noopSteps;
   noopSteps = 60;
 
-  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, noopSteps);
+  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 0.0, 0.0, noopSteps);
   // Reset the emulator
   softReset();
 
@@ -122,7 +122,7 @@ void StellaEnvironment::reset() {
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
   for (size_t i = 0; i < startingActions.size(); i++) {
-    emulate(startingActions[i], PLAYER_B_NOOP);
+    emulate(startingActions[i], PLAYER_B_NOOP, 0.0, 0.0);
   }
 }
 
@@ -163,13 +163,15 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
   //  past the terminal state
   for (size_t i = 0; i < m_frame_skip; i++) {
     // Stochastically drop actions, according to m_repeat_action_probability
-    if (rng.nextDouble() >= m_repeat_action_probability)
+    if (rng.nextDouble() >= m_repeat_action_probability) {
       m_player_a_action = player_a_action;
       m_paddle_a_strength = paddle_a_strength;
+    }
     // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
-    if (rng.nextDouble() >= m_repeat_action_probability)
+    if (rng.nextDouble() >= m_repeat_action_probability) {
       m_player_b_action = player_b_action;
       m_paddle_b_strength = paddle_b_strength;
+    }
 
     // If so desired, request one frame's worth of sound (this does nothing if recording
     // is not enabled)
@@ -183,8 +185,8 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
       m_screen_exporter->saveNext(m_screen);
 
     // Use the stored actions, which may or may not have changed this frame
-    sum_rewards += oneStepAct(m_player_a_action, m_player_a_strength,
-                              m_player_b_action, m_player_b_strength);
+    sum_rewards += oneStepAct(m_player_a_action, m_player_b_action,
+                              m_paddle_a_strength, m_paddle_b_strength);
   }
 
   return std::clamp(sum_rewards, m_reward_min, m_reward_max);
@@ -192,7 +194,7 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
 
 /** This functions emulates a push on the reset button of the console */
 void StellaEnvironment::softReset() {
-  emulate(RESET, PLAYER_B_NOOP, m_num_reset_steps);
+  emulate(RESET, PLAYER_B_NOOP, 0.0, 0.0, m_num_reset_steps);
 
   // Reset previous actions to NOOP for correct action repeating
   m_player_a_action = PLAYER_A_NOOP;
@@ -213,8 +215,8 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
   noopIllegalActions(player_a_action, player_b_action);
 
   // Emulate in the emulator
-  emulate(player_a_action, paddle_a_strength,
-          player_b_action, paddle_b_strength);
+  emulate(player_a_action, player_b_action,
+          paddle_a_strength, paddle_b_strength);
   // Increment the number of frames seen so far
   m_state.incrementFrame();
 
@@ -250,7 +252,7 @@ void StellaEnvironment::pressSelect(size_t num_steps) {
   }
   processScreen();
   processRAM();
-  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP);
+  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 0.0, 0.0);
   m_state.incrementFrame();
 }
 
