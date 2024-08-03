@@ -60,27 +60,19 @@ class ALEState {
   //Apply the special select action
   void pressSelect(stella::Event* event_obj);
 
-  /** Applies paddle actions. This actually modifies the game state by updating the paddle
-      *  resistances. */
-  void applyActionPaddles(stella::Event* event_obj, int player_a_action,
-                          int player_b_action);
   /** Applies paddle continuous actions. This actually modifies the game state
    * by updating the paddle resistances. */
-  void applyActionPaddlesContinuous(
-      stella::Event* event_obj,
-      float player_a_r, float player_a_theta, float player_a_fire,
-      float player_b_r, float player_b_theta, float player_b_fire,
-      float continuous_action_treshold = 0.5);
+  void applyActionPaddles(
+    stella::Event* event_obj,
+    float player_a_r, float player_a_theta, float player_a_fire,
+    float player_b_r, float player_b_theta, float player_b_fire,
+  );
   /** Sets the joystick events. No effect until the emulator is run forward. */
-  void setActionJoysticks(stella::Event* event_obj, int player_a_action,
-                          int player_b_action);
-  /** Sets the joystick events for continuous actions. No effect until the
-   * emulator is run forward. */
-  void setActionJoysticksContinuous(
-      stella::Event* event_obj,
-      float player_a_r, float player_a_theta, float player_a_fire,
-      float player_b_r, float player_b_theta, float player_b_fire,
-      float continuous_action_threshold = 0.5);
+  void setActionJoysticks(
+    stella::Event* event_obj,
+    float player_a_r, float player_a_theta, float player_a_fire,
+    float player_b_r, float player_b_theta, float player_b_fire,
+  );
 
   void incrementFrame(int steps = 1);
 
