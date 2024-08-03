@@ -64,14 +64,13 @@ class ALEState {
    * by updating the paddle resistances. */
   void applyActionPaddles(
     stella::Event* event_obj,
-    float player_a_r, float player_a_theta, float player_a_fire,
-    float player_b_r, float player_b_theta, float player_b_fire,
+    float player_a_paddle, bool player_a_fire,
+    float player_b_paddle, bool player_b_fire,
   );
   /** Sets the joystick events. No effect until the emulator is run forward. */
   void setActionJoysticks(
     stella::Event* event_obj,
-    float player_a_r, float player_a_theta, float player_a_fire,
-    float player_b_r, float player_b_theta, float player_b_fire,
+    int player_a_action, int player_b_action,
   );
 
   void incrementFrame(int steps = 1);
@@ -117,9 +116,6 @@ class ALEState {
   /** Reset key presses */
   void resetKeys(stella::Event* event_obj);
 
-  /** Set the clipping thresholds for the joystick and fire buttons.*/
-  void setActionThresholds(float joystick_discrete_threshold, float fire_discrete_threshold);
-
   /** Sets the paddle to a given position */
   void setPaddles(stella::Event* event_obj, int left, int right);
 
@@ -136,9 +132,6 @@ class ALEState {
   void setDifficultySwitches(stella::Event* event_obj, unsigned int value);
 
  private:
-  float m_joystick_threshold;      // Threshold for continuous to discrete clip for joystick movements
-  float m_fire_threshold;          // Threshold for continuous to discrete clip for the fire buttons (joystick and paddle mode)
-
   int m_left_paddle;               // Current value for the left-paddle
   int m_right_paddle;              // Current value for the right-paddle
 

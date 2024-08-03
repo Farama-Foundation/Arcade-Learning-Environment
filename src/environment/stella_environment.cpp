@@ -76,8 +76,6 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
 
   m_repeat_action_probability =
       m_osystem->settings().getFloat("repeat_action_probability");
-  m_continuous_action_threshold =
-      m_osystem->settings().getFloat("continuous_action_threshold");
 
   m_frame_skip = m_osystem->settings().getInt("frame_skip");
   if (m_frame_skip < 1) {
