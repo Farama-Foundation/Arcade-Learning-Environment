@@ -261,7 +261,7 @@ int ALEInterface::lives() {
 // game over screen.
 // Intentionally set player B actions to 0 since we are in single player mode
 reward_t ALEInterface::act(Action action, float paddle_strength) {
-  return environment->act(action, paddle_strength, PLAYER_B_NOOP, 0.0);
+  return environment->act(action, PLAYER_B_NOOP, paddle_strength, 0.0);
 }
 
 // Returns the vector of modes available for the current game.
