@@ -14,6 +14,7 @@ from utils import test_rom_path, tetris_env  # noqa: F401
 _ACCEPTABLE_WARNING_SNIPPETS = [
     "is out of date. You should consider upgrading to version",
     "we recommend using a symmetric and normalized space",
+    "This will error out when the continuous actions are discretized to illegal action spaces",
 ]
 
 
