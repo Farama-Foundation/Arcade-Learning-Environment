@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 import sys
 from typing import Any, Literal
+from warnings import warn
 
 import ale_py
 import gymnasium
@@ -157,9 +158,15 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.load_game()
 
         # get the set of legal actions
+        if continuous and not full_action_space:
+            warn(
+                "`continuous` is set to `True`, but `full_action_space` is set to `False`. "
+                "This will error out when the continuous actions are discretized to illegal action spaces. "
+                "Therefore, `full_action_space` has been automatically set to `True`."
+            )
         self._action_set = (
             self.ale.getLegalActionSet()
-            if full_action_space
+            if (full_action_space or continuous)
             else self.ale.getMinimalActionSet()
         )
 
@@ -270,21 +277,20 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             # compute the x, y, fire of the joystick
             assert isinstance(action, np.ndarray)
             x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
-            action_idx = self._action_set[
-                self.map_action_idx(
-                    left_center_right=(
-                        -int(x < self.continuous_action_threshold)
+            action_idx = self.map_action_idx(
+                left_center_right=(
+                    -int(x < self.continuous_action_threshold)
                         +int(x > self.continuous_action_threshold)
-                    ),
-                    down_center_up=(
-                        -int(y < self.continuous_action_threshold)
+                ),
+                down_center_up=(
+                    -int(y < self.continuous_action_threshold)
                         +int(y > self.continuous_action_threshold)
-                    ),
-                    fire=(
-                        action[-1] > self.continuous_action_threshold
-                    ),
-                )
-            ]
+                ),
+                fire=(
+                    action[-1] > self.continuous_action_threshold
+                ),
+            )
+
             strength = action[0]
         else:
             action_idx = self._action_set[action]
