@@ -58,8 +58,8 @@ class StellaEnvironment {
    *  Note that the post-act() frame number might not correspond to the pre-act() frame
    *  number plus the frame skip.
    */
-  reward_t act(Action player_a_action, float paddle_a_strength,
-               Action player_b_action, float paddle_b_strength);
+  reward_t act(Action player_a_action, float paddle_a_strength = 1.0,
+               Action player_b_action, float paddle_b_strength = 1.0);
 
   /** Applies the given continuous actions (e.g. updating paddle positions when
    * the paddle is used) and performs one simulation step in Stella. Returns the
@@ -164,7 +164,6 @@ class StellaEnvironment {
   int m_max_num_frames_per_episode;  // Maxmimum number of frames per episode
   size_t m_frame_skip;               // How many frames to emulate per act()
   float m_repeat_action_probability; // Stochasticity of the environment
-  float m_continuous_action_threshold; // Continuous action threshold
   std::unique_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
   int m_max_lives;                  // Maximum number of lives at the start of an episode.
   bool m_truncate_on_loss_of_life;  // Whether to truncate episodes on loss of life.
@@ -173,6 +172,7 @@ class StellaEnvironment {
 
   // The last actions taken by our players
   Action m_player_a_action, m_player_b_action;
+  float m_paddle_a_strength, m_paddle_b_strength;
   float m_player_a_r, m_player_b_r;
   float m_player_a_theta, m_player_b_theta;
   float m_player_a_fire, m_player_b_fire;
