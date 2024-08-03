@@ -58,16 +58,16 @@ class ALEState {
   void resetPaddles(stella::Event*);
 
   //Apply the special select action
-  void pressSelect(stella::Event* event_obj);
+  void pressSelect(stella::Event* event);
 
   /** Applies paddle continuous actions. This actually modifies the game state
    * by updating the paddle resistances. */
-  void applyActionPaddles(stella::Event* event_obj,
+  void applyActionPaddles(stella::Event* event,
                           int player_a_action, float paddle_a_strength,
                           int player_b_action, float paddle_b_strength);
 
   /** Sets the joystick events. No effect until the emulator is run forward. */
-  void applyActionJoysticks(stella::Event* event_obj,
+  void applyActionJoysticks(stella::Event* event,
                             int player_a_action, int player_b_action);
 
   void incrementFrame(int steps = 1);
@@ -111,22 +111,22 @@ class ALEState {
   ALEState save(stella::OSystem* osystem, RomSettings* settings, std::optional<stella::Random*> rng, std::string md5);
 
   /** Reset key presses */
-  void resetKeys(stella::Event* event_obj);
+  void resetKeys(stella::Event* event);
 
   /** Sets the paddle to a given position */
-  void setPaddles(stella::Event* event_obj, int left, int right);
+  void setPaddles(stella::Event* event, int left, int right);
 
   /** Set the paddle min/max values */
   void setPaddleLimits(int paddle_min_val, int paddle_max_val);
 
   /** Updates the paddle position by a delta amount. */
-  void updatePaddlePositions(stella::Event* event_obj, int delta_x, int delta_y);
+  void updatePaddlePositions(stella::Event* event, int delta_x, int delta_y);
 
   /** Calculates the Paddle resistance, based on the given x val */
   int calcPaddleResistance(int x_val);
 
   /** Applies the current difficulty setting, which is effectively part of the action */
-  void setDifficultySwitches(stella::Event* event_obj, unsigned int value);
+  void setDifficultySwitches(stella::Event* event, unsigned int value);
 
  private:
   int m_left_paddle;               // Current value for the left-paddle
