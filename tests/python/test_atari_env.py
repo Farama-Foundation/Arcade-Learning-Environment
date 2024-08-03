@@ -11,6 +11,10 @@ from ale_py.registration import _register_rom_configs, register_v0_v4_envs
 from gymnasium.utils.env_checker import check_env
 from utils import test_rom_path, tetris_env  # noqa: F401
 
+_ACCEPTABLE_WARNING_SNIPPETS = [
+    "is out of date. You should consider upgrading to version",
+    "we recommend using a symmetric and normalized space",
+]
 
 def test_roms_register():
     registered_roms = [
@@ -59,9 +63,9 @@ def test_check_env(env_id, continuous):
         env.close()
 
     for warning in caught_warnings:
-        if (
-            "is out of date. You should consider upgrading to version"
-            not in warning.message.args[0]
+        if not any(
+            (snippet in warning.message.args[0])
+            for snippet in _ACCEPTABLE_WARNING_SNIPPETS
         ):
             raise ValueError(warning.message.args[0])
 

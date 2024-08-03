@@ -265,29 +265,32 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         else:
             raise error.Error(f"Invalid frameskip type: {self._frameskip}")
 
+        # action formatting
+        if self.continuous:
+            # compute the x, y, fire of the joystick
+            assert isinstance(action, np.ndarray)
+            x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
+            action_idx = self.map_action_idx(
+                left_center_right=(
+                    -int(x < self.continuous_action_threshold)
+                    +int(x > self.continuous_action_threshold)
+                ),
+                down_center_up=(
+                    -int(y < self.continuous_action_threshold)
+                    +int(y > self.continuous_action_threshold)
+                ),
+                fire=(action[-1] > self.continuous_action_threshold),
+            )
+            strength = action[0]
+        else:
+            action_idx = self._action_set[action]
+            strength = 1.0
+
         # Frameskip
         reward = 0.0
         for _ in range(frameskip):
-            if self.continuous:
-                # compute the x, y, fire of the joystick
-                assert isinstance(action, np.ndarray)
-                strength = action[0]
-                x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
-                action = self.map_action_idx(
-                    left_center_right=(
-                        -int(x < self.continuous_action_threshold)
-                        +int(x > self.continuous_action_threshold)
-                    ),
-                    down_center_up=(
-                        -int(y < self.continuous_action_threshold)
-                        +int(y > self.continuous_action_threshold)
-                    ),
-                    fire=(action[-1] > self.continuous_action_threshold),
-                )
+            reward += self.ale.act(self._action_set[action_idx], strength)
 
-                reward += self.ale.act(action, strength)
-            else:
-                reward += self.ale.act(self._action_set[action])
         is_terminal = self.ale.game_over(with_truncation=False)
         is_truncated = self.ale.game_truncated()
 
