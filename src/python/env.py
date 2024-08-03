@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 import sys
-from typing import Any, Literal, Sequence
+from typing import Any, Literal
 
 import ale_py
 import gymnasium
@@ -239,13 +239,13 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     def step(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
-        action: int | Sequence[float],
+        action: int | np.ndarray,
     ) -> tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
         """
         Perform one agent step, i.e., repeats `action` frameskip # of steps.
 
         Args:
-            action: int | Sequence[float] =>
+            action: int | np.ndarray =>
                 if `continuous=False` -> action index to execute
                 if `continuous=True` -> numpy array of r, theta, fire
 
@@ -270,7 +270,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         for _ in range(frameskip):
             if self.continuous:
                 # compute the x, y, fire of the joystick
-                assert isinstance(action, Sequence)
+                assert isinstance(action, np.ndarray)
                 strength = action[0]
                 x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
                 action = self.map_action_idx(
