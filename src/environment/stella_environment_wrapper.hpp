@@ -31,7 +31,7 @@ class StellaEnvironmentWrapper {
  public:
   StellaEnvironmentWrapper(StellaEnvironment& environment);
   reward_t act(Action player_a_action, Action player_b_action,
-               float paddle_a_strength, float paddle_b_strength);
+               float paddle_a_strength = 1.0, float paddle_b_strength = 1.0);
   void softReset();
   void pressSelect(size_t num_steps = 1);
   stella::Random& getEnvironmentRNG();

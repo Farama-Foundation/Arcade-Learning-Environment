@@ -303,7 +303,7 @@ void ALEState::setDifficultySwitches(Event* event, unsigned int value) {
 }
 
 void ALEState::applyActionJoysticks(Event* event,
-                                  int player_a_action, int player_b_action) {
+                                    int player_a_action, int player_b_action) {
   // Reset keys
   resetKeys(event);
   switch (player_a_action) {
