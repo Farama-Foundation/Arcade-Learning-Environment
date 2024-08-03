@@ -161,6 +161,11 @@ void ALEState::setPaddleLimits(int paddle_min_val, int paddle_max_val) {
   // paddle update and the positions will be clamped to the new min/max.
 }
 
+void ALEState::setActionThresholds(float joystick_discrete_threshold, float fire_discrete_threshold) {
+  m_joystick_threshold = joystick_discrete_threshold;
+  m_paddle_max = fire_discrete_threshold;
+}
+
 /* *********************************************************************
  *  Updates the positions of the paddles, and sets an event for
  *  updating the corresponding paddle's resistance
@@ -193,7 +198,7 @@ void ALEState::applyActionPaddles(
     Event* event,
     float player_a_r, float player_a_theta, float player_a_fire,
     float player_b_r, float player_b_theta, float player_b_fire,
-    float continuous_action_threshold) {
+) {
   // Reset keys
   resetKeys(event);
 
@@ -208,10 +213,10 @@ void ALEState::applyActionPaddles(
 
   // Now add the fire event
   // Don't have to call when 0 since `reset_keys` is automatically called.
-  if (player_a_fire > continuous_action_threshold) {
+  if (player_a_fire > m_fire_threshold) {
     event->set(Event::PaddleZeroFire, 1);
   }
-  if (player_b_fire > continuous_action_threshold) {
+  if (player_b_fire > m_fire_threshold) {
     event->set(Event::PaddleOneFire, 1);
   }
 }
@@ -234,7 +239,7 @@ void ALEState::setActionJoysticks(
     Event* event,
     float player_a_r, float player_a_theta, float player_a_fire,
     float player_b_r, float player_b_theta, float player_b_fire,
-    float continuous_action_threshold) {
+) {
   // Reset keys
   resetKeys(event);
 
@@ -247,34 +252,34 @@ void ALEState::setActionJoysticks(
   // Go through all possible events and add them if joystick position is there.
   // Original Atari 2600 doesn't have continous actions for joystick actions
   // So we need to quantize here
-  if (a_x < -continuous_action_threshold) {
+  if (a_x < -m_joystick_threshold) {
     event->set(Event::JoystickZeroLeft, 1);
   }
-  if (a_x > continuous_action_threshold) {
+  if (a_x > m_joystick_threshold) {
     event->set(Event::JoystickZeroRight, 1);
   }
-  if (a_y < -continuous_action_threshold) {
+  if (a_y < -m_joystick_threshold) {
     event->set(Event::JoystickZeroDown, 1);
   }
-  if (a_y > continuous_action_threshold) {
+  if (a_y > m_joystick_threshold) {
     event->set(Event::JoystickZeroUp, 1);
   }
-  if (player_a_fire > continuous_action_threshold) {
+  if (player_a_fire > m_fire_threshold) {
     event->set(Event::JoystickZeroFire, 1);
   }
-  if (b_x < -continuous_action_threshold) {
+  if (b_x < -m_joystick_threshold) {
     event->set(Event::JoystickOneLeft, 1);
   }
-  if (b_x > continuous_action_threshold) {
+  if (b_x > m_joystick_threshold) {
     event->set(Event::JoystickOneRight, 1);
   }
-  if (b_y < -continuous_action_threshold) {
+  if (b_y < -m_joystick_threshold) {
     event->set(Event::JoystickOneDown, 1);
   }
-  if (b_y > continuous_action_threshold) {
+  if (b_y > m_joystick_threshold) {
     event->set(Event::JoystickOneUp, 1);
   }
-  if (player_b_fire > continuous_action_threshold) {
+  if (player_b_fire > m_fire_threshold) {
     event->set(Event::JoystickOneFire, 1);
   }
 }

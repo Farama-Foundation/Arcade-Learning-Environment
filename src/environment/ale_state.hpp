@@ -117,6 +117,9 @@ class ALEState {
   /** Reset key presses */
   void resetKeys(stella::Event* event_obj);
 
+  /** Set the clipping thresholds for the joystick and fire buttons.*/
+  void setActionThresholds(float joystick_discrete_threshold, float fire_discrete_threshold);
+
   /** Sets the paddle to a given position */
   void setPaddles(stella::Event* event_obj, int left, int right);
 
@@ -133,6 +136,9 @@ class ALEState {
   void setDifficultySwitches(stella::Event* event_obj, unsigned int value);
 
  private:
+  float m_joystick_threshold;      // Threshold for continuous to discrete clip for joystick movements
+  float m_fire_threshold;          // Threshold for continuous to discrete clip for the fire buttons (joystick and paddle mode)
+
   int m_left_paddle;               // Current value for the left-paddle
   int m_right_paddle;              // Current value for the right-paddle
 
