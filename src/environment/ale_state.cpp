@@ -215,6 +215,7 @@ void ALEState::applyActionPaddles(Event* event,
     case PLAYER_A_DOWNLEFTFIRE:
       delta_a = static_cast<int>(PADDLE_DELTA * fabs(paddle_a_strength));
       break;
+
     default:
       break;
   }
@@ -237,6 +238,7 @@ void ALEState::applyActionPaddles(Event* event,
     case PLAYER_B_DOWNLEFTFIRE:
       delta_b = static_cast<int>(PADDLE_DELTA * fabs(paddle_b_strength));
       break;
+
     default:
       break;
   }
@@ -300,7 +302,7 @@ void ALEState::setDifficultySwitches(Event* event, unsigned int value) {
   event->set(Event::ConsoleRightDifficultyB, !((value & 2) >> 1));
 }
 
-void ALEState::setActionJoysticks(Event* event,
+void ALEState::applyActionJoysticks(Event* event,
                                   int player_a_action, int player_b_action) {
   // Reset keys
   resetKeys(event);
