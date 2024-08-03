@@ -58,8 +58,8 @@ class StellaEnvironment {
    *  Note that the post-act() frame number might not correspond to the pre-act() frame
    *  number plus the frame skip.
    */
-  reward_t act(Action player_a_action, float paddle_a_strength = 1.0,
-               Action player_b_action, float paddle_b_strength = 1.0);
+  reward_t act(Action player_a_action, float paddle_a_strength,
+               Action player_b_action, float paddle_b_strength);
 
   /** Applies the given continuous actions (e.g. updating paddle positions when
    * the paddle is used) and performs one simulation step in Stella. Returns the
