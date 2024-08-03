@@ -279,7 +279,7 @@ void StellaEnvironment::emulate(
       m_state.applyActionPaddles(
         event,
         player_a_action, paddle_a_strength,
-        player_b_action, paddle_b_strength,
+        player_b_action, paddle_b_strength
       );
 
       m_osystem->console().mediaSource().update();
