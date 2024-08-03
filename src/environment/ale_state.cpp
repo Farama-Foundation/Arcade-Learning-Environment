@@ -302,82 +302,82 @@ void ALEState::setDifficultySwitches(Event* event, unsigned int value) {
   event->set(Event::ConsoleRightDifficultyB, !((value & 2) >> 1));
 }
 
-void ALEState::applyActionJoysticks(Event* event_obj,
+void ALEState::applyActionJoysticks(Event* event,
                                   int player_a_action, int player_b_action) {
   // Reset keys
-  resetKeys(event_obj);
+  resetKeys(event);
   switch (player_a_action) {
     case PLAYER_A_NOOP:
       break;
     case PLAYER_A_FIRE:
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_UP:
-      event_obj->set(Event::JoystickZeroUp, 1);
+      event->set(Event::JoystickZeroUp, 1);
       break;
     case PLAYER_A_RIGHT:
-      event_obj->set(Event::JoystickZeroRight, 1);
+      event->set(Event::JoystickZeroRight, 1);
       break;
     case PLAYER_A_LEFT:
-      event_obj->set(Event::JoystickZeroLeft, 1);
+      event->set(Event::JoystickZeroLeft, 1);
       break;
     case PLAYER_A_DOWN:
-      event_obj->set(Event::JoystickZeroDown, 1);
+      event->set(Event::JoystickZeroDown, 1);
       break;
     case PLAYER_A_UPRIGHT:
-      event_obj->set(Event::JoystickZeroUp, 1);
-      event_obj->set(Event::JoystickZeroRight, 1);
+      event->set(Event::JoystickZeroUp, 1);
+      event->set(Event::JoystickZeroRight, 1);
       break;
     case PLAYER_A_UPLEFT:
-      event_obj->set(Event::JoystickZeroUp, 1);
-      event_obj->set(Event::JoystickZeroLeft, 1);
+      event->set(Event::JoystickZeroUp, 1);
+      event->set(Event::JoystickZeroLeft, 1);
       break;
     case PLAYER_A_DOWNRIGHT:
-      event_obj->set(Event::JoystickZeroDown, 1);
-      event_obj->set(Event::JoystickZeroRight, 1);
+      event->set(Event::JoystickZeroDown, 1);
+      event->set(Event::JoystickZeroRight, 1);
       break;
     case PLAYER_A_DOWNLEFT:
-      event_obj->set(Event::JoystickZeroDown, 1);
-      event_obj->set(Event::JoystickZeroLeft, 1);
+      event->set(Event::JoystickZeroDown, 1);
+      event->set(Event::JoystickZeroLeft, 1);
       break;
     case PLAYER_A_UPFIRE:
-      event_obj->set(Event::JoystickZeroUp, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroUp, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_RIGHTFIRE:
-      event_obj->set(Event::JoystickZeroRight, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroRight, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_LEFTFIRE:
-      event_obj->set(Event::JoystickZeroLeft, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroLeft, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_DOWNFIRE:
-      event_obj->set(Event::JoystickZeroDown, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroDown, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_UPRIGHTFIRE:
-      event_obj->set(Event::JoystickZeroUp, 1);
-      event_obj->set(Event::JoystickZeroRight, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroUp, 1);
+      event->set(Event::JoystickZeroRight, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_UPLEFTFIRE:
-      event_obj->set(Event::JoystickZeroUp, 1);
-      event_obj->set(Event::JoystickZeroLeft, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroUp, 1);
+      event->set(Event::JoystickZeroLeft, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_DOWNRIGHTFIRE:
-      event_obj->set(Event::JoystickZeroDown, 1);
-      event_obj->set(Event::JoystickZeroRight, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroDown, 1);
+      event->set(Event::JoystickZeroRight, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case PLAYER_A_DOWNLEFTFIRE:
-      event_obj->set(Event::JoystickZeroDown, 1);
-      event_obj->set(Event::JoystickZeroLeft, 1);
-      event_obj->set(Event::JoystickZeroFire, 1);
+      event->set(Event::JoystickZeroDown, 1);
+      event->set(Event::JoystickZeroLeft, 1);
+      event->set(Event::JoystickZeroFire, 1);
       break;
     case RESET:
-      event_obj->set(Event::ConsoleReset, 1);
+      event->set(Event::ConsoleReset, 1);
       Logger::Info << "Sending Reset...\n";
       break;
     default:
@@ -388,74 +388,74 @@ void ALEState::applyActionJoysticks(Event* event_obj,
     case PLAYER_B_NOOP:
       break;
     case PLAYER_B_FIRE:
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_UP:
-      event_obj->set(Event::JoystickOneUp, 1);
+      event->set(Event::JoystickOneUp, 1);
       break;
     case PLAYER_B_RIGHT:
-      event_obj->set(Event::JoystickOneRight, 1);
+      event->set(Event::JoystickOneRight, 1);
       break;
     case PLAYER_B_LEFT:
-      event_obj->set(Event::JoystickOneLeft, 1);
+      event->set(Event::JoystickOneLeft, 1);
       break;
     case PLAYER_B_DOWN:
-      event_obj->set(Event::JoystickOneDown, 1);
+      event->set(Event::JoystickOneDown, 1);
       break;
     case PLAYER_B_UPRIGHT:
-      event_obj->set(Event::JoystickOneUp, 1);
-      event_obj->set(Event::JoystickOneRight, 1);
+      event->set(Event::JoystickOneUp, 1);
+      event->set(Event::JoystickOneRight, 1);
       break;
     case PLAYER_B_UPLEFT:
-      event_obj->set(Event::JoystickOneUp, 1);
-      event_obj->set(Event::JoystickOneLeft, 1);
+      event->set(Event::JoystickOneUp, 1);
+      event->set(Event::JoystickOneLeft, 1);
       break;
     case PLAYER_B_DOWNRIGHT:
-      event_obj->set(Event::JoystickOneDown, 1);
-      event_obj->set(Event::JoystickOneRight, 1);
+      event->set(Event::JoystickOneDown, 1);
+      event->set(Event::JoystickOneRight, 1);
       break;
     case PLAYER_B_DOWNLEFT:
-      event_obj->set(Event::JoystickOneDown, 1);
-      event_obj->set(Event::JoystickOneLeft, 1);
+      event->set(Event::JoystickOneDown, 1);
+      event->set(Event::JoystickOneLeft, 1);
       break;
     case PLAYER_B_UPFIRE:
-      event_obj->set(Event::JoystickOneUp, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneUp, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_RIGHTFIRE:
-      event_obj->set(Event::JoystickOneRight, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneRight, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_LEFTFIRE:
-      event_obj->set(Event::JoystickOneLeft, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneLeft, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_DOWNFIRE:
-      event_obj->set(Event::JoystickOneDown, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneDown, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_UPRIGHTFIRE:
-      event_obj->set(Event::JoystickOneUp, 1);
-      event_obj->set(Event::JoystickOneRight, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneUp, 1);
+      event->set(Event::JoystickOneRight, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_UPLEFTFIRE:
-      event_obj->set(Event::JoystickOneUp, 1);
-      event_obj->set(Event::JoystickOneLeft, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneUp, 1);
+      event->set(Event::JoystickOneLeft, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_DOWNRIGHTFIRE:
-      event_obj->set(Event::JoystickOneDown, 1);
-      event_obj->set(Event::JoystickOneRight, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneDown, 1);
+      event->set(Event::JoystickOneRight, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case PLAYER_B_DOWNLEFTFIRE:
-      event_obj->set(Event::JoystickOneDown, 1);
-      event_obj->set(Event::JoystickOneLeft, 1);
-      event_obj->set(Event::JoystickOneFire, 1);
+      event->set(Event::JoystickOneDown, 1);
+      event->set(Event::JoystickOneLeft, 1);
+      event->set(Event::JoystickOneFire, 1);
       break;
     case RESET:
-      event_obj->set(Event::ConsoleReset, 1);
+      event->set(Event::ConsoleReset, 1);
       Logger::Info << "Sending Reset...\n";
       break;
     default:
