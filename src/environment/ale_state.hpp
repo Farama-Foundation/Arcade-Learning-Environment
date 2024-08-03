@@ -64,11 +64,11 @@ class ALEState {
    * by updating the paddle resistances. */
   void applyActionPaddles(
     stella::Event* event_obj,
-    float player_a_paddle, bool player_a_fire,
-    float player_b_paddle, bool player_b_fire,
+    int player_a_action, float paddle_a_strength = 1.0,
+    int player_b_action, float paddle_b_strength = 1.0,
   );
   /** Sets the joystick events. No effect until the emulator is run forward. */
-  void setActionJoysticks(
+  void applyActionJoysticks(
     stella::Event* event_obj,
     int player_a_action, int player_b_action,
   );
