@@ -286,8 +286,6 @@ void ALEState::applyActionPaddles(Event* event,
   }
 }
 
-}
-
 void ALEState::pressSelect(Event* event) {
   resetKeys(event);
   event->set(Event::ConsoleSelect, 1);
