@@ -275,12 +275,12 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                 x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
                 action = self.map_action_idx(
                     left_center_right=(
-                        -(x < self.continuous_action_threshold)
-                        +(x > self.continuous_action_threshold)
+                        -int(x < self.continuous_action_threshold)
+                        +int(x > self.continuous_action_threshold)
                     ),
                     down_up_center=(
-                        -(y < self.continuous_action_threshold)
-                        +(y > self.continuous_action_threshold)
+                        -int(y < self.continuous_action_threshold)
+                        +int(y > self.continuous_action_threshold)
                     ),
                     fire=(action[-1] > self.continuous_action_threshold),
                 )
