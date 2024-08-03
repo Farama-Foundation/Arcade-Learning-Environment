@@ -381,7 +381,9 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         #   (key, key, ...) -> action_idx
         # where action_idx is the integer value of the action enum
         #
-        return {tuple(sorted(mapping[act_idx])): act_idx for act_idx in self._action_set}
+        return {
+            tuple(sorted(mapping[act_idx])): act_idx for act_idx in self._action_set
+        }
 
     @lru_cache(18)
     def map_action_idx(
