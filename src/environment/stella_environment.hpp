@@ -58,7 +58,8 @@ class StellaEnvironment {
    *  Note that the post-act() frame number might not correspond to the pre-act() frame
    *  number plus the frame skip.
    */
-  reward_t act(Action player_a_action, Action player_b_action);
+  reward_t act(Action player_a_action, float paddle_a_strength,
+               Action player_b_action, float paddle_b_strength);
 
   /** Applies the given continuous actions (e.g. updating paddle positions when
    * the paddle is used) and performs one simulation step in Stella. Returns the
@@ -67,9 +68,6 @@ class StellaEnvironment {
    * number might not correspond to the pre-act() frame number plus the frame
    * skip.
    */
-  reward_t actContinuous(
-      float player_a_r, float player_a_theta, float player_a_fire,
-      float player_b_r, float player_b_theta, float player_b_fire);
 
   /** This functions emulates a push on the reset button of the console */
   void softReset();
@@ -130,23 +128,13 @@ class StellaEnvironment {
 
  private:
   /** This applies an action exactly one time step. Helper function to act(). */
-  reward_t oneStepAct(Action player_a_action, Action player_b_action);
-
-  /** This applies a continuous action exactly one time step.
-   *  Helper function to actContinuous().
-   */
-  reward_t oneStepActContinuous(
-      float player_a_r, float player_a_theta, float player_a_fire,
-      float player_b_r, float player_b_theta, float player_b_fire);
-
+  reward_t oneStepAct(Action player_a_action, float paddle_a_strength,
+                      Action player_b_action, float paddle_b_strength);
 
   /** Actually emulates the emulator for a given number of steps. */
-  void emulate(Action player_a_action, Action player_b_action,
+  void emulate(Action player_a_action, float paddle_a_strength,
+               Action player_b_action, float paddle_b_strength,
                size_t num_steps = 1);
-  void emulateContinuous(
-      float player_a_r, float player_a_theta, float player_a_fire,
-      float player_b_r, float player_b_theta, float player_b_fire,
-      size_t num_steps = 1);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
    *   from the minimal set of actions. */

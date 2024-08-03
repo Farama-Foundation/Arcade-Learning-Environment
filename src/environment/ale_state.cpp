@@ -189,11 +189,9 @@ void ALEState::updatePaddlePositions(Event* event, int delta_left,
   setPaddles(event, m_left_paddle, m_right_paddle);
 }
 
-void ALEState::applyActionPaddles(
-  Event* event,
-  int player_a_action, float paddle_a_strength,
-  int player_b_action, float paddle_b_strength,
-) {
+void ALEState::applyActionPaddles(Event* event,
+                                  int player_a_action, float paddle_a_strength,
+                                  int player_b_action, float paddle_b_strength) {
   // Reset keys
   resetKeys(event);
 
@@ -302,8 +300,8 @@ void ALEState::setDifficultySwitches(Event* event, unsigned int value) {
   event->set(Event::ConsoleRightDifficultyB, !((value & 2) >> 1));
 }
 
-void ALEState::setActionJoysticks(Event* event, int player_a_action,
-                                  int player_b_action) {
+void ALEState::setActionJoysticks(Event* event,
+                                  int player_a_action, int player_b_action) {
   // Reset keys
   resetKeys(event);
   switch (player_a_action) {
