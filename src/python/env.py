@@ -278,7 +278,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                         -int(x < self.continuous_action_threshold)
                         +int(x > self.continuous_action_threshold)
                     ),
-                    down_up_center=(
+                    down_center_up=(
                         -int(y < self.continuous_action_threshold)
                         +int(y > self.continuous_action_threshold)
                     ),
