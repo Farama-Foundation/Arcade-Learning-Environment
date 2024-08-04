@@ -142,8 +142,12 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("loadROM", &ale::ALEInterface::loadROM)
       .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
       .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
+                      ale::ALEPythonInterface::act)
       .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
                       ale::ALEPythonInterface::act)
+      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
+                      ale::ALEInterface::act)
       .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &
                       ale::ALEInterface::act)
       .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))
