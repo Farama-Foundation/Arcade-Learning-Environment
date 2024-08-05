@@ -189,18 +189,6 @@ def test_get_screen_rgb(tetris):
     assert (preallocate == screen).all()
 
 
-def test_get_screen(tetris):
-    for _ in range(10):
-        tetris.act(0)
-
-    dims = tetris.getScreenDims()
-    preallocate = np.zeros(dims, dtype=np.uint8)
-    tetris.getScreen(preallocate)
-
-    screen = tetris.getScreen()
-    assert (preallocate == screen).all()
-
-
 def test_get_screen_grayscale(tetris):
     for _ in range(10):
         tetris.act(0)

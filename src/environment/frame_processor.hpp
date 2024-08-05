@@ -8,48 +8,39 @@
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  phosphor_blend.hpp
+ *  frame_processor.hpp
  *
- *  Methods for performing colour averaging over the screen.
+ *  Base class to postprocess a frame.
  *
  **************************************************************************** */
 
-#ifndef __PHOSPHOR_BLEND_HPP__
-#define __PHOSPHOR_BLEND_HPP__
+#ifndef __FRAME_PROCESSOR_HPP__
+#define __FRAME_PROCESSOR_HPP__
 
 #include <cstdint>
 
-#include "emucore/OSystem.hxx"
-#include "environment/frame_processor.hpp"
+#include "emucore/MediaSrc.hxx"
+#include "common/ColourPalette.hpp"
 
 namespace ale {
 
-class PhosphorBlend : public FrameProcessor {
+class FrameProcessor {
  public:
-  PhosphorBlend(ColourPalette& palette);
-  void processGrayscale(
+  FrameProcessor(ColourPalette& palette) : m_palette(palette) {}
+  virtual ~FrameProcessor() {}
+  virtual void processGrayscale(
     stella::MediaSource& media,
     uint8_t* out
-  );
-  void processRGB(
+  ) = 0;
+  virtual void processRGB(
     stella::MediaSource& media,
     uint8_t* out
-  );
+  ) = 0;
 
- private:
-  void makeAveragePalette();
-  uint8_t getPhosphor(uint8_t v1, uint8_t v2);
-  uint32_t makeRGB(uint8_t r, uint8_t g, uint8_t b);
-  /** Converts a RGB value to an 8-bit format */
-  uint8_t rgbToNTSC(uint32_t rgb);
-
- private:
-  uint8_t m_rgb_ntsc[64][64][64];
-
-  uint32_t m_avg_palette[256][256];
-  uint8_t m_phosphor_blend_ratio;
+ protected:
+  ColourPalette& m_palette;
 };
 
 }  // namespace ale
 
-#endif  // __PHOSPHOR_BLEND_HPP__
+#endif  // __FRAME_PROCESSOR__

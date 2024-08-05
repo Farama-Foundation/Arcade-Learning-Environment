@@ -37,6 +37,8 @@ class ColourPalette {
   /** Returns the byte-sized grayscale value for this palette index. */
   uint8_t getGrayscale(int val) const;
 
+  uint8_t convertRGBToGrayscale(uint32_t rgb) const;
+
   /** Applies the current RGB palette to the src_buffer and returns the results in dst_buffer
    *  For each byte in src_buffer, three bytes are returned in dst_buffer
    *  8 bits => 24 bits

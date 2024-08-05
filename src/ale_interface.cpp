@@ -49,7 +49,9 @@
 #include "emucore/Console.hxx"
 #include "emucore/Props.hxx"
 #include "emucore/MD5.hxx"
-#include "environment/ale_screen.hpp"
+#include "environment/phosphor_blend.hpp"
+#include "environment/frame_max.hpp"
+#include "environment/frame_identity.hpp"
 #include "games/RomSettings.hpp"
 
 namespace fs = std::filesystem;
@@ -159,6 +161,25 @@ void ALEInterface::loadROM(fs::path rom_file) {
   // Custom environment settings required for a specific ROM must be added
   // before the StellaEnvironment is constructed.
   romSettings->modifyEnvironmentSettings(theOSystem->settings());
+
+  bool shouldFrameAverage = theOSystem->settings().getBool("frame_average");
+  if (theOSystem->settings().getBool("color_averaging")) {
+    Logger::Warning << "color_averaging is deprecated. Please use frame_average instead." << std::endl;
+    shouldFrameAverage = true;
+  }
+  bool shouldFrameMax = theOSystem->settings().getBool("frame_max");
+
+  if (shouldFrameAverage && shouldFrameMax) {
+    throw new std::runtime_error("Cannot enable both frame averaging and frame maxing.");
+  }
+
+  if (shouldFrameAverage) {
+    frameProcessor = std::make_unique<PhosphorBlend>(theOSystem->colourPalette());
+  } else if (shouldFrameMax) {
+    frameProcessor = std::make_unique<FrameMax>(theOSystem->colourPalette());
+  } else {
+    frameProcessor = std::make_unique<FrameIdentity>(theOSystem->colourPalette());
+  }
 
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
@@ -328,41 +349,35 @@ int ALEInterface::getEpisodeFrameNumber() const {
   return environment->getEpisodeFrameNumber();
 }
 
-// Returns the current game screen
-const ALEScreen& ALEInterface::getScreen() const { return environment->getScreen(); }
-
 //This method should receive an empty vector to fill it with
 //the grayscale colours
 void ALEInterface::getScreenGrayscale(
     std::vector<unsigned char>& grayscale_output_buffer) const {
-  size_t w = environment->getScreen().width();
-  size_t h = environment->getScreen().height();
-  size_t screen_size = w * h;
-
-  pixel_t* ale_screen_data = environment->getScreen().getArray();
-  theOSystem->colourPalette().applyPaletteGrayscale(
-      grayscale_output_buffer, ale_screen_data, screen_size);
+  frameProcessor->processGrayscale(
+    theOSystem->console().mediaSource(),
+    grayscale_output_buffer.data()
+  );
 }
 
 //This method should receive a vector to fill it with
 //the RGB colours. The first positions contain the red colours,
 //followed by the green colours and then the blue colours
-void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) const {
-  size_t w = environment->getScreen().width();
-  size_t h = environment->getScreen().height();
-  size_t screen_size = w * h;
-
-  pixel_t* ale_screen_data = environment->getScreen().getArray();
-
-  theOSystem->colourPalette().applyPaletteRGB(output_rgb_buffer,
-                                              ale_screen_data, screen_size);
+void ALEInterface::getScreenRGB(std::vector<unsigned char>& rgb_output_buffer) const {
+  frameProcessor->processRGB(
+    theOSystem->console().mediaSource(),
+    rgb_output_buffer.data()
+  );
 }
 
 // Returns the current RAM content
-const ALERAM& ALEInterface::getRAM() const { return environment->getRAM(); }
+void ALEInterface::getRAM(std::array<uint8_t, 128>& output_ram_buffer) const {
+  for (size_t i = 0; i < 128; ++i) {
+    output_ram_buffer[i] = theOSystem->console().system().peek(i + 0x80);
+  }
+}
 
 // Set byte at memory address
-void ALEInterface::setRAM(size_t memory_index, byte_t value) {
+void ALEInterface::setRAM(size_t memory_index, uint8_t value) {
   if (memory_index < 0 || memory_index >= 128){
       throw std::runtime_error("setRAM index out of bounds.");
   }
@@ -386,13 +401,16 @@ void ALEInterface::restoreSystemState(const ALEState& state) {
 }
 
 void ALEInterface::saveScreenPNG(const std::string& filename) {
-  ScreenExporter exporter(theOSystem->colourPalette());
-  exporter.save(environment->getScreen(), filename);
+  ScreenExporter exporter(theOSystem->console().mediaSource(), theOSystem->colourPalette());
+  exporter.save(filename);
 }
 
 ScreenExporter*
 ALEInterface::createScreenExporter(const std::string& filename) const {
-  return new ScreenExporter(theOSystem->colourPalette(), filename);
+  return new ScreenExporter(
+    theOSystem->console().mediaSource(), theOSystem->colourPalette(),
+    filename
+  );
 }
 
 }  // namespace ale
