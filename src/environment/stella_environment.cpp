@@ -107,7 +107,7 @@ void StellaEnvironment::reset() {
   int noopSteps;
   noopSteps = 60;
 
-  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 0.0, 0.0, noopSteps);
+  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 1.0, 1.0, noopSteps);
   // Reset the emulator
   softReset();
 
@@ -122,7 +122,7 @@ void StellaEnvironment::reset() {
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
   for (size_t i = 0; i < startingActions.size(); i++) {
-    emulate(startingActions[i], PLAYER_B_NOOP, 0.0, 0.0);
+    emulate(startingActions[i], PLAYER_B_NOOP, 1.0, 1.0);
   }
 }
 
@@ -194,7 +194,7 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
 
 /** This functions emulates a push on the reset button of the console */
 void StellaEnvironment::softReset() {
-  emulate(RESET, PLAYER_B_NOOP, 0.0, 0.0, m_num_reset_steps);
+  emulate(RESET, PLAYER_B_NOOP, 1.0, 1.0, m_num_reset_steps);
 
   // Reset previous actions to NOOP for correct action repeating
   m_player_a_action = PLAYER_A_NOOP;
@@ -252,7 +252,7 @@ void StellaEnvironment::pressSelect(size_t num_steps) {
   }
   processScreen();
   processRAM();
-  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 0.0, 0.0);
+  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 1.0, 1.0);
   m_state.incrementFrame();
 }
 
