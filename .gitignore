@@ -1,7 +1,7 @@
 ## ALE
-ale
 build
 doc/examples/*Example
+
 
 # Don't save roms in repo
 *.tar.gz.b64
@@ -161,3 +161,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# CLion project settings and build-folders
+cmake-build-*
+.idea
