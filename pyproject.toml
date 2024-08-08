@@ -20,7 +20,7 @@ authors = [
   {name = "Michael Bowling"},
 ]
 maintainers = [
-  { name = "Farama Foundation", email = "contact@farama.org" },
+  {name = "Farama Foundation", email = "contact@farama.org"},
   {name = "Jesse Farebrother", email = "jfarebro@cs.mcgill.ca"},
 ]
 classifiers = [

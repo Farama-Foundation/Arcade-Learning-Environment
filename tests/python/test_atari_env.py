@@ -1,3 +1,4 @@
+import itertools
 import warnings
 from itertools import product
 from unittest.mock import patch
@@ -9,6 +10,12 @@ from ale_py.env import AtariEnv
 from ale_py.registration import _register_rom_configs, register_v0_v4_envs
 from gymnasium.utils.env_checker import check_env
 from utils import test_rom_path, tetris_env  # noqa: F401
+
+_ACCEPTABLE_WARNING_SNIPPETS = [
+    "is out of date. You should consider upgrading to version",
+    "we recommend using a symmetric and normalized space",
+    "This will error out when the continuous actions are discretized to illegal action spaces",
+]
 
 
 def test_roms_register():
@@ -34,14 +41,17 @@ def test_roms_register():
 
 
 @pytest.mark.parametrize(
-    "env_id",
-    [
-        env_id
-        for env_id, spec in gymnasium.registry.items()
-        if spec.entry_point == "ale_py.env:AtariEnv"
-    ],
+    "env_id,continuous",
+    itertools.product(
+        [
+            env_id
+            for env_id, spec in gymnasium.registry.items()
+            if spec.entry_point == "ale_py.env:AtariEnv"
+        ],
+        [True, False],
+    ),
 )
-def test_check_env(env_id):
+def test_check_env(env_id, continuous):
     if any(
         unsupported_game in env_id
         for unsupported_game in ["Warlords", "MazeCraze", "Joust", "Combat"]
@@ -49,15 +59,15 @@ def test_check_env(env_id):
         pytest.skip(env_id)
 
     with warnings.catch_warnings(record=True) as caught_warnings:
-        env = gymnasium.make(env_id).unwrapped
+        env = gymnasium.make(env_id, continuous=continuous).unwrapped
         check_env(env, skip_render_check=True)
 
         env.close()
 
     for warning in caught_warnings:
-        if (
-            "is out of date. You should consider upgrading to version"
-            not in warning.message.args[0]
+        if not any(
+            (snippet in warning.message.args[0])
+            for snippet in _ACCEPTABLE_WARNING_SNIPPETS
         ):
             raise ValueError(warning.message.args[0])
 
@@ -327,6 +337,19 @@ def test_gym_clone_state(tetris_env):
 @pytest.mark.parametrize("tetris_env", [{"full_action_space": True}], indirect=True)
 def test_gym_action_space(tetris_env):
     assert tetris_env.action_space.n == 18
+
+
+@pytest.mark.parametrize("tetris_env", [{"continuous": True}], indirect=True)
+def test_continuous_action_space(tetris_env):
+    assert isinstance(tetris_env.action_space, gymnasium.spaces.Box)
+    assert len(tetris_env.action_space.shape) == 1
+    assert tetris_env.action_space.shape[0] == 3
+    np.testing.assert_array_almost_equal(
+        tetris_env.action_space.low, np.array([0.0, -np.pi, 0.0])
+    )
+    np.testing.assert_array_almost_equal(
+        tetris_env.action_space.high, np.array([1.0, np.pi, 1.0])
+    )
 
 
 def test_gym_reset_with_infos(tetris_env):
