@@ -259,16 +259,9 @@ int ALEInterface::lives() {
 // user's responsibility to check if the game has ended and reset
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
-reward_t ALEInterface::act(Action action) {
-  return environment->act(action, PLAYER_B_NOOP);
-}
-
-// Applies a continuous action to the game and returns the reward. It is the
-// user's responsibility to check if the game has ended and reset
-// when necessary - this method will keep pressing buttons on the
-// game over screen.
-reward_t ALEInterface::actContinuous(float r, float theta, float fire) {
-  return environment->actContinuous(r, theta, fire, 0.0, 0.0, 0.0);
+// Intentionally set player B actions to 0 since we are in single player mode
+reward_t ALEInterface::act(Action action, float paddle_strength) {
+  return environment->act(action, PLAYER_B_NOOP, paddle_strength, 0.0);
 }
 
 // Returns the vector of modes available for the current game.

@@ -189,16 +189,14 @@ void ALEState::updatePaddlePositions(Event* event, int delta_left,
   setPaddles(event, m_left_paddle, m_right_paddle);
 }
 
-void ALEState::applyActionPaddles(Event* event, int player_a_action,
-                                  int player_b_action) {
+void ALEState::applyActionPaddles(Event* event,
+                                  int player_a_action, float paddle_a_strength,
+                                  int player_b_action, float paddle_b_strength) {
   // Reset keys
   resetKeys(event);
 
-  // First compute whether we should increase or decrease the paddle position
-  //  (for both left and right players)
-  int delta_left;
-  int delta_right;
-
+  int delta_a = 0;
+  int delta_b = 0;
   switch (player_a_action) {
     case PLAYER_A_RIGHT:
     case PLAYER_A_RIGHTFIRE:
@@ -206,7 +204,7 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
     case PLAYER_A_DOWNRIGHT:
     case PLAYER_A_UPRIGHTFIRE:
     case PLAYER_A_DOWNRIGHTFIRE:
-      delta_left = -PADDLE_DELTA;
+      delta_a = static_cast<int>(-PADDLE_DELTA * fabs(paddle_a_strength));
       break;
 
     case PLAYER_A_LEFT:
@@ -215,10 +213,10 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
     case PLAYER_A_DOWNLEFT:
     case PLAYER_A_UPLEFTFIRE:
     case PLAYER_A_DOWNLEFTFIRE:
-      delta_left = PADDLE_DELTA;
+      delta_a = static_cast<int>(PADDLE_DELTA * fabs(paddle_a_strength));
       break;
+
     default:
-      delta_left = 0;
       break;
   }
 
@@ -229,7 +227,7 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
     case PLAYER_B_DOWNRIGHT:
     case PLAYER_B_UPRIGHTFIRE:
     case PLAYER_B_DOWNRIGHTFIRE:
-      delta_right = -PADDLE_DELTA;
+      delta_b = static_cast<int>(-PADDLE_DELTA * fabs(paddle_b_strength));
       break;
 
     case PLAYER_B_LEFT:
@@ -238,15 +236,15 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
     case PLAYER_B_DOWNLEFT:
     case PLAYER_B_UPLEFTFIRE:
     case PLAYER_B_DOWNLEFTFIRE:
-      delta_right = PADDLE_DELTA;
+      delta_b = static_cast<int>(PADDLE_DELTA * fabs(paddle_b_strength));
       break;
+
     default:
-      delta_right = 0;
       break;
   }
 
   // Now update the paddle positions
-  updatePaddlePositions(event, delta_left, delta_right);
+  updatePaddlePositions(event, delta_a, delta_b);
 
   // Handle reset
   if (player_a_action == RESET || player_b_action == RESET)
@@ -288,47 +286,6 @@ void ALEState::applyActionPaddles(Event* event, int player_a_action,
   }
 }
 
-void ALEState::applyActionPaddlesContinuous(
-    Event* event,
-    float player_a_r, float player_a_theta, float player_a_fire,
-    float player_b_r, float player_b_theta, float player_b_fire,
-    float continuous_action_threshold) {
-  // Reset keys
-  resetKeys(event);
-
-  // Convert polar coordinates to x/y position.
-  float a_x = player_a_r * cos(player_a_theta);
-  float a_y = player_a_r * sin(player_a_theta);
-  float b_x = player_b_r * cos(player_b_theta);
-  float b_y = player_b_r * sin(player_b_theta);
-
-  // First compute whether we should increase or decrease the paddle position
-  //  (for both left and right players)
-  int delta_a = 0;
-  if (a_x > continuous_action_threshold) {  // Right action.
-    delta_a = -PADDLE_DELTA;
-  } else if (a_x < -continuous_action_threshold) {  // Left action.
-    delta_a = PADDLE_DELTA;
-  }
-  int delta_b = 0;
-  if (b_x > continuous_action_threshold) {  // Right action.
-    delta_b = -PADDLE_DELTA;
-  } else if (b_x < -continuous_action_threshold) {  // Left action.
-    delta_b = PADDLE_DELTA;
-  }
-
-  // Now update the paddle positions
-  updatePaddlePositions(event, delta_a, delta_b);
-
-  // Now add the fire event
-  if (player_a_fire > continuous_action_threshold) {
-    event->set(Event::PaddleZeroFire, 1);
-  }
-  if (player_b_fire > continuous_action_threshold) {
-    event->set(Event::PaddleOneFire, 1);
-  }
-}
-
 void ALEState::pressSelect(Event* event) {
   resetKeys(event);
   event->set(Event::ConsoleSelect, 1);
@@ -343,93 +300,75 @@ void ALEState::setDifficultySwitches(Event* event, unsigned int value) {
   event->set(Event::ConsoleRightDifficultyB, !((value & 2) >> 1));
 }
 
-void ALEState::setActionJoysticks(Event* event, int player_a_action,
-                                  int player_b_action) {
+void ALEState::applyActionJoysticks(Event* event,
+                                    int player_a_action, int player_b_action) {
   // Reset keys
   resetKeys(event);
-
   switch (player_a_action) {
     case PLAYER_A_NOOP:
       break;
-
     case PLAYER_A_FIRE:
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_UP:
       event->set(Event::JoystickZeroUp, 1);
       break;
-
     case PLAYER_A_RIGHT:
       event->set(Event::JoystickZeroRight, 1);
       break;
-
     case PLAYER_A_LEFT:
       event->set(Event::JoystickZeroLeft, 1);
       break;
-
     case PLAYER_A_DOWN:
       event->set(Event::JoystickZeroDown, 1);
       break;
-
     case PLAYER_A_UPRIGHT:
       event->set(Event::JoystickZeroUp, 1);
       event->set(Event::JoystickZeroRight, 1);
       break;
-
     case PLAYER_A_UPLEFT:
       event->set(Event::JoystickZeroUp, 1);
       event->set(Event::JoystickZeroLeft, 1);
       break;
-
     case PLAYER_A_DOWNRIGHT:
       event->set(Event::JoystickZeroDown, 1);
       event->set(Event::JoystickZeroRight, 1);
       break;
-
     case PLAYER_A_DOWNLEFT:
       event->set(Event::JoystickZeroDown, 1);
       event->set(Event::JoystickZeroLeft, 1);
       break;
-
     case PLAYER_A_UPFIRE:
       event->set(Event::JoystickZeroUp, 1);
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_RIGHTFIRE:
       event->set(Event::JoystickZeroRight, 1);
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_LEFTFIRE:
       event->set(Event::JoystickZeroLeft, 1);
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_DOWNFIRE:
       event->set(Event::JoystickZeroDown, 1);
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_UPRIGHTFIRE:
       event->set(Event::JoystickZeroUp, 1);
       event->set(Event::JoystickZeroRight, 1);
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_UPLEFTFIRE:
       event->set(Event::JoystickZeroUp, 1);
       event->set(Event::JoystickZeroLeft, 1);
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_DOWNRIGHTFIRE:
       event->set(Event::JoystickZeroDown, 1);
       event->set(Event::JoystickZeroRight, 1);
       event->set(Event::JoystickZeroFire, 1);
       break;
-
     case PLAYER_A_DOWNLEFTFIRE:
       event->set(Event::JoystickZeroDown, 1);
       event->set(Event::JoystickZeroLeft, 1);
@@ -437,94 +376,77 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action,
       break;
     case RESET:
       event->set(Event::ConsoleReset, 1);
+      Logger::Info << "Sending Reset...\n";
       break;
     default:
       Logger::Error << "Invalid Player A Action: " << player_a_action << "\n";
       std::exit(-1);
   }
-
   switch (player_b_action) {
     case PLAYER_B_NOOP:
       break;
-
     case PLAYER_B_FIRE:
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_UP:
       event->set(Event::JoystickOneUp, 1);
       break;
-
     case PLAYER_B_RIGHT:
       event->set(Event::JoystickOneRight, 1);
       break;
-
     case PLAYER_B_LEFT:
       event->set(Event::JoystickOneLeft, 1);
       break;
-
     case PLAYER_B_DOWN:
       event->set(Event::JoystickOneDown, 1);
       break;
-
     case PLAYER_B_UPRIGHT:
       event->set(Event::JoystickOneUp, 1);
       event->set(Event::JoystickOneRight, 1);
       break;
-
     case PLAYER_B_UPLEFT:
       event->set(Event::JoystickOneUp, 1);
       event->set(Event::JoystickOneLeft, 1);
       break;
-
     case PLAYER_B_DOWNRIGHT:
       event->set(Event::JoystickOneDown, 1);
       event->set(Event::JoystickOneRight, 1);
       break;
-
     case PLAYER_B_DOWNLEFT:
       event->set(Event::JoystickOneDown, 1);
       event->set(Event::JoystickOneLeft, 1);
       break;
-
     case PLAYER_B_UPFIRE:
       event->set(Event::JoystickOneUp, 1);
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_RIGHTFIRE:
       event->set(Event::JoystickOneRight, 1);
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_LEFTFIRE:
       event->set(Event::JoystickOneLeft, 1);
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_DOWNFIRE:
       event->set(Event::JoystickOneDown, 1);
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_UPRIGHTFIRE:
       event->set(Event::JoystickOneUp, 1);
       event->set(Event::JoystickOneRight, 1);
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_UPLEFTFIRE:
       event->set(Event::JoystickOneUp, 1);
       event->set(Event::JoystickOneLeft, 1);
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_DOWNRIGHTFIRE:
       event->set(Event::JoystickOneDown, 1);
       event->set(Event::JoystickOneRight, 1);
       event->set(Event::JoystickOneFire, 1);
       break;
-
     case PLAYER_B_DOWNLEFTFIRE:
       event->set(Event::JoystickOneDown, 1);
       event->set(Event::JoystickOneLeft, 1);
@@ -537,54 +459,6 @@ void ALEState::setActionJoysticks(Event* event, int player_a_action,
     default:
       Logger::Error << "Invalid Player B Action: " << player_b_action << "\n";
       std::exit(-1);
-  }
-}
-
-
-void ALEState::setActionJoysticksContinuous(
-    Event* event,
-    float player_a_r, float player_a_theta, float player_a_fire,
-    float player_b_r, float player_b_theta, float player_b_fire,
-    float continuous_action_threshold) {
-  // Reset keys
-  resetKeys(event);
-
-  // Convert polar coordinates to x/y position.
-  float a_x = player_a_r * cos(player_a_theta);
-  float a_y = player_a_r * sin(player_a_theta);
-  float b_x = player_b_r * cos(player_b_theta);
-  float b_y = player_b_r * sin(player_b_theta);
-
-  // Go through all possible events and add them if joystick position is there.
-  if (a_x < -continuous_action_threshold) {
-    event->set(Event::JoystickZeroLeft, 1);
-  }
-  if (a_x > continuous_action_threshold) {
-    event->set(Event::JoystickZeroRight, 1);
-  }
-  if (a_y < -continuous_action_threshold) {
-    event->set(Event::JoystickZeroDown, 1);
-  }
-  if (a_y > continuous_action_threshold) {
-    event->set(Event::JoystickZeroUp, 1);
-  }
-  if (player_a_fire > continuous_action_threshold) {
-    event->set(Event::JoystickZeroFire, 1);
-  }
-  if (b_x < -continuous_action_threshold) {
-    event->set(Event::JoystickOneLeft, 1);
-  }
-  if (b_x > continuous_action_threshold) {
-    event->set(Event::JoystickOneRight, 1);
-  }
-  if (b_y < -continuous_action_threshold) {
-    event->set(Event::JoystickOneDown, 1);
-  }
-  if (b_y > continuous_action_threshold) {
-    event->set(Event::JoystickOneUp, 1);
-  }
-  if (player_b_fire > continuous_action_threshold) {
-    event->set(Event::JoystickOneFire, 1);
   }
 }
 
