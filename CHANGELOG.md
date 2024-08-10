@@ -7,7 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.11.0 -
 
-<!-- TODO: Add changelog -->
+Previously in the original ALE interface, the actions are only joystick ActionEnum inputs.
+Then, for games that use a paddle instead of a joystick, joystick controls are mapped into discrete actions applied to paddles, ie:
+- All left actions (`LEFTDOWN`, `LEFTUP`, `LEFT...`) -> paddle left max
+- All right actions (`RIGHTDOWN`, `RIGHTUP`, `RIGHT...`) -> paddle right max
+- Up... etc.
+- Down... etc.
+
+This results in loss of continuous action for paddles.
+This change keeps this functionality and interface, but allows for continuous action inputs for games that allow paddle usage.
+
+To do that, the CPP interface has been modified.
+
+_Old Discrete ALE interface_
+```cpp
+reward_t ALEInterface::act(Action action)
+```
+
+_New Mixed Discrete-Continuous ALE interface_
+```cpp
+reward_t ALEInterface::act(Action action, float paddle_strength = 1.0)
+```
+
+For games that utilize paddles, if the paddle strength parameter is set (the default value is 1.0), we pass the paddle action to the underlying game via [this change](https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/550/files#diff-6d221bfa0361147785924bb8dbd7176abb4727e0d2720cfdda63b5bd6c8fbdefR207):
+```cpp
+delta_a = static_cast<int>(-PADDLE_DELTA * fabs(paddle_a_strength));
+```
+
+This maintains backwards compatibility (it performs exactly the same if `paddle_x_strength` is not applied).
+For games where the paddle is not used, the `paddle_x_strength` parameter is just ignored.
+This mirrors the real world scenario where you have a paddle connected, but the game doesn't react to it when the paddle is turned.
+The Python interface has also been updated.
+
+_Old Discrete ALE Python Interface_
+```py
+ale.act(action: int)
+```
+
+_New Mixed Discrete-Continuous ALE Python Interface_
+```py
+ale.act(action: int, strength: float = 1.0)
+```
+
+The main change this PR applies over the original CALE implementation is that the discretization is now handled at the Python level.
+More specifically, when continuous action space is used.
+```py
+if continuous:
+    # action is expected to be a [2,] array of floats
+    x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
+    action_idx = self.map_action_idx(
+        left_center_right=(
+            -int(x < self.continuous_action_threshold)
+            + int(x > self.continuous_action_threshold)
+        ),
+        down_center_up=(
+            -int(y < self.continuous_action_threshold)
+            + int(y > self.continuous_action_threshold)
+        ),
+        fire=(action[-1] > self.continuous_action_threshold),
+    )
+    ale.act(action_idx, action[1])
+```
+
+More specifically, [`self.map_action_idx`](https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/550/files#diff-057906329e72d689f1d4d9d9e3f80df11ffe74da581b29b3838a436e90841b5cR388-R447) is an `lru_cache`-ed function that takes the continuous action direction and maps it into an ActionEnum.
 
 ## [0.9.0] - 2024-05-10
 
