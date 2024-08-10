@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 -
+
+<!-- TODO: Add changelog -->
+
 ## [0.9.0] - 2024-05-10
 
 Previously, ALE implemented only a [Gym](https://github.com/openai/gym) based environment, however, as Gym is no longer maintained (last commit was 18 months ago). We have updated `ale-py` to use [Gymnasium](http://github.com/farama-Foundation/gymnasium) (a maintained fork of Gym) as the sole backend environment implementation. For more information on Gymnasium’s API, see their [introduction page](https://gymnasium.farama.org/main/introduction/basic_usage/).
