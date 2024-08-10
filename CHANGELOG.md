@@ -29,14 +29,10 @@ _New Mixed Discrete-Continuous ALE interface_
 reward_t ALEInterface::act(Action action, float paddle_strength = 1.0)
 ```
 
-For games that utilize paddles, if the paddle strength parameter is set (the default value is 1.0), we pass the paddle action to the underlying game via [this change](https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/550/files#diff-6d221bfa0361147785924bb8dbd7176abb4727e0d2720cfdda63b5bd6c8fbdefR207):
-```cpp
-delta_a = static_cast<int>(-PADDLE_DELTA * fabs(paddle_a_strength));
-```
-
-This maintains backwards compatibility (it performs exactly the same if `paddle_x_strength` is not applied).
-For games where the paddle is not used, the `paddle_x_strength` parameter is just ignored.
+Games where the paddle is not used simply have the `paddle_strength` parameter ignored.
 This mirrors the real world scenario where you have a paddle connected, but the game doesn't react to it when the paddle is turned.
+This maintains backwards compatibility.
+
 The Python interface has also been updated.
 
 _Old Discrete ALE Python Interface_
@@ -49,8 +45,7 @@ _New Mixed Discrete-Continuous ALE Python Interface_
 ale.act(action: int, strength: float = 1.0)
 ```
 
-The main change this PR applies over the original CALE implementation is that the discretization is now handled at the Python level.
-More specifically, when continuous action space is used.
+More specifically, when continuous action space is used within an ALE gymnasium environment, discretization happens at the Python level.
 ```py
 if continuous:
     # action is expected to be a [2,] array of floats
