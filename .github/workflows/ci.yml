@@ -305,6 +305,8 @@ jobs:
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
 
+      - run: ls /
+
       - run: ls wheels-${{ runner.os }}-${{ matrix.arch }}/
 
       - name: Build
