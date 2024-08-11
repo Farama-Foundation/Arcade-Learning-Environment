@@ -195,7 +195,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels
-          path: ./wheelhouse/*.whl
+          path: ./wheelhouse-${{ matrix.runner-on }}-$${{ matrix.arch }}/*.whl
 
   test-wheels:
     name: Test wheels
