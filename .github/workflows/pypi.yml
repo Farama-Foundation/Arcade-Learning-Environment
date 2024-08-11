@@ -75,7 +75,7 @@ jobs:
     - name: Upload wheels
       uses: actions/upload-artifact@v4
       with:
-        name: wheels
+        name: wheels-${{ matrix.runs-on }}-${{ matrix.arch }}
         path: ./wheelhouse/*.whl
 
   push-pypi:
@@ -88,7 +88,11 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wheels
+          name: | 
+            wheels-windows-latest-x86_64/
+            wheels-ubuntu-latest-ARM64/
+            wheels-macos-12-x86_64/
+            wheels-macos-12-arm64/
 
       - name: Publish to PyPi test
         uses: pypa/gh-action-pypi-publish@release/v1
