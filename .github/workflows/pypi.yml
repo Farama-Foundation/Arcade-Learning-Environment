@@ -73,9 +73,9 @@ jobs:
         CIBW_ARCHS: "${{ matrix.arch }}"
 
     - name: Upload wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: wheels
+        name: wheels-${{ matrix.runs-on }}-${{ matrix.arch }}
         path: ./wheelhouse/*.whl
 
   push-pypi:
@@ -86,9 +86,14 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
+          name: |
+            wheels-windows-latest-x86_64/
+            wheels-ubuntu-latest-ARM64/
+            wheels-macos-12-x86_64/
+            wheels-macos-12-arm64/
+          path: wheels
 
       - name: Publish to PyPi test
         uses: pypa/gh-action-pypi-publish@release/v1
