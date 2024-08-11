@@ -93,6 +93,7 @@ jobs:
             wheels-ubuntu-latest-ARM64/
             wheels-macos-12-x86_64/
             wheels-macos-12-arm64/
+          path: wheels
 
       - name: Publish to PyPi test
         uses: pypa/gh-action-pypi-publish@release/v1
