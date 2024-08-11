@@ -19,6 +19,8 @@
 #ifndef SOUND_HXX
 #define SOUND_HXX
 
+#include <cstdint>
+
 namespace ale {
 namespace stella {
 

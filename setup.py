@@ -123,30 +123,9 @@ def parse_version(version_file):
     semver_regex = r"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"
     semver_prog = re.compile(semver_regex)
 
-    with open(version_file, "r") as fp:
+    with open(version_file) as fp:
         version = fp.read().strip()
         assert semver_prog.match(version) is not None
-
-    if os.getenv("CIBUILDWHEEL") is not None:
-        ci_ref = os.getenv("GITHUB_REF")
-        assert ci_ref is not None, "Github ref not found, are we running in CI?"
-
-        ci_version_match = semver_prog.search(ci_ref)
-        assert ci_version_match is not None, f"Couldn't match semver in {ci_ref}"
-
-        ci_version = ci_version_match.group(0)
-        assert ci_version.startswith(
-            version
-        ), f"{ci_version} not prefixed with {version}"
-
-        version = ci_version
-    else:
-        sha = (
-            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=here)
-            .decode("ascii")
-            .strip()
-        )
-        version += f"+{sha}"
 
     return version
 

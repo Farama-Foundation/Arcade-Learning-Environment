@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <cstdint>
 
 #include "emucore/Props.hxx"
 

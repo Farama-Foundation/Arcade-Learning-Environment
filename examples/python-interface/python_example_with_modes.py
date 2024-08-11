@@ -6,7 +6,8 @@
 # ALE provided in doc/examples/sharedLibraryInterfaceWithModesExample.cpp
 import sys
 from random import randrange
-from ale_py import ALEInterface, SDL_SUPPORT
+
+from ale_py import SDL_SUPPORT, ALEInterface
 
 if len(sys.argv) < 2:
     print(f"Usage: {sys.argv[0]} rom_file")
@@ -40,7 +41,6 @@ legal_actions = ale.getLegalActionSet()
 # Play one episode in each mode and in each difficulty
 for mode in avail_modes:
     for diff in avail_diff:
-
         ale.setDifficulty(diff)
         ale.setMode(mode)
         ale.reset_game()

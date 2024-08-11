@@ -5,6 +5,7 @@ import tempfile
 import ale_py
 import numpy as np
 import pytest
+from utils import ale, random_rom_path, test_rom_path, tetris  # noqa: F401
 
 
 def test_ale_version():
@@ -87,7 +88,7 @@ def test_get_ram(tetris):
         tetris.getRAM(preallocate)
     assert exc_info.type == TypeError
 
-    preallocate = np.empty((1), dtype=np.uint8)
+    preallocate = np.empty(1, dtype=np.uint8)
     with pytest.raises(RuntimeError) as exc_info:
         tetris.getRAM(preallocate)
     assert exc_info.type == RuntimeError
@@ -225,7 +226,7 @@ def test_save_screen_png(tetris):
 def test_is_rom_supported(ale, test_rom_path, random_rom_path):
     assert ale.isSupportedROM(test_rom_path)
     assert ale.isSupportedROM(random_rom_path) is None
-    with pytest.raises(RuntimeError) as exc_info:
+    with pytest.raises(RuntimeError):
         ale.isSupportedROM("notfound")
 
 
@@ -380,7 +381,7 @@ def test_state_pickle(tetris):
     state = tetris.cloneState()
     file = os.path.join(tempfile.gettempdir(), "ale-state.p")
     with open(file, "wb") as fp:
-        data = pickle.dump(state, fp)
+        pickle.dump(state, fp)
 
     tetris.reset_game()
     assert tetris.cloneState() != state

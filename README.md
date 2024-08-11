@@ -1,12 +1,11 @@
 The Arcade Learning Environment
 <a href="#the-arcade-learning-environment">
-  <img alt="Arcade Learning Environment" align="right" src="docs/static/ale.svg" width=75 />
+  <img alt="Arcade Learning Environment" align="right" width=75 src="https://raw.githubusercontent.com/Farama-Foundation/Arcade-Learning-Environment/master/docs/static/ale.svg" />
 </a>
 ===============================
 
-[![Continuous Integration](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/ci.yml/badge.svg)](https://github.com/mgbellemare/Arcade-Learning-Environment/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/pypi/pyversions/ale-py.svg)](https://badge.fury.io/py/ale-py)
 [![PyPI Version](https://img.shields.io/pypi/v/ale-py)](https://pypi.org/project/ale-py)
-
 
 **The Arcade Learning Environment (ALE) is a simple framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
 It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io) and separates the details of emulation from agent design.
@@ -19,20 +18,18 @@ Features
 --------
 
 - Object-oriented framework with support to add agents and games.
-- Emulation core uncoupled from rendering and sound generation modules for fast
-  emulation with minimal library dependencies.
-- Automatic extraction of game score and end-of-game signal for more than 100
-  Atari 2600 games.
+- Emulation core uncoupled from rendering and sound generation modules for fast emulation with minimal library dependencies.
+- Automatic extraction of game score and end-of-game signal for more than 100  Atari 2600 games.
 - Multi-platform code (compiled and tested under macOS, Windows, and several Linux distributions).
 - Python bindings through [pybind11](https://github.com/pybind/pybind11).
-- Native support for OpenAI Gym.
+- Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
 - Visualization tools.
+- Atari roms are packaged within the pip package
 
 Quick Start
 ===========
 
-The ALE currently supports three different interfaces: C++, Python, and OpenAI Gym.
-
+The ALE currently supports three different interfaces: C++, Python, and Gymnasium.
 
 Python
 ------
@@ -42,55 +39,42 @@ You simply need to install the `ale-py` package distributed via PyPI:
 ```shell
 pip install ale-py
 ```
-Note: Make sure you're using an up to date version of `pip` or the install may fail.
+Note: Make sure you're using an up-to-date version of `pip` or the installation may fail.
 
-
-You can now import the ALE in your Python projects with
+You can now import the ALE in your Python projects with providing a direct interface to Stella for interacting with games
 ```python
-from ale_py import ALEInterface
+from ale_py import ALEInterface, roms
 
 ale = ALEInterface()
+ale.loadROM(roms.get_rom_path("Breakout"))
+ale.reset_game()
+
+reward = ale.act(0)  # noop
+screen_obs = ale.getScreenRGB()
 ```
 
-### ROM Management
+## Gymnasium
 
-The ALE doesn't distribute ROMs but we do provide a couple tools for managing your ROMs. First is the command line tool `ale-import-roms`. You can simply specify a directory as the first argument to this tool and we'll import all supported ROMs by the ALE.
-
-```shell
-ale-import-roms roms/
-
-[SUPPORTED]       breakout   roms/breakout.bin
-[SUPPORTED]       freeway    roms/freeway.bin
-
-[NOT SUPPORTED]              roms/custom.bin
-
-Imported 2/3 ROMs
-```
-Furthermore, Python packages can expose ROMs for discovery using the special `ale-py.roms` entry point. For more details check out the example [python-rom-package](./examples/python-rom-package).
-
-Once you've imported a supported ROM you can simply import the path from the `ale-py.roms` package and load the ROM in the ALE:
-```py
-from ale_py.roms import Breakout
-
-ale.loadROM(Breakout)
-```
-
-## OpenAI Gym
-
-Gym support is included in `ale-py`. Simply install  the Python package using the instructions above. You can also install `gym[atari]` which also installs `ale-py` with Gym.
-
-As of Gym v0.20 and onwards all Atari environments are provided via `ale-py`. We do recommend using the new `v5` environments in the `ALE` namespace:
+For simplicity for installing ale-py with Gymnasium, `pip install "gymnasium[atari]"` shall install all necessary modules and ROMs. See Gymnasium [introductory page](https://gymnasium.farama.org/main/introduction/basic_usage/) for description of the API to interface with the environment.
 
 ```py
-import gym
+import gymnasium as gym
+import ale_py
 
-env = gym.make('ALE/Breakout-v5')
+gym.register_envs(ale_py)  # unnecessary but helpful for IDEs
+
+env = gym.make('ALE/Breakout-v5', render_mode="human")  # remove render_mode in training
+obs, info = env.reset()
+episode_over = False
+while not episode_over:
+    action = policy(obs)  # to implement - use `env.action_space.sample()` for a random policy
+    obs, reward, terminated, truncated, info = env.step(action)
+
+    episode_over = terminated or truncated
+env.close()
 ```
-The `v5` environments follow the latest methodology set out in [Revisiting the Arcade Learning Environment by Machado et al.](https://jair.org/index.php/jair/article/view/11182).
 
-The only major change difference from Gym's `AtariEnv` is that we'd recommend not using the `env.render()` method in favour of supplying the `render_mode` keyword argument during environment initialization. The `human` render mode will give you the advantage of: frame perfect rendering, audio support, and proper resolution scaling. For more information check out [docs/gym-interface.md](./docs/gym-interface.md).
-
-For more information on changes to the Atari environments in OpenAI Gym please check out [the following blog post](https://brosa.ca/blog/ale-release-v0.7).
+For all the environments available and their description, see [gymnasium atari page](https://gymnasium.farama.org/environments/atari/).
 
 C++
 ---
