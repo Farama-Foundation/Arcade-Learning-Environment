@@ -19,7 +19,6 @@ import os
 
 import ale_py
 
-
 project = "Arcade-Learning-Environment"
 copyright = "2023 Farama Foundation"
 author = "Farama Foundation"

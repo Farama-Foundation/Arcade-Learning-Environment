@@ -1,14 +1,18 @@
 import os
 
+import ale_py
 import gymnasium as gym
 from PIL import Image
+
+gym.register_envs(ale_py)
 
 # how many steps to record an env for
 LENGTH = 300
 
 
 if __name__ == "__main__":
-    for rom_name in ALL_ATARI_GAMES:
+    for rom_name in ale_py.roms.get_all_rom_ids():
+        env_name = ale_py.registration._rom_id_to_name(rom_name)
         env = gym.make(f"ALE/{rom_name}-v5", render_mode="rgb_array")
 
         # obtain and save LENGTH frames worth of steps

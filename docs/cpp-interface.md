@@ -4,7 +4,6 @@ The shared library interface is the simplest way to implement a C++ agent for th
 This interface allows agents to directly access ALE via a class called
 `ALEInterface`, defined in `ale_interface.hpp`. Example code detailing a simple random agent is provided under `examples/cpp-agent`.
 
-
 To instantiate the Arcade Learning Environment it is enough to write:
 ```cpp
 ale::ALEInterface ale;
@@ -70,4 +69,18 @@ int main(int argc, char** argv) {
 }
 ```
 
-Compilling with the shared library can be done by appending `-lale` or by using `find_package(ale)` and linking to the cmake target `ale::ale-lib`. See [examples/cpp-interface](https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/examples/cpp-interface) for a detailed example, including compilation. If any errors arise make sure to check out the [FAQ](./faq.md).
+Compiling with the shared library can be done by appending `-lale` or by using `find_package(ale)` and linking to the cmake target `ale::ale-lib`.
+
+```
+cmake_minimum_required(VERSION 3.14)
+
+project(example-cpp-lib)
+
+find_package(ale REQUIRED)
+
+add_executable(sharedLibraryInterfaceExample sharedLibraryInterfaceExample.cpp)
+target_link_libraries(sharedLibraryInterfaceExample ale::ale-lib)
+
+add_executable(sharedLibraryInterfaceWithModesExample sharedLibraryInterfaceWithModesExample.cpp)
+target_link_libraries(sharedLibraryInterfaceWithModesExample ale::ale-lib)
+```
