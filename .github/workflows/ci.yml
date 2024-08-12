@@ -289,7 +289,7 @@ jobs:
 
       - name: Build
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install wheels/ale_py-0.11.0-${{ matrix.wheel-name }}.whl
+        run: python -m pip install wheels/ale_py-0.10.0-${{ matrix.wheel-name }}.whl
 
       - name: Install Gymnasium and pytest
         run: python -m pip install gymnasium>=1.0.0a2 pytest
