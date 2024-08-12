@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.11.0 -
+## 0.10.0 -
 
 Previously in the original ALE interface, the actions are only joystick ActionEnum inputs.
 Then, for games that use a paddle instead of a joystick, joystick controls are mapped into discrete actions applied to paddles, ie:
@@ -65,6 +65,10 @@ if continuous:
 ```
 
 More specifically, [`self.map_action_idx`](https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/550/files#diff-057906329e72d689f1d4d9d9e3f80df11ffe74da581b29b3838a436e90841b5cR388-R447) is an `lru_cache`-ed function that takes the continuous action direction and maps it into an ActionEnum.
+
+## 0.9.1 -
+
+Added support for Numpy 2.0.
 
 ## [0.9.0] - 2024-05-10
 
