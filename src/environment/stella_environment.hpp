@@ -58,7 +58,16 @@ class StellaEnvironment {
    *  Note that the post-act() frame number might not correspond to the pre-act() frame
    *  number plus the frame skip.
    */
-  reward_t act(Action player_a_action, Action player_b_action);
+  reward_t act(Action player_a_action, Action player_b_action,
+               float paddle_a_strength = 1.0, float paddle_b_strength = 1.0);
+
+  /** Applies the given continuous actions (e.g. updating paddle positions when
+   * the paddle is used) and performs one simulation step in Stella. Returns the
+   * resultant reward. When frame skip is set to > 1, up the corresponding
+   * number of simulation steps are performed.  Note that the post-act() frame
+   * number might not correspond to the pre-act() frame number plus the frame
+   * skip.
+   */
 
   /** This functions emulates a push on the reset button of the console */
   void softReset();
@@ -119,10 +128,12 @@ class StellaEnvironment {
 
  private:
   /** This applies an action exactly one time step. Helper function to act(). */
-  reward_t oneStepAct(Action player_a_action, Action player_b_action);
+  reward_t oneStepAct(Action player_a_action, Action player_b_action,
+                      float paddle_a_strength, float paddle_b_strength);
 
   /** Actually emulates the emulator for a given number of steps. */
   void emulate(Action player_a_action, Action player_b_action,
+               float paddle_a_strength, float paddle_b_strength,
                size_t num_steps = 1);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
@@ -161,6 +172,10 @@ class StellaEnvironment {
 
   // The last actions taken by our players
   Action m_player_a_action, m_player_b_action;
+  float m_paddle_a_strength, m_paddle_b_strength;
+  float m_player_a_r, m_player_b_r;
+  float m_player_a_theta, m_player_b_theta;
+  float m_player_a_fire, m_player_b_fire;
 };
 
 }  // namespace ale
