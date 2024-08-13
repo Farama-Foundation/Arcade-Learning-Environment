@@ -5,6 +5,71 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 -
+
+Previously in the original ALE interface, the actions are only joystick ActionEnum inputs.
+Then, for games that use a paddle instead of a joystick, joystick controls are mapped into discrete actions applied to paddles, ie:
+- All left actions (`LEFTDOWN`, `LEFTUP`, `LEFT...`) -> paddle left max
+- All right actions (`RIGHTDOWN`, `RIGHTUP`, `RIGHT...`) -> paddle right max
+- Up... etc.
+- Down... etc.
+
+This results in loss of continuous action for paddles.
+This change keeps this functionality and interface, but allows for continuous action inputs for games that allow paddle usage.
+
+To do that, the CPP interface has been modified.
+
+_Old Discrete ALE interface_
+```cpp
+reward_t ALEInterface::act(Action action)
+```
+
+_New Mixed Discrete-Continuous ALE interface_
+```cpp
+reward_t ALEInterface::act(Action action, float paddle_strength = 1.0)
+```
+
+Games where the paddle is not used simply have the `paddle_strength` parameter ignored.
+This mirrors the real world scenario where you have a paddle connected, but the game doesn't react to it when the paddle is turned.
+This maintains backwards compatibility.
+
+The Python interface has also been updated.
+
+_Old Discrete ALE Python Interface_
+```py
+ale.act(action: int)
+```
+
+_New Mixed Discrete-Continuous ALE Python Interface_
+```py
+ale.act(action: int, strength: float = 1.0)
+```
+
+More specifically, when continuous action space is used within an ALE gymnasium environment, discretization happens at the Python level.
+```py
+if continuous:
+    # action is expected to be a [2,] array of floats
+    x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
+    action_idx = self.map_action_idx(
+        left_center_right=(
+            -int(x < self.continuous_action_threshold)
+            + int(x > self.continuous_action_threshold)
+        ),
+        down_center_up=(
+            -int(y < self.continuous_action_threshold)
+            + int(y > self.continuous_action_threshold)
+        ),
+        fire=(action[-1] > self.continuous_action_threshold),
+    )
+    ale.act(action_idx, action[1])
+```
+
+More specifically, [`self.map_action_idx`](https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/550/files#diff-057906329e72d689f1d4d9d9e3f80df11ffe74da581b29b3838a436e90841b5cR388-R447) is an `lru_cache`-ed function that takes the continuous action direction and maps it into an ActionEnum.
+
+## 0.9.1 -
+
+Added support for Numpy 2.0.
+
 ## [0.9.0] - 2024-05-10
 
 Previously, ALE implemented only a [Gym](https://github.com/openai/gym) based environment, however, as Gym is no longer maintained (last commit was 18 months ago). We have updated `ale-py` to use [Gymnasium](http://github.com/farama-Foundation/gymnasium) (a maintained fork of Gym) as the sole backend environment implementation. For more information on Gymnasium’s API, see their [introduction page](https://gymnasium.farama.org/main/introduction/basic_usage/).
