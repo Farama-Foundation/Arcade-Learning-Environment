@@ -56,7 +56,7 @@ _action repeat stochasticity_ to the environment. With probability 𝗉 (default
 the previously executed action is executed again during the next frame, ignoring the agent's
 actual choice. This value can be modified using the option `action_repeat_probability`.
 The default value was chosen as the highest value for which human play-testers
-were unable to detect any delay or control lag. ([Machado et al. 2018](#references-machado18)).
+were unable to detect any delay or control lag. ([Machado et al. 2018](#1)).
 
 The motivation for introducing action repeat stochasticity was to help separate _trajectory optimization_ research from _robust controller optimization_, the latter often being the
 desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use
@@ -73,10 +73,16 @@ to clearly report the method used in their experiments.
 
 ## Modes and Difficulties
 
-ALE 0.6.0 introduces modes and difficulties, which can be set using the relevant methods `setMode`, `setDifficulty`. These introduce a whole range of new environments. For more details, see [Machado et al. 2018](#references-machado18).
+ALE 0.6.0 introduces modes and difficulties, which can be set using the relevant methods `setMode`, `setDifficulty`. These introduce a whole range of new environments. For more details, see [Machado et al. 2018](#1).
 
 
 ## References
 
-<sup><a name="references-machado18">1</a></sup> <small>**Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents**</small>
-<small>M. C. Machado, M. G. Bellemare, E. Talvitie, J. Veness, M. J. Hausknecht, M. Bowling., Journal of Artificial Intelligence Research, Volume 61, pages 523-562, 2018. URL: [https://jair.org/index.php/jair/article/view/11182](https://jair.org/index.php/jair/article/view/11182)</small>
+
+(#1)=
+<a id="1">[1]</a>
+Machado et al.
+"Revisiting the Arcade Learning Environment: Evaluation Protocols
+and Open Problems for General Agents"
+Journal of Artificial Intelligence Research (2018)
+URL: https://jair.org/index.php/jair/article/view/11182
