@@ -51,7 +51,7 @@ citing
 
 cpp-interface
 python-interface
-gym-interface
+gymnasium-interface
 visualization
 ```
 

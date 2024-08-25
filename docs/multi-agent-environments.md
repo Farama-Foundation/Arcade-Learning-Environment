@@ -47,8 +47,6 @@ The unique dependencies for this set of environments can be installed via:
 pip install pettingzoo[atari]
 ````
 
-Install ROMs using [AutoROM](https://github.com/Farama-Foundation/AutoROM), or specify the path to your Atari rom using the `rom_path` argument (see [Common Parameters](#common-parameters)).
-
 ## Usage
 
 To launch a [Space Invaders](https://pettingzoo.farama.org/environments/multi-agent-environments/space_invaders/) environment with agents taking random actions:
