@@ -1,15 +1,10 @@
 # Visualization
 
-ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL).
-Instructions on how to install the SDL library, as well as enabling SDL support within ALE can be found in the section [Getting Started](./getting-started.md).
-Screen display can be enabled using the boolean option `display_screen` (default: `false`),
-and sound playback using the boolean option `sound` (default: `false`).
+ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL). Screen display can be enabled using the boolean option `display_screen` (default: `false`), and sound playback using the boolean option `sound` (default: `false`).
 
 ##  Recording Movies
 
-ALE now provides support for recording frames; if sound is enabled, it is also possible to record audio output.
-An example Python program is provided which will record both visual and audio output for a single episode of play. A similar example using C++ can be found at [`examples/video-recording`](https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/examples/video-recording).
-
+ALE now provides support for recording frames; if sound is enabled, it is also possible to record audio output. An example Python program is provided which will record both visual and audio output for a single episode of play.
 
 ### Python Example
 ```py
@@ -50,7 +45,7 @@ if __name__ == '__main__':
 
     rom_file = sys.argv[1]
     record_dir = sys.argv[2]
-    main(rom_file)
+    main(rom_file, "videos/")
 ```
 
 Once frames and/or sound have been recorded, they may be joined into a video using an external program like [ffmpeg](https://www.ffmpeg.org). For example, you can run:
@@ -70,5 +65,3 @@ ffmpeg -r 60 \
        -c:v libx264 \
        agent.mov
 ```
-
-The parameters may vary depending on the format, you can find more examples at [`examples/video-recording`](https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/examples/video-recording).

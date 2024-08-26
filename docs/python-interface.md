@@ -32,27 +32,3 @@ if __name__ == '__main__':
     rom_file = sys.argv[1]
     main(rom_file)
 ```
-
-## ROM Support
-
-The Python interface introduces some nice-to-have tools for managing ROMs. Specifically we provide the command line tool `ale-import-roms`. By passing a directory argument to this command you can simply import all supported ROMs from the directory. For example,
-
-```shell
-$ ale-import-roms roms/
-
-[SUPPORTED]       breakout        roms/breakout.bin
-
-Imported 1/1 ROMs
-```
-
-Once you've imported ROMs you will be able to import the ROM as follows:
-
-```py
-import ale_py
-from ale_py.roms import Breakout # Note; ROMs are camelcase
-
-ale = ale_py.ALEInterface()
-ale.loadROM(Breakout)
-```
-
-As a more advanced feature the ALE provides the entry point `ale-py.roms` where other Python packages can register ROMs for discovery. To see a more detailed example check out [Arcade-Learning-Environment/examples/python-rom-package](https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/examples/python-rom-package).
