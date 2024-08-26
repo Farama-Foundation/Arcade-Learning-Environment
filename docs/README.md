@@ -1,25 +1,31 @@
-# The Arcade Learning Environment (ALE)
+# ALE-docs
 
-The Arcade Learning Environment (ALE) is a framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games. It is built on top of the Atari 2600 emulator [Stella](https://github.com/stella-emu/stella) and separates the details of emulation from agent design.
+This folder contains the documentation for [Arcade-Learning-Environment](https://github.com/Farama-Foundation/arcade-Learning-Environment).
 
-For an overview of our goals for the ALE read [The Arcade Learning Environment: An Evaluation Platform for General Agents](https://jair.org/index.php/jair/article/view/10819). If you use ALE in your research, we ask that you please [cite](./citing.md) the appropriate paper(s) in reference to the environment.
+## Editing an environment page
 
-## Table of Contents
+If you are editing an Atari environment, directly edit the Markdown file in this repository.
 
-1. [Getting Started](./getting-started.md)
+Otherwise, fork Gymnasium and edit the docstring in the environment's Python file. Then, pip install your Gymnasium fork and run `docs/_scripts/gen_mds.py` in this repo. This will automatically generate a Markdown documentation file for the environment.
 
-2. [Environment Specification](./environment.md)
+## Build the Documentation
 
-3. [C++ Interface](./cpp-interface.md)
+Install the required packages and Gymnasium (or your fork):
 
-4. [Python Interface](./python-interface.md)
+```
+pip install -r docs/requirements.txt
+```
 
-5. [Gym Interface](./gym-interface.md)
+To build the documentation once:
 
-6. [Supported Games](./games.md)
+```
+cd docs
+make html
+```
 
-7. [Visualization](./visualization.md)
+To rebuild the documentation automatically every time a change is made:
 
-8. [FAQ](./faq.md)
-
-9. [Citing](./citing.md)
+```
+cd docs
+sphinx-autobuild -b html . _build
+```
