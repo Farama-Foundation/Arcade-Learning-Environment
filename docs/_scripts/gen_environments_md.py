@@ -209,6 +209,8 @@ For more {env_name} variants with different observation and action spaces, see t
 
 {default_action_table}
 
+See [environment specification](../env-spec) to see more information on the action meaning.
+
 ## Observations
 
 Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.

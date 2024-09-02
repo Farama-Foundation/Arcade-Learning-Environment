@@ -37,26 +37,16 @@ Environment parameters are common to all Atari environments and are described in
 
 In any given turn, an agent can choose from one of 18 actions.
 
-| Action | Behavior       |
-|:------:|----------------|
-|   0    | No operation   |
-|   1    | Fire           |
-|   2    | Move up        |
-|   3    | Move right     |
-|   4    | Move left      |
-|   5    | Move down      |
-|   6    | Move upright   |
-|   7    | Move upleft    |
-|   8    | Move downright |
-|   9    | Move downleft  |
-|   10   | Fire up        |
-|   11   | Fire right     |
-|   12   | Fire left      |
-|   13   | Fire down      |
-|   14   | Fire upright   |
-|   15   | Fire upleft    |
-|   16   | Fire downright |
-|   17   | Fire downleft  |
+| Value   | Meaning      | Value   | Meaning         | Value   | Meaning        |
+|---------|--------------|---------|-----------------|---------|----------------|
+| `0`     | `NOOP`       | `1`     | `FIRE`          | `2`     | `UP`           |
+| `3`     | `RIGHT`      | `4`     | `LEFT`          | `5`     | `DOWN`         |
+| `6`     | `UPRIGHT`    | `7`     | `UPLEFT`        | `8`     | `DOWNRIGHT`    |
+| `9`     | `DOWNLEFT`   | `10`    | `UPFIRE`        | `11`    | `RIGHTFIRE`    |
+| `12`    | `LEFTFIRE`   | `13`    | `DOWNFIRE`      | `14`    | `UPRIGHTFIRE`  |
+| `15`    | `UPLEFTFIRE` | `16`    | `DOWNRIGHTFIRE` | `17`    | `DOWNLEFTFIRE` |
+
+See [environment specification](../env-spec) to see more information on the action meaning.
 
 ## Version History
 

@@ -39,6 +39,8 @@ As MontezumaRevenge uses the full set of actions then specifying `full_action_sp
 | `12`    | `LEFTFIRE`   | `13`    | `DOWNFIRE`      | `14`    | `UPRIGHTFIRE`  |
 | `15`    | `UPLEFTFIRE` | `16`    | `DOWNRIGHTFIRE` | `17`    | `DOWNLEFTFIRE` |
 
+See [environment specification](../env-spec) to see more information on the action meaning.
+
 ## Observations
 
 Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.

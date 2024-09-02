@@ -24,7 +24,7 @@ from ale_py import ALEInterface
 ale = ALEInterface()
 ```
 
-### Gymnasium API
+## Gymnasium API
 
 ALE supports the [Gymnasium](https://github.com/farama-Foundation/gymnasium) API such that all the setup required for interacting with the emulator is complete. See the environment page for all the available ROMs and the gymnasium [getting started](https://gymnasium.farama.org/content/basic_usage/) page for how to interact.
 
@@ -35,6 +35,9 @@ import ale_py
 gym.register_envs(ale_py)
 
 env = gym.make('ALE/Breakout-v5')
+obs, info = env.reset()
+obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
+env.close()
 ```
 
 ## C++ Interface

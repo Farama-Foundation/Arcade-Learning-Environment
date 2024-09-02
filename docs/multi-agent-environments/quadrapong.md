@@ -37,14 +37,12 @@ Environment parameters are common to all Atari environments and are described in
 
 In any given turn, an agent can choose from one of 6 actions.
 
-| Action | Behavior     |
-|:------:|--------------|
-|   0    | No operation |
-|   1    | Fire         |
-|   2    | Move up      |
-|   3    | Move right   |
-|   4    | Move left    |
-|   5    | Move down    |
+| Value   | Meaning      | Value   | Meaning         | Value   | Meaning        |
+|---------|--------------|---------|-----------------|---------|----------------|
+| `0`     | `NOOP`       | `1`     | `FIRE`          | `2`     | `UP`           |
+| `3`     | `RIGHT`      | `4`     | `LEFT`          | `5`     | `DOWN`         |
+
+See [environment specification](../env-spec) to see more information on the action meaning.
 
 ## Version History
 
