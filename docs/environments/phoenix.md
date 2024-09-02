@@ -37,6 +37,8 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`.
 | `3`     | `LEFT`     | `4`     | `DOWN`     | `5`     | `RIGHTFIRE` |
 | `6`     | `LEFTFIRE` | `7`     | `DOWNFIRE` |         |             |
 
+See [environment specification](../env-spec) to see more information on the action meaning.
+
 ## Observations
 
 Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.

@@ -38,6 +38,8 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`.
 | `6`     | `UPRIGHT`  | `7`     | `UPLEFT`  | `8`     | `DOWNRIGHT` |
 | `9`     | `DOWNLEFT` |         |           |         |             |
 
+See [environment specification](../env-spec) to see more information on the action meaning.
+
 ## Observations
 
 Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.

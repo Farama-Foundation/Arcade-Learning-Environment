@@ -4,14 +4,15 @@ firstpage:
 lastpage:
 ---
 
-# The Arcade Learning Environment (ALE)
+# Arcade Learning Environment
 
-The Arcade Learning Environment (ALE) is a framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games. It is built on top of the Atari 2600 emulator [Stella](https://github.com/stella-emu/stella) and separates the details of emulation from agent design.
+The Arcade Learning Environment (ALE), commonly referred to as Atari, is a framework that allows researchers and hobbyists to develop AI agents for Atari 2600 roms. Its built on top of the Atari 2600 emulator [Stella](https://github.com/stella-emu/stella) and separates the details of emulation from agent design. Users can interact with the games through the [Gymnasium API](gymnasium-interface), [Python interface](python-interface) and [C++ interface](cpp-interface). For an overview of our goals for the ALE read [The Arcade Learning Environment: An Evaluation Platform for General Agents](https://jair.org/index.php/jair/article/view/10819) and if you use ALE in your research, we ask that you please [cite](./citing.md) the appropriate paper(s) in reference to the environment.
 
-For an overview of our goals for the ALE read [The Arcade Learning Environment: An Evaluation Platform for General Agents](https://jair.org/index.php/jair/article/view/10819). If you use ALE in your research, we ask that you please [cite](./citing.md) the appropriate paper(s) in reference to the environment.
-
-```{code-block} python
+```python
 import gymnasium as gym
+import ale_py
+
+gym.register_envs(ale_py)
 
 # Initialise the environment
 env = gym.make("ALE/Breakout-v5", render_mode="human")
@@ -49,9 +50,9 @@ citing
 :hidden:
 :caption: API
 
+gymnasium-interface
 cpp-interface
 python-interface
-gymnasium-interface
 visualization
 ```
 

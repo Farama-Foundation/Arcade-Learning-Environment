@@ -40,14 +40,12 @@ pong_v3.env(num_players=2)
 
 In any given turn, an agent can choose from one of 6 actions.
 
-| Action | Behavior     |
-|:------:|--------------|
-|   0    | No operation |
-|   1    | Fire         |
-|   2    | Move right   |
-|   3    | Move left    |
-|   4    | Fire right   |
-|   5    | Fire left    |
+| Value   | Meaning      | Value   | Meaning         | Value   | Meaning        |
+|---------|--------------|---------|-----------------|---------|----------------|
+| `0`     | `NOOP`       | `1`     | `FIRE`          | `2`     | `UP`           |
+| `3`     | `RIGHT`      | `4`     | `LEFT`          | `5`     | `DOWN`         |
+
+See [environment specification](../env-spec) to see more information on the action meaning.
 
 ## Version History
 
