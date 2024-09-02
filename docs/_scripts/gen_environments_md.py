@@ -2,9 +2,9 @@ import itertools
 import json
 
 import ale_py
-from ale_py.registration import _rom_id_to_name
 import gymnasium
 import tabulate
+from ale_py.registration import _rom_id_to_name
 from tqdm import tqdm
 
 gymnasium.register_envs(ale_py)

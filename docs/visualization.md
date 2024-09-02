@@ -4,15 +4,15 @@ ALE offers screen display and audio capabilities via the Simple DirectMedia Laye
 
 ## Gymnasium API
 
-[Gymnasium](https://github.com/farama-Foundation/gymnasium) provides two methods for visualizing an environment, human rendering and video recording. 
+[Gymnasium](https://github.com/farama-Foundation/gymnasium) provides two methods for visualizing an environment, human rendering and video recording.
 
 ### Human visualization
 
-Through specifying the environment `render_mode="human"` then ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after it has been used such that the rendering information is correctly shut down. 
+Through specifying the environment `render_mode="human"` then ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after it has been used such that the rendering information is correctly shut down.
 
 ```python
 import gymnasium
-import ale_py 
+import ale_py
 
 gymnasium.register_envs(ale_py)
 
@@ -20,9 +20,9 @@ env = gymnasium.make("ALE/Pong-v5", render_mode="human")
 env.reset()
 for _ in range(100):
     action = env.action_space.sample()
-    
+
     obs, reward, terminated, truncated, info = env.step(action)
-    
+
     if terminated or truncated:
         obs, info = env.reset()
 
@@ -31,9 +31,9 @@ env.close()
 
 ### Recording videos
 
-Specifying the `render_mode="rgb_array"` will return the rgb array from `env.render()`, this can be combined with the `gymnasium.wrappers.RecordVideo` where the environment renders are stored and saved as mp4 videos for episodes. 
+Specifying the `render_mode="rgb_array"` will return the rgb array from `env.render()`, this can be combined with the `gymnasium.wrappers.RecordVideo` where the environment renders are stored and saved as mp4 videos for episodes.
 
-The example below will record episodes on every other episode (`num % 2 == 0`) using the `episode_trigger` and save the folders in `saved-video-folder` with filename starting `video-` followed by the video number.   
+The example below will record episodes on every other episode (`num % 2 == 0`) using the `episode_trigger` and save the folders in `saved-video-folder` with filename starting `video-` followed by the video number.
 
 ```python
 import gymnasium
@@ -55,9 +55,9 @@ for episode in range(10):
     while not episode_over:
         action = env.action_space.sample()
         obs, reward, terminated, truncated, info = env.step(action)
-        
+
         episode_over = terminated or truncated
-    
+
 env.close()
 ```
 
