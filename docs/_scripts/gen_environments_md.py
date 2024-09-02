@@ -2,9 +2,9 @@ import itertools
 import json
 
 import ale_py
+from ale_py.registration import _rom_id_to_name
 import gymnasium
 import tabulate
-from ale_py.registration import _rom_id_to_name
 from tqdm import tqdm
 
 gymnasium.register_envs(ale_py)
@@ -208,6 +208,8 @@ For more {env_name} variants with different observation and action spaces, see t
 {action_description}
 
 {default_action_table}
+
+See [environment specification](../env-spec) to see more information on the action meaning.
 
 ## Observations
 
