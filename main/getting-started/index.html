@@ -8,7 +8,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="The Arcade Learning Environment (ALE) -- a platform for AI research." />
     <meta property="og:url" content="https://ale.farama.org/getting-started.html" /><meta property="og:image" content="https://ale.farama.org/_static/img/ale.svg" /><meta name="twitter:card" content="summary_large_image"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Environment Specifications" href="../env-spec/" /><link rel="prev" title="The Arcade Learning Environment (ALE)" href="../" />
+<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Environment Specifications" href="../env-spec/" /><link rel="prev" title="Arcade Learning Environment" href="../" />
         <link rel="canonical" href="https://ale.farama.org/getting-started.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
@@ -353,9 +353,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../gymnasium-interface/">Gymnasium Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cpp-interface/">C++ Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python-interface/">Python Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gymnasium-interface/">Gymnasium Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization/">Visualization</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -457,8 +457,9 @@
 <span class="n">ale</span> <span class="o">=</span> <span class="n">ALEInterface</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
 <section id="gymnasium-api">
-<h3>Gymnasium API<a class="headerlink" href="#gymnasium-api" title="Link to this heading">¶</a></h3>
+<h2>Gymnasium API<a class="headerlink" href="#gymnasium-api" title="Link to this heading">¶</a></h2>
 <p>ALE supports the <a class="reference external" href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a> API such that all the setup required for interacting with the emulator is complete. See the environment page for all the available ROMs and the gymnasium <a class="reference external" href="https://gymnasium.farama.org/content/basic_usage/">getting started</a> page for how to interact.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
 <span class="kn">import</span> <span class="nn">ale_py</span>
@@ -466,9 +467,11 @@
 <span class="n">gym</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
 
 <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;ALE/Breakout-v5&#39;</span><span class="p">)</span>
+<span class="n">obs</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">())</span>
+<span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
 </section>
 <section id="c-interface">
 <h2>C++ Interface<a class="headerlink" href="#c-interface" title="Link to this heading">¶</a></h2>
@@ -567,10 +570,8 @@ cmake<span class="w"> </span>--build<span class="w"> </span>.<span class="w"> </
             <div class="toc-tree">
               <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#python-interface">Python Interface</a><ul>
+<li><a class="reference internal" href="#python-interface">Python Interface</a></li>
 <li><a class="reference internal" href="#gymnasium-api">Gymnasium API</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#c-interface">C++ Interface</a></li>
 </ul>
 </li>
