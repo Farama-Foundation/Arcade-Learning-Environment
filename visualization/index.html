@@ -8,7 +8,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="The Arcade Learning Environment (ALE) -- a platform for AI research." />
     <meta property="og:url" content="https://ale.farama.org/visualization.html" /><meta property="og:image" content="https://ale.farama.org/_static/img/ale.svg" /><meta name="twitter:card" content="summary_large_image"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="ALE Release Notes" href="../release_notes/" /><link rel="prev" title="Gymnasium Interface" href="../gymnasium-interface/" />
+<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="ALE Release Notes" href="../release_notes/" /><link rel="prev" title="Python Interface" href="../python-interface/" />
         <link rel="canonical" href="https://ale.farama.org/visualization.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
@@ -353,9 +353,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gymnasium-interface/">Gymnasium Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cpp-interface/">C++ Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python-interface/">Python Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gymnasium-interface/">Gymnasium Interface</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Visualization</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -422,12 +422,66 @@
             <section class="tex2jax_ignore mathjax_ignore" id="visualization">
 <h1>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">¶</a></h1>
 <p>ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL). Screen display can be enabled using the boolean option <code class="docutils literal notranslate"><span class="pre">display_screen</span></code> (default: <code class="docutils literal notranslate"><span class="pre">false</span></code>), and sound playback using the boolean option <code class="docutils literal notranslate"><span class="pre">sound</span></code> (default: <code class="docutils literal notranslate"><span class="pre">false</span></code>).</p>
-<section id="recording-movies">
-<h2>Recording Movies<a class="headerlink" href="#recording-movies" title="Link to this heading">¶</a></h2>
+<section id="gymnasium-api">
+<h2>Gymnasium API<a class="headerlink" href="#gymnasium-api" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a> provides two methods for visualizing an environment, human rendering and video recording.</p>
+<section id="human-visualization">
+<h3>Human visualization<a class="headerlink" href="#human-visualization" title="Link to this heading">¶</a></h3>
+<p>Through specifying the environment <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;human&quot;</span></code> then ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after it has been used such that the rendering information is correctly shut down.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span>
+<span class="kn">import</span> <span class="nn">ale_py</span>
+
+<span class="n">gymnasium</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gymnasium</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;ALE/Pong-v5&quot;</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+
+    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span><span class="p">:</span>
+        <span class="n">obs</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="recording-videos">
+<h3>Recording videos<a class="headerlink" href="#recording-videos" title="Link to this heading">¶</a></h3>
+<p>Specifying the <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;rgb_array&quot;</span></code> will return the rgb array from <code class="docutils literal notranslate"><span class="pre">env.render()</span></code>, this can be combined with the <code class="docutils literal notranslate"><span class="pre">gymnasium.wrappers.RecordVideo</span></code> where the environment renders are stored and saved as mp4 videos for episodes.</p>
+<p>The example below will record episodes on every other episode (<code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">%</span> <span class="pre">2</span> <span class="pre">==</span> <span class="pre">0</span></code>) using the <code class="docutils literal notranslate"><span class="pre">episode_trigger</span></code> and save the folders in <code class="docutils literal notranslate"><span class="pre">saved-video-folder</span></code> with filename starting <code class="docutils literal notranslate"><span class="pre">video-</span></code> followed by the video number.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span>
+<span class="kn">import</span> <span class="nn">ale_py</span>
+
+<span class="n">gymnasium</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gymnasium</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;ALE/Pong-v5&quot;</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s2">&quot;rgb_array&quot;</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">gymnasium</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">RecordVideo</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">,</span>
+    <span class="n">episode_trigger</span><span class="o">=</span><span class="k">lambda</span> <span class="n">num</span><span class="p">:</span> <span class="n">num</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">video_folder</span><span class="o">=</span><span class="s2">&quot;saved-video-folder&quot;</span><span class="p">,</span>
+    <span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;video-&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">obs</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">episode_over</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">episode_over</span><span class="p">:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+        <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+        <span class="n">episode_over</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
+
+<span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="python-interface">
+<h2>Python Interface<a class="headerlink" href="#python-interface" title="Link to this heading">¶</a></h2>
 <p>ALE now provides support for recording frames; if sound is enabled, it is also possible to record audio output. An example Python program is provided which will record both visual and audio output for a single episode of play.</p>
-<section id="python-example">
-<h3>Python Example<a class="headerlink" href="#python-example" title="Link to this heading">¶</a></h3>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
 <span class="kn">from</span> <span class="nn">ale_py</span> <span class="kn">import</span> <span class="n">ALEInterface</span>
@@ -485,7 +539,6 @@ ffmpeg<span class="w"> </span>-r<span class="w"> </span><span class="m">60</span
 </div>
 </section>
 </section>
-</section>
 
           </article>
         </div>
@@ -503,7 +556,7 @@ ffmpeg<span class="w"> </span>-r<span class="w"> </span><span class="m">60</span
                 <use href="#svg-arrow-right"></use>
               </svg>
             </a>
-            <a class="prev-page" href="../gymnasium-interface/">
+            <a class="prev-page" href="../python-interface/">
               <svg class="furo-related-icon">
                 <use href="#svg-arrow-right"></use>
               </svg>
@@ -512,7 +565,7 @@ ffmpeg<span class="w"> </span>-r<span class="w"> </span><span class="m">60</span
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Gymnasium Interface</div>
+                <div class="title">Python Interface</div>
                 
               </div>
             </a>
@@ -557,10 +610,12 @@ ffmpeg<span class="w"> </span>-r<span class="w"> </span><span class="m">60</span
             <div class="toc-tree">
               <ul>
 <li><a class="reference internal" href="#">Visualization</a><ul>
-<li><a class="reference internal" href="#recording-movies">Recording Movies</a><ul>
-<li><a class="reference internal" href="#python-example">Python Example</a></li>
+<li><a class="reference internal" href="#gymnasium-api">Gymnasium API</a><ul>
+<li><a class="reference internal" href="#human-visualization">Human visualization</a></li>
+<li><a class="reference internal" href="#recording-videos">Recording videos</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#python-interface">Python Interface</a></li>
 </ul>
 </li>
 </ul>
