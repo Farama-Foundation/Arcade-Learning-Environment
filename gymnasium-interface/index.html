@@ -8,7 +8,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="The Arcade Learning Environment (ALE) -- a platform for AI research." />
     <meta property="og:url" content="https://ale.farama.org/gymnasium-interface.html" /><meta property="og:image" content="https://ale.farama.org/_static/img/ale.svg" /><meta name="twitter:card" content="summary_large_image"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Visualization" href="../visualization/" /><link rel="prev" title="Python Interface" href="../python-interface/" />
+<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="C++ Interface" href="../cpp-interface/" /><link rel="prev" title="Cite ALE" href="../citing/" />
         <link rel="canonical" href="https://ale.farama.org/gymnasium-interface.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
@@ -353,9 +353,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Gymnasium Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cpp-interface/">C++ Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python-interface/">Python Interface</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Gymnasium Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization/">Visualization</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -423,6 +423,7 @@
 <h1>Gymnasium Interface<a class="headerlink" href="#gymnasium-interface" title="Link to this heading">¶</a></h1>
 <p>ALE natively supports <a class="reference external" href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a>. To use these new environments you can simply:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
+<span class="kn">import</span> <span class="nn">ale_py</span>
 
 <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;ALE/Breakout-v5&#39;</span><span class="p">)</span>
 </pre></div>
@@ -445,18 +446,18 @@
         <footer>
           
           <div class="related-pages">
-            <a class="next-page" href="../visualization/">
+            <a class="next-page" href="../cpp-interface/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Visualization</div>
+                <div class="title">C++ Interface</div>
               </div>
               <svg class="furo-related-icon">
                 <use href="#svg-arrow-right"></use>
               </svg>
             </a>
-            <a class="prev-page" href="../python-interface/">
+            <a class="prev-page" href="../citing/">
               <svg class="furo-related-icon">
                 <use href="#svg-arrow-right"></use>
               </svg>
@@ -465,7 +466,7 @@
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Python Interface</div>
+                <div class="title">Cite ALE</div>
                 
               </div>
             </a>
