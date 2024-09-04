@@ -3,7 +3,7 @@
 # define some directories
 base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)/.."
 unpack_dir="${base_dir}/unpack_dir"
-target_dir="${base_dir}/src/python/roms"
+target_dir="${base_dir}/src/ale/python/roms"
 
 # make the directory where we will do the unpacking
 mkdir $unpack_dir
