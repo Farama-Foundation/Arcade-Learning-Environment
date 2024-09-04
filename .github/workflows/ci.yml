@@ -202,6 +202,7 @@ jobs:
     needs: [build-wheels, build-scratch]
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
