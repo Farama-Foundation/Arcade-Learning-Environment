@@ -1,3 +1,5 @@
+"""Utility functions for testing."""
+
 import os
 from unittest.mock import patch
 
@@ -7,7 +9,8 @@ import pytest
 
 
 @pytest.fixture
-def test_rom_path():
+def tetris_rom_path():
+    """Gets the ROM path of `tetris`."""
     yield os.path.join(
         os.path.abspath(os.path.dirname(__file__)), "..", "resources", "tetris.bin"
     )
@@ -15,6 +18,7 @@ def test_rom_path():
 
 @pytest.fixture
 def random_rom_path():
+    """Gets the ROM path of `random`."""
     yield os.path.join(
         os.path.abspath(os.path.dirname(__file__)), "..", "resources", "random.bin"
     )
@@ -22,19 +26,22 @@ def random_rom_path():
 
 @pytest.fixture
 def ale():
+    """Gets an ALE interface."""
     yield ale_py.ALEInterface()
 
 
 @pytest.fixture
-def tetris(ale, test_rom_path):
-    ale.loadROM(test_rom_path)
+def tetris(ale, tetris_rom_path):
+    """Loads tetris."""
+    ale.loadROM(tetris_rom_path)
     yield ale
 
 
 @pytest.fixture
-def tetris_env(request, test_rom_path):
+def tetris_env(request, tetris_rom_path):
+    """Pytest fixture for creating a tetris environment."""
     with patch(
-        "ale_py.roms.tetris_test", create=True, new_callable=lambda: test_rom_path
+        "ale_py.roms.tetris_test", create=True, new_callable=lambda: tetris_rom_path
     ):
         gymnasium.register(
             id="TetrisTest-v0",

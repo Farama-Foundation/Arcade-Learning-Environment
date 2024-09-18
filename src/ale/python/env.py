@@ -1,3 +1,5 @@
+"""Gymnasium wrapper around the Arcade Learning Environment (ALE)."""
+
 from __future__ import annotations
 
 import sys
@@ -19,6 +21,8 @@ else:
 
 
 class AtariEnvStepMetadata(TypedDict):
+    """Step info options."""
+
     lives: int
     episode_frame_number: int
     frame_number: int
@@ -26,10 +30,7 @@ class AtariEnvStepMetadata(TypedDict):
 
 
 class AtariEnv(gymnasium.Env, utils.EzPickle):
-    """
-    (A)rcade (L)earning (Gym) (Env)ironment.
-    A Gym wrapper around the Arcade Learning Environment (ALE).
-    """
+    """Gymnasium wrapper around the Arcade Learning Environment (ALE)."""
 
     # FPS can differ per ROM, therefore, dynamically collect the fps once the game is loaded
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
@@ -48,8 +49,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         max_num_frames_per_episode: int | None = None,
         render_mode: Literal["human", "rgb_array"] | None = None,
     ):
-        """
-        Initialize the ALE for Gymnasium.
+        """Initialize the ALE for Gymnasium.
+
         Default parameters are taken from Machado et al., 2018.
 
         Args:
@@ -219,13 +220,13 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         if self._game_difficulty is not None:
             self.ale.setDifficulty(self._game_difficulty)
 
-    def reset(  # pyright: ignore[reportIncompatibleMethodOverride]
+    def reset(
         self,
         *,
         seed: int | None = None,
         options: dict[str, Any] | None = None,
     ) -> tuple[np.ndarray, AtariEnvStepMetadata]:
-        """Resets environment and returns initial observation."""
+        """Resets environment and returns initial episode observation."""
         super().reset(seed=seed, options=options)
 
         # sets the seeds if it's specified for both ALE and frameskip np
@@ -248,8 +249,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self,
         action: int | np.ndarray,
     ) -> tuple[np.ndarray, float, bool, bool, AtariEnvStepMetadata]:
-        """
-        Perform one agent step, i.e., repeats `action` frameskip # of steps.
+        """Perform one agent step, i.e., repeats `action` frameskip # of steps.
 
         Args:
             action: int | np.ndarray =>
@@ -260,8 +260,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             tuple[np.ndarray, float, bool, bool, Dict[str, Any]] =>
                 observation, reward, terminal, truncation, metadata
 
-        Note: `metadata` contains the keys "lives" and "rgb" if
-              render_mode == 'rgb_array'.
+        Note: `metadata` contains the keys "lives".
         """
         # If frameskip is a length 2 tuple then it's stochastic
         # frameskip between [frameskip[0], frameskip[1]] uniformly.
@@ -305,15 +304,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         return self._get_obs(), reward, is_terminal, is_truncated, self._get_info()
 
     def render(self) -> np.ndarray | None:
-        """
-        Render is not supported by ALE. We use a paradigm similar to
-        Gym3 which allows you to specify `render_mode` during construction.
-
-        For example,
-            gym.make("ale-py:Pong-v0", render_mode="human")
-        will display the ALE and maintain the proper interval to match the
-        FPS target set by the ROM.
-        """
+        """Renders the ALE with `rgb_array` and `human` options."""
         if self.render_mode == "rgb_array":
             return self.ale.getScreenRGB()
         elif self.render_mode == "human":
@@ -325,10 +316,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             )
 
     def _get_obs(self) -> np.ndarray:
-        """
-        Retrieves the current observation.
-        This is dependent on `self._obs_type`.
-        """
+        """Retrieves the current observation using `obs_type`."""
         if self._obs_type == "ram":
             return self.ale.getRAM()
         elif self._obs_type == "rgb":
@@ -336,7 +324,9 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         elif self._obs_type == "grayscale":
             return self.ale.getScreenGrayscale()
         else:
-            raise error.Error(f"Unrecognized observation type: {self._obs_type}")
+            raise error.Error(
+                f"Unrecognized observation type: {self._obs_type}, expected: 'ram', 'rgb' and 'grayscale'."
+            )
 
     def _get_info(self) -> AtariEnvStepMetadata:
         return {
@@ -347,17 +337,23 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
     @lru_cache(1)
     def get_keys_to_action(self) -> dict[tuple[int, ...], ale_py.Action]:
-        """
-        Return keymapping -> actions for human play.
+        """Return keymapping -> actions for human play.
+
+        Up, down, left and right are wasd keys with fire being space.
+        No op is 'e'
+
+        Returns:
+            Dictionary of key values to actions
         """
         UP = ord("w")
         LEFT = ord("a")
         RIGHT = ord("d")
         DOWN = ord("s")
         FIRE = ord(" ")
+        NOOP = ord("e")
 
         mapping = {
-            ale_py.Action.NOOP: (None,),
+            ale_py.Action.NOOP: (NOOP,),
             ale_py.Action.UP: (UP,),
             ale_py.Action.FIRE: (FIRE,),
             ale_py.Action.DOWN: (DOWN,),
@@ -389,9 +385,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
     def map_action_idx(
         self, left_center_right: int, down_center_up: int, fire: bool
     ) -> int:
-        """
-        Return an action idx given unit actions for underlying env.
-        """
+        """Return an action idx given unit actions for underlying env."""
         # no op and fire
         if left_center_right == 0 and down_center_up == 0 and not fire:
             return ale_py.Action.NOOP
@@ -441,25 +435,28 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         # just in case
         else:
             raise LookupError(
-                "Did not expect to get here, "
-                "expected `left_center_right` and `down_center_up` to be in {-1, 0, 1} "
-                "and `fire` to only be `True` or `False`. "
+                "Unexpected action mapping, expected `left_center_right` and `down_center_up` to be in {-1, 0, 1} and `fire` to only be `True` or `False`. "
                 f"Received {left_center_right=}, {down_center_up=} and {fire=}."
             )
 
     def get_action_meanings(self) -> list[str]:
-        """
-        Return the meaning of each integer action.
-        """
+        """Return the meaning of each action."""
         keys = ale_py.Action.__members__.values()
         values = ale_py.Action.__members__.keys()
         mapping = dict(zip(keys, values))
         return [mapping[action] for action in self._action_set]
 
     def clone_state(self, include_rng: bool = False) -> ale_py.ALEState:
-        """Clone emulator state w/o system state. Restoring this state will
-        *not* give an identical environment. For complete cloning and restoring
-        of the full state, see `{clone,restore}_full_state()`."""
+        """Clone emulator state.
+
+        To reproduce identical states, specify `include_rng` to `True`.
+
+        Args:
+            include_rng: If to include the system RNG within the state
+
+        Returns:
+            The cloned ALE state
+        """
         return self.ale.cloneState(include_rng=include_rng)
 
     def restore_state(self, state: ale_py.ALEState) -> None:
