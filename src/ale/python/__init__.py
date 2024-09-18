@@ -1,3 +1,5 @@
+"""Python module for interacting with ALE c++ interface and gymnasium wrapper."""
+
 import os
 import platform
 import sys
