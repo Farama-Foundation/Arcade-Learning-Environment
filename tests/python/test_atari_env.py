@@ -9,7 +9,7 @@ import pytest
 from ale_py.env import AtariEnv
 from ale_py.registration import _register_rom_configs, register_v0_v4_envs
 from gymnasium.utils.env_checker import check_env
-from utils import test_rom_path, tetris_env  # noqa: F401
+from utils import tetris_env, tetris_rom_path  # noqa: F401
 
 _ACCEPTABLE_WARNING_SNIPPETS = [
     "is out of date. You should consider upgrading to version",
@@ -165,8 +165,8 @@ def test_register_legacy_env_id():
         assert all_ids.issubset(envids)
 
 
-def test_register_gym_envs(test_rom_path):
-    with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: test_rom_path):
+def test_register_gym_envs(tetris_rom_path):
+    with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: tetris_rom_path):
         # Register internal IDs
         # register_v5_envs()
 
@@ -270,7 +270,7 @@ def test_gym_img_rgb_obs(tetris_env):
 @pytest.mark.parametrize("tetris_env", [{"full_action_space": True}], indirect=True)
 def test_gym_keys_to_action(tetris_env):
     keys_full_action_space = {
-        (None,): 0,
+        (101,): 0,
         (32,): 1,
         (119,): 2,
         (100,): 3,
@@ -368,8 +368,8 @@ def test_gym_reset_with_infos(tetris_env):
 
 
 @pytest.mark.parametrize("frameskip", [0, -1, 4.0, (-1, 5), (0, 5), (5, 2), (1, 2, 3)])
-def test_frameskip_warnings(test_rom_path, frameskip):
-    with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: test_rom_path):
+def test_frameskip_warnings(tetris_rom_path, frameskip):
+    with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: tetris_rom_path):
         with pytest.raises(gymnasium.error.Error):
             AtariEnv("Tetris", frameskip=frameskip)
 

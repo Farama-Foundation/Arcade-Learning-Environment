@@ -1,3 +1,5 @@
+"""Rom module with functions for collecting individual and all ROMS files."""
+
 from __future__ import annotations
 
 import functools

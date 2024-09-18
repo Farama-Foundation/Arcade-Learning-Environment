@@ -28,6 +28,7 @@ class LoggerMode:
         """
         :type: str
         """
+
     @property
     def value(self) -> int:
         """
@@ -54,6 +55,7 @@ class Action:
         """
         :type: str
         """
+
     @property
     def value(self) -> int:
         """

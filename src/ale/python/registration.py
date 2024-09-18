@@ -1,3 +1,5 @@
+"""Registration for Atari environments."""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -8,25 +10,24 @@ import gymnasium
 
 
 class EnvFlavour(NamedTuple):
+    """Environment flavour for env id suffix and kwargs."""
+
     suffix: str
     kwargs: Mapping[str, Any] | Callable[[str], Mapping[str, Any]]
 
 
 class EnvConfig(NamedTuple):
+    """Environment config for version, kwargs and flavours."""
+
     version: str
     kwargs: Mapping[str, Any]
     flavours: Sequence[EnvFlavour]
 
 
 def _rom_id_to_name(rom: str) -> str:
-    """
-    Let the ROM ID be the ROM identifier in snake_case.
-        For example, `space_invaders`
-    The ROM name is the ROM ID in pascalcase.
-        For example, `SpaceInvaders`
+    """Converts the Rom ID (snake_case) to ROM name in PascalCase.
 
-    This function converts the ROM ID to the ROM name.
-        i.e., snakecase -> pascalcase
+    For example, `space_invaders` to `SpaceInvaders`
     """
     return rom.title().replace("_", "")
 
@@ -72,6 +73,7 @@ def _register_rom_configs(
 
 
 def register_v0_v4_envs():
+    """Registers all v0 and v4 environments."""
     legacy_games = [
         "adventure",
         "air_raid",
@@ -177,6 +179,7 @@ def register_v0_v4_envs():
 
 
 def register_v5_envs():
+    """Register all v5 environments."""
     all_games = roms.get_all_rom_ids()
     obs_types = ["rgb", "ram"]
 
