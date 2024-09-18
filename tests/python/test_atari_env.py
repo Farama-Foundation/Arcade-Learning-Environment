@@ -270,7 +270,7 @@ def test_gym_img_rgb_obs(tetris_env):
 @pytest.mark.parametrize("tetris_env", [{"full_action_space": True}], indirect=True)
 def test_gym_keys_to_action(tetris_env):
     keys_full_action_space = {
-        (None,): 0,
+        (101,): 0,
         (32,): 1,
         (119,): 2,
         (100,): 3,
