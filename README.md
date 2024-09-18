@@ -1,6 +1,6 @@
 The Arcade Learning Environment
 <a href="#the-arcade-learning-environment">
-  <img alt="Arcade Learning Environment" align="right" width=75 src="https://raw.githubusercontent.com/Farama-Foundation/Arcade-Learning-Environment/master/docs/static/ale.svg" />
+  <img alt="Arcade Learning Environment" align="right" width=75 src="https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/docs/_static/img/ale.svg" />
 </a>
 ===============================
 
