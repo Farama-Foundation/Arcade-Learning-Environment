@@ -7,27 +7,20 @@ import gymnasium
 
 
 def rom_id_to_name(rom: str) -> str:
-    """
-    Let the ROM ID be the ROM identifier in snake_case.
-        For example, `space_invaders`
-    The ROM name is the ROM ID in pascalcase.
-        For example, `SpaceInvaders`
-
-    This function converts the ROM ID to the ROM name.
-        i.e., snakecase -> pascalcase
-    """
+    """Convert a rom id in snake_case to the name in PascalCase."""
     return rom.title().replace("_", "")
 
 
 def register_envs():
-    all_games = roms.get_all_rom_ids()
+    """Register all the Atari Environments."""
+    all_rom_ids = roms.get_all_rom_ids()
 
-    for game in all_games:
+    for rom_id in all_rom_ids:
         gymnasium.register(
-            id=f"ALE/{game}-v6",
+            id=f"ALE/{rom_id_to_name(rom_id)}-v5",
             entry_point="ale_py.env:AtariEnv",
             kwargs={
-                "game": game,
+                "game": rom_id,
                 "obs_type": "rgb",
                 "frameskip": 1,
                 # max_episode_steps is 108k frames which is 30 mins of gameplay.
