@@ -49,13 +49,13 @@ repos:
     rev: 24.8.0
     hooks:
       - id: black
-#  - repo: https://github.com/pycqa/pydocstyle
-#    rev: 6.3.0
-#    hooks:
-#      - id: pydocstyle
-##        exclude: ^
-#        args:
-#          - --source
-#          - --explain
-#          - --convention=google
-#        additional_dependencies: ["tomli"]
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        exclude: ^(docs/)|setup.py
+        args:
+          - --source
+          - --explain
+          - --convention=google
+        additional_dependencies: ["tomli"]

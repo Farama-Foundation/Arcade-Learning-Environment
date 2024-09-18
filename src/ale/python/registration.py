@@ -1,3 +1,5 @@
+"""Registration for Atari environments."""
+
 from __future__ import annotations
 
 import ale_py.roms as roms

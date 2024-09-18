@@ -1,3 +1,5 @@
+"""Setup file for ALE."""
+
 import os
 import re
 import subprocess
@@ -6,7 +8,7 @@ import sys
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
-here = os.path.abspath(os.path.dirname(__file__))
+current_working_file = os.path.abspath(os.path.dirname(__file__))
 
 
 class CMakeExtension(Extension):
@@ -108,8 +110,7 @@ class CMakeBuild(build_ext):
 
 
 def parse_version(version_file):
-    """
-    Parse version from `version_file`.
+    """Parse version from `version_file`.
 
     If we're running on CI, i.e., CIBUILDWHEEL is set, then we'll parse
     the version from `GITHUB_REF` using the official semver regex.
@@ -132,7 +133,7 @@ def parse_version(version_file):
 
 if __name__ == "__main__":
     # Allow for running `pip wheel` from other directories
-    here and os.chdir(here)
+    current_working_file and os.chdir(current_working_file)
     # Most config options are in `setup.cfg`. These are the
     # only dynamic options we need at build time.
     setup(
