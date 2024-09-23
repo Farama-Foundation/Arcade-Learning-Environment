@@ -5,8 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.10.0 -
+## [0.10.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.9.1...v0.10.0) - 2024-10-23
 
+In v0.10, ALE now has its own dedicated website, https://ale.farama.org/ with Atari's documentation being moved from Gymnasium.
+
+### Continuous ALE
 Previously in the original ALE interface, the actions are only joystick ActionEnum inputs.
 Then, for games that use a paddle instead of a joystick, joystick controls are mapped into discrete actions applied to paddles, ie:
 - All left actions (`LEFTDOWN`, `LEFTUP`, `LEFT...`) -> paddle left max
@@ -66,11 +69,15 @@ if continuous:
 
 More specifically, [`self.map_action_idx`](https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/550/files#diff-057906329e72d689f1d4d9d9e3f80df11ffe74da581b29b3838a436e90841b5cR388-R447) is an `lru_cache`-ed function that takes the continuous action direction and maps it into an ActionEnum.
 
-## 0.9.1 -
+### Other changes
+
+We have moved the project main code from `src` into `src/ale` to help incorporate ALE into c++ project and in the python API, we have updated `get_keys_to_action` to work with `gymnasium.utils.play` through changing the key for no-op from `None` to the `e` key.
+
+## [0.9.1](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.9.0...v0.9.1) - 2024-09-01
 
 Added support for Numpy 2.0.
 
-## [0.9.0] - 2024-05-10
+## [0.9.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.8.1...v0.9.0) - 2024-05-10
 
 Previously, ALE implemented only a [Gym](https://github.com/openai/gym) based environment, however, as Gym is no longer maintained (last commit was 18 months ago). We have updated `ale-py` to use [Gymnasium](http://github.com/farama-Foundation/gymnasium) (a maintained fork of Gym) as the sole backend environment implementation. For more information on Gymnasium’s API, see their [introduction page](https://gymnasium.farama.org/main/introduction/basic_usage/).
 
@@ -105,7 +112,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Allow installing without git (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/492)
 - Update to require `importlib-resources` for < 3.9  (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/491)
 
-## [0.8.1] - 2023-02-17
+## [0.8.1](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.8.0...v0.8.1) - 2023-02-17
 
 ### Added
 
@@ -121,7 +128,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
   simply run `ale-import-roms` which will automatically correct this for you.
 - Reverted back to manylinux2014 (glibc 2.17) to better support older operating systems.
 
-## [0.8.0] - 2022-09-05
+## [0.8.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.7.5...v0.8.0) - 2022-09-05
 
 ### Added
 
@@ -139,7 +146,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 
 - Moved the Gym environment entrypoint from `gym.envs.atari:AtariEnv` to `ale_py.env.gym:AtariEnv`. This resolves many issues with the namespace package but does break backwards compatability for some Gym code that relied on the entry point being prefixed with `gym.envs.atari`.
 
-## [0.7.5] - 2022-04-18
+## [0.7.5](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.7.4...v0.7.5) - 2022-04-18
 
 ### Added
 
@@ -158,7 +165,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 
 - Removed Gym's `.render(mode='human')`. Gym now uses the `render_mode` keyword argument in the environment constructor.
 
-## [0.7.4] - 2022-02-16
+## [0.7.4](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.7.3...v0.7.4) - 2022-02-16
 
 ### Added
 
@@ -173,13 +180,13 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Fixed warnings with `importlib-metadata` on Python < 3.9.
 - Reverted the Gym `v5` defaults to align with the post-DQN literature. That is, moving from a frameskip of 5 -> 4, and full action set -> minimal action set.
 
-## [0.7.3] — 2021-11-02
+## [0.7.3](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.7.3...v0.7.2) — 2021-11-02
 
 ### Added
 
 - Environment variable `ALE_PY_ROM_DIR` which if specified will search for ROMs in `${ALE_PY_ROM_DIR}/*.bin`. (@joshgreaves)
 
-## [0.7.2] — 2021-10-07
+## [0.7.2](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.7.1...v0.7.2) — 2021-10-07
 
 ### Added
 
@@ -194,7 +201,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 
 - Python 3.6 prebuilt wheels
 
-## [0.7.1] — 2021-09-28
+## [0.7.1](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.7.0...v0.7.1) — 2021-09-28
 
 ### Added
 
@@ -213,7 +220,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Add missing `std::` name qualifier when enabling SDL (@anadrome)
 - Fixed mandatory kwarg for `gym.envs.atari:AtariEnv.clone_state`.
 
-## [0.7.0] — 2021-09-14
+## [0.7.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.6.1...v0.7.0) — 2021-09-14
 
 ### Added
 
@@ -266,7 +273,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Remove Stella CheatManager
 - Lots of code cleanups conforming to best practices (thanks @tkoeppe)
 
-## [0.6.1] — 2019-11-20
+## [0.6.1](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.6.0...v0.6.1) — 2019-11-20
 
 ### Changed
 
@@ -276,7 +283,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 
 - Fixed switch fall-through with Gravitar lives detection (@lespeholt)
 
-## [0.6.0] — 2015-06-23
+## [0.6.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.5.2...v0.6.0) — 2015-06-23
 
 ### Added
 
@@ -296,7 +303,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Fixed minimal action set in Pong
 - Fixed termination issues in Q\*Bert
 
-## [0.5.2] — 2015-10-04
+## [0.5.2](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.5.1...v0.5.2) — 2015-10-04
 
 ### Added
 
@@ -311,7 +318,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Fix RNG issues introduced in 0.5.0.
 - Additional bug fixes.
 
-## [0.5.1] — 2015-07-07
+## [0.5.1](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.5.0...v0.5.1) — 2015-07-07
 
 ### Added
 
@@ -326,7 +333,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 
 - Bug fixes from ALE 0.5.0.
 
-## [0.5.0] — 2015-06-22
+## [0.5.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/aa433a4b401bc3e7113c494edfc90500bc4afc78...v0.5.0) — 2015-06-22
 
 ### Added
 
@@ -354,13 +361,13 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - The flag 'use_starting_actions' was removed and internally its value is always 'true'.
 - The flag 'disable_color_averaging' was renamed to 'color_averaging' and FALSE is its default value.
 
-## [0.4.4] — 2014-04-28
+## [0.4.4](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/d93189e0f00b5cb10120134ca965d8a5d3124581...aa433a4b401bc3e7113c494edfc90500bc4afc78) — 2014-04-28
 
 ### Fixed
 
 - Fixed a memory issue in ALEScreen.
 
-## [0.4.3] — 2014-04-26
+## [0.4.3](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/b905e07ead43d07f386b35128e7eff60595e1581...d93189e0f00b5cb10120134ca965d8a5d3124581) — 2014-04-26
 
 ### Fixed
 
@@ -368,7 +375,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 - Fixed a bug where total reward was not properly reported under frame skipping.
 - Fixed a bug with ALEState's m_frame_number.
 
-## [0.4.2] — 2013-06-12
+## [0.4.2](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/ba33f16376b545462666268194e8f72df82c1a3a...b905e07ead43d07f386b35128e7eff60595e1581) — 2013-06-12
 
 ### Changed
 
@@ -378,7 +385,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 
 - Series of bug fixes from Matthew Hausknecht and community.
 
-## [0.4.1] — 2013-05-24
+## [0.4.1]https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/84f9678d713695314570e0f183072f36e177a364...ba33f16376b545462666268194e8f72df82c1a3a — 2013-05-24
 
 ### Added
 
@@ -392,7 +399,7 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 
 - Fixed RL-Glue syntax from OBSERVATION to OBSERVATIONS. Thanks to Angus MacIsaac for picking this bug up.
 
-## [0.4.0] — 2013-04-22
+## [0.4.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/5c45f643a78ef96ade23928fd6a3740172ec1e35...84f9678d713695314570e0f183072f36e177a364) — 2013-04-22
 
 ### Added
 
@@ -406,23 +413,3 @@ Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py ut
 ## 0.3.0 — 2012-07-22
 
 - Initial ALE release.
-
-[unreleased]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.8.1...HEAD
-[0.8.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.8.0...v0.8.1
-[0.8.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.5...v0.8.0
-[0.7.5]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.4...v0.7.5
-[0.7.4]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.3...v0.7.4
-[0.7.3]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.2...v0.7.3
-[0.7.2]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.1...v0.7.2
-[0.7.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.7.0...v0.7.1
-[0.7.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.1...v0.7.0
-[0.6.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.6.0...v0.6.1
-[0.6.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.5.2...v0.6.0
-[0.5.2]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.5.1...v0.5.2
-[0.5.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/v0.5.0...v0.5.1
-[0.5.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/aa433a4b401bc3e7113c494edfc90500bc4afc78...v0.5.0
-[0.4.4]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/d93189e0f00b5cb10120134ca965d8a5d3124581...aa433a4b401bc3e7113c494edfc90500bc4afc78
-[0.4.3]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/b905e07ead43d07f386b35128e7eff60595e1581...d93189e0f00b5cb10120134ca965d8a5d3124581
-[0.4.2]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/ba33f16376b545462666268194e8f72df82c1a3a...b905e07ead43d07f386b35128e7eff60595e1581
-[0.4.1]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/84f9678d713695314570e0f183072f36e177a364...ba33f16376b545462666268194e8f72df82c1a3a
-[0.4.0]: https://github.com/mgbellemare/Arcade-Learning-Environment/compare/5c45f643a78ef96ade23928fd6a3740172ec1e35...84f9678d713695314570e0f183072f36e177a364
