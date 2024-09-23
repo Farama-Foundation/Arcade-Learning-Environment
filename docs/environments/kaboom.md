@@ -4,18 +4,18 @@ title: Kaboom
 
 # Kaboom
 
-```{figure} ../_static/videos/environments/kaboom.gif
+```{figure} ../../_static/videos/environments/kaboom.gif
 :width: 120px
 :name: Kaboom
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(4) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(4)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Kaboom-v5")` |
+| Creation          | make(ALE/Kaboom-v5)               |
 
 For more Kaboom variants with different observation and action spaces, see the variants section.
 
@@ -54,10 +54,11 @@ See variants section for the type of observation used by each environment id by 
 Kaboom has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id            | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------|-------------|--------------|------------------------------|
-| ALE/Kaboom-v5     | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Kaboom-ram-v5 | `"ram"`     | `4`          | `0.25`                       |
+| Env-id        | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------|-------------|--------------|------------------------------|
+| ALE/Kaboom-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `KaboomNoFrameskip-v4`.
 
 ## Difficulty and modes
 

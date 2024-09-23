@@ -4,18 +4,18 @@ title: Asteroids
 
 # Asteroids
 
-```{figure} ../_static/videos/environments/asteroids.gif
+```{figure} ../../_static/videos/environments/asteroids.gif
 :width: 120px
 :name: Asteroids
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(14) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(14)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Asteroids-v5")` |
+| Creation          | make(ALE/Asteroids-v5)            |
 
 For more Asteroids variants with different observation and action spaces, see the variants section.
 
@@ -62,22 +62,11 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 Asteroids has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------------|-------------|--------------|------------------------------|
-| Asteroids-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Asteroids-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Asteroids-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Asteroids-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| AsteroidsDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| AsteroidsNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Asteroids-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Asteroids-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Asteroids-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Asteroids-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| AsteroidsDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| AsteroidsNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Asteroids-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Asteroids-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------|-------------|--------------|------------------------------|
+| ALE/Asteroids-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `AsteroidsNoFrameskip-v4`.
 
 ## Difficulty and modes
 

@@ -4,18 +4,18 @@ title: StarGunner
 
 # StarGunner
 
-```{figure} ../_static/videos/environments/star_gunner.gif
+```{figure} ../../_static/videos/environments/star_gunner.gif
 :width: 120px
 :name: StarGunner
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/StarGunner-v5")` |
+| Creation          | make(ALE/StarGunner-v5)           |
 
 For more StarGunner variants with different observation and action spaces, see the variants section.
 
@@ -61,22 +61,11 @@ For a more detailed documentation, see [the Atari Mania page](http://www.atarima
 StarGunner has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                         | obs_type=   | frameskip=   | repeat_action_probability=   |
-|--------------------------------|-------------|--------------|------------------------------|
-| StarGunner-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| StarGunner-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| StarGunner-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| StarGunner-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| StarGunnerDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| StarGunnerNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| StarGunner-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| StarGunner-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| StarGunner-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| StarGunner-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| StarGunnerDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| StarGunnerNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/StarGunner-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/StarGunner-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id            | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------|-------------|--------------|------------------------------|
+| ALE/StarGunner-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `StarGunnerNoFrameskip-v4`.
 
 ## Difficulty and modes
 

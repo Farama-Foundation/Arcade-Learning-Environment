@@ -4,18 +4,18 @@ title: Bowling
 
 # Bowling
 
-```{figure} ../_static/videos/environments/bowling.gif
+```{figure} ../../_static/videos/environments/bowling.gif
 :width: 120px
 :name: Bowling
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(6) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Bowling-v5")` |
+| Creation          | make(ALE/Bowling-v5)              |
 
 For more Bowling variants with different observation and action spaces, see the variants section.
 
@@ -60,22 +60,11 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 Bowling has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| Bowling-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Bowling-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Bowling-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Bowling-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| BowlingDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| BowlingNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Bowling-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Bowling-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Bowling-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Bowling-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| BowlingDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| BowlingNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Bowling-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Bowling-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------|-------------|--------------|------------------------------|
+| ALE/Bowling-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BowlingNoFrameskip-v4`.
 
 ## Difficulty and modes
 

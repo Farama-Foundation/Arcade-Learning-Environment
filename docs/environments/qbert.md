@@ -4,18 +4,18 @@ title: Qbert
 
 # Qbert
 
-```{figure} ../_static/videos/environments/qbert.gif
+```{figure} ../../_static/videos/environments/qbert.gif
 :width: 120px
 :name: Qbert
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(6) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Qbert-v5")` |
+| Creation          | make(ALE/Qbert-v5)                |
 
 For more Qbert variants with different observation and action spaces, see the variants section.
 
@@ -58,22 +58,11 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 Qbert has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                    | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------------------|-------------|--------------|------------------------------|
-| Qbert-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Qbert-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Qbert-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Qbert-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| QbertDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| QbertNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Qbert-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Qbert-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Qbert-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Qbert-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| QbertDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| QbertNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Qbert-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Qbert-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id       | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------|-------------|--------------|------------------------------|
+| ALE/Qbert-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `QbertNoFrameskip-v4`.
 
 ## Difficulty and modes
 

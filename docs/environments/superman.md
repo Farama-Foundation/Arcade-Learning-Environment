@@ -4,18 +4,18 @@ title: Superman
 
 # Superman
 
-```{figure} ../_static/videos/environments/superman.gif
+```{figure} ../../_static/videos/environments/superman.gif
 :width: 120px
 :name: Superman
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Superman-v5")` |
+| Creation          | make(ALE/Superman-v5)             |
 
 For more Superman variants with different observation and action spaces, see the variants section.
 
@@ -57,10 +57,11 @@ See variants section for the type of observation used by each environment id by 
 Superman has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id              | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------------|-------------|--------------|------------------------------|
-| ALE/Superman-v5     | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Superman-ram-v5 | `"ram"`     | `4`          | `0.25`                       |
+| Env-id          | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-----------------|-------------|--------------|------------------------------|
+| ALE/Superman-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `SupermanNoFrameskip-v4`.
 
 ## Difficulty and modes
 

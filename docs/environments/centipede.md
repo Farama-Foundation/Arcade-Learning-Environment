@@ -4,18 +4,18 @@ title: Centipede
 
 # Centipede
 
-```{figure} ../_static/videos/environments/centipede.gif
+```{figure} ../../_static/videos/environments/centipede.gif
 :width: 120px
 :name: Centipede
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Centipede-v5")` |
+| Creation          | make(ALE/Centipede-v5)            |
 
 For more Centipede variants with different observation and action spaces, see the variants section.
 
@@ -62,22 +62,11 @@ Detailed documentation can be found on [the AtariAge page](https://atariage.com/
 Centipede has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------------|-------------|--------------|------------------------------|
-| Centipede-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Centipede-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Centipede-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Centipede-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| CentipedeDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| CentipedeNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Centipede-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Centipede-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Centipede-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Centipede-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| CentipedeDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| CentipedeNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Centipede-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Centipede-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------|-------------|--------------|------------------------------|
+| ALE/Centipede-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `CentipedeNoFrameskip-v4`.
 
 ## Difficulty and modes
 
