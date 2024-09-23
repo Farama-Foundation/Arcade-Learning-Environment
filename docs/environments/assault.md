@@ -4,18 +4,18 @@ title: Assault
 
 # Assault
 
-```{figure} ../_static/videos/environments/assault.gif
+```{figure} ../../_static/videos/environments/assault.gif
 :width: 120px
 :name: Assault
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(7) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(7)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Assault-v5")` |
+| Creation          | make(ALE/Assault-v5)              |
 
 For more Assault variants with different observation and action spaces, see the variants section.
 
@@ -55,22 +55,11 @@ See variants section for the type of observation used by each environment id by 
 Assault has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| Assault-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Assault-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Assault-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Assault-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| AssaultDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| AssaultNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Assault-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Assault-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Assault-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Assault-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| AssaultDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| AssaultNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Assault-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Assault-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------|-------------|--------------|------------------------------|
+| ALE/Assault-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `AssaultNoFrameskip-v4`.
 
 ## Difficulty and modes
 

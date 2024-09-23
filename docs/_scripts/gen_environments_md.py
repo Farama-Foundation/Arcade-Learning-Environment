@@ -4,7 +4,7 @@ import json
 import ale_py
 import gymnasium
 import tabulate
-from ale_py.registration import _rom_id_to_name
+from ale_py.registration import rom_id_to_name
 from tqdm import tqdm
 
 gymnasium.register_envs(ale_py)
@@ -58,7 +58,7 @@ headers = [
 rows = []
 
 for rom_id in tqdm(ALL_ATARI_GAMES):
-    env_name = _rom_id_to_name(rom_id)
+    env_name = rom_id_to_name(rom_id)
 
     env = gymnasium.make(f"ALE/{env_name}-v5").unwrapped
 
@@ -86,13 +86,24 @@ for rom_id in tqdm(ALL_ATARI_GAMES):
 print(tabulate.tabulate(rows, headers=headers, tablefmt="github"))
 
 # Generate each pages results
-with open("atari-docs.json") as file:
+with open("environment-docs.json") as file:
     atari_data = json.load(file)
 
 for rom_id in tqdm(ALL_ATARI_GAMES):
-    env_name = _rom_id_to_name(rom_id)
+    env_name = rom_id_to_name(rom_id)
 
     env = gymnasium.make(f"ALE/{env_name}-v5").unwrapped
+
+    general_info_table = tabulate.tabulate(
+        [
+            ["Action Space", str(env.action_space)],
+            ["Observation Space", str(env.observation_space)],
+            ["Creation", f"make(ALE/{env_name}-v5)"],
+        ],
+        headers=["", ""],
+        tablefmt="github",
+    )
+
     if rom_id in atari_data:
         env_data = atari_data[rom_id]
 
@@ -103,7 +114,8 @@ For a more detailed documentation, see [the AtariAge page]({env_data['atariage_u
 """
         else:
             env_url = ""
-        reward_description = env_data["reward_description"]
+        reward_description = f"""
+{env_data["reward_description"]}"""
     else:
         # Add the information to `atari_docs.json` and rerun this file to generate the new documentation
         env_description = f"{env_name} is missing description documentation. If you are interested in writing up a description, please create an issue or PR with the information on the Gymnasium github."
@@ -148,7 +160,7 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`."""
             env_spec.id,
             f'`"{env_spec.kwargs["obs_type"]}"`',
             f'`{env_spec.kwargs["frameskip"]}`',
-            f'`{env_spec.kwargs["repeat_action_probability"]}`',
+            f'`{env_spec.kwargs["repeat_action_probability"]:.2f}`',
         ]
         for env_spec in env_specs
     ]
@@ -184,18 +196,14 @@ title: {env_name}
 
 # {env_name}
 
-```{{figure}} ../../_static/videos/atari/{rom_id}.gif
+```{{figure}} ../../_static/videos/environments/{rom_id}.gif
 :width: 120px
 :name: {env_name}
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | {env.action_space} |
-| Observation Space | {env.observation_space} |
-| Import | `gymnasium.make("{env.spec.id}")` |
+{general_info_table}
 
 For more {env_name} variants with different observation and action spaces, see the variants section.
 
@@ -220,15 +228,15 @@ Atari environments have three possible observation types: `"rgb"`, `"grayscale"`
 - `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
 
 See variants section for the type of observation used by each environment id by default.
-
 {reward_description}
-
 ## Variants
 
 {env_name} has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
 {env_variant_table}
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `{env_name}NoFrameskip-v4`.
 
 ## Difficulty and modes
 
@@ -246,5 +254,5 @@ A thorough discussion of the intricate differences between the versions and conf
 * v4: Stickiness of actions was removed
 * v0: Initial versions release
 """
-    with open(f"../environments/atari/{rom_id}.md", "w") as file:
+    with open(f"../environments/{rom_id}.md", "w") as file:
         file.write(TEMPLATE)

@@ -4,18 +4,18 @@ title: Venture
 
 # Venture
 
-```{figure} ../_static/videos/environments/venture.gif
+```{figure} ../../_static/videos/environments/venture.gif
 :width: 120px
 :name: Venture
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Venture-v5")` |
+| Creation          | make(ALE/Venture-v5)              |
 
 For more Venture variants with different observation and action spaces, see the variants section.
 
@@ -57,22 +57,11 @@ See variants section for the type of observation used by each environment id by 
 Venture has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| Venture-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Venture-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Venture-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Venture-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| VentureDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| VentureNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Venture-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Venture-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Venture-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Venture-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| VentureDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| VentureNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Venture-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Venture-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------|-------------|--------------|------------------------------|
+| ALE/Venture-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `VentureNoFrameskip-v4`.
 
 ## Difficulty and modes
 

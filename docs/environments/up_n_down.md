@@ -4,18 +4,18 @@ title: UpNDown
 
 # UpNDown
 
-```{figure} ../_static/videos/environments/up_n_down.gif
+```{figure} ../../_static/videos/environments/up_n_down.gif
 :width: 120px
 :name: UpNDown
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(6) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/UpNDown-v5")` |
+| Creation          | make(ALE/UpNDown-v5)              |
 
 For more UpNDown variants with different observation and action spaces, see the variants section.
 
@@ -54,22 +54,11 @@ See variants section for the type of observation used by each environment id by 
 UpNDown has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| UpNDown-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| UpNDown-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| UpNDown-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| UpNDown-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| UpNDownDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| UpNDownNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| UpNDown-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| UpNDown-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| UpNDown-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| UpNDown-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| UpNDownDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| UpNDownNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/UpNDown-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/UpNDown-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------|-------------|--------------|------------------------------|
+| ALE/UpNDown-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `UpNDownNoFrameskip-v4`.
 
 ## Difficulty and modes
 

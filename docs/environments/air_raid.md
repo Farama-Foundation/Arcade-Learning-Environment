@@ -4,18 +4,18 @@ title: AirRaid
 
 # AirRaid
 
-```{figure} ../_static/videos/environments/air_raid.gif
+```{figure} ../../_static/videos/environments/air_raid.gif
 :width: 120px
 :name: AirRaid
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                    |
-|-------------------|------------------------------------|
-| Action Space      | Discrete(6)                        |
-| Observation Space | Box(0, 255, (250, 160, 3), uint8)  |
-| Import            | `gymnasium.make("ALE/AirRaid-v5")` |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(6)                       |
+| Observation Space | Box(0, 255, (250, 160, 3), uint8) |
+| Creation          | make(ALE/AirRaid-v5)              |
 
 For more AirRaid variants with different observation and action spaces, see the variants section.
 
@@ -52,22 +52,11 @@ See variants section for the type of observation used by each environment id by 
 AirRaid has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| AirRaid-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| AirRaid-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| AirRaid-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| AirRaid-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| AirRaidDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| AirRaidNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| AirRaid-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| AirRaid-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| AirRaid-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| AirRaid-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| AirRaidDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| AirRaidNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/AirRaid-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/AirRaid-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------|-------------|--------------|------------------------------|
+| ALE/AirRaid-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `AirRaidNoFrameskip-v4`.
 
 ## Difficulty and modes
 
