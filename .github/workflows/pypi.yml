@@ -68,7 +68,7 @@ jobs:
       run: ./scripts/download_unpack_roms.sh
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.21.1
+      uses: pypa/cibuildwheel@v2.21.0
       env:
         CIBW_ARCHS: "${{ matrix.arch }}"
 
@@ -89,8 +89,8 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: |
-            wheels-windows-latest-x86_64/
-            wheels-ubuntu-latest-ARM64/
+            wheels-windows-latest-ARM64/
+            wheels-ubuntu-latest-x86_64/
             wheels-macos-12-x86_64/
             wheels-macos-12-arm64/
           path: wheels
