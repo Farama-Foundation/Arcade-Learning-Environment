@@ -5,8 +5,9 @@
 name: Push wheels to pypi
 
 on:
-  release:
-    types: [ published ]
+  push:
+#  release:
+#    types: [ published ]
 
 jobs:
   build-wheels:
@@ -86,6 +87,8 @@ jobs:
       id-token: write
 
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: |
@@ -93,12 +96,21 @@ jobs:
             wheels-ubuntu-latest-x86_64/
             wheels-macos-12-x86_64/
             wheels-macos-12-arm64/
-          path: wheels
+          path: dist
 
-      - name: Publish to PyPi test
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: actions/setup-python@v5
         with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
-          packages-dir: wheels/
-          print-hash: true
+          python-version: ${{ matrix.python }}
+
+      - name: Build Source
+        run: python setup.py sdist
+
+      - run: ls dist/
+
+#      - name: Publish to PyPi test
+#        uses: pypa/gh-action-pypi-publish@release/v1
+#        with:
+#          user: __token__
+#          password: ${{ secrets.PYPI_TOKEN }}
+#          packages-dir: dist/
+#          print-hash: true

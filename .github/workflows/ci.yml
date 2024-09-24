@@ -308,7 +308,7 @@ jobs:
 
       - run: ls
 
-      - name: Build
+      - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
         run: python -m pip install ale_py-0.10.0-${{ matrix.wheel-name }}.whl
 
