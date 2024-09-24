@@ -89,7 +89,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: |
-            wheels-windows-latest-ARM64/
+            wheels-windows-latest-AMD64/
             wheels-ubuntu-latest-x86_64/
             wheels-macos-12-x86_64/
             wheels-macos-12-arm64/
