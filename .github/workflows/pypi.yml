@@ -6,6 +6,9 @@ name: Push wheels to pypi
 
 on:
   push:
+  pull_request:
+    branches:
+      - "*"
 #  release:
 #    types: [ published ]
 
@@ -89,6 +92,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: python setup.py sdist
+
       - uses: actions/download-artifact@v4
         with:
           name: |
@@ -97,13 +106,6 @@ jobs:
             wheels-macos-12-x86_64/
             wheels-macos-12-arm64/
           path: dist
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Build Source
-        run: python setup.py sdist
 
       - run: ls dist/
 
