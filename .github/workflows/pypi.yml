@@ -96,6 +96,8 @@ jobs:
         with:
           python-version: '3.12'
 
+      - run: pip install setuptools
+
       - run: python setup.py sdist
 
       - uses: actions/download-artifact@v4
