@@ -102,13 +102,23 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: |
-            wheels-windows-latest-AMD64
-            wheels-ubuntu-latest-x86_64
-            wheels-macos-12-x86_64
-            wheels-macos-12-arm64
+          name: wheels-windows-latest-AMD64
           path: dist
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-ubuntu-latest-x86_64
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-macos-12-x86_64
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-macos-12-arm64
+          path: dist
       - run: ls dist/
 
 #      - name: Publish to PyPi test
