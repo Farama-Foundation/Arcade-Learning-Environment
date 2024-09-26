@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.10.1](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.10.0...v0.10.1) - 2024-10-26
+
+Revert change to requirements that `numpy < 2.0` and add support for building from source distribution, `tar.gz` (though not recommended).
+
 ## [0.10.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.9.1...v0.10.0) - 2024-10-23
 
 In v0.10, ALE now has its own dedicated website, https://ale.farama.org/ with Atari's documentation being moved from Gymnasium.

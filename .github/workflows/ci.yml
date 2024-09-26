@@ -13,12 +13,12 @@ on:
         description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
         required: false
         default: false
-#  push:
-#    paths-ignore:
-#      - "docs/**"
-#  pull_request:
-#    branches:
-#      - "*"
+  push:
+    paths-ignore:
+      - "docs/**"
+  pull_request:
+    branches:
+      - "*"
 
 jobs:
   pre-commit:
@@ -310,7 +310,7 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install ale_py-0.10.0-${{ matrix.wheel-name }}.whl
+        run: python -m pip install ale_py-0.10.1-${{ matrix.wheel-name }}.whl
 
       - name: Install Gymnasium and pytest
         run: python -m pip install gymnasium>=1.0.0a2 pytest
