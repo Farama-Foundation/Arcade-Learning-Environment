@@ -14,14 +14,14 @@ requires-python = ">=3.8"
 license = {text = "GPLv2"}
 keywords = ["reinforcement-learning", "arcade-learning-environment", "atari"]
 authors = [
-  {name = "Marc G. Bellemare"},
-  {name = "Yavar Naddaf"},
-  {name = "Joel Veness"},
-  {name = "Michael Bowling"},
+    {name = "Marc G. Bellemare"},
+    {name = "Yavar Naddaf"},
+    {name = "Joel Veness"},
+    {name = "Michael Bowling"},
 ]
 maintainers = [
-  {name = "Farama Foundation", email = "contact@farama.org"},
-  {name = "Jesse Farebrother", email = "jfarebro@cs.mcgill.ca"},
+    {name = "Farama Foundation", email = "contact@farama.org"},
+    {name = "Jesse Farebrother", email = "jfarebro@cs.mcgill.ca"},
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -37,17 +37,17 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-  "numpy<2.0",
-  "importlib-metadata>=4.10.0; python_version < '3.10'",
-  "importlib-resources; python_version < '3.9'",
-  "typing-extensions; python_version < '3.11'"
+    "numpy>1.20",
+    "importlib-metadata>=4.10.0; python_version < '3.10'",
+    "importlib-resources; python_version < '3.9'",
+    "typing-extensions; python_version < '3.11'"
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 test = [
-  "pytest>=7.0",
-  "gymnasium>=1.0.0a1",
+    "pytest>=7.0",
+    "gymnasium>=1.0.0a1",
 ]
 
 [project.urls]
@@ -57,8 +57,8 @@ changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/bl
 
 [tool.setuptools]
 packages = [
-  "ale_py",
-  "ale_py.roms",
+    "ale_py",
+    "ale_py.roms",
 ]
 package-dir = {ale_py = "src/ale/python"}
 package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
