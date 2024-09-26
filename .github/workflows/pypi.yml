@@ -86,19 +86,40 @@ jobs:
       id-token: write
 
     steps:
+      # create the `ale_py-*.*.*.tar.gz` for source building
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install setuptools
+      - run: python setup.py sdist
+
       - uses: actions/download-artifact@v4
         with:
-          name: |
-            wheels-windows-latest-AMD64/
-            wheels-ubuntu-latest-x86_64/
-            wheels-macos-12-x86_64/
-            wheels-macos-12-arm64/
-          path: wheels
+          name: wheels-windows-latest-AMD64
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-ubuntu-latest-x86_64
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-macos-12-x86_64
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-macos-12-arm64
+          path: dist
+
+      - run: ls dist/
 
       - name: Publish to PyPi test
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
-          packages-dir: wheels/
+          packages-dir: dist/
           print-hash: true

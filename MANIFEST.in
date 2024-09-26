@@ -1,0 +1,7 @@
+# MANIFEST.in
+include version.txt
+include vcpkg.json
+include CMakeLists.txt
+recursive-include cmake *
+include scripts/*
+recursive-include src *

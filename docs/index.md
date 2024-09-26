@@ -60,7 +60,7 @@ visualization
 :hidden:
 :caption: Development
 
-Github <https://github.com/Farama-Foundation/arcade-Learning-Environment>
+Github <https://github.com/Farama-Foundation/Arcade-Learning-Environment>
 release_notes/index
-Contribute to the Docs <https://github.com/Farama-Foundation/arcade-Learning-Environment/blob/main/docs/README.md>
+Contribute to the Docs <https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/main/docs/README.md>
 ```
