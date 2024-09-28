@@ -191,7 +191,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -360,9 +360,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference external" href="https://github.com/Farama-Foundation/arcade-Learning-Environment">Github</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment">Github</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">ALE Release Notes</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/Farama-Foundation/arcade-Learning-Environment/blob/main/docs/README.md">Contribute to the Docs</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/main/docs/README.md">Contribute to the Docs</a></li>
 </ul>
 
 </div>
@@ -410,7 +410,7 @@
                 </svg>
               </button>
             </div>
-            <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-content-icon" for="__toc">
               <div class="visually-hidden">Toggle table of contents sidebar</div>
               <i class="icon"><svg>
                   <use href="#svg-toc"></use>
@@ -421,6 +421,392 @@
             
             <section class="tex2jax_ignore mathjax_ignore" id="ale-release-notes">
 <h1>ALE Release Notes<a class="headerlink" href="#ale-release-notes" title="Link to this heading">¶</a></h1>
+<section id="release-v0-10-1">
+<h2>ALE v0.10.1<a class="headerlink" href="#release-v0-10-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-09-28 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.1/">PyPI</a></em></p>
+<p>Revert change to requirements that <code>numpy &lt; 2.0</code>, now <code>numpy &gt; 1.20</code> and add support for building from source distribution, <code>tar.gz</code> (though not recommended).</p></section>
+<section id="release-v0-10-0">
+<h2>v0.10.0: ALE v0.10<a class="headerlink" href="#release-v0-10-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-09-24 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.0/">PyPI</a></em></p>
+<p>In v0.10, ALE now has its own dedicated website, <a href="https://ale.farama.org/" rel="nofollow">https://ale.farama.org/</a> with Atari's documentation being moved from Gymnasium.</p>
+<p>We have moved the project main code from <code>src</code> into <code>src/ale</code> to help incorporate ALE into C++ projects and in the Python API, we have updated <code>get_keys_to_action</code> to work with <code>gymnasium.utils.play</code> by changing the key for no-op from <code>None</code> to the <code>e</code> key.</p>
+<p>Furthermore, we have updated the API to support continuous actions by <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/jjshoots/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/jjshoots">@jjshoots</a> and <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/psc-g/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/psc-g">@psc-g</a>.</p>
+<p>Previously, users could interact with the ALE interface with only discrete actions linked to joystick controls, ie:</p>
+<ul>
+<li>All left actions (<code>LEFTDOWN</code>, <code>LEFTUP</code>, <code>LEFT...</code>) -&gt; paddle left max</li>
+<li>All right actions (<code>RIGHTDOWN</code>, <code>RIGHTUP</code>, <code>RIGHT...</code>) -&gt; paddle right max</li>
+<li>Up... etc.</li>
+<li>Down... etc.</li>
+</ul>
+<p>However, for games using paddles, this loses the ability to specify non-max values for moving left or right. Therefore, this release adds to both the Python and C++ interfaces the ability to use continuous actions (FYI, this only impacts environments with paddles, otherwise they can't make use of this change).</p>
+<h3>C++ interface changes</h3>
+<p><em>Old Discrete ALE interface</em></p>
+<div class="highlight highlight-source-c++ notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="reward_t ALEInterface::act(Action action)"><pre><span class="pl-c1">reward_t</span> <span class="pl-en">ALEInterface::act</span>(Action action)</pre></div>
+<p><em>New Mixed Discrete-Continuous ALE interface</em></p>
+<div class="highlight highlight-source-c++ notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="reward_t ALEInterface::act(Action action, float paddle_strength = 1.0)"><pre><span class="pl-c1">reward_t</span> <span class="pl-en">ALEInterface::act</span>(Action action, <span class="pl-k">float</span> paddle_strength = <span class="pl-c1">1.0</span>)</pre></div>
+<p>Games where the paddle is not used simply have the <code>paddle_strength</code> parameter ignored.<br>
+This mirrors the real-world scenario where you have a paddle connected, but the game doesn't react to it when the paddle is turned.<br>
+This maintains backwards compatibility.</p>
+<h3>Python interface changes</h3>
+<p><em>Old Discrete ALE Python Interface</em></p>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int)"><pre><span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>)</pre></div>
+<p><em>New Mixed Discrete-Continuous ALE Python Interface</em></p>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int, strength: float = 1.0)"><pre><span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>, <span class="pl-s1">strength</span>: <span class="pl-s1">float</span> <span class="pl-c1">=</span> <span class="pl-c1">1.0</span>)</pre></div>
+<p>The continuous action space is implemented at the Python level within the Gymnasium environment.</p>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="if continuous:
+    # action is expected to be a [2,] array of floats
+    x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
+    action_idx = self.map_action_idx(
+        left_center_right=(
+            -int(x &lt; self.continuous_action_threshold)
+            + int(x &gt; self.continuous_action_threshold)
+        ),
+        down_center_up=(
+            -int(y &lt; self.continuous_action_threshold)
+            + int(y &gt; self.continuous_action_threshold)
+        ),
+        fire=(action[-1] &gt; self.continuous_action_threshold),
+    )
+    ale.act(action_idx, action[1])"><pre><span class="pl-k">if</span> <span class="pl-s1">continuous</span>:
+    <span class="pl-c"># action is expected to be a [2,] array of floats</span>
+    <span class="pl-s1">x</span>, <span class="pl-s1">y</span> <span class="pl-c1">=</span> <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-en">cos</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>]), <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-en">sin</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>])
+    <span class="pl-s1">action_idx</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-en">map_action_idx</span>(
+        <span class="pl-s1">left_center_right</span><span class="pl-c1">=</span>(
+            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+        ),
+        <span class="pl-s1">down_center_up</span><span class="pl-c1">=</span>(
+            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+        ),
+        <span class="pl-s1">fire</span><span class="pl-c1">=</span>(<span class="pl-s1">action</span>[<span class="pl-c1">-</span><span class="pl-c1">1</span>] <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>),
+    )
+    <span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action_idx</span>, <span class="pl-s1">action</span>[<span class="pl-c1">1</span>])</pre></div>
+<p><strong>Full Changelog</strong>: <a class="commit-link" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.9.1...v0.10.0"><tt>v0.9.1...v0.10.0</tt></a></p></section>
+<section id="release-v0-9-1">
+<h2>ALE v0.9.1<a class="headerlink" href="#release-v0-9-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-01 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.9.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.9.1/">PyPI</a></em></p>
+<p>This release adds support for NumPy 2.0 by updating the PyBind 11 version to 2.13.1 used to compile the wheels, see <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2375405689" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/535" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/535/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/535">#535</a> for the changes.</p>
+<p>We have added support for users to use their own PyBind version if already installed when compiling</p>
+<p><strong>Full Changelog</strong>: <a class="commit-link" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.9.0...v0.9.1"><tt>v0.9.0...v0.9.1</tt></a></p></section>
+<section id="release-v0-9-0">
+<h2>ALE v0.9.0<a class="headerlink" href="#release-v0-9-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-05-20 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.9.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.9.0/">PyPI</a></em></p>
+<p>Previously, ALE implemented only a <a href="https://github.com/openai/gym">Gym</a> based environment, however, as Gym is no longer maintained (the last commit was 18 months ago). We have updated <code>ale-py</code> to use <a href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a> <code>&gt;= 1.0.0a1</code> (a maintained fork of Gym) as the sole backend environment implementation. For more information on Gymnasium’s API, see their <a href="https://gymnasium.farama.org/main/introduction/basic_usage/" rel="nofollow">introduction page</a>.</p>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="import gymnasium as gym
+import ale_py
+
+gym.register_envs(ale_py)  # unnecessary but prevents IDEs from complaining
+
+env = gym.make(&quot;ALE/Pong-v5&quot;, render_mode=&quot;human&quot;)
+
+obs, info = env.reset()
+episode_over = False
+while not episode_over:
+	action = policy(obs)  # replace with actual policy
+	obs, reward, terminated, truncated, info = env.step(action)
+	episode_over = terminated or truncated
+env.close()"><pre><span class="pl-k">import</span> <span class="pl-s1">gymnasium</span> <span class="pl-k">as</span> <span class="pl-s1">gym</span>
+<span class="pl-k">import</span> <span class="pl-s1">ale_py</span>
+
+<span class="pl-s1">gym</span>.<span class="pl-en">register_envs</span>(<span class="pl-s1">ale_py</span>)  <span class="pl-c"># unnecessary but prevents IDEs from complaining</span>
+
+<span class="pl-s1">env</span> <span class="pl-c1">=</span> <span class="pl-s1">gym</span>.<span class="pl-en">make</span>(<span class="pl-s">"ALE/Pong-v5"</span>, <span class="pl-s1">render_mode</span><span class="pl-c1">=</span><span class="pl-s">"human"</span>)
+
+<span class="pl-s1">obs</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-en">reset</span>()
+<span class="pl-s1">episode_over</span> <span class="pl-c1">=</span> <span class="pl-c1">False</span>
+<span class="pl-k">while</span> <span class="pl-c1">not</span> <span class="pl-s1">episode_over</span>:
+	<span class="pl-s1">action</span> <span class="pl-c1">=</span> <span class="pl-en">policy</span>(<span class="pl-s1">obs</span>)  <span class="pl-c"># replace with actual policy</span>
+	<span class="pl-s1">obs</span>, <span class="pl-s1">reward</span>, <span class="pl-s1">terminated</span>, <span class="pl-s1">truncated</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-en">step</span>(<span class="pl-s1">action</span>)
+	<span class="pl-s1">episode_over</span> <span class="pl-c1">=</span> <span class="pl-s1">terminated</span> <span class="pl-c1">or</span> <span class="pl-s1">truncated</span>
+<span class="pl-s1">env</span>.<span class="pl-en">close</span>()</pre></div>
+<p>An important change in this update is that the Atari ROMs are packaged within the PyPI installation such that users no longer require <code>pip install "gym[accept-rom-license]"</code> (AutoROM) or <code>ale-import-roms</code> for downloading or loading ROMs. This should significantly simplify installing Atari for users. For users who wish to load ROMs from an alternative folder, use the <code>ALE_ROM_DIR</code> system environment variable to specify a folder directory.</p>
+<p>Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py utilises where atari environments would be registered behind the scenes. As a result, projects will need to import <code>ale_py</code>, to register all the atari environments, before an atari environment can be created with <code>gymnasium.make</code>. We understand this will cause annoyance to some users, however, the previous method brought significant complexity behind the scenes that the development team believed caused more issues than help.</p>
+<h2>Other changes</h2>
+<ul>
+<li>Added Python 3.12 support.</li>
+<li>Replace interactive exit by <code>sys.exit</code> (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1905693443" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/498" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/498/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/498">#498</a>)</li>
+<li>Fix C++ documentation example links(<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1974600159" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/501" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/501/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/501">#501</a>)</li>
+<li>Add support for gcc 13 (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2082149864" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/503" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/503/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/503">#503</a>)</li>
+<li>Unpin cmake dependency and remove wheel from build system (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1836220121" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/493" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/493/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/493">#493</a>)</li>
+<li>Add missing imports for cstdint (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1697944093" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/486" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/486/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/486">#486</a>)</li>
+<li>Allow installing without git (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1827627164" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/492" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/492/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/492">#492</a>)</li>
+<li>Update to require <code>importlib-resources</code> for &lt; 3.9  (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1827604588" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/491" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/491/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/491">#491</a>)</li>
+</ul>
+<p><strong>Full Changelog</strong>: <a class="commit-link" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.8.1...v0.9.0"><tt>v0.8.1...v0.9.0</tt></a></p></section>
+<section id="release-v0-8-1">
+<h2>v0.8.1: Arcade Learning Environment 0.8.1<a class="headerlink" href="#release-v0-8-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2023-02-17 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.8.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.8.1/">PyPI</a></em></p>
+<h3>Added</h3>
+<ul>
+<li>Added type stubs for the native ALE Python module generated via pybind11. You'll now get type hints in your IDE.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed <code>render_mode</code> attribute on legacy Gym environment (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/younik/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/younik">@younik</a>)</li>
+<li>Fixed a bug which could parse invalid ROM names containing numbers, e.g., TicTacToe3D or Pitfall2</li>
+<li>Changed the ROM identifier of VideoChess &amp; VideoCube to match VideoCheckers &amp; VideoPinball.<br>
+Specifically, the environment ID changed from <code>Videochess</code> -&gt; <code>VideoChess</code> and <code>Videocube</code> -&gt; <code>VideoCube</code>.<br>
+Most ROMs had the ID correctly as <code>video_chess.bin</code> and <code>video_cube.bin</code> but for those who didn't you can<br>
+simply run <code>ale-import-roms</code> which will automatically correct this for you.</li>
+<li>Reverted back to manylinux2014 (glibc 2.17) to better support older operating systems.</li>
+</ul></section>
+<section id="release-v0-8-0">
+<h2>v0.8.0: Arcade Learning Environment 0.8.0<a class="headerlink" href="#release-v0-8-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2022-09-09 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.8.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.8.0/">PyPI</a></em></p>
+<h3>Added</h3>
+<ul>
+<li>Added compliance with the Gym v26 API. This includes multiple breaking changes to the Gym API. See the <a href="https://github.com/openai/gym/releases/tag/0.26.0">Gym release</a> for additional information.</li>
+<li>Reworked the ROM plugin API resulting in reduced startup time when importing <code>ale_py.roms</code>.</li>
+<li>Added a truncation API to the ALE interface to query whether an episode was truncated or terminated (<code>ale.game_over(with_truncation=true/false)</code> and <code>ale.game_truncated()</code>)</li>
+<li>Added proper Gym truncation on max episode frames. This no longer relies on the <code>TimeLimit</code> wrapper with the new truncation API in Gym v26.</li>
+<li>Added a setting for truncating on loss-of-life.</li>
+<li>Added a setting for clamping rewards.</li>
+<li>Added <code>const</code> keywords to attributes in <code>ale::ALEInterface</code> (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1235338541" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/457" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/457/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/457">#457</a>) (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/AlessioZanga/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/AlessioZanga">@AlessioZanga</a>).</li>
+<li>Added explicit exports via <code>__all__</code> in ale-py so linting tools can better detect exports.</li>
+<li>Added builds for Python 3.11.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Moved the Gym environment entrypoint from <code>gym.envs.atari:AtariEnv</code> to <code>ale_py.env.gym:AtariEnv</code>. This resolves many issues with the namespace package but does break backwards compatability for some Gym code that relied on the entry point being prefixed with <code>gym.envs.atari</code>.</li>
+</ul></section>
+<section id="release-v0-7-5">
+<h2>v0.7.5: Arcade Learning Environment 0.7.5<a class="headerlink" href="#release-v0-7-5" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2022-04-18 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.7.5">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.7.5/">PyPI</a></em></p>
+<h3>Added</h3>
+<ul>
+<li>Added validation for Gym's frameskip values.</li>
+<li>Made ROM loading more robust with module-level <code>__getattr__</code> and <code>__dir__</code>.</li>
+<li>Added <code>py.typed</code> to the Python module's root directory to support type checkers.</li>
+<li>Bumped SDL to v2.0.16.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed Gym render mode metadata. (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/vwxyzjn/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/vwxyzjn">@vwxyzjn</a>)</li>
+<li>Fixed Gym warnings about <code>seeding.hash_seed</code> and <code>random.randint</code>.</li>
+<li>Fixed build infrastructure issues from the migration to <code>setuptools&gt;=0.61</code>.</li>
+</ul>
+<h3>Removed</h3>
+<ul>
+<li>Removed Gym's <code>.render(mode='human')</code>. Gym now uses the <code>render_mode</code> keyword argument in the environment constructor.</li>
+</ul></section>
+<section id="release-v0-7-4">
+<h2>v0.7.4: Arcade Learning Environment 0.7.4<a class="headerlink" href="#release-v0-7-4" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2022-02-17 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.7.4">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.7.4/">PyPI</a></em></p>
+<h3>Added</h3>
+<ul>
+<li>Proper C++ namespacing for the ALE and Stella (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/tuero/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/tuero">@tuero</a>)</li>
+<li>vcpkg manifest. You can now install dependencies via <code>cmake</code>.</li>
+<li>Support for the new Gym (0.22) <code>reset</code> API, i.e., the <code>seed</code> and <code>return_info</code> keyword arguments.</li>
+<li>Moved cibuildwheel config from Github Actions to pyproject.toml.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed a bug with the terminal signal in ChopperCommand <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="1024917498" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/434" data-hovercard-type="issue" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/issues/434/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/434">#434</a></li>
+<li>Fixed warnings with <code>importlib-metadata</code> on Python &lt; 3.9.</li>
+<li>Reverted the Gym <code>v5</code> defaults to align with the post-DQN literature. That is, moving from a frameskip of 5 -&gt; 4, and full action set -&gt; minimal action set.</li>
+</ul></section>
+<section id="release-v0-7-3">
+<h2>v0.7.3: Arcade Learning Environment 0.7.3<a class="headerlink" href="#release-v0-7-3" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2021-11-02 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.7.3">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.7.3/">PyPI</a></em></p>
+<p>This update includes a minor addition that allows users to load ROMs from a directory specified by the environment variable <code>ALE_PY_ROM_DIR</code>.</p>
+<h3>Added</h3>
+<ul>
+<li>Environment variable <code>ALE_PY_ROM_DIR</code> which if specified will search for ROMs in <code>${ALE_PY_ROM_DIR}/*.bin</code>. (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/joshgreaves/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/joshgreaves">@joshgreaves</a>)</li>
+</ul></section>
+<section id="release-v0-7-2">
+<h2>v0.7.2: Arcade Learning Environment 0.7.2<a class="headerlink" href="#release-v0-7-2" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2021-10-07 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.7.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.7.2/">PyPI</a></em></p>
+<p>This release includes a bug fix for Windows and Python 3.10 wheels. Note that we no longer build wheels for Python 3.6 which is considered end of life as of December 2021.</p>
+<h3>Added</h3>
+<ul>
+<li>Package Tetris by Colin Hughes. This ROM is made publicly available by the author. This is useful for other open-source packages to be able to unit test against the ALE. (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/tfboyd/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/tfboyd">@tfboyd</a>)</li>
+<li>Python 3.10 prebuilt wheels</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed an issue with <code>isSupportedROM</code> on Windows which was causing incorrect ROM hashes.</li>
+</ul>
+<h3>Removed</h3>
+<ul>
+<li>Python 3.6 prebuilt wheels</li>
+</ul></section>
+<section id="release-v0-7-1">
+<h2>v0.7.1: Arcade Learning Environment 0.7.1<a class="headerlink" href="#release-v0-7-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2021-09-29 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.7.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.7.1/">PyPI</a></em></p>
+<p>This release adds some niceties around Gym as well as expands upon some deprecation warnings which may have been confusing. The biggest change in this release is that the Gym environment is now installed to <code>gym.envs.atari:AtariEnv</code> which is now backwards compatible with the previous entry point.</p>
+<p>Furthermore, users no longer need to import the ALE when constructing a <code>*-v5</code> environment. We now use the new Gym environment plugin system for all environments, i.e., <code>v0, v4, v5</code>. Additionally, Gym adds new tools for downloading/installing ROMs. For more info, check out <a href="https://github.com/openai/gym/releases/tag/v0.21.0">Gym's release notes</a>.</p>
+<h3>Added</h3>
+<ul>
+<li>Added <code>ale-import-roms --import-from-pkg {pkg}</code></li>
+<li>Use <code>gym.envs.atari</code> as a namespace package to maintain backwards compatability with the <code>AtariEnv</code> entry point.</li>
+<li>The ALE now uses Gym's environment plugin system in <code>gym&gt;=0.21</code> (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="985771900" data-permission-text="Title is private" data-url="https://github.com/openai/gym/issues/2383" data-hovercard-type="pull_request" data-hovercard-url="/openai/gym/pull/2383/hovercard" href="https://github.com/openai/gym/pull/2383">openai/gym#2383</a>, <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="997222701" data-permission-text="Title is private" data-url="https://github.com/openai/gym/issues/2409" data-hovercard-type="pull_request" data-hovercard-url="/openai/gym/pull/2409/hovercard" href="https://github.com/openai/gym/pull/2409">openai/gym#2409</a>, <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="998452268" data-permission-text="Title is private" data-url="https://github.com/openai/gym/issues/2411" data-hovercard-type="pull_request" data-hovercard-url="/openai/gym/pull/2411/hovercard" href="https://github.com/openai/gym/pull/2411">openai/gym#2411</a>). Users no longer are required to import <code>ale_py</code> to use a <code>-v5</code> environment.</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Silence unsupported ROMs warning behind <code>ImportError</code>. To view these errors you should now supply the environment variable <code>PYTHONWARNINGS=default::ImportWarning:ale_py.roms</code>.</li>
+<li>Reworked ROM error messages to provide more helpful suggestions.</li>
+<li>General metadata changes to the Python package.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Add missing <code>std::</code> name qualifier when enabling SDL (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/anadrome/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/anadrome">@anadrome</a>)</li>
+<li>Fixed mandatory kwarg for <code>gym.envs.atari:AtariEnv.clone_state</code>.</li>
+</ul></section>
+<section id="release-v0-7-0">
+<h2>v0.7.0: Arcade Learning Environment 0.7.0<a class="headerlink" href="#release-v0-7-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2021-09-14 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.7.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.7.0/">PyPI</a></em></p>
+<p>This release focuses on consolidating the ALE into a cohesive package to reduce fragmentation across the community. To this end, the ALE now distributes native Python wheels, replaces the legacy Atari wrapper in OpenAI Gym, and includes additional features like out-of-the-box SDL support for visualizing your agents.</p>
+<p>For a full explainer see our release blog post: <a href="https://brosa.ca/blog/ale-release-v0.7" rel="nofollow">https://brosa.ca/blog/ale-release-v0.7</a>.</p>
+<h3>Added</h3>
+<ul>
+<li>Native support for OpenAI Gym</li>
+<li>Native Python interface using pybind11 which results in a speedup for Python workloads as well as proper support for objects like <code>ALEState</code></li>
+<li>Python ROM management, e.g., <code>ale-import-roms</code></li>
+<li>PyPi Python wheels published as <code>ale-py</code> + we distribute SDL2 for out of the box visualization + audio support</li>
+<li><code>isSupportedROM(path)</code> to check if a ROM file is supported by the ALE</li>
+<li>Added new games: Atlantis2, Backgammon, BasicMath, Blackjack, Casino, Crossbow, DarkChambers, Earthworld, Entombed, ET, FlagCapture, Hangman, HauntedHouse, HumanCannonball, Klax, MarioBros, MiniatureGolf, Othello, Pacman, Pitfall2, SpaceWar, Superman, Surround, TicTacToe3D, VideoCheckers, VideoChess, VideoCube, WordZapper (thanks <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/tkoeppe/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/tkoeppe">@tkoeppe</a>)</li>
+<li>Added (additional) mode/difficulty settings for: Lost Luggage, Turmoil, Tron Dead Discs, Pong, Mr. Do, King Kong, Frogger, Adventure (thanks <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/tkoeppe/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/tkoeppe">@tkoeppe</a>)</li>
+<li>Added <code>cloneState(include_rng)</code> which will eventually replace <code>cloneSystemState</code> (behind the scenes <code>cloneSystemState</code> is equivalent to <code>cloneState(include_rng=True)</code>).</li>
+<li>Added <code>setRAM</code> which can be useful for modifying the environment, e.g., learning a causal model over RAM transitions, altering game dynamics, etc.</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Rewrote SDL support using SDL2 primitives</li>
+<li>SDL2 now renders every frame independent of frameskip</li>
+<li>SDL2 renders at the proper ROM framerate (added benefit of audio sync support)</li>
+<li>Rewrote entire CMake infrastructure which now supports vcpkg natively</li>
+<li>C++ minimum version is now C++17</li>
+<li>Changed all relative imports to absolute imports</li>
+<li>Switched from Travis CI to Github Actions</li>
+<li>Allow for paddle controller's min/max setting to be configurable</li>
+<li>More robust version handling between C++ &amp; Python distributions</li>
+<li>Updated Markdown documentation to replace TeX manual</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed bankswitching type for UA cartridges</li>
+<li>Fixed a SwapPort bug in Surround</li>
+<li>Fixed multiple bugs in handling invalid ROM files (thanks <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/tkoeppe/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/tkoeppe">@tkoeppe</a>)</li>
+<li>Fixed initialization of TIA static data to make it thread safe (thanks <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/tkoeppe/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/tkoeppe">@tkoeppe</a>)</li>
+<li>Fixed RNG initialization, this was one of the last barriers to making the ALE fully deterministic, we are now fully deterministic</li>
+</ul>
+<h3>Removed</h3>
+<ul>
+<li>Removed FIFO interface</li>
+<li>Removed RL-GLUE support</li>
+<li>Removed ALE CLI interface</li>
+<li>Removed Java interface</li>
+<li>Removed <code>ALEInterface::load()</code>, <code>ALEInterface::save()</code>. If you require this stack functionality it's easy to implement on your own using <code>ALEInterface::cloneState(include_rng)</code></li>
+<li>Removed os-dependent filesystem code in favour of C++17 <code>std::fs</code></li>
+<li>Removed human control mode</li>
+<li>Removed old makefile build system in favour of CMake</li>
+<li>Removed bspf</li>
+<li>Removed unused controller types: Driving, Booster, Keyboard</li>
+<li>Removed AtariVox</li>
+<li>Removed Stella types (e.g., Array) in favour of STL types</li>
+<li>Remove Stella debugger</li>
+<li>Remove Stella CheatManager</li>
+<li>Lots of code cleanups conforming to best practices (thanks <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/tkoeppe/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/tkoeppe">@tkoeppe</a>)</li>
+</ul></section>
+<section id="release-v0-6-1">
+<h2>v0.6.1: Arcade Learning Environment 0.6.1<a class="headerlink" href="#release-v0-6-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2019-11-21 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.6.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.6.1/">PyPI</a></em></p>
+<p>This collects a number of minor changes from 0.6.0, spanning about two years.</p>
+<h3>Changed</h3>
+<ul>
+<li>Speedup of up to 30% by optimizing variable types (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/qstanczyk/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/qstanczyk">@qstanczyk</a>)</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed switch fall-through with Gravitar lives detection (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/lespeholt/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/lespeholt">@lespeholt</a>)</li>
+</ul></section>
+<section id="release-v0-6-0">
+<h2>v0.6.0: Arcade Learning Environment 0.6.0<a class="headerlink" href="#release-v0-6-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2017-12-01 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.6.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.6.0/">PyPI</a></em></p>
+<p>This is the first release of a brand new version of the ALE, including modes, difficulties, and a dozen new games.</p>
+<h3>Added</h3>
+<ul>
+<li>Support for modes and difficulties in Atari games (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/mcmachado/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/mcmachado">@mcmachado</a>)</li>
+<li>Frame maxpooling as a post-processing option (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/skylian/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/skylian">@skylian</a>)</li>
+<li>Added support for: Turmoil, Koolaid, Tron Deadly Discs, Mr. Do, Donkey Kong, Keystone Kapers, Frogger, Sir Lancelot, Laser Gates, Lost Luggage,</li>
+<li>Added MD5 list of supported ROMs</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Disabled color averaging by default</li>
+<li>Replaced TinyMT with C++11 random</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed old color averaging scheme (PR <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="179722215" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/181" data-hovercard-type="issue" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/issues/181/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/181">#181</a>)</li>
+<li>Fixed minimal action set in Pong</li>
+<li>Fixed termination issues in Q*Bert</li>
+</ul></section>
+<section id="release-v0-5-2">
+<h2>v0.5.2: Arcade Learning Environment 0.5.2<a class="headerlink" href="#release-v0-5-2" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2017-08-20 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.5.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.5.2/">PyPI</a></em></p>
+<p>This is a minor release of ALE 0.5, meant to reflect a number of bug fixes and PRs that have been added over the last two years. Note that a new major release (0.6) should be released within the next three months.</p>
+<h3>Added</h3>
+<ul>
+<li>Routines for ALEState serialization (@Jragonmiris).</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Enforce flags existence (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/mcmachado/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/mcmachado">@mcmachado</a>).</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Fix RNG issues introduced in 0.5.0.</li>
+<li>Additional bug fixes.</li>
+</ul></section>
+<section id="release-v0-5-1">
+<h2>v0.5.1: Arcade Learning Environment 0.5.1<a class="headerlink" href="#release-v0-5-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2015-10-08 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.5.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.5.1/">PyPI</a></em></p>
+<p>This is the official release of the Arcade Learning Environment, version 0.5.1. This version sees bug fixes from 0.5.0, additions to the C++ and Python interfaces, and additional error checking. The interfaces should be considered mostly stable, but are likely to see a few tweaks before version 1.0.</p>
+<h3>Added</h3>
+<ul>
+<li>Added RNG serialization capability.</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Refactored Python getScreenRGB to return unpacked RGB values (<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/spragunr/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/spragunr">@spragunr</a>).</li>
+<li>Sets the default value of the color_averaging flag to be true. It was true by default in previous versions but was changed in 0.5.0. Reverted for backward compatibility.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Bug fixes from ALE 0.5.0.</li>
+</ul></section>
+<section id="release-v0-5-0">
+<h2>v0.5.0: Arcade Learning Environment 0.5.0<a class="headerlink" href="#release-v0-5-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2015-06-23 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.5.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.5.0/">PyPI</a></em></p>
+<p>This is the official release of the Arcade Learning Environment, version 0.5.0. This version sees a major code overhaul, including simpler installation, better interfaces, visualization, and optional controller stochasticity. The interfaces should be considered mostly stable, but may see a few tweaks before version 1.0.</p>
+<h3>Added</h3>
+<ul>
+<li>Added action_repeat_stochasticity.</li>
+<li>Added sound playback, visualization.</li>
+<li>Added screen/sound recording ability.</li>
+<li>CMake now available.</li>
+<li>Incorporated Benjamin Goodrich's Python interface.</li>
+<li>Added examples for shared library, Python, fifo, RL-Glue interfaces.</li>
+<li>Incorporated Java agent into main repository.</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Better ALEInterface.</li>
+<li>Many other changes.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Some game fixes.</li>
+</ul>
+<h3>Removed</h3>
+<ul>
+<li>Removed internal controller, now superseded by shared library interface.</li>
+<li>Removed the following command-line flags: 'output_file', 'system_reset_steps', 'use_environment_distribution', 'backward_compatible_save', internal agent flags</li>
+<li>The flag 'use_starting_actions' was removed and internally its value is always 'true'.</li>
+<li>The flag 'disable_color_averaging' was renamed to 'color_averaging' and FALSE is its default value.</li>
+</ul></section>
 </section>
 
           </article>
@@ -458,8 +844,43 @@
           
         </footer>
       </div>
-      <aside class="toc-drawer no-toc">
+      <aside class="toc-drawer">
         
+        
+        <div class="toc-sticky toc-scroll">
+          <div class="toc-title-container">
+            <span class="toc-title">
+              On this page
+            </span>
+          </div>
+          <div class="toc-tree-container">
+            <div class="toc-tree">
+              <ul>
+<li><a class="reference internal" href="#">ALE Release Notes</a><ul>
+<li><a class="reference internal" href="#release-v0-10-1">ALE v0.10.1</a></li>
+<li><a class="reference internal" href="#release-v0-10-0">v0.10.0: ALE v0.10</a></li>
+<li><a class="reference internal" href="#release-v0-9-1">ALE v0.9.1</a></li>
+<li><a class="reference internal" href="#release-v0-9-0">ALE v0.9.0</a></li>
+<li><a class="reference internal" href="#release-v0-8-1">v0.8.1: Arcade Learning Environment 0.8.1</a></li>
+<li><a class="reference internal" href="#release-v0-8-0">v0.8.0: Arcade Learning Environment 0.8.0</a></li>
+<li><a class="reference internal" href="#release-v0-7-5">v0.7.5: Arcade Learning Environment 0.7.5</a></li>
+<li><a class="reference internal" href="#release-v0-7-4">v0.7.4: Arcade Learning Environment 0.7.4</a></li>
+<li><a class="reference internal" href="#release-v0-7-3">v0.7.3: Arcade Learning Environment 0.7.3</a></li>
+<li><a class="reference internal" href="#release-v0-7-2">v0.7.2: Arcade Learning Environment 0.7.2</a></li>
+<li><a class="reference internal" href="#release-v0-7-1">v0.7.1: Arcade Learning Environment 0.7.1</a></li>
+<li><a class="reference internal" href="#release-v0-7-0">v0.7.0: Arcade Learning Environment 0.7.0</a></li>
+<li><a class="reference internal" href="#release-v0-6-1">v0.6.1: Arcade Learning Environment 0.6.1</a></li>
+<li><a class="reference internal" href="#release-v0-6-0">v0.6.0: Arcade Learning Environment 0.6.0</a></li>
+<li><a class="reference internal" href="#release-v0-5-2">v0.5.2: Arcade Learning Environment 0.5.2</a></li>
+<li><a class="reference internal" href="#release-v0-5-1">v0.5.1: Arcade Learning Environment 0.5.1</a></li>
+<li><a class="reference internal" href="#release-v0-5-0">v0.5.0: Arcade Learning Environment 0.5.0</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
         
         
       </aside>
@@ -487,7 +908,7 @@
     
     
 
-    <script src="../_static/documentation_options.js?v=d9f3de40"></script>
+    <script src="../_static/documentation_options.js?v=2483e106"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>
