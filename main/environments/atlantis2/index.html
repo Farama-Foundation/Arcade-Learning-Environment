@@ -449,7 +449,8 @@
 <p>For more Atlantis2 variants with different observation and action spaces, see the variants section.</p>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>Atlantis2 is missing description documentation. If you are interested in writing up a description, please create an issue or PR with the information on the Gymnasium github.</p>
+<p>Your job is to defend the submerged city of Atlantis. Your enemies slowly descend towards the city and you must destroy them before they reach striking distance. To this end, you control three defense posts.You lose if your enemies manage to destroy all seven of Atlantis’ installations. You may rebuild installations after you have fought of a wave of enemies and scored a sufficient number of points.</p>
+<p>For a more detailed documentation, see <a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareID=835">the AtariAge page</a></p>
 </section>
 <section id="actions">
 <h2>Actions<a class="headerlink" href="#actions" title="Link to this heading">¶</a></h2>
@@ -489,13 +490,17 @@ initialization or by passing <code class="docutils literal notranslate"><span cl
 </section>
 <section id="observations">
 <h2>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h2>
-<p>Atari environments have three possible observation types: <code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;grayscale&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code>.</p>
+<p>Atari environments have three possible observation types:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span> <span class="pre">-&gt;</span> <span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;ram&quot;</span> <span class="pre">-&gt;</span> <span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(128,),</span> <span class="pre">np.uint8)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span> <span class="pre">-&gt;</span> <span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the “rgb” type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;ram&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(128,),</span> <span class="pre">np.uint8)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the q”rgb” type</p></li>
 </ul>
 <p>See variants section for the type of observation used by each environment id by default.</p>
+<section id="reward">
+<h3>Reward<a class="headerlink" href="#reward" title="Link to this heading">¶</a></h3>
+<p>You score points for destroying enemies, keeping installations protected during attack waves. You score more points if you manage to destroy your enemies with one of the outer defense posts. For a more detailed documentation, see <a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareID=835">the AtariAge page</a>.</p>
+</section>
 </section>
 <section id="variants">
 <h2>Variants<a class="headerlink" href="#variants" title="Link to this heading">¶</a></h2>
@@ -632,7 +637,10 @@ along with the default values.</p>
 <li><a class="reference internal" href="#">Atlantis2</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#actions">Actions</a></li>
-<li><a class="reference internal" href="#observations">Observations</a></li>
+<li><a class="reference internal" href="#observations">Observations</a><ul>
+<li><a class="reference internal" href="#reward">Reward</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#variants">Variants</a></li>
 <li><a class="reference internal" href="#difficulty-and-modes">Difficulty and modes</a></li>
 <li><a class="reference internal" href="#version-history">Version History</a></li>
