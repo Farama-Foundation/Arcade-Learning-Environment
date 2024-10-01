@@ -4,7 +4,7 @@ title: Hangman
 
 # Hangman
 
-```{figure} ../../_static/videos/environments/hangman.gif
+```{figure} ../_static/videos/environments/hangman.gif
 :width: 120px
 :name: Hangman
 ```

@@ -4,7 +4,7 @@ title: Enduro
 
 # Enduro
 
-```{figure} ../../_static/videos/environments/enduro.gif
+```{figure} ../_static/videos/environments/enduro.gif
 :width: 120px
 :name: Enduro
 ```
@@ -50,7 +50,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You get 1 point for each vehicle you overtake.
 
 ## Variants

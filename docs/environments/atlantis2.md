@@ -4,7 +4,7 @@ title: Atlantis2
 
 # Atlantis2
 
-```{figure} ../../_static/videos/environments/atlantis2.gif
+```{figure} ../_static/videos/environments/atlantis2.gif
 :width: 120px
 :name: Atlantis2
 ```
@@ -49,7 +49,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for destroying enemies, keeping installations protected during attack waves. You score more points if you manage to destroy your enemies with one of the outer defense posts. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=835).
 
 ## Variants

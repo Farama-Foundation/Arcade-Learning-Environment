@@ -4,7 +4,7 @@ title: VideoPinball
 
 # VideoPinball
 
-```{figure} ../../_static/videos/environments/video_pinball.gif
+```{figure} ../_static/videos/environments/video_pinball.gif
 :width: 120px
 :name: VideoPinball
 ```

@@ -4,7 +4,7 @@ title: ChopperCommand
 
 # ChopperCommand
 
-```{figure} ../../_static/videos/environments/chopper_command.gif
+```{figure} ../_static/videos/environments/chopper_command.gif
 :width: 120px
 :name: ChopperCommand
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points by destroying planes and other helicopters. You score extra points at the end of every wave, depending on the number of trucks that have survived. Detailed documentation can be found on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=921).
 
 ## Variants

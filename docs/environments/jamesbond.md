@@ -4,7 +4,7 @@ title: Jamesbond
 
 # Jamesbond
 
-```{figure} ../../_static/videos/environments/jamesbond.gif
+```{figure} ../_static/videos/environments/jamesbond.gif
 :width: 120px
 :name: Jamesbond
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 The game ends when you complete the last mission or when you lose the last craft. In either case, you'll receive your final score. There will be a rating based on your score. The highest rating in NOVICE is 006. The highest rating in AGENT is 007. For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=250).
 
 ## Variants

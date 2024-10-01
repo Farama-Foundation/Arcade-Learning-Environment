@@ -4,7 +4,7 @@ title: BeamRider
 
 # BeamRider
 
-```{figure} ../../_static/videos/environments/beam_rider.gif
+```{figure} ../_static/videos/environments/beam_rider.gif
 :width: 120px
 :name: BeamRider
 ```
@@ -50,7 +50,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for destroying enemies. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SystemID=2600&SoftwareID=860&itemTypeID=MANUAL).
 
 ## Variants

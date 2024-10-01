@@ -4,7 +4,7 @@ title: SpaceInvaders
 
 # SpaceInvaders
 
-```{figure} ../../_static/videos/environments/space_invaders.gif
+```{figure} ../_static/videos/environments/space_invaders.gif
 :width: 120px
 :name: SpaceInvaders
 ```
@@ -49,7 +49,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You gain points for destroying space invaders. The invaders in the back rows are worth more points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=460).
 
 ## Variants

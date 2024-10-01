@@ -4,7 +4,7 @@ title: HumanCannonball
 
 # HumanCannonball
 
-```{figure} ../../_static/videos/environments/human_cannonball.gif
+```{figure} ../_static/videos/environments/human_cannonball.gif
 :width: 120px
 :name: HumanCannonball
 ```

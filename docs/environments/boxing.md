@@ -4,7 +4,7 @@ title: Boxing
 
 # Boxing
 
-```{figure} ../../_static/videos/environments/boxing.gif
+```{figure} ../_static/videos/environments/boxing.gif
 :width: 120px
 :name: Boxing
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points by landing punches. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=882).
 
 ## Variants

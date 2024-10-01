@@ -4,7 +4,7 @@ title: Amidar
 
 # Amidar
 
-```{figure} ../../_static/videos/environments/amidar.gif
+```{figure} ../_static/videos/environments/amidar.gif
 :width: 120px
 :name: Amidar
 ```
@@ -51,7 +51,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points by traversing new parts of the grid. Coloring an entire box in the maze or catching chickens gives extra points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=817).
 
 ## Variants

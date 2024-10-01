@@ -4,7 +4,7 @@ title: Skiing
 
 # Skiing
 
-```{figure} ../../_static/videos/environments/skiing.gif
+```{figure} ../_static/videos/environments/skiing.gif
 :width: 120px
 :name: Skiing
 ```
@@ -48,7 +48,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 Seconds are your only rewards - negative rewards and penalties (e.g. missing a gate) are assigned as additional seconds. For a more detailed documentation, see [the AtariAge page [SLALOM RACING section]](https://atariage.com/manual_html_page.php?SoftwareLabelID=434).
 
 ## Variants

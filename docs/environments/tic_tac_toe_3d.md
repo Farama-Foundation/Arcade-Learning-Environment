@@ -4,7 +4,7 @@ title: TicTacToe3D
 
 # TicTacToe3D
 
-```{figure} ../../_static/videos/environments/tic_tac_toe_3d.gif
+```{figure} ../_static/videos/environments/tic_tac_toe_3d.gif
 :width: 120px
 :name: TicTacToe3D
 ```

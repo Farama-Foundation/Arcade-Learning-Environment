@@ -4,7 +4,7 @@ title: Superman
 
 # Superman
 
-```{figure} ../../_static/videos/environments/superman.gif
+```{figure} ../_static/videos/environments/superman.gif
 :width: 120px
 :name: Superman
 ```

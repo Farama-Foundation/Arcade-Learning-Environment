@@ -4,7 +4,7 @@ title: Pacman
 
 # Pacman
 
-```{figure} ../../_static/videos/environments/pacman.gif
+```{figure} ../_static/videos/environments/pacman.gif
 :width: 120px
 :name: Pacman
 ```

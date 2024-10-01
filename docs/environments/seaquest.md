@@ -4,7 +4,7 @@ title: Seaquest
 
 # Seaquest
 
-```{figure} ../../_static/videos/environments/seaquest.gif
+```{figure} ../_static/videos/environments/seaquest.gif
 :width: 120px
 :name: Seaquest
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 Score points are your only reward. Blasting enemy sub and killer shark is worth 20 points.  Every time you surface with six divers, the value of enemy subs and killer sharks increases by 10, up to a maximum of 90 points each. Rescued divers start at 50 points each.  Then, their point value increases by 50, every time you surface, up to a maximum of 1000 points each. You'll be further rewarded with bonus points for all the oxygen you have remaining the moment you surface.  The more oxygen you have left, the more bonus points you're given. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=424).
 
 ## Variants

@@ -4,7 +4,7 @@ title: DemonAttack
 
 # DemonAttack
 
-```{figure} ../../_static/videos/environments/demon_attack.gif
+```{figure} ../_static/videos/environments/demon_attack.gif
 :width: 120px
 :name: DemonAttack
 ```
@@ -49,7 +49,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 Each enemy you slay gives you points. The amount of points depends on the type of demon and which wave you are in. A detailed table of scores is provided on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=135).
 
 ## Variants

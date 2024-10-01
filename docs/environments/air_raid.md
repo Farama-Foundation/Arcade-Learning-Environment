@@ -4,7 +4,7 @@ title: AirRaid
 
 # AirRaid
 
-```{figure} ../../_static/videos/environments/air_raid.gif
+```{figure} ../_static/videos/environments/air_raid.gif
 :width: 120px
 :name: AirRaid
 ```

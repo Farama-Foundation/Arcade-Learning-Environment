@@ -4,7 +4,7 @@ title: Phoenix
 
 # Phoenix
 
-```{figure} ../../_static/videos/environments/phoenix.gif
+```{figure} ../_static/videos/environments/phoenix.gif
 :width: 120px
 :name: Phoenix
 ```

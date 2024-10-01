@@ -4,7 +4,7 @@ title: Riverraid
 
 # Riverraid
 
-```{figure} ../../_static/videos/environments/riverraid.gif
+```{figure} ../_static/videos/environments/riverraid.gif
 :width: 120px
 :name: Riverraid
 ```
@@ -52,8 +52,8 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
-Score points are your only reward. You get score points each time you destroy an enemy object: 
+
+Score points are your only reward. You get score points each time you destroy an enemy object:
 
 | Enemy Object | Score Points |
 |--------------|--------------|

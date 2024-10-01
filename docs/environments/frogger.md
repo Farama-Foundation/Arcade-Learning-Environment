@@ -4,7 +4,7 @@ title: Frogger
 
 # Frogger
 
-```{figure} ../../_static/videos/environments/frogger.gif
+```{figure} ../_static/videos/environments/frogger.gif
 :width: 120px
 :name: Frogger
 ```

@@ -1,5 +1,4 @@
 import itertools
-import json
 
 import ale_py
 import gymnasium

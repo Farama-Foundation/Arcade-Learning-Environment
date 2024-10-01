@@ -4,7 +4,7 @@ title: Trondead
 
 # Trondead
 
-```{figure} ../../_static/videos/environments/trondead.gif
+```{figure} ../_static/videos/environments/trondead.gif
 :width: 120px
 :name: Trondead
 ```

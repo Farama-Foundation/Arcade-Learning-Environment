@@ -4,7 +4,7 @@ title: BasicMath
 
 # BasicMath
 
-```{figure} ../../_static/videos/environments/basic_math.gif
+```{figure} ../_static/videos/environments/basic_math.gif
 :width: 120px
 :name: BasicMath
 ```

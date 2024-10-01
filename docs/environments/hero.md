@@ -4,7 +4,7 @@ title: Hero
 
 # Hero
 
-```{figure} ../../_static/videos/environments/hero.gif
+```{figure} ../_static/videos/environments/hero.gif
 :width: 120px
 :name: Hero
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for shooting critters, rescuing miners, and dynamiting walls. Extra points are rewarded for any power remaining after rescuing a miner. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=228).
 
 ## Variants

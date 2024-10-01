@@ -57,7 +57,7 @@ For a more detailed documentation, see [the AtariAge page]({env_data['atariage_u
     if env_data["reward_description"]:
         reward_description = f"""
 ### Reward
-        
+
 {env_data["reward_description"]}
 """
     else:
@@ -129,11 +129,15 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`."""
         difficulty_mode_row, headers=difficulty_mode_header, tablefmt="github"
     )
 
-    top_table = tabulate.tabulate([
-        ["Action Space", str(env.action_space)],
-        ["Observation Space", str(env.observation_space)],
-        ["Import", f'`gymnasium.make("{env.spec.id}")`']
-    ], headers=["", ""], tablefmt="github")
+    top_table = tabulate.tabulate(
+        [
+            ["Action Space", str(env.action_space)],
+            ["Observation Space", str(env.observation_space)],
+            ["Import", f'`gymnasium.make("{env.spec.id}")`'],
+        ],
+        headers=["", ""],
+        tablefmt="github",
+    )
 
     env.close()
 
@@ -143,7 +147,7 @@ title: {env_name}
 
 # {env_name}
 
-```{{figure}} ../../_static/videos/environments/{rom_id}.gif
+```{{figure}} ../_static/videos/environments/{rom_id}.gif
 :width: 120px
 :name: {env_name}
 ```

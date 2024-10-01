@@ -4,7 +4,7 @@ title: WizardOfWor
 
 # WizardOfWor
 
-```{figure} ../../_static/videos/environments/wizard_of_wor.gif
+```{figure} ../_static/videos/environments/wizard_of_wor.gif
 :width: 120px
 :name: WizardOfWor
 ```

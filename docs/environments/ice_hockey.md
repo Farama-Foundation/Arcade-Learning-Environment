@@ -4,7 +4,7 @@ title: IceHockey
 
 # IceHockey
 
-```{figure} ../../_static/videos/environments/ice_hockey.gif
+```{figure} ../_static/videos/environments/ice_hockey.gif
 :width: 120px
 :name: IceHockey
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points by shooting the puck into your opponent's goal. Your opponent scores in the same manner. There are no limits to how many points you can get per game, other than the time limit of 3-minute games. For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=241).
 
 ## Variants

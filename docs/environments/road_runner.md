@@ -4,7 +4,7 @@ title: RoadRunner
 
 # RoadRunner
 
-```{figure} ../../_static/videos/environments/road_runner.gif
+```{figure} ../_static/videos/environments/road_runner.gif
 :width: 120px
 :name: RoadRunner
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 Score points are your only reward. You get score points each time you:
 
 | actions                                               | points |

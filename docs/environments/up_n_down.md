@@ -4,7 +4,7 @@ title: UpNDown
 
 # UpNDown
 
-```{figure} ../../_static/videos/environments/up_n_down.gif
+```{figure} ../_static/videos/environments/up_n_down.gif
 :width: 120px
 :name: UpNDown
 ```

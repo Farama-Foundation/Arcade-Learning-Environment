@@ -4,7 +4,7 @@ title: Et
 
 # Et
 
-```{figure} ../../_static/videos/environments/et.gif
+```{figure} ../_static/videos/environments/et.gif
 :width: 120px
 :name: Et
 ```

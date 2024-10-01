@@ -4,7 +4,7 @@ title: FlagCapture
 
 # FlagCapture
 
-```{figure} ../../_static/videos/environments/flag_capture.gif
+```{figure} ../_static/videos/environments/flag_capture.gif
 :width: 120px
 :name: FlagCapture
 ```

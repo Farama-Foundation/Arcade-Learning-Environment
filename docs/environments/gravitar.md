@@ -4,7 +4,7 @@ title: Gravitar
 
 # Gravitar
 
-```{figure} ../../_static/videos/environments/gravitar.gif
+```{figure} ../_static/videos/environments/gravitar.gif
 :width: 120px
 :name: Gravitar
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 The exact reward dynamics depend on the environment and are usually documented in the game's manual. You can find these manuals on [AtariAge](https://atariage.com/manual_html_page.php?SoftwareLabelID=223).
 
 ## Variants

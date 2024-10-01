@@ -4,7 +4,7 @@ title: Pooyan
 
 # Pooyan
 
-```{figure} ../../_static/videos/environments/pooyan.gif
+```{figure} ../_static/videos/environments/pooyan.gif
 :width: 120px
 :name: Pooyan
 ```
@@ -49,7 +49,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 If you hit a balloon, wolf or stone with an arrow you score points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=372).
 
 ## Variants

@@ -4,7 +4,7 @@ title: Crossbow
 
 # Crossbow
 
-```{figure} ../../_static/videos/environments/crossbow.gif
+```{figure} ../_static/videos/environments/crossbow.gif
 :width: 120px
 :name: Crossbow
 ```

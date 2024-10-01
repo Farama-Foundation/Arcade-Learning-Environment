@@ -4,7 +4,7 @@ title: ElevatorAction
 
 # ElevatorAction
 
-```{figure} ../../_static/videos/environments/elevator_action.gif
+```{figure} ../_static/videos/environments/elevator_action.gif
 :width: 120px
 :name: ElevatorAction
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You start with 4 lives and are awarded 100 points for each enemy shot, and 500 points for each secret document collected (visiting a red door). Each time you get shot you lose one life and the game ends when losing all lives.
 
 ## Variants

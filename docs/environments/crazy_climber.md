@@ -4,7 +4,7 @@ title: CrazyClimber
 
 # CrazyClimber
 
-```{figure} ../../_static/videos/environments/crazy_climber.gif
+```{figure} ../_static/videos/environments/crazy_climber.gif
 :width: 120px
 :name: CrazyClimber
 ```
@@ -50,7 +50,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 A table of scores awarded for completing each row of a building is provided on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=113).
 
 ## Variants

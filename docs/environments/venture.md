@@ -4,7 +4,7 @@ title: Venture
 
 # Venture
 
-```{figure} ../../_static/videos/environments/venture.gif
+```{figure} ../_static/videos/environments/venture.gif
 :width: 120px
 :name: Venture
 ```

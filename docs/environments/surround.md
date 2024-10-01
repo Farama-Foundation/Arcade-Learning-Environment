@@ -4,7 +4,7 @@ title: Surround
 
 # Surround
 
-```{figure} ../../_static/videos/environments/surround.gif
+```{figure} ../_static/videos/environments/surround.gif
 :width: 120px
 :name: Surround
 ```

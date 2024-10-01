@@ -4,7 +4,7 @@ title: Asterix
 
 # Asterix
 
-```{figure} ../../_static/videos/environments/asterix.gif
+```{figure} ../_static/videos/environments/asterix.gif
 :width: 120px
 :name: Asterix
 ```
@@ -50,7 +50,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 A table of scores awarded for collecting the different objects is provided on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=3325).
 
 ## Variants

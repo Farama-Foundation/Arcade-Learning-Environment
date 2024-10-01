@@ -4,7 +4,7 @@ title: Turmoil
 
 # Turmoil
 
-```{figure} ../../_static/videos/environments/turmoil.gif
+```{figure} ../_static/videos/environments/turmoil.gif
 :width: 120px
 :name: Turmoil
 ```

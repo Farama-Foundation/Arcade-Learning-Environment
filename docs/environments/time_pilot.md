@@ -4,7 +4,7 @@ title: TimePilot
 
 # TimePilot
 
-```{figure} ../../_static/videos/environments/time_pilot.gif
+```{figure} ../_static/videos/environments/time_pilot.gif
 :width: 120px
 :name: TimePilot
 ```
@@ -51,7 +51,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for destroying enemies, gaining more points for difficult enemies. For a more detailed documentation, see [the Atari Mania page](http://www.atarimania.com/game-atari-2600-vcs-time-pilot_8038.html).
 
 ## Variants

@@ -4,7 +4,7 @@ title: VideoCube
 
 # VideoCube
 
-```{figure} ../../_static/videos/environments/video_cube.gif
+```{figure} ../_static/videos/environments/video_cube.gif
 :width: 120px
 :name: VideoCube
 ```

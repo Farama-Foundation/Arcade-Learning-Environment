@@ -4,7 +4,7 @@ title: DoubleDunk
 
 # DoubleDunk
 
-```{figure} ../../_static/videos/environments/double_dunk.gif
+```{figure} ../_static/videos/environments/double_dunk.gif
 :width: 120px
 :name: DoubleDunk
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 Scores follow the rules of basketball. You can get either 3 points, 2 points foul line) depending from where you shoot. After a defensive foul, a successful shot from the foul line gives you 1 point.
 
 ## Variants

@@ -4,7 +4,7 @@ title: Robotank
 
 # Robotank
 
-```{figure} ../../_static/videos/environments/robotank.gif
+```{figure} ../_static/videos/environments/robotank.gif
 :width: 120px
 :name: Robotank
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 The number of enemies destroyed is the only reward. A small tank appears at the top of your screen for each enemy you destroy.  A square with the number 12 appears each time a squadron of twelve enemies are destroyed. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=416).
 
 ## Variants

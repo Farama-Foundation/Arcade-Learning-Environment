@@ -4,7 +4,7 @@ title: Centipede
 
 # Centipede
 
-```{figure} ../../_static/videos/environments/centipede.gif
+```{figure} ../_static/videos/environments/centipede.gif
 :width: 120px
 :name: Centipede
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points by hitting centipedes, scorpions, fleas and spiders. Additional points are awarded after every round (i.e. after you have lost a wand) for mushrooms that were not destroyed. Detailed documentation can be found on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=911).
 
 ## Variants

@@ -4,7 +4,7 @@ title: VideoCheckers
 
 # VideoCheckers
 
-```{figure} ../../_static/videos/environments/video_checkers.gif
+```{figure} ../_static/videos/environments/video_checkers.gif
 :width: 120px
 :name: VideoCheckers
 ```

@@ -4,7 +4,7 @@ title: Backgammon
 
 # Backgammon
 
-```{figure} ../../_static/videos/environments/backgammon.gif
+```{figure} ../_static/videos/environments/backgammon.gif
 :width: 120px
 :name: Backgammon
 ```

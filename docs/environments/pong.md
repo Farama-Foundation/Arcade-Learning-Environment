@@ -4,7 +4,7 @@ title: Pong
 
 # Pong
 
-```{figure} ../../_static/videos/environments/pong.gif
+```{figure} ../_static/videos/environments/pong.gif
 :width: 120px
 :name: Pong
 ```
@@ -49,7 +49,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You get score points for getting the ball to pass the opponent's paddle. You lose points if the ball passes your paddle. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=587).
 
 ## Variants

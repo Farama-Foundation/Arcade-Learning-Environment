@@ -4,7 +4,7 @@ title: Casino
 
 # Casino
 
-```{figure} ../../_static/videos/environments/casino.gif
+```{figure} ../_static/videos/environments/casino.gif
 :width: 120px
 :name: Casino
 ```

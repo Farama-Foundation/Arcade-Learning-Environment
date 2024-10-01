@@ -4,7 +4,7 @@ title: PrivateEye
 
 # PrivateEye
 
-```{figure} ../../_static/videos/environments/private_eye.gif
+```{figure} ../_static/videos/environments/private_eye.gif
 :width: 120px
 :name: PrivateEye
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for completing your tasks like gathering evidence, nabbing questionable characters or closing cases etc. You lose points if you get hit or if your auto is on a pothole. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=376).
 
 ## Variants

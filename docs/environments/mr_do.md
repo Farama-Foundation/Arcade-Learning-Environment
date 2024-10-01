@@ -4,7 +4,7 @@ title: MrDo
 
 # MrDo
 
-```{figure} ../../_static/videos/environments/mr_do.gif
+```{figure} ../_static/videos/environments/mr_do.gif
 :width: 120px
 :name: MrDo
 ```

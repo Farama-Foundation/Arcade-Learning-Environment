@@ -4,7 +4,7 @@ title: Assault
 
 # Assault
 
-```{figure} ../../_static/videos/environments/assault.gif
+```{figure} ../_static/videos/environments/assault.gif
 :width: 120px
 :name: Assault
 ```

@@ -4,7 +4,7 @@ title: Tutankham
 
 # Tutankham
 
-```{figure} ../../_static/videos/environments/tutankham.gif
+```{figure} ../_static/videos/environments/tutankham.gif
 :width: 120px
 :name: Tutankham
 ```

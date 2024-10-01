@@ -4,7 +4,7 @@ title: Kangaroo
 
 # Kangaroo
 
-```{figure} ../../_static/videos/environments/kangaroo.gif
+```{figure} ../_static/videos/environments/kangaroo.gif
 :width: 120px
 :name: Kangaroo
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 Your score will be shown at the top right corner of the game. Your end game score with be dependent on how much time you have remaining and who you encounter along the way. For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=923).
 
 ## Variants

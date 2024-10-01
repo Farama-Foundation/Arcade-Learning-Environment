@@ -4,7 +4,7 @@ title: Adventure
 
 # Adventure
 
-```{figure} ../../_static/videos/environments/adventure.gif
+```{figure} ../_static/videos/environments/adventure.gif
 :width: 120px
 :name: Adventure
 ```

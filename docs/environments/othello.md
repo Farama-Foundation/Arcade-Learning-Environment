@@ -4,7 +4,7 @@ title: Othello
 
 # Othello
 
-```{figure} ../../_static/videos/environments/othello.gif
+```{figure} ../_static/videos/environments/othello.gif
 :width: 120px
 :name: Othello
 ```

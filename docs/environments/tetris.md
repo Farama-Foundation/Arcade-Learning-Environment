@@ -4,7 +4,7 @@ title: Tetris
 
 # Tetris
 
-```{figure} ../../_static/videos/environments/tetris.gif
+```{figure} ../_static/videos/environments/tetris.gif
 :width: 120px
 :name: Tetris
 ```

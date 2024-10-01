@@ -4,7 +4,7 @@ title: StarGunner
 
 # StarGunner
 
-```{figure} ../../_static/videos/environments/star_gunner.gif
+```{figure} ../_static/videos/environments/star_gunner.gif
 :width: 120px
 :name: StarGunner
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for destroying enemies. You get bonus points for clearing a wave and a level. For a more detailed documentation, see [the Atari Mania page](http://www.atarimania.com/game-atari-2600-vcs-stargunner_16921.html).
 
 ## Variants

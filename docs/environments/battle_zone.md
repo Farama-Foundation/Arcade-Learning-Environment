@@ -4,7 +4,7 @@ title: BattleZone
 
 # BattleZone
 
-```{figure} ../../_static/videos/environments/battle_zone.gif
+```{figure} ../_static/videos/environments/battle_zone.gif
 :width: 120px
 :name: BattleZone
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You receive points for destroying enemies. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SystemID=2600&SoftwareID=859&itemTypeID=HTMLMANUAL).
 
 ## Variants

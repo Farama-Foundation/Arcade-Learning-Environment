@@ -4,7 +4,7 @@ title: DonkeyKong
 
 # DonkeyKong
 
-```{figure} ../../_static/videos/environments/donkey_kong.gif
+```{figure} ../_static/videos/environments/donkey_kong.gif
 :width: 120px
 :name: DonkeyKong
 ```

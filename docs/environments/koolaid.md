@@ -4,7 +4,7 @@ title: Koolaid
 
 # Koolaid
 
-```{figure} ../../_static/videos/environments/koolaid.gif
+```{figure} ../_static/videos/environments/koolaid.gif
 :width: 120px
 :name: Koolaid
 ```

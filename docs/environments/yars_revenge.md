@@ -4,7 +4,7 @@ title: YarsRevenge
 
 # YarsRevenge
 
-```{figure} ../../_static/videos/environments/yars_revenge.gif
+```{figure} ../_static/videos/environments/yars_revenge.gif
 :width: 120px
 :name: YarsRevenge
 ```

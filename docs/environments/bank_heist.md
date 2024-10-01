@@ -4,7 +4,7 @@ title: BankHeist
 
 # BankHeist
 
-```{figure} ../../_static/videos/environments/bank_heist.gif
+```{figure} ../_static/videos/environments/bank_heist.gif
 :width: 120px
 :name: BankHeist
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for robbing banks and destroying police cars. If you rob nine or more banks, and then leave the city, you will score extra points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=1008).
 
 ## Variants

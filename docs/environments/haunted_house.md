@@ -4,7 +4,7 @@ title: HauntedHouse
 
 # HauntedHouse
 
-```{figure} ../../_static/videos/environments/haunted_house.gif
+```{figure} ../_static/videos/environments/haunted_house.gif
 :width: 120px
 :name: HauntedHouse
 ```

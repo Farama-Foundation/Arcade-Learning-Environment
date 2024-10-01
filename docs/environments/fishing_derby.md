@@ -4,7 +4,7 @@ title: FishingDerby
 
 # FishingDerby
 
-```{figure} ../../_static/videos/environments/fishing_derby.gif
+```{figure} ../_static/videos/environments/fishing_derby.gif
 :width: 120px
 :name: FishingDerby
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 The exact reward dynamics depend on the environment and are usually documented in the game's manual. You can find these manuals on [AtariAge](https://atariage.com/manual_html_page.php?SoftwareLabelID=182).  Atari environments are simulated via the Arcade Learning Environment (ALE) [[1]](#1).
 
 ## Variants

@@ -4,7 +4,7 @@ title: VideoChess
 
 # VideoChess
 
-```{figure} ../../_static/videos/environments/video_chess.gif
+```{figure} ../_static/videos/environments/video_chess.gif
 :width: 120px
 :name: VideoChess
 ```

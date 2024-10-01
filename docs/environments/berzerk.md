@@ -4,7 +4,7 @@ title: Berzerk
 
 # Berzerk
 
-```{figure} ../../_static/videos/environments/berzerk.gif
+```{figure} ../_static/videos/environments/berzerk.gif
 :width: 120px
 :name: Berzerk
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You score points for destroying robots. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SystemID=2600&SoftwareID=866&itemTypeID=HTMLMANUAL).
 
 ## Variants

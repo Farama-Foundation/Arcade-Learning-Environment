@@ -4,7 +4,7 @@ title: LaserGates
 
 # LaserGates
 
-```{figure} ../../_static/videos/environments/laser_gates.gif
+```{figure} ../_static/videos/environments/laser_gates.gif
 :width: 120px
 :name: LaserGates
 ```

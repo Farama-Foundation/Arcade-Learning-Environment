@@ -4,7 +4,7 @@ title: Krull
 
 # Krull
 
-```{figure} ../../_static/videos/environments/krull.gif
+```{figure} ../_static/videos/environments/krull.gif
 :width: 120px
 :name: Krull
 ```
@@ -52,7 +52,7 @@ Atari environments have three possible observation types:
 See variants section for the type of observation used by each environment id by default.
 
 ### Reward
-        
+
 You will receive various scores for each monster you kill. You can play the game until you have lost all your lives. For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=267).
 
 ## Variants
