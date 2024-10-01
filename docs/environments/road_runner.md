@@ -4,18 +4,18 @@ title: RoadRunner
 
 # RoadRunner
 
-```{figure} ../_static/videos/environments/road_runner.gif
+```{figure} ../../_static/videos/environments/road_runner.gif
 :width: 120px
 :name: RoadRunner
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/RoadRunner-v5")` |
+|                   |                                       |
+|-------------------|---------------------------------------|
+| Action Space      | Discrete(18)                          |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)     |
+| Import            | `gymnasium.make("ALE/RoadRunner-v5")` |
 
 For more RoadRunner variants with different observation and action spaces, see the variants section.
 
@@ -43,16 +43,16 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
+### Reward
+        
 Score points are your only reward. You get score points each time you:
 
 | actions                                               | points |

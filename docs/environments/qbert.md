@@ -4,18 +4,18 @@ title: Qbert
 
 # Qbert
 
-```{figure} ../_static/videos/environments/qbert.gif
+```{figure} ../../_static/videos/environments/qbert.gif
 :width: 120px
 :name: Qbert
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(6) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Qbert-v5")` |
+| Import            | `gymnasium.make("ALE/Qbert-v5")`  |
 
 For more Qbert variants with different observation and action spaces, see the variants section.
 
@@ -40,18 +40,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
-You score points for changing color of the cubes to their destination colors or by defeating enemies. You also gain points for completing a level.
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SystemID=2600&SoftwareID=1224&itemTypeID=HTMLMANUAL).
+### Reward
+        
+You score points for changing color of the cubes to their destination colors or by defeating enemies. You also gain points for completing a level. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SystemID=2600&SoftwareID=1224&itemTypeID=HTMLMANUAL).
 
 ## Variants
 

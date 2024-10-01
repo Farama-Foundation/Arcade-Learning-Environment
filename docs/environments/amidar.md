@@ -4,18 +4,18 @@ title: Amidar
 
 # Amidar
 
-```{figure} ../_static/videos/environments/amidar.gif
+```{figure} ../../_static/videos/environments/amidar.gif
 :width: 120px
 :name: Amidar
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(10) |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Action Space      | Discrete(10)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Amidar-v5")` |
+| Import            | `gymnasium.make("ALE/Amidar-v5")` |
 
 For more Amidar variants with different observation and action spaces, see the variants section.
 
@@ -42,18 +42,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
-You score points by traversing new parts of the grid. Coloring an entire box in the maze or catching chickens gives extra points.
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=817).
+### Reward
+        
+You score points by traversing new parts of the grid. Coloring an entire box in the maze or catching chickens gives extra points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=817).
 
 ## Variants
 

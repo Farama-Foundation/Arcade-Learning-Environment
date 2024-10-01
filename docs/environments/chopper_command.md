@@ -4,18 +4,18 @@ title: ChopperCommand
 
 # ChopperCommand
 
-```{figure} ../_static/videos/environments/chopper_command.gif
+```{figure} ../../_static/videos/environments/chopper_command.gif
 :width: 120px
 :name: ChopperCommand
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/ChopperCommand-v5")` |
+|                   |                                           |
+|-------------------|-------------------------------------------|
+| Action Space      | Discrete(18)                              |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)         |
+| Import            | `gymnasium.make("ALE/ChopperCommand-v5")` |
 
 For more ChopperCommand variants with different observation and action spaces, see the variants section.
 
@@ -43,19 +43,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
-You score points by destroying planes and other helicopters. You score extra points at the end of every wave, depending on the number
-of trucks that have survived.
-Detailed documentation can be found on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=921).
+### Reward
+        
+You score points by destroying planes and other helicopters. You score extra points at the end of every wave, depending on the number of trucks that have survived. Detailed documentation can be found on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=921).
 
 ## Variants
 

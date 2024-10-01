@@ -4,18 +4,18 @@ title: SpaceInvaders
 
 # SpaceInvaders
 
-```{figure} ../_static/videos/environments/space_invaders.gif
+```{figure} ../../_static/videos/environments/space_invaders.gif
 :width: 120px
 :name: SpaceInvaders
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(6) |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/SpaceInvaders-v5")` |
+|                   |                                          |
+|-------------------|------------------------------------------|
+| Action Space      | Discrete(6)                              |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)        |
+| Import            | `gymnasium.make("ALE/SpaceInvaders-v5")` |
 
 For more SpaceInvaders variants with different observation and action spaces, see the variants section.
 
@@ -40,18 +40,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
-You gain points for destroying space invaders. The invaders in the back rows are worth more points.
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=460).
+### Reward
+        
+You gain points for destroying space invaders. The invaders in the back rows are worth more points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=460).
 
 ## Variants
 

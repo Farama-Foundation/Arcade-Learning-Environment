@@ -4,18 +4,18 @@ title: TimePilot
 
 # TimePilot
 
-```{figure} ../_static/videos/environments/time_pilot.gif
+```{figure} ../../_static/videos/environments/time_pilot.gif
 :width: 120px
 :name: TimePilot
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(10) |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/TimePilot-v5")` |
+|                   |                                      |
+|-------------------|--------------------------------------|
+| Action Space      | Discrete(10)                         |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
+| Import            | `gymnasium.make("ALE/TimePilot-v5")` |
 
 For more TimePilot variants with different observation and action spaces, see the variants section.
 
@@ -42,18 +42,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
-You score points for destroying enemies, gaining more points for difficult enemies.
-For a more detailed documentation, see [the Atari Mania page](http://www.atarimania.com/game-atari-2600-vcs-time-pilot_8038.html).
+### Reward
+        
+You score points for destroying enemies, gaining more points for difficult enemies. For a more detailed documentation, see [the Atari Mania page](http://www.atarimania.com/game-atari-2600-vcs-time-pilot_8038.html).
 
 ## Variants
 

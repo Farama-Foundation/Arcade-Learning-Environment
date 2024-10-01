@@ -4,18 +4,18 @@ title: JourneyEscape
 
 # JourneyEscape
 
-```{figure} ../_static/videos/environments/journey_escape.gif
+```{figure} ../../_static/videos/environments/journey_escape.gif
 :width: 120px
 :name: JourneyEscape
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(16) |
-| Observation Space | Box(0, 255, (230, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/JourneyEscape-v5")` |
+|                   |                                          |
+|-------------------|------------------------------------------|
+| Action Space      | Discrete(16)                             |
+| Observation Space | Box(0, 255, (230, 160, 3), uint8)        |
+| Import            | `gymnasium.make("ALE/JourneyEscape-v5")` |
 
 For more JourneyEscape variants with different observation and action spaces, see the variants section.
 
@@ -44,19 +44,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
-At the start of the game, you will have $50,000 and 60 units of time.
-Your end game score with be dependent on how much time you have remaining and who you encounter along the way.
-For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=252).
+### Reward
+        
+At the start of the game, you will have $50,000 and 60 units of time. Your end game score with be dependent on how much time you have remaining and who you encounter along the way. For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=252).
 
 ## Variants
 

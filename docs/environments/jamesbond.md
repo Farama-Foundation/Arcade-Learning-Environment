@@ -4,18 +4,18 @@ title: Jamesbond
 
 # Jamesbond
 
-```{figure} ../_static/videos/environments/jamesbond.gif
+```{figure} ../../_static/videos/environments/jamesbond.gif
 :width: 120px
 :name: Jamesbond
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(18) |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Jamesbond-v5")` |
+|                   |                                      |
+|-------------------|--------------------------------------|
+| Action Space      | Discrete(18)                         |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
+| Import            | `gymnasium.make("ALE/Jamesbond-v5")` |
 
 For more Jamesbond variants with different observation and action spaces, see the variants section.
 
@@ -43,19 +43,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
-
-The game ends when you complete the last mission or when you lose the last craft. In either case, you'll receive your final score.
-There will be a rating based on your score. The highest rating in NOVICE is 006. The highest rating in AGENT is 007.
-For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=250).
+### Reward
+        
+The game ends when you complete the last mission or when you lose the last craft. In either case, you'll receive your final score. There will be a rating based on your score. The highest rating in NOVICE is 006. The highest rating in AGENT is 007. For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=250).
 
 ## Variants
 
