@@ -4,18 +4,18 @@ title: Adventure
 
 # Adventure
 
-```{figure} ../../_static/videos/environments/adventure.gif
+```{figure} ../_static/videos/environments/adventure.gif
 :width: 120px
 :name: Adventure
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                   |
-|-------------------|-----------------------------------|
-| Action Space      | Discrete(18)                      |
-| Observation Space | Box(0, 255, (250, 160, 3), uint8) |
-| Creation          | make(ALE/Adventure-v5)            |
+|                   |                                    |
+|-------------------|------------------------------------|
+| Make              | gymnasium.make("ALE/Adventure-v5") |
+| Action Space      | Discrete(18)                       |
+| Observation Space | Box(0, 255, (250, 160, 3), uint8)  |
 
 For more Adventure variants with different observation and action spaces, see the variants section.
 

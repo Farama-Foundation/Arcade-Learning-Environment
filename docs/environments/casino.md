@@ -13,9 +13,9 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Casino-v5")   |
 | Action Space      | Discrete(4)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import            | `gymnasium.make("ALE/Casino-v5")` |
 
 For more Casino variants with different observation and action spaces, see the variants section.
 
@@ -53,10 +53,11 @@ See variants section for the type of observation used by each environment id by 
 Casino has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id            | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------|-------------|--------------|------------------------------|
-| ALE/Casino-v5     | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Casino-ram-v5 | `"ram"`     | `4`          | `0.25`                       |
+| Env-id        | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------|-------------|--------------|------------------------------|
+| ALE/Casino-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `CasinoNoFrameskip-v4`.
 
 ## Difficulty and modes
 

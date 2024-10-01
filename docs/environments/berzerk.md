@@ -11,11 +11,11 @@ title: Berzerk
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                    |
-|-------------------|------------------------------------|
-| Action Space      | Discrete(18)                       |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
-| Import            | `gymnasium.make("ALE/Berzerk-v5")` |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Berzerk-v5")  |
+| Action Space      | Discrete(18)                      |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
 
 For more Berzerk variants with different observation and action spaces, see the variants section.
 
@@ -60,22 +60,11 @@ You score points for destroying robots. For a more detailed documentation, see [
 Berzerk has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| Berzerk-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Berzerk-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Berzerk-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Berzerk-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| BerzerkDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| BerzerkNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Berzerk-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Berzerk-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Berzerk-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Berzerk-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| BerzerkDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| BerzerkNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Berzerk-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Berzerk-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------|-------------|--------------|------------------------------|
+| ALE/Berzerk-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BerzerkNoFrameskip-v4`.
 
 ## Difficulty and modes
 

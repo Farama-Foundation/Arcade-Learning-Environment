@@ -44,11 +44,10 @@ for rom_id in tqdm(ALL_ATARI_GAMES):
 
     env = gymnasium.make(f"ALE/{env_name}-v5").unwrapped
 
-    general_info_table = tabulate.tabulate(
-        [
+    general_info_table = tabulate.tabulate([
+            ["Make", f'gymnasium.make("ALE/{env_name}-v5")'],
             ["Action Space", str(env.action_space)],
             ["Observation Space", str(env.observation_space)],
-            ["Creation", f"make(ALE/{env_name}-v5)"],
         ],
         headers=["", ""],
         tablefmt="github",

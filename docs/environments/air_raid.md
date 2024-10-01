@@ -4,7 +4,7 @@ title: AirRaid
 
 # AirRaid
 
-```{figure} ../../_static/videos/environments/air_raid.gif
+```{figure} ../_static/videos/environments/air_raid.gif
 :width: 120px
 :name: AirRaid
 ```
@@ -13,9 +13,9 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/AirRaid-v5")  |
 | Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (250, 160, 3), uint8) |
-| Creation          | make(ALE/AirRaid-v5)              |
 
 For more AirRaid variants with different observation and action spaces, see the variants section.
 

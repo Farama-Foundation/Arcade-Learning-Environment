@@ -11,11 +11,11 @@ title: Freeway
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                    |
-|-------------------|------------------------------------|
-| Action Space      | Discrete(3)                        |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
-| Import            | `gymnasium.make("ALE/Freeway-v5")` |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Freeway-v5")  |
+| Action Space      | Discrete(3)                       |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
 
 For more Freeway variants with different observation and action spaces, see the variants section.
 
@@ -56,22 +56,11 @@ The exact reward dynamics depend on the environment and are usually documented i
 Freeway has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| Freeway-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Freeway-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Freeway-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Freeway-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| FreewayDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| FreewayNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Freeway-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Freeway-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Freeway-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Freeway-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| FreewayDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| FreewayNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Freeway-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Freeway-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------|-------------|--------------|------------------------------|
+| ALE/Freeway-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `FreewayNoFrameskip-v4`.
 
 ## Difficulty and modes
 

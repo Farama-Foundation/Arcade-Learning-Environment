@@ -11,17 +11,17 @@ title: Riverraid
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                      |
-|-------------------|--------------------------------------|
-| Action Space      | Discrete(18)                         |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
-| Import            | `gymnasium.make("ALE/Riverraid-v5")` |
+|                   |                                    |
+|-------------------|------------------------------------|
+| Make              | gymnasium.make("ALE/Riverraid-v5") |
+| Action Space      | Discrete(18)                       |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
 
 For more Riverraid variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-You control a jet that flies over a river: you can move it sideways and fire missiles to destroy enemy objects. Each time an enemy object is destroyed you score points (i.e. rewards).You lose a jet when you run out of fuel: fly over a fuel depot when you begin to run low.You lose a jet even when it collides with the river bank or one of the enemy objects (except fuel depots).The game begins with a squadron of three jets in reserve and you're given an additional jet (up to 9) for each 10,000 points you score.
+You control a jet that flies over a river, you can move it sideways and fire missiles to destroy enemy objects. Each time an enemy object is destroyed you score points (i.e. rewards).You lose a jet when you run out of fuel, fly over a fuel depot when you begin to run low.You lose a jet even when it collides with the river bank or one of the enemy objects (except fuel depots).The game begins with a squadron of three jets in reserve and you're given an additional jet (up to 9) for each 10,000 points you score.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=409)
 
@@ -53,7 +53,7 @@ See variants section for the type of observation used by each environment id by 
 
 ### Reward
 
-Score points are your only reward. You get score points each time you destroy an enemy object:
+Score points are your only reward. You get score points each time you destroy an enemy object: 
 
 | Enemy Object | Score Points |
 |--------------|--------------|
@@ -70,22 +70,11 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 Riverraid has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------------|-------------|--------------|------------------------------|
-| Riverraid-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Riverraid-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Riverraid-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Riverraid-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| RiverraidDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| RiverraidNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Riverraid-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Riverraid-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Riverraid-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Riverraid-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| RiverraidDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| RiverraidNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Riverraid-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Riverraid-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------|-------------|--------------|------------------------------|
+| ALE/Riverraid-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `RiverraidNoFrameskip-v4`.
 
 ## Difficulty and modes
 

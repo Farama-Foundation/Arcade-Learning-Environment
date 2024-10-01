@@ -11,11 +11,11 @@ title: Seaquest
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                     |
-|-------------------|-------------------------------------|
-| Action Space      | Discrete(18)                        |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)   |
-| Import            | `gymnasium.make("ALE/Seaquest-v5")` |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Seaquest-v5") |
+| Action Space      | Discrete(18)                      |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
 
 For more Seaquest variants with different observation and action spaces, see the variants section.
 
@@ -60,22 +60,11 @@ Score points are your only reward. Blasting enemy sub and killer shark is worth 
 Seaquest has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                       | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------------------|-------------|--------------|------------------------------|
-| Seaquest-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Seaquest-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Seaquest-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Seaquest-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| SeaquestDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| SeaquestNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Seaquest-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Seaquest-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Seaquest-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Seaquest-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| SeaquestDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| SeaquestNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Seaquest-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Seaquest-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id          | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-----------------|-------------|--------------|------------------------------|
+| ALE/Seaquest-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `SeaquestNoFrameskip-v4`.
 
 ## Difficulty and modes
 

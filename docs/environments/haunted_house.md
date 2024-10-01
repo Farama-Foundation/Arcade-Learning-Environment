@@ -11,11 +11,11 @@ title: HauntedHouse
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                         |
-|-------------------|-----------------------------------------|
-| Action Space      | Discrete(18)                            |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)       |
-| Import            | `gymnasium.make("ALE/HauntedHouse-v5")` |
+|                   |                                       |
+|-------------------|---------------------------------------|
+| Make              | gymnasium.make("ALE/HauntedHouse-v5") |
+| Action Space      | Discrete(18)                          |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)     |
 
 For more HauntedHouse variants with different observation and action spaces, see the variants section.
 
@@ -56,10 +56,11 @@ See variants section for the type of observation used by each environment id by 
 HauntedHouse has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------|-------------|--------------|------------------------------|
-| ALE/HauntedHouse-v5     | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/HauntedHouse-ram-v5 | `"ram"`     | `4`          | `0.25`                       |
+| Env-id              | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------------|-------------|--------------|------------------------------|
+| ALE/HauntedHouse-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `HauntedHouseNoFrameskip-v4`.
 
 ## Difficulty and modes
 

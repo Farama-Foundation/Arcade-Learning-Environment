@@ -11,17 +11,17 @@ title: VideoCube
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                      |
-|-------------------|--------------------------------------|
-| Action Space      | Discrete(18)                         |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
-| Import            | `gymnasium.make("ALE/VideoCube-v5")` |
+|                   |                                    |
+|-------------------|------------------------------------|
+| Make              | gymnasium.make("ALE/VideoCube-v5") |
+| Action Space      | Discrete(18)                       |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
 
 For more VideoCube variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-Solve a Rubik's cube in a nonstandard way: guide Hubie around the cube and swap tiles on the cubes face with one another until each face consists of only one color.
+Solve a Rubik's cube in a nonstandard way, guide Hubie around the cube and swap tiles on the cubes face with one another until each face consists of only one color.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=974)
 
@@ -56,10 +56,11 @@ See variants section for the type of observation used by each environment id by 
 VideoCube has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id               | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------------|-------------|--------------|------------------------------|
-| ALE/VideoCube-v5     | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/VideoCube-ram-v5 | `"ram"`     | `4`          | `0.25`                       |
+| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------|-------------|--------------|------------------------------|
+| ALE/VideoCube-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `VideoCubeNoFrameskip-v4`.
 
 ## Difficulty and modes
 

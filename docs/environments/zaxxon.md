@@ -13,9 +13,9 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Zaxxon-v5")   |
 | Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import            | `gymnasium.make("ALE/Zaxxon-v5")` |
 
 For more Zaxxon variants with different observation and action spaces, see the variants section.
 
@@ -56,22 +56,11 @@ See variants section for the type of observation used by each environment id by 
 Zaxxon has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                     | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------------------|-------------|--------------|------------------------------|
-| Zaxxon-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Zaxxon-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Zaxxon-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Zaxxon-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| ZaxxonDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| ZaxxonNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Zaxxon-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Zaxxon-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Zaxxon-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Zaxxon-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| ZaxxonDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| ZaxxonNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Zaxxon-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Zaxxon-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id        | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------|-------------|--------------|------------------------------|
+| ALE/Zaxxon-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `ZaxxonNoFrameskip-v4`.
 
 ## Difficulty and modes
 

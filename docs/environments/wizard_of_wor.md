@@ -11,11 +11,11 @@ title: WizardOfWor
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                        |
-|-------------------|----------------------------------------|
-| Action Space      | Discrete(10)                           |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)      |
-| Import            | `gymnasium.make("ALE/WizardOfWor-v5")` |
+|                   |                                      |
+|-------------------|--------------------------------------|
+| Make              | gymnasium.make("ALE/WizardOfWor-v5") |
+| Action Space      | Discrete(10)                         |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
 
 For more WizardOfWor variants with different observation and action spaces, see the variants section.
 
@@ -55,22 +55,11 @@ See variants section for the type of observation used by each environment id by 
 WizardOfWor has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                          | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------------------------|-------------|--------------|------------------------------|
-| WizardOfWor-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| WizardOfWor-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| WizardOfWor-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| WizardOfWor-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| WizardOfWorDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| WizardOfWorNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| WizardOfWor-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| WizardOfWor-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| WizardOfWor-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| WizardOfWor-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| WizardOfWorDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| WizardOfWorNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/WizardOfWor-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/WizardOfWor-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id             | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------------|-------------|--------------|------------------------------|
+| ALE/WizardOfWor-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `WizardOfWorNoFrameskip-v4`.
 
 ## Difficulty and modes
 

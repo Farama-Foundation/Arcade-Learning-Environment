@@ -11,11 +11,11 @@ title: BankHeist
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                      |
-|-------------------|--------------------------------------|
-| Action Space      | Discrete(18)                         |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
-| Import            | `gymnasium.make("ALE/BankHeist-v5")` |
+|                   |                                    |
+|-------------------|------------------------------------|
+| Make              | gymnasium.make("ALE/BankHeist-v5") |
+| Action Space      | Discrete(18)                       |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
 
 For more BankHeist variants with different observation and action spaces, see the variants section.
 
@@ -60,22 +60,11 @@ You score points for robbing banks and destroying police cars. If you rob nine o
 BankHeist has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------------|-------------|--------------|------------------------------|
-| BankHeist-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| BankHeist-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| BankHeist-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| BankHeist-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| BankHeistDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| BankHeistNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| BankHeist-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| BankHeist-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| BankHeist-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| BankHeist-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| BankHeistDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| BankHeistNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/BankHeist-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/BankHeist-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------|-------------|--------------|------------------------------|
+| ALE/BankHeist-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BankHeistNoFrameskip-v4`.
 
 ## Difficulty and modes
 

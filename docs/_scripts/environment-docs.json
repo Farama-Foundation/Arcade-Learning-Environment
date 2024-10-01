@@ -11,12 +11,12 @@
     },
     "alien": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareID=815",
-        "env_description": "You are stuck in a maze-like space ship with three aliens. You goal is to destroy their eggs that are scattered all over the ship while simultaneously avoiding the aliens (they are trying to kill you). You have a flamethrower that can help you turn them away in tricky situations. Moreover, you can occasionally collect a power-up (pulsar) that gives you the temporary ability to kill aliens.",
+        "env_description": "You are stuck in a maze-like spaceship with three aliens. You goal is to destroy their eggs that are scattered all over the ship while simultaneously avoiding the aliens (they are trying to kill you). You have a flamethrower that can help you turn them away in tricky situations. Moreover, you can occasionally collect a power-up (pulsar) that gives you the temporary ability to kill aliens.",
         "reward_description": "You score points by destroying eggs, killing aliens, using pulsars, and collecting special prizes. When you are caught by an alien, you will lose one of your lives. The number of lives you have depends on the game flavor. For a table of scores corresponding to the different achievements, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=815)."
     },
     "amidar": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareID=817",
-        "env_description": "This game is similar to Pac-Man: You are trying to visit all places on a 2-dimensional grid while simultaneously avoiding your enemies. You can turn the tables at one point in the game: Your enemies turn into chickens and you can catch them.",
+        "env_description": "This game is similar to Pac-Man, you are trying to visit all places on a 2-dimensional grid while simultaneously avoiding your enemies. You can turn the tables at one point in the game with your enemies turn into chickens and you can catch them.",
         "reward_description": "You score points by traversing new parts of the grid. Coloring an entire box in the maze or catching chickens gives extra points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=817)."
     },
     "assault": {
@@ -26,12 +26,12 @@
     },
     "asterix": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareID=3325",
-        "env_description": "You are Asterix and can move horizontally (continuously) and vertically (discretely). Objects move horizontally across the screen: lyres and other (more useful) objects. Your goal is to guideAsterix in such a way as to avoid lyres and collect as many other objects as possible. You score points by collecting objects and lose a life whenever you collect a lyre. You have three lives available at the beginning. If you score sufficiently many points, you will be awarded additional points.",
+        "env_description": "You are Asterix and can move horizontally (continuously) and vertically (discretely). Objects move horizontally across the screen including lyres and other (more useful) objects. Your goal is to guideAsterix in such a way as to avoid lyres and collect as many other objects as possible. You score points by collecting objects and lose a life whenever you collect a lyre. You have three lives available at the beginning. If you score sufficiently many points, you will be awarded additional points.",
         "reward_description": "A table of scores awarded for collecting the different objects is provided on [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=3325)."
     },
     "asteroids": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareID=828",
-        "env_description": "This is a well-known arcade game: You control a spaceship in an asteroid field and must break up asteroids by shooting them. Once all asteroids are destroyed, you enter a new level and new asteroids will appear. You will occasionally be attacked by a flying saucer.",
+        "env_description": "You control a spaceship in an asteroid field and must break up asteroids by shooting them. Once all asteroids are destroyed, you enter a new level and new asteroids will appear. You will occasionally be attacked by a flying saucer.",
         "reward_description": "You score points for destroying asteroids, satellites and UFOs. The smaller the asteroid, the more points you score for destroying it. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SystemID=2600&SoftwareID=828&itemTypeID=HTMLMANUAL)."
     },
     "atlantis": {
@@ -91,7 +91,7 @@
     },
     "breakout": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareID=889",
-        "env_description": "Another famous Atari game. The dynamics are similar to pong: You move a paddle and hit the ball in a brick wall at the top of the screen. Your goal is to destroy the brick wall. You can try to break through the wall and let the ball wreak havoc on the other side, all on its own! You have five lives.",
+        "env_description": "You move a paddle and hit the ball in a brick wall at the top of the screen. Your goal is to destroy the brick wall. You can try to break through the wall and let the ball wreak havoc on the other side, all on its own! You have five lives.",
         "reward_description": "You score points by destroying bricks in the wall. The reward for destroying a brick depends on the color of the brick. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=889)."
     },
     "carnival": {
@@ -226,7 +226,7 @@
     },
     "hero": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareLabelID=228",
-        "env_description": "You need to rescue miners that are stuck in a mine shaft. You have access to various tools: A propeller backpack that allows you to fly wherever you want, sticks of dynamite that can be used to blast through walls, a laser beam to kill vermin, and a raft to float across stretches of lava.You have a limited amount of power. Once you run out, you lose a live.",
+        "env_description": "You need to rescue miners that are stuck in a mine shaft. You have access to various tools: a propeller backpack that allows you to fly wherever you want, sticks of dynamite that can be used to blast through walls, a laser beam to kill vermin, and a raft to float across stretches of lava.You have a limited amount of power. Once you run out, you lose a live.",
         "reward_description": "You score points for shooting critters, rescuing miners, and dynamiting walls. Extra points are rewarded for any power remaining after rescuing a miner. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=228)."
     },
     "human_cannonball": {
@@ -376,7 +376,7 @@
     },
     "riverraid": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareLabelID=409",
-        "env_description": "You control a jet that flies over a river: you can move it sideways and fire missiles to destroy enemy objects. Each time an enemy object is destroyed you score points (i.e. rewards).You lose a jet when you run out of fuel: fly over a fuel depot when you begin to run low.You lose a jet even when it collides with the river bank or one of the enemy objects (except fuel depots).The game begins with a squadron of three jets in reserve and you're given an additional jet (up to 9) for each 10,000 points you score.",
+        "env_description": "You control a jet that flies over a river, you can move it sideways and fire missiles to destroy enemy objects. Each time an enemy object is destroyed you score points (i.e. rewards).You lose a jet when you run out of fuel, fly over a fuel depot when you begin to run low.You lose a jet even when it collides with the river bank or one of the enemy objects (except fuel depots).The game begins with a squadron of three jets in reserve and you're given an additional jet (up to 9) for each 10,000 points you score.",
         "reward_description": "Score points are your only reward. You get score points each time you destroy an enemy object: \n\n| Enemy Object | Score Points |\n|--------------|--------------|\n| Tanker       | 30           |\n| Helicopter   | 60           |\n| Fuel Depot   | 80           |\n| Jet          | 100          |\n| Bridge       | 500          |\n\nFor a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=409)."
     },
     "road_runner": {
@@ -481,17 +481,17 @@
     },
     "video_checkers": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareLabelID=579",
-        "env_description": "Classic checkers: move your color pieces towards the opposite end of the board, jumping over opponents pieces to remove them from the board and gaining a king when you reach the other side.",
+        "env_description": "Move your color pieces towards the opposite end of the board, jumping over opponents pieces to remove them from the board and gaining a king when you reach the other side.",
         "reward_description": ""
     },
     "video_chess": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareLabelID=581",
-        "env_description": "This is the usual game of chess: capture the opponents king.",
+        "env_description": "This is the usual game of chess, capture the opponents king.",
         "reward_description": ""
     },
     "video_cube": {
         "atariage_url": "https://atariage.com/manual_html_page.php?SoftwareLabelID=974",
-        "env_description": "Solve a Rubik's cube in a nonstandard way: guide Hubie around the cube and swap tiles on the cubes face with one another until each face consists of only one color.",
+        "env_description": "Solve a Rubik's cube in a nonstandard way, guide Hubie around the cube and swap tiles on the cubes face with one another until each face consists of only one color.",
         "reward_description": ""
     },
     "video_pinball": {

@@ -4,7 +4,7 @@ title: Alien
 
 # Alien
 
-```{figure} ../../_static/videos/environments/alien.gif
+```{figure} ../_static/videos/environments/alien.gif
 :width: 120px
 :name: Alien
 ```
@@ -13,15 +13,15 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Alien-v5")    |
 | Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Creation          | make(ALE/Alien-v5)                |
 
 For more Alien variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-You are stuck in a maze-like spaceship with three aliens. Your goal is to destroy their eggs that are scattered all over the ship while simultaneously avoiding the aliens (they are trying to kill you). You have a flamethrower that can help you turn them away in tricky situations. Moreover, you can occasionally collect a power-up (pulsar) that gives you the temporary ability to kill aliens.
+You are stuck in a maze-like spaceship with three aliens. You goal is to destroy their eggs that are scattered all over the ship while simultaneously avoiding the aliens (they are trying to kill you). You have a flamethrower that can help you turn them away in tricky situations. Moreover, you can occasionally collect a power-up (pulsar) that gives you the temporary ability to kill aliens.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=815)
 

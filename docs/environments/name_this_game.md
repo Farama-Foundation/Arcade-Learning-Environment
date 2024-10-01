@@ -11,11 +11,11 @@ title: NameThisGame
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                         |
-|-------------------|-----------------------------------------|
-| Action Space      | Discrete(6)                             |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)       |
-| Import            | `gymnasium.make("ALE/NameThisGame-v5")` |
+|                   |                                       |
+|-------------------|---------------------------------------|
+| Make              | gymnasium.make("ALE/NameThisGame-v5") |
+| Action Space      | Discrete(6)                           |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)     |
 
 For more NameThisGame variants with different observation and action spaces, see the variants section.
 
@@ -53,22 +53,11 @@ See variants section for the type of observation used by each environment id by 
 NameThisGame has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                           | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------------------------|-------------|--------------|------------------------------|
-| NameThisGame-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| NameThisGame-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| NameThisGame-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| NameThisGame-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| NameThisGameDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| NameThisGameNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| NameThisGame-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| NameThisGame-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| NameThisGame-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| NameThisGame-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| NameThisGameDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| NameThisGameNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/NameThisGame-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/NameThisGame-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id              | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------------|-------------|--------------|------------------------------|
+| ALE/NameThisGame-v5 | `"rgb"`     | `1`          | `0.00`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `NameThisGameNoFrameskip-v4`.
 
 ## Difficulty and modes
 
