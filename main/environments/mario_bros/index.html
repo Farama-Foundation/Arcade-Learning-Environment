@@ -517,11 +517,11 @@ As MarioBros uses the full set of actions then specifying <code class="docutils 
 </section>
 <section id="observations">
 <h2>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h2>
-<p>Atari environments have three possible observation types: <code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;grayscale&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code>.</p>
+<p>Atari environments have three possible observation types:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span> <span class="pre">-&gt;</span> <span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;ram&quot;</span> <span class="pre">-&gt;</span> <span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(128,),</span> <span class="pre">np.uint8)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span> <span class="pre">-&gt;</span> <span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the “rgb” type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;ram&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(128,),</span> <span class="pre">np.uint8)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the q”rgb” type</p></li>
 </ul>
 <p>See variants section for the type of observation used by each environment id by default.</p>
 </section>
