@@ -11,17 +11,19 @@ title: Atlantis2
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|   |   |
-|---|---|
-| Action Space | Discrete(4) |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import | `gymnasium.make("ALE/Atlantis2-v5")` |
+|                   |                                      |
+|-------------------|--------------------------------------|
+| Action Space      | Discrete(4)                          |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
+| Import            | `gymnasium.make("ALE/Atlantis2-v5")` |
 
 For more Atlantis2 variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-Atlantis2 is missing description documentation. If you are interested in writing up a description, please create an issue or PR with the information on the Gymnasium github.
+Your job is to defend the submerged city of Atlantis. Your enemies slowly descend towards the city and you must destroy them before they reach striking distance. To this end, you control three defense posts.You lose if your enemies manage to destroy all seven of Atlantis' installations. You may rebuild installations after you have fought of a wave of enemies and scored a sufficient number of points.
+
+For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=835)
 
 ## Actions
 
@@ -38,14 +40,17 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
+### Reward
+
+You score points for destroying enemies, keeping installations protected during attack waves. You score more points if you manage to destroy your enemies with one of the outer defense posts. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=835).
 
 ## Variants
 
