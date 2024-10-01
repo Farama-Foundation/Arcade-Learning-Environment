@@ -4,18 +4,18 @@ title: PrivateEye
 
 # PrivateEye
 
-```{figure} ../../_static/videos/environments/private_eye.gif
+```{figure} ../_static/videos/environments/private_eye.gif
 :width: 120px
 :name: PrivateEye
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                   |
-|-------------------|-----------------------------------|
-| Action Space      | Discrete(18)                      |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Creation          | make(ALE/PrivateEye-v5)           |
+|                   |                                       |
+|-------------------|---------------------------------------|
+| Action Space      | Discrete(18)                          |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)     |
+| Import            | `gymnasium.make("ALE/PrivateEye-v5")` |
 
 For more PrivateEye variants with different observation and action spaces, see the variants section.
 
@@ -43,29 +43,39 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
+### Reward
 
-You score points for completing your tasks like gathering evidence, nabbing questionable characters or closing cases etc. You lose points if you get hit or if your auto is on a pothole.
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=376).
+You score points for completing your tasks like gathering evidence, nabbing questionable characters or closing cases etc. You lose points if you get hit or if your auto is on a pothole. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=376).
 
 ## Variants
 
 PrivateEye has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id            | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------|-------------|--------------|------------------------------|
-| ALE/PrivateEye-v5 | `"rgb"`     | `1`          | `0.00`                       |
-
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `PrivateEyeNoFrameskip-v4`.
+| Env-id                         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------------------------|-------------|--------------|------------------------------|
+| PrivateEye-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
+| PrivateEye-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
+| PrivateEye-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
+| PrivateEye-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
+| PrivateEyeDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
+| PrivateEyeNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
+| PrivateEye-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
+| PrivateEye-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
+| PrivateEye-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
+| PrivateEye-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
+| PrivateEyeDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
+| PrivateEyeNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
+| ALE/PrivateEye-v5              | `"rgb"`     | `4`          | `0.25`                       |
+| ALE/PrivateEye-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
 
 ## Difficulty and modes
 

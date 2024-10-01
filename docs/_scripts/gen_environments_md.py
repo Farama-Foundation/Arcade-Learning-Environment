@@ -18,10 +18,6 @@ ALL_ATARI_GAMES = {
     and env_spec.kwargs["game"] not in impossible_roms
 }
 
-# Generate the list of all atari games on atari.md
-for rom_id in sorted(ALL_ATARI_GAMES):
-    print(f"atari/{rom_id}")
-
 
 def generate_value_ranges(values):
     for a, b in itertools.groupby(enumerate(values), lambda pair: pair[1] - pair[0]):
@@ -38,52 +34,6 @@ def shortened_repr(values):
             output.append(f"{low}, ..., {high}")
     return "[" + ", ".join(output) + "]"
 
-
-# # Test examples
-# print(shortened_repr([0]))
-# print(shortened_repr([1, 2, 3]))
-# print(shortened_repr([0, 1, 2, 3]))
-# print(shortened_repr([0, 4, 8, 12, 16, 20, 24, 28]))
-# print(shortened_repr(list(range(32)) + [128]))
-
-
-# # Generate difficult levels table on atari.md
-headers = [
-    "Environment",
-    "Possible Modes",
-    "Default Mode",
-    "Possible Difficulties",
-    "Default Difficulty",
-]
-rows = []
-
-for rom_id in tqdm(ALL_ATARI_GAMES):
-    env_name = rom_id_to_name(rom_id)
-
-    env = gymnasium.make(f"ALE/{env_name}-v5").unwrapped
-
-    available_difficulties = env.ale.getAvailableDifficulties()
-    default_difficulty = env.ale.cloneState().getDifficulty()
-    available_modes = env.ale.getAvailableModes()
-    default_mode = env.ale.cloneState().getCurrentMode()
-
-    if env_name == "VideoCube":
-        available_modes = "[0, 1, 2, 100, 101, 102, ..., 5000, 5001, 5002]"
-    else:
-        available_modes = shortened_repr(available_modes)
-
-    rows.append(
-        [
-            env_name,
-            available_modes,
-            default_mode,
-            shortened_repr(available_difficulties),
-            default_difficulty,
-        ]
-    )
-    env.close()
-
-print(tabulate.tabulate(rows, headers=headers, tablefmt="github"))
 
 # Generate each pages results
 with open("environment-docs.json") as file:
@@ -107,27 +57,30 @@ for rom_id in tqdm(ALL_ATARI_GAMES):
     if rom_id in atari_data:
         env_data = atari_data[rom_id]
 
-        env_description = env_data["env_description"]
-        if env_data["atariage_url"]:
-            env_url = f"""
+    env_description = env_data["env_description"]
+
+    if env_data["atariage_url"]:
+        env_url = f"""
 For a more detailed documentation, see [the AtariAge page]({env_data['atariage_url']})
 """
-        else:
-            env_url = ""
-        reward_description = f"""
-{env_data["reward_description"]}"""
     else:
-        # Add the information to `atari_docs.json` and rerun this file to generate the new documentation
-        env_description = f"{env_name} is missing description documentation. If you are interested in writing up a description, please create an issue or PR with the information on the Gymnasium github."
         env_url = ""
+
+    if env_data["reward_description"]:
+        reward_description = f"""
+### Reward
+
+{env_data["reward_description"]}
+"""
+    else:
         reward_description = ""
 
-    table_values = map(
+    action_table_values = map(
         lambda s: f"`{s}`",
         itertools.chain(*zip(range(env.action_space.n), env.get_action_meanings())),
     )
     default_action_table = tabulate.tabulate(
-        list(itertools.zip_longest(*([iter(table_values)] * 6), fillvalue="")),
+        list(itertools.zip_longest(*([iter(action_table_values)] * 6), fillvalue="")),
         headers=["Value", "Meaning", "Value", "Meaning", "Value", "Meaning"],
         tablefmt="github",
     )
@@ -196,7 +149,7 @@ title: {env_name}
 
 # {env_name}
 
-```{{figure}} ../../_static/videos/environments/{rom_id}.gif
+```{{figure}} ../_static/videos/environments/{rom_id}.gif
 :width: 120px
 :name: {env_name}
 ```
@@ -221,11 +174,11 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 {reward_description}

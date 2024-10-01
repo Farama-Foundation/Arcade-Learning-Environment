@@ -4,18 +4,18 @@ title: YarsRevenge
 
 # YarsRevenge
 
-```{figure} ../../_static/videos/environments/yars_revenge.gif
+```{figure} ../_static/videos/environments/yars_revenge.gif
 :width: 120px
 :name: YarsRevenge
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                   |
-|-------------------|-----------------------------------|
-| Action Space      | Discrete(18)                      |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Creation          | make(ALE/YarsRevenge-v5)          |
+|                   |                                        |
+|-------------------|----------------------------------------|
+| Action Space      | Discrete(18)                           |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)      |
+| Import            | `gymnasium.make("ALE/YarsRevenge-v5")` |
 
 For more YarsRevenge variants with different observation and action spaces, see the variants section.
 
@@ -43,25 +43,35 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
-
 
 ## Variants
 
 YarsRevenge has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id             | obs_type=   | frameskip=   | repeat_action_probability=   |
-|--------------------|-------------|--------------|------------------------------|
-| ALE/YarsRevenge-v5 | `"rgb"`     | `1`          | `0.00`                       |
-
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `YarsRevengeNoFrameskip-v4`.
+| Env-id                          | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------------------------|-------------|--------------|------------------------------|
+| YarsRevenge-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
+| YarsRevenge-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
+| YarsRevenge-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
+| YarsRevenge-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
+| YarsRevengeDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
+| YarsRevengeNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
+| YarsRevenge-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
+| YarsRevenge-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
+| YarsRevenge-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
+| YarsRevenge-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
+| YarsRevengeDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
+| YarsRevengeNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
+| ALE/YarsRevenge-v5              | `"rgb"`     | `4`          | `0.25`                       |
+| ALE/YarsRevenge-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
 
 ## Difficulty and modes
 

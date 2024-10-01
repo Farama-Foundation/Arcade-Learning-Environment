@@ -4,7 +4,7 @@ title: Pooyan
 
 # Pooyan
 
-```{figure} ../../_static/videos/environments/pooyan.gif
+```{figure} ../_static/videos/environments/pooyan.gif
 :width: 120px
 :name: Pooyan
 ```
@@ -15,7 +15,7 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 |-------------------|-----------------------------------|
 | Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (220, 160, 3), uint8) |
-| Creation          | make(ALE/Pooyan-v5)               |
+| Import            | `gymnasium.make("ALE/Pooyan-v5")` |
 
 For more Pooyan variants with different observation and action spaces, see the variants section.
 
@@ -40,29 +40,39 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
+### Reward
 
-If you hit a balloon, wolf or stone with an arrow you score points.
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=372).
+If you hit a balloon, wolf or stone with an arrow you score points. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=372).
 
 ## Variants
 
 Pooyan has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------|-------------|--------------|------------------------------|
-| ALE/Pooyan-v5 | `"rgb"`     | `1`          | `0.00`                       |
-
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `PooyanNoFrameskip-v4`.
+| Env-id                     | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------------------|-------------|--------------|------------------------------|
+| Pooyan-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
+| Pooyan-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
+| Pooyan-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
+| Pooyan-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
+| PooyanDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
+| PooyanNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
+| Pooyan-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
+| Pooyan-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
+| Pooyan-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
+| Pooyan-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
+| PooyanDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
+| PooyanNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
+| ALE/Pooyan-v5              | `"rgb"`     | `4`          | `0.25`                       |
+| ALE/Pooyan-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
 
 ## Difficulty and modes
 

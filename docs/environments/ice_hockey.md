@@ -4,18 +4,18 @@ title: IceHockey
 
 # IceHockey
 
-```{figure} ../../_static/videos/environments/ice_hockey.gif
+```{figure} ../_static/videos/environments/ice_hockey.gif
 :width: 120px
 :name: IceHockey
 ```
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                   |
-|-------------------|-----------------------------------|
-| Action Space      | Discrete(18)                      |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Creation          | make(ALE/IceHockey-v5)            |
+|                   |                                      |
+|-------------------|--------------------------------------|
+| Action Space      | Discrete(18)                         |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
+| Import            | `gymnasium.make("ALE/IceHockey-v5")` |
 
 For more IceHockey variants with different observation and action spaces, see the variants section.
 
@@ -43,30 +43,39 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
+### Reward
 
-You score points by shooting the puck into your opponent's goal. Your opponent scores in the same manner.
-There are no limits to how many points you can get per game, other than the time limit of 3-minute games.
-For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=241).
+You score points by shooting the puck into your opponent's goal. Your opponent scores in the same manner. There are no limits to how many points you can get per game, other than the time limit of 3-minute games. For a more detailed documentation, consult [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=241).
 
 ## Variants
 
 IceHockey has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------|-------------|--------------|------------------------------|
-| ALE/IceHockey-v5 | `"rgb"`     | `1`          | `0.00`                       |
-
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `IceHockeyNoFrameskip-v4`.
+| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------------|-------------|--------------|------------------------------|
+| IceHockey-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
+| IceHockey-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
+| IceHockey-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
+| IceHockey-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
+| IceHockeyDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
+| IceHockeyNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
+| IceHockey-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
+| IceHockey-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
+| IceHockey-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
+| IceHockey-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
+| IceHockeyDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
+| IceHockeyNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
+| ALE/IceHockey-v5              | `"rgb"`     | `4`          | `0.25`                       |
+| ALE/IceHockey-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
 
 ## Difficulty and modes
 

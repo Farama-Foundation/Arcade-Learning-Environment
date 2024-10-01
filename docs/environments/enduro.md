@@ -4,7 +4,7 @@ title: Enduro
 
 # Enduro
 
-```{figure} ../../_static/videos/environments/enduro.gif
+```{figure} ../_static/videos/environments/enduro.gif
 :width: 120px
 :name: Enduro
 ```
@@ -15,7 +15,7 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 |-------------------|-----------------------------------|
 | Action Space      | Discrete(9)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Creation          | make(ALE/Enduro-v5)               |
+| Import            | `gymnasium.make("ALE/Enduro-v5")` |
 
 For more Enduro variants with different observation and action spaces, see the variants section.
 
@@ -41,15 +41,15 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
+### Reward
 
 You get 1 point for each vehicle you overtake.
 
@@ -58,11 +58,22 @@ You get 1 point for each vehicle you overtake.
 Enduro has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------|-------------|--------------|------------------------------|
-| ALE/Enduro-v5 | `"rgb"`     | `1`          | `0.00`                       |
-
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `EnduroNoFrameskip-v4`.
+| Env-id                     | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------------------|-------------|--------------|------------------------------|
+| Enduro-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
+| Enduro-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
+| Enduro-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
+| Enduro-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
+| EnduroDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
+| EnduroNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
+| Enduro-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
+| Enduro-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
+| Enduro-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
+| Enduro-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
+| EnduroDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
+| EnduroNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
+| ALE/Enduro-v5              | `"rgb"`     | `4`          | `0.25`                       |
+| ALE/Enduro-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
 
 ## Difficulty and modes
 

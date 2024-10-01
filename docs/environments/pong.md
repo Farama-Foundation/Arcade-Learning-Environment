@@ -4,7 +4,7 @@ title: Pong
 
 # Pong
 
-```{figure} ../../_static/videos/environments/pong.gif
+```{figure} ../_static/videos/environments/pong.gif
 :width: 120px
 :name: Pong
 ```
@@ -15,7 +15,7 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 |-------------------|-----------------------------------|
 | Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Creation          | make(ALE/Pong-v5)                 |
+| Import            | `gymnasium.make("ALE/Pong-v5")`   |
 
 For more Pong variants with different observation and action spaces, see the variants section.
 
@@ -40,29 +40,39 @@ See [environment specification](../env-spec) to see more information on the acti
 
 ## Observations
 
-Atari environments have three possible observation types: `"rgb"`, `"grayscale"` and `"ram"`.
+Atari environments have three possible observation types:
 
-- `obs_type="rgb" -> observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
-- `obs_type="ram" -> observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale" -> Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the "rgb" type
+- `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
+- `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
 
 See variants section for the type of observation used by each environment id by default.
 
-### Rewards
+### Reward
 
-You get score points for getting the ball to pass the opponent's paddle. You lose points if the ball passes your paddle.
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=587).
+You get score points for getting the ball to pass the opponent's paddle. You lose points if the ball passes your paddle. For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=587).
 
 ## Variants
 
 Pong has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------|-------------|--------------|------------------------------|
-| ALE/Pong-v5 | `"rgb"`     | `1`          | `0.00`                       |
-
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `PongNoFrameskip-v4`.
+| Env-id                   | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------------------|-------------|--------------|------------------------------|
+| Pong-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
+| Pong-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
+| Pong-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
+| Pong-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
+| PongDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
+| PongNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
+| Pong-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
+| Pong-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
+| Pong-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
+| Pong-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
+| PongDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
+| PongNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
+| ALE/Pong-v5              | `"rgb"`     | `4`          | `0.25`                       |
+| ALE/Pong-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
 
 ## Difficulty and modes
 
