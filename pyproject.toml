@@ -47,7 +47,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 test = [
     "pytest>=7.0",
-    "gymnasium>=1.0.0a1",
+    "gymnasium>=1.0.0",
 ]
 
 [project.urls]
