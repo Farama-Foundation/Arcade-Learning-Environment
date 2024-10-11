@@ -16,7 +16,14 @@ mkdir $unpack_dir
 curl -o "$temp_file" "$file_url"
 
 # Compute the SHA256 checksum of the ROMs file and compare with the expected checksum
-computed_checksum=$(sha256sum "$temp_file" | awk '{ print $1 }')  # use `shasum -a 256` for macos
+if [[ "$(uname)" == "Darwin" ]]; then
+    computed_checksum=$(shasum -a 256 "$temp_file" | awk '{ print $1 }')
+elif [[ "$(uname)" == "Linux" ]]; then
+    computed_checksum=$(sha256sum "$temp_file" | awk '{ print $1 }')
+else
+    echo "Unsupported OS $(uname). Exiting."
+    exit 1
+fi
 
 if [ "$computed_checksum" == "$expected_checksum" ]; then
     # Decode the base64 file and extract the tar.gz content
