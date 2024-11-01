@@ -93,7 +93,7 @@ cmake --build . --target install
 There are optional flags `-DSDL_SUPPORT=ON/OFF` to toggle SDL support (i.e., `display_screen` and `sound` support; `OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
 the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the pybind11 wrapper (`ON` by default).
 
-Finally, you can link agaisnt the ALE in your own CMake project as follows
+Finally, you can link against the ALE in your own CMake project as follows
 
 ```cmake
 find_package(ale REQUIRED)
