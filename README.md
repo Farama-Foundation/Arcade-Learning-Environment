@@ -46,7 +46,7 @@ You can now import the ALE in your Python projects with providing a direct inter
 from ale_py import ALEInterface, roms
 
 ale = ALEInterface()
-ale.loadROM(roms.get_rom_path("Breakout"))
+ale.loadROM(roms.get_rom_path("breakout"))
 ale.reset_game()
 
 reward = ale.act(0)  # noop
