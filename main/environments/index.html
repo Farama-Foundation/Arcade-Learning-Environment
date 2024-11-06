@@ -641,6 +641,9 @@ the table above. Together with <code class="docutils literal notranslate"><span 
 <li><p><strong>repeat_action_probability</strong>: <code class="docutils literal notranslate"><span class="pre">float</span></code>. The probability that an action is repeated, also called “sticky actions”, as described in the section on stochasticity.</p></li>
 <li><p><strong>full_action_space</strong>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the action space consists of all legal actions on the console. Otherwise, the
 action space will be reduced to a subset.</p></li>
+<li><p><strong>continuous</strong>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>. If set to True, will convert the action space into a Gymnasium <a class="reference external" href="https://gymnasium.farama.org/api/spaces/fundamental/#gymnasium.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a> space.
+Actions passed into the environment are then thresholded to discrete using the <code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code> parameter.</p></li>
+<li><p><strong>continuous_action_threshold</strong>: <code class="docutils literal notranslate"><span class="pre">float</span></code>. This determines the threshold for actions to be thresholded into discrete actions.</p></li>
 <li><p><strong>render_mode</strong>: <code class="docutils literal notranslate"><span class="pre">str</span></code>. Specifies the rendering mode. Its values are:</p>
 <ul>
 <li><p>human: Display the screen and enable game sounds. This will lock emulation to the ROMs specified FPS</p></li>

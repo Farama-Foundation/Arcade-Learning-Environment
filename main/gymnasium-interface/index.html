@@ -439,6 +439,24 @@
 </pre></div>
 </div>
 </section>
+<section id="continuous-action-space">
+<h2>Continuous Action Space<a class="headerlink" href="#continuous-action-space" title="Link to this heading">¶</a></h2>
+<p>By default, ALE supports discrete actions related to the cardinal directions and fire (e.g., <code class="docutils literal notranslate"><span class="pre">UP</span></code>, <code class="docutils literal notranslate"><span class="pre">DOWN</span></code>, <code class="docutils literal notranslate"><span class="pre">LEFT</span></code>, <code class="docutils literal notranslate"><span class="pre">FIRE</span></code>).
+With <code class="docutils literal notranslate"><span class="pre">continuous</span></code>, Atari environment can be modified to support continuous actions, first proposed in <a class="reference external" href="https://arxiv.org/pdf/2410.23810">CALE: Continuous Arcade Learning Environment</a>.</p>
+<p>To initialize an environment with continuous actions, simply use the argument <code class="docutils literal notranslate"><span class="pre">continuous=True</span></code> in the <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ale_py</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gym</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;ALE/Breakout-v5&quot;</span><span class="p">,</span> <span class="n">continuous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span>  <span class="c1"># radius, theta and fire where radius and theta for polar coordinates</span>
+<span class="go">Box([0.0, -np.pi, 0.0], [1.0, np.pi, 1.0], np.float32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
 </section>
 
           </article>
@@ -512,6 +530,7 @@
               <ul>
 <li><a class="reference internal" href="#">Gymnasium Interface</a><ul>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
+<li><a class="reference internal" href="#continuous-action-space">Continuous Action Space</a></li>
 </ul>
 </li>
 </ul>
