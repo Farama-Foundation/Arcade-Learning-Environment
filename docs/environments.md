@@ -184,6 +184,11 @@ the table above. Together with `mode`, this determines the "flavor" of the game.
 - **full_action_space**: `bool`. If set to `True`, the action space consists of all legal actions on the console. Otherwise, the
 action space will be reduced to a subset.
 
+- **continuous**: `bool`. If set to True, will convert the action space into a Gymnasium [`Box`](https://gymnasium.farama.org/api/spaces/fundamental/#gymnasium.spaces.Box) space.
+Actions passed into the environment are then thresholded to discrete using the `continuous_action_threshold` parameter.
+
+- **continuous_action_threshold**: `float`. This determines the threshold for actions to be thresholded into discrete actions.
+
 - **render_mode**: `str`. Specifies the rendering mode. Its values are:
 	- human: Display the screen and enable game sounds. This will lock emulation to the ROMs specified FPS
 	- rgb_array: Returns the current environment RGB frame of the environment.
