@@ -1,3 +1,4 @@
+
 # Gymnasium Interface
 
 ALE natively supports [Gymnasium](https://github.com/farama-Foundation/gymnasium). To use these new environments you can simply:
@@ -25,8 +26,8 @@ env = gym.make('Breakout-v0', render_mode='human')
 
 ## Continuous Action Space
 
-By default, ALE supports discrete actions related to the cardinal directions and fire (e.g., `UP`, `DOWN`, `LEFT`, `FIRE`). 
-With `continuous`, Atari environment can be modified to support continuous actions, first proposed in [CALE: Continuous Arcade Learning Environment](https://arxiv.org/pdf/2410.23810). 
+By default, ALE supports discrete actions related to the cardinal directions and fire (e.g., `UP`, `DOWN`, `LEFT`, `FIRE`).
+With `continuous`, Atari environment can be modified to support continuous actions, first proposed in [CALE: Continuous Arcade Learning Environment](https://arxiv.org/pdf/2410.23810).
 
 To initialize an environment with continuous actions, simply use the argument `continuous=True` in the `gymnasium.make`:
 ```python
@@ -41,4 +42,3 @@ Box([0.0, -np.pi, 0.0], [1.0, np.pi, 1.0], np.float32)
 >>> obs, info = env.reset()
 >>> obs, reward, terminated, truncated, info = env.step(np.array([0.9, 0.4, 0.7], dtype=np.float32))
 ```
-
