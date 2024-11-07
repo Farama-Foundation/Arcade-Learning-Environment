@@ -142,57 +142,32 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("loadROM", &ale::ALEInterface::loadROM)
       .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
       .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
-                      ale::ALEInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &
-                      ale::ALEInterface::act)
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &ale::ALEPythonInterface::act)
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &ale::ALEPythonInterface::act)
+      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &ale::ALEInterface::act)
+      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &ale::ALEInterface::act)
       .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))
       .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
       .def("reset_game", &ale::ALEPythonInterface::reset_game)
       .def("getAvailableModes", &ale::ALEPythonInterface::getAvailableModes)
       .def("setMode", &ale::ALEPythonInterface::setMode)
-      .def("getAvailableDifficulties",
-           &ale::ALEPythonInterface::getAvailableDifficulties)
+      .def("getAvailableDifficulties", &ale::ALEPythonInterface::getAvailableDifficulties)
       .def("setDifficulty", &ale::ALEPythonInterface::setDifficulty)
       .def("getLegalActionSet", &ale::ALEPythonInterface::getLegalActionSet)
       .def("getMinimalActionSet", &ale::ALEPythonInterface::getMinimalActionSet)
       .def("getFrameNumber", &ale::ALEPythonInterface::getFrameNumber)
       .def("lives", &ale::ALEPythonInterface::lives)
-      .def("getEpisodeFrameNumber",
-           &ale::ALEPythonInterface::getEpisodeFrameNumber)
-      .def("getScreen", (void (ale::ALEPythonInterface::*)(
-                            py::array_t<ale::pixel_t, py::array::c_style>&)) &
-                            ale::ALEPythonInterface::getScreen)
-      .def("getScreen", (py::array_t<ale::pixel_t, py::array::c_style>(
-                            ale::ALEPythonInterface::*)()) &
-                            ale::ALEPythonInterface::getScreen)
-      .def("getScreenRGB",
-           (void (ale::ALEPythonInterface::*)(
-               py::array_t<ale::pixel_t, py::array::c_style>&)) &
-               ale::ALEPythonInterface::getScreenRGB)
-      .def("getScreenRGB", (py::array_t<ale::pixel_t, py::array::c_style>(
-                               ale::ALEPythonInterface::*)()) &
-                               ale::ALEPythonInterface::getScreenRGB)
-      .def("getScreenGrayscale",
-           (void (ale::ALEPythonInterface::*)(
-               py::array_t<ale::pixel_t, py::array::c_style>&)) &
-               ale::ALEPythonInterface::getScreenGrayscale)
-      .def("getScreenGrayscale",
-           (py::array_t<ale::pixel_t, py::array::c_style>(
-               ale::ALEPythonInterface::*)()) &
-               ale::ALEPythonInterface::getScreenGrayscale)
+      .def("getEpisodeFrameNumber", &ale::ALEPythonInterface::getEpisodeFrameNumber)
+      .def("getScreen", (void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style>&)) &ale::ALEPythonInterface::getScreen)
+      .def("getScreen", (py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getScreen)
+      .def("getScreenRGB", (void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style>&)) &ale::ALEPythonInterface::getScreenRGB)
+      .def("getScreenRGB", (py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getScreenRGB)
+      .def("getScreenGrayscale", (void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style>&)) &ale::ALEPythonInterface::getScreenGrayscale)
+      .def("getScreenGrayscale", (py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getScreenGrayscale)
       .def("getScreenDims", &ale::ALEPythonInterface::getScreenDims)
       .def("getRAMSize", &ale::ALEPythonInterface::getRAMSize)
-      .def("getRAM", (const py::array_t<uint8_t, py::array::c_style> (
-                         ale::ALEPythonInterface::*)()) &
-                         ale::ALEPythonInterface::getRAM)
-      .def("getRAM", (void (ale::ALEPythonInterface::*)(
-                         py::array_t<uint8_t, py::array::c_style>&)) &
-                         ale::ALEPythonInterface::getRAM)
+      .def("getRAM", (const py::array_t<uint8_t, py::array::c_style> (ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getRAM)
+      .def("getRAM", (void (ale::ALEPythonInterface::*)(py::array_t<uint8_t, py::array::c_style>&)) &ale::ALEPythonInterface::getRAM)
       .def("setRAM", &ale::ALEPythonInterface::setRAM)
       .def("cloneState", &ale::ALEPythonInterface::cloneState, py::kw_only(), py::arg("include_rng") = py::bool_(false))
       .def("restoreState", &ale::ALEPythonInterface::restoreState)

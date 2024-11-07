@@ -32,15 +32,12 @@
 #define __ALE_INTERFACE_HPP__
 
 #include "ale/emucore/OSystem.hxx"
-#include "ale/games/Roms.hpp"
 #include "ale/environment/stella_environment.hpp"
 #include "ale/common/ScreenExporter.hpp"
 #include "ale/common/Log.hpp"
-#include "version.hpp"
 
 #include <string>
 #include <optional>
-#include <memory>
 #include <filesystem>
 
 namespace fs = std::filesystem;

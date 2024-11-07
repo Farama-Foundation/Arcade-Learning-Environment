@@ -399,3 +399,10 @@ def test_gym_compliance(tetris_env):
         check_env(tetris_env.unwrapped, skip_render_check=True)
 
     assert len(caught_warnings) == 0, [w.message for w in caught_warnings]
+
+
+@pytest.mark.parametrize("render_screen_size", [None, (100, 100)])
+def test_render_screen_size(render_screen_size):
+    env = gymnasium.make("ALE/Breakout-v5", render_mode="human", render_screen_size=render_screen_size)
+
+    env.close()

@@ -32,7 +32,7 @@ ScreenSDL::ScreenSDL(OSystem* osystem) :
   sound(NULL),
   colourPalette(NULL)
 {
-  // Store necesarry info for ScreenSDL
+  // Store necessary info for ScreenSDL
   mediaSource = &osystem->console().mediaSource();
   sound = &osystem->sound();
   colourPalette = &osystem->colourPalette();
@@ -62,7 +62,6 @@ ScreenSDL::ScreenSDL(OSystem* osystem) :
   if (window == nullptr) {
     throw std::runtime_error("Failed to initialize SDL window");
   }
-
 
   // Get the render info for our driver.
   SDL_RendererInfo rendererInfo;

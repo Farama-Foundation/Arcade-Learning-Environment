@@ -75,7 +75,6 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
               the current environment RGB frame.
 
         Note:
-          - The game must be installed, see ale-import-roms, or ale-py-roms.
           - Frameskip values of (low, high) will enable stochastic frame skip
             which will sample a random frameskip uniformly each action.
           - It is recommended to enable full action space.
@@ -133,13 +132,14 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         # Initialize ALE
         self.ale = ale_py.ALEInterface()
 
+        self.render_mode = render_mode
+
         self._game = game
         self._game_mode = mode
         self._game_difficulty = difficulty
 
         self._frameskip = frameskip
         self._obs_type = obs_type
-        self.render_mode = render_mode
 
         # Set logger mode to error only
         self.ale.setLoggerMode(ale_py.LoggerMode.Error)
@@ -285,7 +285,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                     -int(y < self.continuous_action_threshold)
                     + int(y > self.continuous_action_threshold)
                 ),
-                fire=(action[-1] > self.continuous_action_threshold),
+                fire=bool(action[-1] > self.continuous_action_threshold),
             )
 
             strength = action[0]

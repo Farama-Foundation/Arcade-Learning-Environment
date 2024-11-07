@@ -32,12 +32,9 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cctype>
 #include <cstddef>
-#include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <iterator>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -139,7 +136,7 @@ void ALEInterface::loadROM(fs::path rom_file) {
 
     Logger::Error
       << "For a list of supported ROMs see "
-      << "https://github.com/mgbellemare/Arcade-Learning-Environment"
+      << "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
       << std::endl;
 
     std::exit(1);
@@ -391,8 +388,7 @@ void ALEInterface::saveScreenPNG(const std::string& filename) {
   exporter.save(environment->getScreen(), filename);
 }
 
-ScreenExporter*
-ALEInterface::createScreenExporter(const std::string& filename) const {
+ScreenExporter* ALEInterface::createScreenExporter(const std::string& filename) const {
   return new ScreenExporter(theOSystem->colourPalette(), filename);
 }
 
