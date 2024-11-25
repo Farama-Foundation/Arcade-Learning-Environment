@@ -48,6 +48,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         continuous_action_threshold: float = 0.5,
         max_num_frames_per_episode: int | None = None,
         render_mode: Literal["human", "rgb_array"] | None = None,
+        sound_obs: bool = False,
     ):
         """Initialize the ALE for Gymnasium.
 
@@ -73,6 +74,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
               game sounds. This will lock emulation to the ROMs specified FPS
               If `rgb_array` we'll return the `rgb` key in step metadata with
               the current environment RGB frame.
+          sound_obs: bool => Use sound observation.
 
         Note:
           - The game must be installed, see ale-import-roms, or ale-py-roms.
@@ -128,6 +130,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             continuous_action_threshold=continuous_action_threshold,
             max_num_frames_per_episode=max_num_frames_per_episode,
             render_mode=render_mode,
+            sound_obs=sound_obs,
         )
 
         # Initialize ALE
@@ -140,6 +143,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self._frameskip = frameskip
         self._obs_type = obs_type
         self.render_mode = render_mode
+        self.sound_obs = sound_obs
 
         # Set logger mode to error only
         self.ale.setLoggerMode(ale_py.LoggerMode.Error)
@@ -153,6 +157,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         if render_mode == "human":
             self.ale.setBool("display_screen", True)
             self.ale.setBool("sound", True)
+
+        self.ale.setBool("sound_obs", self.sound_obs)
 
         # seed + load
         self.seed_game()

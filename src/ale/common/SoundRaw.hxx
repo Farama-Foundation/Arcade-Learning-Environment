@@ -1,23 +1,22 @@
-//============================================================================
-//
-//   SSSS    tt          lll  lll
-//  SS  SS   tt           ll   ll
-//  SS     tttttt  eeee   ll   ll   aaaa
-//   SSSS    tt   ee  ee  ll   ll      aa
-//      SS   tt   eeeeee  ll   ll   aaaaa  --  "An Atari 2600 VCS Emulator"
-//  SS  SS   tt   ee      ll   ll  aa  aa
-//   SSSS     ttt  eeeee llll llll  aaaaa
-//
-// Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
-//
-// See the file "license" for information on usage and redistribution of
-// this file, and for a DISCLAIMER OF ALL WARRANTIES.
-//
-// $Id: SoundNull.hxx,v 1.6 2007/01/01 18:04:40 stephena Exp $
-//============================================================================
+/* *****************************************************************************
+ * A.L.E (Arcade Learning Environment)
+ * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare,
+ *   Matthew Hausknecht and the Reinforcement Learning and Artificial Intelligence
+ *   Laboratory
+ * Released under the GNU General Public License; see License.txt for details.
+ *
+ * Based on: Stella  --  "An Atari 2600 VCS Emulator"
+ * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
+ *
+ * *****************************************************************************
+ *  SoundRaw.hxx
+ *
+ *  A class for generating raw Atari 2600 sound samples.
+ *
+ **************************************************************************** */
 
-#ifndef SOUND_NULL_HXX
-#define SOUND_NULL_HXX
+#ifndef SOUND_RAW_HXX
+#define SOUND_RAW_HXX
 
 namespace ale {
 namespace stella {
@@ -30,29 +29,32 @@ class Deserializer;
 }  // namespace ale
 
 #include "ale/emucore/Sound.hxx"
+#include "ale/emucore/TIASnd.hxx"
+#include <deque>
 
 namespace ale {
 
 /**
-  This class implements a Null sound object, where-by sound generation
-  is completely disabled.
-
-  @author Stephen Anthony
-  @version $Id: SoundNull.hxx,v 1.6 2007/01/01 18:04:40 stephena Exp $
+  This class implements a sound object for generating per-frame sound data
+  from raw TIA sound samples.
 */
-class SoundNull : public stella::Sound
+class SoundRaw : public stella::Sound
 {
   public:
+    // The Atari 2600 specification lists the audio clock as ~30KHz. With
+    // a default display rate of 60 FPS, we can expect 512 samples per frame.
+    static constexpr int SamplesPerFrame = 512;
+
     /**
       Create a new sound object.  The init method must be invoked before
       using the object.
     */
-    SoundNull(stella::Settings* settings);
+    SoundRaw(stella::Settings* settings);
 
     /**
       Destructor
     */
-    virtual ~SoundNull();
+    virtual ~SoundRaw();
 
   public:
     /**
@@ -61,7 +63,7 @@ class SoundNull : public stella::Sound
       @param enable  Either true or false, to enable or disable the sound system
       @return        Whether the sound system was enabled or disabled
     */
-    void setEnabled(bool) { }
+    void setEnabled(bool);
 
     /**
       The system cycle counter is being adjusting by the specified amount.  Any
@@ -69,10 +71,11 @@ class SoundNull : public stella::Sound
 
       @param amount The amount the cycle counter is being adjusted by
     */
-    void adjustCycleCounter(int) { }
+    void adjustCycleCounter(int);
 
     /**
       Sets the number of channels (mono or stereo sound).
+      Currently, only mono is supposed for raw sample generation.
 
       @param channels The number of channels
     */
@@ -90,20 +93,20 @@ class SoundNull : public stella::Sound
       Initializes the sound device.  This must be called before any
       calls are made to derived methods.
     */
-    void initialize() { }
+    void initialize();
 
     /**
       Should be called to close the sound device.  Once called the sound
       device can be started again using the initialize method.
     */
-    void close() { }
+    void close();
 
     /**
       Return true iff the sound device was successfully initialized.
 
       @return true iff the sound device was successfully initialized.
     */
-    bool isSuccessfullyInitialized() const { return false; }
+    bool isSuccessfullyInitialized() const;
 
     /**
       Set the mute state of the sound object.  While muted no sound is played.
@@ -115,7 +118,7 @@ class SoundNull : public stella::Sound
     /**
       Reset the sound device.
     */
-    void reset() { }
+    void reset();
 
     /**
       Sets the sound register to a given value.
@@ -124,7 +127,7 @@ class SoundNull : public stella::Sound
       @param value The value to save into the register
       @param cycle The system cycle at which the register is being updated
     */
-    void set(uint16_t, uint8_t, int) { }
+    void set(uint16_t, uint8_t, int);
 
     /**
       Sets the volume of the sound device to the specified level.  The
@@ -151,7 +154,7 @@ class SoundNull : public stella::Sound
     /**
       * Processes audio for raw sample generation (applies all reg updates, fills buffer)
       */
-    virtual void process(uint8_t* buffer, uint32_t samples) { }
+    virtual void process(uint8_t* buffer, uint32_t samples);
 
 public:
     /**
@@ -169,6 +172,30 @@ public:
       @return The result of the save.  True on success, false on failure.
     */
     bool save(stella::Serializer& out);
+
+protected:
+    // Struct to hold information regarding a TIA sound register
+    struct TIARegister
+    {
+      uint16_t addr;
+      uint8_t value;
+    };
+
+private:
+    // TIASound emulation object
+    stella::TIASound myTIASound;
+
+    // Indicates if the sound subsystem is to be initialized
+    bool myIsEnabled;
+
+    // Indicates if the sound device was successfully initialized
+    bool myIsInitializedFlag;
+
+    // Indicates the cycle when a sound register was last set
+    int myLastRegisterSetCycle;
+
+    // Queue of TIA register writes 
+    std::deque<TIARegister> myRegWriteQueue;
 };
 
 }  // namespace ale

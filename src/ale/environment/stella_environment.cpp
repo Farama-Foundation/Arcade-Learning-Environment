@@ -22,6 +22,7 @@
 #include <cstring>
 #include <optional>
 
+#include "ale/common/SoundRaw.hxx"
 #include "ale/emucore/System.hxx"
 
 namespace ale {
@@ -92,6 +93,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
     m_screen_exporter.reset(
         new ScreenExporter(m_osystem->colourPalette(), recordDir));
   }
+
+  m_sound.resize(SoundRaw::SamplesPerFrame, 0);
 }
 
 /** Resets the system to its start state. */
@@ -187,6 +190,9 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
     // Use the stored actions, which may or may not have changed this frame
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action,
                               m_paddle_a_strength, m_paddle_b_strength);
+
+    // Process audio for user queries (accounts for frame_skip)
+    processAudio(i);
   }
 
   return std::clamp(sum_rewards, m_reward_min, m_reward_max);
@@ -320,6 +326,16 @@ void StellaEnvironment::processScreen() {
            m_osystem->console().mediaSource().currentFrameBuffer(),
            m_screen.arraySize());
   }
+}
+
+void StellaEnvironment::processAudio(size_t i_frame) {
+    // Processes audio for sound observation (waits for final frame of frame_skip batch)
+    if ((i_frame+1) == m_frame_skip) {
+      // clear audio data from the previous frame.
+      std::fill(m_sound.begin(), m_sound.end(), 0);
+
+      m_osystem->sound().process(m_sound.data(), m_sound.size());
+    }
 }
 
 void StellaEnvironment::processRAM() {

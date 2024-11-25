@@ -161,6 +161,9 @@ class ALEInterface {
   //followed by the green colours and then the blue colours
   void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) const;
 
+  // Returns the current audio data
+  const std::vector<uint8_t> &getAudio() const;
+
   // Returns the current RAM content
   const ALERAM& getRAM() const;
 

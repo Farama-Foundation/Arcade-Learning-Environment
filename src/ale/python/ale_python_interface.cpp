@@ -160,6 +160,35 @@ ALEPythonInterface::getScreenGrayscale() {
   return buffer;
 }
 
+const py::array_t<uint8_t, py::array::c_style> ALEPythonInterface::getAudio() {
+  const std::vector<uint8_t> &audio = ALEInterface::getAudio();
+
+  // Construct new py::array which copies audio data
+  py::array_t<uint8_t, py::array::c_style> audio_array(audio.size(), audio.data());
+  return audio_array;
+}
+
+void ALEPythonInterface::getAudio(
+    py::array_t<uint8_t, py::array::c_style> &buffer) {
+  py::buffer_info info = buffer.request();
+  if (info.ndim != 1) {
+    throw std::runtime_error("Expected a numpy array with one dimension.");
+  }
+
+  const std::vector<uint8_t> &audio = ALEInterface::getAudio();
+
+  if (info.shape[0] != audio.size()) {
+    std::stringstream msg;
+    msg << "Invalid shape (" << info.shape[0] << "), "
+        << "expecting shape (" << audio.size() << ")";
+    throw std::runtime_error(msg.str());
+  }
+
+  // Get mutable data from buffer arg and copy audio data
+  uint8_t *dst = (uint8_t *)buffer.mutable_data();
+  std::copy(audio.data(), audio.data() + audio.size(), dst);
+}
+
 const py::array_t<uint8_t, py::array::c_style> ALEPythonInterface::getRAM() {
   const ALERAM& ram = ALEInterface::getRAM();
 
