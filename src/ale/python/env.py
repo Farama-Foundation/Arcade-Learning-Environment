@@ -74,7 +74,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
               game sounds. This will lock emulation to the ROMs specified FPS
               If `rgb_array` we'll return the `rgb` key in step metadata with
               the current environment RGB frame.
-          sound_obs: bool => Use sound observation.
+          sound_obs: bool => Add teh sound from the frame to the observation.
 
         Note:
           - The game must be installed, see ale-import-roms, or ale-py-roms.
@@ -209,6 +209,12 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         else:
             raise error.Error(f"Unrecognized observation type: {self._obs_type}")
 
+        if self.sound_obs:
+            self.observation_space = spaces.Dict(
+                image=self.observation_space,
+                sound=spaces.Box(low=0, high=255, dtype=np.uint8, shape=(512,)),
+            )
+
     def seed_game(self, seed: int | None = None) -> tuple[int, int]:
         """Seeds the internal and ALE RNG."""
         ss = np.random.SeedSequence(seed)
@@ -321,18 +327,22 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                 "Supported modes: `human`, `rgb_array`."
             )
 
-    def _get_obs(self) -> np.ndarray:
+    def _get_obs(self) -> np.ndarray | dict[str, np.ndarray]:
         """Retrieves the current observation using `obs_type`."""
         if self._obs_type == "ram":
-            return self.ale.getRAM()
+            image_obs = self.ale.getRAM()
         elif self._obs_type == "rgb":
-            return self.ale.getScreenRGB()
+            image_obs = self.ale.getScreenRGB()
         elif self._obs_type == "grayscale":
-            return self.ale.getScreenGrayscale()
+            image_obs = self.ale.getScreenGrayscale()
         else:
             raise error.Error(
                 f"Unrecognized observation type: {self._obs_type}, expected: 'ram', 'rgb' and 'grayscale'."
             )
+
+        if self.sound_obs:
+            return {"image": image_obs, "sound": self.ale.getAudio()}
+        return image_obs
 
     def _get_info(self) -> AtariEnvStepMetadata:
         return {
