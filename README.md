@@ -74,6 +74,11 @@ while not episode_over:
 env.close()
 ```
 
+To run with continuous actions, you can simply modify the call to `gym.make` above with:
+```python
+env = gym.make('ALE/Breakout-v5', continuous=True, render_mode="human")
+```
+
 For all the environments available and their description, see [gymnasium atari page](https://gymnasium.farama.org/environments/atari/).
 
 C++
@@ -137,5 +142,20 @@ In BibTex format:
     volume = {61},
     pages = {523--562},
     year = {2018}
+}
+```
+
+If you use the CALE (Continuous ALE), we ask you that you also cite the following:
+
+*Jesse Farebrother and Pablo Samuel Castro.  Cale:  Continuous arcade learning environment.Ad-vances in Neural Information Processing Systems, 2024.*
+
+In BibTex format:
+
+```bibtex
+@article{farebrother2024cale,
+  title={C{ALE}: Continuous Arcade Learning Environment},
+  author={Jesse Farebrother and Pablo Samuel Castro},
+  journal={Advances in Neural Information Processing Systems},
+  year={2024}
 }
 ```

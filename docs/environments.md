@@ -133,6 +133,18 @@ Each environment will use a sub-set of the full action space listed below:
 By default, most environments use a smaller subset of the legal actions excluding any actions that don't have an effect in the game.
 If users are interested in using all possible actions, pass the keyword argument `full_action_space=True` to `gymnasium.make`.
 
+## Continuous action space
+
+The ALE supports continuous actions, parameterized as a 3-dimensional vector. The first two dimensions specify polar coordinates
+(radius, theta), while the last dimension is the "fire" dimension. The ranges are:
+1. **radius**: `[0.0, 1.0]`
+2. **theta**: `[-np.pi, np.pi]`
+3. **fire**: `[0.0, 1.0]`
+
+Continuous action spaces still trigger the same events as the default discrete action space, but it is done via the parameter
+`continuous_action_threshold` (i.e. if the "fire" dimension is above `continuous_action_threshold`, a "fire" event is triggered).
+See [[3]](#3) for more details.
+
 ## Observation Space
 
 The Atari environments observation can be
@@ -357,3 +369,10 @@ Machado et al.
 and Open Problems for General Agents"
 Journal of Artificial Intelligence Research (2018)
 URL: https://jair.org/index.php/jair/article/view/11182
+
+(#3)=
+<a id="3">[3]</a>
+Jesse Farebrother and Pablo Samuel Castro
+"CALE: Continuous Arcade Learning Environment"
+Advances in Neural Information Processing Systems (NeurIPS 2024)
+URL: https://arxiv.org/abs/2410.23810
