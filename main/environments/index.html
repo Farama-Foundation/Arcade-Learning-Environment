@@ -591,6 +591,19 @@
 <p>By default, most environments use a smaller subset of the legal actions excluding any actions that don’t have an effect in the game.
 If users are interested in using all possible actions, pass the keyword argument <code class="docutils literal notranslate"><span class="pre">full_action_space=True</span></code> to <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>.</p>
 </section>
+<section id="continuous-action-space">
+<h2>Continuous action space<a class="headerlink" href="#continuous-action-space" title="Link to this heading">¶</a></h2>
+<p>The ALE supports continuous actions, parameterized as a 3-dimensional vector. The first two dimensions specify polar coordinates
+(radius, theta), while the last dimension is the “fire” dimension. The ranges are:</p>
+<ol class="arabic simple">
+<li><p><strong>radius</strong>: <code class="docutils literal notranslate"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></code></p></li>
+<li><p><strong>theta</strong>: <code class="docutils literal notranslate"><span class="pre">[-np.pi,</span> <span class="pre">np.pi]</span></code></p></li>
+<li><p><strong>fire</strong>: <code class="docutils literal notranslate"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></code></p></li>
+</ol>
+<p>Continuous action spaces still trigger the same events as the default discrete action space, but it is done via the parameter
+<code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code> (i.e. if the “fire” dimension is above <code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code>, a “fire” event is triggered).
+See <a class="reference internal" href="#3"><span class="xref myst">[3]</span></a> for more details.</p>
+</section>
 <section id="observation-space">
 <h2>Observation Space<a class="headerlink" href="#observation-space" title="Link to this heading">¶</a></h2>
 <p>The Atari environments observation can be</p>
@@ -1417,6 +1430,11 @@ Machado et al.
 and Open Problems for General Agents”
 Journal of Artificial Intelligence Research (2018)
 URL: https://jair.org/index.php/jair/article/view/11182</p>
+<p id="id3"><a id="3">[3]</a>
+Jesse Farebrother and Pablo Samuel Castro
+“CALE: Continuous Arcade Learning Environment”
+Advances in Neural Information Processing Systems (NeurIPS 2024)
+URL: https://arxiv.org/abs/2410.23810</p>
 </section>
 </section>
 
@@ -1469,6 +1487,7 @@ URL: https://jair.org/index.php/jair/article/view/11182</p>
               <ul>
 <li><a class="reference internal" href="#">Environments</a><ul>
 <li><a class="reference internal" href="#action-space">Action Space</a></li>
+<li><a class="reference internal" href="#continuous-action-space">Continuous action space</a></li>
 <li><a class="reference internal" href="#observation-space">Observation Space</a></li>
 <li><a class="reference internal" href="#rewards">Rewards</a></li>
 <li><a class="reference internal" href="#stochasticity">Stochasticity</a></li>
