@@ -430,6 +430,9 @@ void Settings::setDefaultSettings() {
     // Display Settings
     boolSettings.insert(std::pair<std::string, bool>("display_screen", false));
 
+    // Audio Settings
+    boolSettings.insert(std::pair<std::string, bool>("sound_obs", false));
+
     for(std::map<std::string, std::string>::iterator it = stringSettings.begin(); it != stringSettings.end(); it++) {
       this->setString(it->first, it->second);
     }

@@ -48,6 +48,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         continuous_action_threshold: float = 0.5,
         max_num_frames_per_episode: int | None = None,
         render_mode: Literal["human", "rgb_array"] | None = None,
+        sound_obs: bool = False,
     ):
         """Initialize the ALE for Gymnasium.
 
@@ -73,6 +74,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
               game sounds. This will lock emulation to the ROMs specified FPS
               If `rgb_array` we'll return the `rgb` key in step metadata with
               the current environment RGB frame.
+          sound_obs: bool => Add the sound from the frame to the observation.
 
         Note:
           - The game must be installed, see ale-import-roms, or ale-py-roms.
@@ -128,6 +130,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             continuous_action_threshold=continuous_action_threshold,
             max_num_frames_per_episode=max_num_frames_per_episode,
             render_mode=render_mode,
+            sound_obs=sound_obs,
         )
 
         # Initialize ALE
@@ -140,6 +143,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self._frameskip = frameskip
         self._obs_type = obs_type
         self.render_mode = render_mode
+        self.sound_obs = sound_obs
 
         # Set logger mode to error only
         self.ale.setLoggerMode(ale_py.LoggerMode.Error)
@@ -153,6 +157,8 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         if render_mode == "human":
             self.ale.setBool("display_screen", True)
             self.ale.setBool("sound", True)
+
+        self.ale.setBool("sound_obs", self.sound_obs)
 
         # seed + load
         self.seed_game()
@@ -202,6 +208,12 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             )
         else:
             raise error.Error(f"Unrecognized observation type: {self._obs_type}")
+
+        if self.sound_obs:
+            self.observation_space = spaces.Dict(
+                image=self.observation_space,
+                sound=spaces.Box(low=0, high=255, dtype=np.uint8, shape=(512,)),
+            )
 
     def seed_game(self, seed: int | None = None) -> tuple[int, int]:
         """Seeds the internal and ALE RNG."""
@@ -315,18 +327,22 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                 "Supported modes: `human`, `rgb_array`."
             )
 
-    def _get_obs(self) -> np.ndarray:
+    def _get_obs(self) -> np.ndarray | dict[str, np.ndarray]:
         """Retrieves the current observation using `obs_type`."""
         if self._obs_type == "ram":
-            return self.ale.getRAM()
+            image_obs = self.ale.getRAM()
         elif self._obs_type == "rgb":
-            return self.ale.getScreenRGB()
+            image_obs = self.ale.getScreenRGB()
         elif self._obs_type == "grayscale":
-            return self.ale.getScreenGrayscale()
+            image_obs = self.ale.getScreenGrayscale()
         else:
             raise error.Error(
                 f"Unrecognized observation type: {self._obs_type}, expected: 'ram', 'rgb' and 'grayscale'."
             )
+
+        if self.sound_obs:
+            return {"image": image_obs, "sound": self.ale.getAudio()}
+        return image_obs
 
     def _get_info(self) -> AtariEnvStepMetadata:
         return {

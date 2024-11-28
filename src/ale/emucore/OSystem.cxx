@@ -35,6 +35,7 @@
   #include "ale/common/ScreenSDL.hpp"
   #include "ale/common/SoundSDL.hxx"
 #endif
+#include "ale/common/SoundRaw.hxx"
 
 #define MAX_ROM_SIZE  512 * 1024
 
@@ -116,19 +117,24 @@ void OSystem::createSound()
   }
   mySound = NULL;
 
-#ifdef SDL_SUPPORT
   // If requested (& supported), enable sound
   if (mySettings->getBool("sound") == true) {
-      mySound = new SoundSDL(mySettings);
-      mySound->initialize();
-  }
-  else {
-      mySound = new SoundNull(mySettings);
-  }
+#ifdef SDL_SUPPORT
+    mySound = new SoundSDL(mySettings);
+    mySound->initialize();
 #else
-  mySettings->setBool("sound", false);
-  mySound = new SoundNull(mySettings);
+    mySettings->setBool("sound", false);
+    mySound = new SoundNull(mySettings);
+    ale::Logger::Info << "Setting `sound` is enabled "
+                      << "but SDL_SUPPORT is disabled. To play sound "
+                      << "SDL_SUPPORT must be enabled." << std::endl;
 #endif
+  }
+  else if (mySettings->getBool("sound_obs") == true) {
+    mySound = new SoundRaw(mySettings);
+  } else {
+    mySound = new SoundNull(mySettings);
+  }
 }
 
 

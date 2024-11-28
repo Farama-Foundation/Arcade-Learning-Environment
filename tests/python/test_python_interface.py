@@ -223,6 +223,19 @@ def test_save_screen_png(tetris):
     os.remove(file)
 
 
+def test_get_sound_obs(ale, tetris_rom_path):
+    ale.setBool("sound_obs", True)
+    ale.loadROM(tetris_rom_path)
+    for _ in range(10):
+        ale.act(0)
+
+    preallocate = np.zeros(ale.getAudioSize(), dtype=np.uint8)
+    ale.getAudio(preallocate)
+
+    sound = ale.getAudio()
+    assert (preallocate == sound).all()
+
+
 def test_is_rom_supported(ale, tetris_rom_path, random_rom_path):
     assert ale.isSupportedROM(tetris_rom_path)
     assert ale.isSupportedROM(random_rom_path) is None

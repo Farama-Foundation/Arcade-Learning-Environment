@@ -53,6 +53,10 @@ class ALEPythonInterface : public ALEInterface {
     return py::make_tuple(screen.height(), screen.width());
   }
 
+  inline uint32_t getAudioSize() { return ALEInterface::getAudio().size(); }
+  const py::array_t<uint8_t, py::array::c_style> getAudio();
+  void getAudio(py::array_t<uint8_t, py::array::c_style> &buffer);
+
   // Implicitely cast std::string -> fs::path
   inline void loadROM(std::string rom_file) {
     return ALEInterface::loadROM(rom_file);
@@ -186,6 +190,13 @@ PYBIND11_MODULE(_ale_py, m) {
                ale::ALEPythonInterface::*)()) &
                ale::ALEPythonInterface::getScreenGrayscale)
       .def("getScreenDims", &ale::ALEPythonInterface::getScreenDims)
+      .def("getAudioSize", &ale::ALEPythonInterface::getAudioSize)
+      .def("getAudio", (const py::array_t<uint8_t, py::array::c_style> (
+                           ale::ALEPythonInterface::*)()) &
+                           ale::ALEPythonInterface::getAudio)
+      .def("getAudio", (void (ale::ALEPythonInterface::*)(
+                           py::array_t<uint8_t, py::array::c_style> &)) &
+                           ale::ALEPythonInterface::getAudio)
       .def("getRAMSize", &ale::ALEPythonInterface::getRAMSize)
       .def("getRAM", (const py::array_t<uint8_t, py::array::c_style> (
                          ale::ALEPythonInterface::*)()) &

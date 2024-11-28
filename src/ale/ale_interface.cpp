@@ -359,6 +359,11 @@ void ALEInterface::getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) c
                                               ale_screen_data, screen_size);
 }
 
+// Returns the current audio data
+const std::vector<uint8_t>& ALEInterface::getAudio() const {
+  return environment->getAudio();
+}
+
 // Returns the current RAM content
 const ALERAM& ALEInterface::getRAM() const { return environment->getRAM(); }
 

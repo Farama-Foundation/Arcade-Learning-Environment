@@ -153,6 +153,11 @@ class SoundSDL : public stella::Sound
       */
     void recordNextFrame();
 
+    /**
+      * Processes audio for raw sample generation (applies all reg updates, fills buffer)
+      */
+    void process(uint8_t* buffer, uint32_t samples) { }
+
   public:
     /**
       Loads the current state of this device from the given Deserializer.

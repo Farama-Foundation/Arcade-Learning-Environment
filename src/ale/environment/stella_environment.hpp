@@ -110,6 +110,9 @@ class StellaEnvironment {
   void setRAM(size_t memory_index, byte_t value);
   const ALERAM& getRAM() const { return m_ram; }
 
+  /** Returns the current audio frame */
+  const std::vector<uint8_t>& getAudio() const { return m_sound; }
+
   int getFrameNumber() const { return m_state.getFrameNumber(); }
   int getEpisodeFrameNumber() const { return m_state.getEpisodeFrameNumber(); }
 
@@ -142,6 +145,8 @@ class StellaEnvironment {
 
   /** Processes the current emulator screen and saves it in m_screen */
   void processScreen();
+  /** Processes the current emulator audio and saves it in m_sound */
+  void processAudio(size_t i_frame);
   /** Processes the emulator RAM and saves it in m_ram */
   void processRAM();
 
@@ -155,6 +160,7 @@ class StellaEnvironment {
   ALEState m_state;   // Current environment state
   ALEScreen m_screen; // The current ALE screen (possibly colour-averaged)
   ALERAM m_ram;       // The current ALE RAM
+  std::vector<uint8_t> m_sound; // The current audio frame
 
   bool m_use_paddles; // Whether this game uses paddles
 

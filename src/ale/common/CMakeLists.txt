@@ -7,6 +7,7 @@ target_sources(ale
     ScreenExporter.cpp
     SoundExporter.cpp
     SoundNull.cxx
+    SoundRaw.cxx
     SoundSDL.cxx
     SDL2.cpp
     DynamicLoad.cpp
