@@ -448,6 +448,14 @@ the actions that have some effect on that game. The <code class="docutils litera
 <span class="kt">float</span><span class="w"> </span><span class="n">reward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ale</span><span class="p">.</span><span class="n">act</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
 </pre></div>
 </div>
+<p>An optional sound observation is provided. To enable, set the associated environment parameter:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">setBool</span><span class="p">(</span><span class="s">&quot;sound_obs&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">True</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Once enabled, the sound observation may be obtained by calling:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">getAudio</span><span class="p">()</span>
+</pre></div>
+</div>
 <p>Finally, one can check whether the episode has terminated using the function <code class="docutils literal notranslate"><span class="pre">ale.game_over()</span></code>. With these functions one can already implement a very simple agent that plays randomly for one episode:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ale_interface.hpp&gt;</span>
