@@ -6,9 +6,9 @@ The Python interface `ale-py` supports the following configurations:
 
 | Platform | Architecture | Python Version |
 |:--------:|:------------:|:--------------:|
-|  Linux   |     x64      |      3.8+      |
-|  macOS   |  x64, arm64  |      3.8+      |
-| Windows  |    AMD64     |      3.8+      |
+|  Linux   |     x64      |      3.9+      |
+|  macOS   |  x64, arm64  |      3.9+      |
+| Windows  |    AMD64     |      3.9+      |
 
 
 To install the Python interface from PyPi simply run:
