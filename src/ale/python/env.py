@@ -74,7 +74,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
               game sounds. This will lock emulation to the ROMs specified FPS
               If `rgb_array` we'll return the `rgb` key in step metadata with
               the current environment RGB frame.
-          sound_obs: bool => Add teh sound from the frame to the observation.
+          sound_obs: bool => Add the sound from the frame to the observation.
 
         Note:
           - The game must be installed, see ale-import-roms, or ale-py-roms.

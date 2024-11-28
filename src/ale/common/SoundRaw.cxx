@@ -120,7 +120,7 @@ void SoundRaw::set(uint16_t addr, uint8_t value, int cycle)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SoundRaw::process(uint8_t* buffer, uint32_t samples)
 {
-  // Process all the audio register updates up to this frame 
+  // Process all the audio register updates up to this frame
   // Set audio registers
   uint32_t regSize = myRegWriteQueue.size();
   for(uint32_t i = 0; i < regSize; ++i) {
@@ -128,7 +128,7 @@ void SoundRaw::process(uint8_t* buffer, uint32_t samples)
     myTIASound.set(info.addr, info.value);
     myRegWriteQueue.pop_front();
   }
-  
+
   // Process audio registers
   myTIASound.process(buffer, samples);
 }

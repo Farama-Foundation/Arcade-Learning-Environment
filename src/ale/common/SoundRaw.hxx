@@ -194,7 +194,7 @@ private:
     // Indicates the cycle when a sound register was last set
     int myLastRegisterSetCycle;
 
-    // Queue of TIA register writes 
+    // Queue of TIA register writes
     std::deque<TIARegister> myRegWriteQueue;
 };
 
