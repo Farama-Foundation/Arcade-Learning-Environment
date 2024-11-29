@@ -28,7 +28,7 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-    - uses: pre-commit/action@v3.0.1
+    - uses: pre-commit/action@v3
 
   build-scratch:
     name: "${{ matrix.runs-on }} • py${{ matrix.python }}"
@@ -70,7 +70,9 @@ jobs:
       run: python -m pip install --user cmake
       if: runner.os == 'Windows'
 
-    - uses: microsoft/setup-msbuild@v2
+    - run: xcode-select --install -y
+      if: runner.os == 'macOS'
+    - run: brew install -y llvm
       if: runner.os == 'macOS'
 
 #    - uses: lukka/run-vcpkg@v11
@@ -129,9 +131,11 @@ jobs:
           push: false
           load: true
 
-      - uses: microsoft/setup-msbuild@v2
+      - run: xcode-select --install -y
         if: runner.os == 'macOS'
-#
+      - run: brew install -y llvm
+        if: runner.os == 'macOS'
+
 #      - uses: lukka/run-vcpkg@v11
 #        if: runner.os != 'linux'
 #        with:
@@ -144,7 +148,7 @@ jobs:
         run: ./scripts/download_unpack_roms.sh
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21
+        uses: pypa/cibuildwheel@v2
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
 
