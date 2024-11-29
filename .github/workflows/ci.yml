@@ -70,7 +70,7 @@ jobs:
       run: python -m pip install --user cmake
       if: runner.os == 'Windows'
 
-    - run: xcode-select --install -y
+    - run: xcode-select --install
       if: runner.os == 'macOS'
     - run: brew install -y llvm
       if: runner.os == 'macOS'
@@ -131,7 +131,7 @@ jobs:
           push: false
           load: true
 
-      - run: xcode-select --install -y
+      - run: xcode-select --install
         if: runner.os == 'macOS'
       - run: brew install -y llvm
         if: runner.os == 'macOS'
@@ -148,7 +148,7 @@ jobs:
         run: ./scripts/download_unpack_roms.sh
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2
+        uses: pypa/cibuildwheel@v2.21.3
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
 
