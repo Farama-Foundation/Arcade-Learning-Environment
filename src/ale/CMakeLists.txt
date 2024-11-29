@@ -1,8 +1,10 @@
 # Include src/ and cmake binary directory (for version.hpp)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR})
 
+cmake_policy(VERSION 3.10)
+
 # Project specific target properties
-set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_CXX_EXTENSIONS FALSE)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
