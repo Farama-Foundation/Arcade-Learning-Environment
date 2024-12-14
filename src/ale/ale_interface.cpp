@@ -265,7 +265,7 @@ reward_t ALEInterface::act(
   Action b_action,
   float b_paddle_strength
 ) {
-  return environment->act(a_action, PLAYER_B_NOOP, a_paddle_strength, 0.0);
+  return environment->act(a_action, b_action, a_paddle_strength, b_paddle_strength);
 }
 
 // Returns the vector of modes available for the current game.

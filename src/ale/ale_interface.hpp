@@ -90,7 +90,7 @@ class ALEInterface {
     Action a_action,
     float a_paddle_strength = 1.0,
     Action b_action = PLAYER_B_NOOP,
-    float b_paddle_strength = 1.0
+    float b_paddle_strength = 0.0
   );
 
   // Indicates if the game has ended.
