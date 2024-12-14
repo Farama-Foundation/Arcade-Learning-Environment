@@ -243,7 +243,7 @@ bool ALEInterface::game_over(bool with_truncation) const {
   return with_truncation ? environment->isTerminal() : environment->isGameTerminal();
 }
 
-// Indicateds if the episode has been truncated.
+// Indicates if the episode has been truncated.
 bool ALEInterface::game_truncated() const { return environment->isGameTruncated(); }
 
 // The remaining number of lives.
@@ -259,9 +259,13 @@ int ALEInterface::lives() {
 // user's responsibility to check if the game has ended and reset
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
-// Intentionally set player B actions to 0 since we are in single player mode
-reward_t ALEInterface::act(Action action, float paddle_strength) {
-  return environment->act(action, PLAYER_B_NOOP, paddle_strength, 0.0);
+reward_t ALEInterface::act(
+  Action a_action,
+  float a_paddle_strength,
+  Action b_action,
+  float b_paddle_strength
+) {
+  return environment->act(a_action, PLAYER_B_NOOP, a_paddle_strength, 0.0);
 }
 
 // Returns the vector of modes available for the current game.
