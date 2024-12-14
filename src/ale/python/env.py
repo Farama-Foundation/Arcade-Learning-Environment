@@ -10,7 +10,7 @@ from warnings import warn
 import ale_py
 import gymnasium
 import numpy as np
-from ale_py import roms, Action
+from ale_py import Action, roms
 from gymnasium import error, spaces, utils
 from gymnasium.utils import seeding
 

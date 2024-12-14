@@ -66,7 +66,9 @@ class Action:
     PLAYER_A_DOWNLEFT: _ale_py.Action  # value = <Action.PLAYER_A_DOWNLEFT: 9>
     PLAYER_A_DOWNLEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_DOWNLEFTFIRE: 17>
     PLAYER_A_DOWNRIGHT: _ale_py.Action  # value = <Action.PLAYER_A_DOWNRIGHT: 8>
-    PLAYER_A_DOWNRIGHTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_DOWNRIGHTFIRE: 16>
+    PLAYER_A_DOWNRIGHTFIRE: (
+        _ale_py.Action
+    )  # value = <Action.PLAYER_A_DOWNRIGHTFIRE: 16>
     PLAYER_A_FIRE: _ale_py.Action  # value = <Action.PLAYER_A_FIRE: 1>
     PLAYER_A_LEFT: _ale_py.Action  # value = <Action.PLAYER_A_LEFT: 4>
     PLAYER_A_LEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_LEFTFIRE: 12>
@@ -84,7 +86,9 @@ class Action:
     PLAYER_B_DOWNLEFT: _ale_py.Action  # value = <Action.PLAYER_B_DOWNLEFT: 27>
     PLAYER_B_DOWNLEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_DOWNLEFTFIRE: 35>
     PLAYER_B_DOWNRIGHT: _ale_py.Action  # value = <Action.PLAYER_B_DOWNRIGHT: 26>
-    PLAYER_B_DOWNRIGHTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_DOWNRIGHTFIRE: 34>
+    PLAYER_B_DOWNRIGHTFIRE: (
+        _ale_py.Action
+    )  # value = <Action.PLAYER_B_DOWNRIGHTFIRE: 34>
     PLAYER_B_FIRE: _ale_py.Action  # value = <Action.PLAYER_B_FIRE: 19>
     PLAYER_B_LEFT: _ale_py.Action  # value = <Action.PLAYER_B_LEFT: 22>
     PLAYER_B_LEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_LEFTFIRE: 30>
@@ -122,9 +126,21 @@ class ALEState:
 class ALEInterface:
     def __init__(self) -> None: ...
     @overload
-    def act(self, a_action: Action, a_paddle_strength: float = 1.0, b_action: Action = Action.PLAYER_B_NOOP, b_paddle_strength: float = 1.0) -> int: ...
+    def act(
+        self,
+        a_action: Action,
+        a_paddle_strength: float = 1.0,
+        b_action: Action = Action.PLAYER_B_NOOP,
+        b_paddle_strength: float = 1.0,
+    ) -> int: ...
     @overload
-    def act(self, a_action: int, a_paddle_strength: float = 1.0, b_action: int = 18, b_paddle_strength: float = 1.0) -> int: ...
+    def act(
+        self,
+        a_action: int,
+        a_paddle_strength: float = 1.0,
+        b_action: int = 18,
+        b_paddle_strength: float = 1.0,
+    ) -> int: ...
     def cloneState(self, *, include_rng: bool = False) -> ALEState: ...
     def cloneSystemState(self) -> ALEState: ...
     def game_over(self, *, with_truncation: bool = True) -> bool: ...
