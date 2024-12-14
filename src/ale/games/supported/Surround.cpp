@@ -112,10 +112,11 @@ ModeVect SurroundSettings::getAvailableModes() {
 void SurroundSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  // m = 4 for 2 player
   if (m == 0 || m == 2 || m == 4) {
     // Read the game mode from RAM address 0xf9.
     unsigned char mode = readRam(&system, 0xf9);
-    int desired_mode = m + 1;
+    int desired_mode = 4 + 1;
 
     // Press select until the correct mode is reached for single player only.
     while (mode != desired_mode) {
