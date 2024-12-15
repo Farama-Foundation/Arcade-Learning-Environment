@@ -55,9 +55,9 @@ reward_t FreewaySettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool FreewaySettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_UP:
-    case PLAYER_A_DOWN:
+    case NOOP:
+    case UP:
+    case DOWN:
       return true;
     default:
       return false;

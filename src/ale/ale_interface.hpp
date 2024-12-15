@@ -89,7 +89,7 @@ class ALEInterface {
   reward_t act(
     Action a_action,
     float a_paddle_strength = 1.0,
-    Action b_action = PLAYER_B_NOOP,
+    Action b_action = NOOP,
     float b_paddle_strength = 0.0
   );
 

@@ -47,15 +47,15 @@ reward_t LostLuggageSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool LostLuggageSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
+    case NOOP:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
       return true;
     default:
       return false;
@@ -65,15 +65,15 @@ bool LostLuggageSettings::isMinimal(const Action& a) const {
 bool LostLuggageSettings::isLegal(const Action& a) const {
   switch (a) {
     // Don't allow pressing 'fire'
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_DOWNFIRE:
-    case PLAYER_A_LEFTFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_UPLEFTFIRE:
-    case PLAYER_A_UPRIGHTFIRE:
-    case PLAYER_A_DOWNLEFTFIRE:
-    case PLAYER_A_DOWNRIGHTFIRE:
+    case FIRE:
+    case UPFIRE:
+    case DOWNFIRE:
+    case LEFTFIRE:
+    case RIGHTFIRE:
+    case UPLEFTFIRE:
+    case UPRIGHTFIRE:
+    case DOWNLEFTFIRE:
+    case DOWNRIGHTFIRE:
       return false;
     default:
       return true;
@@ -105,7 +105,7 @@ void LostLuggageSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect LostLuggageSettings::getStartingActions() {
-  return {PLAYER_A_FIRE};
+  return {FIRE};
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=277

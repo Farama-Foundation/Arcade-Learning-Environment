@@ -61,48 +61,25 @@ class Action:
         """
         :type: int
         """
-    PLAYER_A_DOWN: _ale_py.Action  # value = <Action.PLAYER_A_DOWN: 5>
-    PLAYER_A_DOWNFIRE: _ale_py.Action  # value = <Action.PLAYER_A_DOWNFIRE:  >
-    PLAYER_A_DOWNLEFT: _ale_py.Action  # value = <Action.PLAYER_A_DOWNLEFT: 9>
-    PLAYER_A_DOWNLEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_DOWNLEFTFIRE: 17>
-    PLAYER_A_DOWNRIGHT: _ale_py.Action  # value = <Action.PLAYER_A_DOWNRIGHT: 8>
-    PLAYER_A_DOWNRIGHTFIRE: (
-        _ale_py.Action
-    )  # value = <Action.PLAYER_A_DOWNRIGHTFIRE: 16>
-    PLAYER_A_FIRE: _ale_py.Action  # value = <Action.PLAYER_A_FIRE: 1>
-    PLAYER_A_LEFT: _ale_py.Action  # value = <Action.PLAYER_A_LEFT: 4>
-    PLAYER_A_LEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_LEFTFIRE: 12>
-    PLAYER_A_NOOP: _ale_py.Action  # value = <Action.PLAYER_A_NOOP: 0>
-    PLAYER_A_RIGHT: _ale_py.Action  # value = <Action.PLAYER_A_RIGHT: 3>
-    PLAYER_A_RIGHTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_RIGHTFIRE: 11>
-    PLAYER_A_UP: _ale_py.Action  # value = <Action.PLAYER_A_UP: 2>
-    PLAYER_A_UPFIRE: _ale_py.Action  # value = <Action.PLAYER_A_UPFIRE: 10>
-    PLAYER_A_UPLEFT: _ale_py.Action  # value = <Action.PLAYER_A_UPLEFT: 7>
-    PLAYER_A_UPLEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_UPLEFTFIRE: 15>
-    PLAYER_A_UPRIGHT: _ale_py.Action  # value = <Action.PLAYER_A_UPRIGHT: 6>
-    PLAYER_A_UPRIGHTFIRE: _ale_py.Action  # value = <Action.PLAYER_A_UPRIGHTFIRE: 14>
-    PLAYER_B_DOWN: _ale_py.Action  # value = <Action.PLAYER_B_DOWN: 23>
-    PLAYER_B_DOWNFIRE: _ale_py.Action  # value = <Action.PLAYER_B_DOWNFIRE: 31>
-    PLAYER_B_DOWNLEFT: _ale_py.Action  # value = <Action.PLAYER_B_DOWNLEFT: 27>
-    PLAYER_B_DOWNLEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_DOWNLEFTFIRE: 35>
-    PLAYER_B_DOWNRIGHT: _ale_py.Action  # value = <Action.PLAYER_B_DOWNRIGHT: 26>
-    PLAYER_B_DOWNRIGHTFIRE: (
-        _ale_py.Action
-    )  # value = <Action.PLAYER_B_DOWNRIGHTFIRE: 34>
-    PLAYER_B_FIRE: _ale_py.Action  # value = <Action.PLAYER_B_FIRE: 19>
-    PLAYER_B_LEFT: _ale_py.Action  # value = <Action.PLAYER_B_LEFT: 22>
-    PLAYER_B_LEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_LEFTFIRE: 30>
-    PLAYER_B_NOOP: _ale_py.Action  # value = <Action.PLAYER_B_NOOP: 18>
-    PLAYER_B_RIGHT: _ale_py.Action  # value = <Action.PLAYER_B_RIGHT: 21>
-    PLAYER_B_RIGHTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_RIGHTFIRE: 29>
-    PLAYER_B_UP: _ale_py.Action  # value = <Action.PLAYER_B_UP: 20>
-    PLAYER_B_UPFIRE: _ale_py.Action  # value = <Action.PLAYER_B_UPFIRE: 28>
-    PLAYER_B_UPLEFT: _ale_py.Action  # value = <Action.PLAYER_B_UPLEFT: 25>
-    PLAYER_B_UPLEFTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_UPLEFTFIRE: 33>
-    PLAYER_B_UPRIGHT: _ale_py.Action  # value = <Action.PLAYER_B_UPRIGHT: 24>
-    PLAYER_B_UPRIGHTFIRE: _ale_py.Action  # value = <Action.PLAYER_B_UPRIGHTFIRE: 32>
-    __members__: dict  # value = {'PLAYER_A_NOOP': <Action.NOOP: 0>, 'PLAYER_A_FIRE': <Action.FIRE: 1>, 'PLAYER_A_UP': <Action.UP: 2>, 'PLAYER_A_RIGHT': <Action.RIGHT: 3>, 'PLAYER_A_LEFT': <Action.LEFT: 4>, 'PLAYER_A_DOWN': <Action.DOWN: 5>, 'PLAYER_A_UPRIGHT': <Action.UPRIGHT: 6>, 'PLAYER_A_UPLEFT': <Action.UPLEFT: 7>, 'PLAYER_A_DOWNRIGHT': <Action.DOWNRIGHT: 8>, 'PLAYER_A_DOWNLEFT': <Action.DOWNLEFT: 9>, 'PLAYER_A_UPFIRE': <Action.UPFIRE: 10>, 'PLAYER_A_RIGHTFIRE': <Action.RIGHTFIRE: 11>, 'PLAYER_A_LEFTFIRE': <Action.LEFTFIRE: 12>, 'PLAYER_A_DOWNFIRE': <Action.DOWNFIRE: 13>, 'PLAYER_A_UPRIGHTFIRE': <Action.UPRIGHTFIRE: 14>, 'PLAYER_A_UPLEFTFIRE': <Action.UPLEFTFIRE: 15>, 'PLAYER_A_DOWNRIGHTFIRE': <Action.DOWNRIGHTFIRE: 16>, 'PLAYER_A_DOWNLEFTFIRE': <Action.DOWNLEFTFIRE: 17> 'PLAYER_B_NOOP': <Action.NOOP: 18>, 'PLAYER_B_FIRE': <Action.FIRE: 19>, 'PLAYER_B_UP': <Action.UP: 20>, 'PLAYER_B_RIGHT': <Action.RIGHT: 21>, 'PLAYER_B_LEFT': <Action.LEFT: 22>, 'PLAYER_B_DOWN': <Action.DOWN: 23>, 'PLAYER_B_UPRIGHT': <Action.UPRIGHT: 24>, 'PLAYER_B_UPLEFT': <Action.UPLEFT: 25>, 'PLAYER_B_DOWNRIGHT': <Action.DOWNRIGHT: 26>, 'PLAYER_B_DOWNLEFT': <Action.DOWNLEFT: 27>, 'PLAYER_B_UPFIRE': <Action.UPFIRE: 28>, 'PLAYER_B_RIGHTFIRE': <Action.RIGHTFIRE: 29>, 'PLAYER_B_LEFTFIRE': <Action.LEFTFIRE: 30>, 'PLAYER_B_DOWNFIRE': <Action.DOWNFIRE: 31>, 'PLAYER_B_UPRIGHTFIRE': <Action.UPRIGHTFIRE: 32>, 'PLAYER_B_UPLEFTFIRE': <Action.UPLEFTFIRE: 33>, 'PLAYER_B_DOWNRIGHTFIRE': <Action.DOWNRIGHTFIRE: 34>, 'PLAYER_B_DOWNLEFTFIRE': <Action.DOWNLEFTFIRE: 35>}
-    pass
+    DOWN: _ale_py.Action  # value = <Action.DOWN: 5>
+    DOWNFIRE: _ale_py.Action  # value = <Action.DOWNFIRE: 13>
+    DOWNLEFT: _ale_py.Action  # value = <Action.DOWNLEFT: 9>
+    DOWNLEFTFIRE: _ale_py.Action  # value = <Action.DOWNLEFTFIRE: 17>
+    DOWNRIGHT: _ale_py.Action  # value = <Action.DOWNRIGHT: 8>
+    DOWNRIGHTFIRE: _ale_py.Action  # value = <Action.DOWNRIGHTFIRE: 16>
+    FIRE: _ale_py.Action  # value = <Action.FIRE: 1>
+    LEFT: _ale_py.Action  # value = <Action.LEFT: 4>
+    LEFTFIRE: _ale_py.Action  # value = <Action.LEFTFIRE: 12>
+    NOOP: _ale_py.Action  # value = <Action.NOOP: 0>
+    RIGHT: _ale_py.Action  # value = <Action.RIGHT: 3>
+    RIGHTFIRE: _ale_py.Action  # value = <Action.RIGHTFIRE: 11>
+    UP: _ale_py.Action  # value = <Action.UP: 2>
+    UPFIRE: _ale_py.Action  # value = <Action.UPFIRE: 10>
+    UPLEFT: _ale_py.Action  # value = <Action.UPLEFT: 7>
+    UPLEFTFIRE: _ale_py.Action  # value = <Action.UPLEFTFIRE: 15>
+    UPRIGHT: _ale_py.Action  # value = <Action.UPRIGHT: 6>
+    UPRIGHTFIRE: _ale_py.Action  # value = <Action.UPRIGHTFIRE: 14>
+    __members__: dict  # value = {'NOOP': <Action.NOOP: 0>, 'FIRE': <Action.FIRE: 1>, 'UP': <Action.UP: 2>, 'RIGHT': <Action.RIGHT: 3>, 'LEFT': <Action.LEFT: 4>, 'DOWN': <Action.DOWN: 5>, 'UPRIGHT': <Action.UPRIGHT: 6>, 'UPLEFT': <Action.UPLEFT: 7>, 'DOWNRIGHT': <Action.DOWNRIGHT: 8>, 'DOWNLEFT': <Action.DOWNLEFT: 9>, 'UPFIRE': <Action.UPFIRE: 10>, 'RIGHTFIRE': <Action.RIGHTFIRE: 11>, 'LEFTFIRE': <Action.LEFTFIRE: 12>, 'DOWNFIRE': <Action.DOWNFIRE: 13>, 'UPRIGHTFIRE': <Action.UPRIGHTFIRE: 14>, 'UPLEFTFIRE': <Action.UPLEFTFIRE: 15>, 'DOWNRIGHTFIRE': <Action.DOWNRIGHTFIRE: 16>, 'DOWNLEFTFIRE': <Action.DOWNLEFTFIRE: 17>}    pass
 
 class ALEState:
     def __eq__(self, other: ALEState) -> bool: ...
@@ -130,7 +107,7 @@ class ALEInterface:
         self,
         a_action: Action,
         a_paddle_strength: float = 1.0,
-        b_action: Action = Action.PLAYER_B_NOOP,
+        b_action: Action = Action.NOOP,
         b_paddle_strength: float = 1.0,
     ) -> int: ...
     @overload

@@ -60,24 +60,24 @@ reward_t WordZapperSettings::getReward() const { return m_reward; }
 
 bool WordZapperSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
-    case PLAYER_A_DOWNFIRE:
-    case PLAYER_A_UPRIGHTFIRE:
-    case PLAYER_A_UPLEFTFIRE:
-    case PLAYER_A_DOWNRIGHTFIRE:
-    case PLAYER_A_DOWNLEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
+    case UPFIRE:
+    case RIGHTFIRE:
+    case LEFTFIRE:
+    case DOWNFIRE:
+    case UPRIGHTFIRE:
+    case UPLEFTFIRE:
+    case DOWNRIGHTFIRE:
+    case DOWNLEFTFIRE:
       return true;
     default:
       return false;
@@ -107,12 +107,12 @@ ActionVect WordZapperSettings::getStartingActions() {
   // user input is accepted, even the 'start' button. This lasts for around
   // 8 seconds so we wait for 486 frames to be sure our subsequent action to
   // press 'fire' is effective.
-  ActionVect startingActions(486, PLAYER_A_NOOP);
+  ActionVect startingActions(486, NOOP);
 
   // Press fire to start and wait a couple of frames.
-  startingActions.push_back(PLAYER_A_FIRE);
-  startingActions.push_back(PLAYER_A_NOOP);
-  startingActions.push_back(PLAYER_A_NOOP);
+  startingActions.push_back(FIRE);
+  startingActions.push_back(NOOP);
+  startingActions.push_back(NOOP);
 
   return startingActions;
 }

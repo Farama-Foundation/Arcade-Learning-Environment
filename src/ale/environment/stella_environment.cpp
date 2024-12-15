@@ -34,8 +34,8 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
       m_phosphor_blend(osystem),
       m_screen(m_osystem->console().mediaSource().height(),
                m_osystem->console().mediaSource().width()),
-      m_player_a_action(PLAYER_A_NOOP),
-      m_player_b_action(PLAYER_B_NOOP) {
+      m_player_a_action(NOOP),
+      m_player_b_action(NOOP) {
   // Determine whether this is a paddle-based game
   if (m_osystem->console().properties().get(Controller_Left) == "PADDLES" ||
       m_osystem->console().properties().get(Controller_Right) == "PADDLES") {
@@ -110,7 +110,7 @@ void StellaEnvironment::reset() {
   int noopSteps;
   noopSteps = 60;
 
-  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 1.0, 1.0, noopSteps);
+  emulate(NOOP, NOOP, 1.0, 1.0, noopSteps);
   // Reset the emulator
   softReset();
 
@@ -125,7 +125,7 @@ void StellaEnvironment::reset() {
   // Apply necessary actions specified by the rom itself
   ActionVect startingActions = m_settings->getStartingActions();
   for (size_t i = 0; i < startingActions.size(); i++) {
-    emulate(startingActions[i], PLAYER_B_NOOP, 1.0, 1.0);
+    emulate(startingActions[i], NOOP, 1.0, 1.0);
   }
 }
 
@@ -140,19 +140,19 @@ void StellaEnvironment::restoreState(const ALEState& target_state) {
 
 void StellaEnvironment::noopIllegalActions(Action& player_a_action,
                                            Action& player_b_action) {
-  if (player_a_action < (Action)PLAYER_B_NOOP &&
+  if (player_a_action < (Action)NOOP &&
       !m_settings->isLegal(player_a_action)) {
-    player_a_action = (Action)PLAYER_A_NOOP;
+    player_a_action = (Action)NOOP;
   }
   // Also drop RESET, which doesn't play nice with our clean notions of RL environments
   else if (player_a_action == RESET)
-    player_a_action = (Action)PLAYER_A_NOOP;
+    player_a_action = (Action)NOOP;
 
   if (player_b_action < (Action)RESET &&
-      !m_settings->isLegal((Action)((int)player_b_action - PLAYER_B_NOOP))) {
-    player_b_action = (Action)PLAYER_B_NOOP;
+      !m_settings->isLegal((Action)((int)player_b_action - NOOP))) {
+    player_b_action = (Action)NOOP;
   } else if (player_b_action == RESET)
-    player_b_action = (Action)PLAYER_B_NOOP;
+    player_b_action = (Action)NOOP;
 }
 
 reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
@@ -200,11 +200,11 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
 
 /** This functions emulates a push on the reset button of the console */
 void StellaEnvironment::softReset() {
-  emulate(RESET, PLAYER_B_NOOP, 1.0, 1.0, m_num_reset_steps);
+  emulate(RESET, NOOP, 1.0, 1.0, m_num_reset_steps);
 
   // Reset previous actions to NOOP for correct action repeating
-  m_player_a_action = PLAYER_A_NOOP;
-  m_player_b_action = PLAYER_B_NOOP;
+  m_player_a_action = NOOP;
+  m_player_b_action = NOOP;
 }
 
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
@@ -258,7 +258,7 @@ void StellaEnvironment::pressSelect(size_t num_steps) {
   }
   processScreen();
   processRAM();
-  emulate(PLAYER_A_NOOP, PLAYER_B_NOOP, 1.0, 1.0);
+  emulate(NOOP, NOOP, 1.0, 1.0);
   m_state.incrementFrame();
 }
 

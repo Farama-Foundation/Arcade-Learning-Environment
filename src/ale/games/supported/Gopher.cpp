@@ -65,14 +65,14 @@ reward_t GopherSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool GopherSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case UPFIRE:
+    case RIGHTFIRE:
+    case LEFTFIRE:
       return true;
     default:
       return false;
@@ -104,7 +104,7 @@ void GopherSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect GopherSettings::getStartingActions() {
-  return {PLAYER_A_FIRE};
+  return {FIRE};
 }
 
 // returns a list of mode that the game can be played in

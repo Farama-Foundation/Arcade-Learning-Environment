@@ -308,7 +308,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         # Frameskip
         reward = 0.0
         for _ in range(frameskip):
-            reward += self.ale.act(action_idx, strength, Action.PLAYER_B_NOOP, 0.0)
+            reward += self.ale.act(action_idx, strength, Action.NOOP, 0.0)
 
         is_terminal = self.ale.game_over(with_truncation=False)
         is_truncated = self.ale.game_truncated()
@@ -369,24 +369,24 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         NOOP = ord("e")
 
         mapping = {
-            ale_py.Action.PLAYER_A_NOOP: (NOOP,),
-            ale_py.Action.PLAYER_A_UP: (UP,),
-            ale_py.Action.PLAYER_A_FIRE: (FIRE,),
-            ale_py.Action.PLAYER_A_DOWN: (DOWN,),
-            ale_py.Action.PLAYER_A_LEFT: (LEFT,),
-            ale_py.Action.PLAYER_A_RIGHT: (RIGHT,),
-            ale_py.Action.PLAYER_A_UPFIRE: (UP, FIRE),
-            ale_py.Action.PLAYER_A_DOWNFIRE: (DOWN, FIRE),
-            ale_py.Action.PLAYER_A_LEFTFIRE: (LEFT, FIRE),
-            ale_py.Action.PLAYER_A_RIGHTFIRE: (RIGHT, FIRE),
-            ale_py.Action.PLAYER_A_UPLEFT: (UP, LEFT),
-            ale_py.Action.PLAYER_A_UPRIGHT: (UP, RIGHT),
-            ale_py.Action.PLAYER_A_DOWNLEFT: (DOWN, LEFT),
-            ale_py.Action.PLAYER_A_DOWNRIGHT: (DOWN, RIGHT),
-            ale_py.Action.PLAYER_A_UPLEFTFIRE: (UP, LEFT, FIRE),
-            ale_py.Action.PLAYER_A_UPRIGHTFIRE: (UP, RIGHT, FIRE),
-            ale_py.Action.PLAYER_A_DOWNLEFTFIRE: (DOWN, LEFT, FIRE),
-            ale_py.Action.PLAYER_A_DOWNRIGHTFIRE: (DOWN, RIGHT, FIRE),
+            ale_py.Action.NOOP: (NOOP,),
+            ale_py.Action.UP: (UP,),
+            ale_py.Action.FIRE: (FIRE,),
+            ale_py.Action.DOWN: (DOWN,),
+            ale_py.Action.LEFT: (LEFT,),
+            ale_py.Action.RIGHT: (RIGHT,),
+            ale_py.Action.UPFIRE: (UP, FIRE),
+            ale_py.Action.DOWNFIRE: (DOWN, FIRE),
+            ale_py.Action.LEFTFIRE: (LEFT, FIRE),
+            ale_py.Action.RIGHTFIRE: (RIGHT, FIRE),
+            ale_py.Action.UPLEFT: (UP, LEFT),
+            ale_py.Action.UPRIGHT: (UP, RIGHT),
+            ale_py.Action.DOWNLEFT: (DOWN, LEFT),
+            ale_py.Action.DOWNRIGHT: (DOWN, RIGHT),
+            ale_py.Action.UPLEFTFIRE: (UP, LEFT, FIRE),
+            ale_py.Action.UPRIGHTFIRE: (UP, RIGHT, FIRE),
+            ale_py.Action.DOWNLEFTFIRE: (DOWN, LEFT, FIRE),
+            ale_py.Action.DOWNRIGHTFIRE: (DOWN, RIGHT, FIRE),
         }
 
         # Map
@@ -404,49 +404,49 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         """Return an action idx given unit actions for underlying env."""
         # no op and fire
         if left_center_right == 0 and down_center_up == 0 and not fire:
-            return ale_py.Action.PLAYER_A_NOOP
+            return ale_py.Action.NOOP
         elif left_center_right == 0 and down_center_up == 0 and fire:
-            return ale_py.Action.PLAYER_A_FIRE
+            return ale_py.Action.FIRE
 
         # cardinal no fire
         elif left_center_right == -1 and down_center_up == 0 and not fire:
-            return ale_py.Action.PLAYER_A_LEFT
+            return ale_py.Action.LEFT
         elif left_center_right == 1 and down_center_up == 0 and not fire:
-            return ale_py.Action.PLAYER_A_RIGHT
+            return ale_py.Action.RIGHT
         elif left_center_right == 0 and down_center_up == -1 and not fire:
-            return ale_py.Action.PLAYER_A_DOWN
+            return ale_py.Action.DOWN
         elif left_center_right == 0 and down_center_up == 1 and not fire:
-            return ale_py.Action.PLAYER_A_UP
+            return ale_py.Action.UP
 
         # cardinal fire
         if left_center_right == -1 and down_center_up == 0 and fire:
-            return ale_py.Action.PLAYER_A_LEFTFIRE
+            return ale_py.Action.LEFTFIRE
         elif left_center_right == 1 and down_center_up == 0 and fire:
-            return ale_py.Action.PLAYER_A_RIGHTFIRE
+            return ale_py.Action.RIGHTFIRE
         elif left_center_right == 0 and down_center_up == -1 and fire:
-            return ale_py.Action.PLAYER_A_DOWNFIRE
+            return ale_py.Action.DOWNFIRE
         elif left_center_right == 0 and down_center_up == 1 and fire:
-            return ale_py.Action.PLAYER_A_UPFIRE
+            return ale_py.Action.UPFIRE
 
         # diagonal no fire
         elif left_center_right == -1 and down_center_up == -1 and not fire:
-            return ale_py.Action.PLAYER_A_DOWNLEFT
+            return ale_py.Action.DOWNLEFT
         elif left_center_right == 1 and down_center_up == -1 and not fire:
-            return ale_py.Action.PLAYER_A_DOWNRIGHT
+            return ale_py.Action.DOWNRIGHT
         elif left_center_right == -1 and down_center_up == 1 and not fire:
-            return ale_py.Action.PLAYER_A_UPLEFT
+            return ale_py.Action.UPLEFT
         elif left_center_right == 1 and down_center_up == 1 and not fire:
-            return ale_py.Action.PLAYER_A_UPRIGHT
+            return ale_py.Action.UPRIGHT
 
         # diagonal fire
         elif left_center_right == -1 and down_center_up == -1 and fire:
-            return ale_py.Action.PLAYER_A_DOWNLEFTFIRE
+            return ale_py.Action.DOWNLEFTFIRE
         elif left_center_right == 1 and down_center_up == -1 and fire:
-            return ale_py.Action.PLAYER_A_DOWNRIGHTFIRE
+            return ale_py.Action.DOWNRIGHTFIRE
         elif left_center_right == -1 and down_center_up == 1 and fire:
-            return ale_py.Action.PLAYER_A_UPLEFTFIRE
+            return ale_py.Action.UPLEFTFIRE
         elif left_center_right == 1 and down_center_up == 1 and fire:
-            return ale_py.Action.PLAYER_A_UPRIGHTFIRE
+            return ale_py.Action.UPRIGHTFIRE
 
         # just in case
         else:

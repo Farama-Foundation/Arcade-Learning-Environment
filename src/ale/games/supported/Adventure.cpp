@@ -62,24 +62,24 @@ reward_t AdventureSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool AdventureSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
-    case PLAYER_A_DOWNFIRE:
-    case PLAYER_A_UPRIGHTFIRE:
-    case PLAYER_A_UPLEFTFIRE:
-    case PLAYER_A_DOWNRIGHTFIRE:
-    case PLAYER_A_DOWNLEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
+    case UPFIRE:
+    case RIGHTFIRE:
+    case LEFTFIRE:
+    case DOWNFIRE:
+    case UPRIGHTFIRE:
+    case UPLEFTFIRE:
+    case DOWNRIGHTFIRE:
+    case DOWNLEFTFIRE:
       return true;
     default:
       return false;
@@ -138,7 +138,7 @@ void AdventureSettings::setMode(
       environment->pressSelect(2 + rng.next() % 256);
       // Adventure uses a debouncer so need to wait before the select takes
       // effect.
-      environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+      environment->act(NOOP, NOOP);
       mode = (readRam(&system, 0xDD) >> 1) & 0x03;
     }
     // Reset the environment to apply changes.

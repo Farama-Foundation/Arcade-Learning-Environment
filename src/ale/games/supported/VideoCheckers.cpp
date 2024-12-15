@@ -85,11 +85,11 @@ reward_t VideoCheckersSettings::getReward() const { return m_reward; }
 
 bool VideoCheckersSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
+    case FIRE:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
       return true;
     default:
       return false;

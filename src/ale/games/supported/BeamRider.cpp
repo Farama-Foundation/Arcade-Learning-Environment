@@ -71,15 +71,15 @@ reward_t BeamRiderSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool BeamRiderSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case UPRIGHT:
+    case UPLEFT:
+    case RIGHTFIRE:
+    case LEFTFIRE:
       return true;
     default:
       return false;
@@ -111,7 +111,7 @@ void BeamRiderSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect BeamRiderSettings::getStartingActions() {
-  return {PLAYER_A_RIGHT};
+  return {RIGHT};
 }
 
 DifficultyVect BeamRiderSettings::getAvailableDifficulties() {
