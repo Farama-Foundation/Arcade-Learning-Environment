@@ -31,7 +31,7 @@ bool RomSettings::isLegal(const Action& a) const {
 
 ActionVect RomSettings::getMinimalActionSet() {
   ActionVect actions;
-  for (int a = 0; a < PLAYER_B_NOOP; a++) {
+  for (int a = 0; a < RESET; a++) {
     if (isMinimal((Action)a) && isLegal((Action)a)) {
       actions.push_back((Action)a);
     }
@@ -41,7 +41,7 @@ ActionVect RomSettings::getMinimalActionSet() {
 
 ActionVect RomSettings::getAllActions() {
   ActionVect actions;
-  for (int a = 0; a < PLAYER_B_NOOP; a++) {
+  for (int a = 0; a < RESET; a++) {
     if (isLegal((Action)a)) {
       actions.push_back((Action)a);
     }

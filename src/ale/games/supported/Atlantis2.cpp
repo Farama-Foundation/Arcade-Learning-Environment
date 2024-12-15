@@ -69,10 +69,10 @@ reward_t Atlantis2Settings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool Atlantis2Settings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case RIGHTFIRE:
+    case LEFTFIRE:
       return true;
     default:
       return false;

@@ -52,12 +52,12 @@ reward_t BasicMathSettings::getReward() const { return m_reward; }
 
 bool BasicMathSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
       // Fire button is select in this game so doesn't make sense to move
       // and press fire at the same time.
       return true;

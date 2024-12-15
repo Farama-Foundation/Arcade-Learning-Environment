@@ -63,11 +63,11 @@ reward_t SurroundSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool SurroundSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_UP:
-    case PLAYER_A_DOWN:
+    case NOOP:
+    case LEFT:
+    case RIGHT:
+    case UP:
+    case DOWN:
       return true;
     default:
       return false;
@@ -106,13 +106,14 @@ DifficultyVect SurroundSettings::getAvailableDifficulties() {
 // https://atariage.com/manual_html_page.php?SoftwareLabelID=535
 // There are only two single player modes, the second is faster than the first.
 ModeVect SurroundSettings::getAvailableModes() {
-  return {0, 2};
+  return {0, 2, 4};
 }
 
 void SurroundSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0 || m == 2) {
+  // m = 4 for 2 player
+  if (m == 0 || m == 2 || m == 4) {
     // Read the game mode from RAM address 0xf9.
     unsigned char mode = readRam(&system, 0xf9);
     int desired_mode = m + 1;

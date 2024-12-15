@@ -68,20 +68,20 @@ reward_t AsteroidsSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool AsteroidsSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
-    case PLAYER_A_DOWNFIRE:
-    case PLAYER_A_UPRIGHTFIRE:
-    case PLAYER_A_UPLEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case UPFIRE:
+    case RIGHTFIRE:
+    case LEFTFIRE:
+    case DOWNFIRE:
+    case UPRIGHTFIRE:
+    case UPLEFTFIRE:
       return true;
     default:
       return false;

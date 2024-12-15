@@ -46,12 +46,12 @@ reward_t SirLancelotSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool SirLancelotSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case RIGHT:
+    case LEFT:
+    case RIGHTFIRE:
+    case LEFTFIRE:
       return true;
     default:
       return false;
@@ -83,7 +83,7 @@ void SirLancelotSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect SirLancelotSettings::getStartingActions() {
-  return {RESET, PLAYER_A_LEFT};
+  return {RESET, LEFT};
 }
 
 }  // namespace ale

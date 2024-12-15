@@ -141,24 +141,24 @@ reward_t VideoCubeSettings::getReward() const { return m_reward; }
 
 bool VideoCubeSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
-    case PLAYER_A_DOWNFIRE:
-    case PLAYER_A_UPRIGHTFIRE:
-    case PLAYER_A_UPLEFTFIRE:
-    case PLAYER_A_DOWNRIGHTFIRE:
-    case PLAYER_A_DOWNLEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
+    case UPFIRE:
+    case RIGHTFIRE:
+    case LEFTFIRE:
+    case DOWNFIRE:
+    case UPRIGHTFIRE:
+    case UPLEFTFIRE:
+    case DOWNRIGHTFIRE:
+    case DOWNLEFTFIRE:
       return true;
     default:
       return false;
@@ -195,12 +195,12 @@ ActionVect VideoCubeSettings::getStartingActions() {
   // fire button being pressed to confirm the selection and start the game.
   // We do the cube selection in setMode, but force a "fire button" press after
   // approximately a second of waiting about.
-  ActionVect startingActions(61, PLAYER_A_NOOP);
+  ActionVect startingActions(61, NOOP);
 
   // Press fire to start and wait a couple of frames.
-  startingActions.push_back(PLAYER_A_FIRE);
-  startingActions.push_back(PLAYER_A_NOOP);
-  startingActions.push_back(PLAYER_A_NOOP);
+  startingActions.push_back(FIRE);
+  startingActions.push_back(NOOP);
+  startingActions.push_back(NOOP);
 
   return startingActions;
 }
@@ -266,7 +266,7 @@ void VideoCubeSettings::setMode(
     // Press "right" until the correct cube is selected.
     unsigned char cube = getDecimalScore(0x9f, &system);
     while (cube != m_cubeNumber) {
-      environment->act(PLAYER_A_RIGHT, PLAYER_B_NOOP);
+      environment->act(RIGHT, NOOP);
       cube = getDecimalScore(0x9f, &system);
     }
   } else {

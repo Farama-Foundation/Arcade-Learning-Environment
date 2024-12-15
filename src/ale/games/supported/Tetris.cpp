@@ -71,11 +71,11 @@ reward_t TetrisSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool TetrisSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
+    case NOOP:
+    case FIRE:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
       return true;
     default:
       return false;

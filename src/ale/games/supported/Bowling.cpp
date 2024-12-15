@@ -45,12 +45,12 @@ reward_t BowlingSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool BowlingSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_DOWNFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case DOWN:
+    case UPFIRE:
+    case DOWNFIRE:
       return true;
     default:
       return false;

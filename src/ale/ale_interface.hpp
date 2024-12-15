@@ -86,7 +86,12 @@ class ALEInterface {
   // user's responsibility to check if the game has ended and reset
   // when necessary - this method will keep pressing buttons on the
   // game over screen.
-  reward_t act(Action action, float paddle_strength = 1.0);
+  reward_t act(
+    Action a_action,
+    float a_paddle_strength = 1.0,
+    Action b_action = NOOP,
+    float b_paddle_strength = 0.0
+  );
 
   // Indicates if the game has ended.
   bool game_over(bool with_truncation = true) const;

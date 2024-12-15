@@ -47,24 +47,24 @@ reward_t DoubleDunkSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool DoubleDunkSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
-    case PLAYER_A_DOWNFIRE:
-    case PLAYER_A_UPRIGHTFIRE:
-    case PLAYER_A_UPLEFTFIRE:
-    case PLAYER_A_DOWNRIGHTFIRE:
-    case PLAYER_A_DOWNLEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
+    case UPFIRE:
+    case RIGHTFIRE:
+    case LEFTFIRE:
+    case DOWNFIRE:
+    case UPRIGHTFIRE:
+    case UPLEFTFIRE:
+    case DOWNRIGHTFIRE:
+    case DOWNLEFTFIRE:
       return true;
     default:
       return false;
@@ -93,7 +93,7 @@ void DoubleDunkSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect DoubleDunkSettings::getStartingActions() {
-  return {PLAYER_A_UPFIRE};
+  return {UPFIRE};
 }
 
 // returns a list of mode that the game can be played in
@@ -114,8 +114,8 @@ void DoubleDunkSettings::goDown(
   // this function goes to the next option in the menu
   int previousSelection = readRam(&system, 0xB0);
   while (previousSelection == readRam(&system, 0xB0)) {
-    environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
-    environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    environment->act(DOWN, NOOP);
+    environment->act(NOOP, NOOP);
   }
 }
 
@@ -125,8 +125,8 @@ void DoubleDunkSettings::activateOption(
   // once we are at the proper option in the menu,
   // if we want to enable it all we have to do is to go right
   while ((readRam(&system, 0x80) & bitOfInterest) != bitOfInterest) {
-    environment->act(PLAYER_A_RIGHT, PLAYER_B_NOOP);
-    environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    environment->act(RIGHT, NOOP);
+    environment->act(NOOP, NOOP);
   }
 }
 
@@ -136,8 +136,8 @@ void DoubleDunkSettings::deactivateOption(
   // once we are at the proper optio in the menu,
   // if we want to disable it all we have to do is to go left
   while ((readRam(&system, 0x80) & bitOfInterest) == bitOfInterest) {
-    environment->act(PLAYER_A_LEFT, PLAYER_B_NOOP);
-    environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    environment->act(LEFT, NOOP);
+    environment->act(NOOP, NOOP);
   }
 }
 
@@ -187,8 +187,8 @@ void DoubleDunkSettings::setMode(
     //reset the environment to apply changes.
     environment->softReset();
     //apply starting action
-    environment->act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
-    environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+    environment->act(UPFIRE, NOOP);
+    environment->act(NOOP, NOOP);
 
   } else {
     throw std::runtime_error("This mode doesn't currently exist for this game");

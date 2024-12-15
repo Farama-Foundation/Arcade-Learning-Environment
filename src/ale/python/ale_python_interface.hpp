@@ -83,24 +83,24 @@ PYBIND11_MODULE(_ale_py, m) {
 #endif
 
   py::enum_<ale::Action>(m, "Action")
-      .value("NOOP", ale::PLAYER_A_NOOP)
-      .value("FIRE", ale::PLAYER_A_FIRE)
-      .value("UP", ale::PLAYER_A_UP)
-      .value("RIGHT", ale::PLAYER_A_RIGHT)
-      .value("LEFT", ale::PLAYER_A_LEFT)
-      .value("DOWN", ale::PLAYER_A_DOWN)
-      .value("UPRIGHT", ale::PLAYER_A_UPRIGHT)
-      .value("UPLEFT", ale::PLAYER_A_UPLEFT)
-      .value("DOWNRIGHT", ale::PLAYER_A_DOWNRIGHT)
-      .value("DOWNLEFT", ale::PLAYER_A_DOWNLEFT)
-      .value("UPFIRE", ale::PLAYER_A_UPFIRE)
-      .value("RIGHTFIRE", ale::PLAYER_A_RIGHTFIRE)
-      .value("LEFTFIRE", ale::PLAYER_A_LEFTFIRE)
-      .value("DOWNFIRE", ale::PLAYER_A_DOWNFIRE)
-      .value("UPRIGHTFIRE", ale::PLAYER_A_UPRIGHTFIRE)
-      .value("UPLEFTFIRE", ale::PLAYER_A_UPLEFTFIRE)
-      .value("DOWNRIGHTFIRE", ale::PLAYER_A_DOWNRIGHTFIRE)
-      .value("DOWNLEFTFIRE", ale::PLAYER_A_DOWNLEFTFIRE)
+      .value("NOOP", ale::NOOP)
+      .value("FIRE", ale::FIRE)
+      .value("UP", ale::UP)
+      .value("RIGHT", ale::RIGHT)
+      .value("LEFT", ale::LEFT)
+      .value("DOWN", ale::DOWN)
+      .value("UPRIGHT", ale::UPRIGHT)
+      .value("UPLEFT", ale::UPLEFT)
+      .value("DOWNRIGHT", ale::DOWNRIGHT)
+      .value("DOWNLEFT", ale::DOWNLEFT)
+      .value("UPFIRE", ale::UPFIRE)
+      .value("RIGHTFIRE", ale::RIGHTFIRE)
+      .value("LEFTFIRE", ale::LEFTFIRE)
+      .value("DOWNFIRE", ale::DOWNFIRE)
+      .value("UPRIGHTFIRE", ale::UPRIGHTFIRE)
+      .value("UPLEFTFIRE", ale::UPLEFTFIRE)
+      .value("DOWNRIGHTFIRE", ale::DOWNRIGHTFIRE)
+      .value("DOWNLEFTFIRE", ale::DOWNLEFTFIRE)
       .export_values();
 
   py::enum_<ale::Logger::mode>(m, "LoggerMode")
@@ -150,9 +150,15 @@ PYBIND11_MODULE(_ale_py, m) {
                       ale::ALEPythonInterface::act)
       .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
                       ale::ALEPythonInterface::act)
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
+                      ale::ALEPythonInterface::act)
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float, uint32_t, float)) &
+                      ale::ALEPythonInterface::act)
       .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
                       ale::ALEInterface::act)
       .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &
+                      ale::ALEInterface::act)
+      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float, ale::Action, float)) &
                       ale::ALEInterface::act)
       .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))
       .def("game_truncated", &ale::ALEPythonInterface::game_truncated)

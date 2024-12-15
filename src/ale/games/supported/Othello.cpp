@@ -65,16 +65,16 @@ reward_t OthelloSettings::getReward() const { return m_reward; }
 
 bool OthelloSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
       // The joystick is used to move the active square on the board, then
       // fire selects that square. It does not make sense to press fire and
       // move at the same time.

@@ -10,7 +10,7 @@ from warnings import warn
 import ale_py
 import gymnasium
 import numpy as np
-from ale_py import roms
+from ale_py import Action, roms
 from gymnasium import error, spaces, utils
 from gymnasium.utils import seeding
 
@@ -66,7 +66,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
           full_action_space: bool => Use full action space?
           continuous: bool => Use continuous actions?
           continuous_action_threshold: float => threshold used for continuous actions.
-          max_num_frames_per_episode: int => Max number of frame per epsiode.
+          max_num_frames_per_episode: int => Max number of frame per episode.
               Once `max_num_frames_per_episode` is reached the episode is
               truncated.
           render_mode: str => One of { 'human', 'rgb_array' }.
@@ -308,7 +308,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         # Frameskip
         reward = 0.0
         for _ in range(frameskip):
-            reward += self.ale.act(action_idx, strength)
+            reward += self.ale.act(action_idx, strength, Action.NOOP, 0.0)
 
         is_terminal = self.ale.game_over(with_truncation=False)
         is_truncated = self.ale.game_truncated()

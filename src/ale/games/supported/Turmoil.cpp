@@ -50,18 +50,18 @@ reward_t TurmoilSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool TurmoilSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPRIGHT:
-    case PLAYER_A_UPLEFT:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case UPRIGHT:
+    case UPLEFT:
+    case DOWNRIGHT:
+    case DOWNLEFT:
+    case RIGHTFIRE:
+    case LEFTFIRE:
       return true;
     default:
       return false;
@@ -93,7 +93,7 @@ void TurmoilSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect TurmoilSettings::getStartingActions() {
-  return {PLAYER_A_FIRE};
+  return {FIRE};
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=571
