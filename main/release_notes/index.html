@@ -449,9 +449,9 @@ This mirrors the real-world scenario where you have a paddle connected, but the 
 This maintains backwards compatibility.</p>
 <h3>Python interface changes</h3>
 <p><em>Old Discrete ALE Python Interface</em></p>
-<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int)"><pre><span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>)</pre></div>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int)"><pre><span class="pl-s1">ale</span>.<span class="pl-c1">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>)</pre></div>
 <p><em>New Mixed Discrete-Continuous ALE Python Interface</em></p>
-<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int, strength: float = 1.0)"><pre><span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>, <span class="pl-s1">strength</span>: <span class="pl-s1">float</span> <span class="pl-c1">=</span> <span class="pl-c1">1.0</span>)</pre></div>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int, strength: float = 1.0)"><pre><span class="pl-s1">ale</span>.<span class="pl-c1">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>, <span class="pl-s1">strength</span>: <span class="pl-s1">float</span> <span class="pl-c1">=</span> <span class="pl-c1">1.0</span>)</pre></div>
 <p>The continuous action space is implemented at the Python level within the Gymnasium environment.</p>
 <div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="if continuous:
     # action is expected to be a [2,] array of floats
@@ -469,19 +469,19 @@ This maintains backwards compatibility.</p>
     )
     ale.act(action_idx, action[1])"><pre><span class="pl-k">if</span> <span class="pl-s1">continuous</span>:
     <span class="pl-c"># action is expected to be a [2,] array of floats</span>
-    <span class="pl-s1">x</span>, <span class="pl-s1">y</span> <span class="pl-c1">=</span> <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-en">cos</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>]), <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-en">sin</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>])
-    <span class="pl-s1">action_idx</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-en">map_action_idx</span>(
+    <span class="pl-s1">x</span>, <span class="pl-s1">y</span> <span class="pl-c1">=</span> <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-c1">cos</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>]), <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-c1">sin</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>])
+    <span class="pl-s1">action_idx</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">map_action_idx</span>(
         <span class="pl-s1">left_center_right</span><span class="pl-c1">=</span>(
-            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
-            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
+            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
         ),
         <span class="pl-s1">down_center_up</span><span class="pl-c1">=</span>(
-            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
-            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
+            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
         ),
-        <span class="pl-s1">fire</span><span class="pl-c1">=</span>(<span class="pl-s1">action</span>[<span class="pl-c1">-</span><span class="pl-c1">1</span>] <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>),
+        <span class="pl-s1">fire</span><span class="pl-c1">=</span>(<span class="pl-s1">action</span>[<span class="pl-c1">-</span><span class="pl-c1">1</span>] <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>),
     )
-    <span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action_idx</span>, <span class="pl-s1">action</span>[<span class="pl-c1">1</span>])</pre></div>
+    <span class="pl-s1">ale</span>.<span class="pl-c1">act</span>(<span class="pl-s1">action_idx</span>, <span class="pl-s1">action</span>[<span class="pl-c1">1</span>])</pre></div>
 <p><strong>Full Changelog</strong>: <a class="commit-link" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.9.1...v0.10.0"><tt>v0.9.1...v0.10.0</tt></a></p></section>
 <section id="release-v0-9-1">
 <h2>ALE v0.9.1<a class="headerlink" href="#release-v0-9-1" title="Link to this heading">¶</a></h2>
@@ -509,17 +509,17 @@ while not episode_over:
 env.close()"><pre><span class="pl-k">import</span> <span class="pl-s1">gymnasium</span> <span class="pl-k">as</span> <span class="pl-s1">gym</span>
 <span class="pl-k">import</span> <span class="pl-s1">ale_py</span>
 
-<span class="pl-s1">gym</span>.<span class="pl-en">register_envs</span>(<span class="pl-s1">ale_py</span>)  <span class="pl-c"># unnecessary but prevents IDEs from complaining</span>
+<span class="pl-s1">gym</span>.<span class="pl-c1">register_envs</span>(<span class="pl-s1">ale_py</span>)  <span class="pl-c"># unnecessary but prevents IDEs from complaining</span>
 
-<span class="pl-s1">env</span> <span class="pl-c1">=</span> <span class="pl-s1">gym</span>.<span class="pl-en">make</span>(<span class="pl-s">"ALE/Pong-v5"</span>, <span class="pl-s1">render_mode</span><span class="pl-c1">=</span><span class="pl-s">"human"</span>)
+<span class="pl-s1">env</span> <span class="pl-c1">=</span> <span class="pl-s1">gym</span>.<span class="pl-c1">make</span>(<span class="pl-s">"ALE/Pong-v5"</span>, <span class="pl-s1">render_mode</span><span class="pl-c1">=</span><span class="pl-s">"human"</span>)
 
-<span class="pl-s1">obs</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-en">reset</span>()
+<span class="pl-s1">obs</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-c1">reset</span>()
 <span class="pl-s1">episode_over</span> <span class="pl-c1">=</span> <span class="pl-c1">False</span>
 <span class="pl-k">while</span> <span class="pl-c1">not</span> <span class="pl-s1">episode_over</span>:
 	<span class="pl-s1">action</span> <span class="pl-c1">=</span> <span class="pl-en">policy</span>(<span class="pl-s1">obs</span>)  <span class="pl-c"># replace with actual policy</span>
-	<span class="pl-s1">obs</span>, <span class="pl-s1">reward</span>, <span class="pl-s1">terminated</span>, <span class="pl-s1">truncated</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-en">step</span>(<span class="pl-s1">action</span>)
+	<span class="pl-s1">obs</span>, <span class="pl-s1">reward</span>, <span class="pl-s1">terminated</span>, <span class="pl-s1">truncated</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-c1">step</span>(<span class="pl-s1">action</span>)
 	<span class="pl-s1">episode_over</span> <span class="pl-c1">=</span> <span class="pl-s1">terminated</span> <span class="pl-c1">or</span> <span class="pl-s1">truncated</span>
-<span class="pl-s1">env</span>.<span class="pl-en">close</span>()</pre></div>
+<span class="pl-s1">env</span>.<span class="pl-c1">close</span>()</pre></div>
 <p>An important change in this update is that the Atari ROMs are packaged within the PyPI installation such that users no longer require <code>pip install "gym[accept-rom-license]"</code> (AutoROM) or <code>ale-import-roms</code> for downloading or loading ROMs. This should significantly simplify installing Atari for users. For users who wish to load ROMs from an alternative folder, use the <code>ALE_ROM_DIR</code> system environment variable to specify a folder directory.</p>
 <p>Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py utilises where atari environments would be registered behind the scenes. As a result, projects will need to import <code>ale_py</code>, to register all the atari environments, before an atari environment can be created with <code>gymnasium.make</code>. We understand this will cause annoyance to some users, however, the previous method brought significant complexity behind the scenes that the development team believed caused more issues than help.</p>
 <h2>Other changes</h2>
