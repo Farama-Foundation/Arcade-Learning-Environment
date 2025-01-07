@@ -70,14 +70,15 @@ jobs:
       run: python -m pip install --user cmake
       if: runner.os == 'Windows'
 
-    - run: brew install llvm
-      if: runner.os == 'macOS'
-
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
     - name: Build
       run: python -m pip install --verbose .[test]
+
+    - name: debug
+      if: always() && runner.os == 'macOS'
+      run: cat /usr/local/share/vcpkg/buildtrees/sdl2/install-x64-osx-mixed-dbg-out.log
 
     - name: Test
       run: python -m pytest
@@ -121,9 +122,6 @@ jobs:
           tags: manylinux-vcpkg:latest
           push: false
           load: true
-
-      - run: brew install llvm
-        if: runner.os == 'macOS'
 
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
