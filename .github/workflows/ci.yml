@@ -64,7 +64,7 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: Install test dependencies
+    - name: Install windows cmake
       # TODO(jfarebro): There's a bug with Windows cmake and PEP517 builds via pip install.
       # As a temporary workaround installing cmake outside of the isolated env seems to work.
       run: python -m pip install --user cmake
@@ -79,6 +79,10 @@ jobs:
     - name: debug
       if: always() && runner.os == 'macOS'
       run: cat /usr/local/share/vcpkg/buildtrees/sdl2/install-x64-osx-mixed-dbg-out.log
+
+    - name: debug vcpkg
+      if: always() && runner.os == 'macOS'
+      run: cat /Users/runner/work/Arcade-Learning-Environment/Arcade-Learning-Environment/build/temp.macosx-10.13-universal2-cpython-312/ale_py._ale_py/vcpkg-manifest-install.log
 
     - name: Test
       run: python -m pytest
