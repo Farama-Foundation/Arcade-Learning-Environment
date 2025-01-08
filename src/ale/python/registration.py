@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Any, Callable, Mapping, NamedTuple, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any, Callable, NamedTuple
 
 import ale_py.roms as roms
 import gymnasium

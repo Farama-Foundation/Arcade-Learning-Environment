@@ -68,7 +68,7 @@ jobs:
       run: ./scripts/download_unpack_roms.sh
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.21.3
+      uses: pypa/cibuildwheel@v2.21
       env:
         CIBW_ARCHS: "${{ matrix.arch }}"
 
