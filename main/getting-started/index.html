@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>Installation - ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -435,15 +435,15 @@
 <tbody>
 <tr class="row-even"><td class="text-center"><p>Linux</p></td>
 <td class="text-center"><p>x64</p></td>
-<td class="text-center"><p>3.8+</p></td>
+<td class="text-center"><p>3.9+</p></td>
 </tr>
 <tr class="row-odd"><td class="text-center"><p>macOS</p></td>
 <td class="text-center"><p>x64, arm64</p></td>
-<td class="text-center"><p>3.8+</p></td>
+<td class="text-center"><p>3.9+</p></td>
 </tr>
 <tr class="row-even"><td class="text-center"><p>Windows</p></td>
 <td class="text-center"><p>AMD64</p></td>
-<td class="text-center"><p>3.8+</p></td>
+<td class="text-center"><p>3.9+</p></td>
 </tr>
 </tbody>
 </table>
@@ -453,7 +453,7 @@
 </pre></div>
 </div>
 <p>Once installed you can import the native ALE interface as <code class="docutils literal notranslate"><span class="pre">ale_py</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ale_py</span> <span class="kn">import</span> <span class="n">ALEInterface</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ale_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALEInterface</span>
 <span class="n">ale</span> <span class="o">=</span> <span class="n">ALEInterface</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -461,8 +461,8 @@
 <section id="gymnasium-api">
 <h2>Gymnasium API<a class="headerlink" href="#gymnasium-api" title="Link to this heading">¶</a></h2>
 <p>ALE supports the <a class="reference external" href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a> API such that all the setup required for interacting with the emulator is complete. See the environment page for all the available ROMs and the gymnasium <a class="reference external" href="https://gymnasium.farama.org/content/basic_usage/">getting started</a> page for how to interact.</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
-<span class="kn">import</span> <span class="nn">ale_py</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
 <span class="n">gym</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
 

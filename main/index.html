@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -422,8 +422,8 @@
             <section class="tex2jax_ignore mathjax_ignore" id="arcade-learning-environment">
 <h1>Arcade Learning Environment<a class="headerlink" href="#arcade-learning-environment" title="Link to this heading">¶</a></h1>
 <p>The Arcade Learning Environment (ALE), commonly referred to as Atari, is a framework that allows researchers and hobbyists to develop AI agents for Atari 2600 roms. Its built on top of the Atari 2600 emulator <a class="reference external" href="https://github.com/stella-emu/stella">Stella</a> and separates the details of emulation from agent design. Users can interact with the games through the <a class="reference internal" href="gymnasium-interface/"><span class="doc std std-doc">Gymnasium API</span></a>, <a class="reference internal" href="python-interface/"><span class="doc std std-doc">Python interface</span></a> and <a class="reference internal" href="cpp-interface/"><span class="doc std std-doc">C++ interface</span></a>. For an overview of our goals for the ALE read <a class="reference external" href="https://jair.org/index.php/jair/article/view/10819">The Arcade Learning Environment: An Evaluation Platform for General Agents</a> and if you use ALE in your research, we ask that you please <a class="reference internal" href="citing/"><span class="std std-doc">cite</span></a> the appropriate paper(s) in reference to the environment.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
-<span class="kn">import</span> <span class="nn">ale_py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
 <span class="n">gym</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
 
