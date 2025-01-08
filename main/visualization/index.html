@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>Visualization - ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -428,8 +428,8 @@
 <section id="human-visualization">
 <h3>Human visualization<a class="headerlink" href="#human-visualization" title="Link to this heading">¶</a></h3>
 <p>Through specifying the environment <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;human&quot;</span></code> then ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after it has been used such that the rendering information is correctly shut down.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span>
-<span class="kn">import</span> <span class="nn">ale_py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
 <span class="n">gymnasium</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
 
@@ -451,8 +451,8 @@
 <h3>Recording videos<a class="headerlink" href="#recording-videos" title="Link to this heading">¶</a></h3>
 <p>Specifying the <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;rgb_array&quot;</span></code> will return the rgb array from <code class="docutils literal notranslate"><span class="pre">env.render()</span></code>, this can be combined with the <code class="docutils literal notranslate"><span class="pre">gymnasium.wrappers.RecordVideo</span></code> where the environment renders are stored and saved as mp4 videos for episodes.</p>
 <p>The example below will record episodes on every other episode (<code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">%</span> <span class="pre">2</span> <span class="pre">==</span> <span class="pre">0</span></code>) using the <code class="docutils literal notranslate"><span class="pre">episode_trigger</span></code> and save the folders in <code class="docutils literal notranslate"><span class="pre">saved-video-folder</span></code> with filename starting <code class="docutils literal notranslate"><span class="pre">video-</span></code> followed by the video number.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span>
-<span class="kn">import</span> <span class="nn">ale_py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
 <span class="n">gymnasium</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
 
@@ -481,12 +481,12 @@
 <section id="python-interface">
 <h2>Python Interface<a class="headerlink" href="#python-interface" title="Link to this heading">¶</a></h2>
 <p>ALE now provides support for recording frames; if sound is enabled, it is also possible to record audio output. An example Python program is provided which will record both visual and audio output for a single episode of play.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
-<span class="kn">from</span> <span class="nn">ale_py</span> <span class="kn">import</span> <span class="n">ALEInterface</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randrange</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ale_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALEInterface</span>
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">rom_file</span><span class="p">,</span> <span class="n">record_dir</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">rom_file</span><span class="p">,</span> <span class="n">record_dir</span><span class="p">):</span>
     <span class="n">ale</span> <span class="o">=</span> <span class="n">ALEInterface</span><span class="p">()</span>
     <span class="n">ale</span><span class="o">.</span><span class="n">setInt</span><span class="p">(</span><span class="s1">&#39;random_seed&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">)</span>
 
