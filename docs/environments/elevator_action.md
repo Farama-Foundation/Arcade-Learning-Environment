@@ -21,7 +21,7 @@ For more ElevatorAction variants with different observation and action spaces, s
 
 ## Description
 
-You are a secret agent that must retrieve some secret documents and reach the ground level of a building by going down an elevator/stairs. Once you reach the ground level, you are picked up and taken to the next level. You are equipped with a gun to defend yourself against enemy agents waiting for you in each floor. You gather points by shooting down enemy agents and visiting apartments marked with a red door, which contain the secret documents.This is an unreleased prototype based on the arcade game.
+You are a secret agent that must retrieve some secret documents and reach the ground level of a building by going down an elevator/stairs. Once you reach the ground level, you are picked up and taken to the next level. You are equipped with a gun to defend yourself against enemy agents waiting for you in each floor. You gather points by shooting down enemy agents and visiting apartments marked with a red door, which contain the secret documents. This is an unreleased prototype based on the arcade game.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=1131)
 
@@ -60,9 +60,10 @@ You start with 4 lives and are awarded 100 points for each enemy shot, and 500 p
 ElevatorAction has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------|-------------|--------------|------------------------------|
-| ALE/ElevatorAction-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                       | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------------|-------------|--------------|------------------------------|
+| ElevatorActionNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/ElevatorAction-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `ElevatorActionNoFrameskip-v4`.
 

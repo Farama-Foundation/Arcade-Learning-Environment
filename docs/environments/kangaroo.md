@@ -21,7 +21,7 @@ For more Kangaroo variants with different observation and action spaces, see the
 
 ## Description
 
-The object of the game is to score as many points as you can while controlling Mother Kangaroo to rescue her precious baby. You start the game with three lives.During this rescue mission, Mother Kangaroo encounters many obstacles. You need to help her climb ladders, pick bonus fruit, and throw punches at monkeys.
+The object of the game is to score as many points as you can while controlling Mother Kangaroo to rescue her precious baby. You start the game with three lives. During this rescue mission, Mother Kangaroo encounters many obstacles. You need to help her climb ladders, pick bonus fruit, and throw punches at monkeys.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=923)
 
@@ -60,9 +60,10 @@ Your score will be shown at the top right corner of the game. Your end game scor
 Kangaroo has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id          | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------|-------------|--------------|------------------------------|
-| ALE/Kangaroo-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                 | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------|-------------|--------------|------------------------------|
+| KangarooNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Kangaroo-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `KangarooNoFrameskip-v4`.
 

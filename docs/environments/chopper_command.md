@@ -21,7 +21,7 @@ For more ChopperCommand variants with different observation and action spaces, s
 
 ## Description
 
-You control a helicopter and must protect truck convoys. To that end, you need to shoot down enemy aircraft.A mini-map is displayed at the bottom of the screen.
+You control a helicopter and must protect truck convoys. To that end, you need to shoot down enemy aircraft. A mini-map is displayed at the bottom of the screen.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=921)
 
@@ -60,9 +60,10 @@ You score points by destroying planes and other helicopters. You score extra poi
 ChopperCommand has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------|-------------|--------------|------------------------------|
-| ALE/ChopperCommand-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                       | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------------|-------------|--------------|------------------------------|
+| ChopperCommandNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/ChopperCommand-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `ChopperCommandNoFrameskip-v4`.
 

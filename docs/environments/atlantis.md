@@ -21,7 +21,7 @@ For more Atlantis variants with different observation and action spaces, see the
 
 ## Description
 
-Your job is to defend the submerged city of Atlantis. Your enemies slowly descend towards the city and you must destroy them before they reach striking distance. To this end, you control three defense posts.You lose if your enemies manage to destroy all seven of Atlantis' installations. You may rebuild installations after you have fought of a wave of enemies and scored a sufficient number of points.
+Your job is to defend the submerged city of Atlantis. Your enemies slowly descend towards the city and you must destroy them before they reach striking distance. To this end, you control three defense posts. You lose if your enemies manage to destroy all seven of Atlantis' installations. You may rebuild installations after you have fought of a wave of enemies and scored a sufficient number of points.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=835)
 
@@ -57,10 +57,12 @@ You score points for destroying enemies, keeping installations protected during 
 Atlantis has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------|-------------|--------------|------------------------------|
-| ALE/Atlantis-v5  | `"rgb"`     | `1`          | `0.00`                       |
-| ALE/Atlantis2-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------|-------------|--------------|------------------------------|
+| Atlantis2NoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| AtlantisNoFrameskip-v4  | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Atlantis-v5         | `"rgb"`     | `4`          | `0.25`                       |
+| ALE/Atlantis2-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `AtlantisNoFrameskip-v4`.
 

@@ -21,7 +21,7 @@ For more BankHeist variants with different observation and action spaces, see th
 
 ## Description
 
-You are a bank robber and (naturally) want to rob as many banks as possible. You control your getaway car and must navigate maze-like cities. The police chases you and will appear whenever you rob a bank. You may destroy police cars by dropping sticks of dynamite. You can fill up your gas tank by entering a new city.At the beginning of the game you have four lives. Lives are lost if you run out of gas, are caught by the police,or run over the dynamite you have previously dropped.
+You are a bank robber and (naturally) want to rob as many banks as possible. You control your getaway car and must navigate maze-like cities. The police chases you and will appear whenever you rob a bank. You may destroy police cars by dropping sticks of dynamite. You can fill up your gas tank by entering a new city. At the beginning of the game you have four lives. Lives are lost if you run out of gas, are caught by the police,or run over the dynamite you have previously dropped.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=1008)
 
@@ -60,9 +60,10 @@ You score points for robbing banks and destroying police cars. If you rob nine o
 BankHeist has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------|-------------|--------------|------------------------------|
-| ALE/BankHeist-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------|-------------|--------------|------------------------------|
+| BankHeistNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/BankHeist-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BankHeistNoFrameskip-v4`.
 

@@ -21,7 +21,7 @@ For more Berzerk variants with different observation and action spaces, see the 
 
 ## Description
 
-You are stuck in a maze with evil robots. You must destroy them and avoid touching the walls of the maze, as this will kill you. You may be awarded extra lives after scoring a sufficient number of points, depending on the game mode.You may also be chased by an undefeatable enemy, Evil Otto, that you must avoid. Evil Otto does not appear in the default mode.
+You are stuck in a maze with evil robots. You must destroy them and avoid touching the walls of the maze, as this will kill you. You may be awarded extra lives after scoring a sufficient number of points, depending on the game mode. You may also be chased by an undefeatable enemy, Evil Otto, that you must avoid. Evil Otto does not appear in the default mode.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=866)
 
@@ -60,9 +60,10 @@ You score points for destroying robots. For a more detailed documentation, see [
 Berzerk has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------|-------------|--------------|------------------------------|
-| ALE/Berzerk-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-----------------------|-------------|--------------|------------------------------|
+| BerzerkNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Berzerk-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BerzerkNoFrameskip-v4`.
 

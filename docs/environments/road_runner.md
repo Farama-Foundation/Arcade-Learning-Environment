@@ -21,7 +21,7 @@ For more RoadRunner variants with different observation and action spaces, see t
 
 ## Description
 
-You control the Road Runner(TM) in a race; you can control the direction to run in and times to jumps.The goal is to outrun Wile E. Coyote(TM) while avoiding the hazards of the desert.The game begins with three lives.  You lose a life when the coyote catches you, picks you up in a rocket, or shoots you with a cannon.  You also lose a life when a truck hits you, you hit a land mine, you fall off a cliff,or you get hit by a falling rock.You score points (i.e. rewards) by eating seeds along the road, eating steel shot, and destroying the coyote.
+You control the Road Runner(TM) in a race; you can control the direction to run in and times to jumps. The goal is to outrun Wile E. Coyote(TM) while avoiding the hazards of the desert. The game begins with three lives.  You lose a life when the coyote catches you, picks you up in a rocket, or shoots you with a cannon.  You also lose a life when a truck hits you, you hit a land mine, you fall off a cliff,or you get hit by a falling rock. You score points (i.e. rewards) by eating seeds along the road, eating steel shot, and destroying the coyote.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=412)
 
@@ -69,9 +69,10 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 RoadRunner has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id            | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------|-------------|--------------|------------------------------|
-| ALE/RoadRunner-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                   | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------------------|-------------|--------------|------------------------------|
+| RoadRunnerNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/RoadRunner-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `RoadRunnerNoFrameskip-v4`.
 

@@ -21,7 +21,7 @@ For more Hero variants with different observation and action spaces, see the var
 
 ## Description
 
-You need to rescue miners that are stuck in a mine shaft. You have access to various tools: a propeller backpack that allows you to fly wherever you want, sticks of dynamite that can be used to blast through walls, a laser beam to kill vermin, and a raft to float across stretches of lava.You have a limited amount of power. Once you run out, you lose a live.
+You need to rescue miners that are stuck in a mine shaft. You have access to various tools: a propeller backpack that allows you to fly wherever you want, sticks of dynamite that can be used to blast through walls, a laser beam to kill vermin, and a raft to float across stretches of lava. You have a limited amount of power. Once you run out, you lose a live.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=228)
 
@@ -60,9 +60,10 @@ You score points for shooting critters, rescuing miners, and dynamiting walls. E
 Hero has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------|-------------|--------------|------------------------------|
-| ALE/Hero-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id             | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------------|-------------|--------------|------------------------------|
+| HeroNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Hero-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `HeroNoFrameskip-v4`.
 

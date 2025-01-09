@@ -21,7 +21,7 @@ For more Seaquest variants with different observation and action spaces, see the
 
 ## Description
 
-You control a sub able to move in all directions and fire torpedoes.The goal is to retrieve as many divers as you can, while dodging and blasting enemy subs and killer sharks; points will be awarded accordingly.The game begins with one sub and three waiting on the horizon. Each time you increase your score by 10,000 points, an extra sub will be delivered to yourbase.  You can only have six reserve subs on the screen at one time.Your sub will explode if it collides with anything except your own divers.The sub has a limited amount of oxygen that decreases at a constant rate during the game. When the oxygen tank is almost empty, you need to surface and if you don't do it in time, your sub will blow up and you'll lose one diver.  Each time you're forced to surface, with less than six divers, you lose one diver as well.
+You control a sub able to move in all directions and fire torpedoes. The goal is to retrieve as many divers as you can, while dodging and blasting enemy subs and killer sharks; points will be awarded accordingly. The game begins with one sub and three waiting on the horizon. Each time you increase your score by 10,000 points, an extra sub will be delivered to yourbase.  You can only have six reserve subs on the screen at one time. Your sub will explode if it collides with anything except your own divers. The sub has a limited amount of oxygen that decreases at a constant rate during the game. When the oxygen tank is almost empty, you need to surface and if you don't do it in time, your sub will blow up and you'll lose one diver.  Each time you're forced to surface, with less than six divers, you lose one diver as well.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=424)
 
@@ -60,9 +60,10 @@ Score points are your only reward. Blasting enemy sub and killer shark is worth 
 Seaquest has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id          | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------|-------------|--------------|------------------------------|
-| ALE/Seaquest-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                 | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------|-------------|--------------|------------------------------|
+| SeaquestNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Seaquest-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `SeaquestNoFrameskip-v4`.
 

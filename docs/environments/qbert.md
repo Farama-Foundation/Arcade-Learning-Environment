@@ -57,9 +57,10 @@ You score points for changing color of the cubes to their destination colors or 
 Qbert has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id       | obs_type=   | frameskip=   | repeat_action_probability=   |
-|--------------|-------------|--------------|------------------------------|
-| ALE/Qbert-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id              | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------------|-------------|--------------|------------------------------|
+| QbertNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Qbert-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `QbertNoFrameskip-v4`.
 

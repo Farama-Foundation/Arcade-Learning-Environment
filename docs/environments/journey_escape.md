@@ -21,7 +21,7 @@ For more JourneyEscape variants with different observation and action spaces, se
 
 ## Description
 
-You must lead all 5 members of JOURNEY through waves of pesky characters and backstage obstacles to the Scarab Escape Vehicle before time runs out.You must also protect $50,000 in concert cash from grasping groupies, photographers, and promoters.
+You must lead all 5 members of JOURNEY through waves of pesky characters and backstage obstacles to the Scarab Escape Vehicle before time runs out. You must also protect $50,000 in concert cash from grasping groupies, photographers, and promoters.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=252)
 
@@ -61,9 +61,10 @@ At the start of the game, you will have $50,000 and 60 units of time. Your end g
 JourneyEscape has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id               | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------------|-------------|--------------|------------------------------|
-| ALE/JourneyEscape-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-----------------------------|-------------|--------------|------------------------------|
+| JourneyEscapeNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/JourneyEscape-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `JourneyEscapeNoFrameskip-v4`.
 

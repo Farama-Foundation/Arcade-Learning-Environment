@@ -21,7 +21,7 @@ For more Assault variants with different observation and action spaces, see the 
 
 ## Description
 
-You control a vehicle that can move sideways. A big mother ship circles overhead and continually deploys smaller drones.You must destroy these enemies and dodge their attacks.
+You control a vehicle that can move sideways. A big mother ship circles overhead and continually deploys smaller drones. You must destroy these enemies and dodge their attacks.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=827)
 
@@ -54,9 +54,10 @@ See variants section for the type of observation used by each environment id by 
 Assault has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id         | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------|-------------|--------------|------------------------------|
-| ALE/Assault-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-----------------------|-------------|--------------|------------------------------|
+| AssaultNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Assault-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `AssaultNoFrameskip-v4`.
 

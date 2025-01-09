@@ -21,7 +21,7 @@ For more IceHockey variants with different observation and action spaces, see th
 
 ## Description
 
-Your goal is to score as many points as possible in a standard game of Ice Hockey over a 3-minute time period. The ball is usually called "the puck".There are 32 shot angles ranging from the extreme left to the extreme right. The angles can only aim towards the opponent's goal.Just as in real hockey, you can pass the puck by shooting it off the sides of the rink. This can be really key when you're in position to score a goal.
+Your goal is to score as many points as possible in a standard game of Ice Hockey over a 3-minute time period. The ball is usually called "the puck". There are 32 shot angles ranging from the extreme left to the extreme right. The angles can only aim towards the opponent's goal.Just as in real hockey, you can pass the puck by shooting it off the sides of the rink. This can be really key when you're in position to score a goal.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=241)
 
@@ -60,9 +60,10 @@ You score points by shooting the puck into your opponent's goal. Your opponent s
 IceHockey has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------|-------------|--------------|------------------------------|
-| ALE/IceHockey-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------|-------------|--------------|------------------------------|
+| IceHockeyNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/IceHockey-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `IceHockeyNoFrameskip-v4`.
 

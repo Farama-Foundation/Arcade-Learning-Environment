@@ -21,7 +21,7 @@ For more Robotank variants with different observation and action spaces, see the
 
 ## Description
 
-You control your Robot Tanks to destroy enemies and avoid enemy fire.Game ends when all of your Robot Tanks are destroyed or all 12 enemy squadrons are destroyed.The game begins with one active Robot Tank and three reserves.Your Robot Tank may get lost when it is hit by enemy    rocket fire - your video scrambles with static interference when this    happens - or just become damaged - sensors report the damage by flashing on your control panel (look at V/C/R/T squares).You earn one bonus Robot Tank for every enemy squadron destroyed. The maximum number of bonus Robot Tanks allowed at any one time is 12.
+You control your Robot Tanks to destroy enemies and avoid enemy fire. Game ends when all of your Robot Tanks are destroyed or all 12 enemy squadrons are destroyed. The game begins with one active Robot Tank and three reserves. Your Robot Tank may get lost when it is hit by enemy    rocket fire - your video scrambles with static interference when this    happens - or just become damaged - sensors report the damage by flashing on your control panel (look at V/C/R/T squares). You earn one bonus Robot Tank for every enemy squadron destroyed. The maximum number of bonus Robot Tanks allowed at any one time is 12.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=416)
 
@@ -60,9 +60,10 @@ The number of enemies destroyed is the only reward. A small tank appears at the 
 Robotank has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id          | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------|-------------|--------------|------------------------------|
-| ALE/Robotank-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                 | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------|-------------|--------------|------------------------------|
+| RobotankNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Robotank-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `RobotankNoFrameskip-v4`.
 

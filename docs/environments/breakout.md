@@ -57,9 +57,10 @@ You score points by destroying bricks in the wall. The reward for destroying a b
 Breakout has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id          | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------|-------------|--------------|------------------------------|
-| ALE/Breakout-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                 | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------|-------------|--------------|------------------------------|
+| BreakoutNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Breakout-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BreakoutNoFrameskip-v4`.
 

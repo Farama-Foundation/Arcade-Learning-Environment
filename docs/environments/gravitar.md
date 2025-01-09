@@ -60,9 +60,10 @@ The exact reward dynamics depend on the environment and are usually documented i
 Gravitar has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id          | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------|-------------|--------------|------------------------------|
-| ALE/Gravitar-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                 | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------|-------------|--------------|------------------------------|
+| GravitarNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Gravitar-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `GravitarNoFrameskip-v4`.
 

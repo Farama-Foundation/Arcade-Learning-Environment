@@ -21,7 +21,7 @@ For more Tennis variants with different observation and action spaces, see the v
 
 ## Description
 
-You control the orange player playing against a computer-controlled blue player. The game follows the rules of tennis.The first player to win at least 6 games with a margin of at least two games wins the match. If the score is tied at 6-6, the first player to go 2 games up wins the match.
+You control the orange player playing against a computer-controlled blue player. The game follows the rules of tennis. The first player to win at least 6 games with a margin of at least two games wins the match. If the score is tied at 6-6, the first player to go 2 games up wins the match.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=555)
 
@@ -60,9 +60,10 @@ The scoring is as per the sport of tennis, played till one set. For a more detai
 Tennis has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------|-------------|--------------|------------------------------|
-| ALE/Tennis-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id               | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------------|-------------|--------------|------------------------------|
+| TennisNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Tennis-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `TennisNoFrameskip-v4`.
 

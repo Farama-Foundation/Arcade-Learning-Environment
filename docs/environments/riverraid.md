@@ -21,7 +21,7 @@ For more Riverraid variants with different observation and action spaces, see th
 
 ## Description
 
-You control a jet that flies over a river, you can move it sideways and fire missiles to destroy enemy objects. Each time an enemy object is destroyed you score points (i.e. rewards).You lose a jet when you run out of fuel, fly over a fuel depot when you begin to run low.You lose a jet even when it collides with the river bank or one of the enemy objects (except fuel depots).The game begins with a squadron of three jets in reserve and you're given an additional jet (up to 9) for each 10,000 points you score.
+You control a jet that flies over a river, you can move it sideways and fire missiles to destroy enemy objects. Each time an enemy object is destroyed you score points (i.e. rewards). You lose a jet when you run out of fuel, fly over a fuel depot when you begin to run low. You lose a jet even when it collides with the river bank or one of the enemy objects (except fuel depots). The game begins with a squadron of three jets in reserve and you're given an additional jet (up to 9) for each 10,000 points you score.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=409)
 
@@ -70,9 +70,10 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 Riverraid has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------|-------------|--------------|------------------------------|
-| ALE/Riverraid-v5 | `"rgb"`     | `1`          | `0.00`                       |
+| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------|-------------|--------------|------------------------------|
+| RiverraidNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Riverraid-v5        | `"rgb"`     | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `RiverraidNoFrameskip-v4`.
 
