@@ -50,8 +50,13 @@ def test_int_config(tetris):
 
 def test_act(tetris):
     enum = tetris.getLegalActionSet()
-    tetris.act(enum[0])  # NOOP
-    tetris.act(0)  # integer instead of enum
+    tetris.act(enum[0])  # enum action
+    tetris.act(enum[0], 0.5)  # paddle strength
+    tetris.act(enum[0], 0.5, enum[0], 0.5)  # two player
+
+    tetris.act(0)  # integer action
+    tetris.act(0, 0.5)  # paddle strength
+    tetris.act(0, 0.5, 0, 0.5)  # two player
 
 
 def test_game_over(tetris):
