@@ -115,7 +115,7 @@ class ALEInterface:
         self,
         a_action: int,
         a_paddle_strength: float = 1.0,
-        b_action: int = 18,
+        b_action: int = 0,
         b_paddle_strength: float = 1.0,
     ) -> int: ...
     def cloneState(self, *, include_rng: bool = False) -> ALEState: ...
