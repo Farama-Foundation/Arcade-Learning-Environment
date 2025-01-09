@@ -205,11 +205,12 @@ Actions passed into the environment are then thresholded to discrete using the `
 
 ## Version History and Naming Schemes
 
-In v0.11, the number of registered Atari environments does significantly reduced from 960 to 105 to only register `ALE/{rom_name}-v5` following the best practices outlined in [[2]](#2).
+In v0.11, the number of registered Atari environments was significantly reduced from 960 to 210 to only register `{rom_name}NoFrameskip-v4` the most popular environment and `ALE/{rom_name}-v5` following the best practices outlined in [[2]](#2).
 
-| Name             | `obs_type=` | `frameskip=` | `repeat_action_probability=` | `full_ation_space=` |
-|------------------|-------------|--------------|------------------------------|---------------------|
-| ALE/Adventure-v5 | `"rgb"`     | `4`          | `0.25`                       | `False`             |
+| Name                    | `obs_type=` | `frameskip=` | `repeat_action_probability=` | `full_ation_space=` |
+|-------------------------|-------------|--------------|------------------------------|---------------------|
+| AdventureNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       | `False`             |
+| ALE/Adventure-v5        | `"rgb"`     | `4`          | `0.25`                       | `False`             |
 
 Importantly, `repeat_action_probability=0.25` can negatively impact the performance of agents so when comparing training graphs, be aware of the parameters used for fair comparisons.
 
@@ -229,6 +230,7 @@ To create previously implemented environment use the following parameters, `gymn
 | Adventure-ram-v4              | `"ram"`     | `(2, 5,)`    | `0.0`                        | `False`              |
 | Adventure-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        | `False`              |
 | Adventure-ramNoframeskip-v4   | `"ram"`     | `1`          | `0.0`                        | `False`              |
+| ALE/Adventure-v5              | `"rgb"`     | `4`          | `0.25`                       | `False`              |
 | ALE/Adventure-ram-v5          | `"ram"`     | `4`          | `0.25`                       | `False`              |
 
 ## Flavors
