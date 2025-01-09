@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from collections import defaultdict
-
 import ale_py.roms as roms
 import gymnasium
 
@@ -16,7 +14,7 @@ def rom_id_to_name(rom: str) -> str:
 def register_envs():
     """Register all the Atari Environments."""
     all_rom_ids = roms.get_all_rom_ids()
-    # These environments all don't have a single agent implementation
+    # These environments all don't have a single agent implementation therefore are removed
     all_rom_ids.remove("warlords")
     all_rom_ids.remove("maze_craze")
     all_rom_ids.remove("joust")

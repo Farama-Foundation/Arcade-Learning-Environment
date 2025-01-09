@@ -23,9 +23,13 @@ def test_roms_register():
 
     registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, registered_roms))
     assert len(registered_v5_roms) == 104
-    registered_noframeskip_v4_roms = list(filter(lambda env_id: "NoFrameskip-v4" in env_id, registered_roms))
+    registered_noframeskip_v4_roms = list(
+        filter(lambda env_id: "NoFrameskip-v4" in env_id, registered_roms)
+    )
     assert len(registered_noframeskip_v4_roms) == 104
-    assert len(registered_roms) == len(registered_v5_roms) + len(registered_noframeskip_v4_roms)
+    assert len(registered_roms) == len(registered_v5_roms) + len(
+        registered_noframeskip_v4_roms
+    )
 
 
 @pytest.mark.parametrize(

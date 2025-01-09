@@ -53,7 +53,7 @@ See variants section for the type of observation used by each environment id by 
 
 ### Reward
 
-Score points are your only reward. You get score points each time you destroy an enemy object: 
+Score points are your only reward. You get score points each time you destroy an enemy object:
 
 | Enemy Object | Score Points |
 |--------------|--------------|
