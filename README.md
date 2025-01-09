@@ -46,7 +46,7 @@ You can now import the ALE in your Python projects with providing a direct inter
 from ale_py import ALEInterface, roms
 
 ale = ALEInterface()
-ale.loadROM(roms.get_rom_path("Breakout"))
+ale.loadROM(roms.get_rom_path("breakout"))
 ale.reset_game()
 
 reward = ale.act(0)  # noop
@@ -74,6 +74,11 @@ while not episode_over:
 env.close()
 ```
 
+To run with continuous actions, you can simply modify the call to `gym.make` above with:
+```python
+env = gym.make('ALE/Breakout-v5', continuous=True, render_mode="human")
+```
+
 For all the environments available and their description, see [gymnasium atari page](https://gymnasium.farama.org/environments/atari/).
 
 C++
@@ -93,7 +98,7 @@ cmake --build . --target install
 There are optional flags `-DSDL_SUPPORT=ON/OFF` to toggle SDL support (i.e., `display_screen` and `sound` support; `OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
 the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the pybind11 wrapper (`ON` by default).
 
-Finally, you can link agaisnt the ALE in your own CMake project as follows
+Finally, you can link against the ALE in your own CMake project as follows
 
 ```cmake
 find_package(ale REQUIRED)
@@ -137,5 +142,20 @@ In BibTex format:
     volume = {61},
     pages = {523--562},
     year = {2018}
+}
+```
+
+If you use the CALE (Continuous ALE), we ask you that you also cite the following:
+
+*Jesse Farebrother and Pablo Samuel Castro.  Cale:  Continuous arcade learning environment.Ad-vances in Neural Information Processing Systems, 2024.*
+
+In BibTex format:
+
+```bibtex
+@article{farebrother2024cale,
+  title={C{ALE}: Continuous Arcade Learning Environment},
+  author={Jesse Farebrother and Pablo Samuel Castro},
+  journal={Advances in Neural Information Processing Systems},
+  year={2024}
 }
 ```

@@ -55,6 +55,7 @@ for rom_id in tqdm(ALL_ATARI_GAMES):
 
     if rom_id in atari_data:
         env_data = atari_data[rom_id]
+    env_data = atari_data[rom_id]
 
     env_description = env_data["env_description"]
 

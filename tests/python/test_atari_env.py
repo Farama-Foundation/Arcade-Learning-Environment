@@ -270,3 +270,12 @@ def test_gym_compliance(tetris_env):
         check_env(tetris_env.unwrapped, skip_render_check=True)
 
     assert len(caught_warnings) == 0, [w.message for w in caught_warnings]
+
+
+def test_sound_obs():
+    env = gymnasium.make("ALE/MsPacman-v5", sound_obs=True)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        check_env(env.unwrapped, skip_render_check=True)
+
+    assert caught_warnings == [], [caught.message.args[0] for caught in caught_warnings]

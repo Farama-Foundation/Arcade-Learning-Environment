@@ -143,6 +143,11 @@ class Sound
       */
     virtual void recordNextFrame() = 0;
 
+    /**
+      * Processes audio for raw sample generation (applies all reg updates, fills buffer)
+      */
+    virtual void process(uint8_t* buffer, uint32_t samples) = 0;
+
 public:
     /**
       Loads the current state of this device from the given Deserializer.

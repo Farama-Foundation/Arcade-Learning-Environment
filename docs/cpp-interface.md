@@ -37,6 +37,18 @@ ale::Action a = legal_actions[rand() % legal_actions.size()];
 float reward = ale.act(a);
 ```
 
+An optional sound observation is provided. To enable, set the associated environment parameter:
+
+```cpp
+ale.setBool("sound_obs", True);
+```
+
+Once enabled, the sound observation may be obtained by calling:
+
+```cpp
+ale.getAudio()
+```
+
 Finally, one can check whether the episode has terminated using the function `ale.game_over()`. With these functions one can already implement a very simple agent that plays randomly for one episode:
 
 ```cpp
