@@ -13,9 +13,9 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Et-v5")       |
 | Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import            | `gymnasium.make("ALE/Et-v5")`     |
 
 For more Et variants with different observation and action spaces, see the variants section.
 
@@ -56,10 +56,12 @@ See variants section for the type of observation used by each environment id by 
 Et has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------|-------------|--------------|------------------------------|
-| ALE/Et-v5     | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Et-ram-v5 | `"ram"`     | `4`          | `0.25`                       |
+| Env-id           | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------|-------------|--------------|------------------------------|
+| EtNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Et-v5        | `"rgb"`     | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `EtNoFrameskip-v4`.
 
 ## Difficulty and modes
 

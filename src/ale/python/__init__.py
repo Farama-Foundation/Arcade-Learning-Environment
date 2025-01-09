@@ -63,9 +63,8 @@ try:
 
     __all__ += ["AtariEnv", "AtariEnvStepMetadata"]
 
-    from ale_py.registration import register_v0_v4_envs, register_v5_envs
+    from ale_py.registration import register_envs
 
-    register_v0_v4_envs()
-    register_v5_envs()
+    register_envs()
 except ImportError:
     pass

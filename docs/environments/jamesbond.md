@@ -11,17 +11,17 @@ title: Jamesbond
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                      |
-|-------------------|--------------------------------------|
-| Action Space      | Discrete(18)                         |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
-| Import            | `gymnasium.make("ALE/Jamesbond-v5")` |
+|                   |                                    |
+|-------------------|------------------------------------|
+| Make              | gymnasium.make("ALE/Jamesbond-v5") |
+| Action Space      | Discrete(18)                       |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
 
 For more Jamesbond variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-Your mission is to control Mr. Bond's specially designed multipurpose craft to complete a variety of missions.The craft moves forward with a right motion and slightly back with a left motion.An up or down motion causes the craft to jump or dive.You can also fire by either lobbing a bomb to the bottom of the screen or firing a fixed angle shot to the top of the screen.
+Your mission is to control Mr. Bond's specially designed multipurpose craft to complete a variety of missions. The craft moves forward with a right motion and slightly back with a left motion. An up or down motion causes the craft to jump or dive. You can also fire by either lobbing a bomb to the bottom of the screen or firing a fixed angle shot to the top of the screen.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=250)
 
@@ -60,22 +60,12 @@ The game ends when you complete the last mission or when you lose the last craft
 Jamesbond has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------------|-------------|--------------|------------------------------|
-| Jamesbond-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Jamesbond-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Jamesbond-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Jamesbond-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| JamesbondDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| JamesbondNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Jamesbond-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Jamesbond-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Jamesbond-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Jamesbond-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| JamesbondDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| JamesbondNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Jamesbond-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Jamesbond-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------|-------------|--------------|------------------------------|
+| JamesbondNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Jamesbond-v5        | `"rgb"`     | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `JamesbondNoFrameskip-v4`.
 
 ## Difficulty and modes
 

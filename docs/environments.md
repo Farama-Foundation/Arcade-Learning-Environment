@@ -154,13 +154,11 @@ The Atari environments observation can be
 
 ## Rewards
 
-The exact reward dynamics depend on the environment and are usually documented in the game's manual. You can
-find these manuals on [AtariAge](https://atariage.com/).
+The exact reward dynamics depend on the environment and are usually documented in the game's manual. You can find these manuals on [AtariAge](https://atariage.com/).
 
 ## Stochasticity
 
-As the Atari games are entirely deterministic, agents could achieve
-state-of-the-art performance by simply memorizing an optimal sequence of actions while completely ignoring observations from the environment.
+As the Atari games are entirely deterministic, agents can achieve state-of-the-art performance by simply memorizing an optimal sequence of actions while completely ignoring observations from the environment.
 
 To avoid this, there are several methods to avoid this.
 
@@ -168,7 +166,7 @@ To avoid this, there are several methods to avoid this.
 probability that the previously executed action is used instead. In the v0 and v5 environments, the probability of
 repeating an action is `25%` while in v4 environments, the probability is `0%`. Users can specify the repeat action
 probability using `repeat_action_probability` to `make`.
-2. Frameskipping: On each environment step, the action can be repeated for a random number of frames. This behavior
+2. Frame-skipping: On each environment step, the action can be repeated for a random number of frames. This behavior
 may be altered by setting the keyword argument `frameskip` to either a positive integer or
 a tuple of two positive integers. If `frameskip` is an integer, frame skipping is deterministic, and in each step the action is
 repeated `frameskip` many times. Otherwise, if `frameskip` is a tuple, the number of skipped frames is chosen uniformly at
@@ -207,38 +205,33 @@ Actions passed into the environment are then thresholded to discrete using the `
 
 ## Version History and Naming Schemes
 
-All Atari games are available in three versions. They differ in the default settings of the arguments above.
-The differences are listed in the following table:
+In v0.11, the number of registered Atari environments was significantly reduced from 960 to 210 to only register `{rom_name}NoFrameskip-v4` the most popular environment and `ALE/{rom_name}-v5` following the best practices outlined in [[2]](#2).
 
-| Version | `frameskip=` | `repeat_action_probability=` | `full_action_space=` |
-|---------|--------------|------------------------------|----------------------|
-| v0      | `(2, 5,)`    | `0.25`                       | `False`              |
-| v4      | `(2, 5,)`    | `0.0`                        | `False`              |
-| v5      | `4`          | `0.25`                       | `False`              |
+| Name                    | `obs_type=` | `frameskip=` | `repeat_action_probability=` | `full_ation_space=` |
+|-------------------------|-------------|--------------|------------------------------|---------------------|
+| AdventureNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       | `False`             |
+| ALE/Adventure-v5        | `"rgb"`     | `4`          | `0.25`                       | `False`             |
 
-> Version v5 follows the best practices outlined in [[2]](#2). Thus, it is recommended to transition to v5 and
-customize the environment using the arguments above, if necessary.
+Importantly, `repeat_action_probability=0.25` can negatively impact the performance of agents so when comparing training graphs, be aware of the parameters used for fair comparisons.
 
-For each Atari game, several different configurations are registered in Gymnasium. The naming schemes are analogous for
-v0 and v4. Let us take a look at all variations of Amidar-v0 that are registered with gymnasium:
+To create previously implemented environment use the following parameters, `gymnasium.make(env_id, obs_type=..., frameskip=..., repeat_action_probability=..., full_action_space=...)`.
 
-| Name                       | `obs_type=` | `frameskip=` | `repeat_action_probability=` |
-|----------------------------|-------------|--------------|------------------------------|
-| Amidar-v0                  | `"rgb"`     | `(2, 5,)`    | `0.25`                       |
-| AmidarDeterministic-v0     | `"rgb"`     | `4`          | `0.0`                        |
-| AmidarNoframeskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Amidar-ram-v0              | `"ram"`     | `(2, 5,)`    | `0.25`                       |
-| Amidar-ramDeterministic-v0 | `"ram"`     | `4`          | `0.0`                        |
-| Amidar-ramNoframeskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-
-Things change in v5: The suffixes "Deterministic" and "NoFrameskip" are no longer available. Instead, you must specify the
-environment configuration via arguments passed to `gymnasium.make`. Moreover, the v5 environments
-are in the "ALE" namespace. The suffix "-ram" is still available. Thus, we get the following table:
-
-| Name              | `obs_type=` | `frameskip=` | `repeat_action_probability=` |
-|-------------------|-------------|--------------|------------------------------|
-| ALE/Amidar-v5     | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Amidar-ram-v5 | `"ram"`     | `4`          | `0.25`                       |
+| Name                          | `obs_type=` | `frameskip=` | `repeat_action_probability=` | `full_action_space=` |
+|-------------------------------|-------------|--------------|------------------------------|----------------------|
+| Adventure-v0                  | `"rgb"`     | `(2, 5,)`    | `0.25`                       | `False`              |
+| AdventureDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       | `False`              |
+| AdventureNoframeskip-v0       | `"rgb"`     | `1`          | `0.25`                       | `False`              |
+| Adventure-ram-v0              | `"ram"`     | `(2, 5,)`    | `0.25`                       | `False`              |
+| Adventure-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       | `False`              |
+| Adventure-ramNoframeskip-v0   | `"ram"`     | `1`          | `0.25`                       | `False`              |
+| Adventure-v4                  | `"rgb"`     | `(2, 5,)`    | `0.0`                        | `False`              |
+| AdventureDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        | `False`              |
+| AdventureNoframeskip-v4       | `"rgb"`     | `1`          | `0.0`                        | `False`              |
+| Adventure-ram-v4              | `"ram"`     | `(2, 5,)`    | `0.0`                        | `False`              |
+| Adventure-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        | `False`              |
+| Adventure-ramNoframeskip-v4   | `"ram"`     | `1`          | `0.0`                        | `False`              |
+| ALE/Adventure-v5              | `"rgb"`     | `4`          | `0.25`                       | `False`              |
+| ALE/Adventure-ram-v5          | `"ram"`     | `4`          | `0.25`                       | `False`              |
 
 ## Flavors
 

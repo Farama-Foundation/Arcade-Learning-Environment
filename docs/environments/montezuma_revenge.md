@@ -11,11 +11,11 @@ title: MontezumaRevenge
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                             |
-|-------------------|---------------------------------------------|
-| Action Space      | Discrete(18)                                |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)           |
-| Import            | `gymnasium.make("ALE/MontezumaRevenge-v5")` |
+|                   |                                           |
+|-------------------|-------------------------------------------|
+| Make              | gymnasium.make("ALE/MontezumaRevenge-v5") |
+| Action Space      | Discrete(18)                              |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)         |
 
 For more MontezumaRevenge variants with different observation and action spaces, see the variants section.
 
@@ -56,22 +56,12 @@ See variants section for the type of observation used by each environment id by 
 MontezumaRevenge has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                               | obs_type=   | frameskip=   | repeat_action_probability=   |
-|--------------------------------------|-------------|--------------|------------------------------|
-| MontezumaRevenge-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| MontezumaRevenge-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| MontezumaRevenge-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| MontezumaRevenge-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| MontezumaRevengeDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| MontezumaRevengeNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| MontezumaRevenge-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| MontezumaRevenge-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| MontezumaRevenge-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| MontezumaRevenge-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| MontezumaRevengeDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| MontezumaRevengeNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/MontezumaRevenge-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/MontezumaRevenge-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                         | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------------------------|-------------|--------------|------------------------------|
+| MontezumaRevengeNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/MontezumaRevenge-v5        | `"rgb"`     | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `MontezumaRevengeNoFrameskip-v4`.
 
 ## Difficulty and modes
 
