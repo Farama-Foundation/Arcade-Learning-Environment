@@ -26,6 +26,7 @@ target_link_libraries(ale
     ZLIB::ZLIB
     Threads::Threads)
 
+message(status "SDL_SUPPORT=${SDL_SUPPORT}")
 if(SDL_SUPPORT)
   option(SDL_DYNLOAD "Dynamically load SDL" OFF)
   find_package(SDL2 CONFIG REQUIRED)
@@ -45,7 +46,7 @@ if(SDL_SUPPORT)
   target_include_directories(ale PRIVATE ${SDL2_INCLUDE_DIRS})
 endif()
 
-configure_file ("version.hpp.in" "version.hpp")
+configure_file("version.hpp.in" "version.hpp")
 
 # Add submodules
 add_subdirectory(common)
@@ -66,6 +67,7 @@ if (BUILD_PYTHON_LIB)
 endif()
 
 # Install cpp-lib and CMake config & pkg-config
+message(STATUS "UNIX=${UNIX} BUILD_CPP_LIB=${BUILD_CPP_LIB}")
 if (UNIX AND BUILD_CPP_LIB)
   include(GNUInstallDirs)
   include(CMakePackageConfigHelpers)

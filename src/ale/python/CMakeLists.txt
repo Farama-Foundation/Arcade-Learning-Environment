@@ -1,12 +1,11 @@
 find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
-set(PYBIND11_VER 2.13.1)
-
-include(FetchContent)
 set(PYBIND11_FINDPYTHON ON)
+set(PYBIND11_VER 2.13.1)
 find_package(pybind11 ${PYBIND11_VER} QUIET)
 
 if(NOT pybind11_FOUND)
+    include(FetchContent)
     FetchContent_Declare(
         pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11

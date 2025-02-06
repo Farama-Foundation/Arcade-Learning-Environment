@@ -56,6 +56,10 @@ endif()
 include(ParseVersion)
 parse_version("version.txt" PREFIX ALE)
 
+message(STATUS "CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+message(STATUS "CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
+message(STATUS "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
+
 project(ale VERSION ${ALE_DEFAULT_VERSION}
             DESCRIPTION "The Arcade Learning Environment (ALE) - a platform for AI research."
             HOMEPAGE_URL "http://www.arcadelearningenvironment.org"
