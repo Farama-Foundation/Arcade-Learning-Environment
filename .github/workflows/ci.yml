@@ -68,6 +68,8 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
+    - run: vcpkg x-update-baseline
+
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
