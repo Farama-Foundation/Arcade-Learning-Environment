@@ -28,7 +28,7 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-    - uses: pre-commit/action@v3.0.1
+    - uses: pre-commit/action@v3
 
   build-scratch:
     name: "${{ matrix.runs-on }} • py${{ matrix.python }}"
@@ -48,6 +48,10 @@ jobs:
           - runs-on: macos-13
             python: '3.12'
             triplet: x64-osx-mixed
+
+          - runs-on: macos-14
+            python: '3.12'
+            triplet: universal2-osx-mixed
 
           - runs-on: windows-latest
             python: '3.12'
@@ -75,7 +79,7 @@ jobs:
 
   build-wheels:
     name: "${{ matrix.runs-on }} • ${{ matrix.arch }}"
-    needs: pre-commit
+    needs: [pre-commit, build-scratch]
     defaults:
       run:
         shell: bash
@@ -96,23 +100,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        if: runner.os == 'linux'
-        id: buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          install: true
-      - name: Build Docker image with vcpkg
-        if: runner.os == 'linux'
-        # using build-push-action (without push) to make use of cache arguments
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: .github/docker/manylinux-vcpkg.Dockerfile
-          tags: manylinux-vcpkg:latest
-          push: false
-          load: true
-
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
 
@@ -132,7 +119,7 @@ jobs:
     needs: [build-wheels, build-scratch]
 
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)

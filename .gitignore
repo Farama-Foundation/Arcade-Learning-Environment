@@ -168,3 +168,5 @@ cython_debug/
 # CLion project settings and build-folders
 cmake-build-*
 .idea
+
+vcpkg_installed/*
