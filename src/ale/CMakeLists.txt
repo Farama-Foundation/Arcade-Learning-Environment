@@ -70,9 +70,15 @@ if (BUILD_VECTOR_LIB)
   find_package(glog REQUIRED)
   target_link_libraries(ale PRIVATE glog::glog)
 
-  target_include_directories(ale INTERFACE
-          ${PROJECT_SOURCE_DIR}/external/concurrentqueue/
-          ${PROJECT_SOURCE_DIR}/external/ThreadPool/
+  message(STATUS "PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}, CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
+  get_property(dirs DIRECTORY ${PROJECT_SOURCE_DIR}/external PROPERTY INCLUDE_DIRECTORIES)
+  foreach(dir ${dirs})
+    message(STATUS "dir='${dir}'")
+  endforeach()
+
+  target_include_directories(ale PUBLIC
+    ${PROJECT_SOURCE_DIR}/external/concurrentqueue/
+    ${PROJECT_SOURCE_DIR}/external/ThreadPool/
   )
 
   find_package(OpenCV CONFIG REQUIRED)

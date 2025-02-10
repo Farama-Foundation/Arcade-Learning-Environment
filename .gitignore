@@ -170,3 +170,4 @@ cmake-build-*
 .idea
 
 vcpkg_installed/*
+external/*
