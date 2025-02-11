@@ -76,6 +76,20 @@ jobs:
 
     - run: vcpkg x-update-baseline
 
+    - name: Cache vcpkg dependencies
+      id: vcpkg-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ${{ env.VCPKG_ROOT }}/installed
+          ${{ env.VCPKG_ROOT }}/downloads
+        key: "${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}"
+        restore-keys: ${{ runner.os }}-vcpkg
+
+    - run: vcpkg install --clean-buildtrees-after-build
+
+    - run: ls -ls .
+
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
