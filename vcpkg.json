@@ -20,6 +20,13 @@
         "glog",
         "opencv2"
       ]
+    },
+    "cuda": {
+      "description": "Enable CUDA, this enable XLA support.",
+      "supports": "linux & windows",
+      "dependencies": [
+        "cuda"
+      ]
     }
   },
   "overrides": [
