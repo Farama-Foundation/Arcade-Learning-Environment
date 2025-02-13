@@ -45,7 +45,7 @@ if(SDL_SUPPORT)
   target_include_directories(ale PRIVATE ${SDL2_INCLUDE_DIRS})
 endif()
 
-configure_file ("version.hpp.in" "version.hpp")
+configure_file("version.hpp.in" "version.hpp")
 
 # Add submodules
 add_subdirectory(common)
@@ -63,6 +63,23 @@ endif()
 # Python Library
 if (BUILD_PYTHON_LIB)
   add_subdirectory(python)
+endif()
+
+# Vector library
+if (BUILD_VECTOR_LIB)
+  find_package(glog REQUIRED)
+  target_link_libraries(ale PRIVATE glog::glog)
+
+  message(STATUS "PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}, CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
+  target_include_directories(ale PUBLIC
+    ${PROJECT_SOURCE_DIR}/external/concurrentqueue/
+    ${PROJECT_SOURCE_DIR}/external/ThreadPool/
+  )
+
+  find_package(OpenCV CONFIG REQUIRED)
+  target_link_libraries(ale PRIVATE opencv_core)
+
+  add_subdirectory(vector)
 endif()
 
 # Install cpp-lib and CMake config & pkg-config

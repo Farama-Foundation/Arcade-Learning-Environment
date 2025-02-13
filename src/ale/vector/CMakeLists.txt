@@ -1,0 +1,21 @@
+target_sources(ale
+  PRIVATE
+    action_buffer_queue.h
+    array.h
+    async_envpool.h
+    atari_env.h
+    atari_envpool.cc
+    circular_buffer.h
+    dict.h
+    env.h
+    env_spec.h
+    envpool.h
+    py_envpool.h
+    spec.h
+    state_buffer.h
+    state_buffer_queue.h
+    tuple_utils.h
+    type_utils.h
+    xla.h
+    xla_template.h
+)
