@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.2](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.10.1...v0.10.2) - 2025-02-13
+
+Fixed performance regression for CPP users - A single-argument `act` function was missing causing the `paddle_strength` introduced in v0.10.0 to default to zero rather than one. As Gymnasium passed this variable to act, this was only an issue for users directly interacting with `ale_interface`.  For more details, see https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/595.
 
 ## [0.10.1](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.10.0...v0.10.1) - 2024-10-26
 
