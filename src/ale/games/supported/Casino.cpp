@@ -75,10 +75,10 @@ reward_t CasinoSettings::getReward() const { return m_reward; }
 // all possible betting actions. Recommend setting paddle_max = 1290196.
 bool CasinoSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_DOWN:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case DOWN:
       return true;
     default:
       return false;
@@ -146,11 +146,11 @@ void CasinoSettings::setMode(
 
 ActionVect CasinoSettings::getStartingActions() {
   // Need to wait for one second (60 frames) for the cards to be shuffled.
-  ActionVect startingActions(60, PLAYER_A_NOOP);
+  ActionVect startingActions(60, NOOP);
 
   // Press fire for a couple of frames to enter player A into the game.
-  startingActions.push_back(PLAYER_A_FIRE);
-  startingActions.push_back(PLAYER_A_FIRE);
+  startingActions.push_back(FIRE);
+  startingActions.push_back(FIRE);
 
   return startingActions;
 }

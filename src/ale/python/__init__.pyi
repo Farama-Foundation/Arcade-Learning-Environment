@@ -79,8 +79,7 @@ class Action:
     UPLEFTFIRE: _ale_py.Action  # value = <Action.UPLEFTFIRE: 15>
     UPRIGHT: _ale_py.Action  # value = <Action.UPRIGHT: 6>
     UPRIGHTFIRE: _ale_py.Action  # value = <Action.UPRIGHTFIRE: 14>
-    __members__: dict  # value = {'NOOP': <Action.NOOP: 0>, 'FIRE': <Action.FIRE: 1>, 'UP': <Action.UP: 2>, 'RIGHT': <Action.RIGHT: 3>, 'LEFT': <Action.LEFT: 4>, 'DOWN': <Action.DOWN: 5>, 'UPRIGHT': <Action.UPRIGHT: 6>, 'UPLEFT': <Action.UPLEFT: 7>, 'DOWNRIGHT': <Action.DOWNRIGHT: 8>, 'DOWNLEFT': <Action.DOWNLEFT: 9>, 'UPFIRE': <Action.UPFIRE: 10>, 'RIGHTFIRE': <Action.RIGHTFIRE: 11>, 'LEFTFIRE': <Action.LEFTFIRE: 12>, 'DOWNFIRE': <Action.DOWNFIRE: 13>, 'UPRIGHTFIRE': <Action.UPRIGHTFIRE: 14>, 'UPLEFTFIRE': <Action.UPLEFTFIRE: 15>, 'DOWNRIGHTFIRE': <Action.DOWNRIGHTFIRE: 16>, 'DOWNLEFTFIRE': <Action.DOWNLEFTFIRE: 17>}
-    pass
+    __members__: dict  # value = {'NOOP': <Action.NOOP: 0>, 'FIRE': <Action.FIRE: 1>, 'UP': <Action.UP: 2>, 'RIGHT': <Action.RIGHT: 3>, 'LEFT': <Action.LEFT: 4>, 'DOWN': <Action.DOWN: 5>, 'UPRIGHT': <Action.UPRIGHT: 6>, 'UPLEFT': <Action.UPLEFT: 7>, 'DOWNRIGHT': <Action.DOWNRIGHT: 8>, 'DOWNLEFT': <Action.DOWNLEFT: 9>, 'UPFIRE': <Action.UPFIRE: 10>, 'RIGHTFIRE': <Action.RIGHTFIRE: 11>, 'LEFTFIRE': <Action.LEFTFIRE: 12>, 'DOWNFIRE': <Action.DOWNFIRE: 13>, 'UPRIGHTFIRE': <Action.UPRIGHTFIRE: 14>, 'UPLEFTFIRE': <Action.UPLEFTFIRE: 15>, 'DOWNRIGHTFIRE': <Action.DOWNRIGHTFIRE: 16>, 'DOWNLEFTFIRE': <Action.DOWNLEFTFIRE: 17>}    pass
 
 class ALEState:
     def __eq__(self, other: ALEState) -> bool: ...
@@ -104,9 +103,21 @@ class ALEState:
 class ALEInterface:
     def __init__(self) -> None: ...
     @overload
-    def act(self, action: Action, paddle_strength: float = 1.0) -> int: ...
+    def act(
+        self,
+        a_action: Action,
+        a_paddle_strength: float = 1.0,
+        b_action: Action = Action.NOOP,
+        b_paddle_strength: float = 1.0,
+    ) -> int: ...
     @overload
-    def act(self, action: int, paddle_strength: float = 1.0) -> int: ...
+    def act(
+        self,
+        a_action: int,
+        a_paddle_strength: float = 1.0,
+        b_action: int = 18,
+        b_paddle_strength: float = 1.0,
+    ) -> int: ...
     def cloneState(self, *, include_rng: bool = False) -> ALEState: ...
     def cloneSystemState(self) -> ALEState: ...
     def game_over(self, *, with_truncation: bool = True) -> bool: ...

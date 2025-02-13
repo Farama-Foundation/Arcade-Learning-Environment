@@ -48,6 +48,14 @@ class ALEPythonInterface : public ALEInterface {
     return ALEInterface::act((Action)action);
   }
 
+  inline reward_t act(unsigned int action, float paddle_strength) {
+    return ALEInterface::act((Action)action, paddle_strength);
+  }
+
+  inline reward_t act(unsigned int a_action, float a_paddle_strength, unsigned int b_action, float b_paddle_strength) {
+    return ALEInterface::act((Action)a_action, a_paddle_strength, (Action)b_action, b_paddle_strength);
+  }
+
   inline py::tuple getScreenDims() {
     const ALEScreen& screen = ALEInterface::getScreen();
     return py::make_tuple(screen.height(), screen.width());
@@ -57,12 +65,12 @@ class ALEPythonInterface : public ALEInterface {
   const py::array_t<uint8_t, py::array::c_style> getAudio();
   void getAudio(py::array_t<uint8_t, py::array::c_style> &buffer);
 
-  // Implicitely cast std::string -> fs::path
+  // Implicitly cast std::string -> fs::path
   inline void loadROM(std::string rom_file) {
     return ALEInterface::loadROM(rom_file);
   }
 
-  // Implicitely cast std::string -> fs::path
+  // Implicitly cast std::string -> fs::path
   static inline std::optional<std::string> isSupportedROM(const std::string& rom_file) {
     return ALEInterface::isSupportedROM(rom_file);
   }
@@ -83,24 +91,24 @@ PYBIND11_MODULE(_ale_py, m) {
 #endif
 
   py::enum_<ale::Action>(m, "Action")
-      .value("NOOP", ale::PLAYER_A_NOOP)
-      .value("FIRE", ale::PLAYER_A_FIRE)
-      .value("UP", ale::PLAYER_A_UP)
-      .value("RIGHT", ale::PLAYER_A_RIGHT)
-      .value("LEFT", ale::PLAYER_A_LEFT)
-      .value("DOWN", ale::PLAYER_A_DOWN)
-      .value("UPRIGHT", ale::PLAYER_A_UPRIGHT)
-      .value("UPLEFT", ale::PLAYER_A_UPLEFT)
-      .value("DOWNRIGHT", ale::PLAYER_A_DOWNRIGHT)
-      .value("DOWNLEFT", ale::PLAYER_A_DOWNLEFT)
-      .value("UPFIRE", ale::PLAYER_A_UPFIRE)
-      .value("RIGHTFIRE", ale::PLAYER_A_RIGHTFIRE)
-      .value("LEFTFIRE", ale::PLAYER_A_LEFTFIRE)
-      .value("DOWNFIRE", ale::PLAYER_A_DOWNFIRE)
-      .value("UPRIGHTFIRE", ale::PLAYER_A_UPRIGHTFIRE)
-      .value("UPLEFTFIRE", ale::PLAYER_A_UPLEFTFIRE)
-      .value("DOWNRIGHTFIRE", ale::PLAYER_A_DOWNRIGHTFIRE)
-      .value("DOWNLEFTFIRE", ale::PLAYER_A_DOWNLEFTFIRE)
+      .value("NOOP", ale::NOOP)
+      .value("FIRE", ale::FIRE)
+      .value("UP", ale::UP)
+      .value("RIGHT", ale::RIGHT)
+      .value("LEFT", ale::LEFT)
+      .value("DOWN", ale::DOWN)
+      .value("UPRIGHT", ale::UPRIGHT)
+      .value("UPLEFT", ale::UPLEFT)
+      .value("DOWNRIGHT", ale::DOWNRIGHT)
+      .value("DOWNLEFT", ale::DOWNLEFT)
+      .value("UPFIRE", ale::UPFIRE)
+      .value("RIGHTFIRE", ale::RIGHTFIRE)
+      .value("LEFTFIRE", ale::LEFTFIRE)
+      .value("DOWNFIRE", ale::DOWNFIRE)
+      .value("UPRIGHTFIRE", ale::UPRIGHTFIRE)
+      .value("UPLEFTFIRE", ale::UPLEFTFIRE)
+      .value("DOWNRIGHTFIRE", ale::DOWNRIGHTFIRE)
+      .value("DOWNLEFTFIRE", ale::DOWNLEFTFIRE)
       .export_values();
 
   py::enum_<ale::Logger::mode>(m, "LoggerMode")
@@ -146,64 +154,43 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("loadROM", &ale::ALEInterface::loadROM)
       .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
       .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
-                      ale::ALEInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &
-                      ale::ALEInterface::act)
+
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &ale::ALEPythonInterface::act)
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &ale::ALEPythonInterface::act)
+      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float, uint32_t, float)) &ale::ALEPythonInterface::act)
+
+      .def("act",
+           &ale::ALEInterface::act,
+           py::arg("a_action"),
+           py::arg("a_paddle_strength") = 1.0f,
+           py::arg("b_action") = ale::NOOP,
+           py::arg("b_paddle_strength") = 1.0f)
+
       .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))
       .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
       .def("reset_game", &ale::ALEPythonInterface::reset_game)
       .def("getAvailableModes", &ale::ALEPythonInterface::getAvailableModes)
       .def("setMode", &ale::ALEPythonInterface::setMode)
-      .def("getAvailableDifficulties",
-           &ale::ALEPythonInterface::getAvailableDifficulties)
+      .def("getAvailableDifficulties", &ale::ALEPythonInterface::getAvailableDifficulties)
       .def("setDifficulty", &ale::ALEPythonInterface::setDifficulty)
       .def("getLegalActionSet", &ale::ALEPythonInterface::getLegalActionSet)
       .def("getMinimalActionSet", &ale::ALEPythonInterface::getMinimalActionSet)
       .def("getFrameNumber", &ale::ALEPythonInterface::getFrameNumber)
       .def("lives", &ale::ALEPythonInterface::lives)
-      .def("getEpisodeFrameNumber",
-           &ale::ALEPythonInterface::getEpisodeFrameNumber)
-      .def("getScreen", (void (ale::ALEPythonInterface::*)(
-                            py::array_t<ale::pixel_t, py::array::c_style>&)) &
-                            ale::ALEPythonInterface::getScreen)
-      .def("getScreen", (py::array_t<ale::pixel_t, py::array::c_style>(
-                            ale::ALEPythonInterface::*)()) &
-                            ale::ALEPythonInterface::getScreen)
-      .def("getScreenRGB",
-           (void (ale::ALEPythonInterface::*)(
-               py::array_t<ale::pixel_t, py::array::c_style>&)) &
-               ale::ALEPythonInterface::getScreenRGB)
-      .def("getScreenRGB", (py::array_t<ale::pixel_t, py::array::c_style>(
-                               ale::ALEPythonInterface::*)()) &
-                               ale::ALEPythonInterface::getScreenRGB)
-      .def("getScreenGrayscale",
-           (void (ale::ALEPythonInterface::*)(
-               py::array_t<ale::pixel_t, py::array::c_style>&)) &
-               ale::ALEPythonInterface::getScreenGrayscale)
-      .def("getScreenGrayscale",
-           (py::array_t<ale::pixel_t, py::array::c_style>(
-               ale::ALEPythonInterface::*)()) &
-               ale::ALEPythonInterface::getScreenGrayscale)
+      .def("getEpisodeFrameNumber", &ale::ALEPythonInterface::getEpisodeFrameNumber)
+      .def("getScreen", (void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style>&)) &ale::ALEPythonInterface::getScreen)
+      .def("getScreen", (py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getScreen)
+      .def("getScreenRGB", (void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style>&)) &ale::ALEPythonInterface::getScreenRGB)
+      .def("getScreenRGB", (py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getScreenRGB)
+      .def("getScreenGrayscale", (void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style>&)) &ale::ALEPythonInterface::getScreenGrayscale)
+      .def("getScreenGrayscale", (py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getScreenGrayscale)
       .def("getScreenDims", &ale::ALEPythonInterface::getScreenDims)
       .def("getAudioSize", &ale::ALEPythonInterface::getAudioSize)
-      .def("getAudio", (const py::array_t<uint8_t, py::array::c_style> (
-                           ale::ALEPythonInterface::*)()) &
-                           ale::ALEPythonInterface::getAudio)
-      .def("getAudio", (void (ale::ALEPythonInterface::*)(
-                           py::array_t<uint8_t, py::array::c_style> &)) &
-                           ale::ALEPythonInterface::getAudio)
+      .def("getAudio", (const py::array_t<uint8_t, py::array::c_style> (ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getAudio)
+      .def("getAudio", (void (ale::ALEPythonInterface::*)(py::array_t<uint8_t, py::array::c_style> &)) &ale::ALEPythonInterface::getAudio)
       .def("getRAMSize", &ale::ALEPythonInterface::getRAMSize)
-      .def("getRAM", (const py::array_t<uint8_t, py::array::c_style> (
-                         ale::ALEPythonInterface::*)()) &
-                         ale::ALEPythonInterface::getRAM)
-      .def("getRAM", (void (ale::ALEPythonInterface::*)(
-                         py::array_t<uint8_t, py::array::c_style>&)) &
-                         ale::ALEPythonInterface::getRAM)
+      .def("getRAM", (const py::array_t<uint8_t, py::array::c_style> (ale::ALEPythonInterface::*)()) &ale::ALEPythonInterface::getRAM)
+      .def("getRAM", (void (ale::ALEPythonInterface::*)(py::array_t<uint8_t, py::array::c_style>&)) &ale::ALEPythonInterface::getRAM)
       .def("setRAM", &ale::ALEPythonInterface::setRAM)
       .def("cloneState", &ale::ALEPythonInterface::cloneState, py::kw_only(), py::arg("include_rng") = py::bool_(false))
       .def("restoreState", &ale::ALEPythonInterface::restoreState)

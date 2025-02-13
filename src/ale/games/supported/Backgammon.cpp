@@ -122,9 +122,9 @@ reward_t BackgammonSettings::getReward() const { return m_reward; }
 
 bool BackgammonSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_FIRE:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
+    case FIRE:
+    case RIGHT:
+    case LEFT:
       return true;
     default:
       return false;

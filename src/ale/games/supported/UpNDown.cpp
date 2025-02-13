@@ -64,12 +64,12 @@ reward_t UpNDownSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool UpNDownSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_UPFIRE:
-    case PLAYER_A_DOWNFIRE:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case DOWN:
+    case UPFIRE:
+    case DOWNFIRE:
       return true;
     default:
       return false;
@@ -101,7 +101,7 @@ void UpNDownSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect UpNDownSettings::getStartingActions() {
-  return {PLAYER_A_FIRE};
+  return {FIRE};
 }
 
 DifficultyVect UpNDownSettings::getAvailableDifficulties() {

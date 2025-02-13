@@ -66,10 +66,10 @@ reward_t BreakoutSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool BreakoutSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
+    case NOOP:
+    case FIRE:
+    case RIGHT:
+    case LEFT:
       return true;
     default:
       return false;

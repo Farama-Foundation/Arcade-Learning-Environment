@@ -67,15 +67,15 @@ reward_t EnduroSettings::getReward() const { return m_reward; }
 /* is an action part of the minimal set? */
 bool EnduroSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_RIGHT:
-    case PLAYER_A_LEFT:
-    case PLAYER_A_DOWN:
-    case PLAYER_A_DOWNRIGHT:
-    case PLAYER_A_DOWNLEFT:
-    case PLAYER_A_RIGHTFIRE:
-    case PLAYER_A_LEFTFIRE:
+    case NOOP:
+    case FIRE:
+    case RIGHT:
+    case LEFT:
+    case DOWN:
+    case DOWNRIGHT:
+    case DOWNLEFT:
+    case RIGHTFIRE:
+    case LEFTFIRE:
       return true;
     default:
       return false;
@@ -104,7 +104,7 @@ void EnduroSettings::loadState(Deserializer& ser) {
 }
 
 ActionVect EnduroSettings::getStartingActions() {
-  return {PLAYER_A_FIRE};
+  return {FIRE};
 }
 
 }  // namespace ale

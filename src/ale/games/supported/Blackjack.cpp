@@ -54,10 +54,10 @@ reward_t BlackjackSettings::getReward() const { return m_reward; }
 
 bool BlackjackSettings::isMinimal(const Action& a) const {
   switch (a) {
-    case PLAYER_A_NOOP:
-    case PLAYER_A_FIRE:
-    case PLAYER_A_UP:
-    case PLAYER_A_DOWN:
+    case NOOP:
+    case FIRE:
+    case UP:
+    case DOWN:
       return true;
     default:
       return false;
