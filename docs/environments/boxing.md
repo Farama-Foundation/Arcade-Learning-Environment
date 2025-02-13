@@ -13,9 +13,9 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Boxing-v5")   |
 | Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import            | `gymnasium.make("ALE/Boxing-v5")` |
 
 For more Boxing variants with different observation and action spaces, see the variants section.
 
@@ -60,22 +60,12 @@ You score points by landing punches. For a more detailed documentation, see [the
 Boxing has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                     | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------------------|-------------|--------------|------------------------------|
-| Boxing-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Boxing-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Boxing-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Boxing-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| BoxingDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| BoxingNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Boxing-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Boxing-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Boxing-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Boxing-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| BoxingDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| BoxingNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Boxing-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Boxing-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id               | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------------|-------------|--------------|------------------------------|
+| BoxingNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Boxing-v5        | `"rgb"`     | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BoxingNoFrameskip-v4`.
 
 ## Difficulty and modes
 

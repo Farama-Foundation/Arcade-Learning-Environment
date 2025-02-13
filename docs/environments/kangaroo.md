@@ -11,17 +11,17 @@ title: Kangaroo
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                     |
-|-------------------|-------------------------------------|
-| Action Space      | Discrete(18)                        |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)   |
-| Import            | `gymnasium.make("ALE/Kangaroo-v5")` |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Kangaroo-v5") |
+| Action Space      | Discrete(18)                      |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
 
 For more Kangaroo variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-The object of the game is to score as many points as you can while controlling Mother Kangaroo to rescue her precious baby. You start the game with three lives.During this rescue mission, Mother Kangaroo encounters many obstacles. You need to help her climb ladders, pick bonus fruit, and throw punches at monkeys.
+The object of the game is to score as many points as you can while controlling Mother Kangaroo to rescue her precious baby. You start the game with three lives. During this rescue mission, Mother Kangaroo encounters many obstacles. You need to help her climb ladders, pick bonus fruit, and throw punches at monkeys.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=923)
 
@@ -60,22 +60,12 @@ Your score will be shown at the top right corner of the game. Your end game scor
 Kangaroo has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                       | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------------------|-------------|--------------|------------------------------|
-| Kangaroo-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Kangaroo-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Kangaroo-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Kangaroo-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| KangarooDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| KangarooNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Kangaroo-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Kangaroo-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Kangaroo-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Kangaroo-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| KangarooDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| KangarooNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Kangaroo-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Kangaroo-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                 | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------|-------------|--------------|------------------------------|
+| KangarooNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
+| ALE/Kangaroo-v5        | `"rgb"`     | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `KangarooNoFrameskip-v4`.
 
 ## Difficulty and modes
 

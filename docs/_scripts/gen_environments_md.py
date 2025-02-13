@@ -4,7 +4,7 @@ import json
 import ale_py
 import gymnasium
 import tabulate
-from ale_py.registration import _rom_id_to_name
+from ale_py.registration import rom_id_to_name
 from tqdm import tqdm
 
 gymnasium.register_envs(ale_py)
@@ -40,9 +40,22 @@ with open("environment-docs.json") as file:
     atari_data = json.load(file)
 
 for rom_id in tqdm(ALL_ATARI_GAMES):
-    env_name = _rom_id_to_name(rom_id)
+    env_name = rom_id_to_name(rom_id)
 
     env = gymnasium.make(f"ALE/{env_name}-v5").unwrapped
+
+    general_info_table = tabulate.tabulate(
+        [
+            ["Make", f'gymnasium.make("ALE/{env_name}-v5")'],
+            ["Action Space", str(env.action_space)],
+            ["Observation Space", str(env.observation_space)],
+        ],
+        headers=["", ""],
+        tablefmt="github",
+    )
+
+    if rom_id in atari_data:
+        env_data = atari_data[rom_id]
     env_data = atari_data[rom_id]
 
     env_description = env_data["env_description"]
@@ -101,7 +114,7 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`."""
             env_spec.id,
             f'`"{env_spec.kwargs["obs_type"]}"`',
             f'`{env_spec.kwargs["frameskip"]}`',
-            f'`{env_spec.kwargs["repeat_action_probability"]}`',
+            f'`{env_spec.kwargs["repeat_action_probability"]:.2f}`',
         ]
         for env_spec in env_specs
     ]
@@ -129,16 +142,6 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`."""
         difficulty_mode_row, headers=difficulty_mode_header, tablefmt="github"
     )
 
-    top_table = tabulate.tabulate(
-        [
-            ["Action Space", str(env.action_space)],
-            ["Observation Space", str(env.observation_space)],
-            ["Import", f'`gymnasium.make("{env.spec.id}")`'],
-        ],
-        headers=["", ""],
-        tablefmt="github",
-    )
-
     env.close()
 
     TEMPLATE = f"""---
@@ -154,7 +157,7 @@ title: {env_name}
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-{top_table}
+{general_info_table}
 
 For more {env_name} variants with different observation and action spaces, see the variants section.
 
@@ -186,6 +189,8 @@ See variants section for the type of observation used by each environment id by 
 the number of frame-skips and the repeat action probability.
 
 {env_variant_table}
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `{env_name}NoFrameskip-v4`.
 
 ## Difficulty and modes
 
