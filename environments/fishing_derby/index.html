@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="../../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>FishingDerby - ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -517,17 +517,16 @@ As FishingDerby uses the full set of actions then specifying <code class="docuti
 </section>
 <section id="observations">
 <h2>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h2>
-<p>Atari environments have three possible observation types: <code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;grayscale&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code>.</p>
+<p>Atari environments have three possible observation types:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span> <span class="pre">-&gt;</span> <span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;ram&quot;</span> <span class="pre">-&gt;</span> <span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(128,),</span> <span class="pre">np.uint8)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span> <span class="pre">-&gt;</span> <span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the “rgb” type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;ram&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(128,),</span> <span class="pre">np.uint8)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the q”rgb” type</p></li>
 </ul>
 <p>See variants section for the type of observation used by each environment id by default.</p>
-<section id="rewards">
-<h3>Rewards<a class="headerlink" href="#rewards" title="Link to this heading">¶</a></h3>
-<p>The exact reward dynamics depend on the environment and are usually documented in the game’s manual. You can
-find these manuals on <a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareLabelID=182">AtariAge</a>.</p>
+<section id="reward">
+<h3>Reward<a class="headerlink" href="#reward" title="Link to this heading">¶</a></h3>
+<p>The exact reward dynamics depend on the environment and are usually documented in the game’s manual. You can find these manuals on <a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareLabelID=182">AtariAge</a>.  Atari environments are simulated via the Arcade Learning Environment (ALE) <a class="reference internal" href="#1"><span class="xref myst">[1]</span></a>.</p>
 </section>
 </section>
 <section id="variants">
@@ -726,7 +725,7 @@ along with the default values.</p>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#actions">Actions</a></li>
 <li><a class="reference internal" href="#observations">Observations</a><ul>
-<li><a class="reference internal" href="#rewards">Rewards</a></li>
+<li><a class="reference internal" href="#reward">Reward</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#variants">Variants</a></li>
@@ -766,7 +765,7 @@ along with the default values.</p>
     
     
 
-    <script src="../../_static/documentation_options.js?v=2483e106"></script>
+    <script src="../../_static/documentation_options.js?v=f862a68d"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=7660844c"></script>

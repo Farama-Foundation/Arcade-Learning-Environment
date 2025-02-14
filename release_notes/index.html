@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>ALE Release Notes - ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -421,16 +421,21 @@
             
             <section class="tex2jax_ignore mathjax_ignore" id="ale-release-notes">
 <h1>ALE Release Notes<a class="headerlink" href="#ale-release-notes" title="Link to this heading">¶</a></h1>
+<section id="release-v0-10-2">
+<h2>ALE v0.10.2<a class="headerlink" href="#release-v0-10-2" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-02-14 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.2/">PyPI</a></em></p>
+<h3>Fixed performance regression for CPP users</h3>
+<p>A single-argument <code>act</code> function was missing, causing the <code>paddle_strength</code> introduced in v0.10.0 to default to zero rather than one. As Gymnasium passed this variable to act, this was only an issue for users directly interacting with <code>ale_interface</code>.  For more details, see <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2852021617" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/595" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/595/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/595">#595</a>.</p></section>
 <section id="release-v0-10-1">
 <h2>ALE v0.10.1<a class="headerlink" href="#release-v0-10-1" title="Link to this heading">¶</a></h2>
 <p><em>Released on 2024-09-28 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.1/">PyPI</a></em></p>
 <p>Revert change to requirements that <code>numpy &lt; 2.0</code>, now <code>numpy &gt; 1.20</code> and add support for building from source distribution, <code>tar.gz</code> (though not recommended).</p></section>
 <section id="release-v0-10-0">
-<h2>v0.10.0: ALE v0.10<a class="headerlink" href="#release-v0-10-0" title="Link to this heading">¶</a></h2>
+<h2>ALE v0.10.0<a class="headerlink" href="#release-v0-10-0" title="Link to this heading">¶</a></h2>
 <p><em>Released on 2024-09-24 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.0/">PyPI</a></em></p>
 <p>In v0.10, ALE now has its own dedicated website, <a href="https://ale.farama.org/" rel="nofollow">https://ale.farama.org/</a> with Atari's documentation being moved from Gymnasium.</p>
 <p>We have moved the project main code from <code>src</code> into <code>src/ale</code> to help incorporate ALE into C++ projects and in the Python API, we have updated <code>get_keys_to_action</code> to work with <code>gymnasium.utils.play</code> by changing the key for no-op from <code>None</code> to the <code>e</code> key.</p>
-<p>Furthermore, we have updated the API to support continuous actions by <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/jjshoots/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/jjshoots">@jjshoots</a> and <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/psc-g/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/psc-g">@psc-g</a>.</p>
+<p>Furthermore, we have updated the API to support continuous actions by <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/jjshoots/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/jjshoots">@jjshoots</a> and <a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/psc-g/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/psc-g">@psc-g</a>, see <a href="https://arxiv.org/pdf/2410.23810" rel="nofollow">https://arxiv.org/pdf/2410.23810</a> for the impact.</p>
 <p>Previously, users could interact with the ALE interface with only discrete actions linked to joystick controls, ie:</p>
 <ul>
 <li>All left actions (<code>LEFTDOWN</code>, <code>LEFTUP</code>, <code>LEFT...</code>) -&gt; paddle left max</li>
@@ -449,9 +454,9 @@ This mirrors the real-world scenario where you have a paddle connected, but the 
 This maintains backwards compatibility.</p>
 <h3>Python interface changes</h3>
 <p><em>Old Discrete ALE Python Interface</em></p>
-<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int)"><pre><span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>)</pre></div>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int)"><pre><span class="pl-s1">ale</span>.<span class="pl-c1">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>)</pre></div>
 <p><em>New Mixed Discrete-Continuous ALE Python Interface</em></p>
-<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int, strength: float = 1.0)"><pre><span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>, <span class="pl-s1">strength</span>: <span class="pl-s1">float</span> <span class="pl-c1">=</span> <span class="pl-c1">1.0</span>)</pre></div>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ale.act(action: int, strength: float = 1.0)"><pre><span class="pl-s1">ale</span>.<span class="pl-c1">act</span>(<span class="pl-s1">action</span>: <span class="pl-s1">int</span>, <span class="pl-s1">strength</span>: <span class="pl-s1">float</span> <span class="pl-c1">=</span> <span class="pl-c1">1.0</span>)</pre></div>
 <p>The continuous action space is implemented at the Python level within the Gymnasium environment.</p>
 <div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="if continuous:
     # action is expected to be a [2,] array of floats
@@ -469,19 +474,19 @@ This maintains backwards compatibility.</p>
     )
     ale.act(action_idx, action[1])"><pre><span class="pl-k">if</span> <span class="pl-s1">continuous</span>:
     <span class="pl-c"># action is expected to be a [2,] array of floats</span>
-    <span class="pl-s1">x</span>, <span class="pl-s1">y</span> <span class="pl-c1">=</span> <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-en">cos</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>]), <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-en">sin</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>])
-    <span class="pl-s1">action_idx</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-en">map_action_idx</span>(
+    <span class="pl-s1">x</span>, <span class="pl-s1">y</span> <span class="pl-c1">=</span> <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-c1">cos</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>]), <span class="pl-s1">action</span>[<span class="pl-c1">0</span>] <span class="pl-c1">*</span> <span class="pl-s1">np</span>.<span class="pl-c1">sin</span>(<span class="pl-s1">action</span>[<span class="pl-c1">1</span>])
+    <span class="pl-s1">action_idx</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">map_action_idx</span>(
         <span class="pl-s1">left_center_right</span><span class="pl-c1">=</span>(
-            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
-            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
+            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">x</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
         ),
         <span class="pl-s1">down_center_up</span><span class="pl-c1">=</span>(
-            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
-            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>)
+            <span class="pl-c1">-</span><span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
+            <span class="pl-c1">+</span> <span class="pl-en">int</span>(<span class="pl-s1">y</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>)
         ),
-        <span class="pl-s1">fire</span><span class="pl-c1">=</span>(<span class="pl-s1">action</span>[<span class="pl-c1">-</span><span class="pl-c1">1</span>] <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-s1">continuous_action_threshold</span>),
+        <span class="pl-s1">fire</span><span class="pl-c1">=</span>(<span class="pl-s1">action</span>[<span class="pl-c1">-</span><span class="pl-c1">1</span>] <span class="pl-c1">&gt;</span> <span class="pl-s1">self</span>.<span class="pl-c1">continuous_action_threshold</span>),
     )
-    <span class="pl-s1">ale</span>.<span class="pl-en">act</span>(<span class="pl-s1">action_idx</span>, <span class="pl-s1">action</span>[<span class="pl-c1">1</span>])</pre></div>
+    <span class="pl-s1">ale</span>.<span class="pl-c1">act</span>(<span class="pl-s1">action_idx</span>, <span class="pl-s1">action</span>[<span class="pl-c1">1</span>])</pre></div>
 <p><strong>Full Changelog</strong>: <a class="commit-link" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.9.1...v0.10.0"><tt>v0.9.1...v0.10.0</tt></a></p></section>
 <section id="release-v0-9-1">
 <h2>ALE v0.9.1<a class="headerlink" href="#release-v0-9-1" title="Link to this heading">¶</a></h2>
@@ -509,17 +514,17 @@ while not episode_over:
 env.close()"><pre><span class="pl-k">import</span> <span class="pl-s1">gymnasium</span> <span class="pl-k">as</span> <span class="pl-s1">gym</span>
 <span class="pl-k">import</span> <span class="pl-s1">ale_py</span>
 
-<span class="pl-s1">gym</span>.<span class="pl-en">register_envs</span>(<span class="pl-s1">ale_py</span>)  <span class="pl-c"># unnecessary but prevents IDEs from complaining</span>
+<span class="pl-s1">gym</span>.<span class="pl-c1">register_envs</span>(<span class="pl-s1">ale_py</span>)  <span class="pl-c"># unnecessary but prevents IDEs from complaining</span>
 
-<span class="pl-s1">env</span> <span class="pl-c1">=</span> <span class="pl-s1">gym</span>.<span class="pl-en">make</span>(<span class="pl-s">"ALE/Pong-v5"</span>, <span class="pl-s1">render_mode</span><span class="pl-c1">=</span><span class="pl-s">"human"</span>)
+<span class="pl-s1">env</span> <span class="pl-c1">=</span> <span class="pl-s1">gym</span>.<span class="pl-c1">make</span>(<span class="pl-s">"ALE/Pong-v5"</span>, <span class="pl-s1">render_mode</span><span class="pl-c1">=</span><span class="pl-s">"human"</span>)
 
-<span class="pl-s1">obs</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-en">reset</span>()
+<span class="pl-s1">obs</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-c1">reset</span>()
 <span class="pl-s1">episode_over</span> <span class="pl-c1">=</span> <span class="pl-c1">False</span>
 <span class="pl-k">while</span> <span class="pl-c1">not</span> <span class="pl-s1">episode_over</span>:
 	<span class="pl-s1">action</span> <span class="pl-c1">=</span> <span class="pl-en">policy</span>(<span class="pl-s1">obs</span>)  <span class="pl-c"># replace with actual policy</span>
-	<span class="pl-s1">obs</span>, <span class="pl-s1">reward</span>, <span class="pl-s1">terminated</span>, <span class="pl-s1">truncated</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-en">step</span>(<span class="pl-s1">action</span>)
+	<span class="pl-s1">obs</span>, <span class="pl-s1">reward</span>, <span class="pl-s1">terminated</span>, <span class="pl-s1">truncated</span>, <span class="pl-s1">info</span> <span class="pl-c1">=</span> <span class="pl-s1">env</span>.<span class="pl-c1">step</span>(<span class="pl-s1">action</span>)
 	<span class="pl-s1">episode_over</span> <span class="pl-c1">=</span> <span class="pl-s1">terminated</span> <span class="pl-c1">or</span> <span class="pl-s1">truncated</span>
-<span class="pl-s1">env</span>.<span class="pl-en">close</span>()</pre></div>
+<span class="pl-s1">env</span>.<span class="pl-c1">close</span>()</pre></div>
 <p>An important change in this update is that the Atari ROMs are packaged within the PyPI installation such that users no longer require <code>pip install "gym[accept-rom-license]"</code> (AutoROM) or <code>ale-import-roms</code> for downloading or loading ROMs. This should significantly simplify installing Atari for users. For users who wish to load ROMs from an alternative folder, use the <code>ALE_ROM_DIR</code> system environment variable to specify a folder directory.</p>
 <p>Importantly, Gymnasium 1.0.0 removes a registration plugin system that ale-py utilises where atari environments would be registered behind the scenes. As a result, projects will need to import <code>ale_py</code>, to register all the atari environments, before an atari environment can be created with <code>gymnasium.make</code>. We understand this will cause annoyance to some users, however, the previous method brought significant complexity behind the scenes that the development team believed caused more issues than help.</p>
 <h2>Other changes</h2>
@@ -857,8 +862,9 @@ simply run <code>ale-import-roms</code> which will automatically correct this fo
             <div class="toc-tree">
               <ul>
 <li><a class="reference internal" href="#">ALE Release Notes</a><ul>
+<li><a class="reference internal" href="#release-v0-10-2">ALE v0.10.2</a></li>
 <li><a class="reference internal" href="#release-v0-10-1">ALE v0.10.1</a></li>
-<li><a class="reference internal" href="#release-v0-10-0">v0.10.0: ALE v0.10</a></li>
+<li><a class="reference internal" href="#release-v0-10-0">ALE v0.10.0</a></li>
 <li><a class="reference internal" href="#release-v0-9-1">ALE v0.9.1</a></li>
 <li><a class="reference internal" href="#release-v0-9-0">ALE v0.9.0</a></li>
 <li><a class="reference internal" href="#release-v0-8-1">v0.8.1: Arcade Learning Environment 0.8.1</a></li>
@@ -908,7 +914,7 @@ simply run <code>ale-import-roms</code> which will automatically correct this fo
     
     
 
-    <script src="../_static/documentation_options.js?v=2483e106"></script>
+    <script src="../_static/documentation_options.js?v=f862a68d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>

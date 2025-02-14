@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>Gymnasium Interface - ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -422,8 +422,8 @@
             <section class="tex2jax_ignore mathjax_ignore" id="gymnasium-interface">
 <h1>Gymnasium Interface<a class="headerlink" href="#gymnasium-interface" title="Link to this heading">¶</a></h1>
 <p>ALE natively supports <a class="reference external" href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a>. To use these new environments you can simply:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
-<span class="kn">import</span> <span class="nn">ale_py</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
 <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;ALE/Breakout-v5&#39;</span><span class="p">)</span>
 </pre></div>
@@ -433,9 +433,27 @@
 <section id="visualization">
 <h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">¶</a></h2>
 <p>Gymnasium supports the <code class="docutils literal notranslate"><span class="pre">.render()</span></code> method on environments that supports frame perfect visualization, proper scaling, and audio support. The <code class="docutils literal notranslate"><span class="pre">render_mode</span></code> argument supports either <code class="docutils literal notranslate"><span class="pre">human</span> <span class="pre">|</span> <span class="pre">rgb_array</span></code>. For example,</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
 
 <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;Breakout-v0&#39;</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s1">&#39;human&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="continuous-action-space">
+<h2>Continuous Action Space<a class="headerlink" href="#continuous-action-space" title="Link to this heading">¶</a></h2>
+<p>By default, ALE supports discrete actions related to the cardinal directions and fire (e.g., <code class="docutils literal notranslate"><span class="pre">UP</span></code>, <code class="docutils literal notranslate"><span class="pre">DOWN</span></code>, <code class="docutils literal notranslate"><span class="pre">LEFT</span></code>, <code class="docutils literal notranslate"><span class="pre">FIRE</span></code>).
+With <code class="docutils literal notranslate"><span class="pre">continuous</span></code>, Atari environment can be modified to support continuous actions, first proposed in <a class="reference external" href="https://arxiv.org/pdf/2410.23810">CALE: Continuous Arcade Learning Environment</a>.</p>
+<p>To initialize an environment with continuous actions, simply use the argument <code class="docutils literal notranslate"><span class="pre">continuous=True</span></code> in the <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gym</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;ALE/Breakout-v5&quot;</span><span class="p">,</span> <span class="n">continuous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span>  <span class="c1"># radius, theta and fire where radius and theta for polar coordinates</span>
+<span class="go">Box([0.0, -np.pi, 0.0], [1.0, np.pi, 1.0], np.float32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -512,6 +530,7 @@
               <ul>
 <li><a class="reference internal" href="#">Gymnasium Interface</a><ul>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
+<li><a class="reference internal" href="#continuous-action-space">Continuous Action Space</a></li>
 </ul>
 </li>
 </ul>
@@ -546,7 +565,7 @@
     
     
 
-    <script src="../_static/documentation_options.js?v=2483e106"></script>
+    <script src="../_static/documentation_options.js?v=f862a68d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>
