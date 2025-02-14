@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>C++ Interface - ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -448,6 +448,14 @@ the actions that have some effect on that game. The <code class="docutils litera
 <span class="kt">float</span><span class="w"> </span><span class="n">reward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ale</span><span class="p">.</span><span class="n">act</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
 </pre></div>
 </div>
+<p>An optional sound observation is provided. To enable, set the associated environment parameter:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">setBool</span><span class="p">(</span><span class="s">&quot;sound_obs&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">True</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Once enabled, the sound observation may be obtained by calling:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">getAudio</span><span class="p">()</span>
+</pre></div>
+</div>
 <p>Finally, one can check whether the episode has terminated using the function <code class="docutils literal notranslate"><span class="pre">ale.game_over()</span></code>. With these functions one can already implement a very simple agent that plays randomly for one episode:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ale_interface.hpp&gt;</span>
@@ -580,7 +588,7 @@ the actions that have some effect on that game. The <code class="docutils litera
     
     
 
-    <script src="../_static/documentation_options.js?v=2483e106"></script>
+    <script src="../_static/documentation_options.js?v=f862a68d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>

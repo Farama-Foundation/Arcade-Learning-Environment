@@ -13,9 +13,9 @@
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2023.08.19.dev1 -->
         <title>Environments - ALE Documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=3e7f4c72" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=49cbaffd" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=82c8b628" />
     
     
 
@@ -591,6 +591,19 @@
 <p>By default, most environments use a smaller subset of the legal actions excluding any actions that don’t have an effect in the game.
 If users are interested in using all possible actions, pass the keyword argument <code class="docutils literal notranslate"><span class="pre">full_action_space=True</span></code> to <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>.</p>
 </section>
+<section id="continuous-action-space">
+<h2>Continuous action space<a class="headerlink" href="#continuous-action-space" title="Link to this heading">¶</a></h2>
+<p>The ALE supports continuous actions, parameterized as a 3-dimensional vector. The first two dimensions specify polar coordinates
+(radius, theta), while the last dimension is the “fire” dimension. The ranges are:</p>
+<ol class="arabic simple">
+<li><p><strong>radius</strong>: <code class="docutils literal notranslate"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></code></p></li>
+<li><p><strong>theta</strong>: <code class="docutils literal notranslate"><span class="pre">[-np.pi,</span> <span class="pre">np.pi]</span></code></p></li>
+<li><p><strong>fire</strong>: <code class="docutils literal notranslate"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></code></p></li>
+</ol>
+<p>Continuous action spaces still trigger the same events as the default discrete action space, but it is done via the parameter
+<code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code> (i.e. if the “fire” dimension is above <code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code>, a “fire” event is triggered).
+See <a class="reference internal" href="#3"><span class="xref myst">[3]</span></a> for more details.</p>
+</section>
 <section id="observation-space">
 <h2>Observation Space<a class="headerlink" href="#observation-space" title="Link to this heading">¶</a></h2>
 <p>The Atari environments observation can be</p>
@@ -641,6 +654,9 @@ the table above. Together with <code class="docutils literal notranslate"><span 
 <li><p><strong>repeat_action_probability</strong>: <code class="docutils literal notranslate"><span class="pre">float</span></code>. The probability that an action is repeated, also called “sticky actions”, as described in the section on stochasticity.</p></li>
 <li><p><strong>full_action_space</strong>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the action space consists of all legal actions on the console. Otherwise, the
 action space will be reduced to a subset.</p></li>
+<li><p><strong>continuous</strong>: <code class="docutils literal notranslate"><span class="pre">bool</span></code>. If set to True, will convert the action space into a Gymnasium <a class="reference external" href="https://gymnasium.farama.org/api/spaces/fundamental/#gymnasium.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a> space.
+Actions passed into the environment are then thresholded to discrete using the <code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code> parameter.</p></li>
+<li><p><strong>continuous_action_threshold</strong>: <code class="docutils literal notranslate"><span class="pre">float</span></code>. This determines the threshold for actions to be thresholded into discrete actions.</p></li>
 <li><p><strong>render_mode</strong>: <code class="docutils literal notranslate"><span class="pre">str</span></code>. Specifies the rendering mode. Its values are:</p>
 <ul>
 <li><p>human: Display the screen and enable game sounds. This will lock emulation to the ROMs specified FPS</p></li>
@@ -707,7 +723,7 @@ v0 and v4. Let us take a look at all variations of Amidar-v0 that are registered
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>AmidarNoframeskip-v0</p></td>
+<tr class="row-even"><td><p>AmidarNoFrameskip-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
@@ -722,7 +738,7 @@ v0 and v4. Let us take a look at all variations of Amidar-v0 that are registered
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>Amidar-ramNoframeskip-v0</p></td>
+<tr class="row-odd"><td><p>Amidar-ramNoFrameskip-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
@@ -1414,6 +1430,11 @@ Machado et al.
 and Open Problems for General Agents”
 Journal of Artificial Intelligence Research (2018)
 URL: https://jair.org/index.php/jair/article/view/11182</p>
+<p id="id3"><a id="3">[3]</a>
+Jesse Farebrother and Pablo Samuel Castro
+“CALE: Continuous Arcade Learning Environment”
+Advances in Neural Information Processing Systems (NeurIPS 2024)
+URL: https://arxiv.org/abs/2410.23810</p>
 </section>
 </section>
 
@@ -1466,6 +1487,7 @@ URL: https://jair.org/index.php/jair/article/view/11182</p>
               <ul>
 <li><a class="reference internal" href="#">Environments</a><ul>
 <li><a class="reference internal" href="#action-space">Action Space</a></li>
+<li><a class="reference internal" href="#continuous-action-space">Continuous action space</a></li>
 <li><a class="reference internal" href="#observation-space">Observation Space</a></li>
 <li><a class="reference internal" href="#rewards">Rewards</a></li>
 <li><a class="reference internal" href="#stochasticity">Stochasticity</a></li>
@@ -1507,7 +1529,7 @@ URL: https://jair.org/index.php/jair/article/view/11182</p>
     
     
 
-    <script src="../_static/documentation_options.js?v=2483e106"></script>
+    <script src="../_static/documentation_options.js?v=f862a68d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>
