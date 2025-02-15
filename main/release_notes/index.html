@@ -421,12 +421,17 @@
             
             <section class="tex2jax_ignore mathjax_ignore" id="ale-release-notes">
 <h1>ALE Release Notes<a class="headerlink" href="#ale-release-notes" title="Link to this heading">¶</a></h1>
+<section id="release-v0-10-2">
+<h2>ALE v0.10.2<a class="headerlink" href="#release-v0-10-2" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-02-14 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.2/">PyPI</a></em></p>
+<h3>Fixed performance regression for CPP users</h3>
+<p>A single-argument <code>act</code> function was missing, causing the <code>paddle_strength</code> introduced in v0.10.0 to default to zero rather than one. As Gymnasium passed this variable to act, this was only an issue for users directly interacting with <code>ale_interface</code>.  For more details, see <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2852021617" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/595" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/595/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/595">#595</a>.</p></section>
 <section id="release-v0-10-1">
 <h2>ALE v0.10.1<a class="headerlink" href="#release-v0-10-1" title="Link to this heading">¶</a></h2>
 <p><em>Released on 2024-09-28 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.1/">PyPI</a></em></p>
 <p>Revert change to requirements that <code>numpy &lt; 2.0</code>, now <code>numpy &gt; 1.20</code> and add support for building from source distribution, <code>tar.gz</code> (though not recommended).</p></section>
 <section id="release-v0-10-0">
-<h2>v0.10.0: ALE v0.10<a class="headerlink" href="#release-v0-10-0" title="Link to this heading">¶</a></h2>
+<h2>ALE v0.10.0<a class="headerlink" href="#release-v0-10-0" title="Link to this heading">¶</a></h2>
 <p><em>Released on 2024-09-24 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.0/">PyPI</a></em></p>
 <p>In v0.10, ALE now has its own dedicated website, <a href="https://ale.farama.org/" rel="nofollow">https://ale.farama.org/</a> with Atari's documentation being moved from Gymnasium.</p>
 <p>We have moved the project main code from <code>src</code> into <code>src/ale</code> to help incorporate ALE into C++ projects and in the Python API, we have updated <code>get_keys_to_action</code> to work with <code>gymnasium.utils.play</code> by changing the key for no-op from <code>None</code> to the <code>e</code> key.</p>
@@ -857,8 +862,9 @@ simply run <code>ale-import-roms</code> which will automatically correct this fo
             <div class="toc-tree">
               <ul>
 <li><a class="reference internal" href="#">ALE Release Notes</a><ul>
+<li><a class="reference internal" href="#release-v0-10-2">ALE v0.10.2</a></li>
 <li><a class="reference internal" href="#release-v0-10-1">ALE v0.10.1</a></li>
-<li><a class="reference internal" href="#release-v0-10-0">v0.10.0: ALE v0.10</a></li>
+<li><a class="reference internal" href="#release-v0-10-0">ALE v0.10.0</a></li>
 <li><a class="reference internal" href="#release-v0-9-1">ALE v0.9.1</a></li>
 <li><a class="reference internal" href="#release-v0-9-0">ALE v0.9.0</a></li>
 <li><a class="reference internal" href="#release-v0-8-1">v0.8.1: Arcade Learning Environment 0.8.1</a></li>
