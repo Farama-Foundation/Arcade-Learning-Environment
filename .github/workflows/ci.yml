@@ -64,7 +64,7 @@ jobs:
 
     # for some reason the checkout submodules isn't work
     - name: clone submodules
-      run: | 
+      run: |
         mkdir -p external
         git clone https://github.com/progschj/ThreadPool external/ThreadPool
         git clone https://github.com/cameron314/concurrentqueue external/concurrentqueue
