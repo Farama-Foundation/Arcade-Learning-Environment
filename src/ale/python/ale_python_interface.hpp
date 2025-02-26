@@ -72,6 +72,62 @@ class ALEPythonInterface : public ALEInterface {
   void getRAM(py::array_t<uint8_t, py::array::c_style>& buffer);
 };
 
+// Add to existing file, at the end before the PYBIND11_MODULE section
+
+#ifdef BUILD_VECTOR_LIB
+#include "ale/vector/atari_env.h"
+
+void init_vector_bindings(py::module& m) {
+    py::module vector = m.def_submodule("_vector", "Vector ALE bindings");
+
+    py::class_<atari::AtariEnvPool>(vector, "AtariEnvPool")
+        .def(py::init([](const py::dict& config) {
+            // Convert Python dict to C++ config
+            auto c = atari::AtariEnvFns::DefaultConfig();
+            // Set config values from Python dict
+            if (config.contains("num_envs"))
+                c["num_envs"_] = config["num_envs"].cast<int>();
+            if (config.contains("game"))
+                c["task"_] = config["game"].cast<std::string>();
+            if (config.contains("frame_skip"))
+                c["frame_skip"_] = config["frame_skip"].cast<int>();
+            if (config.contains("repeat_action_probability"))
+                c["repeat_action_probability"_] = config["repeat_action_probability"].cast<float>();
+            if (config.contains("minimal_actions"))
+                c["full_action_space"_] = !config["minimal_actions"].cast<bool>();
+            if (config.contains("max_episode_steps"))
+                c["max_episode_steps"_] = config["max_episode_steps"].cast<int>();
+            if (config.contains("num_threads"))
+                c["num_threads"_] = config["num_threads"].cast<int>();
+            if (config.contains("seed"))
+                c["seed"_] = config["seed"].cast<int>();
+            if (config.contains("obs_type")) {
+                std::string obs_type = config["obs_type"].cast<std::string>();
+                c["gray_scale"_] = (obs_type == "grayscale");
+            }
+
+            // Create spec and environment pool
+            atari::AtariEnvSpec spec(c.AllValues());
+            return std::make_unique<atari::AtariEnvPool>(spec);
+        }))
+        .def("reset", &atari::AtariEnvPool::PyReset)
+        .def("step", &atari::AtariEnvPool::PySend, &atari::AtariEnvPool::PyRecv)
+        .def("close", [](atari::AtariEnvPool& self) {
+            // Cleanup resources
+        })
+        .def("get_action_set", [](atari::AtariEnvPool& self) {
+            // Return full action set
+            // Implementation needed
+            return py::list();
+        })
+        .def("get_minimal_action_set", [](atari::AtariEnvPool& self) {
+            // Return minimal action set
+            // Implementation needed
+            return py::list();
+        });
+}
+#endif
+
 } // namespace ale
 
 PYBIND11_MODULE(_ale_py, m) {
@@ -80,6 +136,9 @@ PYBIND11_MODULE(_ale_py, m) {
   m.attr("SDL_SUPPORT") = py::bool_(true);
 #else
   m.attr("SDL_SUPPORT") = py::bool_(false);
+#endif
+#ifdef BUILD_VECTOR_LIB
+    init_vector_bindings(m);
 #endif
 
   py::enum_<ale::Action>(m, "Action")
