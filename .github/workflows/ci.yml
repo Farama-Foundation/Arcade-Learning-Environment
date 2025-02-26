@@ -49,10 +49,6 @@ jobs:
             python: '3.12'
             triplet: x64-osx-mixed
 
-          - runs-on: macos-14
-            python: '3.12'
-            triplet: universal2-osx-mixed
-
           - runs-on: windows-latest
             python: '3.12'
             triplet: x64-windows
@@ -64,7 +60,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: 'recursive'
+        submodules: 'true'
+
+    - name: Debug submodules
+      run: |
+        ls -la
+        mkdir -p external
+        ls -la external
+        git submodule status
 
     - uses: actions/setup-python@v5
       with:
@@ -86,7 +89,7 @@ jobs:
         key: "${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}"
         restore-keys: ${{ runner.os }}-vcpkg
 
-    - run: vcpkg install --clean-buildtrees-after-build --overlay-triplets='cmake/custom-triplets'
+    - run: vcpkg install --clean-buildtrees-after-build --overlay-triplets='cmake/custom-triplets' --debug
 
     - run: ls -ls .
 
