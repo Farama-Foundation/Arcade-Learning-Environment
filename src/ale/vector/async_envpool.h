@@ -23,6 +23,15 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#if defined(__linux__)
+  #include <sched.h>
+  #include <pthread.h>
+#elif defined(_WIN32)
+  #include <windows.h>
+#elif defined(__APPLE__)
+  #include <mach/mach.h>
+  #include <mach/thread_policy.h>
+#endif
 
 #include "ThreadPool.h"
 #include "ale/vector/action_buffer_queue.h"
@@ -130,15 +139,26 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
       });
     }
     if (spec.config["thread_affinity_offset"_] >= 0) {
-      std::size_t thread_affinity_offset =
-          spec.config["thread_affinity_offset"_];
+      std::size_t thread_affinity_offset = spec.config["thread_affinity_offset"_];
       for (std::size_t tid = 0; tid < num_threads_; ++tid) {
-        cpu_set_t cpuset;
-        CPU_ZERO(&cpuset);
         std::size_t cid = (thread_affinity_offset + tid) % processor_count;
-        CPU_SET(cid, &cpuset);
-        pthread_setaffinity_np(workers_[tid].native_handle(), sizeof(cpu_set_t),
-                               &cpuset);
+
+        #if defined(__linux__)
+          cpu_set_t cpuset;
+          CPU_ZERO(&cpuset);
+          CPU_SET(cid, &cpuset);
+          pthread_setaffinity_np(workers_[tid].native_handle(), sizeof(cpu_set_t), &cpuset);
+        #elif defined(_WIN32)
+          DWORD_PTR mask = (static_cast<DWORD_PTR>(1) << cid);
+          SetThreadAffinityMask(workers_[tid].native_handle(), mask);
+        #elif defined(__APPLE__)
+          // macOS thread affinity is limited and different
+          // This is a best-effort implementation
+          thread_affinity_policy_data_t policy = { static_cast<integer_t>(cid) };
+          thread_port_t mach_thread = pthread_mach_thread_np(workers_[tid].native_handle());
+          thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY,
+                           (thread_policy_t)&policy, THREAD_AFFINITY_POLICY_COUNT);
+        #endif
       }
     }
   }
