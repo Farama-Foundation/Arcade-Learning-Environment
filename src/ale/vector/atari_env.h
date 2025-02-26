@@ -30,7 +30,7 @@
 #include "ale/vector/env.h"
 #include "ale/vector/utils/image_process.h"
 
-namespace atari {
+namespace ale {
 
 auto TurnOffVerbosity() {
   ale::Logger::setMode(ale::Logger::Error);
@@ -309,6 +309,6 @@ class AtariEnv : public Env<AtariEnvSpec> {
 
 using AtariEnvPool = AsyncEnvPool<AtariEnv>;
 
-}  // namespace atari
+}  // namespace ale
 
 #endif  // ENVPOOL_ATARI_ATARI_ENV_H_
