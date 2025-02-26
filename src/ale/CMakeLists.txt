@@ -67,10 +67,11 @@ endif()
 
 # Vector library
 if (BUILD_VECTOR_LIB)
-  find_package(glog REQUIRED)
+  find_package(glog CONFIG REQUIRED)
   target_link_libraries(ale PRIVATE glog::glog)
 
   message(STATUS "PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}, CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
+  message(STATUS "GLOG_INCLUDE_DIRS=${glog_INCLUDE_DIRS}")
   target_include_directories(ale PUBLIC
     ${PROJECT_SOURCE_DIR}/external/concurrentqueue/
     ${PROJECT_SOURCE_DIR}/external/ThreadPool/
@@ -78,6 +79,13 @@ if (BUILD_VECTOR_LIB)
 
   find_package(OpenCV CONFIG REQUIRED)
   target_link_libraries(ale PRIVATE opencv_core)
+
+  message(STATUS "PYBIND11_INCLUDE_DIRS: ${pybind11_INCLUDE_DIRS}")
+  if(EXISTS "${pybind11_INCLUDE_DIRS}/pybind11/functional.h")
+    message(STATUS "pybind11/functional.h exists")
+  else()
+    message(STATUS "pybind11/functional.h NOT found")
+  endif()
 
   add_subdirectory(vector)
 endif()

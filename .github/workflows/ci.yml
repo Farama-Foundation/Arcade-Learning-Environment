@@ -73,10 +73,6 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: MacOS-14 install vcpkg
-      if: ${{ matrix.runs-on == 'macos-14' }}
-      run: sudo ./scripts/ci-install-vcpkg-macos.sh
-
     - run: vcpkg x-update-baseline
 
 #    - name: Cache vcpkg dependencies
