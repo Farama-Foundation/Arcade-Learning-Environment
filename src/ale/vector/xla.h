@@ -17,7 +17,13 @@
 #ifndef ENVPOOL_CORE_XLA_H_
 #define ENVPOOL_CORE_XLA_H_
 
-#include <cuda_runtime_api.h>
+// Conditionally include CUDA
+#if defined(_WIN32) || defined(__linux__)
+#if defined(WITH_CUDA)
+    #include <cuda_runtime_api.h>
+    #define ALE_CUDA_AVAILABLE
+#endif
+#endif
 
 #include <cstdint>
 #include <memory>

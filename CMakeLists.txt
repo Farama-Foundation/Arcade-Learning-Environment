@@ -18,10 +18,19 @@ option(BUILD_VECTOR_LIB "Build Vector Interface" OFF)
 # Append VCPKG manifest feature
 if (BUILD_VECTOR_LIB)
   list(APPEND VCPKG_MANIFEST_FEATURES "vector")
+  add_definitions(-DBUILD_VECTOR_LIB)
 endif()
-option(BUILD_VECTOR_XLA "Build Vector XLA Interface" OFF)
-if (BUILD_VECTOR_XLA)
-  list(APPEND VCPKG_MANIFEST_FEATURES "cuda")
+
+# Enable CUDA (XLA) integration
+option(WITH_CUDA "Enable CUDA support for vector environments" OFF)
+if(WITH_CUDA AND (WIN32 OR UNIX AND NOT APPLE))
+  find_package(CUDA QUIET)
+  if(CUDA_FOUND)
+    add_definitions(-DWITH_CUDA)
+    message(STATUS "CUDA found, enabling CUDA support for vector environments")
+  else()
+    message(STATUS "CUDA not found, disabling CUDA support")
+  endif()
 endif()
 
 # Set cmake module path
