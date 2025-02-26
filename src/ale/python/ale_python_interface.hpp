@@ -44,8 +44,8 @@ class ALEPythonInterface : public ALEInterface {
   py::array_t<pixel_t, py::array::c_style> getScreenRGB();
   py::array_t<pixel_t, py::array::c_style> getScreenGrayscale();
 
-  inline reward_t act(unsigned int action) {
-    return ALEInterface::act((Action)action);
+  inline reward_t act(unsigned int action, float paddle_strength = 1.0) {
+    return ALEInterface::act((Action)action, paddle_strength);
   }
 
   inline py::tuple getScreenDims() {
@@ -146,14 +146,14 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("loadROM", &ale::ALEInterface::loadROM)
       .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
       .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
-                      ale::ALEPythonInterface::act)
       .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
-                      ale::ALEInterface::act)
+                      ale::ALEPythonInterface::act,
+                      py::arg("action"),
+                      py::arg("paddle_strength") = 1.0)
       .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &
-                      ale::ALEInterface::act)
+                      ale::ALEInterface::act,
+                      py::arg("action"),
+                      py::arg("paddle_strength") = 1.0)
       .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))
       .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
       .def("reset_game", &ale::ALEPythonInterface::reset_game)

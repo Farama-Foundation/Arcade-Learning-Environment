@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "arcade-learning-environment",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "builtin-baseline": "0ca64b4e1c70fa6d9f53b369b8f3f0843797c20c",
   "dependencies": [
     "zlib"
