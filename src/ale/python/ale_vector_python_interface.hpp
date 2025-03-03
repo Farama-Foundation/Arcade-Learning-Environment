@@ -117,22 +117,11 @@ public:
      *
      * @return Observations from all environments after reset
      */
-    std::vector<Observation> reset_all() {
+    std::vector<Observation> reset() {
         std::vector<int> env_ids(num_envs_);
         for (int i = 0; i < num_envs_; ++i) {
             env_ids[i] = i;
         }
-        vectorizer_->reset(env_ids);
-        return vectorizer_->recv();
-    }
-
-    /**
-     * Reset specific environments
-     *
-     * @param env_ids IDs of environments to reset
-     * @return Observations from reset environments
-     */
-    std::vector<Observation> reset(const std::vector<int>& env_ids) {
         vectorizer_->reset(env_ids);
         return vectorizer_->recv();
     }
@@ -171,7 +160,7 @@ public:
      *
      * @return Tuple of (stack_num, channels, height, width)
      */
-    std::tuple<int, int, int, int> get_observation_dims() const {
+    std::tuple<int, int, int, int> get_observation_shape() const {
         const int channels = gray_scale_ ? 1 : 3;
         return std::make_tuple(stack_num_, channels, img_height_, img_width_);
     }

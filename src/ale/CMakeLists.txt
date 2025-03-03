@@ -61,7 +61,7 @@ if (BUILD_CPP_LIB OR BUILD_PYTHON_LIB)
 
   if (BUILD_VECTOR_LIB)
     find_package(OpenCV CONFIG REQUIRED)
-    target_link_directories(ale PRIVATE opencv_core)
+    include_directories(${OpenCV_INCLUDE_DIRS})
 
     target_include_directories(ale PUBLIC
       ${PROJECT_SOURCE_DIR}/external/concurrentqueue/
@@ -69,6 +69,8 @@ if (BUILD_CPP_LIB OR BUILD_PYTHON_LIB)
     )
 
     add_subdirectory(vector)
+
+    target_link_libraries(ale PRIVATE ${OpenCV_LIBS})
   endif()
 endif()
 

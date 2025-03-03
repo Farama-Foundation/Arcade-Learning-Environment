@@ -211,6 +211,11 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("restoreSystemState", &ale::ALEPythonInterface::restoreSystemState)
       .def("saveScreenPNG", &ale::ALEPythonInterface::saveScreenPNG)
       .def_static("setLoggerMode", &ale::Logger::setMode);
+
+  // Initialize the vector module if it's enabled
+#ifdef BUILD_VECTOR_LIB
+  init_vector_module(m);
+#endif
 }
 
 #endif // __ALE_PYTHON_INTERFACE_HPP__

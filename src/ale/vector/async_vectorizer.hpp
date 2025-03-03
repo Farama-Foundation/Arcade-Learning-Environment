@@ -15,6 +15,10 @@
 #include "utils.hpp"
 #include "preprocessed_env.hpp"
 
+#if defined(_WIN32) || defined(WIN32) || defined(_MSC_VER)
+    #include <windows.h>
+#endif
+
 namespace ale {
 namespace vector {
 
@@ -56,7 +60,7 @@ public:
         // Setup worker threads
         std::size_t processor_count = std::thread::hardware_concurrency();
         if (num_threads <= 0) {
-            num_threads_ = std::min(batch_size_, static_cast<int>(processor_count));
+            num_threads_ = min(batch_size_, static_cast<int>(processor_count));
         } else {
             num_threads_ = num_threads;
         }
@@ -102,11 +106,11 @@ public:
             int env_id = actions[i].env_id;
             envs_[env_id]->set_action(actions[i]);
 
-            action_slices.emplace_back(ActionSlice{
-                .env_id = env_id,
-                .order = is_sync_ ? static_cast<int>(i) : -1,
-                .force_reset = false
-            });
+            ActionSlice slice;
+            slice.env_id = env_id;
+            slice.order = is_sync_ ? static_cast<int>(i) : -1;
+            slice.force_reset = false;
+            action_slices.emplace_back(slice);
         }
 
         if (is_sync_) {
@@ -146,11 +150,11 @@ public:
         reset_actions.reserve(env_ids.size());
 
         for (size_t i = 0; i < env_ids.size(); ++i) {
-            reset_actions.emplace_back(ActionSlice{
-                .env_id = env_ids[i],
-                .order = is_sync_ ? static_cast<int>(i) : -1,
-                .force_reset = true
-            });
+            ActionSlice slice;
+            slice.env_id = env_ids[i];
+            slice.order = is_sync_ ? static_cast<int>(i) : -1;
+            slice.force_reset = true;
+            reset_actions.emplace_back(slice);
         }
 
         if (is_sync_) {
