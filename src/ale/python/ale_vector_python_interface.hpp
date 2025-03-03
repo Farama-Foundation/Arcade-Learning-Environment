@@ -11,6 +11,12 @@
 #include "ale/vector/preprocessed_env.hpp"
 #include "ale/vector/utils.hpp"
 
+
+#include <pybind11/pybind11.h>
+
+namespace py = pybind11;
+void init_vector_module(py::module& m);
+
 namespace fs = std::filesystem;
 
 namespace ale {
@@ -26,8 +32,8 @@ public:
     /**
      * Constructor
      *
-     * @param num_envs Number of parallel environments
-     * @param rom_path Path to the ROM file
+	 * @param rom_path Path to the ROM file
+	 * @param num_envs Number of parallel environments
      * @param frame_skip Number of frames to skip between agent decisions (default: 4)
      * @param gray_scale Whether to convert frames to grayscale (default: true)
      * @param stack_num Number of frames to stack for observations (default: 4)
@@ -45,8 +51,8 @@ public:
      * @param thread_affinity_offset The CPU core offset for thread affinity (-1 means no affinity, default: -1)
      */
     ALEVectorInterface(
-        int num_envs,
         const std::string& rom_path,
+        int num_envs,
         int frame_skip = 4,
         bool gray_scale = true,
         int stack_num = 4,
@@ -62,8 +68,8 @@ public:
         int num_threads = 0,
         int seed = 0,
         int thread_affinity_offset = -1
-    ) : num_envs_(num_envs),
-        rom_path_(rom_path),
+    ) : rom_path_(rom_path),
+        num_envs_(num_envs),
         frame_skip_(frame_skip),
         gray_scale_(gray_scale),
         stack_num_(stack_num),
@@ -75,8 +81,7 @@ public:
         max_episode_steps_(max_episode_steps),
         repeat_action_probability_(repeat_action_probability),
         full_action_space_(full_action_space),
-        seed_(seed),
-        gen_(seed) {
+        seed_(seed) {
 
         // Create environment factory
         auto env_factory = [this](int env_id) {
@@ -180,10 +185,9 @@ private:
     float repeat_action_probability_;         // Sticky actions probability
     bool full_action_space_;                  // Use full action space
     int seed_;                                // Random seed
-    std::mt19937 gen_;                        // Random number generator
 
     std::unique_ptr<AsyncVectorizer> vectorizer_;  // Vectorizer
-    ActionVect action_set_;                  // Set of available actions
+    ActionVect action_set_;                   // Set of available actions
 };
 
 } // namespace vector

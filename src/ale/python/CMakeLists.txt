@@ -17,8 +17,9 @@ endif()
 # If vector library is enabled, include the vector Python interface
 if(BUILD_VECTOR_LIB)
     add_library(ale-py MODULE ale_python_interface.cpp ale_vector_python_interface.cpp)
+    target_compile_definitions(ale-py PRIVATE BUILD_VECTOR_LIB)
 else ()
-    add_library(ale-py MODULE ale_python_interface.cpp )
+    add_library(ale-py MODULE ale_python_interface.cpp)
 endif()
 
 # Depend on the ALE and pybind11 module

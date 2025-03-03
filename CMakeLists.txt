@@ -16,6 +16,7 @@ endif()
 option(BUILD_VECTOR_LIB "Build Vector Interface" OFF)
 if (BUILD_VECTOR_LIB)
   list(APPEND VCPKG_MANIFEST_FEATURES "vector")
+  add_definitions(-DBUILD_VECTOR_LIB)
 endif()
 
 # Set cmake module path

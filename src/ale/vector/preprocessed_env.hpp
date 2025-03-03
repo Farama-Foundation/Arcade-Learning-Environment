@@ -42,7 +42,7 @@ public:
      */
     PreprocessedAtariEnv(
         int env_id,
-        const std::string& rom_path,
+        const fs::path rom_path,
         int obs_height = 84,
         int obs_width = 84,
         int frame_skip = 4,
@@ -308,7 +308,7 @@ private:
     }
 
     int env_id_;                                  // Unique ID for this environment
-    std::string rom_path_;                        // Path to the ROM file
+    fs::path rom_path_;                           // Path to the ROM file
     std::unique_ptr<ALEInterface> env_;           // ALE interface
 
     ActionVect action_set_;                       // Available actions

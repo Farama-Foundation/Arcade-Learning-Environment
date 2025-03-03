@@ -49,9 +49,9 @@ void init_vector_module(py::module& m) {
 
     // Define ALEVectorInterface class
     py::class_<ale::vector::ALEVectorInterface>(vector_module, "ALEVectorInterface")
-        .def(py::init<int, const std::string&, int, bool, int, int, int, int, bool, bool, int, float, bool, int, int, int, int>(),
-             py::arg("num_envs"),
+        .def(py::init<const std::string&, int, int, bool, int, int, int, int, bool, bool, int, float, bool, int, int, int, int>(),
              py::arg("rom_path"),
+             py::arg("num_envs"),
              py::arg("frame_skip") = 4,
              py::arg("gray_scale") = true,
              py::arg("stack_num") = 4,

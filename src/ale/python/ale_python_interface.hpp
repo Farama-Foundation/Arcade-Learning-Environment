@@ -16,7 +16,6 @@
 #ifndef __ALE_PYTHON_INTERFACE_HPP__
 #define __ALE_PYTHON_INTERFACE_HPP__
 
-#include <sstream>
 #include <optional>
 
 #include <pybind11/numpy.h>
@@ -26,6 +25,11 @@
 
 #include "ale/ale_interface.hpp"
 #include "version.hpp"
+
+#ifdef BUILD_VECTOR_LIB
+#include "ale_vector_python_interface.hpp"
+#endif
+
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -146,12 +150,10 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("loadROM", &ale::ALEInterface::loadROM)
       .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
       .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
-                      ale::ALEPythonInterface::act,
+      .def("act", &ale::ALEPythonInterface::act,
                       py::arg("action"),
                       py::arg("paddle_strength") = 1.0)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &
-                      ale::ALEInterface::act,
+      .def("act", &ale::ALEInterface::act,
                       py::arg("action"),
                       py::arg("paddle_strength") = 1.0)
       .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))

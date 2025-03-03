@@ -35,16 +35,10 @@ It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
         if hasattr(kernel32, "AddDllDirectory"):
             kernel32.AddDllDirectory(packagedir)
 
-# TODO Py38: Once 3.7 is deprecated use importlib.metadata to parse
 # version string from package.
-try:
-    import importlib.metadata as metadata
-except ImportError:
-    import importlib_metadata as metadata
-try:
-    __version__ = metadata.version(__package__)
-except metadata.PackageNotFoundError:
-    __version__ = "unknown"
+import importlib.metadata as metadata
+
+__version__ = metadata.version(__package__)
 
 # Import native shared library
 from ale_py._ale_py import (  # noqa: E402
@@ -60,8 +54,9 @@ __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
 try:
     from ale_py.env import AtariEnv, AtariEnvStepMetadata
+    from ale_py.vector_env import VectorEnv
 
-    __all__ += ["AtariEnv", "AtariEnvStepMetadata"]
+    __all__ += ["AtariEnv", "AtariEnvStepMetadata", "VectorEnv"]
 
     from ale_py.registration import register_v0_v4_envs, register_v5_envs
 
