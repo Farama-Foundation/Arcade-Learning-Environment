@@ -8,11 +8,26 @@
   "features": {
     "sdl": {
       "description": "Enable SDL, this enables display and audio support.",
-      "dependencies": [ "sdl2" ]
+      "dependencies": [
+        "sdl2"
+      ]
+    },
+    "vector": {
+      "description": "Enable Vector, this enables vectorisation of atari environments",
+      "dependencies": [
+        "opencv"
+      ]
     }
   },
-  "builtin-baseline": "9aa0d66373ce3a6868d12353d0d4960db0d4bd18",
+  "builtin-baseline": "1420fe276fe8f6450565e6239a675271c0869359",
   "overrides": [
-    { "name": "sdl2", "version": "2.24.2" }
+    {
+      "name": "sdl2",
+      "version": "2.24.2"
+    },
+    {
+      "name": "opencv",
+      "version": "4.10.0"
+    }
   ]
 }

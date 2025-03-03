@@ -50,7 +50,7 @@ test = [
 
 [project.urls]
 homepage = "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
-documentation = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/tree/master/docs"
+documentation = "https://ale.farama.org"
 changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
 [tool.setuptools]

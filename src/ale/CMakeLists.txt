@@ -58,6 +58,18 @@ if (BUILD_CPP_LIB OR BUILD_PYTHON_LIB)
   add_library(ale-lib ale_interface.cpp)
   set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
   target_link_libraries(ale-lib PUBLIC ale)
+
+  if (BUILD_VECTOR_LIB)
+    find_package(OpenCV CONFIG REQUIRED)
+    target_link_directories(ale PRIVATE opencv_core)
+
+    target_include_directories(ale PUBLIC
+      ${PROJECT_SOURCE_DIR}/external/concurrentqueue/
+      ${PROJECT_SOURCE_DIR}/external/ThreadPool/
+    )
+
+    add_subdirectory(vector)
+  endif()
 endif()
 
 # Python Library

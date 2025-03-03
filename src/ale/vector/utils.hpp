@@ -1,0 +1,219 @@
+#ifndef ALE_VECTOR_UTILS_HPP_
+#define ALE_VECTOR_UTILS_HPP_
+
+#include <vector>
+#include <atomic>
+#include <functional>
+#include <mutex>
+#include <condition_variable>
+#include <cstdint>
+#include <memory>
+
+#ifndef MOODYCAMEL_DELETE_FUNCTION
+    #define MOODYCAMEL_DELETE_FUNCTION = delete
+#endif
+
+#include "lightweightsemaphore.h"
+
+namespace ale {
+namespace vector {
+
+/**
+ * ActionSlice represents a single action or command to be processed by a worker thread
+ */
+struct ActionSlice {
+    int env_id;        // ID of the environment to apply the action to
+    int order;         // Order in the batch for synchronous operation (-1 for async)
+    bool force_reset;  // Whether to force a reset of the environment
+};
+
+/**
+ * Action represents an action to be taken in an environment
+ */
+struct Action {
+    int env_id;            // ID of the environment to apply the action to
+    int action_id;         // ID of the action to take
+    float paddle_strength; // Strength for paddle-based games (default: 1.0)
+};
+
+/**
+ * Observation represents the output from an environment step
+ */
+struct Observation {
+    int env_id;                      // ID of the environment this observation is from
+    std::vector<uint8_t> screen;     // Screen pixel data
+    float reward;                    // Reward received in this step
+    bool terminated;                 // Whether the game ended
+    bool truncated;                  // Whether the episode was truncated due to a time limit
+    int lives;                       // Remaining lives in the game
+    int frame_number;                // Frame number since the beginning of the game
+    int episode_frame_number;        // Frame number since the beginning of the episode
+};
+
+/**
+ * Lock-free queue for actions to be processed by worker threads
+ */
+class ActionBufferQueue {
+public:
+    explicit ActionBufferQueue(std::size_t num_envs)
+        : alloc_ptr_(0),
+          done_ptr_(0),
+          queue_size_(num_envs * 2),
+          queue_(queue_size_),
+          sem_(0),
+          sem_enqueue_(1),
+          sem_dequeue_(1) {}
+
+    /**
+     * Enqueue multiple actions at once
+     */
+    void enqueue_bulk(const std::vector<ActionSlice>& actions) {
+        while (!sem_enqueue_.wait()) {}
+
+        uint64_t pos = alloc_ptr_.fetch_add(actions.size());
+        for (std::size_t i = 0; i < actions.size(); ++i) {
+            queue_[(pos + i) % queue_size_] = actions[i];
+        }
+
+        sem_.signal(actions.size());
+        sem_enqueue_.signal(1);
+    }
+
+    /**
+     * Dequeue a single action
+     */
+    ActionSlice dequeue() {
+        while (!sem_.wait()) {}
+        while (!sem_dequeue_.wait()) {}
+
+        auto ptr = done_ptr_.fetch_add(1);
+        auto ret = queue_[ptr % queue_size_];
+
+        sem_dequeue_.signal(1);
+        return ret;
+    }
+
+    /**
+     * Get the approximate size of the queue
+     */
+    std::size_t size_approx() {
+        return alloc_ptr_ - done_ptr_;
+    }
+
+private:
+    std::atomic<uint64_t> alloc_ptr_;  // Pointer to next allocation position
+    std::atomic<uint64_t> done_ptr_;   // Pointer to next dequeue position
+    std::size_t queue_size_;           // Size of the queue
+    std::vector<ActionSlice> queue_;   // The actual queue data
+    moodycamel::LightweightSemaphore sem_;           // Semaphore for queue access
+    moodycamel::LightweightSemaphore sem_enqueue_;   // Semaphore for enqueue operations
+    moodycamel::LightweightSemaphore sem_dequeue_;   // Semaphore for dequeue operations
+};
+
+/**
+ * StateBufferQueue handles the collection of observations from environments
+ */
+class StateBufferQueue {
+public:
+    StateBufferQueue(std::size_t batch_size, std::size_t num_envs)
+        : batch_size_(batch_size),
+          num_buffers_((num_envs / batch_size + 2) * 2),
+          current_buffer_(0),
+          observations_(num_buffers_),
+          buffer_count_(num_buffers_, 0),
+          buffer_filled_(num_buffers_, false),
+          ready_sem_(0) {
+
+        // Initialize the observation vectors
+        for (auto& obs : observations_) {
+            obs.reserve(batch_size_);
+        }
+    }
+
+    /**
+     * Write an observation to the buffer
+     */
+    void write(const Observation& obs, int order = -1) {
+        std::unique_lock lock(mutex_);
+
+        // Determine which buffer to write to
+        size_t buffer_idx = current_buffer_;
+
+        // If using ordered observations (order >= 0), place in the correct position
+        if (order >= 0) {
+            // For ordered observations in synchronous mode
+            // Buffer might need reorganizing after collection
+            observations_[buffer_idx].push_back(obs);
+        } else {
+            // For unordered observations
+            observations_[buffer_idx].push_back(obs);
+        }
+
+        buffer_count_[buffer_idx]++;
+
+        // Check if buffer is full
+        if (buffer_count_[buffer_idx] >= batch_size_) {
+            buffer_filled_[buffer_idx] = true;
+            ready_sem_.signal();
+        }
+
+        lock.unlock();
+    }
+
+    /**
+     * Wait for observations to be ready and return them
+     *
+     * @param additional_wait Number of additional observations to wait for
+     * @return Vector of observations
+     */
+    std::vector<Observation> wait(int additional_wait = 0) {
+        while (!ready_sem_.wait()) {}
+
+        std::unique_lock lock(mutex_);
+
+        // Find a filled buffer
+        size_t buffer_idx = current_buffer_;
+
+        // If we're waiting for additional observations
+        if (additional_wait > 0) {
+            // This would handle the case where we're synchronously waiting
+            // for the batch to complete
+            buffer_count_[buffer_idx] += additional_wait;
+            if (buffer_count_[buffer_idx] >= batch_size_) {
+                buffer_filled_[buffer_idx] = true;
+            }
+        }
+
+        std::vector<Observation> result;
+        if (buffer_filled_[buffer_idx]) {
+            // Get the observations
+            result = std::move(observations_[buffer_idx]);
+
+            // Reset the buffer
+            observations_[buffer_idx].clear();
+            observations_[buffer_idx].reserve(batch_size_);
+            buffer_count_[buffer_idx] = 0;
+            buffer_filled_[buffer_idx] = false;
+
+            // Move to the next buffer
+            current_buffer_ = (current_buffer_ + 1) % num_buffers_;
+        }
+
+        return result;
+    }
+
+private:
+    std::size_t batch_size_;                     // Size of each batch
+    std::size_t num_buffers_;                    // Number of circular buffers
+    std::size_t current_buffer_;                 // Current buffer index
+    std::vector<std::vector<Observation>> observations_;  // Observation storage
+    std::vector<std::size_t> buffer_count_;      // Count of observations in each buffer
+    std::vector<bool> buffer_filled_;            // Whether each buffer is filled
+    std::mutex mutex_;                           // Mutex for thread safety
+    moodycamel::LightweightSemaphore ready_sem_; // Semaphore for ready buffer
+};
+
+} // namespace vector
+} // namespace ale
+
+#endif // ALE_VECTOR_UTILS_HPP_
