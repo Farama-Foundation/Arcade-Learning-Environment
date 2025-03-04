@@ -37,17 +37,17 @@ struct Action {
 };
 
 /**
- * Observation represents the output from an environment step
+ * Timestep represents the output from an environment step
  */
-struct Observation {
-    int env_id;                      // ID of the environment this observation is from
-    std::vector<uint8_t> screen;     // Screen pixel data
-    float reward;                    // Reward received in this step
-    bool terminated;                 // Whether the game ended
-    bool truncated;                  // Whether the episode was truncated due to a time limit
-    int lives;                       // Remaining lives in the game
-    int frame_number;                // Frame number since the beginning of the game
-    int episode_frame_number;        // Frame number since the beginning of the episode
+struct Timestep {
+    int env_id;                       // ID of the environment this observation is from
+    std::vector<uint8_t> observation; // Screen pixel data
+    float reward;                     // Reward received in this step
+    bool terminated;                  // Whether the game ended
+    bool truncated;                   // Whether the episode was truncated due to a time limit
+    int lives;                        // Remaining lives in the game
+    int frame_number;                 // Frame number since the beginning of the game
+    int episode_frame_number;         // Frame number since the beginning of the episode
 };
 
 /**
@@ -111,7 +111,7 @@ private:
 };
 
 /**
- * StateBufferQueue handles the collection of observations from environments
+ * StateBufferQueue handles the collection of timesteps from environments
  */
 class StateBufferQueue {
 public:
@@ -119,34 +119,34 @@ public:
         : batch_size_(batch_size),
           num_buffers_((num_envs / batch_size + 2) * 2),
           current_buffer_(0),
-          observations_(num_buffers_),
+          timesteps_(num_buffers_),
           buffer_count_(num_buffers_, 0),
           buffer_filled_(num_buffers_, false),
           ready_sem_(0) {
 
-        // Initialize the observation vectors
-        for (auto& obs : observations_) {
-            obs.reserve(batch_size_);
+        // Initialize the timesteps vectors
+        for (auto& ts : timesteps_) {
+            ts.reserve(batch_size_);
         }
     }
 
     /**
-     * Write an observation to the buffer
+     * Write an timestep to the buffer
      */
-    void write(const Observation& obs, int order = -1) {
+    void write(const Timestep& timestep, int order = -1) {
         std::unique_lock lock(mutex_);
 
         // Determine which buffer to write to
         size_t buffer_idx = current_buffer_;
 
-        // If using ordered observations (order >= 0), place in the correct position
+        // If using ordered timesteps (order >= 0), place in the correct position
         if (order >= 0) {
-            // For ordered observations in synchronous mode
+            // For ordered timestep in synchronous mode
             // Buffer might need reorganizing after collection
-            observations_[buffer_idx].push_back(obs);
+            timesteps_[buffer_idx].push_back(timestep);
         } else {
-            // For unordered observations
-            observations_[buffer_idx].push_back(obs);
+            // For unordered timesteps
+            timesteps_[buffer_idx].push_back(timestep);
         }
 
         buffer_count_[buffer_idx]++;
@@ -161,12 +161,12 @@ public:
     }
 
     /**
-     * Wait for observations to be ready and return them
+     * Wait for Timestep to be ready and return them
      *
-     * @param additional_wait Number of additional observations to wait for
-     * @return Vector of observations
+     * @param additional_wait Number of additional timesteps to wait for
+     * @return Vector of timesteps
      */
-    std::vector<Observation> wait(int additional_wait = 0) {
+    std::vector<Timestep> wait(int additional_wait = 0) {
         while (!ready_sem_.wait()) {}
 
         std::unique_lock lock(mutex_);
@@ -174,7 +174,7 @@ public:
         // Find a filled buffer
         size_t buffer_idx = current_buffer_;
 
-        // If we're waiting for additional observations
+        // If we're waiting for additional timesteps
         if (additional_wait > 0) {
             // This would handle the case where we're synchronously waiting
             // for the batch to complete
@@ -184,14 +184,14 @@ public:
             }
         }
 
-        std::vector<Observation> result;
+        std::vector<Timestep> result;
         if (buffer_filled_[buffer_idx]) {
-            // Get the observations
-            result = std::move(observations_[buffer_idx]);
+            // Get the timesteps
+            result = std::move(timesteps_[buffer_idx]);
 
             // Reset the buffer
-            observations_[buffer_idx].clear();
-            observations_[buffer_idx].reserve(batch_size_);
+            timesteps_[buffer_idx].clear();
+            timesteps_[buffer_idx].reserve(batch_size_);
             buffer_count_[buffer_idx] = 0;
             buffer_filled_[buffer_idx] = false;
 
@@ -206,8 +206,8 @@ private:
     std::size_t batch_size_;                     // Size of each batch
     std::size_t num_buffers_;                    // Number of circular buffers
     std::size_t current_buffer_;                 // Current buffer index
-    std::vector<std::vector<Observation>> observations_;  // Observation storage
-    std::vector<std::size_t> buffer_count_;      // Count of observations in each buffer
+    std::vector<std::vector<Timestep>> timesteps_;  // Timesteps storage
+    std::vector<std::size_t> buffer_count_;      // Count of timesteps in each buffer
     std::vector<bool> buffer_filled_;            // Whether each buffer is filled
     std::mutex mutex_;                           // Mutex for thread safety
     moodycamel::LightweightSemaphore ready_sem_; // Semaphore for ready buffer

@@ -198,32 +198,32 @@ public:
     /**
      * Get the current observation
      */
-    Observation get_observation() const {
-        Observation obs;
-        obs.env_id = env_id_;
+    Timestep get_timestep() const {
+        Timestep timestep;
+        timestep.env_id = env_id_;
 
-        obs.reward = last_reward_;
-        obs.terminated = game_over_;
-        obs.truncated = elapsed_step_ >= max_episode_steps_;
+        timestep.reward = last_reward_;
+        timestep.terminated = game_over_;
+        timestep.truncated = elapsed_step_ >= max_episode_steps_;
 
-        obs.lives = lives_;
-        obs.frame_number = env_->getFrameNumber();
-        obs.episode_frame_number = env_->getEpisodeFrameNumber();
+        timestep.lives = lives_;
+        timestep.frame_number = env_->getFrameNumber();
+        timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
         // Combine stacked frames into a single observation
         const int channels = gray_scale_ ? 1 : 3;
         const size_t frame_size = obs_height_ * obs_width_ * channels;
-        obs.screen.resize(frame_size * stack_num_);
+        timestep.observation.resize(frame_size * stack_num_);
 
         for (int i = 0; i < stack_num_; ++i) {
             std::memcpy(
-                obs.screen.data() + i * frame_size,
+                timestep.observation.data() + i * frame_size,
                 frame_stack_[i].data(),
                 frame_size
             );
         }
 
-        return obs;
+        return timestep;
     }
 
     /**
@@ -263,9 +263,6 @@ private:
 
     /**
      * Process the screen and update the frame stack
-     *
-    * @param maxpool Whether to maxpool the last two raw frames
-     * @param push_all Whether to copy the newest frame to all frames in the stack
      */
     void process_screen() {
         const int channels = gray_scale_ ? 1 : 3;
@@ -281,30 +278,16 @@ private:
         }
 
         // Resize the raw frame to target dimensions
-        resize_frame(
-            raw_frames_[0].data(),
-            resized_frame_.data(),
-            raw_height,
-            raw_width,
-            obs_height_,
-            obs_width_,
-            channels
-        );
+        cv::Mat src_img(raw_height, raw_width, channels == 1 ? CV_8UC1 : CV_8UC3,
+                        const_cast<uint8_t*>(raw_frames_[0].data()));
+        cv::Mat dst_img(obs_height_, obs_width_, channels == 1 ? CV_8UC1 : CV_8UC3,
+                        resized_frame_.data());
+        // Use INTER_AREA for downsampling to avoid moire patterns
+        cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
 
         // Push the new frame into the stack
         frame_stack_.pop_front();
         frame_stack_.push_back(resized_frame_);
-    }
-
-    /**
-     * Resize a frame from raw resolution to target resolution
-     */
-    void resize_frame(const uint8_t* src, uint8_t* dst, int src_h, int src_w, int dst_h, int dst_w, int channels) {
-        cv::Mat src_img(src_h, src_w, channels == 1 ? CV_8UC1 : CV_8UC3, const_cast<uint8_t*>(src));
-        cv::Mat dst_img(dst_h, dst_w, channels == 1 ? CV_8UC1 : CV_8UC3, dst);
-
-        // Use INTER_AREA for downsampling to avoid moire patterns
-        cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
     }
 
     int env_id_;                                  // Unique ID for this environment
@@ -325,11 +308,11 @@ private:
     int max_episode_steps_;                       // Maximum number of steps per episode before truncating
 
     int elapsed_step_;                            // Current step in the episode
-    bool game_over_;                               // Whether the game is over
+    bool game_over_;                              // Whether the game is over
     int lives_;                                   // Current number of lives
     float last_reward_;                           // Last reward received
     int seed_;                                    // Random seed
-    std::mt19937 rng_gen_;                            // Random number generator
+    std::mt19937 rng_gen_;                             // Random number generator
     std::uniform_int_distribution<> noop_generator_;   // Distribution for no-op steps
 
     Action current_action_;                       // Current action to take

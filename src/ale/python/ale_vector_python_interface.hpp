@@ -11,8 +11,10 @@
 #include "ale/vector/preprocessed_env.hpp"
 #include "ale/vector/utils.hpp"
 
-
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+#include <pybind11/numpy.h>
 
 namespace py = pybind11;
 void init_vector_module(py::module& m);
@@ -51,7 +53,7 @@ public:
      * @param thread_affinity_offset The CPU core offset for thread affinity (-1 means no affinity, default: -1)
      */
     ALEVectorInterface(
-        const std::string& rom_path,
+        const fs::path rom_path,
         int num_envs,
         int frame_skip = 4,
         bool gray_scale = true,
@@ -120,26 +122,29 @@ public:
     /**
      * Reset all environments
      *
-     * @return Observations from all environments after reset
+     * @return Timesteps from all environments after reset
      */
-    std::vector<Observation> reset() {
+    std::vector<Timestep> reset() {
+        py::gil_scoped_release release; // Release GIL during C++ processing
         std::vector<int> env_ids(num_envs_);
         for (int i = 0; i < num_envs_; ++i) {
             env_ids[i] = i;
         }
         vectorizer_->reset(env_ids);
-        return vectorizer_->recv();
+        return vectorizer_->recv(); // GIL is reacquired when the function returns
     }
 
     /**
      * Step environments with actions
      *
      * @param actions Vector of actions to take in environments
-     * @return Observations from environments after stepping
+     * @return Timesteps from environments after stepping
      */
-    std::vector<Observation> step(const std::vector<Action>& actions) {
+    std::vector<Timestep> step(const std::vector<Action>& actions) {
+        py::gil_scoped_release release; // Release GIL during C++ processing
         vectorizer_->send(actions);
-        return vectorizer_->recv();
+        auto result = vectorizer_->recv();
+        return result; // GIL is reacquired when the function returns
     }
 
     /**
@@ -172,7 +177,7 @@ public:
 
 private:
     int num_envs_;                            // Number of parallel environments
-    std::string rom_path_;                    // Path to the ROM file
+    fs::path rom_path_;                       // Path to the ROM file
     int frame_skip_;                          // Number of frames to skip
     bool gray_scale_;                         // Whether to use grayscale
     int stack_num_;                           // Number of frames to stack

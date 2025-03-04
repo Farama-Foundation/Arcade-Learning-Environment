@@ -94,9 +94,33 @@ public:
     }
 
     /**
-     * Send actions to environments
+     * Reset specified environments
      *
-     * @param actions Vector of actions to send to environments
+     * @param env_ids Vector of environment IDs to reset
+     */
+    void reset(const std::vector<int>& env_ids) {
+        std::vector<ActionSlice> reset_actions;
+        reset_actions.reserve(env_ids.size());
+
+        for (size_t i = 0; i < env_ids.size(); ++i) {
+            ActionSlice slice;
+            slice.env_id = env_ids[i];
+            slice.order = is_sync_ ? static_cast<int>(i) : -1;
+            slice.force_reset = true;
+            reset_actions.emplace_back(slice);
+        }
+
+        if (is_sync_) {
+            stepping_env_num_ += env_ids.size();
+        }
+
+        action_buffer_queue_->enqueue_bulk(reset_actions);
+    }
+
+    /**
+     * Send actions to the sub-environments
+     *
+     * @param actions Vector of actions to send to the sub-environments
      */
     void send(const std::vector<Action>& actions) {
         std::vector<ActionSlice> action_slices;
@@ -121,47 +145,23 @@ public:
     }
 
     /**
-     * Receive observations from environments
+     * Receive timesteps from the sub-environments
      *
-     * @return Vector of observations from environments
+     * @return Vector of timesteps from the sub-environments
      */
-    std::vector<Observation> recv() {
+    std::vector<Timestep> recv() {
         int additional_wait = 0;
         if (is_sync_ && stepping_env_num_ < batch_size_) {
             additional_wait = batch_size_ - stepping_env_num_;
         }
 
-        std::vector<Observation> observations = state_buffer_queue_->wait(additional_wait);
+        std::vector<Timestep> timesteps = state_buffer_queue_->wait(additional_wait);
 
         if (is_sync_) {
-            stepping_env_num_ -= observations.size();
+            stepping_env_num_ -= timesteps.size();
         }
 
-        return observations;
-    }
-
-    /**
-     * Reset specified environments
-     *
-     * @param env_ids Vector of environment IDs to reset
-     */
-    void reset(const std::vector<int>& env_ids) {
-        std::vector<ActionSlice> reset_actions;
-        reset_actions.reserve(env_ids.size());
-
-        for (size_t i = 0; i < env_ids.size(); ++i) {
-            ActionSlice slice;
-            slice.env_id = env_ids[i];
-            slice.order = is_sync_ ? static_cast<int>(i) : -1;
-            slice.force_reset = true;
-            reset_actions.emplace_back(slice);
-        }
-
-        if (is_sync_) {
-            stepping_env_num_ += env_ids.size();
-        }
-
-        action_buffer_queue_->enqueue_bulk(reset_actions);
+        return timesteps;
     }
 
 private:
@@ -186,9 +186,9 @@ private:
                     envs_[env_id]->step();
                 }
 
-                // Get observation and write to state buffer
-                Observation obs = envs_[env_id]->get_observation();
-                state_buffer_queue_->write(obs, order);
+                // Get timestep and write to state buffer
+                Timestep timestep = envs_[env_id]->get_timestep();
+                state_buffer_queue_->write(timestep, order);
 
             } catch (const std::exception& e) {
                 // Log error but continue processing
@@ -226,6 +226,7 @@ private:
     int batch_size_;                                  // Batch size for processing
     int num_threads_;                                 // Number of worker threads
     bool is_sync_;                                    // Whether to operate in synchronous mode
+
     std::atomic<bool> stop_;                          // Signal to stop worker threads
     std::atomic<int> stepping_env_num_;               // Number of environments currently stepping
     std::vector<std::thread> workers_;                // Worker threads

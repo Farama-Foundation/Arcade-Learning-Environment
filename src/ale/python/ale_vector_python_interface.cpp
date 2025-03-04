@@ -1,7 +1,9 @@
 #include "ale_vector_python_interface.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
+
 
 namespace py = pybind11;
 
@@ -10,46 +12,9 @@ void init_vector_module(py::module& m) {
     // Create a submodule for vector environments
     py::module vector_module = m.def_submodule("vector", "Vector environment support for ALE");
 
-    // Define ActionSlice class
-    py::class_<ale::vector::ActionSlice>(vector_module, "ActionSlice")
-        .def(py::init<>())
-        .def_readwrite("env_id", &ale::vector::ActionSlice::env_id)
-        .def_readwrite("order", &ale::vector::ActionSlice::order)
-        .def_readwrite("force_reset", &ale::vector::ActionSlice::force_reset);
-
-    // Define Action class
-    py::class_<ale::vector::Action>(vector_module, "Action")
-        .def(py::init<>())
-        .def(py::init([](const py::dict& d) {
-            ale::vector::Action a;
-            a.env_id = d["env_id"].cast<int>();
-            a.action_id = d["action_id"].cast<int>();
-            if (d.contains("paddle_strength")) {
-                a.paddle_strength = d["paddle_strength"].cast<float>();
-            } else {
-                a.paddle_strength = 1.0f;
-            }
-            return a;
-        }))
-        .def_readwrite("env_id", &ale::vector::Action::env_id)
-        .def_readwrite("action_id", &ale::vector::Action::action_id)
-        .def_readwrite("paddle_strength", &ale::vector::Action::paddle_strength);
-
-    // Define Observation class
-    py::class_<ale::vector::Observation>(vector_module, "Observation")
-        .def(py::init<>())
-        .def_property_readonly("env_id", [](const ale::vector::Observation& o) { return o.env_id; })
-        .def_property_readonly("screen", [](const ale::vector::Observation& o) { return o.screen; })
-        .def_property_readonly("reward", [](const ale::vector::Observation& o) { return o.reward; })
-        .def_property_readonly("terminated", [](const ale::vector::Observation& o) { return o.terminated; })
-        .def_property_readonly("truncated", [](const ale::vector::Observation& o) { return o.truncated; })
-        .def_property_readonly("lives", [](const ale::vector::Observation& o) { return o.lives; })
-        .def_property_readonly("frame_number", [](const ale::vector::Observation& o) { return o.frame_number; })
-        .def_property_readonly("episode_frame_number", [](const ale::vector::Observation& o) { return o.episode_frame_number; });
-
     // Define ALEVectorInterface class
     py::class_<ale::vector::ALEVectorInterface>(vector_module, "ALEVectorInterface")
-        .def(py::init<const std::string&, int, int, bool, int, int, int, int, bool, bool, int, float, bool, int, int, int, int>(),
+        .def(py::init<const fs::path, int, int, bool, int, int, int, int, bool, bool, int, float, bool, int, int, int, int>(),
              py::arg("rom_path"),
              py::arg("num_envs"),
              py::arg("frame_skip") = 4,
@@ -67,8 +32,146 @@ void init_vector_module(py::module& m) {
              py::arg("num_threads") = 0,
              py::arg("seed") = 0,
              py::arg("thread_affinity_offset") = -1)
-        .def("reset", &ale::vector::ALEVectorInterface::reset)
-        .def("step", &ale::vector::ALEVectorInterface::step)
+        .def("reset", [](ale::vector::ALEVectorInterface& self) {
+            // Call C++ reset method with GIL released
+            py::gil_scoped_release release;
+            auto timesteps = self.reset();
+            py::gil_scoped_acquire acquire;
+
+            // Get shape information
+            auto shape_info = self.get_observation_shape();
+            int stack_num = std::get<0>(shape_info);
+            int channels = std::get<1>(shape_info);
+            int height = std::get<2>(shape_info);
+            int width = std::get<3>(shape_info);
+            int num_envs = timesteps.size();
+
+            // Create a single NumPy array for all observations
+            py::array_t<uint8_t> observations({num_envs, stack_num, channels, height, width});
+            auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
+
+            // Create arrays for info fields
+            py::array_t<int> env_ids(num_envs);
+            py::array_t<int> lives(num_envs);
+            py::array_t<int> frame_numbers(num_envs);
+            py::array_t<int> episode_frame_numbers(num_envs);
+
+            auto env_ids_ptr = static_cast<int*>(env_ids.mutable_data());
+            auto lives_ptr = static_cast<int*>(lives.mutable_data());
+            auto frame_numbers_ptr = static_cast<int*>(frame_numbers.mutable_data());
+            auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
+
+            // Copy data from observations to NumPy arrays
+            size_t screen_size = stack_num * channels * height * width;
+            for (int i = 0; i < num_envs; i++) {
+                const auto& timestep = timesteps[i];
+
+                // Copy screen data
+                std::memcpy(
+                    observations_ptr + i * screen_size,
+                    timestep.observation.data(),
+                    screen_size * sizeof(uint8_t)
+                );
+
+                // Copy info fields
+                env_ids_ptr[i] = timestep.env_id;
+                lives_ptr[i] = timestep.lives;
+                frame_numbers_ptr[i] = timestep.frame_number;
+                episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
+            }
+
+            // Create info dict
+            py::dict info;
+            info["env_id"] = env_ids;
+            info["lives"] = lives;
+            info["frame_number"] = frame_numbers;
+            info["episode_frame_number"] = episode_frame_numbers;
+
+            return py::make_tuple(observations, info);
+        })
+        .def("step", [](ale::vector::ALEVectorInterface& self, const py::list& actions) {
+            // Convert Python actions to C++
+            std::vector<ale::vector::Action> cpp_actions;
+            for (const auto& action : actions) {
+                py::dict py_action = action.cast<py::dict>();
+
+                ale::vector::Action cpp_action;
+                cpp_action.env_id = py_action["env_id"].cast<int>();
+                cpp_action.action_id = py_action["action_id"].cast<int>();
+
+                if (py_action.contains("paddle_strength")) {
+                    cpp_action.paddle_strength = py_action["paddle_strength"].cast<float>();
+                } else {
+                    cpp_action.paddle_strength = 1.0f;
+                }
+
+                cpp_actions.push_back(cpp_action);
+            }
+
+            // Call C++ step method with GIL released
+            py::gil_scoped_release release;
+            auto timesteps = self.step(cpp_actions);
+            py::gil_scoped_acquire acquire;
+
+            // Get shape information
+            auto shape_info = self.get_observation_shape();
+            int stack_num = std::get<0>(shape_info);
+            int channels = std::get<1>(shape_info);
+            int height = std::get<2>(shape_info);
+            int width = std::get<3>(shape_info);
+            int num_envs = timesteps.size();
+
+            // Create NumPy arrays
+            py::array_t<uint8_t> observations({num_envs, stack_num, channels, height, width});
+            py::array_t<float> rewards(num_envs);
+            py::array_t<bool> terminations(num_envs);
+            py::array_t<bool> truncations(num_envs);
+            py::array_t<int> env_ids(num_envs);
+            py::array_t<int> lives(num_envs);
+            py::array_t<int> frame_numbers(num_envs);
+            py::array_t<int> episode_frame_numbers(num_envs);
+
+            // Get pointers to the arrays' data
+            auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
+            auto rewards_ptr = static_cast<float*>(rewards.mutable_data());
+            auto terminations_ptr = static_cast<bool*>(terminations.mutable_data());
+            auto truncations_ptr = static_cast<bool*>(truncations.mutable_data());
+            auto env_ids_ptr = static_cast<int*>(env_ids.mutable_data());
+            auto lives_ptr = static_cast<int*>(lives.mutable_data());
+            auto frame_numbers_ptr = static_cast<int*>(frame_numbers.mutable_data());
+            auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
+
+            // Copy data from observations to NumPy arrays
+            size_t obs_size = stack_num * channels * height * width;
+            for (int i = 0; i < num_envs; i++) {
+                const auto& timestep = timesteps[i];
+
+                // Copy screen data
+                std::memcpy(
+                    observations_ptr + i * obs_size,
+                    timestep.observation.data(),
+                    obs_size * sizeof(uint8_t)
+                );
+
+                // Copy other fields
+                rewards_ptr[i] = timestep.reward;
+                terminations_ptr[i] = timestep.terminated;
+                truncations_ptr[i] = timestep.truncated;
+                env_ids_ptr[i] = timestep.env_id;
+                lives_ptr[i] = timestep.lives;
+                frame_numbers_ptr[i] = timestep.frame_number;
+                episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
+            }
+
+            // Create info dict
+            py::dict info;
+            info["env_id"] = env_ids;
+            info["lives"] = lives;
+            info["frame_number"] = frame_numbers;
+            info["episode_frame_number"] = episode_frame_numbers;
+
+            return py::make_tuple(observations, rewards, terminations, truncations, info);
+        })
         .def("get_action_set", &ale::vector::ALEVectorInterface::get_action_set)
         .def("get_num_envs", &ale::vector::ALEVectorInterface::get_num_envs)
         .def("get_observation_shape", &ale::vector::ALEVectorInterface::get_observation_shape);
