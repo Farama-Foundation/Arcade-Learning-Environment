@@ -56,7 +56,7 @@ try:
     from ale_py.env import AtariEnv, AtariEnvStepMetadata
     from ale_py.vector_env import VectorEnv
 
-    __all__ += ["AtariEnv", "AtariEnvStepMetadata", "VectorEnv"]
+    __all__ += ["AtariEnv", "AtariEnvStepMetadata", "VectorAtariEnv"]
 
     from ale_py.registration import register_v0_v4_envs, register_v5_envs
 

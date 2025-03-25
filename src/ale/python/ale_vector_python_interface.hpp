@@ -176,8 +176,8 @@ public:
     }
 
 private:
-    int num_envs_;                            // Number of parallel environments
     fs::path rom_path_;                       // Path to the ROM file
+    int num_envs_;                            // Number of parallel environments
     int frame_skip_;                          // Number of frames to skip
     bool gray_scale_;                         // Whether to use grayscale
     int stack_num_;                           // Number of frames to stack

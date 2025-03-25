@@ -58,9 +58,9 @@ public:
         int seed = 0
     ) : env_id_(env_id),
         rom_path_(rom_path),
-        frame_skip_(frame_skip),
         obs_height_(obs_height),
         obs_width_(obs_width),
+        frame_skip_(frame_skip),
         gray_scale_(gray_scale),
         maxpool_(maxpool),
         stack_num_(stack_num),

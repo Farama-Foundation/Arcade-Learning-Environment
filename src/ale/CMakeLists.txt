@@ -63,7 +63,7 @@ if (BUILD_CPP_LIB OR BUILD_PYTHON_LIB)
     find_package(OpenCV CONFIG REQUIRED)
     include_directories(${OpenCV_INCLUDE_DIRS})
 
-    target_include_directories(ale PUBLIC ${PROJECT_SOURCE_DIR}/src/ale/external/)
+    target_include_directories(ale PUBLIC external)
 
     add_subdirectory(vector)
 
