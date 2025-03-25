@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, List, Optional, overload, Tuple, Dict
+from typing import Any, Dict, List, Optional, Tuple, overload
 
 import numpy as np
 import numpy.typing as npt

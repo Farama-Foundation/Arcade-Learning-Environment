@@ -36,7 +36,7 @@ It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
             kernel32.AddDllDirectory(packagedir)
 
 # version string from package.
-import importlib.metadata as metadata
+import importlib.metadata as metadata  # noqa: E402
 
 __version__ = metadata.version(__package__)
 
@@ -54,7 +54,7 @@ __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
 try:
     from ale_py.env import AtariEnv, AtariEnvStepMetadata
-    from ale_py.vector_env import VectorEnv
+    from ale_py.vector_env import VectorAtariEnv
 
     __all__ += ["AtariEnv", "AtariEnvStepMetadata", "VectorAtariEnv"]
 
