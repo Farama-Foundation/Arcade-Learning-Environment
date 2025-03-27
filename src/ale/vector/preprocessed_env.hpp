@@ -55,7 +55,7 @@ public:
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
-        int seed = 0
+        int seed = -1
     ) : env_id_(env_id),
         rom_path_(rom_path),
         obs_height_(obs_height),
@@ -70,8 +70,7 @@ public:
         reward_clipping_(reward_clipping),
         max_episode_steps_(max_episode_steps),
         elapsed_step_(max_episode_steps + 1),
-        seed_(seed + env_id),
-        rng_gen_(seed_) {
+        rng_gen_(seed == -1 ? std::random_device{}() : seed) {
 
         // Turn off verbosity
         Logger::setMode(Logger::Error);
@@ -79,7 +78,7 @@ public:
         // Initialize ALE
         env_ = std::make_unique<ALEInterface>();
         env_->setFloat("repeat_action_probability", repeat_action_probability);
-        env_->setInt("random_seed", seed_);
+        env_->setInt("random_seed", seed);
         env_->loadROM(rom_path_);
 
         // Get action set
@@ -115,10 +114,21 @@ public:
         }
     }
 
+    void set_seed(int seed) {
+        current_seed_ = seed;
+    }
+
     /**
      * Reset the environment and return the initial observation
      */
     void reset() {
+        if (current_seed_ > 0) {
+            env_->setInt("random_seed", current_seed_);
+            rng_gen_.seed(current_seed_);
+
+            env_->loadROM(rom_path_);
+            current_seed_ = -1;
+        }
         env_->reset_game();
 
         // Perform no-op steps
@@ -269,12 +279,16 @@ private:
             }
         }
 
-        // Resize the raw frame to target dimensions
-        cv::Mat src_img(raw_height, raw_width, CV_8UC1, const_cast<uint8_t*>(raw_frames_[0].data()));
-        cv::Mat dst_img(obs_height_, obs_width_, CV_8UC1, resized_frame_.data());
+        if (obs_height_ != raw_height && obs_width_ != raw_width) {
+            // Resize the raw frame to target dimensions
+            cv::Mat src_img(raw_height, raw_width, CV_8UC1, const_cast<uint8_t*>(raw_frames_[0].data()));
+            cv::Mat dst_img(obs_height_, obs_width_, CV_8UC1, resized_frame_.data());
 
-        // Use INTER_AREA for downsampling to avoid moire patterns
-        cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
+            // Use INTER_AREA for downsampling to avoid moire patterns
+            cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
+        } else {
+            resized_frame_ = raw_frames_[0];
+        }
 
         // Push the new frame into the stack
         frame_stack_.pop_front();
@@ -304,11 +318,11 @@ private:
     int lives_;                          // Current number of lives
     bool was_life_loss_;                 // If a life is loss from a step
     float reward_;                       // Last reward received
-    int seed_;                           // Random seed
     std::mt19937 rng_gen_;                             // Random number generator
     std::uniform_int_distribution<> noop_generator_;   // Distribution for no-op steps
 
     EnvironmentAction current_action_;   // Current action to take
+    int current_seed_;                   // Current seed to update
 
     // Frame buffers
     std::vector<std::vector<uint8_t>> raw_frames_;  // Raw frame buffers for maxpooling

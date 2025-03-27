@@ -47,6 +47,7 @@ __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
 
 try:
+    # As the vector interface is an optional cmake build, it's not assumed to exist
     from ale_py._ale_py import ALEVectorInterface
 
     __all__ += ["ALEVectorInterface"]

@@ -44,7 +44,7 @@ public:
         int thread_affinity_offset = -1,
         std::function<std::unique_ptr<PreprocessedAtariEnv>(int)> env_factory = nullptr
     ) : num_envs_(num_envs),
-        batch_size_(batch_size <= 0 ? num_envs : batch_size),
+        batch_size_(batch_size > 0 ? batch_size : num_envs),
         is_sync_(batch_size_ == num_envs_),
         stop_(false),
         stepping_env_num_(0),
@@ -97,14 +97,18 @@ public:
      * Reset specified environments
      *
      * @param reset_indices Vector of environment IDs to reset
+     * @param seeds Vector of seeds to use on reset (use -1 to not change the environment's seed)
      */
-    void reset(const std::vector<int>& reset_indices) {
+    void reset(const std::vector<int>& reset_indices, const std::vector<int>& seeds) {
         std::vector<ActionSlice> reset_actions;
         reset_actions.reserve(reset_indices.size());
 
         for (size_t i = 0; i < reset_indices.size(); ++i) {
+            int env_id = reset_indices[i];
+            envs_[env_id]->set_seed(seeds[i]);
+
             ActionSlice action;
-            action.env_id = reset_indices[i];
+            action.env_id = env_id;
             action.order = is_sync_ ? static_cast<int>(i) : -1;
             action.force_reset = true;
 
@@ -131,12 +135,12 @@ public:
             int env_id = actions[i].env_id;
             envs_[env_id]->set_action(actions[i]);
 
-            ActionSlice slice;
-            slice.env_id = env_id;
-            slice.order = is_sync_ ? static_cast<int>(i) : -1;
-            slice.force_reset = false;
+            ActionSlice action;
+            action.env_id = env_id;
+            action.order = is_sync_ ? static_cast<int>(i) : -1;
+            action.force_reset = false;
 
-            action_slices.emplace_back(slice);
+            action_slices.emplace_back(action);
         }
 
         if (is_sync_) {

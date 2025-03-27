@@ -14,13 +14,14 @@ namespace py = pybind11;
 void init_vector_module(py::module& m) {
     // Define ALEVectorInterface class
     py::class_<ale::vector::ALEVectorInterface>(m, "ALEVectorInterface")
-        .def(py::init<const fs::path, int, int, int, int, int, int, bool, bool, bool, bool, int, float, bool, int, int, int>(),
+        .def(py::init<const fs::path, int, int, int, int, int, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int>(),
              py::arg("rom_path"),
              py::arg("num_envs"),
              py::arg("frame_skip") = 4,
              py::arg("stack_num") = 4,
              py::arg("img_height") = 84,
              py::arg("img_width") = 84,
+              py::arg("maxpool") = true,
              py::arg("noop_max") = 30,
              py::arg("use_fire_reset") = true,
              py::arg("episodic_life") = false,
@@ -32,10 +33,10 @@ void init_vector_module(py::module& m) {
              py::arg("batch_size") = 0,
              py::arg("num_threads") = 0,
              py::arg("thread_affinity_offset") = -1)
-        .def("reset", [](ale::vector::ALEVectorInterface& self, const std::vector<int> reset_indices) {
+        .def("reset", [](ale::vector::ALEVectorInterface& self, const std::vector<int> reset_indices, const std::vector<int> reset_seeds) {
             // Call C++ reset method with GIL released
             py::gil_scoped_release release;
-            auto timesteps = self.reset(reset_indices);
+            auto timesteps = self.reset(reset_indices, reset_seeds);
             py::gil_scoped_acquire acquire;
 
             // Get shape information

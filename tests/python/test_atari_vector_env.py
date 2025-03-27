@@ -1,170 +1,139 @@
 """Test equivalence between Gymnasium and Vector environments."""
 
 import gymnasium as gym
-import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from ale_py.vector_env import AtariVectorEnv
-from gymnasium.wrappers import AtariPreprocessing, FrameStackObservation
+from gymnasium.utils.env_checker import data_equivalence
 
 
-@pytest.fixture
-def common_params():
-    """Common environment parameters."""
-    return {
-        "noop_max": 0,
-        "frame_skip": 4,
-        "frame_stack": 4,
-        "img_height": 84,
-        "img_width": 84,
-        "episodic_life": True,
-    }
-
-
-@pytest.fixture
-def gym_env(common_params):
-    """Create a Gymnasium environment with preprocessing and frame stacking."""
-    # v4 environment used to avoid `repeat-action-probability`
-    env = gym.make("BreakoutNoFrameskip-v4", render_mode=None)
-
-    # Apply standard preprocessing
-    env = AtariPreprocessing(
-        env,
-        noop_max=common_params["noop_max"],
-        frame_skip=common_params["frame_skip"],
-        screen_size=(common_params["img_height"], common_params["img_width"]),
-        terminal_on_life_loss=common_params["episodic_life"],
-    )
-
-    # Apply frame stacking
-    env = FrameStackObservation(
-        env, stack_size=common_params["frame_stack"], padding_type="zero"
-    )
-
-    yield env
-    env.close()
-
-
-@pytest.fixture
-def vector_env(common_params, num_envs=1):
-    """Create a vector environment with a single instance."""
-    env = AtariVectorEnv(
+@pytest.mark.parametrize("num_envs", [1, 3])
+@pytest.mark.parametrize("stack_num", [4, 6])
+@pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
+def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
+    """Test if reset returns observations with the correct shape."""
+    envs = AtariVectorEnv(
         game="breakout",
         num_envs=num_envs,
-        frame_skip=common_params["frame_skip"],
-        stack_num=common_params["frame_stack"],
-        img_height=common_params["img_height"],
-        img_width=common_params["img_width"],
-        noop_max=common_params["noop_max"],
-        episodic_life=common_params["episodic_life"],
+        stack_num=stack_num,
+        img_height=img_height,
+        img_width=img_width,
     )
 
-    yield env
-    env.close()
+    assert envs.num_envs == num_envs
+    assert envs.observation_space.shape == (num_envs, stack_num, img_height, img_width)
+    assert envs.action_space.shape == (num_envs,)
 
+    print("resetting the environment")
+    obs, info = envs.reset(seed=0)
 
-def test_action_space_equivalence(gym_env, vector_env):
-    """Test if action spaces are equivalent."""
-    assert gym_env.action_space.n == vector_env.single_action_space.n
-
-
-def test_observation_space_equivalence(gym_env, vector_env):
-    """Test if observation spaces are equivalent."""
-    # - Gym: (stack, height, width)
-    # - Vector: (num_envs, stack, height, width)
-    gym_shape = gym_env.observation_space.shape
-    vector_shape = vector_env.single_observation_space.shape
-
-    assert vector_shape == gym_shape
-
-
-def test_reset_output_shape(gym_env, vector_env):
-    """Test if reset returns observations with the correct shape."""
-    gym_obs, gym_info = gym_env.reset(seed=0)
-    vector_obs, vector_info = vector_env.reset(seed=0)
-
-    fig, axs = plt.subplots(2, 4, figsize=(8, 8))
-    for i in range(4):
-        axs[0, i].imshow(gym_obs[i])
-        axs[1, i].imshow(vector_obs[0, i])
-    plt.show()
-
-    assert gym_obs.shape == vector_obs.shape[1:]
-    for i in range(4):
-        print(np.all(gym_obs[i] == vector_obs[0, i]), i)
-
-    assert gym_info == vector_info
-
-
-def test_step_output_shape(gym_env, vector_env):
-    """Test if step returns observations with the correct shape."""
-    gym_obs, _ = gym_env.reset()
-    vector_obs, _ = vector_env.reset()
-
-    # Take a step in both environments
-    gym_action = gym_env.action_space.sample()
-    vector_action = np.array([gym_action])
-
-    gym_obs, gym_reward, gym_terminated, gym_truncated, gym_info = gym_env.step(
-        gym_action
-    )
-    vector_obs, vector_rewards, vector_terminated, vector_truncated, vector_info = (
-        vector_env.step(vector_action)
+    assert isinstance(obs, np.ndarray)
+    assert obs.shape == (num_envs, stack_num, img_height, img_width)
+    assert obs.dtype == np.uint8
+    assert obs in envs.observation_space, f"{envs.observation_space=}"
+    assert isinstance(info, dict)
+    assert all(
+        isinstance(val, np.ndarray) and len(val) == num_envs for val in info.values()
     )
 
-    fig, axs = plt.subplots(2, 4, figsize=(8, 8))
-    for i in range(4):
-        axs[0, i].imshow(gym_obs[i])
-        axs[1, i].imshow(vector_obs[0, i])
-    plt.show()
+    actions = envs.action_space.sample()
+    print("stepping the environment")
+    obs, reward, terminations, truncations, info = envs.step(actions)
 
-    assert gym_obs.shape[1:] == vector_obs.shape
-    assert np.all(gym_obs == vector_obs)
-    assert gym_reward == vector_rewards[0]
-    assert gym_terminated == vector_terminated[0]
-    assert gym_truncated == vector_truncated[0]
-    assert gym_info == vector_info
+    assert isinstance(obs, np.ndarray)
+    assert obs.shape == (num_envs, stack_num, img_height, img_width)
+    assert obs.dtype == np.uint8
+    assert obs in envs.observation_space, f"{envs.observation_space=}"
+    assert isinstance(reward, np.ndarray) and reward.dtype == np.float32
+    assert reward.shape == (num_envs,)
+    assert isinstance(terminations, np.ndarray) and terminations.dtype == bool
+    assert terminations.shape == (num_envs,)
+    assert isinstance(truncations, np.ndarray) and truncations.dtype == bool
+    assert truncations.shape == (num_envs,)
+    assert isinstance(info, dict)
+    assert all(
+        isinstance(val, np.ndarray) and len(val) == num_envs for val in info.values()
+    )
+
+    envs.close()
 
 
-def test_rollout_consistency(gym_env, vector_env):
+@pytest.mark.parametrize("num_envs", [1, 8])
+@pytest.mark.parametrize("stack_num", [4, 6])
+@pytest.mark.parametrize("img_height, img_width", [])
+@pytest.mark.parametrize("frame_skip", [1, 4])
+def test_rollout_consistency(
+    num_envs, stack_num, img_height, img_width, frame_skip, rollout_length=100
+):
     """Test if both environments produce similar results over a short rollout."""
-    # Reset environments
-    gym_obs, _ = gym_env.reset(seed=0)
-    vector_obs, _ = vector_env.reset()
-
-    # Fixed action sequence to test
-    actions = [1, 2, 3, 0, 1, 1, 2, 3]  # Some arbitrary but deterministic sequence
-
-    gym_rewards = []
-    vector_rewards = []
-
-    # Run a short rollout with the same actions
-    for action in actions:
-        # Step the gym environment
-        gym_obs, gym_reward, gym_terminated, gym_truncated, _ = gym_env.step(action)
-        gym_rewards.append(gym_reward)
-
-        # Step the vector environment
-        vector_action = np.array([action])
-        vector_obs, vector_reward, vector_terminated, vector_truncated, _ = (
-            vector_env.step(vector_action)
-        )
-        vector_rewards.append(vector_reward[0])  # Extract from batch dimension
-
-        # If either environment terminates, end the test
-        if gym_terminated or vector_terminated[0]:
-            break
-
-    # Check that rewards have the same length
-    assert len(gym_rewards) == len(vector_rewards)
-
-    # Check if reward patterns are similar
-    # We don't expect exact matches due to implementation differences,
-    # but the pattern should be similar in terms of non-zero rewards
-    gym_nonzero = [i for i, r in enumerate(gym_rewards) if r != 0]
-    vector_nonzero = [i for i, r in enumerate(vector_rewards) if r != 0]
-
-    # Basic consistency check - if one has non-zero rewards, the other should too
-    assert (len(gym_nonzero) == 0 and len(vector_nonzero) == 0) or (
-        len(gym_nonzero) > 0 and len(vector_nonzero) > 0
+    gym_envs = gym.vector.SyncVectorEnv(
+        [
+            lambda: gym.wrappers.FrameStackObservation(
+                gym.wrappers.AtariPreprocessing(
+                    gym.make("BreakoutNoFrameskip-v4"),
+                    noop_max=0,
+                    frame_skip=frame_skip,
+                    screen_size=(img_height, img_width),
+                ),
+                stack_size=stack_num,
+            )
+            for _ in range(num_envs)
+        ],
     )
+    ale_envs = AtariVectorEnv(
+        game="breakout",
+        num_envs=num_envs,
+        frame_skip=frame_skip,
+        img_height=img_height,
+        img_width=img_width,
+        noop_max=0,
+    )
+
+    gym_obs, gym_info = gym_envs.reset(seed=0)
+    ale_obs, ale_info = ale_envs.reset(seed=0)
+
+    assert data_equivalence(gym_obs, ale_obs)
+
+    env_ids = ale_info.pop("env_ids")
+    assert np.all(env_ids == np.arange(num_envs))
+    assert data_equivalence(gym_info, ale_info)
+
+    ale_envs.action_space.seed(123)
+    for i in range(rollout_length):
+        actions = ale_envs.action_space.sample()
+
+        gym_obs, gym_rewards, gym_terminations, gym_truncations, gym_info = (
+            gym_envs.step(actions)
+        )
+        ale_obs, ale_rewards, ale_terminations, ale_truncations, ale_info = (
+            ale_envs.step(actions)
+        )
+
+        assert data_equivalence(gym_obs, ale_obs)
+        assert data_equivalence(gym_rewards, ale_rewards)
+        assert data_equivalence(gym_terminations, ale_terminations)
+        assert data_equivalence(gym_truncations, ale_truncations)
+
+        env_ids = ale_info.pop("env_ids")
+        assert np.all(env_ids == np.arange(num_envs))
+        assert data_equivalence(gym_info, ale_info)
+
+
+def test_batch_size():
+    pass  # TODO
+
+
+def test_full_action_space():
+    pass  # TODO
+
+
+def test_max_episode_steps():
+    pass  # TODO
+
+
+def test_episodic_life_and_life_loss_info():
+    pass  # TODO
+
+
+def test_continuous_action_space():
+    pass  # TODO

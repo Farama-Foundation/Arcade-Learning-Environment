@@ -41,6 +41,7 @@ public:
      * @param stack_num Number of frames to stack for observations (default: 4)
      * @param img_height Height to resize frames to (default: 84)
      * @param img_width Width to resize frames to (default: 84)
+     * @param maxpool If to maxpool over frames (default: true)
      * @param noop_max Maximum number of no-ops to perform at reset (default: 30)
      * @param fire_reset Whether to press FIRE during reset (default: true)
      * @param episodic_life Whether to end episodes when a life is lost (default: false)
@@ -59,6 +60,7 @@ public:
         int stack_num = 4,
         int img_height = 84,
         int img_width = 84,
+        bool maxpool = true,
         int noop_max = 30,
         bool use_fire_reset = true,
         bool episodic_life = false,
@@ -69,14 +71,14 @@ public:
         bool full_action_space = false,
         int batch_size = 0,
         int num_threads = 0,
-        int thread_affinity_offset = -1,
-        int seed = 0
+        int thread_affinity_offset = -1
     ) : rom_path_(rom_path),
         num_envs_(num_envs),
         frame_skip_(frame_skip),
         stack_num_(stack_num),
         img_height_(img_height),
         img_width_(img_width),
+        maxpool_(maxpool),
         noop_max_(noop_max),
         use_fire_reset_(use_fire_reset),
         episodic_life_(episodic_life),
@@ -85,7 +87,6 @@ public:
         max_episode_steps_(max_episode_steps),
         repeat_action_probability_(repeat_action_probability),
         full_action_space_(full_action_space),
-        initial_seed_(seed),
         received_env_ids_(batch_size > 0 ? batch_size : num_envs) {
 
         // Create environment factory
@@ -93,10 +94,11 @@ public:
             return std::make_unique<PreprocessedAtariEnv>(
                 env_id,
                 rom_path_,
-                frame_skip_,
-                stack_num_,
                 img_height_,
                 img_width_,
+                frame_skip_,
+                maxpool_,
+                stack_num_,
                 noop_max_,
                 use_fire_reset_,
                 episodic_life_,
@@ -105,7 +107,7 @@ public:
                 max_episode_steps_,
                 repeat_action_probability_,
                 full_action_space_,
-                initial_seed_ + env_id
+                -1
             );
         };
 
@@ -129,8 +131,8 @@ public:
      * @param reset_indices Vector of environment indices to be reset
      * @return Timesteps from all environments after reset
      */
-    std::vector<Timestep> reset(const std::vector<int> reset_indices) {
-        vectorizer_->reset(reset_indices);
+    std::vector<Timestep> reset(const std::vector<int> reset_indices, const std::vector<int> reset_seeds) {
+        vectorizer_->reset(reset_indices, reset_seeds);
         return vectorizer_->recv();
     }
 
@@ -205,6 +207,7 @@ private:
     int stack_num_;                           // Number of frames to stack
     int img_height_;                          // Height of resized frames
     int img_width_;                           // Width of resized frames
+    bool maxpool_;                            // If to maxpool over frames
     int noop_max_;                            // Max no-ops on reset
     bool use_fire_reset_;                     // Whether to fire on reset
     bool episodic_life_;                      // End episode on life loss
@@ -213,7 +216,6 @@ private:
     int max_episode_steps_;                   // Max steps per episode
     float repeat_action_probability_;         // Sticky actions probability
     bool full_action_space_;                  // Use full action space
-    int initial_seed_;
 
     std::vector<int> received_env_ids_;        // Vector of environment ids for the most recently received data
 
