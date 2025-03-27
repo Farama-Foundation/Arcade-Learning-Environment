@@ -137,8 +137,8 @@ The `batch_size` parameter controls how many environments are processed simultan
 envs = VectorAtariEnv(game="Breakout", num_envs=16, batch_size=4)
 ```
 
-A smaller batch size can improve latency while a larger batch size can improve throughput. 
-When passing a batch size, the information will include the environment id of each observation 
+A smaller batch size can improve latency while a larger batch size can improve throughput.
+When passing a batch size, the information will include the environment id of each observation
 which is critical as the first (batch size) observations are returned for `reset` and `recv`.
 
 ### Thread Affinity

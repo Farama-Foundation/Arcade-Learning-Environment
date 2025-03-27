@@ -36,31 +36,30 @@ It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
             kernel32.AddDllDirectory(packagedir)
 
 # version string from package.
-import importlib.metadata as metadata  # noqa: E402
+import importlib.metadata as metadata
 
 __version__ = metadata.version(__package__)
 
 # Import native shared library
-from ale_py._ale_py import (  # noqa: E402
-    SDL_SUPPORT,
-    Action,
-    ALEInterface,
-    ALEState,
-    LoggerMode,
-)
+from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMode
 
 __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
 
 try:
-    from ale_py.env import AtariEnv, AtariEnvStepMetadata
-    from ale_py.vector_env import VectorAtariEnv
+    from ale_py._ale_py import ALEVectorInterface
 
-    __all__ += ["AtariEnv", "AtariEnvStepMetadata", "VectorAtariEnv"]
-
-    from ale_py.registration import register_v0_v4_envs, register_v5_envs
-
-    register_v0_v4_envs()
-    register_v5_envs()
+    __all__ += ["ALEVectorInterface"]
 except ImportError:
     pass
+
+
+from ale_py.env import AtariEnv, AtariEnvStepMetadata
+from ale_py.vector_env import AtariVectorEnv
+
+__all__ += ["AtariEnv", "AtariEnvStepMetadata", "AtariVectorEnv"]
+
+from ale_py.registration import register_v0_v4_envs, register_v5_envs
+
+register_v0_v4_envs()
+register_v5_envs()

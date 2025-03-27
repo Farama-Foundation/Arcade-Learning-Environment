@@ -29,11 +29,10 @@ public:
      * @param obs_height Height to resize frames to for observations
      * @param obs_width Width to resize frames to for observations
      * @param frame_skip Number of frames for which to repeat the action
-     * @param gray_scale Whether to convert frames to grayscale observation or keep RGB
      * @param maxpool Whether to maxpool observations
      * @param stack_num Number of frames to stack for observations
      * @param noop_max Maximum number of no-ops to perform on resets
-     * @param fire_reset Whether to press FIRE during reset
+     * @param use_fire_reset Whether to press FIRE during reset
      * @param episodic_life Whether to end episodes when a life is lost
      * @param max_episode_steps Maximum number of steps per episode before truncating
      * @param repeat_action_probability Probability of repeating the last action
@@ -46,12 +45,13 @@ public:
         int obs_height = 84,
         int obs_width = 84,
         int frame_skip = 4,
-        bool gray_scale = true,
         bool maxpool = true,
         int stack_num = 4,
         int noop_max = 30,
-        bool fire_reset = true,
+        bool use_fire_reset = true,
         bool episodic_life = false,
+        bool life_loss_info = false,
+        bool reward_clipping = true,
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
@@ -61,12 +61,13 @@ public:
         obs_height_(obs_height),
         obs_width_(obs_width),
         frame_skip_(frame_skip),
-        gray_scale_(gray_scale),
         maxpool_(maxpool),
         stack_num_(stack_num),
         noop_max_(noop_max),
-        fire_reset_(fire_reset),
+        use_fire_reset_(use_fire_reset),
         episodic_life_(episodic_life),
+        life_loss_info_(life_loss_info),
+        reward_clipping_(reward_clipping),
         max_episode_steps_(max_episode_steps),
         elapsed_step_(max_episode_steps + 1),
         seed_(seed + env_id),
@@ -89,7 +90,7 @@ public:
         }
 
         // Check if fire action is available (needed for fire_reset)
-        if (fire_reset_) {
+        if (use_fire_reset_) {
             has_fire_action_ = false;
             for (auto a : action_set_) {
                 if (a == PLAYER_A_FIRE) {
@@ -97,20 +98,19 @@ public:
                     break;
                 }
             }
-            fire_reset_ = has_fire_action_;
+            use_fire_reset = has_fire_action_;
         }
 
         // Initialize random distribution for no-ops
         noop_generator_ = std::uniform_int_distribution<>(0, noop_max_ - 1);
 
         // Initialize the buffers
-        const int channels = gray_scale_ ? 1 : 3;
         for (int i = 0; i < 2; ++i) {
-            raw_frames_.emplace_back(210 * 160 * channels);
+            raw_frames_.emplace_back(210 * 160);
         }
-        resized_frame_.resize(obs_height_ * obs_width_ * channels);
+        resized_frame_.resize(obs_height_ * obs_width_);
         for (int i = 0; i < stack_num_; ++i) {
-            std::vector<uint8_t> frame(obs_height_ * obs_width_ * channels, 0);
+            std::vector<uint8_t> frame(obs_height_ * obs_width_, 0);
             frame_stack_.push_back(std::move(frame));
         }
     }
@@ -122,7 +122,7 @@ public:
         env_->reset_game();
 
         // Perform no-op steps
-        int noop_steps = noop_generator_(rng_gen_) + 1 - static_cast<int>(fire_reset_ && has_fire_action_);
+        int noop_steps = noop_generator_(rng_gen_) + 1 - static_cast<int>(use_fire_reset_ && has_fire_action_);
         while (noop_steps > 0) {
             env_->act(PLAYER_A_NOOP);
             if (env_->game_over()) {
@@ -132,7 +132,7 @@ public:
         }
 
         // Press FIRE if required by the environment
-        if (fire_reset_ && has_fire_action_) {
+        if (use_fire_reset_ && has_fire_action_) {
             env_->act(PLAYER_A_FIRE);
         }
 
@@ -148,13 +148,14 @@ public:
         elapsed_step_ = 0;
         game_over_ = false;
         lives_ = env_->lives();
+        was_life_loss_ = false;
         current_action_.action_id = PLAYER_A_NOOP;
     }
 
     /**
      * Set the action to be taken in the next step
      */
-    void set_action(const Action& action) {
+    void set_action(const EnvironmentAction& action) {
         current_action_ = action;
     }
 
@@ -191,8 +192,9 @@ public:
 
         // Update state
         elapsed_step_++;
+        was_life_loss_ = env_->lives() < lives_;
         lives_ = env_->lives();
-        last_reward_ = reward;
+        reward_ = reward_clipping_ ? std::clamp<int>(reward, -1, 1) : reward;
     }
 
     /**
@@ -202,8 +204,8 @@ public:
         Timestep timestep;
         timestep.env_id = env_id_;
 
-        timestep.reward = last_reward_;
-        timestep.terminated = game_over_;
+        timestep.reward = reward_;
+        timestep.terminated = game_over_ || (life_loss_info_ && was_life_loss_);
         timestep.truncated = elapsed_step_ >= max_episode_steps_;
 
         timestep.lives = lives_;
@@ -211,8 +213,7 @@ public:
         timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
         // Combine stacked frames into a single observation
-        const int channels = gray_scale_ ? 1 : 3;
-        const size_t frame_size = obs_height_ * obs_width_ * channels;
+        const size_t frame_size = obs_height_ * obs_width_;
         timestep.observation.resize(frame_size * stack_num_);
 
         for (int i = 0; i < stack_num_; ++i) {
@@ -248,40 +249,30 @@ private:
         const ALEScreen& screen = env_->getScreen();
         uint8_t* ale_screen_data = screen.getArray();
 
-        if (gray_scale_) {
-            // Get grayscale screen
-            env_->theOSystem->colourPalette().applyPaletteGrayscale(
-                buffer, ale_screen_data, screen.width() * screen.height()
-            );
-        } else {
-            // Get RGB screen
-            env_->theOSystem->colourPalette().applyPaletteRGB(
-                buffer, ale_screen_data, screen.width() * screen.height()
-            );
-        }
+        env_->theOSystem->colourPalette().applyPaletteGrayscale(
+            buffer, ale_screen_data, screen.width() * screen.height()
+        );
     }
 
     /**
      * Process the screen and update the frame stack
      */
     void process_screen() {
-        const int channels = gray_scale_ ? 1 : 3;
         const int raw_height = 210;
         const int raw_width = 160;
 
         if (maxpool_) {
             // Maxpool over the last two frames
-            const int raw_size = raw_height * raw_width * channels;
+            const int raw_size = raw_height * raw_width;
             for (int i = 0; i < raw_size; ++i) {
                 raw_frames_[0][i] = std::max(raw_frames_[0][i], raw_frames_[1][i]);
             }
         }
 
         // Resize the raw frame to target dimensions
-        cv::Mat src_img(raw_height, raw_width, channels == 1 ? CV_8UC1 : CV_8UC3,
-                        const_cast<uint8_t*>(raw_frames_[0].data()));
-        cv::Mat dst_img(obs_height_, obs_width_, channels == 1 ? CV_8UC1 : CV_8UC3,
-                        resized_frame_.data());
+        cv::Mat src_img(raw_height, raw_width, CV_8UC1, const_cast<uint8_t*>(raw_frames_[0].data()));
+        cv::Mat dst_img(obs_height_, obs_width_, CV_8UC1, resized_frame_.data());
+
         // Use INTER_AREA for downsampling to avoid moire patterns
         cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
 
@@ -290,32 +281,34 @@ private:
         frame_stack_.push_back(resized_frame_);
     }
 
-    int env_id_;                                  // Unique ID for this environment
-    fs::path rom_path_;                           // Path to the ROM file
-    std::unique_ptr<ALEInterface> env_;           // ALE interface
+    int env_id_;                         // Unique ID for this environment
+    fs::path rom_path_;                  // Path to the ROM file
+    std::unique_ptr<ALEInterface> env_;  // ALE interface
 
-    ActionVect action_set_;                       // Available actions
-    int obs_height_;                              // Height to resize frames to for observations
-    int obs_width_;                               // Width to resize frames to for observations
-    int frame_skip_;                              // Number of frames for which to repeat the action
-    bool gray_scale_;                             // Whether to convert frames to grayscale observation or keep RGB
-    bool maxpool_;                                // Whether to maxpool observations
-    int stack_num_;                               // Number of frames to stack for observations
-    int noop_max_;                                // Maximum number of no-ops at reset
-    bool fire_reset_;                             // Whether to press FIRE during reset
-    bool has_fire_action_;                        // Whether FIRE action is available for reset
-    bool episodic_life_;                          // Whether to end episodes when a life is lost
-    int max_episode_steps_;                       // Maximum number of steps per episode before truncating
+    ActionVect action_set_;              // Available actions
+    int obs_height_;                     // Height to resize frames to for observations
+    int obs_width_;                      // Width to resize frames to for observations
+    int frame_skip_;                     // Number of frames for which to repeat the action
+    bool maxpool_;                       // Whether to maxpool observations
+    int stack_num_;                      // Number of frames to stack for observations
+    int noop_max_;                       // Maximum number of no-ops at reset
+    bool use_fire_reset_;                // Whether to press FIRE during reset
+    bool has_fire_action_;               // Whether FIRE action is available for reset
+    bool episodic_life_;                 // Whether to end episodes when a life is lost
+    bool life_loss_info_;                // If to provide termination signal (but not reset) on life loss
+    bool reward_clipping_;               // If to clip rewards between -1 and 1
+    int max_episode_steps_;              // Maximum number of steps per episode before truncating
 
-    int elapsed_step_;                            // Current step in the episode
-    bool game_over_;                              // Whether the game is over
-    int lives_;                                   // Current number of lives
-    float last_reward_;                           // Last reward received
-    int seed_;                                    // Random seed
+    int elapsed_step_;                   // Current step in the episode
+    bool game_over_;                     // Whether the game is over
+    int lives_;                          // Current number of lives
+    bool was_life_loss_;                 // If a life is loss from a step
+    float reward_;                       // Last reward received
+    int seed_;                           // Random seed
     std::mt19937 rng_gen_;                             // Random number generator
     std::uniform_int_distribution<> noop_generator_;   // Distribution for no-op steps
 
-    Action current_action_;                       // Current action to take
+    EnvironmentAction current_action_;   // Current action to take
 
     // Frame buffers
     std::vector<std::vector<uint8_t>> raw_frames_;  // Raw frame buffers for maxpooling

@@ -24,7 +24,7 @@ namespace vector {
 
 /**
  * AsyncVectorizer manages a collection of environments that can be stepped in parallel.
- * It handles the distribution of actions to environments and collection of observations.
+ * It handles the (async) distribution of actions to environments and collection of observations.
  */
 class AsyncVectorizer {
 public:
@@ -96,22 +96,23 @@ public:
     /**
      * Reset specified environments
      *
-     * @param env_ids Vector of environment IDs to reset
+     * @param reset_indices Vector of environment IDs to reset
      */
-    void reset(const std::vector<int>& env_ids) {
+    void reset(const std::vector<int>& reset_indices) {
         std::vector<ActionSlice> reset_actions;
-        reset_actions.reserve(env_ids.size());
+        reset_actions.reserve(reset_indices.size());
 
-        for (size_t i = 0; i < env_ids.size(); ++i) {
-            ActionSlice slice;
-            slice.env_id = env_ids[i];
-            slice.order = is_sync_ ? static_cast<int>(i) : -1;
-            slice.force_reset = true;
-            reset_actions.emplace_back(slice);
+        for (size_t i = 0; i < reset_indices.size(); ++i) {
+            ActionSlice action;
+            action.env_id = reset_indices[i];
+            action.order = is_sync_ ? static_cast<int>(i) : -1;
+            action.force_reset = true;
+
+            reset_actions.emplace_back(action);
         }
 
         if (is_sync_) {
-            stepping_env_num_ += env_ids.size();
+            stepping_env_num_ += reset_indices.size();
         }
 
         action_buffer_queue_->enqueue_bulk(reset_actions);
@@ -122,7 +123,7 @@ public:
      *
      * @param actions Vector of actions to send to the sub-environments
      */
-    void send(const std::vector<Action>& actions) {
+    void send(const std::vector<EnvironmentAction>& actions) {
         std::vector<ActionSlice> action_slices;
         action_slices.reserve(actions.size());
 
@@ -134,6 +135,7 @@ public:
             slice.env_id = env_id;
             slice.order = is_sync_ ? static_cast<int>(i) : -1;
             slice.force_reset = false;
+
             action_slices.emplace_back(slice);
         }
 
@@ -145,9 +147,10 @@ public:
     }
 
     /**
-     * Receive timesteps from the sub-environments
+     * Receive timesteps from the environments
+     * This is the asynchronous version that waits for results after send()
      *
-     * @return Vector of timesteps from the sub-environments
+     * @return Vector of timesteps from the environments
      */
     std::vector<Timestep> recv() {
         int additional_wait = 0;
@@ -162,6 +165,18 @@ public:
         }
 
         return timesteps;
+    }
+
+    /**
+     * Step the environments with actions and wait for results
+     * This is a convenience method that combines send() and recv()
+     *
+     * @param actions Vector of actions for the environments
+     * @return Vector of timesteps from the environments
+     */
+    std::vector<Timestep> step(const std::vector<EnvironmentAction>& actions) {
+        send(actions);
+        return recv();
     }
 
 private:
@@ -189,7 +204,6 @@ private:
                 // Get timestep and write to state buffer
                 Timestep timestep = envs_[env_id]->get_timestep();
                 state_buffer_queue_->write(timestep, order);
-
             } catch (const std::exception& e) {
                 // Log error but continue processing
                 std::cerr << "Error in worker thread: " << e.what() << std::endl;

@@ -6,6 +6,7 @@
 #include <memory>
 #include <random>
 #include <filesystem>
+#include <stdexcept>
 
 #include "ale/vector/async_vectorizer.hpp"
 #include "ale/vector/preprocessed_env.hpp"
@@ -37,7 +38,6 @@ public:
 	 * @param rom_path Path to the ROM file
 	 * @param num_envs Number of parallel environments
      * @param frame_skip Number of frames to skip between agent decisions (default: 4)
-     * @param gray_scale Whether to convert frames to grayscale (default: true)
      * @param stack_num Number of frames to stack for observations (default: 4)
      * @param img_height Height to resize frames to (default: 84)
      * @param img_width Width to resize frames to (default: 84)
@@ -56,34 +56,37 @@ public:
         const fs::path rom_path,
         int num_envs,
         int frame_skip = 4,
-        bool gray_scale = true,
         int stack_num = 4,
         int img_height = 84,
         int img_width = 84,
         int noop_max = 30,
-        bool fire_reset = true,
+        bool use_fire_reset = true,
         bool episodic_life = false,
+        bool life_loss_info = false,
+        bool reward_clipping = true,
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
         int batch_size = 0,
         int num_threads = 0,
-        int seed = 0,
-        int thread_affinity_offset = -1
+        int thread_affinity_offset = -1,
+        int seed = 0
     ) : rom_path_(rom_path),
         num_envs_(num_envs),
         frame_skip_(frame_skip),
-        gray_scale_(gray_scale),
         stack_num_(stack_num),
         img_height_(img_height),
         img_width_(img_width),
         noop_max_(noop_max),
-        fire_reset_(fire_reset),
+        use_fire_reset_(use_fire_reset),
         episodic_life_(episodic_life),
+        life_loss_info_(life_loss_info),
+        reward_clipping_(reward_clipping),
         max_episode_steps_(max_episode_steps),
         repeat_action_probability_(repeat_action_probability),
         full_action_space_(full_action_space),
-        seed_(seed) {
+        initial_seed_(seed),
+        received_env_ids_(batch_size > 0 ? batch_size : num_envs) {
 
         // Create environment factory
         auto env_factory = [this](int env_id) {
@@ -91,17 +94,18 @@ public:
                 env_id,
                 rom_path_,
                 frame_skip_,
-                gray_scale_,
                 stack_num_,
                 img_height_,
                 img_width_,
                 noop_max_,
-                fire_reset_,
+                use_fire_reset_,
                 episodic_life_,
+                life_loss_info_,
+                reward_clipping_,
                 max_episode_steps_,
                 repeat_action_probability_,
                 full_action_space_,
-                seed_ + env_id
+                initial_seed_ + env_id
             );
         };
 
@@ -122,29 +126,49 @@ public:
     /**
      * Reset all environments
      *
+     * @param reset_indices Vector of environment indices to be reset
      * @return Timesteps from all environments after reset
      */
-    std::vector<Timestep> reset() {
-        py::gil_scoped_release release; // Release GIL during C++ processing
-        std::vector<int> env_ids(num_envs_);
-        for (int i = 0; i < num_envs_; ++i) {
-            env_ids[i] = i;
-        }
-        vectorizer_->reset(env_ids);
-        return vectorizer_->recv(); // GIL is reacquired when the function returns
+    std::vector<Timestep> reset(const std::vector<int> reset_indices) {
+        vectorizer_->reset(reset_indices);
+        return vectorizer_->recv();
     }
 
     /**
      * Step environments with actions
      *
      * @param actions Vector of actions to take in environments
-     * @return Timesteps from environments after stepping
      */
-    std::vector<Timestep> step(const std::vector<Action>& actions) {
-        py::gil_scoped_release release; // Release GIL during C++ processing
-        vectorizer_->send(actions);
-        auto result = vectorizer_->recv();
-        return result; // GIL is reacquired when the function returns
+    void send(const std::vector<int>& action_ids, const std::vector<float>& paddle_strengths) {
+        if (action_ids.size() != paddle_strengths.size()) {
+            throw std::invalid_argument(
+                "The size of the action_ids is different from the paddle_strengths, action_ids length=" + std::to_string(action_ids.size())
+                + ", paddle_strengths length="  + std::to_string(paddle_strengths.size()));
+        }
+        std::vector<ale::vector::EnvironmentAction> environment_actions;
+        environment_actions.resize(action_ids.size());
+
+        for (int i = 0; i < action_ids.size(); i++) {
+            ale::vector::EnvironmentAction env_action;
+            env_action.env_id = received_env_ids_[i];
+            env_action.action_id = action_ids[i];
+            env_action.paddle_strength = paddle_strengths[i];
+
+            environment_actions[i] = env_action;
+        }
+
+        vectorizer_->send(environment_actions);
+    }
+
+    /**
+    * Returns the environment's data for the environments
+    */
+    std::vector<Timestep> recv() {
+        std::vector<Timestep> timesteps = vectorizer_->recv();
+        for (int i = 0; i < timesteps.size(); i++) {
+            received_env_ids_[i] = timesteps[i].env_id;
+        }
+        return timesteps;
     }
 
     /**
@@ -168,31 +192,33 @@ public:
     /**
      * Get the dimensions of the observation space
      *
-     * @return Tuple of (stack_num, channels, height, width)
+     * @return Tuple of (stack_num, height, width)
      */
-    std::tuple<int, int, int, int> get_observation_shape() const {
-        const int channels = gray_scale_ ? 1 : 3;
-        return std::make_tuple(stack_num_, channels, img_height_, img_width_);
+    std::tuple<int, int, int> get_observation_shape() const {
+        return std::make_tuple(stack_num_, img_height_, img_width_);
     }
 
 private:
     fs::path rom_path_;                       // Path to the ROM file
     int num_envs_;                            // Number of parallel environments
     int frame_skip_;                          // Number of frames to skip
-    bool gray_scale_;                         // Whether to use grayscale
     int stack_num_;                           // Number of frames to stack
     int img_height_;                          // Height of resized frames
     int img_width_;                           // Width of resized frames
     int noop_max_;                            // Max no-ops on reset
-    bool fire_reset_;                         // Whether to fire on reset
+    bool use_fire_reset_;                     // Whether to fire on reset
     bool episodic_life_;                      // End episode on life loss
+    bool life_loss_info_;                     // If to provide termination signal (but not reset) on life loss
+    bool reward_clipping_;                    // If to clip rewards between -1 and 1
     int max_episode_steps_;                   // Max steps per episode
     float repeat_action_probability_;         // Sticky actions probability
     bool full_action_space_;                  // Use full action space
-    int seed_;                                // Random seed
+    int initial_seed_;
+
+    std::vector<int> received_env_ids_;        // Vector of environment ids for the most recently received data
 
     std::unique_ptr<AsyncVectorizer> vectorizer_;  // Vectorizer
-    ActionVect action_set_;                   // Set of available actions
+    ActionVect action_set_;                    // Set of available actions
 };
 
 } // namespace vector

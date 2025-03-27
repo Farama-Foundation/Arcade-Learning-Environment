@@ -10,6 +10,7 @@ from ale_py import _ale_py
 __all__ = [
     "Action",
     "ALEInterface",
+    "ALEVectorInterface",
     "ALEState",
     "LoggerMode",
     "SDL_SUPPORT",
@@ -171,15 +172,35 @@ class ALEInterface:
     def setRAM(self, index: int, value: int) -> None: ...
     def setString(self, key: str, value: str) -> None: ...
 
-class AtariVectorEnv:
-    def __init__(self, rom_path) -> None: ...
-    def reset(self) -> Tuple[np.ndarray, Dict[str, Any]]: ...
-    def step(
+class ALEVectorInterface:
+    def __init__(
+        self,
+        rom_path: os.PathLike,
+        num_envs: int,
+        frame_skip: int,
+        stack_num: int,
+        img_height: int,
+        img_width: int,
+        noop_max: int,
+        use_fire_reset: bool,
+        episodic_life: bool,
+        life_loss_info: bool,
+        reward_clipping: bool,
+        max_episode_steps: int,
+        repeat_action_probability: float,
+        full_action_space: bool,
+        batch_size: int,
+        num_threads: int,
+        thread_affinity_offset: int,
+    ) -> None: ...
+    def reset(self, reset_indices: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]: ...
+    def send(self, action_idx: np.ndarray, paddle_strength: np.ndarray): ...
+    def recv(
         self,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]: ...
-    def getActionSet(self) -> List[Action]: ...
-    def getNumEnvs(self) -> int: ...
-    def getObservationShape(self) -> Tuple[int, ...]: ...
+    def get_action_set(self) -> List[Action]: ...
+    def get_num_envs(self) -> int: ...
+    def get_observation_shape(self) -> Tuple[int, int, int]: ...
 
 SDL_SUPPORT: bool
 __version__: str

@@ -28,9 +28,9 @@ struct ActionSlice {
 };
 
 /**
- * Action represents an action to be taken in an environment
+ * EnvironmentAction represents an action to be taken in an environment
  */
-struct Action {
+struct EnvironmentAction {
     int env_id;            // ID of the environment to apply the action to
     int action_id;         // ID of the action to take
     float paddle_strength; // Strength for paddle-based games (default: 1.0)
