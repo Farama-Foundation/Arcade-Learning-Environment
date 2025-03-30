@@ -24,7 +24,6 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
     assert envs.observation_space.shape == (num_envs, stack_num, img_height, img_width)
     assert envs.action_space.shape == (num_envs,)
 
-    print("resetting the environment")
     obs, info = envs.reset(seed=0)
 
     assert isinstance(obs, np.ndarray)
@@ -37,7 +36,6 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
     )
 
     actions = envs.action_space.sample()
-    print("stepping the environment")
     obs, reward, terminations, truncations, info = envs.step(actions)
 
     assert isinstance(obs, np.ndarray)
@@ -60,7 +58,7 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
 
 @pytest.mark.parametrize("num_envs", [1, 8])
 @pytest.mark.parametrize("stack_num", [4, 6])
-@pytest.mark.parametrize("img_height, img_width", [])
+@pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
 @pytest.mark.parametrize("frame_skip", [1, 4])
 def test_rollout_consistency(
     num_envs, stack_num, img_height, img_width, frame_skip, rollout_length=100
@@ -83,10 +81,11 @@ def test_rollout_consistency(
     ale_envs = AtariVectorEnv(
         game="breakout",
         num_envs=num_envs,
-        frame_skip=frame_skip,
+        frameskip=frame_skip,
         img_height=img_height,
         img_width=img_width,
         noop_max=0,
+        use_fire_reset=False,
     )
 
     gym_obs, gym_info = gym_envs.reset(seed=0)
@@ -94,7 +93,7 @@ def test_rollout_consistency(
 
     assert data_equivalence(gym_obs, ale_obs)
 
-    env_ids = ale_info.pop("env_ids")
+    env_ids = ale_info.pop("env_id")
     assert np.all(env_ids == np.arange(num_envs))
     assert data_equivalence(gym_info, ale_info)
 
@@ -114,9 +113,12 @@ def test_rollout_consistency(
         assert data_equivalence(gym_terminations, ale_terminations)
         assert data_equivalence(gym_truncations, ale_truncations)
 
-        env_ids = ale_info.pop("env_ids")
+        env_ids = ale_info.pop("env_id")
         assert np.all(env_ids == np.arange(num_envs))
         assert data_equivalence(gym_info, ale_info)
+
+    gym_envs.close()
+    ale_envs.close()
 
 
 def test_batch_size():

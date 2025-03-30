@@ -187,5 +187,5 @@ def register_v5_envs():
                 full_action_space=False,
                 frameskip=4,
                 max_num_frames_per_episode=108_000,
-            )
+            ),
         )

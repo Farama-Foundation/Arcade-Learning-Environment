@@ -133,7 +133,7 @@ public:
      */
     std::vector<Timestep> reset(const std::vector<int> reset_indices, const std::vector<int> reset_seeds) {
         vectorizer_->reset(reset_indices, reset_seeds);
-        return vectorizer_->recv();
+        return recv();
     }
 
     /**
@@ -145,7 +145,7 @@ public:
         if (action_ids.size() != paddle_strengths.size()) {
             throw std::invalid_argument(
                 "The size of the action_ids is different from the paddle_strengths, action_ids length=" + std::to_string(action_ids.size())
-                + ", paddle_strengths length="  + std::to_string(paddle_strengths.size()));
+                + ", paddle_strengths length=" + std::to_string(paddle_strengths.size()));
         }
         std::vector<ale::vector::EnvironmentAction> environment_actions;
         environment_actions.resize(action_ids.size());

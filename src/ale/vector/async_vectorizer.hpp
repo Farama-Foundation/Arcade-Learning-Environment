@@ -131,7 +131,7 @@ public:
         std::vector<ActionSlice> action_slices;
         action_slices.reserve(actions.size());
 
-        for (size_t i = 0; i < actions.size(); ++i) {
+        for (int i = 0; i < actions.size(); i++) {
             int env_id = actions[i].env_id;
             envs_[env_id]->set_action(actions[i]);
 

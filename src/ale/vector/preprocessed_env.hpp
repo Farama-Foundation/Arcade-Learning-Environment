@@ -287,7 +287,8 @@ private:
             // Use INTER_AREA for downsampling to avoid moire patterns
             cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
         } else {
-            resized_frame_ = raw_frames_[0];
+            // Otherwise, just copy the data to the resized frame
+            std::memcpy(resized_frame_.data(), raw_frames_[0].data(), raw_frames_[0].size());
         }
 
         // Push the new frame into the stack
