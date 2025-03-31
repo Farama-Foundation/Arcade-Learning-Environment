@@ -9,7 +9,7 @@ name = "ale-py"
 description = "The Arcade Learning Environment (ALE) - a platform for AI research."
 readme = "README.md"
 requires-python = ">=3.9"
-license = "GPLv2"
+license = {text = "GPLv2"}
 keywords = ["reinforcement-learning", "arcade-learning-environment", "atari"]
 authors = [
     {name = "Marc G. Bellemare"},
