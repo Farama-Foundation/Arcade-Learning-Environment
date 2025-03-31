@@ -173,6 +173,9 @@ def register_v5_envs():
     all_games = roms.get_all_rom_ids()
 
     for rom in all_games:
+        if rom in {"combat", "joust", "maze_craze", "warlords"}:
+            continue
+
         name = _rom_id_to_name(rom)
 
         # max_episode_steps is 108k frames which is 30 mins of gameplay.
