@@ -60,7 +60,7 @@ public:
         // Setup worker threads
         std::size_t processor_count = std::thread::hardware_concurrency();
         if (num_threads <= 0) {
-            num_threads_ = std::min(batch_size_, static_cast<int>(processor_count));
+            num_threads_ = std::min<int>(batch_size_, static_cast<int>(processor_count));
         } else {
             num_threads_ = num_threads;
         }
