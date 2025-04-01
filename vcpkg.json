@@ -28,10 +28,6 @@
     {
       "name": "sdl2",
       "version": "2.24.2"
-    },
-    {
-      "name": "opencv",
-      "version": "4.8.0"
     }
   ]
 }
