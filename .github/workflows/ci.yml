@@ -64,6 +64,24 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
+    - name: Cache vcpkg dependencies
+      uses: actions/cache@v4
+      with:
+        path: vcpkg_installed
+        key: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}-${{ hashFiles('vcpkg.json') }}
+        restore-keys: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}
+
+    - run: |
+        ls 
+        ls vcpkg_installed
+
+    - name: Install vcpkg dependencies
+      run: vcpkg install
+
+    - run: |
+        ls 
+        ls vcpkg_installed
+
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
@@ -96,6 +114,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache vcpkg dependencies
+        uses: actions/cache@v4
+        with:
+          path: vcpkg_installed
+          key: vcpkg-${{ matrix.runs-on }}-${{ matrix.arch }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}
+
       - name: Set up Docker Buildx
         if: runner.os == 'linux'
         id: buildx
@@ -113,6 +138,17 @@ jobs:
           push: false
           load: true
 
+      - run: |
+          ls 
+          ls vcpkg_installed
+
+      - name: Install vcpkg dependencies
+        run: vcpkg install
+
+      - run: |
+          ls 
+          ls vcpkg_installed
+
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
 
@@ -120,6 +156,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.21.3
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
+          VCPKG_DEFAULT_TRIPLET: "${{ matrix.triplet }}"
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
