@@ -97,11 +97,15 @@ public:
                     break;
                 }
             }
-            use_fire_reset = has_fire_action_;
         }
 
         // Initialize random distribution for no-ops
-        noop_generator_ = std::uniform_int_distribution<>(0, noop_max_ - 1);
+        if (noop_max_ > 0) {
+            noop_generator_ = std::uniform_int_distribution<>(0, noop_max_ - 1);
+        } else {
+            // If noop_max is 0, create a distribution that always returns 0
+            noop_generator_ = std::uniform_int_distribution<>(0, 0);
+        }
 
         // Initialize the buffers
         for (int i = 0; i < 2; ++i) {
@@ -132,7 +136,7 @@ public:
         env_->reset_game();
 
         // Perform no-op steps
-        int noop_steps = noop_generator_(rng_gen_) + 1 - static_cast<int>(use_fire_reset_ && has_fire_action_);
+        int noop_steps = noop_generator_(rng_gen_) - static_cast<int>(use_fire_reset_ && has_fire_action_);
         while (noop_steps > 0) {
             env_->act(PLAYER_A_NOOP);
             if (env_->game_over()) {
@@ -147,12 +151,12 @@ public:
         }
 
         // Get the screen data and process it
-        std::fill(raw_frames_[0].begin(), raw_frames_[0].end(), 0);
-        get_screen_data(raw_frames_[1].data());
-        process_screen();
+        get_screen_data(raw_frames_[0].data());
+        std::fill(raw_frames_[1].begin(), raw_frames_[1].end(), 0);
         for (int stack_id = 0; stack_id < stack_num_ - 1; ++stack_id) {
-            frame_stack_[stack_id] = resized_frame_;
+            std::fill(frame_stack_[stack_id].begin(), frame_stack_[stack_id].end(), 0);
         }
+        process_screen();
 
         // Update state
         elapsed_step_ = 0;
@@ -193,7 +197,7 @@ public:
 
             // Capture last two frames for maxpooling
             if (skip_id <= 2) {
-                get_screen_data(raw_frames_[2 - skip_id].data());
+                get_screen_data(raw_frames_[skip_id - 1].data());
             }
         }
 

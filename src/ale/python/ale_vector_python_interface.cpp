@@ -21,7 +21,7 @@ void init_vector_module(py::module& m) {
              py::arg("stack_num") = 4,
              py::arg("img_height") = 84,
              py::arg("img_width") = 84,
-              py::arg("maxpool") = true,
+             py::arg("maxpool") = true,
              py::arg("noop_max") = 30,
              py::arg("use_fire_reset") = true,
              py::arg("episodic_life") = false,
@@ -105,7 +105,7 @@ void init_vector_module(py::module& m) {
 
             // Create NumPy arrays
             py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
-            py::array_t<float> rewards(num_envs);
+            py::array_t<int> rewards(num_envs);
             py::array_t<bool> terminations(num_envs);
             py::array_t<bool> truncations(num_envs);
             py::array_t<int> env_ids(num_envs);
@@ -115,7 +115,7 @@ void init_vector_module(py::module& m) {
 
             // Get pointers to the arrays' data
             auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
-            auto rewards_ptr = static_cast<float*>(rewards.mutable_data());
+            auto rewards_ptr = static_cast<int*>(rewards.mutable_data());
             auto terminations_ptr = static_cast<bool*>(terminations.mutable_data());
             auto truncations_ptr = static_cast<bool*>(truncations.mutable_data());
             auto env_ids_ptr = static_cast<int*>(env_ids.mutable_data());

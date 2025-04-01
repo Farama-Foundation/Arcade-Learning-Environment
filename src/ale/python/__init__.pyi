@@ -181,6 +181,7 @@ class ALEVectorInterface:
         stack_num: int,
         img_height: int,
         img_width: int,
+        maxpool: bool,
         noop_max: int,
         use_fire_reset: bool,
         episodic_life: bool,

@@ -141,9 +141,12 @@ public:
 
         // If using ordered timesteps (order >= 0), place in the correct position
         if (order >= 0) {
-            // For ordered timestep in synchronous mode
-            // Buffer might need reorganizing after collection
-            timesteps_[buffer_idx].push_back(timestep);
+            // Ensure we have enough space
+            if (timesteps_[buffer_idx].size() <= static_cast<size_t>(order)) {
+                timesteps_[buffer_idx].resize(order + 1);
+            }
+            // Place at the specific order position
+            timesteps_[buffer_idx][order] = timestep;
         } else {
             // For unordered timesteps
             timesteps_[buffer_idx].push_back(timestep);

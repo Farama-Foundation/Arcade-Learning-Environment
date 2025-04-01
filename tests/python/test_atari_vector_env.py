@@ -42,7 +42,7 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
     assert obs.shape == (num_envs, stack_num, img_height, img_width)
     assert obs.dtype == np.uint8
     assert obs in envs.observation_space, f"{envs.observation_space=}"
-    assert isinstance(reward, np.ndarray) and reward.dtype == np.float32
+    assert isinstance(reward, np.ndarray) and reward.dtype == np.int32
     assert reward.shape == (num_envs,)
     assert isinstance(terminations, np.ndarray) and terminations.dtype == bool
     assert terminations.shape == (num_envs,)
@@ -71,9 +71,10 @@ def test_rollout_consistency(
                     gym.make("BreakoutNoFrameskip-v4"),
                     noop_max=0,
                     frame_skip=frame_skip,
-                    screen_size=(img_height, img_width),
+                    screen_size=(img_width, img_height),
                 ),
                 stack_size=stack_num,
+                padding_type="zero",
             )
             for _ in range(num_envs)
         ],
@@ -84,15 +85,26 @@ def test_rollout_consistency(
         frameskip=frame_skip,
         img_height=img_height,
         img_width=img_width,
+        stack_num=stack_num,
         noop_max=0,
         use_fire_reset=False,
+        maxpool=frame_skip > 1,
     )
 
-    gym_obs, gym_info = gym_envs.reset(seed=0)
-    ale_obs, ale_info = ale_envs.reset(seed=0)
+    assert gym_envs.num_envs == ale_envs.num_envs
+    assert gym_envs.observation_space == ale_envs.observation_space
+    assert gym_envs.action_space == ale_envs.action_space
+
+    gym_obs, gym_info = gym_envs.reset(seed=123)
+    ale_obs, ale_info = ale_envs.reset(seed=123)
 
     assert data_equivalence(gym_obs, ale_obs)
 
+    gym_info = {
+        key: value.astype(np.int32)
+        for key, value in gym_info.items()
+        if not key.startswith("_") and key != "seeds"
+    }
     env_ids = ale_info.pop("env_id")
     assert np.all(env_ids == np.arange(num_envs))
     assert data_equivalence(gym_info, ale_info)
@@ -108,11 +120,16 @@ def test_rollout_consistency(
             ale_envs.step(actions)
         )
 
-        assert data_equivalence(gym_obs, ale_obs)
-        assert data_equivalence(gym_rewards, ale_rewards)
+        assert data_equivalence(gym_obs, ale_obs), i
+        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards)
         assert data_equivalence(gym_terminations, ale_terminations)
         assert data_equivalence(gym_truncations, ale_truncations)
 
+        gym_info = {
+            key: value.astype(np.int32)
+            for key, value in gym_info.items()
+            if not key.startswith("_") and key != "seeds"
+        }
         env_ids = ale_info.pop("env_id")
         assert np.all(env_ids == np.arange(num_envs))
         assert data_equivalence(gym_info, ale_info)

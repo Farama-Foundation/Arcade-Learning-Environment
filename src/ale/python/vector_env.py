@@ -33,6 +33,7 @@ class AtariVectorEnv(VectorEnv):
         img_width: int = 84,
         stack_num: int = 4,
         frameskip: int = 4,
+        maxpool: bool = True,
         noop_max: int = 30,
         episodic_life: bool = False,
         life_loss_info: bool = False,
@@ -56,6 +57,7 @@ class AtariVectorEnv(VectorEnv):
             img_width: The ƒrame width
             stack_num: The frame stack size
             frameskip: The number of frame skips to use for each action
+            maxpool: If maxpool over subsequent frames
             noop_max: If to use noop-max for the episode resets
             episodic_life: If to terminate episodes on life losses
             life_loss_info: If to provide a termination signal on life loss
@@ -69,6 +71,7 @@ class AtariVectorEnv(VectorEnv):
             stack_num=stack_num,
             img_height=img_height,
             img_width=img_width,
+            maxpool=maxpool,
             noop_max=noop_max,
             use_fire_reset=use_fire_reset,
             episodic_life=episodic_life,
