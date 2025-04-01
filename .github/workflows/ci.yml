@@ -71,10 +71,6 @@ jobs:
         key: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}-${{ hashFiles('vcpkg.json') }}
         restore-keys: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}
 
-    - run: |
-        ls
-        ls vcpkg_installed
-
     - name: Install vcpkg dependencies
       run: vcpkg install
 
@@ -137,10 +133,6 @@ jobs:
           tags: manylinux-vcpkg:latest
           push: false
           load: true
-
-      - run: |
-          ls
-          ls vcpkg_installed
 
       - name: Install vcpkg dependencies
         run: vcpkg install
