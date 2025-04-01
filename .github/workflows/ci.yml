@@ -72,14 +72,14 @@ jobs:
         restore-keys: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}
 
     - run: |
-        ls 
+        ls
         ls vcpkg_installed
 
     - name: Install vcpkg dependencies
       run: vcpkg install
 
     - run: |
-        ls 
+        ls
         ls vcpkg_installed
 
     - name: Download and unpack ROMs
@@ -139,14 +139,14 @@ jobs:
           load: true
 
       - run: |
-          ls 
+          ls
           ls vcpkg_installed
 
       - name: Install vcpkg dependencies
         run: vcpkg install
 
       - run: |
-          ls 
+          ls
           ls vcpkg_installed
 
       - name: Download and unpack ROMs
