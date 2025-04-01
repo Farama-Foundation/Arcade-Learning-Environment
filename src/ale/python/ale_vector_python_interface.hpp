@@ -35,8 +35,8 @@ public:
     /**
      * Constructor
      *
-	 * @param rom_path Path to the ROM file
-	 * @param num_envs Number of parallel environments
+     * @param rom_path Path to the ROM file
+     * @param num_envs Number of parallel environments
      * @param frame_skip Number of frames to skip between agent decisions (default: 4)
      * @param stack_num Number of frames to stack for observations (default: 4)
      * @param img_height Height to resize frames to (default: 84)
