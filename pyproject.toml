@@ -46,6 +46,7 @@ dynamic = ["version"]
 test = [
     "pytest>=7.0",
     "gymnasium>=1.0.0",
+    "opencv-python>=3.0",
 ]
 
 [project.urls]

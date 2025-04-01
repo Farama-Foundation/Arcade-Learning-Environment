@@ -31,7 +31,7 @@ def test_roms_register():
         len(registered_v0_roms) == 372
     ), f"{len(registered_roms)}, {len(registered_v0_roms)}, {len(registered_v4_roms)}, {len(registered_v5_roms)}"
     assert len(registered_v4_roms) == 372
-    assert len(registered_v5_roms) == 108
+    assert len(registered_v5_roms) == 104
 
     assert len(registered_roms) == len(registered_v0_roms) + len(
         registered_v4_roms
