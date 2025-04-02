@@ -71,8 +71,10 @@ jobs:
         key: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}-${{ hashFiles('vcpkg.json') }}
         restore-keys: vcpkg-${{ matrix.runners-on }}-${{ matrix.arch }}
 
+    - run: ls
+
     - name: Install vcpkg dependencies
-      run: vcpkg install
+      run: vcpkg install --overlay-triplets=cmake/custom-triplets
 
     - run: |
         ls
@@ -134,8 +136,10 @@ jobs:
           push: false
           load: true
 
+      - run: ls
+
       - name: Install vcpkg dependencies
-        run: vcpkg install
+        run: vcpkg install --overlay-triplets=cmake/custom-triplets
 
       - run: |
           ls
