@@ -13,5 +13,11 @@
       ]
     }
   },
-  "builtin-baseline": "0ca64b4e1c70fa6d9f53b369b8f3f0843797c20c"
+  "builtin-baseline": "0ca64b4e1c70fa6d9f53b369b8f3f0843797c20c",
+  "overrides": [
+    {
+      "name": "sdl2",
+      "version": "2.30.11"
+    }
+  ]
 }
