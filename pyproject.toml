@@ -1,7 +1,6 @@
 [build-system]
 requires = [
     "setuptools>=77.0.0",
-    "ninja"
 ]
 build-backend = "setuptools.build_meta"
 

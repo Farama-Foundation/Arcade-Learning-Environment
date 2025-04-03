@@ -117,13 +117,9 @@ jobs:
         run: ./scripts/download_unpack_roms.sh
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.3
+        uses: pypa/cibuildwheel@v2.23.2
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
-
-      - name: Debug vcpkg logs
-        if: runner.os == 'linux' && always()
-        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-out.log
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
