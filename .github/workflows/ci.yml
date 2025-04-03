@@ -70,10 +70,6 @@ jobs:
     - name: Build
       run: python -m pip install --verbose .[test]
 
-    - name: Debug vcpkg logs
-      if: runner.os == 'Linux' && always()
-      run: cat /home/runner/work/Arcade-Learning-Environment/Arcade-Learning-Environment/build/temp.linux-x86_64-cpython-312/ale_py._ale_py/vcpkg-manifest-install.log
-
     - name: Test
       run: python -m pytest
 
