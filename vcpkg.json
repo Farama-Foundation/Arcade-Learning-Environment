@@ -22,10 +22,6 @@
     {
       "name": "sdl2",
       "version": "2.30.11"
-    },
-    {
-      "name": "zlib",
-      "version": "1.2.13"
     }
   ]
 }
