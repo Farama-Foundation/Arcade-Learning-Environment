@@ -9,7 +9,7 @@ RUN curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/dow
     unzip ninja-linux.zip -d /usr/local/bin && \
     rm ninja-linux.zip && \
     chmod +x /usr/local/bin/ninja && \
-    ninja --version \
+    ninja --version
 
 # Install vcpkg
 RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg
