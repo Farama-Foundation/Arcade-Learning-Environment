@@ -66,9 +66,12 @@ class CMakeBuild(build_ext):
                         f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
                     ]
                 except ImportError:
-                    if shutil.which("ninja") is not None:
+                    ninja_executable = shutil.which("ninja")
+                    if ninja_executable is not None:
+                        print(f"Using Ninja from PATH: {ninja_executable}")
                         cmake_args += [
                             "-GNinja",
+                            f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable}",
                         ]
 
         else:
