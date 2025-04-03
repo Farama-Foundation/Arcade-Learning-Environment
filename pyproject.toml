@@ -73,7 +73,7 @@ skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
 
-#manylinux-x86_64-image = "manylinux-vcpkg:latest"
+manylinux-x86_64-image = "manylinux-vcpkg:latest"
 
 [tool.cibuildwheel.linux]
 environment-pass = ["GITHUB_REF"]
