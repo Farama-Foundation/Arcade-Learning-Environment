@@ -3,6 +3,10 @@ FROM quay.io/pypa/manylinux2014_x86_64
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
 RUN yum install -y curl unzip zip tar
+# install cmake<4.0
+RUN yum list available cmake\*
+RUN yum install -y cmake-3.30.7
+RUN cmake --version
 
 # Install a newer version of Ninja build system
 RUN curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip && \
@@ -29,5 +33,3 @@ RUN mkdir -p /root/.vcpkg && touch /root/.vcpkg/vcpkg.path.txt
 RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate install && \
     vcpkg integrate bash
-
-RUN cmake --version
