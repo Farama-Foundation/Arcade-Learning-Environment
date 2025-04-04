@@ -3,9 +3,13 @@ FROM quay.io/pypa/manylinux2014_x86_64
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
 RUN yum install -y curl unzip zip tar
-# install cmake<4.0
-RUN yum list available cmake\*
-RUN yum install -y cmake-3.30.7
+
+# Install a specific version of CMake from source
+RUN yum remove -y cmake || true
+RUN curl -L https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9-linux-x86_64.sh -o cmake.sh && \
+    chmod +x cmake.sh && \
+    ./cmake.sh --skip-license --prefix=/usr && \
+    rm cmake.sh
 RUN cmake --version
 
 # Install a newer version of Ninja build system
