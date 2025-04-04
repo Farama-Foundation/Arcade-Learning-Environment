@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcad
 RUN yum install -y curl unzip zip tar
 
 # Install a specific version of CMake from source
-RUN rm -rf /usr/bin/cmake* /usr/share/cmake* /usr/lib/cmake* || true
+RUN rm -rf /usr/local/bin/cmake || true
 RUN which cmake || echo "No cmake found in PATH"
 RUN curl -L https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9-linux-x86_64.sh -o cmake.sh && \
     chmod +x cmake.sh && \
