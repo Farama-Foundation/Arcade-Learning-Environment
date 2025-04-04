@@ -56,20 +56,30 @@ class CMakeBuild(build_ext):
             # exported for Ninja to pick it up, which is a little tricky to do.
             # Users can override the generator with CMAKE_GENERATOR in CMake
             # 3.15+.
+            # Check if ninja is available and modify cmake_args accordingly
+            use_ninja = False
             if not cmake_generator or cmake_generator == "Ninja":
                 try:
-                    import ninja  # noqa: F401
-
+                    import ninja
                     ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
-                    cmake_args += [
-                        "-GNinja",
-                        f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
-                    ]
-                except ImportError:
-                    if shutil.which("ninja") is not None:
+                    if os.path.exists(ninja_executable_path):
+                        use_ninja = True
                         cmake_args += [
                             "-GNinja",
+                            f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
                         ]
+                except ImportError:
+                    ninja_path = shutil.which("ninja")
+                    if ninja_path is not None:
+                        use_ninja = True
+                        cmake_args += [
+                            "-GNinja",
+                            f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_path}",
+                        ]
+
+            if not use_ninja:
+                # Fall back to makefile generator
+                cmake_args += ["-GUnix Makefiles"]
 
         else:
             # Single config generators are handled "normally"
