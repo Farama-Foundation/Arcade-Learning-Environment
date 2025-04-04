@@ -56,24 +56,24 @@ class CMakeBuild(build_ext):
             # exported for Ninja to pick it up, which is a little tricky to do.
             # Users can override the generator with CMAKE_GENERATOR in CMake
             # 3.15+.
-            if not cmake_generator or cmake_generator == "Ninja":
-                try:
-                    import ninja  # noqa: F401
-
-                    ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
-                    cmake_args += [
-                        "-GNinja",
-                        f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
-                    ]
-                except ImportError:
-                    ninja_executable = shutil.which("ninja")
-                    if ninja_executable is not None:
-                        print(f"Using Ninja from PATH: {ninja_executable}")
-                        cmake_args += [
-                            "-GNinja",
-                            f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable}",
-                        ]
-
+            # if not cmake_generator or cmake_generator == "Ninja":
+            #     try:
+            #         import ninja  # noqa: F401
+            #
+            #         ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
+            #         cmake_args += [
+            #             "-GNinja",
+            #             f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
+            #         ]
+            #     except ImportError:
+            #         ninja_executable = shutil.which("ninja")
+            #         if ninja_executable is not None:
+            #             print(f"Using Ninja from PATH: {ninja_executable}")
+            #             cmake_args += [
+            #                 "-GNinja",
+            #                 f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable}",
+            #             ]
+            pass
         else:
             # Single config generators are handled "normally"
             single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
