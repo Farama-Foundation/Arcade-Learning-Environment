@@ -130,8 +130,8 @@ jobs:
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
           CIBW_BEFORE_BUILD: |
-            echo ninja --version
-            echo cmake --version
+            ninja --version
+            cmake --version
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
