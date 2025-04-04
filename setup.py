@@ -61,6 +61,7 @@ class CMakeBuild(build_ext):
             if not cmake_generator or cmake_generator == "Ninja":
                 try:
                     import ninja
+
                     ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
                     if os.path.exists(ninja_executable_path):
                         use_ninja = True
