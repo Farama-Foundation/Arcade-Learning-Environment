@@ -118,6 +118,7 @@ jobs:
 
       - run: vcpkg version
       - run: gcc --version
+      - run: cmake --version
 
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
