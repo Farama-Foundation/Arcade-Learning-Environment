@@ -113,6 +113,8 @@ jobs:
           push: false
           load: true
 
+      - run: vcpkg version
+
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
 
