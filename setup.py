@@ -66,14 +66,13 @@ class CMakeBuild(build_ext):
                         f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
                     ]
                 except ImportError:
-                    pass
-                    # ninja_executable = shutil.which("ninja")
-                    # if ninja_executable is not None:
-                    #     print(f"Using Ninja from PATH: {ninja_executable}")
-                    #     cmake_args += [
-                    #         "-GNinja",
-                    #         f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable}",
-                    #     ]
+                    ninja_executable = shutil.which("ninja")
+                    if ninja_executable is not None:
+                        print(f"Using Ninja from PATH: {ninja_executable}")
+                        cmake_args += [
+                            "-GNinja",
+                            f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable}",
+                        ]
 
         else:
             # Single config generators are handled "normally"
@@ -113,6 +112,8 @@ class CMakeBuild(build_ext):
         if not os.path.exists(build_temp):
             os.makedirs(build_temp)
 
+        print(f"Running CMake with generator: {cmake_generator or 'default'}")
+        print(f"CMake args: {cmake_args}")
         subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=build_temp)
         subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=build_temp)
 
