@@ -117,11 +117,6 @@ jobs:
           push: false
           load: true
 
-      - run: vcpkg version
-      - run: gcc --version
-      - run: cmake --version
-      - run: ninja --version
-
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
 
@@ -130,7 +125,6 @@ jobs:
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
           CIBW_BEFORE_BUILD: |
-            ninja --version
             cmake --version
 
       - name: Upload wheels

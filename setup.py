@@ -120,8 +120,6 @@ class CMakeBuild(build_ext):
         if not os.path.exists(build_temp):
             os.makedirs(build_temp)
 
-        print(f"Running CMake with generator: {cmake_generator or 'default'}")
-        print(f"CMake args: {cmake_args}")
         subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=build_temp)
         subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=build_temp)
 
@@ -152,7 +150,7 @@ def get_setup_requires():
     """Determine extra dependencies necessary for build"""
     setup_requires = []
     if shutil.which("cmake") is None:
-        setup_requires += ["cmake>=3.22"]
+        setup_requires += ["cmake>=3.22,<4.0"]
     if shutil.which("ninja") is None:
         setup_requires += [
             "ninja; sys_platform != 'win32' and platform_machine != 'arm64'"
