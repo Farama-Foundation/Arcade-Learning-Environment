@@ -66,7 +66,7 @@ jobs:
 
     - name: macos install cmake
       if: runner.os == 'macOS'
-      run: brew install cmake@4.0
+      run: brew install cmake
 
     - name: windows install cmake
       if: runner.os == 'Windows'
@@ -74,7 +74,7 @@ jobs:
 
     - name: ubuntu isntall cmake
       if: runner.os == 'Linux'
-      run: apt-get install cmake==4.0.0 -y
+      run: sudo apt-get install cmake==4.0.0 -y
 
     - run: cmake --version
 
@@ -136,6 +136,7 @@ jobs:
           CIBW_ARCHS: "${{ matrix.arch }}"
           CIBW_BEFORE_BUILD: |
             cmake --version
+            vcpkg version
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4

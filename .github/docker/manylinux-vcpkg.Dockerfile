@@ -23,7 +23,7 @@ RUN ls -la /usr/local/bin/ninja && \
 
 # Install vcpkg
 RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg
-RUN cd /opt/vcpkg && git reset --hard 9b75e789ece3f942159b8500584e35aafe3979ff
+RUN cd /opt/vcpkg && git reset --hard b328539dd9c022e3f11b267ef68f11ad3a85eaf8
 
 ENV VCPKG_INSTALLATION_ROOT="/opt/vcpkg"
 ENV PATH="${PATH}:/opt/vcpkg"
