@@ -45,13 +45,13 @@ jobs:
             python: '3.12'
             triplet: x64-linux-mixed
 
-#          - runs-on: macos-13
-#            python: '3.12'
-#            triplet: x64-osx-mixed
+          - runs-on: macos-13
+            python: '3.12'
+            triplet: x64-osx-mixed
 
-#          - runs-on: windows-latest
-#            python: '3.12'
-#            triplet: x64-windows
+          - runs-on: windows-latest
+            python: '3.12'
+            triplet: x64-windows
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
@@ -64,8 +64,18 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - run: vcpkg version
-    - run: gcc --version
+    - name: macos install cmake
+      if: runner.os == 'macOS'
+      run: brew install cmake@4.0
+
+    - name: windows install cmake
+      if: runner.os == 'Windows'
+      run: choco install cmake --version=4.0
+
+    - name: ubuntu isntall cmake
+      if: runner.os == 'Linux'
+      run: apt-get install cmake==4.0.0 -y
+
     - run: cmake --version
 
     - name: Download and unpack ROMs
