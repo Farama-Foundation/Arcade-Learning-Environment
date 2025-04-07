@@ -125,7 +125,23 @@ jobs:
           CIBW_BEFORE_BUILD: |
             cmake --version
             vcpkg version
-            echo $DISABLE_PARALLEL
+            echo 'DISABLE_PARALLEL=${DISABLE_PARALLEL}'
+
+      - name: Debug dbg CMakeCache logs
+        if: runner.os == 'Linux' && always()
+        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-dbg-CMakeCache.txt.log
+      - name: Debug rel CMakeCache logs
+        if: runner.os == 'Linux' && always()
+        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-rel-CMakeCache.txt.log
+      - name: Debug dbg CMakeConfigureLog logs
+        if: runner.os == 'Linux' && always()
+        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-dbg-CMakeConfigureLog.yaml.log
+      - name: Debug rel CMakeConfigureLog logs
+        if: runner.os == 'Linux' && always()
+        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-rel-CMakeConfigureLog.yaml.log
+      - name: Debug mixed out logs
+        if: runner.os == 'Linux' && always()
+        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-out.log
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
