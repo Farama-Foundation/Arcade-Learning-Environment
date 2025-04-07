@@ -7,6 +7,11 @@ RUN yum install -y curl unzip zip tar
 # Install a specific version of CMake from source
 RUN rm -rf /usr/local/bin/cmake || true
 RUN which cmake || echo "No cmake found in PATH"
+RUN curl -L https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9-linux-x86_64.sh -o cmake.sh && \
+    chmod +x cmake.sh && \
+    ./cmake.sh --skip-license --prefix=/usr && \
+    rm cmake.sh
+RUN which cmake && cmake --version
 
 # Install a newer version of Ninja build system
 RUN curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip && \
@@ -23,7 +28,7 @@ RUN ls -la /usr/local/bin/ninja && \
 
 # Install vcpkg
 RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg
-RUN cd /opt/vcpkg && git reset --hard b328539dd9c022e3f11b267ef68f11ad3a85eaf8
+RUN cd /opt/vcpkg && git reset --hard 9b75e789ece3f942159b8500584e35aafe3979ff
 
 ENV VCPKG_INSTALLATION_ROOT="/opt/vcpkg"
 ENV PATH="${PATH}:/opt/vcpkg"

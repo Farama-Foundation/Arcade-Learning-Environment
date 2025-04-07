@@ -64,18 +64,6 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: macos install cmake
-      if: runner.os == 'macOS'
-      run: brew install cmake
-
-    - name: windows install cmake
-      if: runner.os == 'Windows'
-      run: choco install cmake --version=4.0
-
-    - name: ubuntu isntall cmake
-      if: runner.os == 'Linux'
-      run: sudo apt-get install cmake==4.0.0 -y
-
     - run: cmake --version
 
     - name: Download and unpack ROMs
@@ -99,12 +87,12 @@ jobs:
         include:
           - runs-on: ubuntu-latest
             arch: x86_64
-#          - runs-on: windows-latest
-#            arch: AMD64
-#          - runs-on: macos-13
-#            arch: x86_64
-#          - runs-on: macos-13
-#            arch: arm64
+          - runs-on: windows-latest
+            arch: AMD64
+          - runs-on: macos-13
+            arch: x86_64
+          - runs-on: macos-13
+            arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
     steps:
