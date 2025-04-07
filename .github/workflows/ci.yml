@@ -125,6 +125,7 @@ jobs:
           CIBW_BEFORE_BUILD: |
             cmake --version
             vcpkg version
+            echo $VCPKG_DISABLE_PARALLEL_CONFIGURE
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4

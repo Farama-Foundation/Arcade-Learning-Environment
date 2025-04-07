@@ -38,3 +38,5 @@ RUN mkdir -p /root/.vcpkg && touch /root/.vcpkg/vcpkg.path.txt
 RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate install && \
     vcpkg integrate bash
+
+RUN export VCPKG_DISABLE_PARALLEL_CONFIGURE ON
