@@ -39,4 +39,4 @@ RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate install && \
     vcpkg integrate bash
 
-RUN export VCPKG_DISABLE_PARALLEL_CONFIGURE ON
+RUN export DISABLE_PARALLEL ON
