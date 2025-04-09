@@ -1,6 +1,4 @@
 FROM quay.io/pypa/manylinux2014_x86_64
-
-
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
 RUN yum install -y curl unzip zip tar
@@ -40,5 +38,13 @@ RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate install && \
     vcpkg integrate bash
 
+# Install python version
+RUN sudo add-apt-repository ppa:deadsnakes/ppa && apt install python3.11
 RUN python3 --version
+
+# Install package
+RUN ls /usr/local
+COPY . /usr/local/Arcade-Learning-Environment/
+WORKDIR /usr/local/Arcade-Learning-Environment/
+
 RUN pip3 install .
