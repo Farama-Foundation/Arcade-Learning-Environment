@@ -21,6 +21,30 @@ on:
       - "*"
 
 jobs:
+  debug_ubuntu_wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker build -f .github/docker/debug.Dockerfile \
+            --tag debug-docker .
+
+      - name: Debug dbg CMakeCache logs
+        if: always()
+        run: docker run debug-docker cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-dbg-CMakeCache.txt.log
+      - name: Debug rel CMakeCache logs
+        if: always()
+        run: docker run debug-docker cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-rel-CMakeCache.txt.log
+      - name: Debug dbg CMakeConfigureLog logs
+        if: always()
+        run: docker run debug-docker cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-dbg-CMakeConfigureLog.yaml.log
+      - name: Debug rel CMakeConfigureLog logs
+        if: always()
+        run: docker run debug-docker cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-rel-CMakeConfigureLog.yaml.log
+      - name: Debug mixed out logs
+        if: always()
+        run: docker run debug-docker cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-out.log
+
   pre-commit:
     runs-on: ubuntu-latest
     steps:
@@ -45,13 +69,13 @@ jobs:
             python: '3.12'
             triplet: x64-linux-mixed
 
-          - runs-on: macos-13
-            python: '3.12'
-            triplet: x64-osx-mixed
-
-          - runs-on: windows-latest
-            python: '3.12'
-            triplet: x64-windows
+#          - runs-on: macos-13
+#            python: '3.12'
+#            triplet: x64-osx-mixed
+#
+#          - runs-on: windows-latest
+#            python: '3.12'
+#            triplet: x64-windows
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
@@ -87,12 +111,12 @@ jobs:
         include:
           - runs-on: ubuntu-latest
             arch: x86_64
-          - runs-on: windows-latest
-            arch: AMD64
-          - runs-on: macos-13
-            arch: x86_64
-          - runs-on: macos-13
-            arch: arm64
+#          - runs-on: windows-latest
+#            arch: AMD64
+#          - runs-on: macos-13
+#            arch: x86_64
+#          - runs-on: macos-13
+#            arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
     steps:
@@ -125,23 +149,6 @@ jobs:
           CIBW_BEFORE_BUILD: |
             cmake --version
             vcpkg version
-            echo 'DISABLE_PARALLEL=${DISABLE_PARALLEL}'
-
-      - name: Debug dbg CMakeCache logs
-        if: runner.os == 'Linux' && always()
-        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-dbg-CMakeCache.txt.log
-      - name: Debug rel CMakeCache logs
-        if: runner.os == 'Linux' && always()
-        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-rel-CMakeCache.txt.log
-      - name: Debug dbg CMakeConfigureLog logs
-        if: runner.os == 'Linux' && always()
-        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-dbg-CMakeConfigureLog.yaml.log
-      - name: Debug rel CMakeConfigureLog logs
-        if: runner.os == 'Linux' && always()
-        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-rel-CMakeConfigureLog.yaml.log
-      - name: Debug mixed out logs
-        if: runner.os == 'Linux' && always()
-        run: cat /opt/vcpkg/buildtrees/zlib/config-x64-linux-mixed-out.log
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
