@@ -1,7 +1,7 @@
 FROM quay.io/pypa/manylinux2014_x86_64
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
-RUN yum install -y curl unzip zip tar
+RUN yum install -y curl unzip zip tar python3
 
 # Install a specific version of CMake from source
 RUN rm -rf /usr/local/bin/cmake || true
@@ -38,16 +38,10 @@ RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate install && \
     vcpkg integrate bash
 
-# Install python version
-RUN apt install -y software-properties-common
-RUN add-apt-repository ppa:deadsnakes/ppa && \
-    apt update && \
-    apt install -y python3.11
-RUN python3 --version
-
 # Install package
 RUN ls /usr/local
 COPY . /usr/local/Arcade-Learning-Environment/
 WORKDIR /usr/local/Arcade-Learning-Environment/
 
+RUN python3 --version
 RUN pip3 install .

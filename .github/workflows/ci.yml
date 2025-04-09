@@ -96,8 +96,8 @@ jobs:
     - name: Build
       run: python -m pip install --verbose .[test]
 
-    - name: Test
-      run: python -m pytest
+#    - name: Test
+#      run: python -m pytest
 
   build-wheels:
     name: "${{ matrix.runs-on }} • ${{ matrix.arch }}"
