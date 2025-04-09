@@ -39,6 +39,7 @@ RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate bash
 
 # Install python version
+RUN apt install -y software-properties-common
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt update && \
     apt install -y python3.11
