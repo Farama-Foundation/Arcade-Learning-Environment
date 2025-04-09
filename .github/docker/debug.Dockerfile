@@ -40,5 +40,5 @@ RUN bootstrap-vcpkg.sh &&  \
     vcpkg integrate install && \
     vcpkg integrate bash
 
-RUN python --version
-RUN pip install .
+RUN python3 --version
+RUN pip3 install .
