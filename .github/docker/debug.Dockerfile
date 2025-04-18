@@ -1,7 +1,22 @@
 FROM quay.io/pypa/manylinux2014_x86_64
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
-RUN yum install -y curl unzip zip tar python3
+RUN yum install -y curl unzip zip tar wget openssl-devel bzip2-devel libffi-devel
+
+# Install Python 3.10 from source
+RUN cd /tmp && \
+    wget https://www.python.org/ftp/python/3.10.13/Python-3.10.13.tgz && \
+    tar xzf Python-3.10.13.tgz && \
+    cd Python-3.10.13 && \
+    ./configure --enable-optimizations && \
+    make altinstall && \
+    rm -rf /tmp/Python-3.10.13*
+
+# Create symbolic links for Python 3.10
+RUN ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3 && \
+    ln -sf /usr/local/bin/python3.10 /usr/local/bin/python && \
+    ln -sf /usr/local/bin/pip3.10 /usr/local/bin/pip3 && \
+    ln -sf /usr/local/bin/pip3.10 /usr/local/bin/pip
 
 # Install a specific version of CMake from source
 RUN rm -rf /usr/local/bin/cmake || true

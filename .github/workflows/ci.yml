@@ -25,9 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          docker build -f .github/docker/debug.Dockerfile \
-            --tag debug-docker .
+      - run: docker build -f .github/docker/debug.Dockerfile --tag debug-docker .
+
+      - run: docker run debug-docker pip install .
 
       - name: Debug dbg CMakeCache logs
         if: always()
