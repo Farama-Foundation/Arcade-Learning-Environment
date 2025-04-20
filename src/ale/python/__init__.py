@@ -1,8 +1,8 @@
 """Python module for interacting with ALE c++ interface and gymnasium wrapper."""
 
+import importlib.metadata as metadata
 import os
 import platform
-import sys
 import warnings
 
 packagedir = os.path.abspath(os.path.dirname(__file__))
@@ -23,20 +23,10 @@ It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
         )
 
     # Loading DLLs on Windows is kind of a disaster
-    # The best approach seems to be using LoadLibraryEx
-    # with user defined search paths. This kind of acts like
-    # $ORIGIN or @loader_path on Unix / macOS.
+    # The best approach seems to be using LoadLibraryEx with user defined search paths.
+    # This kind of acts like $ORIGIN or @loader_path on Unix / macOS.
     # This way we guarantee we load OUR DLLs.
-    if sys.version_info.major == 3 and sys.version_info.minor >= 8:
-        os.add_dll_directory(packagedir)
-    else:
-        # TODO: Py38: Remove AddDllDirectory
-        kernel32 = ctypes.WinDLL("kernel32.dll", use_last_error=True)
-        if hasattr(kernel32, "AddDllDirectory"):
-            kernel32.AddDllDirectory(packagedir)
-
-# version string from package.
-import importlib.metadata as metadata
+    os.add_dll_directory(packagedir)
 
 __version__ = metadata.version(__package__)
 
