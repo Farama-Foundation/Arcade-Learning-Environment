@@ -72,9 +72,6 @@ norecursedirs = ["vcpkg", "build"]
 skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
-# Limit parallelism
-environment = { CMAKE_BUILD_PARALLEL_LEVEL = "1" }
-
 manylinux-x86_64-image = "manylinux-vcpkg:latest"
 
 [tool.cibuildwheel.linux]
