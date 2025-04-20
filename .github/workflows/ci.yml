@@ -122,7 +122,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.23.2
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
-          CIBW_BEFORE_ALL_LINUX: vcpkg install --triplet=x64-linux-mixed --feature-flags=manifests --x-feature=sdl
+          CIBW_BEFORE_ALL_LINUX: vcpkg install --triplet=x64-linux-mixed -overlay-triplets=cmake/custom-triplets --x-feature=sdl
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
