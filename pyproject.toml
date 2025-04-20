@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=61",
+    "setuptools>=77.0.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -9,7 +9,8 @@ name = "ale-py"
 description = "The Arcade Learning Environment (ALE) - a platform for AI research."
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "GPLv2"}
+license = "GPL-2.0-only"
+license-files = ["LICENSE.md"]
 keywords = ["reinforcement-learning", "arcade-learning-environment", "atari"]
 authors = [
     {name = "Marc G. Bellemare"},
@@ -24,7 +25,6 @@ maintainers = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -72,7 +72,6 @@ norecursedirs = ["vcpkg", "build"]
 skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
-
 manylinux-x86_64-image = "manylinux-vcpkg:latest"
 
 [tool.cibuildwheel.linux]
@@ -81,12 +80,12 @@ environment-pass = ["GITHUB_REF"]
 # macOS x86-64
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_x86_64"
-environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "10.15" }
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "13.0" }
 
 # macOS arm64
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_arm64"
-environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "10.15" }
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "13.0" }
 
 # Windows x64
 [[tool.cibuildwheel.overrides]]

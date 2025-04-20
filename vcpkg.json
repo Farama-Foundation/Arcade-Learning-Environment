@@ -8,11 +8,20 @@
   "features": {
     "sdl": {
       "description": "Enable SDL, this enables display and audio support.",
-      "dependencies": [ "sdl2" ]
+      "dependencies": [
+        {
+          "name": "sdl2",
+          "default-features": false,
+          "features": []
+        }
+      ]
     }
   },
-  "builtin-baseline": "9aa0d66373ce3a6868d12353d0d4960db0d4bd18",
+  "builtin-baseline": "0ca64b4e1c70fa6d9f53b369b8f3f0843797c20c",
   "overrides": [
-    { "name": "sdl2", "version": "2.24.2" }
+    {
+      "name": "sdl2",
+      "version": "2.30.11"
+    }
   ]
 }
