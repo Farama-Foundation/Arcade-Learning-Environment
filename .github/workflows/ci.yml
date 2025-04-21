@@ -217,44 +217,44 @@ jobs:
 
           - runs-on: macos-13
             python: '3.9'
-            wheel-name: 'cp39-cp39-macosx_10_15_x86_64'
+            wheel-name: 'cp39-cp39-macosx_13_0_x86_64'
             arch: x86_64
           - runs-on: macos-13
             python: '3.10'
-            wheel-name: 'cp310-cp310-macosx_10_15_x86_64'
+            wheel-name: 'cp310-cp310-macosx_13_0_x86_64'
             arch: x86_64
           - runs-on: macos-13
             python: '3.11'
-            wheel-name: 'cp311-cp311-macosx_10_15_x86_64'
+            wheel-name: 'cp311-cp311-macosx_13_0_x86_64'
             arch: x86_64
           - runs-on: macos-13
             python: '3.12'
-            wheel-name: 'cp312-cp312-macosx_10_15_x86_64'
+            wheel-name: 'cp312-cp312-macosx_13_0_x86_64'
             arch: x86_64
           - runs-on: macos-13
             python: '3.13'
-            wheel-name: 'cp313-cp313-macosx_10_15_x86_64'
+            wheel-name: 'cp313-cp313-macosx_13_0_x86_64'
             arch: x86_64
 
           - runs-on: macos-14
             python: '3.9'
-            wheel-name: 'cp39-cp39-macosx_11_0_arm64'
+            wheel-name: 'cp39-cp39-macosx_13_0_arm64'
             arch: arm64
           - runs-on: macos-14
             python: '3.10'
-            wheel-name: 'cp310-cp310-macosx_11_0_arm64'
+            wheel-name: 'cp310-cp310-macosx_13_0_arm64'
             arch: arm64
           - runs-on: macos-14
             python: '3.11'
-            wheel-name: 'cp311-cp311-macosx_11_0_arm64'
+            wheel-name: 'cp311-cp311-macosx_13_0_arm64'
             arch: arm64
           - runs-on: macos-14
             python: '3.12'
-            wheel-name: 'cp312-cp312-macosx_11_0_arm64'
+            wheel-name: 'cp312-cp312-macosx_13_0_arm64'
             arch: arm64
           - runs-on: macos-14
             python: '3.13'
-            wheel-name: 'cp313-cp313-macosx_11_0_arm64'
+            wheel-name: 'cp313-cp313-macosx_13_0_arm64'
             arch: arm64
 
     runs-on: ${{ matrix.runs-on }}
