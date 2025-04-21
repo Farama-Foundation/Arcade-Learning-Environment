@@ -12,7 +12,7 @@
         {
           "name": "sdl2",
           "default-features": false,
-          "features": []
+          "features": ["wayland", "x11"]
         }
       ]
     },
@@ -27,7 +27,7 @@
   "overrides": [
     {
       "name": "sdl2",
-      "version": "2.30.11"
+      "version": "2.32.4"
     }
   ]
 }
