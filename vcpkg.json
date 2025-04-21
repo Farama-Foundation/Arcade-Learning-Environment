@@ -8,13 +8,7 @@
   "features": {
     "sdl": {
       "description": "Enable SDL, this enables display and audio support.",
-      "dependencies": [
-        {
-          "name": "sdl2",
-          "default-features": false,
-          "features": ["wayland", "x11"]
-        }
-      ]
+      "dependencies": ["sdl2"]
     },
     "vector": {
       "description": "Enable Vector, this enables vectorisation of atari environments",
@@ -27,7 +21,7 @@
   "overrides": [
     {
       "name": "sdl2",
-      "version": "2.32.4"
+      "version": "2.30.11"
     }
   ]
 }
