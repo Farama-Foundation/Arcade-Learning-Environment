@@ -120,7 +120,10 @@ def test_rollout_consistency(
             ale_envs.step(actions)
         )
 
-        assert data_equivalence(gym_obs, ale_obs), i
+        if not data_equivalence(gym_obs, ale_obs):
+            diff = gym_obs.astype(np.int32) - ale_obs.astype(np.int32)
+            print(f'Timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)}')
+
         assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards)
         assert data_equivalence(gym_terminations, ale_terminations)
         assert data_equivalence(gym_truncations, ale_truncations)
