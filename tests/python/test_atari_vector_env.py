@@ -122,8 +122,9 @@ def test_rollout_consistency(
 
         if not data_equivalence(gym_obs, ale_obs):
             diff = gym_obs.astype(np.int32) - ale_obs.astype(np.int32)
-            print(
-                f"Timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)}"
+            gym.logger.warn(
+                f"rollout error for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)} "
+                f"({num_envs=}, {stack_num=}, {img_height=}, {img_width=}, {frame_skip=})"
             )
 
         assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards)
