@@ -33,46 +33,6 @@ def _rom_id_to_name(rom: str) -> str:
     return rom.title().replace("_", "")
 
 
-def _register_rom_configs(
-    roms: Sequence[str],
-    obs_types: Sequence[str],
-    configs: Sequence[EnvConfig],
-    prefix: str = "",
-):
-    if len(prefix) > 0 and prefix[-1] != "/":
-        prefix += "/"
-
-    for rom in roms:
-        for obs_type in obs_types:
-            for config in configs:
-                for flavour in config.flavours:
-                    name = _rom_id_to_name(rom)
-                    name = f"{name}-ram" if obs_type == "ram" else name
-
-                    # Parse config kwargs
-                    config_kwargs = (
-                        config.kwargs(rom) if callable(config.kwargs) else config.kwargs
-                    )
-                    # Parse flavour kwargs
-                    flavour_kwargs = (
-                        flavour.kwargs(rom)
-                        if callable(flavour.kwargs)
-                        else flavour.kwargs
-                    )
-
-                    # Register the environment
-                    gymnasium.register(
-                        id=f"{prefix}{name}{flavour.suffix}-{config.version}",
-                        entry_point="ale_py.env:AtariEnv",
-                        kwargs=dict(
-                            game=rom,
-                            obs_type=obs_type,
-                            **config_kwargs,
-                            **flavour_kwargs,
-                        ),
-                    )
-
-
 def register_v0_v4_envs():
     """Registers all v0 and v4 environments."""
     legacy_games = [
@@ -176,27 +136,59 @@ def register_v0_v4_envs():
         ),
     ]
 
-    _register_rom_configs(legacy_games, obs_types, versions)
+    for rom in legacy_games:
+        for obs_type in obs_types:
+            for config in versions:
+                for flavour in config.flavours:
+                    name = _rom_id_to_name(rom)
+                    name = f"{name}-ram" if obs_type == "ram" else name
+
+                    # Parse config kwargs
+                    if callable(config.kwargs):
+                        config_kwargs = config.kwargs(rom)
+                    else:
+                        config_kwargs = config.kwargs
+
+                    # Parse flavour kwargs
+                    if callable(flavour.kwargs):
+                        flavour_kwargs = flavour.kwargs(rom)
+                    else:
+                        flavour_kwargs = flavour.kwargs
+
+                    # Register the environment
+                    gymnasium.register(
+                        id=f"{name}{flavour.suffix}-{config.version}",
+                        entry_point="ale_py.env:AtariEnv",
+                        kwargs=dict(
+                            game=rom,
+                            obs_type=obs_type,
+                            **config_kwargs,
+                            **flavour_kwargs,
+                        ),
+                    )
 
 
 def register_v5_envs():
     """Register all v5 environments."""
     all_games = roms.get_all_rom_ids()
-    obs_types = ["rgb", "ram"]
 
-    # max_episode_steps is 108k frames which is 30 mins of gameplay.
-    # This corresponds to 108k / 4 = 27,000 steps
-    versions = [
-        EnvConfig(
-            version="v5",
-            kwargs={
-                "repeat_action_probability": 0.25,
-                "full_action_space": False,
-                "frameskip": 4,
-                "max_num_frames_per_episode": 108_000,
-            },
-            flavours=[EnvFlavour("", {})],
+    for rom in all_games:
+        if rom in {"combat", "joust", "maze_craze", "warlords"}:
+            continue
+
+        name = _rom_id_to_name(rom)
+
+        # max_episode_steps is 108k frames which is 30 mins of gameplay.
+        # This corresponds to 108k / 4 = 27,000 steps
+        gymnasium.register(
+            id=f"ALE/{name}-v5",
+            entry_point="ale_py.env:AtariEnv",
+            vector_entry_point="ale_py.vector_env:AtariVectorEnv",
+            kwargs=dict(
+                game=rom,
+                repeat_action_probability=0.25,
+                full_action_space=False,
+                frameskip=4,
+                max_num_frames_per_episode=108_000,
+            ),
         )
-    ]
-
-    _register_rom_configs(all_games, obs_types, versions, prefix="ALE/")

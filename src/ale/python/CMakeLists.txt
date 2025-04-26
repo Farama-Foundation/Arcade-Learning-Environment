@@ -14,7 +14,14 @@ if(NOT pybind11_FOUND)
     FetchContent_MakeAvailable(pybind11)
 endif()
 
-add_library(ale-py MODULE ale_python_interface.cpp)
+# If vector library is enabled, include the vector Python interface
+if(BUILD_VECTOR_LIB)
+    add_library(ale-py MODULE ale_python_interface.cpp ale_vector_python_interface.cpp)
+    target_compile_definitions(ale-py PRIVATE BUILD_VECTOR_LIB)
+else ()
+    add_library(ale-py MODULE ale_python_interface.cpp)
+endif()
+
 # Depend on the ALE and pybind11 module
 target_link_libraries(ale-py PUBLIC ale ale-lib)
 target_link_libraries(ale-py PRIVATE pybind11::module)

@@ -1,13 +1,11 @@
 import itertools
 import warnings
-from itertools import product
 from unittest.mock import patch
 
 import gymnasium
 import numpy as np
 import pytest
 from ale_py.env import AtariEnv
-from ale_py.registration import _register_rom_configs, register_v0_v4_envs
 from gymnasium.utils.env_checker import check_env
 from utils import tetris_env, tetris_rom_path  # noqa: F401
 
@@ -33,7 +31,7 @@ def test_roms_register():
         len(registered_v0_roms) == 372
     ), f"{len(registered_roms)}, {len(registered_v0_roms)}, {len(registered_v4_roms)}, {len(registered_v5_roms)}"
     assert len(registered_v4_roms) == 372
-    assert len(registered_v5_roms) == 216
+    assert len(registered_v5_roms) == 104
 
     assert len(registered_roms) == len(registered_v0_roms) + len(
         registered_v4_roms
@@ -52,12 +50,6 @@ def test_roms_register():
     ),
 )
 def test_check_env(env_id, continuous):
-    if any(
-        unsupported_game in env_id
-        for unsupported_game in ["Warlords", "MazeCraze", "Joust", "Combat"]
-    ):
-        pytest.skip(env_id)
-
     with warnings.catch_warnings(record=True) as caught_warnings:
         env = gymnasium.make(env_id, continuous=continuous).unwrapped
         check_env(env, skip_render_check=True)
@@ -70,116 +62,6 @@ def test_check_env(env_id, continuous):
             for snippet in _ACCEPTABLE_WARNING_SNIPPETS
         ):
             raise ValueError(warning.message.args[0])
-
-
-def test_register_legacy_env_id():
-    prefix = "ALETest/"
-
-    _original_register_gym_configs = _register_rom_configs
-
-    def _mocked_register_gym_configs(*args, **kwargs):
-        return _original_register_gym_configs(*args, **kwargs, prefix=prefix)
-
-    with patch(
-        "ale_py.registration._register_rom_configs",
-        new=_mocked_register_gym_configs,
-    ):
-        # Register internal IDs
-        register_v0_v4_envs()
-
-        # Check if we registered the proper environments
-        envids = set(map(lambda e: e.id, gymnasium.registry.values()))
-        legacy_games = [
-            "Adventure",
-            "AirRaid",
-            "Alien",
-            "Amidar",
-            "Assault",
-            "Asterix",
-            "Asteroids",
-            "Atlantis",
-            "BankHeist",
-            "BattleZone",
-            "BeamRider",
-            "Berzerk",
-            "Bowling",
-            "Boxing",
-            "Breakout",
-            "Carnival",
-            "Centipede",
-            "ChopperCommand",
-            "CrazyClimber",
-            "Defender",
-            "DemonAttack",
-            "DoubleDunk",
-            "ElevatorAction",
-            "Enduro",
-            "FishingDerby",
-            "Freeway",
-            "Frostbite",
-            "Gopher",
-            "Gravitar",
-            "Hero",
-            "IceHockey",
-            "Jamesbond",
-            "JourneyEscape",
-            "Kangaroo",
-            "Krull",
-            "KungFuMaster",
-            "MontezumaRevenge",
-            "MsPacman",
-            "NameThisGame",
-            "Phoenix",
-            "Pitfall",
-            "Pong",
-            "Pooyan",
-            "PrivateEye",
-            "Qbert",
-            "Riverraid",
-            "RoadRunner",
-            "Robotank",
-            "Seaquest",
-            "Skiing",
-            "Solaris",
-            "SpaceInvaders",
-            "StarGunner",
-            "Tennis",
-            "TimePilot",
-            "Tutankham",
-            "UpNDown",
-            "Venture",
-            "VideoPinball",
-            "WizardOfWor",
-            "YarsRevenge",
-            "Zaxxon",
-        ]
-        legacy_games = map(lambda game: f"{prefix}{game}", legacy_games)
-
-        obs_types = ["", "-ram"]
-        suffixes = ["Deterministic", "NoFrameskip"]
-        versions = ["-v0", "-v4"]
-
-        all_ids = set(
-            map("".join, product(legacy_games, obs_types, suffixes, versions))
-        )
-        assert all_ids.issubset(envids)
-
-
-def test_register_gym_envs(tetris_rom_path):
-    with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: tetris_rom_path):
-        # Register internal IDs
-        # register_v5_envs()
-
-        # Check if we registered the proper environments
-        envids = set(map(lambda e: e.id, gymnasium.registry.values()))
-        games = ["ALE/Tetris"]
-
-        obs_types = ["", "-ram"]
-        suffixes = []
-        versions = ["-v5"]
-
-        all_ids = set(map("".join, product(games, obs_types, suffixes, versions)))
-        assert all_ids.issubset(envids)
 
 
 def test_gym_make(tetris_env):

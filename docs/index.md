@@ -41,6 +41,7 @@ env.close()
 getting-started
 env-spec
 environments
+vector-environment
 multi-agent-environments
 faq
 citing

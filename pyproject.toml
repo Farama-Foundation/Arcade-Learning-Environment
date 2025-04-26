@@ -46,11 +46,12 @@ dynamic = ["version"]
 test = [
     "pytest>=7.0",
     "gymnasium>=1.0.0",
+    "opencv-python>=3.0",
 ]
 
 [project.urls]
 homepage = "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
-documentation = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/tree/master/docs"
+documentation = "https://ale.farama.org"
 changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
 [tool.setuptools]
