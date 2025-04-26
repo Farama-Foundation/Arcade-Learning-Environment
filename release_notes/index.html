@@ -321,6 +321,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../environments/zaxxon/">Zaxxon</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../vector-environment/">ALE Vector Environment Guide</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../multi-agent-environments/">Multi-agent environments</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Multi-agent environments</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../multi-agent-environments/basketball_pong/">Basketball Pong</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../multi-agent-environments/boxing/">Boxing</a></li>
@@ -421,6 +422,42 @@
             
             <section class="tex2jax_ignore mathjax_ignore" id="ale-release-notes">
 <h1>ALE Release Notes<a class="headerlink" href="#ale-release-notes" title="Link to this heading">¶</a></h1>
+<section id="release-v0-11-0">
+<h2>ALE v0.11.0<a class="headerlink" href="#release-v0-11-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-04-26 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.11.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.11.0/">PyPI</a></em></p>
+<p>This release adds (an experiment) built-in vectorisation environment, available through <code>gymnasium.make_vec("ALE/{game_name}-v5", num_envs)</code> or <code>ale_py.AtariVectorEnv("{rom_name}", num_envs)</code>.</p>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="import gymnasium as gym
+import ale_py
+
+gym.register_envs(ale_py)
+
+envs = gym.make_vec(&quot;ALE/Pong-v5&quot;)
+observations, infos = envs.reset()
+
+for i in range(100):
+  actions = envs.action_space.sample()
+  observations, rewards, terminations, truncations, infos = envs.step(actions)
+
+envs.close()"><pre><span class="pl-k">import</span> <span class="pl-s1">gymnasium</span> <span class="pl-k">as</span> <span class="pl-s1">gym</span>
+<span class="pl-k">import</span> <span class="pl-s1">ale_py</span>
+
+<span class="pl-s1">gym</span>.<span class="pl-c1">register_envs</span>(<span class="pl-s1">ale_py</span>)
+
+<span class="pl-s1">envs</span> <span class="pl-c1">=</span> <span class="pl-s1">gym</span>.<span class="pl-c1">make_vec</span>(<span class="pl-s">"ALE/Pong-v5"</span>)
+<span class="pl-s1">observations</span>, <span class="pl-s1">infos</span> <span class="pl-c1">=</span> <span class="pl-s1">envs</span>.<span class="pl-c1">reset</span>()
+
+<span class="pl-k">for</span> <span class="pl-s1">i</span> <span class="pl-c1">in</span> <span class="pl-en">range</span>(<span class="pl-c1">100</span>):
+  <span class="pl-s1">actions</span> <span class="pl-c1">=</span> <span class="pl-s1">envs</span>.<span class="pl-c1">action_space</span>.<span class="pl-c1">sample</span>()
+  <span class="pl-s1">observations</span>, <span class="pl-s1">rewards</span>, <span class="pl-s1">terminations</span>, <span class="pl-s1">truncations</span>, <span class="pl-s1">infos</span> <span class="pl-c1">=</span> <span class="pl-s1">envs</span>.<span class="pl-c1">step</span>(<span class="pl-s1">actions</span>)
+
+<span class="pl-s1">envs</span>.<span class="pl-c1">close</span>()</pre></div>
+<p>Vectorisation is a crucial feature of RL to help increase the sample rate of environments through sampling multiple sub-environments at the same time.<br>
+<a href="https://gymnasium.farama.org/api/vector/" rel="nofollow">Gymnasium</a> provides a generalised vectorisation capability, however, is relatively slow due its python implementation.<br>
+For faster implementations, <a href="https://github.com/sail-sg/envpool">EnvPool</a> provide C++ vectorisation that significantly increase the sample speed but it no longer maintained.<br>
+Inspired by the <code>EnvPool</code> implementation, we've implemented an asynchronous vectorisation environment in C++, in particular, the <a href="https://gymnasium.farama.org/api/wrappers/misc_wrappers/#gymnasium.wrappers.AtariPreprocessing" rel="nofollow">standard Atari preprocessing</a> including frame skipping, frame stacking, observation resizing, etc.</p>
+<p>For full documentation of the vector environment, see <a href="https://ale.farama.org/v0.11.0/vector-environment" rel="nofollow">this page</a>.</p>
+<p>We will continue building out this vectorisation to include <a href="https://github.com/openxla/xla">XLA</a> support, improved preprocessing and auto resetting.</p>
+<p>As this is an experimental feature, we wish to hear about any bugs, problems or features to add. Raise an issue on GitHub or ask a question on the <a href="https://discord.gg/bnJ6kubTg6" rel="nofollow">Farama Discord server</a>.</p></section>
 <section id="release-v0-10-2">
 <h2>ALE v0.10.2<a class="headerlink" href="#release-v0-10-2" title="Link to this heading">¶</a></h2>
 <p><em>Released on 2025-02-14 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.10.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.10.2/">PyPI</a></em></p>
@@ -862,6 +899,7 @@ simply run <code>ale-import-roms</code> which will automatically correct this fo
             <div class="toc-tree">
               <ul>
 <li><a class="reference internal" href="#">ALE Release Notes</a><ul>
+<li><a class="reference internal" href="#release-v0-11-0">ALE v0.11.0</a></li>
 <li><a class="reference internal" href="#release-v0-10-2">ALE v0.10.2</a></li>
 <li><a class="reference internal" href="#release-v0-10-1">ALE v0.10.1</a></li>
 <li><a class="reference internal" href="#release-v0-10-0">ALE v0.10.0</a></li>
@@ -914,7 +952,7 @@ simply run <code>ale-import-roms</code> which will automatically correct this fo
     
     
 
-    <script src="../_static/documentation_options.js?v=f862a68d"></script>
+    <script src="../_static/documentation_options.js?v=c9b6e68e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>
