@@ -121,6 +121,7 @@ def test_rollout_consistency(
         )
 
         if not data_equivalence(gym_obs, ale_obs):
+            # For MacOS ARM, there is a known problem where there is a max difference of 1 for 1 or 2 pixels
             diff = gym_obs.astype(np.int32) - ale_obs.astype(np.int32)
             gym.logger.warn(
                 f"rollout error for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)} "
