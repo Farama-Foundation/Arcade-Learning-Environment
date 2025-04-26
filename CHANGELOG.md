@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.10.2...v0.11.0) - 2025-04-26
+
+This release adds (an experiment) built-in vectorisation environment, available through `gymnasium.make_vec("ALE/{game_name}-v5", num_envs)` or `ale_py.AtariVectorEnv("{rom_name}", num_envs)`.
+
+```python
+import gymnasium as gym
+import ale_py
+
+gym.register_envs(ale_py)
+
+envs = gym.make_vec("ALE/Pong-v5")
+observations, infos = envs.reset()
+
+for i in range(100):
+  actions = envs.action_space.sample()
+  observations, rewards, terminations, truncations, infos = envs.step(actions)
+
+envs.close()
+```
+
+Vectorisation is a crucial feature of RL to help increase the sample rate of environments through sampling multiple sub-environments at the same time.
+[Gymnasium](https://gymnasium.farama.org/api/vector/) provides a generalised vectorisation capability, however, is relatively slow due its python implementation.
+For faster implementations, [EnvPool](https://github.com/sail-sg/envpool) provide C++ vectorisation that significantly increase the sample speed but it no longer maintained.
+Inspired by the `EnvPool` implementation, we've implemented an asynchronous vectorisation environment in C++, in particular, the [standard Atari preprocessing](https://gymnasium.farama.org/api/wrappers/misc_wrappers/#gymnasium.wrappers.AtariPreprocessing) including frame skipping, frame stacking, observation resizing, etc.
+
+For full documentation of the vector environment, see [this page](https://ale.farama.org/v0.11.0/vector-environment).
+
+We will continue building out this vectorisation to include [XLA](https://github.com/openxla/xla) support, improved preprocessing and auto resetting.
+
+As this is an experimental feature, we wish to hear about any bugs, problems or features to add. Raise an issue on GitHub or ask a question on the [Farama Discord server](https://discord.gg/bnJ6kubTg6).
+
 ## [0.10.2](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.10.1...v0.10.2) - 2025-02-13
 
 Fixed performance regression for CPP users - A single-argument `act` function was missing causing the `paddle_strength` introduced in v0.10.0 to default to zero rather than one. As Gymnasium passed this variable to act, this was only an issue for users directly interacting with `ale_interface`.  For more details, see https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/595.

@@ -28,29 +28,29 @@ It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
     # This way we guarantee we load OUR DLLs.
     os.add_dll_directory(packagedir)
 
-
 __version__ = metadata.version(__package__)
 
 # Import native shared library
-from ale_py._ale_py import (  # noqa: E402
-    SDL_SUPPORT,
-    Action,
-    ALEInterface,
-    ALEState,
-    LoggerMode,
-)
+from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMode
 
 __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
 
 try:
-    from ale_py.env import AtariEnv, AtariEnvStepMetadata
+    # As the vector interface is an optional cmake build, it's not assumed to exist
+    from ale_py._ale_py import ALEVectorInterface
 
-    __all__ += ["AtariEnv", "AtariEnvStepMetadata"]
-
-    from ale_py.registration import register_v0_v4_envs, register_v5_envs
-
-    register_v0_v4_envs()
-    register_v5_envs()
+    __all__ += ["ALEVectorInterface"]
 except ImportError:
     pass
+
+
+from ale_py.env import AtariEnv, AtariEnvStepMetadata
+from ale_py.vector_env import AtariVectorEnv
+
+__all__ += ["AtariEnv", "AtariEnvStepMetadata", "AtariVectorEnv"]
+
+from ale_py.registration import register_v0_v4_envs, register_v5_envs
+
+register_v0_v4_envs()
+register_v5_envs()

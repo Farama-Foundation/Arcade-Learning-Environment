@@ -13,6 +13,12 @@ if(SDL_SUPPORT)
   list(APPEND VCPKG_MANIFEST_FEATURES "sdl")
 endif()
 
+option(BUILD_VECTOR_LIB "Build Vector Interface" OFF)
+if (BUILD_VECTOR_LIB)
+  list(APPEND VCPKG_MANIFEST_FEATURES "vector")
+  add_definitions(-DBUILD_VECTOR_LIB)
+endif()
+
 # Set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
