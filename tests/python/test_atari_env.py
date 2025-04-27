@@ -42,12 +42,6 @@ def test_roms_register():
 )
 @pytest.mark.parametrize("continuous", [True, False])
 def test_check_env(env_id, continuous):
-    if any(
-        unsupported_game in env_id
-        for unsupported_game in ["Warlords", "MazeCraze", "Joust", "Combat"]
-    ):
-        pytest.skip(env_id)
-
     with warnings.catch_warnings(record=True) as caught_warnings:
         env = gymnasium.make(env_id, continuous=continuous).unwrapped
         check_env(env, skip_render_check=True)

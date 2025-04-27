@@ -397,10 +397,11 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             tuple(sorted(mapping[act_idx])): act_idx for act_idx in self._action_set
         }
 
+    @staticmethod
     @lru_cache(18)
     def map_action_idx(
-        self, left_center_right: int, down_center_up: int, fire: bool
-    ) -> int:
+        left_center_right: int, down_center_up: int, fire: bool
+    ) -> ale_py.Action:
         """Return an action idx given unit actions for underlying env."""
         # no op and fire
         if left_center_right == 0 and down_center_up == 0 and not fire:

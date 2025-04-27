@@ -58,6 +58,17 @@ if (BUILD_CPP_LIB OR BUILD_PYTHON_LIB)
   add_library(ale-lib ale_interface.cpp)
   set_target_properties(ale-lib PROPERTIES OUTPUT_NAME ale)
   target_link_libraries(ale-lib PUBLIC ale)
+
+  if (BUILD_VECTOR_LIB)
+    find_package(OpenCV CONFIG REQUIRED)
+    include_directories(${OpenCV_INCLUDE_DIRS})
+
+    target_include_directories(ale PUBLIC external)
+
+    add_subdirectory(vector)
+
+    target_link_libraries(ale PRIVATE ${OpenCV_LIBS})
+  endif()
 endif()
 
 # Python Library

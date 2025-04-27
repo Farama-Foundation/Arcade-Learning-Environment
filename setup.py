@@ -2,6 +2,7 @@
 
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -46,6 +47,7 @@ class CMakeBuild(build_ext):
             "-DSDL_DYNLOAD=ON",
             "-DBUILD_CPP_LIB=OFF",
             "-DBUILD_PYTHON_LIB=ON",
+            "-DBUILD_VECTOR_LIB=ON",
         ]
         build_args = []
 
@@ -65,7 +67,10 @@ class CMakeBuild(build_ext):
                         f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
                     ]
                 except ImportError:
-                    pass
+                    if shutil.which("ninja") is not None:
+                        cmake_args += [
+                            "-GNinja",
+                        ]
 
         else:
             # Single config generators are handled "normally"
@@ -131,6 +136,18 @@ def parse_version(version_file):
     return version
 
 
+def get_setup_requires():
+    """Determine extra dependencies necessary for build"""
+    setup_requires = []
+    if shutil.which("cmake") is None:
+        setup_requires += ["cmake>=3.22"]
+    if shutil.which("ninja") is None:
+        setup_requires += [
+            "ninja; sys_platform != 'win32' and platform_machine != 'arm64'"
+        ]
+    return setup_requires
+
+
 if __name__ == "__main__":
     # Allow for running `pip wheel` from other directories
     current_working_file and os.chdir(current_working_file)
@@ -139,6 +156,7 @@ if __name__ == "__main__":
     setup(
         name="ale-py",
         version=parse_version("version.txt"),
+        setup_requires=get_setup_requires(),
         ext_modules=[CMakeExtension("ale_py._ale_py")],
         cmdclass={"build_ext": CMakeBuild},
     )

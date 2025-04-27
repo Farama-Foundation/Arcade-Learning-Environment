@@ -16,7 +16,6 @@
 #ifndef __ALE_PYTHON_INTERFACE_HPP__
 #define __ALE_PYTHON_INTERFACE_HPP__
 
-#include <sstream>
 #include <optional>
 
 #include <pybind11/numpy.h>
@@ -26,6 +25,11 @@
 
 #include "ale/ale_interface.hpp"
 #include "version.hpp"
+
+#ifdef BUILD_VECTOR_LIB
+#include "ale_vector_python_interface.hpp"
+#endif
+
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -44,8 +48,8 @@ class ALEPythonInterface : public ALEInterface {
   py::array_t<pixel_t, py::array::c_style> getScreenRGB();
   py::array_t<pixel_t, py::array::c_style> getScreenGrayscale();
 
-  inline reward_t act(unsigned int action) {
-    return ALEInterface::act((Action)action);
+  inline reward_t act(unsigned int action, float paddle_strength = 1.0) {
+    return ALEInterface::act((Action)action, paddle_strength);
   }
 
   inline py::tuple getScreenDims() {
@@ -146,14 +150,12 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("loadROM", &ale::ALEInterface::loadROM)
       .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
       .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEPythonInterface::*)(uint32_t, float)) &
-                      ale::ALEPythonInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action)) &
-                      ale::ALEInterface::act)
-      .def("act", (ale::reward_t(ale::ALEInterface::*)(ale::Action, float)) &
-                      ale::ALEInterface::act)
+      .def("act", &ale::ALEPythonInterface::act,
+                      py::arg("action"),
+                      py::arg("paddle_strength") = 1.0)
+      .def("act", &ale::ALEInterface::act,
+                      py::arg("action"),
+                      py::arg("paddle_strength") = 1.0)
       .def("game_over", &ale::ALEPythonInterface::game_over, py::kw_only(), py::arg("with_truncation") = py::bool_(true))
       .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
       .def("reset_game", &ale::ALEPythonInterface::reset_game)
@@ -211,6 +213,11 @@ PYBIND11_MODULE(_ale_py, m) {
       .def("restoreSystemState", &ale::ALEPythonInterface::restoreSystemState)
       .def("saveScreenPNG", &ale::ALEPythonInterface::saveScreenPNG)
       .def_static("setLoggerMode", &ale::Logger::setMode);
+
+  // Initialize the vector module if it's enabled
+#ifdef BUILD_VECTOR_LIB
+  init_vector_module(m);
+#endif
 }
 
 #endif // __ALE_PYTHON_INTERFACE_HPP__

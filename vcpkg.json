@@ -1,18 +1,33 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "arcade-learning-environment",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "dependencies": [
     "zlib"
   ],
   "features": {
     "sdl": {
       "description": "Enable SDL, this enables display and audio support.",
-      "dependencies": [ "sdl2" ]
+      "dependencies": [
+        {"name": "sdl2", "features":  [], "default-features": false}
+      ]
+    },
+    "vector": {
+      "description": "Enable Vector, this enables vectorisation of atari environments",
+      "dependencies": [
+        {"name": "opencv4", "features": [], "default-features": false}
+      ]
     }
   },
-  "builtin-baseline": "9aa0d66373ce3a6868d12353d0d4960db0d4bd18",
+  "builtin-baseline": "3426a5e955f029ab0088ef6656fda06552bd2699",
   "overrides": [
-    { "name": "sdl2", "version": "2.24.2" }
+    {
+      "name": "sdl2",
+      "version": "2.30.11"
+    },
+    {
+      "name": "opencv4",
+      "version": "4.10.0"
+    }
   ]
 }
