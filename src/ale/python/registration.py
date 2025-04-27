@@ -79,35 +79,22 @@ def register_v0_v4_envs():
     ]
 
     for rom in legacy_games:
-        for obs_type in obs_types:
-            for config in versions:
-                for flavour in config.flavours:
-                    name = _rom_id_to_name(rom)
-                    name = f"{name}-ram" if obs_type == "ram" else name
+        for suffix, frameskip in (("", (2, 5)), ("NoFrameskip", 1)):
+            for version, repeat_action_probability in (("v0", 0.25), ("v4", 0.0)):
+                name = rom_id_to_name(rom)
 
-                    # Parse config kwargs
-                    if callable(config.kwargs):
-                        config_kwargs = config.kwargs(rom)
-                    else:
-                        config_kwargs = config.kwargs
-
-                    # Parse flavour kwargs
-                    if callable(flavour.kwargs):
-                        flavour_kwargs = flavour.kwargs(rom)
-                    else:
-                        flavour_kwargs = flavour.kwargs
-
-                    # Register the environment
-                    gymnasium.register(
-                        id=f"{name}{flavour.suffix}-{config.version}",
-                        entry_point="ale_py.env:AtariEnv",
-                        kwargs=dict(
-                            game=rom,
-                            obs_type=obs_type,
-                            **config_kwargs,
-                            **flavour_kwargs,
-                        ),
-                    )
+                # Register the environment
+                gymnasium.register(
+                    id=f"{name}{suffix}-{version}",
+                    entry_point="ale_py.env:AtariEnv",
+                    kwargs=dict(
+                        game=rom,
+                        repeat_action_probability=repeat_action_probability,
+                        full_action_space=False,
+                        frameskip=frameskip,
+                        max_num_frames_per_episode=108_000,
+                    ),
+                )
 
 
 def register_v5_envs():
@@ -115,10 +102,11 @@ def register_v5_envs():
     all_games = roms.get_all_rom_ids()
 
     for rom in all_games:
+        # These roms don't have a single-player ROM attached (do have a multi-player mode)
         if rom in {"combat", "joust", "maze_craze", "warlords"}:
             continue
 
-        name = _rom_id_to_name(rom)
+        name = rom_id_to_name(rom)
 
         # max_episode_steps is 108k frames which is 30 mins of gameplay.
         # This corresponds to 108k / 4 = 27,000 steps
