@@ -31,12 +31,18 @@ TicTacToe3D has the action space of `Discrete(10)` with the table below listing 
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning    | Value   | Meaning   | Value   | Meaning     |
-|---------|------------|---------|-----------|---------|-------------|
-| `0`     | `NOOP`     | `1`     | `FIRE`    | `2`     | `UP`        |
-| `3`     | `RIGHT`    | `4`     | `LEFT`    | `5`     | `DOWN`      |
-| `6`     | `UPRIGHT`  | `7`     | `UPLEFT`  | `8`     | `DOWNRIGHT` |
-| `9`     | `DOWNLEFT` |         |           |         |             |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | FIRE      |
+|       2 | UP        |
+|       3 | RIGHT     |
+|       4 | LEFT      |
+|       5 | DOWN      |
+|       6 | UPRIGHT   |
+|       7 | UPLEFT    |
+|       8 | DOWNRIGHT |
+|       9 | DOWNLEFT  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -55,10 +61,9 @@ See variants section for the type of observation used by each environment id by 
 TicTacToe3D has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                    | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------------------|-------------|--------------|------------------------------|
-| TicTacToe3DNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
-| ALE/TicTacToe3D-v5        | `"rgb"`     | `4`          | `0.25`                       |
+| Env-id             | obs_type=   | frameskip=   | repeat_action_probability=   |
+|--------------------|-------------|--------------|------------------------------|
+| ALE/TicTacToe3D-v5 | `rgb`       | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `TicTacToe3DNoFrameskip-v4`.
 

@@ -31,13 +31,22 @@ KungFuMaster has the action space of `Discrete(14)` with the table below listing
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning         | Value   | Meaning        | Value   | Meaning      |
-|---------|-----------------|---------|----------------|---------|--------------|
-| `0`     | `NOOP`          | `1`     | `UP`           | `2`     | `RIGHT`      |
-| `3`     | `LEFT`          | `4`     | `DOWN`         | `5`     | `DOWNRIGHT`  |
-| `6`     | `DOWNLEFT`      | `7`     | `RIGHTFIRE`    | `8`     | `LEFTFIRE`   |
-| `9`     | `DOWNFIRE`      | `10`    | `UPRIGHTFIRE`  | `11`    | `UPLEFTFIRE` |
-| `12`    | `DOWNRIGHTFIRE` | `13`    | `DOWNLEFTFIRE` |         |              |
+|   Value | Meaning       |
+|---------|---------------|
+|       0 | NOOP          |
+|       1 | UP            |
+|       2 | RIGHT         |
+|       3 | LEFT          |
+|       4 | DOWN          |
+|       5 | DOWNRIGHT     |
+|       6 | DOWNLEFT      |
+|       7 | RIGHTFIRE     |
+|       8 | LEFTFIRE      |
+|       9 | DOWNFIRE      |
+|      10 | UPRIGHTFIRE   |
+|      11 | UPLEFTFIRE    |
+|      12 | DOWNRIGHTFIRE |
+|      13 | DOWNLEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -58,8 +67,11 @@ the number of frame-skips and the repeat action probability.
 
 | Env-id                     | obs_type=   | frameskip=   | repeat_action_probability=   |
 |----------------------------|-------------|--------------|------------------------------|
-| KungFuMasterNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
-| ALE/KungFuMaster-v5        | `"rgb"`     | `4`          | `0.25`                       |
+| KungFuMaster-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| KungFuMasterNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| KungFuMaster-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| KungFuMasterNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/KungFuMaster-v5        | `rgb`       | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `KungFuMasterNoFrameskip-v4`.
 

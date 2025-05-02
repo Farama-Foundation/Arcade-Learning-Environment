@@ -11,6 +11,7 @@ from utils import tetris_env, tetris_rom_path  # noqa: F401
 _VALID_WARNINGS = [
     "we recommend using a symmetric and normalized space",
     "This will error out when the continuous actions are discretized to illegal action spaces",
+    "is out of date. You should consider upgrading to version",
 ]
 
 
@@ -21,15 +22,23 @@ def test_roms_register():
         if spec.entry_point == "ale_py.env:AtariEnv"
     ]
 
-    registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, registered_roms))
-    assert len(registered_v5_roms) == 104
-    registered_noframeskip_v4_roms = list(
+    registered_v0_roms = list(filter(lambda env_id: "v0" in env_id, registered_roms))
+    assert len(registered_v0_roms) == 124
+    registered_no_frameskip_v0_roms = list(
+        filter(lambda env_id: "NoFrameskip-v0" in env_id, registered_roms)
+    )
+    assert len(registered_no_frameskip_v0_roms) == 62
+    registered_v4_roms = list(filter(lambda env_id: "v4" in env_id, registered_roms))
+    assert len(registered_v4_roms) == 124
+    registered_no_frameskip_v4_roms = list(
         filter(lambda env_id: "NoFrameskip-v4" in env_id, registered_roms)
     )
-    assert len(registered_noframeskip_v4_roms) == 104
-    assert len(registered_roms) == len(registered_v5_roms) + len(
-        registered_noframeskip_v4_roms
-    )
+    assert len(registered_no_frameskip_v4_roms) == 62
+    registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, registered_roms))
+    assert len(registered_v5_roms) == 104
+    assert len(registered_roms) == len(registered_v0_roms) + len(
+        registered_v4_roms
+    ) + len(registered_v5_roms)
 
 
 @pytest.mark.parametrize(

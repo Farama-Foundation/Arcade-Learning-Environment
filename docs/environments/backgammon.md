@@ -31,9 +31,11 @@ Backgammon has the action space of `Discrete(3)` with the table below listing th
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning   | Value   | Meaning   | Value   | Meaning   |
-|---------|-----------|---------|-----------|---------|-----------|
-| `0`     | `FIRE`    | `1`     | `RIGHT`   | `2`     | `LEFT`    |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | FIRE      |
+|       1 | RIGHT     |
+|       2 | LEFT      |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -52,10 +54,9 @@ See variants section for the type of observation used by each environment id by 
 Backgammon has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                   | obs_type=   | frameskip=   | repeat_action_probability=   |
-|--------------------------|-------------|--------------|------------------------------|
-| BackgammonNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
-| ALE/Backgammon-v5        | `"rgb"`     | `4`          | `0.25`                       |
+| Env-id            | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------|-------------|--------------|------------------------------|
+| ALE/Backgammon-v5 | `rgb`       | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BackgammonNoFrameskip-v4`.
 

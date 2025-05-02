@@ -30,14 +30,26 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 IceHockey has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
 As IceHockey uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
-| Value   | Meaning      | Value   | Meaning         | Value   | Meaning        |
-|---------|--------------|---------|-----------------|---------|----------------|
-| `0`     | `NOOP`       | `1`     | `FIRE`          | `2`     | `UP`           |
-| `3`     | `RIGHT`      | `4`     | `LEFT`          | `5`     | `DOWN`         |
-| `6`     | `UPRIGHT`    | `7`     | `UPLEFT`        | `8`     | `DOWNRIGHT`    |
-| `9`     | `DOWNLEFT`   | `10`    | `UPFIRE`        | `11`    | `RIGHTFIRE`    |
-| `12`    | `LEFTFIRE`   | `13`    | `DOWNFIRE`      | `14`    | `UPRIGHTFIRE`  |
-| `15`    | `UPLEFTFIRE` | `16`    | `DOWNRIGHTFIRE` | `17`    | `DOWNLEFTFIRE` |
+|   Value | Meaning       |
+|---------|---------------|
+|       0 | NOOP          |
+|       1 | FIRE          |
+|       2 | UP            |
+|       3 | RIGHT         |
+|       4 | LEFT          |
+|       5 | DOWN          |
+|       6 | UPRIGHT       |
+|       7 | UPLEFT        |
+|       8 | DOWNRIGHT     |
+|       9 | DOWNLEFT      |
+|      10 | UPFIRE        |
+|      11 | RIGHTFIRE     |
+|      12 | LEFTFIRE      |
+|      13 | DOWNFIRE      |
+|      14 | UPRIGHTFIRE   |
+|      15 | UPLEFTFIRE    |
+|      16 | DOWNRIGHTFIRE |
+|      17 | DOWNLEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -62,8 +74,11 @@ the number of frame-skips and the repeat action probability.
 
 | Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
 |-------------------------|-------------|--------------|------------------------------|
-| IceHockeyNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
-| ALE/IceHockey-v5        | `"rgb"`     | `4`          | `0.25`                       |
+| IceHockey-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| IceHockeyNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| IceHockey-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| IceHockeyNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/IceHockey-v5        | `rgb`       | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `IceHockeyNoFrameskip-v4`.
 

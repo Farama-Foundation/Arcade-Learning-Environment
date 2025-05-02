@@ -31,11 +31,16 @@ Tutankham has the action space of `Discrete(8)` with the table below listing the
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning     | Value   | Meaning    | Value   | Meaning   |
-|---------|-------------|---------|------------|---------|-----------|
-| `0`     | `NOOP`      | `1`     | `UP`       | `2`     | `RIGHT`   |
-| `3`     | `LEFT`      | `4`     | `DOWN`     | `5`     | `UPFIRE`  |
-| `6`     | `RIGHTFIRE` | `7`     | `LEFTFIRE` |         |           |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | UP        |
+|       2 | RIGHT     |
+|       3 | LEFT      |
+|       4 | DOWN      |
+|       5 | UPFIRE    |
+|       6 | RIGHTFIRE |
+|       7 | LEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -56,8 +61,11 @@ the number of frame-skips and the repeat action probability.
 
 | Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
 |-------------------------|-------------|--------------|------------------------------|
-| TutankhamNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
-| ALE/Tutankham-v5        | `"rgb"`     | `4`          | `0.25`                       |
+| Tutankham-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| TutankhamNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| Tutankham-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| TutankhamNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/Tutankham-v5        | `rgb`       | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `TutankhamNoFrameskip-v4`.
 

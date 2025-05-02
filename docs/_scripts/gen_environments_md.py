@@ -76,13 +76,9 @@ For a more detailed documentation, see [the AtariAge page]({env_data['atariage_u
     else:
         reward_description = ""
 
-    action_table_values = map(
-        lambda s: f"`{s}`",
-        itertools.chain(*zip(range(env.action_space.n), env.get_action_meanings())),
-    )
-    default_action_table = tabulate.tabulate(
-        list(itertools.zip_longest(*([iter(action_table_values)] * 6), fillvalue="")),
-        headers=["Value", "Meaning", "Value", "Meaning", "Value", "Meaning"],
+    action_table = tabulate.tabulate(
+        zip(range(env.action_space.n), env.get_action_meanings()),
+        headers=["Index", "Action", "Description"],
         tablefmt="github",
     )
     if env.action_space.n == 18:
@@ -112,7 +108,7 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`."""
     env_variant_rows = [
         [
             env_spec.id,
-            f'`"{env_spec.kwargs["obs_type"]}"`',
+            "`rgb`",
             f'`{env_spec.kwargs["frameskip"]}`',
             f'`{env_spec.kwargs["repeat_action_probability"]:.2f}`',
         ]
@@ -169,7 +165,7 @@ For more {env_name} variants with different observation and action spaces, see t
 
 {action_description}
 
-{default_action_table}
+{action_table}
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 

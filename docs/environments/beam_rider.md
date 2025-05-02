@@ -31,11 +31,17 @@ BeamRider has the action space of `Discrete(9)` with the table below listing the
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning   | Value   | Meaning     | Value   | Meaning    |
-|---------|-----------|---------|-------------|---------|------------|
-| `0`     | `NOOP`    | `1`     | `FIRE`      | `2`     | `UP`       |
-| `3`     | `RIGHT`   | `4`     | `LEFT`      | `5`     | `UPRIGHT`  |
-| `6`     | `UPLEFT`  | `7`     | `RIGHTFIRE` | `8`     | `LEFTFIRE` |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | FIRE      |
+|       2 | UP        |
+|       3 | RIGHT     |
+|       4 | LEFT      |
+|       5 | UPRIGHT   |
+|       6 | UPLEFT    |
+|       7 | RIGHTFIRE |
+|       8 | LEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -60,8 +66,11 @@ the number of frame-skips and the repeat action probability.
 
 | Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
 |-------------------------|-------------|--------------|------------------------------|
-| BeamRiderNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       |
-| ALE/BeamRider-v5        | `"rgb"`     | `4`          | `0.25`                       |
+| BeamRider-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| BeamRiderNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| BeamRider-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| BeamRiderNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/BeamRider-v5        | `rgb`       | `4`          | `0.25`                       |
 
 See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BeamRiderNoFrameskip-v4`.
 
