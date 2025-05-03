@@ -13,9 +13,9 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Pooyan-v5")   |
 | Action Space      | Discrete(6)                       |
 | Observation Space | Box(0, 255, (220, 160, 3), uint8) |
-| Import            | `gymnasium.make("ALE/Pooyan-v5")` |
 
 For more Pooyan variants with different observation and action spaces, see the variants section.
 
@@ -31,10 +31,14 @@ Pooyan has the action space of `Discrete(6)` with the table below listing the me
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning   | Value   | Meaning   | Value   | Meaning    |
-|---------|-----------|---------|-----------|---------|------------|
-| `0`     | `NOOP`    | `1`     | `FIRE`    | `2`     | `UP`       |
-| `3`     | `DOWN`    | `4`     | `UPFIRE`  | `5`     | `DOWNFIRE` |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | FIRE      |
+|       2 | UP        |
+|       3 | DOWN      |
+|       4 | UPFIRE    |
+|       5 | DOWNFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -57,22 +61,15 @@ If you hit a balloon, wolf or stone with an arrow you score points. For a more d
 Pooyan has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                     | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------------------|-------------|--------------|------------------------------|
-| Pooyan-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Pooyan-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Pooyan-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Pooyan-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| PooyanDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| PooyanNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Pooyan-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Pooyan-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Pooyan-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Pooyan-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| PooyanDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| PooyanNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Pooyan-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Pooyan-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id               | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------------|-------------|--------------|------------------------------|
+| Pooyan-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| PooyanNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| Pooyan-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| PooyanNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/Pooyan-v5        | `rgb`       | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `PooyanNoFrameskip-v4`.
 
 ## Difficulty and modes
 
