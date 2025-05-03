@@ -616,20 +616,18 @@ See <a class="reference internal" href="#3"><span class="xref myst">[3]</span></
 </section>
 <section id="rewards">
 <h2>Rewards<a class="headerlink" href="#rewards" title="Link to this heading">¶</a></h2>
-<p>The exact reward dynamics depend on the environment and are usually documented in the game’s manual. You can
-find these manuals on <a class="reference external" href="https://atariage.com/">AtariAge</a>.</p>
+<p>The exact reward dynamics depend on the environment and are usually documented in the game’s manual. You can find these manuals on <a class="reference external" href="https://atariage.com/">AtariAge</a>.</p>
 </section>
 <section id="stochasticity">
 <h2>Stochasticity<a class="headerlink" href="#stochasticity" title="Link to this heading">¶</a></h2>
-<p>As the Atari games are entirely deterministic, agents could achieve
-state-of-the-art performance by simply memorizing an optimal sequence of actions while completely ignoring observations from the environment.</p>
+<p>As the Atari games are entirely deterministic, agents can achieve state-of-the-art performance by simply memorizing an optimal sequence of actions while completely ignoring observations from the environment.</p>
 <p>To avoid this, there are several methods to avoid this.</p>
 <ol class="arabic simple">
 <li><p>Sticky actions: Instead of always simulating the action passed to the environment, there is a small
 probability that the previously executed action is used instead. In the v0 and v5 environments, the probability of
 repeating an action is <code class="docutils literal notranslate"><span class="pre">25%</span></code> while in v4 environments, the probability is <code class="docutils literal notranslate"><span class="pre">0%</span></code>. Users can specify the repeat action
 probability using <code class="docutils literal notranslate"><span class="pre">repeat_action_probability</span></code> to <code class="docutils literal notranslate"><span class="pre">make</span></code>.</p></li>
-<li><p>Frameskipping: On each environment step, the action can be repeated for a random number of frames. This behavior
+<li><p>Frame-skipping: On each environment step, the action can be repeated for a random number of frames. This behavior
 may be altered by setting the keyword argument <code class="docutils literal notranslate"><span class="pre">frameskip</span></code> to either a positive integer or
 a tuple of two positive integers. If <code class="docutils literal notranslate"><span class="pre">frameskip</span></code> is an integer, frame skipping is deterministic, and in each step the action is
 repeated <code class="docutils literal notranslate"><span class="pre">frameskip</span></code> many times. Otherwise, if <code class="docutils literal notranslate"><span class="pre">frameskip</span></code> is a tuple, the number of skipped frames is chosen uniformly at
@@ -668,107 +666,129 @@ Actions passed into the environment are then thresholded to discrete using the <
 </section>
 <section id="version-history-and-naming-schemes">
 <h2>Version History and Naming Schemes<a class="headerlink" href="#version-history-and-naming-schemes" title="Link to this heading">¶</a></h2>
-<p>All Atari games are available in three versions. They differ in the default settings of the arguments above.
-The differences are listed in the following table:</p>
+<p>In v0.11, the number of registered Atari environments was significantly reduced from 960 to 210 to only register <code class="docutils literal notranslate"><span class="pre">{rom_name}NoFrameskip-v4</span></code> the most popular environment and <code class="docutils literal notranslate"><span class="pre">ALE/{rom_name}-v5</span></code> following the best practices outlined in <a class="reference internal" href="#2"><span class="xref myst">[2]</span></a>.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Version</p></th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">obs_type=</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">frameskip=</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">repeat_action_probability=</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">full_ation_space=</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>AdventureNoFrameskip-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.00</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>ALE/Adventure-v5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Importantly, <code class="docutils literal notranslate"><span class="pre">repeat_action_probability=0.25</span></code> can negatively impact the performance of agents so when comparing training graphs, be aware of the parameters used for fair comparisons.</p>
+<p>To create previously implemented environment use the following parameters, <code class="docutils literal notranslate"><span class="pre">gymnasium.make(env_id,</span> <span class="pre">obs_type=...,</span> <span class="pre">frameskip=...,</span> <span class="pre">repeat_action_probability=...,</span> <span class="pre">full_action_space=...)</span></code>.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">obs_type=</span></code></p></th>
 <th class="head"><p><code class="docutils literal notranslate"><span class="pre">frameskip=</span></code></p></th>
 <th class="head"><p><code class="docutils literal notranslate"><span class="pre">repeat_action_probability=</span></code></p></th>
 <th class="head"><p><code class="docutils literal notranslate"><span class="pre">full_action_space=</span></code></p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5,)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5,)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>v5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<blockquote>
-<div><p>Version v5 follows the best practices outlined in <a class="reference internal" href="#2"><span class="xref myst">[2]</span></a>. Thus, it is recommended to transition to v5 and
-customize the environment using the arguments above, if necessary.</p>
-</div></blockquote>
-<p>For each Atari game, several different configurations are registered in Gymnasium. The naming schemes are analogous for
-v0 and v4. Let us take a look at all variations of Amidar-v0 that are registered with gymnasium:</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p><code class="docutils literal notranslate"><span class="pre">obs_type=</span></code></p></th>
-<th class="head"><p><code class="docutils literal notranslate"><span class="pre">frameskip=</span></code></p></th>
-<th class="head"><p><code class="docutils literal notranslate"><span class="pre">repeat_action_probability=</span></code></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Amidar-v0</p></td>
+<tr class="row-even"><td><p>Adventure-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5,)</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>AmidarDeterministic-v0</p></td>
+<tr class="row-odd"><td><p>AdventureDeterministic-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>AmidarNoFrameskip-v0</p></td>
+<tr class="row-even"><td><p>AdventureNoframeskip-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>Amidar-ram-v0</p></td>
+<tr class="row-odd"><td><p>Adventure-ram-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5,)</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>Amidar-ramDeterministic-v0</p></td>
+<tr class="row-even"><td><p>Adventure-ramDeterministic-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>Amidar-ramNoFrameskip-v0</p></td>
+<tr class="row-odd"><td><p>Adventure-ramNoframeskip-v0</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-</tbody>
-</table>
-</div>
-<p>Things change in v5: The suffixes “Deterministic” and “NoFrameskip” are no longer available. Instead, you must specify the
-environment configuration via arguments passed to <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>. Moreover, the v5 environments
-are in the “ALE” namespace. The suffix “-ram” is still available. Thus, we get the following table:</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p><code class="docutils literal notranslate"><span class="pre">obs_type=</span></code></p></th>
-<th class="head"><p><code class="docutils literal notranslate"><span class="pre">frameskip=</span></code></p></th>
-<th class="head"><p><code class="docutils literal notranslate"><span class="pre">repeat_action_probability=</span></code></p></th>
+<tr class="row-even"><td><p>Adventure-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5,)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>ALE/Amidar-v5</p></td>
+<tr class="row-odd"><td><p>AdventureDeterministic-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>AdventureNoframeskip-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Adventure-ram-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5,)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Adventure-ramDeterministic-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Adventure-ramNoframeskip-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>ALE/Adventure-v5</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>ALE/Amidar-ram-v5</p></td>
+<tr class="row-odd"><td><p>ALE/Adventure-ram-v5</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
 </tbody>
 </table>
