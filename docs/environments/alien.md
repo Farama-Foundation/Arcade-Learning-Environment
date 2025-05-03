@@ -13,15 +13,15 @@ This environment is part of the <a href='..'>Atari environments</a>. Please read
 
 |                   |                                   |
 |-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Alien-v5")    |
 | Action Space      | Discrete(18)                      |
 | Observation Space | Box(0, 255, (210, 160, 3), uint8) |
-| Import            | `gymnasium.make("ALE/Alien-v5")`  |
 
 For more Alien variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-You are stuck in a maze-like space ship with three aliens. You goal is to destroy their eggs that are scattered all over the ship while simultaneously avoiding the aliens (they are trying to kill you). You have a flamethrower that can help you turn them away in tricky situations. Moreover, you can occasionally collect a power-up (pulsar) that gives you the temporary ability to kill aliens.
+You are stuck in a maze-like spaceship with three aliens. You goal is to destroy their eggs that are scattered all over the ship while simultaneously avoiding the aliens (they are trying to kill you). You have a flamethrower that can help you turn them away in tricky situations. Moreover, you can occasionally collect a power-up (pulsar) that gives you the temporary ability to kill aliens.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=815)
 
@@ -30,14 +30,26 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 Alien has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
 As Alien uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
-| Value   | Meaning      | Value   | Meaning         | Value   | Meaning        |
-|---------|--------------|---------|-----------------|---------|----------------|
-| `0`     | `NOOP`       | `1`     | `FIRE`          | `2`     | `UP`           |
-| `3`     | `RIGHT`      | `4`     | `LEFT`          | `5`     | `DOWN`         |
-| `6`     | `UPRIGHT`    | `7`     | `UPLEFT`        | `8`     | `DOWNRIGHT`    |
-| `9`     | `DOWNLEFT`   | `10`    | `UPFIRE`        | `11`    | `RIGHTFIRE`    |
-| `12`    | `LEFTFIRE`   | `13`    | `DOWNFIRE`      | `14`    | `UPRIGHTFIRE`  |
-| `15`    | `UPLEFTFIRE` | `16`    | `DOWNRIGHTFIRE` | `17`    | `DOWNLEFTFIRE` |
+|   Value | Meaning       |
+|---------|---------------|
+|       0 | NOOP          |
+|       1 | FIRE          |
+|       2 | UP            |
+|       3 | RIGHT         |
+|       4 | LEFT          |
+|       5 | DOWN          |
+|       6 | UPRIGHT       |
+|       7 | UPLEFT        |
+|       8 | DOWNRIGHT     |
+|       9 | DOWNLEFT      |
+|      10 | UPFIRE        |
+|      11 | RIGHTFIRE     |
+|      12 | LEFTFIRE      |
+|      13 | DOWNFIRE      |
+|      14 | UPRIGHTFIRE   |
+|      15 | UPLEFTFIRE    |
+|      16 | DOWNRIGHTFIRE |
+|      17 | DOWNLEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -60,22 +72,15 @@ You score points by destroying eggs, killing aliens, using pulsars, and collecti
 Alien has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                    | obs_type=   | frameskip=   | repeat_action_probability=   |
-|---------------------------|-------------|--------------|------------------------------|
-| Alien-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Alien-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Alien-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Alien-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| AlienDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| AlienNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Alien-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Alien-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Alien-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Alien-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| AlienDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| AlienNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Alien-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Alien-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id              | obs_type=   | frameskip=   | repeat_action_probability=   |
+|---------------------|-------------|--------------|------------------------------|
+| Alien-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| AlienNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| Alien-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| AlienNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/Alien-v5        | `rgb`       | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `AlienNoFrameskip-v4`.
 
 ## Difficulty and modes
 

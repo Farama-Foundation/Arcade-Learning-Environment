@@ -11,17 +11,17 @@ title: Seaquest
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                     |
-|-------------------|-------------------------------------|
-| Action Space      | Discrete(18)                        |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)   |
-| Import            | `gymnasium.make("ALE/Seaquest-v5")` |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Seaquest-v5") |
+| Action Space      | Discrete(18)                      |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
 
 For more Seaquest variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-You control a sub able to move in all directions and fire torpedoes.The goal is to retrieve as many divers as you can, while dodging and blasting enemy subs and killer sharks; points will be awarded accordingly.The game begins with one sub and three waiting on the horizon. Each time you increase your score by 10,000 points, an extra sub will be delivered to yourbase.  You can only have six reserve subs on the screen at one time.Your sub will explode if it collides with anything except your own divers.The sub has a limited amount of oxygen that decreases at a constant rate during the game. When the oxygen tank is almost empty, you need to surface and if you don't do it in time, your sub will blow up and you'll lose one diver.  Each time you're forced to surface, with less than six divers, you lose one diver as well.
+You control a sub able to move in all directions and fire torpedoes. The goal is to retrieve as many divers as you can, while dodging and blasting enemy subs and killer sharks; points will be awarded accordingly. The game begins with one sub and three waiting on the horizon. Each time you increase your score by 10,000 points, an extra sub will be delivered to yourbase.  You can only have six reserve subs on the screen at one time. Your sub will explode if it collides with anything except your own divers. The sub has a limited amount of oxygen that decreases at a constant rate during the game. When the oxygen tank is almost empty, you need to surface and if you don't do it in time, your sub will blow up and you'll lose one diver.  Each time you're forced to surface, with less than six divers, you lose one diver as well.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=424)
 
@@ -30,14 +30,26 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 Seaquest has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
 As Seaquest uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
-| Value   | Meaning      | Value   | Meaning         | Value   | Meaning        |
-|---------|--------------|---------|-----------------|---------|----------------|
-| `0`     | `NOOP`       | `1`     | `FIRE`          | `2`     | `UP`           |
-| `3`     | `RIGHT`      | `4`     | `LEFT`          | `5`     | `DOWN`         |
-| `6`     | `UPRIGHT`    | `7`     | `UPLEFT`        | `8`     | `DOWNRIGHT`    |
-| `9`     | `DOWNLEFT`   | `10`    | `UPFIRE`        | `11`    | `RIGHTFIRE`    |
-| `12`    | `LEFTFIRE`   | `13`    | `DOWNFIRE`      | `14`    | `UPRIGHTFIRE`  |
-| `15`    | `UPLEFTFIRE` | `16`    | `DOWNRIGHTFIRE` | `17`    | `DOWNLEFTFIRE` |
+|   Value | Meaning       |
+|---------|---------------|
+|       0 | NOOP          |
+|       1 | FIRE          |
+|       2 | UP            |
+|       3 | RIGHT         |
+|       4 | LEFT          |
+|       5 | DOWN          |
+|       6 | UPRIGHT       |
+|       7 | UPLEFT        |
+|       8 | DOWNRIGHT     |
+|       9 | DOWNLEFT      |
+|      10 | UPFIRE        |
+|      11 | RIGHTFIRE     |
+|      12 | LEFTFIRE      |
+|      13 | DOWNFIRE      |
+|      14 | UPRIGHTFIRE   |
+|      15 | UPLEFTFIRE    |
+|      16 | DOWNRIGHTFIRE |
+|      17 | DOWNLEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -60,22 +72,15 @@ Score points are your only reward. Blasting enemy sub and killer shark is worth 
 Seaquest has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                       | obs_type=   | frameskip=   | repeat_action_probability=   |
-|------------------------------|-------------|--------------|------------------------------|
-| Seaquest-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Seaquest-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Seaquest-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Seaquest-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| SeaquestDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| SeaquestNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Seaquest-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Seaquest-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Seaquest-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Seaquest-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| SeaquestDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| SeaquestNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Seaquest-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Seaquest-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                 | obs_type=   | frameskip=   | repeat_action_probability=   |
+|------------------------|-------------|--------------|------------------------------|
+| Seaquest-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| SeaquestNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| Seaquest-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| SeaquestNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/Seaquest-v5        | `rgb`       | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `SeaquestNoFrameskip-v4`.
 
 ## Difficulty and modes
 

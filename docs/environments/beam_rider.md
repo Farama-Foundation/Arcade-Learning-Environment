@@ -11,11 +11,11 @@ title: BeamRider
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                      |
-|-------------------|--------------------------------------|
-| Action Space      | Discrete(9)                          |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
-| Import            | `gymnasium.make("ALE/BeamRider-v5")` |
+|                   |                                    |
+|-------------------|------------------------------------|
+| Make              | gymnasium.make("ALE/BeamRider-v5") |
+| Action Space      | Discrete(9)                        |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
 
 For more BeamRider variants with different observation and action spaces, see the variants section.
 
@@ -31,11 +31,17 @@ BeamRider has the action space of `Discrete(9)` with the table below listing the
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning   | Value   | Meaning     | Value   | Meaning    |
-|---------|-----------|---------|-------------|---------|------------|
-| `0`     | `NOOP`    | `1`     | `FIRE`      | `2`     | `UP`       |
-| `3`     | `RIGHT`   | `4`     | `LEFT`      | `5`     | `UPRIGHT`  |
-| `6`     | `UPLEFT`  | `7`     | `RIGHTFIRE` | `8`     | `LEFTFIRE` |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | FIRE      |
+|       2 | UP        |
+|       3 | RIGHT     |
+|       4 | LEFT      |
+|       5 | UPRIGHT   |
+|       6 | UPLEFT    |
+|       7 | RIGHTFIRE |
+|       8 | LEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -58,22 +64,15 @@ You score points for destroying enemies. For a more detailed documentation, see 
 BeamRider has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------------|-------------|--------------|------------------------------|
-| BeamRider-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| BeamRider-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| BeamRider-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| BeamRider-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| BeamRiderDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| BeamRiderNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| BeamRider-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| BeamRider-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| BeamRider-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| BeamRider-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| BeamRiderDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| BeamRiderNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/BeamRider-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/BeamRider-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------|-------------|--------------|------------------------------|
+| BeamRider-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| BeamRiderNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| BeamRider-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| BeamRiderNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/BeamRider-v5        | `rgb`       | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `BeamRiderNoFrameskip-v4`.
 
 ## Difficulty and modes
 

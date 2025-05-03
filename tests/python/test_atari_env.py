@@ -1,4 +1,3 @@
-import itertools
 import warnings
 from unittest.mock import patch
 
@@ -9,10 +8,10 @@ from ale_py.env import AtariEnv
 from gymnasium.utils.env_checker import check_env
 from utils import tetris_env, tetris_rom_path  # noqa: F401
 
-_ACCEPTABLE_WARNING_SNIPPETS = [
-    "is out of date. You should consider upgrading to version",
+_VALID_WARNINGS = [
     "we recommend using a symmetric and normalized space",
     "This will error out when the continuous actions are discretized to illegal action spaces",
+    "is out of date. You should consider upgrading to version",
 ]
 
 
@@ -24,31 +23,33 @@ def test_roms_register():
     ]
 
     registered_v0_roms = list(filter(lambda env_id: "v0" in env_id, registered_roms))
+    assert len(registered_v0_roms) == 124
+    registered_no_frameskip_v0_roms = list(
+        filter(lambda env_id: "NoFrameskip-v0" in env_id, registered_roms)
+    )
+    assert len(registered_no_frameskip_v0_roms) == 62
     registered_v4_roms = list(filter(lambda env_id: "v4" in env_id, registered_roms))
+    assert len(registered_v4_roms) == 124
+    registered_no_frameskip_v4_roms = list(
+        filter(lambda env_id: "NoFrameskip-v4" in env_id, registered_roms)
+    )
+    assert len(registered_no_frameskip_v4_roms) == 62
     registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, registered_roms))
-
-    assert (
-        len(registered_v0_roms) == 372
-    ), f"{len(registered_roms)}, {len(registered_v0_roms)}, {len(registered_v4_roms)}, {len(registered_v5_roms)}"
-    assert len(registered_v4_roms) == 372
     assert len(registered_v5_roms) == 104
-
     assert len(registered_roms) == len(registered_v0_roms) + len(
         registered_v4_roms
     ) + len(registered_v5_roms)
 
 
 @pytest.mark.parametrize(
-    "env_id,continuous",
-    itertools.product(
-        [
-            env_id
-            for env_id, spec in gymnasium.registry.items()
-            if spec.entry_point == "ale_py.env:AtariEnv"
-        ],
-        [True, False],
-    ),
+    "env_id",
+    [
+        env_id
+        for env_id, spec in gymnasium.registry.items()
+        if spec.entry_point == "ale_py.env:AtariEnv"
+    ],
 )
+@pytest.mark.parametrize("continuous", [True, False])
 def test_check_env(env_id, continuous):
     with warnings.catch_warnings(record=True) as caught_warnings:
         env = gymnasium.make(env_id, continuous=continuous).unwrapped
@@ -57,10 +58,7 @@ def test_check_env(env_id, continuous):
         env.close()
 
     for warning in caught_warnings:
-        if not any(
-            (snippet in warning.message.args[0])
-            for snippet in _ACCEPTABLE_WARNING_SNIPPETS
-        ):
+        if not any((snippet in warning.message.args[0]) for snippet in _VALID_WARNINGS):
             raise ValueError(warning.message.args[0])
 
 
