@@ -435,14 +435,14 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Action Space</p></td>
+<tr class="row-even"><td><p>Make</p></td>
+<td><p>gymnasium.make(“ALE/Breakout-v5”)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Action Space</p></td>
 <td><p>Discrete(4)</p></td>
 </tr>
-<tr class="row-odd"><td><p>Observation Space</p></td>
+<tr class="row-even"><td><p>Observation Space</p></td>
 <td><p>Box(0, 255, (210, 160, 3), uint8)</p></td>
-</tr>
-<tr class="row-even"><td><p>Import</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">gymnasium.make(&quot;ALE/Breakout-v5&quot;)</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -450,7 +450,7 @@
 <p>For more Breakout variants with different observation and action spaces, see the variants section.</p>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>Another famous Atari game. The dynamics are similar to pong: You move a paddle and hit the ball in a brick wall at the top of the screen. Your goal is to destroy the brick wall. You can try to break through the wall and let the ball wreak havoc on the other side, all on its own! You have five lives.</p>
+<p>You move a paddle and hit the ball in a brick wall at the top of the screen. Your goal is to destroy the brick wall. You can try to break through the wall and let the ball wreak havoc on the other side, all on its own! You have five lives.</p>
 <p>For a more detailed documentation, see <a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareID=889">the AtariAge page</a></p>
 </section>
 <section id="actions">
@@ -463,26 +463,20 @@ initialization or by passing <code class="docutils literal notranslate"><span cl
 <thead>
 <tr class="row-odd"><th class="head"><p>Value</p></th>
 <th class="head"><p>Meaning</p></th>
-<th class="head"><p>Value</p></th>
-<th class="head"><p>Meaning</p></th>
-<th class="head"><p>Value</p></th>
-<th class="head"><p>Meaning</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">NOOP</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">RIGHT</span></code></p></td>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>NOOP</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LEFT</span></code></p></td>
-<td><p></p></td>
-<td><p></p></td>
-<td><p></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>FIRE</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>RIGHT</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>LEFT</p></td>
 </tr>
 </tbody>
 </table>
@@ -518,78 +512,34 @@ the number of frame-skips and the repeat action probability.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Breakout-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Breakout-ram-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Breakout-ramDeterministic-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Breakout-ramNoFrameskip-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>BreakoutDeterministic-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>BreakoutNoFrameskip-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Breakout-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Breakout-ram-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Breakout-ramDeterministic-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Breakout-ramNoFrameskip-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>BreakoutDeterministic-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.00</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>BreakoutNoFrameskip-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.00</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>ALE/Breakout-v5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>ALE/Breakout-ram-v5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>See the <a class="reference external" href="https://ale.farama.org/environments/#version-history-and-naming-schemes">version history page</a> to implement previously implemented environments, e.g., <code class="docutils literal notranslate"><span class="pre">BreakoutNoFrameskip-v4</span></code>.</p>
 </section>
 <section id="difficulty-and-modes">
 <h2>Difficulty and modes<a class="headerlink" href="#difficulty-and-modes" title="Link to this heading">¶</a></h2>

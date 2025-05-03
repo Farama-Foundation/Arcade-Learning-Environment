@@ -435,14 +435,14 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Action Space</p></td>
+<tr class="row-even"><td><p>Make</p></td>
+<td><p>gymnasium.make(“ALE/Boxing-v5”)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Action Space</p></td>
 <td><p>Discrete(18)</p></td>
 </tr>
-<tr class="row-odd"><td><p>Observation Space</p></td>
+<tr class="row-even"><td><p>Observation Space</p></td>
 <td><p>Box(0, 255, (210, 160, 3), uint8)</p></td>
-</tr>
-<tr class="row-even"><td><p>Import</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">gymnasium.make(&quot;ALE/Boxing-v5&quot;)</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -462,54 +462,62 @@ As Boxing uses the full set of actions then specifying <code class="docutils lit
 <thead>
 <tr class="row-odd"><th class="head"><p>Value</p></th>
 <th class="head"><p>Meaning</p></th>
-<th class="head"><p>Value</p></th>
-<th class="head"><p>Meaning</p></th>
-<th class="head"><p>Value</p></th>
-<th class="head"><p>Meaning</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">NOOP</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">UP</span></code></p></td>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>NOOP</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">RIGHT</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LEFT</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">5</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DOWN</span></code></p></td>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>FIRE</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">6</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">UPRIGHT</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">7</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">UPLEFT</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">8</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DOWNRIGHT</span></code></p></td>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>UP</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">9</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DOWNLEFT</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">UPFIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">11</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">RIGHTFIRE</span></code></p></td>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>RIGHT</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">12</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LEFTFIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">13</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DOWNFIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">14</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">UPRIGHTFIRE</span></code></p></td>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>LEFT</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">15</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">UPLEFTFIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">16</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DOWNRIGHTFIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">17</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DOWNLEFTFIRE</span></code></p></td>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>DOWN</p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>UPRIGHT</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>UPLEFT</p></td>
+</tr>
+<tr class="row-even"><td><p>8</p></td>
+<td><p>DOWNRIGHT</p></td>
+</tr>
+<tr class="row-odd"><td><p>9</p></td>
+<td><p>DOWNLEFT</p></td>
+</tr>
+<tr class="row-even"><td><p>10</p></td>
+<td><p>UPFIRE</p></td>
+</tr>
+<tr class="row-odd"><td><p>11</p></td>
+<td><p>RIGHTFIRE</p></td>
+</tr>
+<tr class="row-even"><td><p>12</p></td>
+<td><p>LEFTFIRE</p></td>
+</tr>
+<tr class="row-odd"><td><p>13</p></td>
+<td><p>DOWNFIRE</p></td>
+</tr>
+<tr class="row-even"><td><p>14</p></td>
+<td><p>UPRIGHTFIRE</p></td>
+</tr>
+<tr class="row-odd"><td><p>15</p></td>
+<td><p>UPLEFTFIRE</p></td>
+</tr>
+<tr class="row-even"><td><p>16</p></td>
+<td><p>DOWNRIGHTFIRE</p></td>
+</tr>
+<tr class="row-odd"><td><p>17</p></td>
+<td><p>DOWNLEFTFIRE</p></td>
 </tr>
 </tbody>
 </table>
@@ -545,78 +553,34 @@ the number of frame-skips and the repeat action probability.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Boxing-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Boxing-ram-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Boxing-ramDeterministic-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Boxing-ramNoFrameskip-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>BoxingDeterministic-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>BoxingNoFrameskip-v0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Boxing-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Boxing-ram-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Boxing-ramDeterministic-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Boxing-ramNoFrameskip-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>BoxingDeterministic-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.00</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>BoxingNoFrameskip-v4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.00</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>ALE/Boxing-v5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>ALE/Boxing-ram-v5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ram&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>See the <a class="reference external" href="https://ale.farama.org/environments/#version-history-and-naming-schemes">version history page</a> to implement previously implemented environments, e.g., <code class="docutils literal notranslate"><span class="pre">BoxingNoFrameskip-v4</span></code>.</p>
 </section>
 <section id="difficulty-and-modes">
 <h2>Difficulty and modes<a class="headerlink" href="#difficulty-and-modes" title="Link to this heading">¶</a></h2>
