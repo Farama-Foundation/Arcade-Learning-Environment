@@ -43,10 +43,20 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
+vector = [
+    "gymnasium>=1.0.0",
+    "opencv-python>=3.0"
+]
+xla = [
+    "gymnasium>=1.0.0",
+    "opencv-python>=3.0",
+    "jax>=0.4.29",
+]
 test = [
     "pytest>=7.0",
     "gymnasium>=1.0.0",
     "opencv-python>=3.0",
+    "jax>=0.4.29"
 ]
 
 [project.urls]
@@ -60,7 +70,7 @@ packages = [
     "ale_py.roms",
 ]
 package-dir = {ale_py = "src/ale/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
+package-data = {"ale_py" = ["py.typed", "*.py", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"

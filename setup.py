@@ -48,6 +48,7 @@ class CMakeBuild(build_ext):
             "-DBUILD_CPP_LIB=OFF",
             "-DBUILD_PYTHON_LIB=ON",
             "-DBUILD_VECTOR_LIB=ON",
+            "-DBUILD_VECTOR_XLA_LIB=ON",
         ]
         build_args = []
 

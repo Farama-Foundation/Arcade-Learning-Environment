@@ -118,6 +118,8 @@ class AtariVectorEnv(VectorEnv):
             self.single_action_space, self.batch_size
         )
 
+        self.is_xla_registered = False
+
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[ObsType, dict[str, Any]]:
@@ -190,3 +192,103 @@ class AtariVectorEnv(VectorEnv):
         """Receive the next observations, rewards, terminations, truncations and info from the sub-environments."""
         # The data will be of the batch_size, see `info["env_id"]` for the set of environments used.
         return self.ale.recv()
+
+    def xla(self):
+        """Return XLA-compatible functions for JAX integration."""
+        if not self.is_xla_registered:
+            self._register_xla_handlers()
+            self.is_xla_registered = True
+
+        import jax
+        import jax.numpy as jnp
+
+        def xla_reset(
+            handle: np.ndarray, reset_indices: np.ndarray, reset_seeds: np.ndarray
+        ) -> tuple[np.ndarray, tuple[np.ndarray, dict[str, Any]]]:
+            xla_call = jax.ffi.ffi_call(
+                "atari_vector_env_xla_reset",
+                (
+                    jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
+                    jax.ShapeDtypeStruct(
+                        self.observation_space.shape, jnp.uint8
+                    ),  # observations
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # lives
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
+                    jax.ShapeDtypeStruct(
+                        (self.num_envs,), jnp.int32
+                    ),  # episode frame numbers
+                ),
+                vmap_method="broadcast_all",
+            )
+
+            new_handle, obs, env_ids, lives, frame_numbers, episode_frame_numbers = (
+                xla_call(handle, reset_indices, reset_seeds)
+            )
+            info = {
+                "end_ids": env_ids,
+                "lives": lives,
+                "frame_numbers": frame_numbers,
+                "episode_frame_numbers": episode_frame_numbers,
+            }
+
+            return new_handle, (obs, info)
+
+        def xla_step(handle, actions):
+            xla_call = jax.ffi.ffi_call(
+                "atari_vector_env_xla_step",
+                (
+                    jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
+                    jax.ShapeDtypeStruct(
+                        self.observation_space.shape, jnp.uint8
+                    ),  # observations
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.float32),  # rewards
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # terminations
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # truncations
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # lives
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
+                    jax.ShapeDtypeStruct(
+                        (self.num_envs,), jnp.int32
+                    ),  # episode frame numbers
+                ),
+                vmap_method="broadcast_all",
+            )
+
+            (
+                new_handle,
+                obs,
+                rewards,
+                terminations,
+                truncations,
+                env_ids,
+                lives,
+                frame_numbers,
+                episode_frame_numbers,
+            ) = xla_call(handle, actions)
+            lives = {
+                "env_ids": env_ids,
+                "lives": lives,
+                "frames": frame_numbers,
+                "episode_frame_numbers": episode_frame_numbers,
+            }
+
+            return new_handle, (obs, rewards, terminations, truncations, lives)
+
+        ale_handle = np.frombuffer(self.ale.handle(), dtype=np.uint8)
+        return ale_handle, xla_reset, xla_step
+
+    @staticmethod
+    def _register_xla_handlers():
+        import jax
+
+        jax.ffi.register_ffi_target(
+            "atari_vector_env_xla_reset",
+            jax.ffi.pycapsule(ale_py._ale_py.VectorXLAReset),
+            platform="cpu",
+        )
+        jax.ffi.register_ffi_target(
+            "atari_vector_env_xla_step",
+            jax.ffi.pycapsule(ale_py._ale_py.VectorXLAStep),
+            platform="cpu",
+        )

@@ -5,7 +5,6 @@
 #include <pybind11/numpy.h>
 #include <vector>
 #include <cmath>
-#include <map>
 #include <tuple>
 
 namespace py = pybind11;
@@ -40,11 +39,11 @@ void init_vector_module(py::module& m) {
             py::gil_scoped_acquire acquire;
 
             // Get shape information
-            auto shape_info = self.get_observation_shape();
-            int stack_num = std::get<0>(shape_info);
-            int height = std::get<1>(shape_info);
-            int width = std::get<2>(shape_info);
             int num_envs = timesteps.size();
+            auto obs_shape = self.get_observation_shape();
+            int stack_num = std::get<0>(obs_shape);
+            int height = std::get<1>(obs_shape);
+            int width = std::get<2>(obs_shape);
 
             // Create a single NumPy array for all observations
             py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
@@ -93,11 +92,11 @@ void init_vector_module(py::module& m) {
             self.send(action_ids, paddle_strengths);
         })
         .def("recv", [](ale::vector::ALEVectorInterface& self) {
-            auto timesteps = self.recv();
+            const auto timesteps = self.recv();
             py::gil_scoped_acquire acquire;
 
             // Get shape information
-            auto shape_info = self.get_observation_shape();
+            const auto shape_info = self.get_observation_shape();
             int stack_num = std::get<0>(shape_info);
             int height = std::get<1>(shape_info);
             int width = std::get<2>(shape_info);
@@ -124,7 +123,7 @@ void init_vector_module(py::module& m) {
             auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
 
             // Copy data from observations to NumPy arrays
-            size_t obs_size = stack_num * height * width;
+            const size_t obs_size = stack_num * height * width;
             for (int i = 0; i < num_envs; i++) {
                 const auto& timestep = timesteps[i];
 
@@ -156,5 +155,10 @@ void init_vector_module(py::module& m) {
         })
         .def("get_action_set", &ale::vector::ALEVectorInterface::get_action_set)
         .def("get_num_envs", &ale::vector::ALEVectorInterface::get_num_envs)
-        .def("get_observation_shape", &ale::vector::ALEVectorInterface::get_observation_shape);
+        .def("get_observation_shape", &ale::vector::ALEVectorInterface::get_observation_shape)
+        .def("handle", [](ale::vector::ALEVectorInterface& self) {
+            return py::bytes(
+                 std::string(reinterpret_cast<const char*>(self.get_vectorizer()), sizeof(ale::vector::AsyncVectorizer*))
+            );
+        });
 }
