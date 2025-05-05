@@ -26,7 +26,7 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
     )
 #    message(STATUS "XLA include directory: '${XLA_DIR}'")
 
-    find_package(CUDAToolkit REQUIRED)
+#    find_package(CUDAToolkit REQUIRED)
 
     add_library(ale-py MODULE ale_python_interface.cpp ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
     set_target_properties(ale-py PROPERTIES POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 17)

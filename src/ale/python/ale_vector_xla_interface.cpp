@@ -1,5 +1,4 @@
 
-#include "xla/ffi/api/c_api.h"
 #include "xla/ffi/api/ffi.h"
 
 #include "ale/vector/async_vectorizer.hpp"
@@ -166,7 +165,7 @@ py::capsule EncapsulateFFICall(T *fn) {
 }
 
 
-void init_xla_module(py::module& m) {
+void init_vector_module_xla(py::module& m) {
     m.def("VectorXLAReset", [] {return EncapsulateFFICall(AtariVectorEnvXLAReset); });
     m.def("VectorXLAStep", [] {return EncapsulateFFICall(AtariVectorEnvXLAStep);});
 }

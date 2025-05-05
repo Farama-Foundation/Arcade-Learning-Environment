@@ -206,7 +206,7 @@ class AtariVectorEnv(VectorEnv):
             handle: np.ndarray, reset_indices: np.ndarray, reset_seeds: np.ndarray
         ) -> tuple[np.ndarray, tuple[np.ndarray, dict[str, Any]]]:
             xla_call = jax.ffi.ffi_call(
-                "atari_vector_env_xla_reset",
+                "atari_vector_xla_reset",
                 (
                     jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
                     jax.ShapeDtypeStruct(
@@ -217,7 +217,7 @@ class AtariVectorEnv(VectorEnv):
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
                     jax.ShapeDtypeStruct(
                         (self.num_envs,), jnp.int32
-                    ),  # episode frame numbers
+                    ),  # episode frame number
                 ),
                 vmap_method="broadcast_all",
             )
@@ -236,13 +236,13 @@ class AtariVectorEnv(VectorEnv):
 
         def xla_step(handle, actions):
             xla_call = jax.ffi.ffi_call(
-                "atari_vector_env_xla_step",
+                "atari_vector_xla_step",
                 (
                     jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
                     jax.ShapeDtypeStruct(
                         self.observation_space.shape, jnp.uint8
                     ),  # observations
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.float32),  # rewards
+                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # rewards
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # terminations
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # truncations
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
@@ -250,7 +250,7 @@ class AtariVectorEnv(VectorEnv):
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
                     jax.ShapeDtypeStruct(
                         (self.num_envs,), jnp.int32
-                    ),  # episode frame numbers
+                    ),  # episode frame number
                 ),
                 vmap_method="broadcast_all",
             )
@@ -283,12 +283,10 @@ class AtariVectorEnv(VectorEnv):
         import jax
 
         jax.ffi.register_ffi_target(
-            "atari_vector_env_xla_reset",
-            jax.ffi.pycapsule(ale_py._ale_py.VectorXLAReset),
-            platform="cpu",
+            "atari_vector_xla_reset",
+            ale_py._ale_py.VectorXLAReset(),
         )
         jax.ffi.register_ffi_target(
-            "atari_vector_env_xla_step",
-            jax.ffi.pycapsule(ale_py._ale_py.VectorXLAStep),
-            platform="cpu",
+            "atari_vector_xla_step",
+            ale_py._ale_py.VectorXLAStep(),
         )
