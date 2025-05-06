@@ -259,14 +259,14 @@ class AtariVectorEnv(VectorEnv):
             new_handle, obs, env_ids, lives, frame_numbers, episode_frame_numbers = (
                 xla_call(handle, reset_indices, reset_seeds)
             )
-            info = {
-                "end_ids": env_ids,
-                "lives": lives,
-                "frame_numbers": frame_numbers,
-                "episode_frame_numbers": episode_frame_numbers,
-            }
 
-            return new_handle, (obs, info)
+            info = {
+                "env_id": np.asarray(env_ids),
+                "lives": np.asarray(lives),
+                "frame_number": np.asarray(frame_numbers),
+                "episode_frame_number": np.asarray(episode_frame_numbers),
+            }
+            return new_handle, (np.asarray(obs), info)
 
         def xla_step(handle, actions):
             if self.continuous:
@@ -326,14 +326,20 @@ class AtariVectorEnv(VectorEnv):
                 frame_numbers,
                 episode_frame_numbers,
             ) = xla_call(handle, action_ids, paddle_strength)
-            lives = {
-                "env_ids": env_ids,
-                "lives": lives,
-                "frames": frame_numbers,
-                "episode_frame_numbers": episode_frame_numbers,
-            }
 
-            return new_handle, (obs, rewards, terminations, truncations, lives)
+            info = {
+                "env_id": np.asarray(env_ids),
+                "lives": np.asarray(lives),
+                "frame_number": np.asarray(frame_numbers),
+                "episode_frame_number": np.asarray(episode_frame_numbers),
+            }
+            return new_handle, (
+                np.asarray(obs),
+                np.asarray(rewards),
+                np.asarray(terminations),
+                np.asarray(truncations),
+                info,
+            )
 
         # Get the vectorizer handle and make sure it's properly formatted
         ale_handle = np.frombuffer(self.ale.handle(), dtype=np.uint8)

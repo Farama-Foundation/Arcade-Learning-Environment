@@ -150,7 +150,7 @@ def test_rollout_consistency(
     [(1, np.array([0])), (3, np.array([1, 2, 3])), (10, np.arange(10))],
 )
 @pytest.mark.parametrize("noop_max", (0, 10, 30))
-@pytest.mark.parametrize("repeat_action_probability", (0, 0.25))
+@pytest.mark.parametrize("repeat_action_probability", (0.0, 0.25))
 @pytest.mark.parametrize("use_fire_reset", [False, True])
 def test_determinism(
     num_envs: int,
@@ -186,7 +186,7 @@ def test_determinism(
         actions = envs_1.action_space.sample()
 
         obs_1, rewards_1, terminations_1, truncations_1, info_1 = envs_1.step(actions)
-        obs_2, rewards_2, terminations_2, truncations_2, info_2 = envs_1.step(actions)
+        obs_2, rewards_2, terminations_2, truncations_2, info_2 = envs_2.step(actions)
 
         assert data_equivalence(obs_1, obs_2)
         assert data_equivalence(rewards_1, rewards_2)

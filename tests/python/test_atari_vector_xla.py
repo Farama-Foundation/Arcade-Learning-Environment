@@ -1,12 +1,23 @@
 import numpy as np
+import pytest
 from ale_py import AtariVectorEnv
 from gymnasium.utils.env_checker import data_equivalence
 
 
-def test_vector_xla_equivalence(
+@pytest.mark.parametrize(
+    "num_envs, seeds",
+    [(1, np.array([0])), (3, np.array([1, 2, 3])), (10, np.arange(10))],
+)
+@pytest.mark.parametrize("noop_max", (0, 10, 30))
+@pytest.mark.parametrize("repeat_action_probability", (0.0, 0.25))
+@pytest.mark.parametrize("use_fire_reset", [False, True])
+def test_xla_determinism(
+    num_envs: int,
+    seeds: np.ndarray,
+    noop_max: int,
+    repeat_action_probability: float,
+    use_fire_reset: bool,
     game: str = "pong",
-    num_envs: int = 3,
-    seeds: np.ndarray = np.arange(3),
     rollout_length: int = 100,
 ):
     envs_1 = AtariVectorEnv(game, num_envs=num_envs)
