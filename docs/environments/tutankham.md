@@ -11,11 +11,11 @@ title: Tutankham
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                      |
-|-------------------|--------------------------------------|
-| Action Space      | Discrete(8)                          |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)    |
-| Import            | `gymnasium.make("ALE/Tutankham-v5")` |
+|                   |                                    |
+|-------------------|------------------------------------|
+| Make              | gymnasium.make("ALE/Tutankham-v5") |
+| Action Space      | Discrete(8)                        |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
 
 For more Tutankham variants with different observation and action spaces, see the variants section.
 
@@ -31,11 +31,16 @@ Tutankham has the action space of `Discrete(8)` with the table below listing the
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning     | Value   | Meaning    | Value   | Meaning   |
-|---------|-------------|---------|------------|---------|-----------|
-| `0`     | `NOOP`      | `1`     | `UP`       | `2`     | `RIGHT`   |
-| `3`     | `LEFT`      | `4`     | `DOWN`     | `5`     | `UPFIRE`  |
-| `6`     | `RIGHTFIRE` | `7`     | `LEFTFIRE` |         |           |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | UP        |
+|       2 | RIGHT     |
+|       3 | LEFT      |
+|       4 | DOWN      |
+|       5 | UPFIRE    |
+|       6 | RIGHTFIRE |
+|       7 | LEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -54,22 +59,15 @@ See variants section for the type of observation used by each environment id by 
 Tutankham has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                        | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-------------------------------|-------------|--------------|------------------------------|
-| Tutankham-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Tutankham-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Tutankham-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Tutankham-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| TutankhamDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| TutankhamNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Tutankham-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Tutankham-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Tutankham-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Tutankham-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| TutankhamDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| TutankhamNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Tutankham-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Tutankham-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                  | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-------------------------|-------------|--------------|------------------------------|
+| Tutankham-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| TutankhamNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| Tutankham-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| TutankhamNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/Tutankham-v5        | `rgb`       | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `TutankhamNoFrameskip-v4`.
 
 ## Difficulty and modes
 

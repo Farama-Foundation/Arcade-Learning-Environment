@@ -11,17 +11,17 @@ title: Assault
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                    |
-|-------------------|------------------------------------|
-| Action Space      | Discrete(7)                        |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)  |
-| Import            | `gymnasium.make("ALE/Assault-v5")` |
+|                   |                                   |
+|-------------------|-----------------------------------|
+| Make              | gymnasium.make("ALE/Assault-v5")  |
+| Action Space      | Discrete(7)                       |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8) |
 
 For more Assault variants with different observation and action spaces, see the variants section.
 
 ## Description
 
-You control a vehicle that can move sideways. A big mother ship circles overhead and continually deploys smaller drones.You must destroy these enemies and dodge their attacks.
+You control a vehicle that can move sideways. A big mother ship circles overhead and continually deploys smaller drones. You must destroy these enemies and dodge their attacks.
 
 For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareID=827)
 
@@ -31,11 +31,15 @@ Assault has the action space of `Discrete(7)` with the table below listing the m
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning    | Value   | Meaning   | Value   | Meaning     |
-|---------|------------|---------|-----------|---------|-------------|
-| `0`     | `NOOP`     | `1`     | `FIRE`    | `2`     | `UP`        |
-| `3`     | `RIGHT`    | `4`     | `LEFT`    | `5`     | `RIGHTFIRE` |
-| `6`     | `LEFTFIRE` |         |           |         |             |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | FIRE      |
+|       2 | UP        |
+|       3 | RIGHT     |
+|       4 | LEFT      |
+|       5 | RIGHTFIRE |
+|       6 | LEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -54,22 +58,15 @@ See variants section for the type of observation used by each environment id by 
 Assault has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                      | obs_type=   | frameskip=   | repeat_action_probability=   |
-|-----------------------------|-------------|--------------|------------------------------|
-| Assault-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| Assault-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| Assault-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| Assault-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| AssaultDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| AssaultNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| Assault-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| Assault-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| Assault-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| Assault-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| AssaultDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| AssaultNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/Assault-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/Assault-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                | obs_type=   | frameskip=   | repeat_action_probability=   |
+|-----------------------|-------------|--------------|------------------------------|
+| Assault-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| AssaultNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| Assault-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| AssaultNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/Assault-v5        | `rgb`       | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `AssaultNoFrameskip-v4`.
 
 ## Difficulty and modes
 

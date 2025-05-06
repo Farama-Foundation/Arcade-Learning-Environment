@@ -11,11 +11,11 @@ title: CrazyClimber
 
 This environment is part of the <a href='..'>Atari environments</a>. Please read that page first for general information.
 
-|                   |                                         |
-|-------------------|-----------------------------------------|
-| Action Space      | Discrete(9)                             |
-| Observation Space | Box(0, 255, (210, 160, 3), uint8)       |
-| Import            | `gymnasium.make("ALE/CrazyClimber-v5")` |
+|                   |                                       |
+|-------------------|---------------------------------------|
+| Make              | gymnasium.make("ALE/CrazyClimber-v5") |
+| Action Space      | Discrete(9)                           |
+| Observation Space | Box(0, 255, (210, 160, 3), uint8)     |
 
 For more CrazyClimber variants with different observation and action spaces, see the variants section.
 
@@ -31,11 +31,17 @@ CrazyClimber has the action space of `Discrete(9)` with the table below listing 
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-| Value   | Meaning   | Value   | Meaning     | Value   | Meaning    |
-|---------|-----------|---------|-------------|---------|------------|
-| `0`     | `NOOP`    | `1`     | `UP`        | `2`     | `RIGHT`    |
-| `3`     | `LEFT`    | `4`     | `DOWN`      | `5`     | `UPRIGHT`  |
-| `6`     | `UPLEFT`  | `7`     | `DOWNRIGHT` | `8`     | `DOWNLEFT` |
+|   Value | Meaning   |
+|---------|-----------|
+|       0 | NOOP      |
+|       1 | UP        |
+|       2 | RIGHT     |
+|       3 | LEFT      |
+|       4 | DOWN      |
+|       5 | UPRIGHT   |
+|       6 | UPLEFT    |
+|       7 | DOWNRIGHT |
+|       8 | DOWNLEFT  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
@@ -58,22 +64,15 @@ A table of scores awarded for completing each row of a building is provided on [
 CrazyClimber has the following variants of the environment id which have the following differences in observation,
 the number of frame-skips and the repeat action probability.
 
-| Env-id                           | obs_type=   | frameskip=   | repeat_action_probability=   |
-|----------------------------------|-------------|--------------|------------------------------|
-| CrazyClimber-v0                  | `"rgb"`     | `(2, 5)`     | `0.25`                       |
-| CrazyClimber-ram-v0              | `"ram"`     | `(2, 5)`     | `0.25`                       |
-| CrazyClimber-ramDeterministic-v0 | `"ram"`     | `4`          | `0.25`                       |
-| CrazyClimber-ramNoFrameskip-v0   | `"ram"`     | `1`          | `0.25`                       |
-| CrazyClimberDeterministic-v0     | `"rgb"`     | `4`          | `0.25`                       |
-| CrazyClimberNoFrameskip-v0       | `"rgb"`     | `1`          | `0.25`                       |
-| CrazyClimber-v4                  | `"rgb"`     | `(2, 5)`     | `0.0`                        |
-| CrazyClimber-ram-v4              | `"ram"`     | `(2, 5)`     | `0.0`                        |
-| CrazyClimber-ramDeterministic-v4 | `"ram"`     | `4`          | `0.0`                        |
-| CrazyClimber-ramNoFrameskip-v4   | `"ram"`     | `1`          | `0.0`                        |
-| CrazyClimberDeterministic-v4     | `"rgb"`     | `4`          | `0.0`                        |
-| CrazyClimberNoFrameskip-v4       | `"rgb"`     | `1`          | `0.0`                        |
-| ALE/CrazyClimber-v5              | `"rgb"`     | `4`          | `0.25`                       |
-| ALE/CrazyClimber-ram-v5          | `"ram"`     | `4`          | `0.25`                       |
+| Env-id                     | obs_type=   | frameskip=   | repeat_action_probability=   |
+|----------------------------|-------------|--------------|------------------------------|
+| CrazyClimber-v0            | `rgb`       | `(2, 5)`     | `0.25`                       |
+| CrazyClimberNoFrameskip-v0 | `rgb`       | `1`          | `0.25`                       |
+| CrazyClimber-v4            | `rgb`       | `(2, 5)`     | `0.00`                       |
+| CrazyClimberNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
+| ALE/CrazyClimber-v5        | `rgb`       | `4`          | `0.25`                       |
+
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `CrazyClimberNoFrameskip-v4`.
 
 ## Difficulty and modes
 
