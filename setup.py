@@ -52,7 +52,7 @@ class CMakeBuild(build_ext):
             "-DBUILD_VECTOR_LIB=ON",
         ]
         # We can only support XLA on platforms with JAX support (e.g., 3.10+ and Windows/Linux)
-        if Version(sys.version) >= Version("3.10") and platform.system() in {
+        if Version(sys.version_info) >= Version("3.10") and platform.system() in {
             "Windows",
             "Linux",
         }:
