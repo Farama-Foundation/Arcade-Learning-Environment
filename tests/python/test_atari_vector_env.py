@@ -186,7 +186,7 @@ def test_determinism(
         actions = envs_1.action_space.sample()
 
         obs_1, rewards_1, terminations_1, truncations_1, info_1 = envs_1.step(actions)
-        obs_2, rewards_2, terminations_2, truncations_2, info_2 = envs_1.step(actions)
+        obs_2, rewards_2, terminations_2, truncations_2, info_2 = envs_2.step(actions)
 
         assert data_equivalence(obs_1, obs_2)
         assert data_equivalence(rewards_1, rewards_2)
