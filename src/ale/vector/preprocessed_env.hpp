@@ -126,7 +126,7 @@ public:
      * Reset the environment and return the initial observation
      */
     void reset() {
-        if (current_seed_ > 0) {
+        if (current_seed_ >= 0) {
             env_->setInt("random_seed", current_seed_);
             rng_gen_.seed(current_seed_);
 
