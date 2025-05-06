@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools>=77.0.0",
-    "jax>0.4.31"
+    "jax>0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -57,7 +57,7 @@ test = [
     "pytest>=7.0",
     "gymnasium>=1.0.0",
     "opencv-python>=3.0",
-    "jax>=0.4.29"
+    "jax>=0.4.29; python_version > '3.9'"
 ]
 
 [project.urls]

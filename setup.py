@@ -1,11 +1,13 @@
 """Setup file for ALE."""
 
 import os
+import platform
 import re
 import shutil
 import subprocess
 import sys
 
+from packaging.version import Version
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
@@ -48,8 +50,13 @@ class CMakeBuild(build_ext):
             "-DBUILD_CPP_LIB=OFF",
             "-DBUILD_PYTHON_LIB=ON",
             "-DBUILD_VECTOR_LIB=ON",
-            "-DBUILD_VECTOR_XLA_LIB=ON",
         ]
+        # We can only support XLA on platforms with JAX support (e.g., 3.10+ and Windows/Linux)
+        if Version(sys.version) >= Version("3.10") and platform.system() in {
+            "Windows",
+            "Linux",
+        }:
+            cmake_args.append("-DBUILD_VECTOR_XLA_LIB=ON")
         build_args = []
 
         if self.compiler.compiler_type != "msvc":
