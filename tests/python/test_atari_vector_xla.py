@@ -3,6 +3,8 @@ import pytest
 from ale_py import AtariVectorEnv
 from gymnasium.utils.env_checker import data_equivalence
 
+pytest.importorskip("jax")
+
 
 @pytest.mark.parametrize(
     "num_envs, seeds",

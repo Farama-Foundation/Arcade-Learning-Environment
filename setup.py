@@ -7,7 +7,6 @@ import shutil
 import subprocess
 import sys
 
-from packaging.version import Version
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
@@ -52,7 +51,7 @@ class CMakeBuild(build_ext):
             "-DBUILD_VECTOR_LIB=ON",
         ]
         # We can only support XLA on platforms with JAX support (e.g., 3.10+ and Windows/Linux)
-        if Version(sys.version_info) >= Version("3.10") and platform.system() in {
+        if sys.version_info >= (3, 10) and platform.system() in {
             "Windows",
             "Linux",
         }:
