@@ -157,8 +157,16 @@ void init_vector_module(py::module& m) {
         .def("get_num_envs", &ale::vector::ALEVectorInterface::get_num_envs)
         .def("get_observation_shape", &ale::vector::ALEVectorInterface::get_observation_shape)
         .def("handle", [](ale::vector::ALEVectorInterface& self) {
-            return py::bytes(
-                 std::string(reinterpret_cast<const char*>(self.get_vectorizer()), sizeof(ale::vector::AsyncVectorizer*))
-            );
+            // Get the raw pointer to the AsyncVectorizer
+            auto ptr = self.get_vectorizer();
+
+            // Create a NumPy array with the correct size to hold the pointer
+            py::array_t<uint8_t> handle_array(sizeof(ptr));
+            auto handle_ptr = static_cast<uint8_t*>(handle_array.mutable_data());
+
+            // Copy the pointer value into the byte array
+            std::memcpy(handle_ptr, &ptr, sizeof(ptr));
+
+            return handle_array;
         });
 }

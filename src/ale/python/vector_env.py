@@ -103,8 +103,8 @@ class AtariVectorEnv(VectorEnv):
         if self.continuous:
             # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
             self.single_action_space = Box(
-                np.array([0.0, -np.pi, 0.0]).astype(np.float32),
-                np.array([1.0, np.pi, 1.0]).astype(np.float32),
+                low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
+                high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
             )
         else:
             self.single_action_space = Discrete(len(self.ale.get_action_set()))
@@ -121,7 +121,10 @@ class AtariVectorEnv(VectorEnv):
         self.is_xla_registered = False
 
     def reset(
-        self, *, seed: int | None = None, options: dict[str, Any] | None = None
+        self,
+        *,
+        seed: int | np.ndarray | None = None,
+        options: dict[str, Any] | None = None,
     ) -> tuple[ObsType, dict[str, Any]]:
         """Resets the sub-environments.
 
@@ -195,19 +198,33 @@ class AtariVectorEnv(VectorEnv):
 
     def xla(self):
         """Return XLA-compatible functions for JAX integration."""
+        try:
+            import jax
+            import jax.numpy as jnp
+        except ImportError as e:
+            raise gymnasium.error.DependencyNotInstalled(
+                'ALE is missing jax, necessary for using the vector XLA support, use `pip install "ale_py[xla]"` to import'
+            ) from e
+
         if not self.is_xla_registered:
-            self._register_xla_handlers()
+            jax.ffi.register_ffi_target(
+                "atari_vector_xla_reset",
+                ale_py._ale_py.VectorXLAReset(),
+            )
+            jax.ffi.register_ffi_target(
+                "atari_vector_xla_step",
+                ale_py._ale_py.VectorXLAStep(),
+            )
             self.is_xla_registered = True
 
-        import jax
-        import jax.numpy as jnp
-
         def xla_reset(
-            handle: np.ndarray, reset_indices: np.ndarray, reset_seeds: np.ndarray
+            handle: np.ndarray,
+            seed: np.ndarray | None = None,
+            reset_mask: np.ndarray | None = None,
         ) -> tuple[np.ndarray, tuple[np.ndarray, dict[str, Any]]]:
             xla_call = jax.ffi.ffi_call(
-                "atari_vector_xla_reset",
-                (
+                target_name="atari_vector_xla_reset",
+                result_shape_dtypes=(
                     jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
                     jax.ShapeDtypeStruct(
                         self.observation_space.shape, jnp.uint8
@@ -222,6 +239,23 @@ class AtariVectorEnv(VectorEnv):
                 vmap_method="broadcast_all",
             )
 
+            if reset_mask is not None:
+                assert (
+                    isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool
+                )
+                reset_indices, _ = np.where(reset_mask)
+            else:
+                reset_indices = np.arange(self.num_envs)
+
+            if seed is None:
+                reset_seeds = np.full(len(reset_indices), -1)
+            elif isinstance(seed, int):
+                reset_seeds = np.arange(seed, seed + len(reset_indices))
+            elif isinstance(seed, np.ndarray):
+                reset_seeds = seed
+            else:
+                raise TypeError("Unsupported seed type")
+
             new_handle, obs, env_ids, lives, frame_numbers, episode_frame_numbers = (
                 xla_call(handle, reset_indices, reset_seeds)
             )
@@ -235,6 +269,32 @@ class AtariVectorEnv(VectorEnv):
             return new_handle, (obs, info)
 
         def xla_step(handle, actions):
+            if self.continuous:
+                assert isinstance(actions, np.ndarray)
+                assert actions.dtype == np.float32
+                assert actions.shape == (self.batch_size, 2)
+
+                x = actions[0, :] * np.cos(actions[1, :])
+                y = actions[0, :] * np.sin(actions[1, :])
+
+                horizontal = -(x < self.continuous_action_threshold) + (
+                    x > self.continuous_action_threshold
+                )
+                vertical = -(y < self.continuous_action_threshold) + (
+                    y > self.continuous_action_threshold
+                )
+                fire = actions[1, :] > self.continuous_action_threshold
+
+                action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
+                paddle_strength = actions[1, :]
+            else:
+                assert isinstance(actions, np.ndarray)
+                assert actions.dtype == np.int64 or actions.dtype == np.int32
+                assert actions.shape == (self.batch_size,)
+
+                action_ids = actions
+                paddle_strength = np.ones(self.batch_size)
+
             xla_call = jax.ffi.ffi_call(
                 "atari_vector_xla_step",
                 (
@@ -265,7 +325,7 @@ class AtariVectorEnv(VectorEnv):
                 lives,
                 frame_numbers,
                 episode_frame_numbers,
-            ) = xla_call(handle, actions)
+            ) = xla_call(handle, action_ids, paddle_strength)
             lives = {
                 "env_ids": env_ids,
                 "lives": lives,
@@ -275,18 +335,6 @@ class AtariVectorEnv(VectorEnv):
 
             return new_handle, (obs, rewards, terminations, truncations, lives)
 
+        # Get the vectorizer handle and make sure it's properly formatted
         ale_handle = np.frombuffer(self.ale.handle(), dtype=np.uint8)
         return ale_handle, xla_reset, xla_step
-
-    @staticmethod
-    def _register_xla_handlers():
-        import jax
-
-        jax.ffi.register_ffi_target(
-            "atari_vector_xla_reset",
-            ale_py._ale_py.VectorXLAReset(),
-        )
-        jax.ffi.register_ffi_target(
-            "atari_vector_xla_step",
-            ale_py._ale_py.VectorXLAStep(),
-        )

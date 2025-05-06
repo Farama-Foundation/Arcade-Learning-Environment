@@ -1,4 +1,3 @@
-
 #include "xla/ffi/api/ffi.h"
 
 #include "ale/vector/async_vectorizer.hpp"
@@ -7,6 +6,8 @@
 #include <pybind11/numpy.h>
 
 #include <vector>
+#include <cstring>  // For memcpy
+#include <iostream>
 
 namespace ffi = xla::ffi;
 namespace py = pybind11;
@@ -22,39 +23,70 @@ ffi::Error XLAResetImpl(
     ffi::ResultBuffer<ffi::S32> frame_numbers_buffer,
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
-    ale::vector::AsyncVectorizer* vectorizer = reinterpret_cast<ale::vector::AsyncVectorizer*>(handle_buffer.typed_data());
-
-    std::copy(handle_buffer.typed_data(),
-              handle_buffer.typed_data() + 8,
-              new_handle_buffer->typed_data());
-
-    const std::vector<int> reset_indices(reset_indices_buffer.typed_data(), reset_indices_buffer.typed_data() + reset_indices_buffer.element_count());
-    const std::vector<int> reset_seeds(reset_seeds_buffer.typed_data(), reset_seeds_buffer.typed_data() + reset_seeds_buffer.element_count());
-    vectorizer->reset(reset_indices, reset_seeds);
-    auto timesteps = vectorizer->recv();
-
-    // Copy data to output buffers
-    uint8_t* obs_ptr = observations_buffer->typed_data();
-    int32_t* env_ids_ptr = env_ids_buffer->typed_data();
-    int32_t* lives_ptr = lives_buffer->typed_data();
-    int32_t* frame_numbers_ptr = frame_numbers_buffer->typed_data();
-    int32_t* episode_frame_numbers_ptr = episode_frame_numbers_buffer->typed_data();
-
-    // Copy data to output buffers
-    size_t obs_size = vectorizer->get_obs_size();
-    for (size_t i = 0; i < timesteps.size(); ++i) {
-        const auto& timestep = timesteps[i];
-
-        std::copy(timestep.observation.data(),
-                  timestep.observation.data() + obs_size,
-                  obs_ptr + i * obs_size);
-        env_ids_ptr[i] = timestep.env_id;
-        lives_ptr[i] = timestep.lives;
-        frame_numbers_ptr[i] = timestep.frame_number;
-        episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
+    // Validate handle buffer size
+    if (handle_buffer.element_count() < sizeof(ale::vector::AsyncVectorizer*)) {
+        return ffi::Error::Internal("Incorrect handle buffer size in reset");
     }
 
-    return ffi::Error::Success();
+    // Safely extract the vectorizer pointer from the handle buffer
+    ale::vector::AsyncVectorizer* vectorizer = nullptr;
+    std::memcpy(&vectorizer, handle_buffer.typed_data(), sizeof(vectorizer));
+    if (!vectorizer) {
+        return ffi::Error::Internal("Invalid vectorizer pointer in reset");
+    }
+
+    // Copy handle to output (needed for state management)
+    if (new_handle_buffer->element_count() < handle_buffer.element_count()) {
+        return ffi::Error::Internal("Incorrect new handle buffer size in reset");
+    }
+    std::memcpy(new_handle_buffer->typed_data(),
+                handle_buffer.typed_data(),
+                handle_buffer.element_count());
+
+    try {
+        // Extract reset indices and seeds
+        std::vector<int> reset_indices(
+            reset_indices_buffer.typed_data(),
+            reset_indices_buffer.typed_data() + reset_indices_buffer.element_count());
+        std::vector<int> reset_seeds(
+            reset_seeds_buffer.typed_data(),
+            reset_seeds_buffer.typed_data() + reset_seeds_buffer.element_count());
+
+        // Reset the environments
+        vectorizer->reset(reset_indices, reset_seeds);
+
+        // Receive the observations after reset
+        auto timesteps = vectorizer->recv();
+
+        // Copy data to output buffers
+        size_t obs_size = vectorizer->get_obs_size();
+        size_t num_envs = timesteps.size();
+        for (size_t i = 0; i < num_envs; ++i) {
+            const auto& timestep = timesteps[i];
+
+            std::memcpy(
+                observations_buffer->typed_data() + i * obs_size,
+                timestep.observation.data(),
+                obs_size
+            );
+            env_ids_buffer->typed_data()[i] = timestep.env_id;
+            lives_buffer->typed_data()[i] = timestep.lives;
+            frame_numbers_buffer->typed_data()[i] = timestep.frame_number;
+            episode_frame_numbers_buffer->typed_data()[i] = timestep.episode_frame_number;
+        }
+
+        return ffi::Error::Success();
+    }
+    catch (const std::exception& e) {
+        std::string error_msg = "Exception during reset: ";
+        error_msg += e.what();
+        std::cerr << error_msg << std::endl;
+        return ffi::Error::Internal(error_msg);
+    }
+    catch (...) {
+        std::cerr << "Unknown exception during reset" << std::endl;
+        return ffi::Error::Internal("Unknown exception during reset");
+    }
 }
 
 XLA_FFI_DEFINE_HANDLER_SYMBOL(
@@ -73,7 +105,7 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
 
 ffi::Error XLAStepImpl(
     ffi::Buffer<ffi::U8> handle_buffer,
-    ffi::Buffer<ffi::S32> actions_buffer,
+    ffi::Buffer<ffi::S32> action_id_buffer,
     ffi::Buffer<ffi::F32> paddle_strength_buffer,
     ffi::ResultBuffer<ffi::U8> new_handle_buffer,
     ffi::ResultBuffer<ffi::U8> observations_buffer,
@@ -85,57 +117,81 @@ ffi::Error XLAStepImpl(
     ffi::ResultBuffer<ffi::S32> frame_numbers_buffer,
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
-    ale::vector::AsyncVectorizer* vectorizer = reinterpret_cast<ale::vector::AsyncVectorizer*>(handle_buffer.typed_data());
+    // Validate handle buffer size
+    if (handle_buffer.element_count() < sizeof(ale::vector::AsyncVectorizer*)) {
+        return ffi::Error::Internal("Incorrect handle buffer size in step");
+    }
+
+    // Safely extract the vectorizer pointer from the handle buffer
+    ale::vector::AsyncVectorizer* vectorizer = nullptr;
+    std::memcpy(&vectorizer, handle_buffer.typed_data(), sizeof(vectorizer));
+    if (!vectorizer) {
+        return ffi::Error::Internal("Invalid vectorizer pointer in step");
+    }
 
     // Copy handle to output
-    std::copy(handle_buffer.typed_data(),
-              handle_buffer.typed_data() + 8,
-              new_handle_buffer->typed_data());
-
-    // Create actions for the vectorizer
-    std::vector<ale::vector::EnvironmentAction> actions(vectorizer->get_num_envs());
-    for (int i = 0; i < vectorizer->get_num_envs(); ++i) {
-        actions[i].env_id = i;
-        actions[i].action_id = actions_buffer.typed_data()[i];
-        actions[i].paddle_strength = paddle_strength_buffer.typed_data()[i];
+    if (new_handle_buffer->element_count() < handle_buffer.element_count()) {
+        return ffi::Error::Internal("New handle buffer too small in step");
     }
+    std::memcpy(new_handle_buffer->typed_data(),
+                handle_buffer.typed_data(),
+                handle_buffer.element_count());
 
-    // Step the environments
-    vectorizer->send(actions);
-    auto timesteps = vectorizer->recv();
+    try {
+        size_t num_envs = vectorizer->get_batch_size();
+        size_t obs_size = vectorizer->get_obs_size();
 
-    // Get shape info to properly format the observations
-    size_t obs_size = vectorizer->get_obs_size();
+        if (action_id_buffer.element_count() < num_envs) {
+            return ffi::Error::Internal("Action id buffer is too small");
+        } else if (paddle_strength_buffer.element_count() < num_envs) {
+            return ffi::Error::Internal("Paddle strength buffer is too small");
+        }
 
-    // Copy data to output buffers
-    uint8_t* obs_ptr = observations_buffer->typed_data();
-    int* rewards_ptr = rewards_buffer->typed_data();
-    bool* terminations_ptr = terminations_buffer->typed_data();
-    bool* truncations_ptr = truncations_buffer->typed_data();
-    int* env_ids_ptr = env_id_buffer->typed_data();
-    int* lives_ptr = lives_buffer->typed_data();
-    int* frame_numbers_ptr = frame_numbers_buffer->typed_data();
-    int* episode_frame_numbers_ptr = episode_frame_numbers_buffer->typed_data();
+        std::vector<ale::vector::EnvironmentAction> actions(num_envs);
+        for (size_t i = 0; i < num_envs; ++i) {
+            actions[i].env_id = i;
+            actions[i].action_id = action_id_buffer.typed_data()[i];
+            actions[i].paddle_strength = paddle_strength_buffer.typed_data()[i];
+        }
 
-    for (int i = 0; i < vectorizer->get_num_envs(); ++i) {
-        const auto& timestep = timesteps[i];
+        // Step the environments
+        vectorizer->send(actions);
+        auto timesteps = vectorizer->recv();
 
-        // Copy observation data
-        std::copy(timestep.observation.data(),
-                  timestep.observation.data() + obs_size,
-                  obs_ptr + i * obs_size);
+        if (observations_buffer->element_count() < timesteps.size() * obs_size) {
+            return ffi::Error::Internal("Observations buffer too small in step");
+        }
 
-        // Copy other fields
-        rewards_ptr[i] = timestep.reward;
-        terminations_ptr[i] = timestep.terminated ? 1 : 0;
-        truncations_ptr[i] = timestep.truncated ? 1 : 0;
-        env_ids_ptr[i] = timestep.env_id;
-        lives_ptr[i] = timestep.lives;
-        frame_numbers_ptr[i] = timestep.frame_number;
-        episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
+        // Copy data to output buffers
+        for (size_t i = 0; i < timesteps.size(); ++i) {
+            const auto& timestep = timesteps[i];
+
+            std::memcpy(
+                observations_buffer->typed_data() + i * obs_size,
+                timestep.observation.data(),
+                obs_size
+            );
+            rewards_buffer->typed_data()[i] = timestep.reward;
+            terminations_buffer->typed_data()[i] = timestep.terminated;
+            truncations_buffer->typed_data()[i] = timestep.truncated;
+            env_id_buffer->typed_data()[i] = timestep.env_id;
+            lives_buffer->typed_data()[i] = timestep.lives;
+            frame_numbers_buffer->typed_data()[i] = timestep.frame_number;
+            episode_frame_numbers_buffer->typed_data()[i] = timestep.episode_frame_number;
+        }
+
+        return ffi::Error::Success();
     }
-
-    return ffi::Error::Success();
+    catch (const std::exception& e) {
+        std::string error_msg = "Exception during step: ";
+        error_msg += e.what();
+        std::cerr << error_msg << std::endl;
+        return ffi::Error::Internal(error_msg);
+    }
+    catch (...) {
+        std::cerr << "Unknown exception during step" << std::endl;
+        return ffi::Error::Internal("Unknown exception during step");
+    }
 }
 
 XLA_FFI_DEFINE_HANDLER_SYMBOL(
@@ -143,7 +199,7 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
     ffi::Ffi::Bind()
         .Arg<ffi::Buffer<ffi::U8>>()  // handle
         .Arg<ffi::Buffer<ffi::S32>>()  // actions
-        .Arg<ffi::Buffer<ffi::F32>>()  // paddle_strength (optional)
+        .Arg<ffi::Buffer<ffi::F32>>()  // paddle_strength
         .Ret<ffi::Buffer<ffi::U8>>()  // new_handle
         .Ret<ffi::Buffer<ffi::U8>>()   // observations
         .Ret<ffi::Buffer<ffi::S32>>()  // rewards
@@ -155,7 +211,6 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
         .Ret<ffi::Buffer<ffi::S32>>()  // episode_frame_numbers
 );
 
-
 template <typename T>
 py::capsule EncapsulateFFICall(T *fn) {
     // This check is optional, but it can be helpful for avoiding invalid handlers.
@@ -163,7 +218,6 @@ py::capsule EncapsulateFFICall(T *fn) {
                   "Encapsulated function must be and XLA FFI handler");
     return py::capsule(reinterpret_cast<void *>(fn));
 }
-
 
 void init_vector_module_xla(py::module& m) {
     m.def("VectorXLAReset", [] {return EncapsulateFFICall(AtariVectorEnvXLAReset); });
