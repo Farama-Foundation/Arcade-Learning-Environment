@@ -19,6 +19,11 @@ if (BUILD_VECTOR_LIB)
   add_definitions(-DBUILD_VECTOR_LIB)
 endif()
 
+option(BUILD_VECTOR_XLA_LIB "Build with Vector XLA Support" OFF)
+if (BUILD_VECTOR_XLA_LIB)
+  add_definitions(-BUILD_VECTOR_XLA_LIB)
+endif()
+
 # Set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 

@@ -150,7 +150,7 @@ def test_rollout_consistency(
     [(1, np.array([0])), (3, np.array([1, 2, 3])), (10, np.arange(10))],
 )
 @pytest.mark.parametrize("noop_max", (0, 10, 30))
-@pytest.mark.parametrize("repeat_action_probability", (0, 0.25))
+@pytest.mark.parametrize("repeat_action_probability", (0.0, 0.25))
 @pytest.mark.parametrize("use_fire_reset", [False, True])
 def test_determinism(
     num_envs: int,
@@ -198,7 +198,11 @@ def test_determinism(
     envs_2.close()
 
 
-def test_batch_size():
+def test_continuous_action_space():
+    pass  # TODO
+
+
+def test_batch_size_async():
     pass  # TODO
 
 
@@ -211,8 +215,4 @@ def test_max_episode_steps():
 
 
 def test_episodic_life_and_life_loss_info():
-    pass  # TODO
-
-
-def test_continuous_action_space():
     pass  # TODO
