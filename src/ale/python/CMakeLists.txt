@@ -20,7 +20,7 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
 #    message(STATUS "Python3_SITELIB=${Python3_SITELIB}, Python3_SITEARCH=${Python3_SITEARCH}")
     execute_process(
         COMMAND "${Python3_EXECUTABLE}" "-c"
-        "import sys; sys.path.append('${Python3_SITELIB}'); sys.path.append('${Python3_SITEARCH}'); from jax import ffi; print(ffi.include_dir())"
+        "import sys; sys.path.append(r'${Python3_SITELIB}'); sys.path.append(r'${Python3_SITEARCH}'); from jax import ffi; print(ffi.include_dir())"
         OUTPUT_STRIP_TRAILING_WHITESPACE
         OUTPUT_VARIABLE XLA_DIR
     )
