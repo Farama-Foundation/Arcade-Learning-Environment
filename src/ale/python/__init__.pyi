@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, List, Optional, Tuple, overload
+from typing import Any, Dict, List, Optional, Tuple, TypeAlias, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -14,7 +14,11 @@ __all__ = [
     "ALEState",
     "LoggerMode",
     "SDL_SUPPORT",
+    "__version__",
 ]
+
+SDL_SUPPORT: bool
+__version__: str
 
 class LoggerMode:
     def __eq__(self, other: object) -> bool: ...
@@ -204,6 +208,16 @@ class ALEVectorInterface:
     def get_action_set(self) -> List[Action]: ...
     def get_num_envs(self) -> int: ...
     def get_observation_shape(self) -> Tuple[int, int, int]: ...
+    def handle(self) -> np.ndarray: ...
 
-SDL_SUPPORT: bool
-__version__: str
+try:
+    from ale_py.env import AtariEnvStepMetadata
+    from ale_py.vector_env import AtariVectorEnv
+
+    AtariEnv: TypeAlias = AtariEnv
+    AtariEnvStepMetadata: TypeAlias = AtariEnvStepMetadata
+    AtariVectorEnv: TypeAlias = AtariVectorEnv
+
+    __all__ += ["AtariEnv", "AtariEnvStepMetadata", "AtariVectorEnv"]
+except ImportError:
+    pass
