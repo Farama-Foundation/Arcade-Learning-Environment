@@ -1,6 +1,7 @@
 [build-system]
 requires = [
     "setuptools>=77.0.0",
+    "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -43,10 +44,20 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
+vector = [
+    "gymnasium>=1.0.0",
+    "opencv-python>=3.0"
+]
+xla = [
+    "gymnasium>=1.0.0",
+    "opencv-python>=3.0",
+    "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
+]
 test = [
     "pytest>=7.0",
     "gymnasium>=1.0.0",
     "opencv-python>=3.0",
+    "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
 ]
 
 [project.urls]
@@ -60,7 +71,7 @@ packages = [
     "ale_py.roms",
 ]
 package-dir = {ale_py = "src/ale/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
+package-data = {"ale_py" = ["py.typed", "*.py", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"

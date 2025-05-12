@@ -240,10 +240,7 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install ale_py-0.11.0-${{ matrix.wheel-name }}.whl
-
-      - name: Install Gymnasium and pytest
-        run: python -m pip install gymnasium>=1.0.0 pytest opencv-python
+        run: python -m pip install "ale_py-0.11.1-${{ matrix.wheel-name }}.whl[test]"
 
       - name: Test
         run: python -m pytest

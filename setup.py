@@ -1,6 +1,7 @@
 """Setup file for ALE."""
 
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -49,6 +50,12 @@ class CMakeBuild(build_ext):
             "-DBUILD_PYTHON_LIB=ON",
             "-DBUILD_VECTOR_LIB=ON",
         ]
+        # We can only support XLA on platforms with JAX support (e.g., 3.10+ and Windows/Linux)
+        if sys.version_info >= (3, 10) and platform.system() in {
+            "Windows",
+            "Linux",
+        }:
+            cmake_args.append("-DBUILD_VECTOR_XLA_LIB=ON")
         build_args = []
 
         if self.compiler.compiler_type != "msvc":
