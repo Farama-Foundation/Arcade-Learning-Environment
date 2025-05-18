@@ -58,10 +58,20 @@ ffi::Error XLAResetImpl(
         // Receive the observations after reset
         auto timesteps = vectorizer->recv();
 
-        // Copy data to output buffers
+        if (timesteps.empty()) {
+            return ffi::Error::Internal("No timesteps received after step");
+        } else if (timesteps.size() != vectorizer->get_batch_size();) {
+            return ffi::Error::Internal("Number of timesteps is wrong");
+        }
+
         size_t obs_size = vectorizer->get_obs_size();
-        size_t num_envs = timesteps.size();
-        for (size_t i = 0; i < num_envs; ++i) {
+
+        // Check if the observations buffer is large enough
+        if (observations_buffer->element_count() < vectorizer->get_batch_size() * obs_size) {
+            return ffi::Error::Internal("Observations buffer too small");
+        }
+
+        for (size_t i = 0; i < vectorizer->get_batch_size(); ++i) {
             const auto& timestep = timesteps[i];
 
             std::memcpy(
@@ -156,14 +166,24 @@ ffi::Error XLAStepImpl(
 
         // Step the environments
         vectorizer->send(actions);
+
+        // Receive the timesteps
         auto timesteps = vectorizer->recv();
 
-        if (observations_buffer->element_count() < timesteps.size() * obs_size) {
-            return ffi::Error::Internal("Observations buffer too small in step");
+        if (timesteps.empty()) {
+            return ffi::Error::Internal("No timesteps received after step");
+        } else if (timesteps.size() != vectorizer->get_batch_size();) {
+            return ffi::Error::Internal("Number of timesteps is wrong");
         }
 
-        // Copy data to output buffers
-        for (size_t i = 0; i < timesteps.size(); ++i) {
+        size_t obs_size = vectorizer->get_obs_size();
+
+        // Check if the observations buffer is large enough
+        if (observations_buffer->element_count() < vectorizer->get_batch_size() * obs_size) {
+            return ffi::Error::Internal("Observations buffer is too small");
+        }
+
+        for (size_t i = 0; i < vectorizer->get_batch_size(); ++i) {
             const auto& timestep = timesteps[i];
 
             std::memcpy(

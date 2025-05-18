@@ -29,6 +29,7 @@ namespace ale::vector {
          * @param obs_width Width to resize frames to for observations
          * @param frame_skip Number of frames for which to repeat the action
          * @param maxpool Whether to maxpool observations
+         * @param obs_format Format of observations (grayscale or RGB)
          * @param stack_num Number of frames to stack for observations
          * @param noop_max Maximum number of no-ops to perform on resets
          * @param use_fire_reset Whether to press FIRE during reset
@@ -47,6 +48,7 @@ namespace ale::vector {
             const int obs_width = 84,
             const int frame_skip = 4,
             const bool maxpool = true,
+            const ObsFormat obs_format = ObsFormat::Grayscale,
             const int stack_num = 4,
             const int noop_max = 30,
             const bool use_fire_reset = true,
@@ -63,6 +65,8 @@ namespace ale::vector {
             obs_width_(obs_width),
             frame_skip_(frame_skip),
             maxpool_(maxpool),
+            obs_format_(obs_format),
+            channels_per_frame_((obs_format == ObsFormat.GRAYSCALE) ? 1 : 3),
             stack_num_(stack_num),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
@@ -72,11 +76,10 @@ namespace ale::vector {
             max_episode_steps_(max_episode_steps),
             rng_gen_(seed == -1 ? std::random_device{}() : seed),
             elapsed_step_(max_episode_steps + 1),
-            // Uninitialised variables
+            // Uninitialized variables
             game_over_(false), lives_(0), was_life_loss_(false), reward_(0),
             current_action_(EnvironmentAction()), current_seed_(0)
         {
-
             // Turn off verbosity
             Logger::setMode(Logger::Error);
 
@@ -112,14 +115,21 @@ namespace ale::vector {
                 noop_generator_ = std::uniform_int_distribution<>(0, 0);
             }
 
-            // Initialize the buffers
+            // Calculate buffer sizes based on observation format
+            const int frame_size = obs_height_ * obs_width_ * channels_per_frame_;
+
+            // Initialize raw frame buffers for maxpooling (store two frames)
+            raw_frames_.resize(2);
             for (int i = 0; i < 2; ++i) {
-                raw_frames_.emplace_back(210 * 160);
+                raw_frames_[i].resize(210 * 160 * channels_per_frame);
             }
-            resized_frame_.resize(obs_height_ * obs_width_);
+
+            // Initialize resized frame buffer
+            resized_frame_.resize(frame_size, 0);
+
+            // Initialize frame stack
             for (int i = 0; i < stack_num_; ++i) {
-                std::vector<uint8_t> frame(obs_height_ * obs_width_, 0);
-                frame_stack_.push_back(std::move(frame));
+                frame_stack_.push_back(std::vector<uint8_t>(frame_size, 0));
             }
         }
 
@@ -156,11 +166,19 @@ namespace ale::vector {
             }
 
             // Get the screen data and process it
-            get_screen_data(raw_frames_[0].data());
-            std::fill(raw_frames_[1].begin(), raw_frames_[1].end(), 0);
-            for (int stack_id = 0; stack_id < stack_num_ - 1; ++stack_id) {
-                std::fill(frame_stack_[stack_id].begin(), frame_stack_[stack_id].end(), 0);
+            if (obs_format_ == ObsFormat::Grayscale) {
+                get_screen_data_grayscale(raw_frames_[0].data());
+            } else {
+                get_screen_data_rgb(raw_frames_[0].data());
             }
+            std::fill(raw_frames_[1].begin(), raw_frames_[1].end(), 0);
+
+            // Clear the frame stack
+            const int frame_size = obs_height_ * obs_width_ * channels_per_frame_;
+            for (auto& frame : frame_stack_) {
+                std::fill(frame.begin(), frame.end(), 0);
+            }
+
             process_screen();
 
             // Update state
@@ -201,7 +219,11 @@ namespace ale::vector {
 
                 // Captures last two frames for maxpooling
                 if (skip_id <= 2) {
-                    get_screen_data(raw_frames_[skip_id - 1].data());
+                    if (obs_format_ == ObsFormat::Grayscale) {
+                        get_screen_data_grayscale(raw_frames_[skip_id - 1].data());
+                    } else {
+                        get_screen_data_rgb(raw_frames_[skip_id - 1].data());
+                    }
                 }
             }
 
@@ -230,16 +252,18 @@ namespace ale::vector {
             timestep.frame_number = env_->getFrameNumber();
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
-            // Combine stacked frames into a single observation
-            const size_t frame_size = obs_height_ * obs_width_;
-            timestep.observation.resize(frame_size * stack_num_);
+            // Calculate size for the observation based on format
+            timestep.observation.resize(stack_num_ * channels_per_frame_ * obs_height_ * obs_width_);
 
+            // For both formats, simply copy the stacked frames
+            size_t offset = 0;
             for (int i = 0; i < stack_num_; ++i) {
                 std::memcpy(
-                    timestep.observation.data() + i * frame_size,
+                    timestep.observation.data() + offset,
                     frame_stack_[i].data(),
                     frame_size
                 );
+                offset += frame_size;
             }
 
             return timestep;
@@ -263,14 +287,28 @@ namespace ale::vector {
          * Get observation size
          */
         int get_obs_size() const {
-            return obs_height_ * obs_width_ * stack_num_;
+            return obs_height_ * obs_width_ * channels_per_frame_ * stack_num_;
+        }
+
+        /**
+         * Get observation format
+         */
+        ObsFormat get_obs_format() const {
+            return obs_format_;
+        }
+
+        /**
+         * Get channels per frame
+         */
+        int get_channels_per_frame() const {
+            return channels_per_frame_;
         }
 
     private:
         /**
-         * Get the current screen data from ALE
+         * Get the current screen data from ALE in grayscale format
          */
-        void get_screen_data(uint8_t* buffer) const {
+        void get_screen_data_grayscale(uint8_t* buffer) const {
             const ALEScreen& screen = env_->getScreen();
             uint8_t* ale_screen_data = screen.getArray();
 
@@ -280,33 +318,45 @@ namespace ale::vector {
         }
 
         /**
+         * Get the current screen data from ALE in RGB format
+         */
+        void get_screen_data_rgb(uint8_t* buffer) const {
+            const ALEScreen& screen = env_->getScreen();
+            uint8_t* ale_screen_data = screen.getArray();
+
+            env_->theOSystem->colourPalette().applyPaletteRGB(
+                buffer, ale_screen_data, screen.width() * screen.height()
+            );
+        }
+
+        /**
          * Process the screen and update the frame stack
          */
         void process_screen() {
-            constexpr int raw_height = 210;
-            constexpr int raw_width = 160;
+            int raw_height = 210;
+            int raw_width = 160;
 
+            // Maxpool raw frames if required (different for grayscale and RGB)
             if (maxpool_) {
-                // Maxpool over the last two frames
-                constexpr int raw_size = raw_height * raw_width;
+                int raw_size = raw_height * raw_width * channels_per_frame_;
                 for (int i = 0; i < raw_size; ++i) {
                     raw_frames_[0][i] = std::max(raw_frames_[0][i], raw_frames_[1][i]);
                 }
             }
 
-            if (obs_height_ != raw_height && obs_width_ != raw_width) {
-                // Resize the raw frame to target dimensions
-                cv::Mat src_img(raw_height, raw_width, CV_8UC1, raw_frames_[0].data());
-                cv::Mat dst_img(obs_height_, obs_width_, CV_8UC1, resized_frame_.data());
-
-                // Use INTER_AREA for downsampling to avoid moiré patterns
+            // Resize the raw frame based on format
+            if (obs_height_ != raw_height || obs_width_ != raw_width) {
+                auto resize_obs_format = (obs_format_ == ObsFormat::Grayscale) ? CV_8UC1 : CV_8UC3
+                cv::Mat src_img(raw_height, raw_width, resize_obs_format, raw_frames_[0].data());
+                cv::Mat dst_img(obs_height_, obs_width_, resize_obs_format, resized_frame_.data());
                 cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
             } else {
-                // Otherwise, just copy the data to the resized frame
-                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), raw_frames_[0].size());
+                // No resize needed, just copy
+                int original_shape = raw_height * raw_width * channels_per_frame_;
+                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), original_shape);
             }
 
-            // Push the new frame into the stack
+            // Update frame stack - remove oldest frame and add new one
             frame_stack_.pop_front();
             frame_stack_.push_back(resized_frame_);
         }
@@ -320,6 +370,8 @@ namespace ale::vector {
         int obs_width_;                      // Width to resize frames to for observations
         int frame_skip_;                     // Number of frames for which to repeat the action
         bool maxpool_;                       // Whether to maxpool observations
+        ObsFormat obs_format_;               // Format of observations (grayscale or RGB)
+        int channels_per_frame_;             // The number of channels for each frame based on obs_format
         int stack_num_;                      // Number of frames to stack for observations
         int noop_max_;                       // Maximum number of no-ops at reset
         bool use_fire_reset_;                // Whether to press FIRE during reset
@@ -341,10 +393,10 @@ namespace ale::vector {
         EnvironmentAction current_action_;   // Current action to take
         int current_seed_;                   // Current seed to update
 
-        // Frame buffers
-        std::vector<std::vector<uint8_t>> raw_frames_;  // Raw frame buffers for maxpooling
-        std::vector<uint8_t> resized_frame_;            // Resized frame buffer
-        std::deque<std::vector<uint8_t>> frame_stack_;  // Stack of recent frames
+        // Frame buffers - unified for both grayscale and RGB
+        std::vector<std::vector<uint8_t>> raw_frames_;     // Raw frame buffers for maxpooling
+        std::vector<uint8_t> resized_frame_;               // Current resized frame
+        std::deque<std::vector<uint8_t>> frame_stack_;     // Stack of recent frames
     };
 }
 

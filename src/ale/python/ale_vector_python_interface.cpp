@@ -13,13 +13,14 @@ namespace py = pybind11;
 void init_vector_module(py::module& m) {
     // Define ALEVectorInterface class
     py::class_<ale::vector::ALEVectorInterface>(m, "ALEVectorInterface")
-        .def(py::init<const fs::path, int, int, int, int, int, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int>(),
+        .def(py::init<const fs::path, int, int, int, int, int, bool, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int>(),
              py::arg("rom_path"),
              py::arg("num_envs"),
              py::arg("frame_skip") = 4,
              py::arg("stack_num") = 4,
              py::arg("img_height") = 84,
              py::arg("img_width") = 84,
+             py::arg("grayscale") = true,
              py::arg("maxpool") = true,
              py::arg("noop_max") = 30,
              py::arg("use_fire_reset") = true,
@@ -44,9 +45,14 @@ void init_vector_module(py::module& m) {
             int stack_num = std::get<0>(obs_shape);
             int height = std::get<1>(obs_shape);
             int width = std::get<2>(obs_shape);
+            int channels = self.is_grayscale() ? 1 : 3;
 
             // Create a single NumPy array for all observations
-            py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
+            if (is_grayscale) {
+                py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
+            } else {
+                py::array_t<uint8_t> observations({num_envs, stack_num, height, width, 3});
+            }
             auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
 
             // Create arrays for info fields
@@ -61,7 +67,7 @@ void init_vector_module(py::module& m) {
             auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
 
             // Copy data from observations to NumPy arrays
-            size_t obs_size = stack_num * height * width;
+            size_t obs_size = stack_num * height * width * channels;
             for (int i = 0; i < num_envs; i++) {
                 const auto& timestep = timesteps[i];
 
@@ -96,14 +102,19 @@ void init_vector_module(py::module& m) {
             py::gil_scoped_acquire acquire;
 
             // Get shape information
+            int num_envs = timesteps.size();
             const auto shape_info = self.get_observation_shape();
             int stack_num = std::get<0>(shape_info);
             int height = std::get<1>(shape_info);
             int width = std::get<2>(shape_info);
-            int num_envs = timesteps.size();
+            int channels = self.is_grayscale() ? 1 : 3;
 
             // Create NumPy arrays
-            py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
+            if (is_grayscale) {
+                py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
+            } else {
+                py::array_t<uint8_t> observations({num_envs, stack_num, height, width, 3});
+            }
             py::array_t<int> rewards(num_envs);
             py::array_t<bool> terminations(num_envs);
             py::array_t<bool> truncations(num_envs);
@@ -123,7 +134,7 @@ void init_vector_module(py::module& m) {
             auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
 
             // Copy data from observations to NumPy arrays
-            const size_t obs_size = stack_num * height * width;
+            const size_t obs_size = stack_num * height * width * channels;
             for (int i = 0; i < num_envs; i++) {
                 const auto& timestep = timesteps[i];
 
@@ -155,7 +166,14 @@ void init_vector_module(py::module& m) {
         })
         .def("get_action_set", &ale::vector::ALEVectorInterface::get_action_set)
         .def("get_num_envs", &ale::vector::ALEVectorInterface::get_num_envs)
-        .def("get_observation_shape", &ale::vector::ALEVectorInterface::get_observation_shape)
+        .def("get_observation_shape", [](ale::vector::ALEVectorInterface& self) {
+            auto shape = self.get_observation_shape();
+            if (self.is_grayscale()) {
+                return py::make_tuple(std::get<0>(shape), std::get<1>(shape), std::get<2>(shape));
+            } else {
+                return py::make_tuple(std::get<0>(shape), std::get<1>(shape), std::get<2>(shape), std::get<3>(shape));
+            }
+        })
         .def("handle", [](ale::vector::ALEVectorInterface& self) {
             // Get the raw pointer to the AsyncVectorizer
             auto ptr = self.get_vectorizer();
