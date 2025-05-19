@@ -293,10 +293,16 @@ def test_sound_obs():
 def test_get_keys_to_action():
     env = gymnasium.make("ALE/MsPacman-v5").unwrapped
     assert len(env._action_set) == len(env.get_keys_to_action())
-    for keys, action in env.get_keys_to_action():
+    for keys, action in env.get_keys_to_action().items():
         assert isinstance(keys, tuple)
         assert all(isinstance(key, str) for key in keys)
         assert action in env.action_space
+    env.close()
 
     env = gymnasium.make("ALE/MsPacman-v5", continuous=True).unwrapped
-    assert len(env._action_set) == len(env.get_keys_to_action())
+    with pytest.raises(
+        AttributeError,
+        match="`get_keys_to_action` can't be provided for this Atari environment as `continuous=True`.",
+    ):
+        env.get_keys_to_action()
+    env.close()

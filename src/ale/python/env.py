@@ -352,7 +352,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         }
 
     @lru_cache(1)
-    def get_keys_to_action(self) -> dict[tuple[str, ...], int]:
+    def get_keys_to_action(self) -> dict[tuple[str, ...], int | np.ndarray]:
         """Return keymapping -> actions for human play.
 
         Up, down, left and right are wasd keys with fire being space.
@@ -390,13 +390,13 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         }
 
         # Map
-        #   (key, key, ...) -> action_idx
-        # where action_idx is the integer value of the action enum
-        #
-        return {
-            tuple(sorted(mapping[act_idx])): act_idx.value
-            for act_idx in self._action_set
-        }
+        #   (key, key, ...) -> action
+        if self.continuous:
+            raise AttributeError(
+                "`get_keys_to_action` can't be provided for this Atari environment as `continuous=True`."
+            )
+        else:
+            return {mapping[action]: i for i, action in enumerate(self._action_set)}
 
     @staticmethod
     @lru_cache(18)
