@@ -111,7 +111,7 @@ class AtariVectorEnv(VectorEnv):
 
         if self.continuous:
             # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
-            self.action_space = Box(
+            self.single_action_space = Box(
                 low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
                 high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
                 dtype=np.float32,
