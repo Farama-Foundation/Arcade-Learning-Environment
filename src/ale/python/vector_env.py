@@ -92,10 +92,9 @@ class AtariVectorEnv(VectorEnv):
         self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
         for h in (-1, 0, 1):
             for v in (-1, 0, 1):
-                for f in (False, True):
-                    self.map_action_idx[h, v, f] = AtariEnv.map_action_idx(
-                        h, v, f
-                    ).value
+                for f in (0, 1):
+                    action = AtariEnv.map_action_idx(h, v, bool(f)).value
+                    self.map_action_idx[h + 1, v + 1, f] = action
 
         self.single_observation_space = Box(
             shape=(stack_num, img_height, img_width), low=0, high=255, dtype=np.uint8
@@ -172,15 +171,19 @@ class AtariVectorEnv(VectorEnv):
             x = actions[:, 0] * np.cos(actions[:, 1])
             y = actions[:, 0] * np.sin(actions[:, 1])
 
-            horizontal = -(x < self.continuous_action_threshold) + (
-                x > self.continuous_action_threshold
+            horizontal = (
+                -(x < self.continuous_action_threshold).astype(np.int32)
+                + (x > self.continuous_action_threshold).astype(np.int32)
+                + 1
             )
-            vertical = -(y < self.continuous_action_threshold) + (
-                y > self.continuous_action_threshold
+            vertical = (
+                -(y < self.continuous_action_threshold).astype(np.int32)
+                + (y > self.continuous_action_threshold).astype(np.int32)
+                + 1
             )
-            fire = actions[:, 2] > self.continuous_action_threshold
+            fire = (actions[:, 2] > self.continuous_action_threshold).astype(np.int32)
 
-            action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
+            action_ids = self.map_action_idx[horizontal, vertical, fire]
             paddle_strength = actions[:, 0]
             self.ale.send(action_ids, paddle_strength)
         else:

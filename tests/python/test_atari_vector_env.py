@@ -56,9 +56,6 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
     envs.close()
 
 
-NUM_ENVS = 8
-
-
 def assert_rollout_equivalence(
     gym_envs,
     ale_envs,
@@ -103,9 +100,9 @@ def assert_rollout_equivalence(
                 f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)}"
             )
 
-        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards)
-        assert data_equivalence(gym_terminations, ale_terminations)
-        assert data_equivalence(gym_truncations, ale_truncations)
+        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), i
+        assert data_equivalence(gym_terminations, ale_terminations), i
+        assert data_equivalence(gym_truncations, ale_truncations), i
 
         gym_info = {
             key: value.astype(np.int32)
@@ -113,8 +110,8 @@ def assert_rollout_equivalence(
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
-        assert np.all(env_ids == np.arange(gym_envs.num_envs))
-        assert data_equivalence(gym_info, ale_info)
+        assert np.all(env_ids == np.arange(gym_envs.num_envs)), i
+        assert data_equivalence(gym_info, ale_info), i
 
     gym_envs.close()
     ale_envs.close()
@@ -123,7 +120,9 @@ def assert_rollout_equivalence(
 @pytest.mark.parametrize("stack_num", [4, 6])
 @pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
 @pytest.mark.parametrize("frame_skip", [1, 4])
-def test_obs_params__equivalence(stack_num, img_height, img_width, frame_skip):
+def test_obs_params_equivalence(
+    stack_num, img_height, img_width, frame_skip, num_envs=8
+):
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
@@ -136,12 +135,12 @@ def test_obs_params__equivalence(stack_num, img_height, img_width, frame_skip):
                 stack_size=stack_num,
                 padding_type="zero",
             )
-            for _ in range(NUM_ENVS)
+            for _ in range(num_envs)
         ],
     )
     ale_envs = AtariVectorEnv(
         game="breakout",
-        num_envs=NUM_ENVS,
+        num_envs=num_envs,
         frameskip=frame_skip,
         img_height=img_height,
         img_width=img_width,
@@ -154,7 +153,7 @@ def test_obs_params__equivalence(stack_num, img_height, img_width, frame_skip):
     assert_rollout_equivalence(gym_envs, ale_envs)
 
 
-def test_continuous_actions():
+def test_continuous_actions_equivalence(num_envs=8):
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
@@ -168,12 +167,12 @@ def test_continuous_actions():
                 stack_size=4,
                 padding_type="zero",
             )
-            for _ in range(NUM_ENVS)
+            for _ in range(num_envs)
         ],
     )
     ale_envs = AtariVectorEnv(
         game="breakout",
-        num_envs=NUM_ENVS,
+        num_envs=num_envs,
         noop_max=0,
         use_fire_reset=False,
         continuous=True,
