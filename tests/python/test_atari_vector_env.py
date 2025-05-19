@@ -64,18 +64,20 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width, grayscale
 NUM_ENVS = 8
 
 
-def rollout_consistency(
+def assert_rollout_equivalence(
     gym_envs,
     ale_envs,
     rollout_length=100,
+    reset_seed=123,
+    action_seed=123,
 ):
     """Test if both environments produce similar results over a short rollout."""
     assert gym_envs.num_envs == ale_envs.num_envs
     assert gym_envs.observation_space == ale_envs.observation_space
     assert gym_envs.action_space == ale_envs.action_space
 
-    gym_obs, gym_info = gym_envs.reset(seed=123)
-    ale_obs, ale_info = ale_envs.reset(seed=123)
+    gym_obs, gym_info = gym_envs.reset(seed=reset_seed)
+    ale_obs, ale_info = ale_envs.reset(seed=reset_seed)
 
     assert data_equivalence(gym_obs, ale_obs)
 
@@ -88,7 +90,7 @@ def rollout_consistency(
     assert np.all(env_ids == np.arange(gym_envs.num_envs))
     assert data_equivalence(gym_info, ale_info)
 
-    ale_envs.action_space.seed(123)
+    ale_envs.action_space.seed(action_seed)
     for i in range(rollout_length):
         actions = ale_envs.action_space.sample()
 
@@ -157,16 +159,15 @@ def test_obs_params(stack_num, img_height, img_width, frame_skip, grayscale):
         grayscale=grayscale,
     )
 
-    rollout_consistency(gym_envs, ale_envs)
+    assert_rollout_equivalence(gym_envs, ale_envs)
 
 
-@pytest.mark.parametrize("continuous_actions", [False, True])
-def test_continuous_actions(continuous_actions):
+def test_continuous_actions():
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
                 gym.wrappers.AtariPreprocessing(
-                    gym.make("BreakoutNoFrameskip-v4", continuous=continuous_actions),
+                    gym.make("BreakoutNoFrameskip-v4", continuous=True),
                     noop_max=0,
                 ),
                 padding_type="zero",
@@ -179,10 +180,10 @@ def test_continuous_actions(continuous_actions):
         num_envs=NUM_ENVS,
         noop_max=0,
         use_fire_reset=False,
-        continuous=continuous_actions,
+        continuous=True,
     )
 
-    rollout_consistency(gym_envs, ale_envs)
+    assert_rollout_equivalence(gym_envs, ale_envs)
 
 
 @pytest.mark.parametrize(

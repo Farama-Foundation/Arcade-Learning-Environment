@@ -78,6 +78,7 @@ namespace ale::vector {
             img_height_(img_height),
             img_width_(img_width),
             grayscale_(grayscale),
+            obs_format_(grayscale_ ? ObsFormat::Grayscale : ObsFormat::RGB),
             maxpool_(maxpool),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
@@ -89,9 +90,6 @@ namespace ale::vector {
             full_action_space_(full_action_space),
             received_env_ids_(batch_size > 0 ? batch_size : num_envs) {
 
-            // Convert grayscale flag to ObsFormat
-            ObsFormat obs_format = grayscale_ ? ObsFormat::Grayscale : ObsFormat::RGB;
-
             // Create environment factory
             auto env_factory = [this](int env_id) {
                 return std::make_unique<PreprocessedAtariEnv>(
@@ -101,7 +99,7 @@ namespace ale::vector {
                     img_width_,
                     frame_skip_,
                     maxpool_,
-                    obs_format,
+                    obs_format_,
                     stack_num_,
                     noop_max_,
                     use_fire_reset_,
@@ -236,6 +234,7 @@ namespace ale::vector {
         int img_height_;                          // Height of resized frames
         int img_width_;                           // Width of resized frames
         bool grayscale_;                          // Whether to use grayscale observations
+        ObsFormat obs_format_;                    // Observation format based on grayscale
         bool maxpool_;                            // If to maxpool over frames
         int noop_max_;                            // Max no-ops on reset
         bool use_fire_reset_;                     // Whether to fire on reset

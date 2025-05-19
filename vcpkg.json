@@ -27,7 +27,7 @@
       ]
     }
   },
-  "builtin-baseline": "0ca64b4e1c70fa6d9f53b369b8f3f0843797c20c",
+  "builtin-baseline": "3426a5e955f029ab0088ef6656fda06552bd2699",
   "overrides": [
     {
       "name": "sdl2",
