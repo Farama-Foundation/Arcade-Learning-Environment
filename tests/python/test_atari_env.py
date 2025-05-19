@@ -288,3 +288,15 @@ def test_sound_obs():
         check_env(env.unwrapped, skip_render_check=True)
 
     assert caught_warnings == [], [caught.message.args[0] for caught in caught_warnings]
+
+
+def test_get_keys_to_action():
+    env = gymnasium.make("ALE/MsPacman-v5").unwrapped
+    assert len(env._action_set) == len(env.get_keys_to_action())
+    for keys, action in env.get_keys_to_action():
+        assert isinstance(keys, tuple)
+        assert all(isinstance(key, str) for key in keys)
+        assert action in env.action_space
+
+    env = gymnasium.make("ALE/MsPacman-v5", continuous=True).unwrapped
+    assert len(env._action_set) == len(env.get_keys_to_action())
