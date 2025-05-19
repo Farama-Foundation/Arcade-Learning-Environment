@@ -154,14 +154,18 @@ def test_obs_params__equivalence(stack_num, img_height, img_width, frame_skip):
     assert_rollout_equivalence(gym_envs, ale_envs)
 
 
-def test_continuous_actions_equivalence():
+def test_continuous_actions():
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
                 gym.wrappers.AtariPreprocessing(
-                    gym.make("BreakoutNoFrameskip-v4", continuous=True),
+                    gym.make(
+                        "BreakoutNoFrameskip-v4",
+                        continuous=True,
+                    ),
                     noop_max=0,
                 ),
+                stack_size=4,
                 padding_type="zero",
             )
             for _ in range(NUM_ENVS)
