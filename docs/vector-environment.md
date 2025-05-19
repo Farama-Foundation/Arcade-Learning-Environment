@@ -41,7 +41,7 @@ from ale_py.vector_env import VectorAtariEnv
 
 # Create a vector environment with 4 parallel instances of Breakout
 envs = VectorAtariEnv(
-    game="breakout",  # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions  
+    game="breakout",  # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions
     num_envs=4,
 )
 
@@ -63,7 +63,7 @@ The vector environment provides numerous configuration options:
 ```python
 envs = VectorAtariEnv(
     # Required parameters
-    game="breakout",          # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions 
+    game="breakout",          # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions
     num_envs=8,               # Number of parallel environments
 
     # Preprocessing parameters
