@@ -116,11 +116,10 @@ namespace ale::vector {
             }
 
             // Initialize the buffers
-            const int frame_size = obs_height_ * obs_width_ * channels_per_frame_;
-
             for (int i = 0; i < 2; ++i) {
                 raw_frames_.emplace_back(210 * 160 * channels_per_frame_);
             }
+            const int frame_size = obs_height_ * obs_width_ * channels_per_frame_;
             resized_frame_.resize(frame_size, 0);
             for (int i = 0; i < stack_num_; ++i) {
                 frame_stack_.push_back(std::vector<uint8_t>(frame_size, 0));
@@ -170,7 +169,7 @@ namespace ale::vector {
             // Clear the frame stack
             for (int stack_id = 0; stack_id < stack_num_ - 1; ++stack_id) {
                 std::fill(frame_stack_[stack_id].begin(), frame_stack_[stack_id].end(), 0);
-
+            }
             process_screen();
 
             // Update state
@@ -244,13 +243,13 @@ namespace ale::vector {
             timestep.frame_number = env_->getFrameNumber();
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
-            // Calculate size for the observation based on format
+            // Combine stacked frames into a single observation
             const size_t frame_size = obs_height_ * obs_width_ * channels_per_frame_;
             timestep.observation.resize(frame_size * stack_num_);
 
             for (int i = 0; i < stack_num_; ++i) {
                 std::memcpy(
-                    timestep.observation.data() + frame_size,
+                    timestep.observation.data() + i * frame_size,
                     frame_stack_[i].data(),
                     frame_size
                 );
@@ -278,13 +277,6 @@ namespace ale::vector {
          */
         int get_obs_size() const {
             return obs_height_ * obs_width_ * channels_per_frame_ * stack_num_;
-        }
-
-        /**
-         * Get observation format
-         */
-        ObsFormat get_obs_format() const {
-            return obs_format_;
         }
 
         /**
@@ -336,9 +328,11 @@ namespace ale::vector {
 
             // Resize the raw frame based on format
             if (obs_height_ != raw_height || obs_width_ != raw_width) {
-                auto resize_obs_format = (obs_format_ == ObsFormat::Grayscale) ? CV_8UC1 : CV_8UC3;
-                cv::Mat src_img(raw_height, raw_width, resize_obs_format, raw_frames_[0].data());
-                cv::Mat dst_img(obs_height_, obs_width_, resize_obs_format, resized_frame_.data());
+                auto cv2_format = (obs_format_ == ObsFormat::Grayscale) ? CV_8UC1 : CV_8UC3;
+                cv::Mat src_img(raw_height, raw_width, cv2_format, raw_frames_[0].data());
+                cv::Mat dst_img(obs_height_, obs_width_, cv2_format, resized_frame_.data());
+
+                // Use INTER_AREA for downsampling to avoid moiré patterns
                 cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
             } else {
                 // No resize needed, just copy

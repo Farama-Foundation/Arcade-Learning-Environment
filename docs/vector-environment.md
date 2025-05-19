@@ -41,7 +41,7 @@ from ale_py.vector_env import VectorAtariEnv
 
 # Create a vector environment with 4 parallel instances of Breakout
 envs = VectorAtariEnv(
-    game="Breakout",
+    game="breakout",  # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions  
     num_envs=4,
 )
 
@@ -63,7 +63,7 @@ The vector environment provides numerous configuration options:
 ```python
 envs = VectorAtariEnv(
     # Required parameters
-    game="Breakout",          # ROM name in snake_case
+    game="breakout",          # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions 
     num_envs=8,               # Number of parallel environments
 
     # Preprocessing parameters
@@ -72,6 +72,7 @@ envs = VectorAtariEnv(
     stack_num=4,              # Number of frames to stack
     img_height=84,            # Height to resize frames to
     img_width=84,             # Width to resize frames to
+    maxpool=True,             # If to maxpool sequential frames
 
     # Environment behavior
     noop_max=30,              # Maximum number of no-ops at reset
@@ -102,10 +103,7 @@ Where:
 - `stack_size`: Number of stacked frames (typically 4)
 - `height`, `width`: Image dimensions (typically 84x84)
 
-This differs from the standard Gymnasium Atari environment format which uses:
-```
-observations.shape = (num_envs, stack_size, height, width)  # Without num_envs
-```
+Additionally, with `grayscale=True` then the shape is `(num_envs, stack_size, height, width, 3)` for RGB frames.
 
 ## Performance Considerations
 
@@ -148,49 +146,4 @@ On systems with multiple CPU cores, setting thread affinity can improve performa
 ```python
 # Set thread affinity starting from core 0
 envs = VectorAtariEnv(game="Breakout", num_envs=8, thread_affinity_offset=0)
-```
-
-
-## Examples
-
-### Training Example with PyTorch
-
-```python
-import torch
-import numpy as np
-from ale_py.vector_env import VectorAtariEnv
-
-# Create environment
-envs = VectorAtariEnv(game="Breakout", num_envs=8)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# Initialize model (simplified example)
-model = torch.nn.Sequential(
-    torch.nn.Conv2d(4, 32, kernel_size=8, stride=4),
-    torch.nn.ReLU(),
-    torch.nn.Conv2d(32, 64, kernel_size=4, stride=2),
-    torch.nn.ReLU(),
-    torch.nn.Conv2d(64, 64, kernel_size=3, stride=1),
-    torch.nn.ReLU(),
-    torch.nn.Flatten(),
-    torch.nn.Linear(3136, 512),
-    torch.nn.ReLU(),
-    torch.nn.Linear(512, envs.single_action_space.n)
-).to(device)
-
-# Reset environment
-observations, _ = envs.reset()
-
-# Training loop
-for step in range(1000):
-    # Convert observations to PyTorch tensors
-    obs_tensor = torch.tensor(observations, dtype=torch.float32, device=device) / 255.0
-
-    # Get actions from model
-    with torch.no_grad():
-        q_values = model(obs_tensor)
-        actions = q_values.max(dim=1)[1].cpu().numpy()
-
-    # Step the environment
-    observations, rewards, terminations, truncations, infos = envs.step(actions)
 ```
