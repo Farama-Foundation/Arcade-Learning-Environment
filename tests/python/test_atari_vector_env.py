@@ -10,7 +10,7 @@ from gymnasium.utils.env_checker import data_equivalence
 @pytest.mark.parametrize("num_envs", [1, 3])
 @pytest.mark.parametrize("stack_num", [4, 6])
 @pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
-@pytest.mark.parametrize("grayscale", [False, True])
+@pytest.mark.parametrize("grayscale", [True, False])
 def test_reset_step_shapes(num_envs, stack_num, img_height, img_width, grayscale):
     """Test if reset returns observations with the correct shape."""
     envs = AtariVectorEnv(
@@ -22,17 +22,18 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width, grayscale
         grayscale=grayscale,
     )
 
-    assert envs.num_envs == num_envs
     expected_shape = (num_envs, stack_num, img_height, img_width)
     if not grayscale:
         expected_shape += (3,)
+
+    assert envs.num_envs == num_envs
     assert envs.observation_space.shape == expected_shape
     assert envs.action_space.shape == (num_envs,)
 
     obs, info = envs.reset(seed=0)
 
     assert isinstance(obs, np.ndarray)
-    assert obs.shape == (num_envs, stack_num, img_height, img_width)
+    assert obs.shape == expected_shape
     assert obs.dtype == np.uint8
     assert obs in envs.observation_space, f"{envs.observation_space=}"
     assert isinstance(info, dict)
@@ -44,7 +45,7 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width, grayscale
     obs, reward, terminations, truncations, info = envs.step(actions)
 
     assert isinstance(obs, np.ndarray)
-    assert obs.shape == (num_envs, stack_num, img_height, img_width)
+    assert obs.shape == expected_shape
     assert obs.dtype == np.uint8
     assert obs in envs.observation_space, f"{envs.observation_space=}"
     assert isinstance(reward, np.ndarray) and reward.dtype == np.int32
@@ -157,35 +158,6 @@ def test_obs_params(stack_num, img_height, img_width, frame_skip, grayscale):
         use_fire_reset=False,
         maxpool=frame_skip > 1,
         grayscale=grayscale,
-    )
-
-    assert_rollout_equivalence(gym_envs, ale_envs)
-
-
-def test_continuous_actions():
-    gym_envs = gym.vector.SyncVectorEnv(
-        [
-            lambda: gym.wrappers.FrameStackObservation(
-                gym.wrappers.AtariPreprocessing(
-                    gym.make(
-                        "BreakoutNoFrameskip-v4",
-                        continuous=True,
-                        full_action_space=True,
-                    ),
-                    noop_max=0,
-                ),
-                stack_size=4,
-                padding_type="zero",
-            )
-            for _ in range(NUM_ENVS)
-        ],
-    )
-    ale_envs = AtariVectorEnv(
-        game="breakout",
-        num_envs=NUM_ENVS,
-        noop_max=0,
-        use_fire_reset=False,
-        continuous=True,
     )
 
     assert_rollout_equivalence(gym_envs, ale_envs)

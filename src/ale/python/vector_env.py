@@ -103,7 +103,7 @@ class AtariVectorEnv(VectorEnv):
 
         # Set up the observation space based on grayscale or RGB format
         obs_shape = (stack_num, img_height, img_width)
-        if grayscale:
+        if not grayscale:
             obs_shape += (3,)
         self.single_observation_space = Box(
             shape=obs_shape, low=0, high=255, dtype=np.uint8

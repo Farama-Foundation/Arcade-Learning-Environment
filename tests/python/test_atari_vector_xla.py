@@ -51,6 +51,20 @@ def test_seeding(num_envs, seeds):
     assert_rollout_equivalence(num_envs, seeds)
 
 
+@pytest.mark.parametrize("stack_num", [4, 6])
+@pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
+@pytest.mark.parametrize("frame_skip", [1, 4])
+@pytest.mark.parametrize("grayscale", [False, True])
+def test_obs_params(stack_num, img_height, img_width, frame_skip, grayscale):
+    assert_rollout_equivalence(
+        stack_num=stack_num,
+        img_height=img_height,
+        img_width=img_width,
+        frameskip=frame_skip,
+        grayscale=grayscale,
+    )
+
+
 def test_continuous_actions():
     assert_rollout_equivalence(continuous=True)
 

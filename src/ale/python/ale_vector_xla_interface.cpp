@@ -24,7 +24,7 @@ ffi::Error XLAResetImpl(
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
     // Validate handle buffer size
-    if (handle_buffer.element_count() == sizeof(ale::vector::AsyncVectorizer*)) {
+    if (handle_buffer.element_count() != sizeof(ale::vector::AsyncVectorizer*)) {
         return ffi::Error::Internal("Incorrect handle buffer size in reset");
     }
 
@@ -36,7 +36,7 @@ ffi::Error XLAResetImpl(
     }
 
     // Copy handle to output (needed for state management)
-    if (new_handle_buffer->element_count() == handle_buffer.element_count()) {
+    if (new_handle_buffer->element_count() != handle_buffer.element_count()) {
         return ffi::Error::Internal("Incorrect new handle buffer size in reset");
     }
     std::memcpy(new_handle_buffer->typed_data(),
@@ -67,8 +67,8 @@ ffi::Error XLAResetImpl(
         size_t obs_size = vectorizer->get_obs_size();
 
         // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() == vectorizer->get_batch_size() * obs_size) {
-            return ffi::Error::Internal("Observations buffer too small");
+        if (observations_buffer->element_count() != vectorizer->get_batch_size() * obs_size) {
+            return ffi::Error::Internal("Observations buffer is the wrong size");
         }
 
         for (size_t i = 0; i < vectorizer->get_batch_size(); ++i) {
@@ -128,7 +128,7 @@ ffi::Error XLAStepImpl(
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
     // Validate handle buffer size
-    if (handle_buffer.element_count() == sizeof(ale::vector::AsyncVectorizer*)) {
+    if (handle_buffer.element_count() != sizeof(ale::vector::AsyncVectorizer*)) {
         return ffi::Error::Internal("Incorrect handle buffer size in step");
     }
 
@@ -140,8 +140,8 @@ ffi::Error XLAStepImpl(
     }
 
     // Copy handle to output
-    if (new_handle_buffer->element_count() == handle_buffer.element_count()) {
-        return ffi::Error::Internal("New handle buffer too small in step");
+    if (new_handle_buffer->element_count() != handle_buffer.element_count()) {
+        return ffi::Error::Internal("New handle buffer is the wrong size");
     }
     std::memcpy(new_handle_buffer->typed_data(),
                 handle_buffer.typed_data(),
@@ -150,10 +150,10 @@ ffi::Error XLAStepImpl(
     try {
         size_t num_envs = vectorizer->get_batch_size();
 
-        if (action_id_buffer.element_count() == num_envs) {
-            return ffi::Error::Internal("Action id buffer is too small");
-        } else if (paddle_strength_buffer.element_count() == num_envs) {
-            return ffi::Error::Internal("Paddle strength buffer is too small");
+        if (action_id_buffer.element_count() != num_envs) {
+            return ffi::Error::Internal("Action id buffer is the wrong size");
+        } else if (paddle_strength_buffer.element_count() != num_envs) {
+            return ffi::Error::Internal("Paddle strength buffer is the wrong size");
         }
 
         std::vector<ale::vector::EnvironmentAction> actions(num_envs);
@@ -178,8 +178,8 @@ ffi::Error XLAStepImpl(
         size_t obs_size = vectorizer->get_obs_size();
 
         // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() == vectorizer->get_batch_size() * obs_size) {
-            return ffi::Error::Internal("Observations buffer is too small");
+        if (observations_buffer->element_count() != vectorizer->get_batch_size() * obs_size) {
+            return ffi::Error::Internal("Observations buffer is the wrong size");
         }
 
         for (size_t i = 0; i < vectorizer->get_batch_size(); ++i) {
