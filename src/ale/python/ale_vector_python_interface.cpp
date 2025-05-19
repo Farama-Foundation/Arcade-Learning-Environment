@@ -110,10 +110,11 @@ void init_vector_module(py::module& m) {
             int channels = self.is_grayscale() ? 1 : 3;
 
             // Create NumPy arrays
+            py::array_t<uint8_t> observations;
             if (self.is_grayscale()) {
-                py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
+                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
             } else {
-                py::array_t<uint8_t> observations({num_envs, stack_num, height, width, 3});
+                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
             }
             py::array_t<int> rewards(num_envs);
             py::array_t<bool> terminations(num_envs);
