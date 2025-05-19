@@ -66,7 +66,7 @@ namespace ale::vector {
             frame_skip_(frame_skip),
             maxpool_(maxpool),
             obs_format_(obs_format),
-            channels_per_frame_(obs_format == ObsFormat::GRAYSCALE ? 1 : 3),
+            channels_per_frame_(obs_format == ObsFormat::Grayscale ? 1 : 3),
             stack_num_(stack_num),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
