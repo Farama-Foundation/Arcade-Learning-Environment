@@ -48,7 +48,7 @@ void init_vector_module(py::module& m) {
             int channels = self.is_grayscale() ? 1 : 3;
 
             // Create a single NumPy array for all observations
-            if (is_grayscale) {
+            if (self.is_grayscale()) {
                 py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
             } else {
                 py::array_t<uint8_t> observations({num_envs, stack_num, height, width, 3});
@@ -110,7 +110,7 @@ void init_vector_module(py::module& m) {
             int channels = self.is_grayscale() ? 1 : 3;
 
             // Create NumPy arrays
-            if (is_grayscale) {
+            if (self.is_grayscale()) {
                 py::array_t<uint8_t> observations({num_envs, stack_num, height, width});
             } else {
                 py::array_t<uint8_t> observations({num_envs, stack_num, height, width, 3});
