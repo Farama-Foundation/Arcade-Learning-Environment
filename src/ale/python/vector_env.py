@@ -111,9 +111,11 @@ class AtariVectorEnv(VectorEnv):
 
         if self.continuous:
             # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
-            self.single_action_space = Box(
+            self.action_space = Box(
                 low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
                 high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
+                dtype=np.float32,
+                shape=(3,),
             )
         else:
             self.single_action_space = Discrete(len(self.ale.get_action_set()))
@@ -174,7 +176,7 @@ class AtariVectorEnv(VectorEnv):
         if self.continuous:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.float32
-            assert actions.shape == (self.batch_size, 2)
+            assert actions.shape == (self.batch_size, 3)
 
             x = actions[:, 0] * np.cos(actions[:, 1])
             y = actions[:, 0] * np.sin(actions[:, 1])
@@ -185,10 +187,10 @@ class AtariVectorEnv(VectorEnv):
             vertical = -(y < self.continuous_action_threshold) + (
                 y > self.continuous_action_threshold
             )
-            fire = actions[:, 1] > self.continuous_action_threshold
+            fire = actions[:, 2] > self.continuous_action_threshold
 
             action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
-            paddle_strength = actions[:, 1]
+            paddle_strength = actions[:, 0]
             self.ale.send(action_ids, paddle_strength)
         else:
             assert isinstance(actions, np.ndarray)

@@ -167,9 +167,14 @@ def test_continuous_actions():
         [
             lambda: gym.wrappers.FrameStackObservation(
                 gym.wrappers.AtariPreprocessing(
-                    gym.make("BreakoutNoFrameskip-v4", continuous=True),
+                    gym.make(
+                        "BreakoutNoFrameskip-v4",
+                        continuous=True,
+                        full_action_space=True,
+                    ),
                     noop_max=0,
                 ),
+                stack_size=4,
                 padding_type="zero",
             )
             for _ in range(NUM_ENVS)
