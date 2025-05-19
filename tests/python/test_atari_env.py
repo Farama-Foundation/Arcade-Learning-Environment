@@ -147,31 +147,22 @@ def test_gym_img_rgb_obs(tetris_env):
     assert obs.shape[-1] == 3
 
 
-@pytest.mark.parametrize("tetris_env", [{"full_action_space": True}], indirect=True)
-def test_gym_keys_to_action(tetris_env):
-    keys_full_action_space = {
-        (101,): 0,
-        (32,): 1,
-        (119,): 2,
-        (100,): 3,
-        (97,): 4,
-        (115,): 5,
-        (100, 119): 6,
-        (97, 119): 7,
-        (100, 115): 8,
-        (97, 115): 9,
-        (32, 119): 10,
-        (32, 100): 11,
-        (32, 97): 12,
-        (32, 115): 13,
-        (32, 100, 119): 14,
-        (32, 97, 119): 15,
-        (32, 100, 115): 16,
-        (32, 97, 115): 17,
-    }
-    keys_to_actions = tetris_env.unwrapped.get_keys_to_action()
+def test_gym_keys_to_action():
+    env = gymnasium.make("ALE/MsPacman-v5").unwrapped
+    assert len(env._action_set) == len(env.get_keys_to_action())
+    for keys, action in env.get_keys_to_action().items():
+        assert isinstance(keys, tuple)
+        assert all(isinstance(key, str) for key in keys)
+        assert action in env.action_space
+    env.close()
 
-    assert keys_full_action_space == keys_to_actions
+    env = gymnasium.make("ALE/MsPacman-v5", continuous=True).unwrapped
+    with pytest.raises(
+        AttributeError,
+        match="`get_keys_to_action` can't be provided for this Atari environment as `continuous=True`.",
+    ):
+        env.get_keys_to_action()
+    env.close()
 
 
 @pytest.mark.parametrize("tetris_env", [{"full_action_space": True}], indirect=True)
@@ -288,21 +279,3 @@ def test_sound_obs():
         check_env(env.unwrapped, skip_render_check=True)
 
     assert caught_warnings == [], [caught.message.args[0] for caught in caught_warnings]
-
-
-def test_get_keys_to_action():
-    env = gymnasium.make("ALE/MsPacman-v5").unwrapped
-    assert len(env._action_set) == len(env.get_keys_to_action())
-    for keys, action in env.get_keys_to_action().items():
-        assert isinstance(keys, tuple)
-        assert all(isinstance(key, str) for key in keys)
-        assert action in env.action_space
-    env.close()
-
-    env = gymnasium.make("ALE/MsPacman-v5", continuous=True).unwrapped
-    with pytest.raises(
-        AttributeError,
-        match="`get_keys_to_action` can't be provided for this Atari environment as `continuous=True`.",
-    ):
-        env.get_keys_to_action()
-    env.close()
