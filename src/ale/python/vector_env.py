@@ -139,7 +139,7 @@ class AtariVectorEnv(VectorEnv):
             reset_indices = np.arange(self.num_envs)
         else:
             reset_mask = options["reset_mask"]
-            assert isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool
+            assert isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool_
             reset_indices, _ = np.where(reset_mask)
 
         if seed is None:
@@ -167,8 +167,8 @@ class AtariVectorEnv(VectorEnv):
             assert actions.dtype == np.float32
             assert actions.shape == (self.batch_size, 2)
 
-            x = actions[0, :] * np.cos(actions[1, :])
-            y = actions[0, :] * np.sin(actions[1, :])
+            x = actions[:, 0] * np.cos(actions[:, 1])
+            y = actions[:, 0] * np.sin(actions[:, 1])
 
             horizontal = -(x < self.continuous_action_threshold) + (
                 x > self.continuous_action_threshold
@@ -176,10 +176,10 @@ class AtariVectorEnv(VectorEnv):
             vertical = -(y < self.continuous_action_threshold) + (
                 y > self.continuous_action_threshold
             )
-            fire = actions[1, :] > self.continuous_action_threshold
+            fire = actions[:, 1] > self.continuous_action_threshold
 
             action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
-            paddle_strength = actions[1, :]
+            paddle_strength = actions[:, 1]
             self.ale.send(action_ids, paddle_strength)
         else:
             assert isinstance(actions, np.ndarray)
@@ -241,7 +241,7 @@ class AtariVectorEnv(VectorEnv):
 
             if reset_mask is not None:
                 assert (
-                    isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool
+                    isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool_
                 )
                 reset_indices, _ = np.where(reset_mask)
             else:
@@ -274,8 +274,8 @@ class AtariVectorEnv(VectorEnv):
                 assert actions.dtype == np.float32
                 assert actions.shape == (self.batch_size, 2)
 
-                x = actions[0, :] * np.cos(actions[1, :])
-                y = actions[0, :] * np.sin(actions[1, :])
+                x = actions[:, 0] * np.cos(actions[:, 1])
+                y = actions[:, 0] * np.sin(actions[:, 1])
 
                 horizontal = -(x < self.continuous_action_threshold) + (
                     x > self.continuous_action_threshold
@@ -283,10 +283,10 @@ class AtariVectorEnv(VectorEnv):
                 vertical = -(y < self.continuous_action_threshold) + (
                     y > self.continuous_action_threshold
                 )
-                fire = actions[1, :] > self.continuous_action_threshold
+                fire = actions[:, 1] > self.continuous_action_threshold
 
                 action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
-                paddle_strength = actions[1, :]
+                paddle_strength = actions[:, 1]
             else:
                 assert isinstance(actions, np.ndarray)
                 assert actions.dtype == np.int64 or actions.dtype == np.int32
@@ -296,8 +296,8 @@ class AtariVectorEnv(VectorEnv):
                 paddle_strength = np.ones(self.batch_size)
 
             xla_call = jax.ffi.ffi_call(
-                "atari_vector_xla_step",
-                (
+                target_name="atari_vector_xla_step",
+                result_shape_dtypes=(
                     jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
                     jax.ShapeDtypeStruct(
                         self.observation_space.shape, jnp.uint8

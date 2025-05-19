@@ -56,47 +56,23 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
     envs.close()
 
 
-@pytest.mark.parametrize("num_envs", [1, 8])
-@pytest.mark.parametrize("stack_num", [4, 6])
-@pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
-@pytest.mark.parametrize("frame_skip", [1, 4])
-def test_rollout_consistency(
-    num_envs, stack_num, img_height, img_width, frame_skip, rollout_length=100
+NUM_ENVS = 8
+
+
+def assert_rollout_equivalence(
+    gym_envs,
+    ale_envs,
+    rollout_length=100,
+    reset_seed=123,
+    action_seed=123,
 ):
     """Test if both environments produce similar results over a short rollout."""
-    gym_envs = gym.vector.SyncVectorEnv(
-        [
-            lambda: gym.wrappers.FrameStackObservation(
-                gym.wrappers.AtariPreprocessing(
-                    gym.make("BreakoutNoFrameskip-v4"),
-                    noop_max=0,
-                    frame_skip=frame_skip,
-                    screen_size=(img_width, img_height),
-                ),
-                stack_size=stack_num,
-                padding_type="zero",
-            )
-            for _ in range(num_envs)
-        ],
-    )
-    ale_envs = AtariVectorEnv(
-        game="breakout",
-        num_envs=num_envs,
-        frameskip=frame_skip,
-        img_height=img_height,
-        img_width=img_width,
-        stack_num=stack_num,
-        noop_max=0,
-        use_fire_reset=False,
-        maxpool=frame_skip > 1,
-    )
-
     assert gym_envs.num_envs == ale_envs.num_envs
     assert gym_envs.observation_space == ale_envs.observation_space
     assert gym_envs.action_space == ale_envs.action_space
 
-    gym_obs, gym_info = gym_envs.reset(seed=123)
-    ale_obs, ale_info = ale_envs.reset(seed=123)
+    gym_obs, gym_info = gym_envs.reset(seed=reset_seed)
+    ale_obs, ale_info = ale_envs.reset(seed=reset_seed)
 
     assert data_equivalence(gym_obs, ale_obs)
 
@@ -106,10 +82,10 @@ def test_rollout_consistency(
         if not key.startswith("_") and key != "seeds"
     }
     env_ids = ale_info.pop("env_id")
-    assert np.all(env_ids == np.arange(num_envs))
+    assert np.all(env_ids == np.arange(gym_envs.num_envs))
     assert data_equivalence(gym_info, ale_info)
 
-    ale_envs.action_space.seed(123)
+    ale_envs.action_space.seed(action_seed)
     for i in range(rollout_length):
         actions = ale_envs.action_space.sample()
 
@@ -124,8 +100,7 @@ def test_rollout_consistency(
             # For MacOS ARM, there is a known problem where there is a max difference of 1 for 1 or 2 pixels
             diff = gym_obs.astype(np.int32) - ale_obs.astype(np.int32)
             gym.logger.warn(
-                f"rollout error for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)} "
-                f"({num_envs=}, {stack_num=}, {img_height=}, {img_width=}, {frame_skip=})"
+                f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)}"
             )
 
         assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards)
@@ -138,11 +113,69 @@ def test_rollout_consistency(
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
-        assert np.all(env_ids == np.arange(num_envs))
+        assert np.all(env_ids == np.arange(gym_envs.num_envs))
         assert data_equivalence(gym_info, ale_info)
 
     gym_envs.close()
     ale_envs.close()
+
+
+@pytest.mark.parametrize("stack_num", [4, 6])
+@pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
+@pytest.mark.parametrize("frame_skip", [1, 4])
+def test_obs_params__equivalence(stack_num, img_height, img_width, frame_skip):
+    gym_envs = gym.vector.SyncVectorEnv(
+        [
+            lambda: gym.wrappers.FrameStackObservation(
+                gym.wrappers.AtariPreprocessing(
+                    gym.make("BreakoutNoFrameskip-v4"),
+                    noop_max=0,
+                    frame_skip=frame_skip,
+                    screen_size=(img_width, img_height),
+                ),
+                stack_size=stack_num,
+                padding_type="zero",
+            )
+            for _ in range(NUM_ENVS)
+        ],
+    )
+    ale_envs = AtariVectorEnv(
+        game="breakout",
+        num_envs=NUM_ENVS,
+        frameskip=frame_skip,
+        img_height=img_height,
+        img_width=img_width,
+        stack_num=stack_num,
+        noop_max=0,
+        use_fire_reset=False,
+        maxpool=frame_skip > 1,
+    )
+
+    assert_rollout_equivalence(gym_envs, ale_envs)
+
+
+def test_continuous_actions_equivalence():
+    gym_envs = gym.vector.SyncVectorEnv(
+        [
+            lambda: gym.wrappers.FrameStackObservation(
+                gym.wrappers.AtariPreprocessing(
+                    gym.make("BreakoutNoFrameskip-v4", continuous=True),
+                    noop_max=0,
+                ),
+                padding_type="zero",
+            )
+            for _ in range(NUM_ENVS)
+        ],
+    )
+    ale_envs = AtariVectorEnv(
+        game="breakout",
+        num_envs=NUM_ENVS,
+        noop_max=0,
+        use_fire_reset=False,
+        continuous=True,
+    )
+
+    assert_rollout_equivalence(gym_envs, ale_envs)
 
 
 @pytest.mark.parametrize(
@@ -198,19 +231,7 @@ def test_determinism(
     envs_2.close()
 
 
-def test_continuous_action_space():
-    pass  # TODO
-
-
 def test_batch_size_async():
-    pass  # TODO
-
-
-def test_full_action_space():
-    pass  # TODO
-
-
-def test_max_episode_steps():
     pass  # TODO
 
 
