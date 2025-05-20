@@ -47,6 +47,14 @@ namespace ale::vector {
     };
 
     /**
+     * Observation format enumeration
+     */
+    enum class ObsFormat {
+        Grayscale,  // Single channel grayscale observations
+        RGB         // Three channel RGB observations
+    };
+
+    /**
      * Lock-free queue for actions to be processed by worker threads
      */
     class ActionBufferQueue {

@@ -9,13 +9,21 @@
     "sdl": {
       "description": "Enable SDL, this enables display and audio support.",
       "dependencies": [
-        {"name": "sdl2", "features":  [], "default-features": false}
+        {
+          "name": "sdl2",
+          "features": [],
+          "default-features": false
+        }
       ]
     },
     "vector": {
       "description": "Enable Vector, this enables vectorisation of atari environments",
       "dependencies": [
-        {"name": "opencv4", "features": [], "default-features": false}
+        {
+          "name": "opencv4",
+          "features": [],
+          "default-features": false
+        }
       ]
     }
   },
