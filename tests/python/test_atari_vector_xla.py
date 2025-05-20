@@ -3,7 +3,8 @@ import pytest
 from ale_py import AtariVectorEnv
 from gymnasium.utils.env_checker import data_equivalence
 
-pytest.importorskip("jax")
+jax = pytest.importorskip("jax")
+chex = pytest.importorskip("chex")
 
 
 @pytest.mark.parametrize(
@@ -47,5 +48,66 @@ def test_xla_determinism(
         assert data_equivalence(truncations_1, truncations_2)
         assert data_equivalence(info_1, info_2)
 
+    envs_1.close()
+    envs_2.close()
+
+
+def test_jit(
+    num_envs: int = 4,
+    seeds: np.ndarray = np.arange(4),
+    game: str = "pong",
+    rollout_length: int = 100,
+    **kwargs,
+):
+    envs_1 = AtariVectorEnv(game, num_envs=num_envs, **kwargs)
+    envs_2 = AtariVectorEnv(game, num_envs=num_envs, **kwargs)
+
+    env_2_handle, env_2_reset, env_2_step = envs_2.xla()
+
+    obs_1, info_1 = envs_1.reset(seed=seeds)
+    env_2_handle, (obs_2, info_2) = env_2_reset(env_2_handle, seed=seeds)
+
+    assert data_equivalence(obs_1, obs_2)
+    assert data_equivalence(info_1, info_2)
+
+    @jax.jit
+    @chex.assert_max_traces(1)
+    def actor(carry, action):
+        (handle, i) = carry
+        output = env_2_step(handle, action)
+        return (handle, action, i + 1), output
+
+    actions = [envs_1.action_space.sample() for _ in range(rollout_length)]
+
+    for_loop_output = [envs_1.step(action) for action in actions]
+    scan_output = jax.lax.scan(actor, (env_2_handle, 0), xs=actions)
+
+    assert data_equivalence(for_loop_output, scan_output)
+
+    envs_1.close()
+    envs_2.close()
+
+
+def test_vmap(num_envs: int = 4,
+    seeds: np.ndarray = np.arange(4),
+    game: str = "pong"):
+    envs_1 = AtariVectorEnv(game, num_envs=num_envs)
+    envs_2 = AtariVectorEnv(game, num_envs=num_envs)
+
+    obs_1, info_1 = envs_1.reset(seed=seeds)
+    obs_2, info_2 = envs_2.reset(seed=seeds)
+
+    assert data_equivalence(obs_1, obs_2)
+    assert data_equivalence(info_1, info_2)
+
+    @jax.vmap()
+    def actor(action, envs):
+        return envs.step(action)
+
+    actions = envs_1.action_space.sample()
+    envs_1_step = actor(actions, envs_1)
+    envs_2_step = envs_2.step(actions)
+
+    assert data_equivalence(envs_1_step, envs_2_step)
     envs_1.close()
     envs_2.close()
