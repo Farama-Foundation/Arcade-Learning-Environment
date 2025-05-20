@@ -108,3 +108,8 @@ environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows"
 [[tool.cibuildwheel.overrides]]
 select = "*-manylinux_x86_64"
 environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-linux-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
+
+# Linux ARM64 (manylinux)
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux_aarch64"
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-linux-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
