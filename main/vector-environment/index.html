@@ -468,7 +468,7 @@
 
 <span class="c1"># Create a vector environment with 4 parallel instances of Breakout</span>
 <span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span>
-    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span>
+    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;breakout&quot;</span><span class="p">,</span>  <span class="c1"># The ROM id not name, i.e., camel case compared to Gymnasium.make name versions</span>
     <span class="n">num_envs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -490,7 +490,7 @@
 <p>The vector environment provides numerous configuration options:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span>
     <span class="c1"># Required parameters</span>
-    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span>          <span class="c1"># ROM name in snake_case</span>
+    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;breakout&quot;</span><span class="p">,</span>          <span class="c1"># The ROM id not name, i.e., camel case compared to Gymnasium.make name versions</span>
     <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>               <span class="c1"># Number of parallel environments</span>
 
     <span class="c1"># Preprocessing parameters</span>
@@ -499,6 +499,7 @@
     <span class="n">stack_num</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>              <span class="c1"># Number of frames to stack</span>
     <span class="n">img_height</span><span class="o">=</span><span class="mi">84</span><span class="p">,</span>            <span class="c1"># Height to resize frames to</span>
     <span class="n">img_width</span><span class="o">=</span><span class="mi">84</span><span class="p">,</span>             <span class="c1"># Width to resize frames to</span>
+    <span class="n">maxpool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>             <span class="c1"># If to maxpool sequential frames</span>
 
     <span class="c1"># Environment behavior</span>
     <span class="n">noop_max</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>              <span class="c1"># Maximum number of no-ops at reset</span>
@@ -529,10 +530,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">stack_size</span></code>: Number of stacked frames (typically 4)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>: Image dimensions (typically 84x84)</p></li>
 </ul>
-<p>This differs from the standard Gymnasium Atari environment format which uses:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">observations</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_envs</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>  <span class="c1"># Without num_envs</span>
-</pre></div>
-</div>
+<p>Additionally, with <code class="docutils literal notranslate"><span class="pre">grayscale=True</span></code> then the shape is <code class="docutils literal notranslate"><span class="pre">(num_envs,</span> <span class="pre">stack_size,</span> <span class="pre">height,</span> <span class="pre">width,</span> <span class="pre">3)</span></code> for RGB frames.</p>
 </section>
 <section id="performance-considerations">
 <h2>Performance Considerations<a class="headerlink" href="#performance-considerations" title="Link to this heading">¶</a></h2>
@@ -570,51 +568,6 @@ which is critical as the first (batch size) observations are returned for <code 
 <p>On systems with multiple CPU cores, setting thread affinity can improve performance:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set thread affinity starting from core 0</span>
 <span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">thread_affinity_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
-<section id="training-example-with-pytorch">
-<h3>Training Example with PyTorch<a class="headerlink" href="#training-example-with-pytorch" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ale_py.vector_env</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorAtariEnv</span>
-
-<span class="c1"># Create environment</span>
-<span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-
-<span class="c1"># Initialize model (simplified example)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3136</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">envs</span><span class="o">.</span><span class="n">single_action_space</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
-<span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-<span class="c1"># Reset environment</span>
-<span class="n">observations</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-
-<span class="c1"># Training loop</span>
-<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="c1"># Convert observations to PyTorch tensors</span>
-    <span class="n">obs_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">observations</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.0</span>
-
-    <span class="c1"># Get actions from model</span>
-    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-        <span class="n">q_values</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">obs_tensor</span><span class="p">)</span>
-        <span class="n">actions</span> <span class="o">=</span> <span class="n">q_values</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-
-    <span class="c1"># Step the environment</span>
-    <span class="n">observations</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">terminations</span><span class="p">,</span> <span class="n">truncations</span><span class="p">,</span> <span class="n">infos</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -705,10 +658,6 @@ which is critical as the first (batch size) observations are returned for <code 
 <li><a class="reference internal" href="#send-recv-vs-step">Send/Recv vs Step</a></li>
 <li><a class="reference internal" href="#batch-size">Batch Size</a></li>
 <li><a class="reference internal" href="#thread-affinity">Thread Affinity</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#examples">Examples</a><ul>
-<li><a class="reference internal" href="#training-example-with-pytorch">Training Example with PyTorch</a></li>
 </ul>
 </li>
 </ul>
