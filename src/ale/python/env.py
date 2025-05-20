@@ -5,7 +5,6 @@ from __future__ import annotations
 import sys
 from functools import lru_cache
 from typing import Any, Literal
-from warnings import warn
 
 import ale_py
 import gymnasium
@@ -165,28 +164,22 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.load_game()
 
         # get the set of legal actions
-        if continuous and not full_action_space:
-            warn(
-                "`continuous` is set to `True`, but `full_action_space` is set to `False`. "
-                "This will error out when the continuous actions are discretized to illegal action spaces. "
-                "Therefore, `full_action_space` has been automatically set to `True`."
-            )
-        self._action_set = (
-            self.ale.getLegalActionSet()
-            if (full_action_space or continuous)
-            else self.ale.getMinimalActionSet()
-        )
+        if full_action_space or continuous:
+            self._action_set = self.ale.getLegalActionSet()
+        else:
+            self._action_set = self.ale.getMinimalActionSet()
 
         # action space
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
         if continuous:
-            # Actions are radius, theta, and fire, where first two are the
-            # parameters of polar coordinates.
+            # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
             self.action_space = spaces.Box(
-                np.array([0.0, -np.pi, 0.0]).astype(np.float32),
-                np.array([1.0, np.pi, 1.0]).astype(np.float32),
-            )  # radius, theta, fire. First two are polar coordinates.
+                low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
+                high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
+                dtype=np.float32,
+                shape=(3,),
+            )
         else:
             self.action_space = spaces.Discrete(len(self._action_set))
 
