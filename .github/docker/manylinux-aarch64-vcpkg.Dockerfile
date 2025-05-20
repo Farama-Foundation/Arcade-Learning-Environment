@@ -1,4 +1,4 @@
-FROM quay.io/pypa/ manylinux2014_aarch64
+FROM quay.io/pypa/manylinux2014_aarch64
 
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
