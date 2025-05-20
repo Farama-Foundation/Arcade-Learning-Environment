@@ -2,7 +2,7 @@ FROM quay.io/pypa/manylinux2014_aarch64
 
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
-RUN apt-get update && apt-get install -y curl unzip zip tar libc6-dev
+RUN yum install -y curl unzip zip tar glibc-static
 
 # Install vcpkg
 RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg

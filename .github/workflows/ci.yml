@@ -163,23 +163,23 @@ jobs:
             wheel-name: 'cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64'
             arch: 'x86_64'
 
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04-arm
             python: '3.9'
             wheel-name: 'cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64'
             arch: 'x86_64'
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04-arm
             python: '3.10'
             wheel-name: 'cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64'
             arch: 'x86_64'
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04-arm
             python: '3.11'
             wheel-name: 'cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64'
             arch: 'x86_64'
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04-arm
             python: '3.12'
             wheel-name: 'cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64'
             arch: 'x86_64'
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04-arm
             python: '3.13'
             wheel-name: 'cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64'
             arch: 'x86_64'
