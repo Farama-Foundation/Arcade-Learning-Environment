@@ -135,7 +135,9 @@ def assert_rollout_equivalence(
 @pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
 @pytest.mark.parametrize("frame_skip", [1, 4])
 @pytest.mark.parametrize("grayscale", [False, True])
-def test_obs_params_equivalence(stack_num, img_height, img_width, frame_skip, grayscale, num_envs=8):
+def test_obs_params_equivalence(
+    stack_num, img_height, img_width, frame_skip, grayscale, num_envs=8
+):
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
@@ -174,7 +176,11 @@ def test_continuous_equivalence(continuous_action_threshold, num_envs=8):
         [
             lambda: gym.wrappers.FrameStackObservation(
                 gym.wrappers.AtariPreprocessing(
-                    gym.make("BreakoutNoFrameskip-v4", continuous=True, continuous_action_threshold=continuous_action_threshold),
+                    gym.make(
+                        "BreakoutNoFrameskip-v4",
+                        continuous=True,
+                        continuous_action_threshold=continuous_action_threshold,
+                    ),
                     noop_max=0,
                 ),
                 stack_size=4,
@@ -189,7 +195,7 @@ def test_continuous_equivalence(continuous_action_threshold, num_envs=8):
         noop_max=0,
         use_fire_reset=False,
         continuous=True,
-        continuous_action_threshold=continuous_action_threshold
+        continuous_action_threshold=continuous_action_threshold,
     )
 
     assert_rollout_equivalence(gym_envs, ale_envs)
