@@ -102,8 +102,16 @@ def assert_rollout_equivalence(
         if not data_equivalence(gym_obs, ale_obs):
             # For MacOS ARM, there is a known problem where there is a max difference of 1 for 1 or 2 pixels
             diff = gym_obs.astype(np.int32) - ale_obs.astype(np.int32)
+            count = np.count_nonzero(diff)
+
+            assert gym_obs.shape == ale_obs.shape
+            assert gym_obs.dtype == ale_obs.dtype
+            assert np.max(diff) <= 2
+            assert np.min(diff) >= -2
+            assert count <= 3
+
             gym.logger.warn(
-                f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={np.count_nonzero(diff)}"
+                f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
             )
 
         assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), i
@@ -127,7 +135,7 @@ def assert_rollout_equivalence(
 @pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
 @pytest.mark.parametrize("frame_skip", [1, 4])
 @pytest.mark.parametrize("grayscale", [False, True])
-def test_obs_params_equivalence(stack_num, img_height, img_width, frame_skip, grayscale):
+def test_obs_params_equivalence(stack_num, img_height, img_width, frame_skip, grayscale, num_envs=8):
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
@@ -141,12 +149,12 @@ def test_obs_params_equivalence(stack_num, img_height, img_width, frame_skip, gr
                 stack_size=stack_num,
                 padding_type="zero",
             )
-            for _ in range(NUM_ENVS)
+            for _ in range(num_envs)
         ],
     )
     ale_envs = AtariVectorEnv(
         game="breakout",
-        num_envs=NUM_ENVS,
+        num_envs=num_envs,
         frameskip=frame_skip,
         img_height=img_height,
         img_width=img_width,
@@ -155,6 +163,33 @@ def test_obs_params_equivalence(stack_num, img_height, img_width, frame_skip, gr
         use_fire_reset=False,
         maxpool=frame_skip > 1,
         grayscale=grayscale,
+    )
+
+    assert_rollout_equivalence(gym_envs, ale_envs)
+
+
+@pytest.mark.parametrize("continuous_action_threshold", (0.2, 0.5, 0.8))
+def test_continuous_equivalence(continuous_action_threshold, num_envs=8):
+    gym_envs = gym.vector.SyncVectorEnv(
+        [
+            lambda: gym.wrappers.FrameStackObservation(
+                gym.wrappers.AtariPreprocessing(
+                    gym.make("BreakoutNoFrameskip-v4", continuous=True, continuous_action_threshold=continuous_action_threshold),
+                    noop_max=0,
+                ),
+                stack_size=4,
+                padding_type="zero",
+            )
+            for _ in range(num_envs)
+        ],
+    )
+    ale_envs = AtariVectorEnv(
+        game="breakout",
+        num_envs=num_envs,
+        noop_max=0,
+        use_fire_reset=False,
+        continuous=True,
+        continuous_action_threshold=continuous_action_threshold
     )
 
     assert_rollout_equivalence(gym_envs, ale_envs)

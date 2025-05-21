@@ -84,7 +84,7 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping=reward_clipping,
             max_episode_steps=max_num_frames_per_episode,
             repeat_action_probability=repeat_action_probability,
-            full_action_space=full_action_space,
+            full_action_space=full_action_space or continuous,
             batch_size=batch_size,
             num_threads=num_threads,
             thread_affinity_offset=thread_affinity_offset,
