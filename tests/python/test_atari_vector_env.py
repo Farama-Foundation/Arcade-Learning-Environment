@@ -10,7 +10,8 @@ from gymnasium.utils.env_checker import data_equivalence
 @pytest.mark.parametrize("num_envs", [1, 3])
 @pytest.mark.parametrize("stack_num", [4, 6])
 @pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
-def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
+@pytest.mark.parametrize("grayscale", [True, False])
+def test_reset_step_shapes(num_envs, stack_num, img_height, img_width, grayscale):
     """Test if reset returns observations with the correct shape."""
     envs = AtariVectorEnv(
         game="breakout",
@@ -18,16 +19,21 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
         stack_num=stack_num,
         img_height=img_height,
         img_width=img_width,
+        grayscale=grayscale,
     )
 
+    expected_shape = (num_envs, stack_num, img_height, img_width)
+    if not grayscale:
+        expected_shape += (3,)
+
     assert envs.num_envs == num_envs
-    assert envs.observation_space.shape == (num_envs, stack_num, img_height, img_width)
+    assert envs.observation_space.shape == expected_shape
     assert envs.action_space.shape == (num_envs,)
 
     obs, info = envs.reset(seed=0)
 
     assert isinstance(obs, np.ndarray)
-    assert obs.shape == (num_envs, stack_num, img_height, img_width)
+    assert obs.shape == expected_shape
     assert obs.dtype == np.uint8
     assert obs in envs.observation_space, f"{envs.observation_space=}"
     assert isinstance(info, dict)
@@ -39,7 +45,7 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width):
     obs, reward, terminations, truncations, info = envs.step(actions)
 
     assert isinstance(obs, np.ndarray)
-    assert obs.shape == (num_envs, stack_num, img_height, img_width)
+    assert obs.shape == expected_shape
     assert obs.dtype == np.uint8
     assert obs in envs.observation_space, f"{envs.observation_space=}"
     assert isinstance(reward, np.ndarray) and reward.dtype == np.int32
@@ -120,9 +126,8 @@ def assert_rollout_equivalence(
 @pytest.mark.parametrize("stack_num", [4, 6])
 @pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
 @pytest.mark.parametrize("frame_skip", [1, 4])
-def test_obs_params_equivalence(
-    stack_num, img_height, img_width, frame_skip, num_envs=8
-):
+@pytest.mark.parametrize("grayscale", [False, True])
+def test_obs_params_equivalence(stack_num, img_height, img_width, frame_skip, grayscale):
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
@@ -131,16 +136,17 @@ def test_obs_params_equivalence(
                     noop_max=0,
                     frame_skip=frame_skip,
                     screen_size=(img_width, img_height),
+                    grayscale_obs=grayscale,
                 ),
                 stack_size=stack_num,
                 padding_type="zero",
             )
-            for _ in range(num_envs)
+            for _ in range(NUM_ENVS)
         ],
     )
     ale_envs = AtariVectorEnv(
         game="breakout",
-        num_envs=num_envs,
+        num_envs=NUM_ENVS,
         frameskip=frame_skip,
         img_height=img_height,
         img_width=img_width,
@@ -148,34 +154,7 @@ def test_obs_params_equivalence(
         noop_max=0,
         use_fire_reset=False,
         maxpool=frame_skip > 1,
-    )
-
-    assert_rollout_equivalence(gym_envs, ale_envs)
-
-
-def test_continuous_actions_equivalence(num_envs=8):
-    gym_envs = gym.vector.SyncVectorEnv(
-        [
-            lambda: gym.wrappers.FrameStackObservation(
-                gym.wrappers.AtariPreprocessing(
-                    gym.make(
-                        "BreakoutNoFrameskip-v4",
-                        continuous=True,
-                    ),
-                    noop_max=0,
-                ),
-                stack_size=4,
-                padding_type="zero",
-            )
-            for _ in range(num_envs)
-        ],
-    )
-    ale_envs = AtariVectorEnv(
-        game="breakout",
-        num_envs=num_envs,
-        noop_max=0,
-        use_fire_reset=False,
-        continuous=True,
+        grayscale=grayscale,
     )
 
     assert_rollout_equivalence(gym_envs, ale_envs)

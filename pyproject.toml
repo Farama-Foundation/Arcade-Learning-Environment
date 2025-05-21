@@ -57,7 +57,8 @@ test = [
     "pytest>=7.0",
     "gymnasium>=1.0.0",
     "opencv-python>=3.0",
-    "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
+    "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')",
+    "chex; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
 ]
 
 [project.urls]

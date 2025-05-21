@@ -37,6 +37,7 @@ namespace ale::vector {
          * @param stack_num Number of frames to stack for observations (default: 4)
          * @param img_height Height to resize frames to (default: 84)
          * @param img_width Width to resize frames to (default: 84)
+         * @param grayscale Whether to use grayscale observations (default: true)
          * @param maxpool If to maxpool over frames (default: true)
          * @param noop_max Maximum number of no-ops to perform at reset (default: 30)
          * @param use_fire_reset Whether to press FIRE during reset (default: true)
@@ -57,6 +58,7 @@ namespace ale::vector {
             const int stack_num = 4,
             const int img_height = 84,
             const int img_width = 84,
+            const bool grayscale = true,
             const bool maxpool = true,
             const int noop_max = 30,
             const bool use_fire_reset = true,
@@ -75,6 +77,8 @@ namespace ale::vector {
             stack_num_(stack_num),
             img_height_(img_height),
             img_width_(img_width),
+            grayscale_(grayscale),
+            obs_format_(grayscale_ ? ObsFormat::Grayscale : ObsFormat::RGB),
             maxpool_(maxpool),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
@@ -95,6 +99,7 @@ namespace ale::vector {
                     img_width_,
                     frame_skip_,
                     maxpool_,
+                    obs_format_,
                     stack_num_,
                     noop_max_,
                     use_fire_reset_,
@@ -193,10 +198,23 @@ namespace ale::vector {
         /**
          * Get the dimensions of the observation space
          *
-         * @return Tuple of (stack_num, height, width)
+         * @return Tuple of (stack_num, height, width, 0) if grayscale or (stack_num, height, width, 3) if RGB
          */
-        std::tuple<int, int, int> get_observation_shape() const {
-            return std::make_tuple(stack_num_, img_height_, img_width_);
+        std::tuple<int, int, int, int> get_observation_shape() const {
+            if (grayscale_) {
+                return std::make_tuple(stack_num_, img_height_, img_width_, 0);
+            } else {
+                return std::make_tuple(stack_num_, img_height_, img_width_, 3);
+            }
+        }
+
+        /**
+         * Check if observations are grayscale
+         *
+         * @return true if observations are grayscale, false if RGB
+         */
+        bool is_grayscale() const {
+            return grayscale_;
         }
 
         /**
@@ -215,6 +233,8 @@ namespace ale::vector {
         int stack_num_;                           // Number of frames to stack
         int img_height_;                          // Height of resized frames
         int img_width_;                           // Width of resized frames
+        bool grayscale_;                          // Whether to use grayscale observations
+        ObsFormat obs_format_;                    // Observation format based on grayscale
         bool maxpool_;                            // If to maxpool over frames
         int noop_max_;                            // Max no-ops on reset
         bool use_fire_reset_;                     // Whether to fire on reset

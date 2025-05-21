@@ -33,6 +33,7 @@ class AtariVectorEnv(VectorEnv):
         # Preprocessing values
         img_height: int = 84,
         img_width: int = 84,
+        grayscale: bool = True,
         stack_num: int = 4,
         frameskip: int = 4,
         maxpool: bool = True,
@@ -56,7 +57,8 @@ class AtariVectorEnv(VectorEnv):
             continuous: If to use the continuous action space
             continuous_action_threshold: The continuous action threshold
             img_height: The frame height
-            img_width: The ƒrame width
+            img_width: The frame width
+            grayscale: Whether to use grayscale observations
             stack_num: The frame stack size
             frameskip: The number of frame skips to use for each action
             maxpool: If maxpool over subsequent frames
@@ -73,6 +75,7 @@ class AtariVectorEnv(VectorEnv):
             stack_num=stack_num,
             img_height=img_height,
             img_width=img_width,
+            grayscale=grayscale,
             maxpool=maxpool,
             noop_max=noop_max,
             use_fire_reset=use_fire_reset,
@@ -89,6 +92,7 @@ class AtariVectorEnv(VectorEnv):
 
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
+        self.grayscale = grayscale
         self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
         for h in (-1, 0, 1):
             for v in (-1, 0, 1):
@@ -96,9 +100,14 @@ class AtariVectorEnv(VectorEnv):
                     action = AtariEnv.map_action_idx(h, v, bool(f)).value
                     self.map_action_idx[h + 1, v + 1, f] = action
 
+        # Set up the observation space based on grayscale or RGB format
+        obs_shape = (stack_num, img_height, img_width)
+        if not grayscale:
+            obs_shape += (3,)
         self.single_observation_space = Box(
-            shape=(stack_num, img_height, img_width), low=0, high=255, dtype=np.uint8
+            shape=obs_shape, low=0, high=255, dtype=np.uint8
         )
+
         if self.continuous:
             # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
             self.single_action_space = Box(

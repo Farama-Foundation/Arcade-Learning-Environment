@@ -3,27 +3,19 @@ import pytest
 from ale_py import AtariVectorEnv
 from gymnasium.utils.env_checker import data_equivalence
 
-pytest.importorskip("jax")
+jax = pytest.importorskip("jax")
+chex = pytest.importorskip("chex")
 
 
-@pytest.mark.parametrize(
-    "num_envs, seeds",
-    [(1, np.array([0])), (3, np.array([1, 2, 3])), (10, np.arange(10))],
-)
-@pytest.mark.parametrize("noop_max", (0, 10, 30))
-@pytest.mark.parametrize("repeat_action_probability", (0.0, 0.25))
-@pytest.mark.parametrize("use_fire_reset", [False, True])
-def test_xla_determinism(
-    num_envs: int,
-    seeds: np.ndarray,
-    noop_max: int,
-    repeat_action_probability: float,
-    use_fire_reset: bool,
+def assert_rollout_equivalence(
+    num_envs: int = 4,
+    seeds: np.ndarray = np.arange(4),
     game: str = "pong",
     rollout_length: int = 100,
+    **kwargs,
 ):
-    envs_1 = AtariVectorEnv(game, num_envs=num_envs)
-    envs_2 = AtariVectorEnv(game, num_envs=num_envs)
+    envs_1 = AtariVectorEnv(game, num_envs=num_envs, **kwargs)
+    envs_2 = AtariVectorEnv(game, num_envs=num_envs, **kwargs)
 
     env_2_handle, env_2_reset, env_2_step = envs_2.xla()
 
@@ -49,3 +41,25 @@ def test_xla_determinism(
 
     envs_1.close()
     envs_2.close()
+
+
+@pytest.mark.parametrize(
+    "num_envs, seeds",
+    [(1, np.array([0])), (3, np.array([1, 2, 3])), (10, np.arange(10))],
+)
+def test_seeding(num_envs, seeds):
+    assert_rollout_equivalence(num_envs, seeds)
+
+
+@pytest.mark.parametrize("stack_num", [4, 6])
+@pytest.mark.parametrize("img_height, img_width", [(84, 84), (210, 160)])
+@pytest.mark.parametrize("frame_skip", [1, 4])
+@pytest.mark.parametrize("grayscale", [False, True])
+def test_obs_params(stack_num, img_height, img_width, frame_skip, grayscale):
+    assert_rollout_equivalence(
+        stack_num=stack_num,
+        img_height=img_height,
+        img_width=img_width,
+        frameskip=frame_skip,
+        grayscale=grayscale,
+    )
