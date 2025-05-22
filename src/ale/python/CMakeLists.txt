@@ -1,16 +1,9 @@
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
-include(FetchContent)
-set(NANOBIND_VER 2.7.0)
-find_package(nanobind ${NANOBIND_VER} QUIET)
-
-if(NOT nanobind_FOUND)
-    FetchContent_Declare(
-        nanobind
-        GIT_REPOSITORY https://github.com/wjakob/nanobind
-        GIT_TAG v${NANOBIND_VER})
-    FetchContent_MakeAvailable(nanobind)
-endif()
+execute_process(
+  COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+  OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE nanobind_ROOT)
+find_package(nanobind CONFIG REQUIRED)
 
 # If vector library is enabled, include the vector Python interface
 # XLA Integration
