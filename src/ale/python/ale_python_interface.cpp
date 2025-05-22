@@ -19,202 +19,187 @@
 namespace ale {
 
 void ALEPythonInterface::getScreen(
-    py::array_t<pixel_t, py::array::c_style>& buffer) {
-  py::buffer_info info = buffer.request();
-  if (info.ndim != 2) {
+    nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer) {
+  if (buffer.ndim() != 2) {
     throw std::runtime_error("Expected a numpy array with two dimensions.");
   }
 
   size_t h = environment->getScreen().height();
   size_t w = environment->getScreen().width();
 
-  if (info.shape[0] != h || info.shape[1] != w) {
+  if (buffer.shape(0) != h || buffer.shape(1) != w) {
     std::stringstream msg;
-    msg << "Invalid shape, (" << info.shape[0] << ", " << info.shape[1] << "), "
+    msg << "Invalid shape, (" << buffer.shape(0) << ", " << buffer.shape(1) << "), "
         << "expecting shape (" << h << ", " << w << ")";
     throw std::runtime_error(msg.str());
   }
 
   pixel_t* src = environment->getScreen().getArray();
-  pixel_t* dst = (pixel_t*)buffer.mutable_data();
+  pixel_t* dst = buffer.data();
 
   std::copy(src, src + (w * h * sizeof(pixel_t)), dst);
 }
 
 void ALEPythonInterface::getScreenRGB(
-    py::array_t<pixel_t, py::array::c_style>& buffer) {
-  py::buffer_info info = buffer.request();
-  if (info.ndim != 3) {
+    nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer) {
+  if (buffer.ndim() != 3) {
     throw std::runtime_error("Expected a numpy array with three dimensions.");
   }
 
   size_t h = environment->getScreen().height();
   size_t w = environment->getScreen().width();
 
-  if (info.shape[0] != h || info.shape[1] != w || info.shape[2] != 3) {
+  if (buffer.shape(0) != h || buffer.shape(1) != w || buffer.shape(2) != 3) {
     std::stringstream msg;
-    msg << "Invalid shape (" << info.shape[0] << ", " << info.shape[1] << ", "
-        << info.shape[2] << "), expecting shape " << "(" << h << ", " << w << ", 3)";
+    msg << "Invalid shape (" << buffer.shape(0) << ", " << buffer.shape(1) << ", "
+        << buffer.shape(2) << "), expecting shape " << "(" << h << ", " << w << ", 3)";
     throw std::runtime_error(msg.str());
   }
 
   pixel_t* src = environment->getScreen().getArray();
-  pixel_t* dst = (pixel_t*)buffer.mutable_data();
+  pixel_t* dst = buffer.data();
 
   theOSystem->colourPalette().applyPaletteRGB(dst, src, w * h);
 }
 
 void ALEPythonInterface::getScreenGrayscale(
-    py::array_t<pixel_t, py::array::c_style>& buffer) {
-  py::buffer_info info = buffer.request();
-  if (info.ndim != 2) {
+    nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer) {
+  if (buffer.ndim() != 2) {
     throw std::runtime_error("Expected a numpy array with two dimensions.");
   }
 
   size_t h = environment->getScreen().height();
   size_t w = environment->getScreen().width();
 
-  if (info.shape[0] != h || info.shape[1] != w) {
+  if (buffer.shape(0) != h || buffer.shape(1) != w) {
     std::stringstream msg;
-    msg << "Invalid shape (" << info.shape[0] << ", " << info.shape[1] << "), "
+    msg << "Invalid shape (" << buffer.shape(0) << ", " << buffer.shape(1) << "), "
         << "expecting shape (" << h << ", " << w << ")";
     throw std::runtime_error(msg.str());
   }
 
   pixel_t* src = environment->getScreen().getArray();
-  pixel_t* dst = (pixel_t*)buffer.mutable_data();
+  pixel_t* dst = buffer.data();
 
   theOSystem->colourPalette().applyPaletteGrayscale(dst, src, h * w);
 }
 
-py::array_t<pixel_t, py::array::c_style> ALEPythonInterface::getScreen() {
+nb::ndarray<nb::numpy, pixel_t> ALEPythonInterface::getScreen() {
   int32_t w = environment->getScreen().width();
   int32_t h = environment->getScreen().height();
 
-  // Buffer info args:
-  //   ptr: nullptr
-  //   itemsize: sizeof(pixel_t)
-  //   format: format_descriptor<pixel_t>::format()
-  //   ndims: 2
-  //   shape: { height, width }
-  //   strides: { itemsize * w, itemsize } -- row major
+  // Create new array with shape {h, w}
+  size_t shape[2] = {static_cast<size_t>(h), static_cast<size_t>(w)};
+  auto buffer = nb::steal(nb::detail::ndarray_new(
+      nb::handle(nb::dtype<pixel_t>().raw_dtype()),
+      2, shape, nb::handle(nullptr), nullptr, nb::dtype<pixel_t>()));
 
-   py::buffer_info info = py::buffer_info(
-      nullptr, sizeof(pixel_t), py::format_descriptor<pixel_t>::format(), 2,
-      {h, w}, {sizeof(pixel_t) * w, sizeof(pixel_t)});
-
-  // Construct buffer with given info
-  py::array_t<pixel_t, py::array::c_style> buffer(info);
   // Call our overloaded getScreen function
-  this->getScreen(buffer);
+  this->getScreen(nb::cast<nb::ndarray<nb::numpy, pixel_t, nb::c_contig>>(buffer));
 
-  return buffer;
+  return nb::cast<nb::ndarray<nb::numpy, pixel_t>>(buffer);
 }
 
-py::array_t<pixel_t, py::array::c_style> ALEPythonInterface::getScreenRGB() {
+nb::ndarray<nb::numpy, pixel_t> ALEPythonInterface::getScreenRGB() {
   int32_t h = environment->getScreen().height();
   int32_t w = environment->getScreen().width();
 
-  // Buffer info args:
-  //   ptr: nullptr
-  //   itemsize: sizeof(pixel_t)
-  //   format: format_descriptor<pixel_t>::format()
-  //   ndims: 3
-  //   shape: { height, width, 3 }
-  //   strides: { itemsize * w * 3, itemsize * 3, itemsize } -- row major
+  // Create new array with shape {h, w, 3}
+  size_t shape[3] = {static_cast<size_t>(h), static_cast<size_t>(w), 3};
+  auto buffer = nb::steal(nb::detail::ndarray_new(
+      nb::handle(nb::dtype<pixel_t>().raw_dtype()),
+      3, shape, nb::handle(nullptr), nullptr, nb::dtype<pixel_t>()));
 
-   py::buffer_info info = py::buffer_info(
-      nullptr, sizeof(pixel_t), py::format_descriptor<pixel_t>::format(), 3,
-      {h, w, 3}, {sizeof(pixel_t) * w * 3, sizeof(pixel_t) * 3, sizeof(pixel_t)});
-
-  // Construct buffer with given info
-  py::array_t<pixel_t, py::array::c_style> buffer(info);
   // Call our overloaded getScreenRGB function
-  this->getScreenRGB(buffer);
+  this->getScreenRGB(nb::cast<nb::ndarray<nb::numpy, pixel_t, nb::c_contig>>(buffer));
 
-  return buffer;
+  return nb::cast<nb::ndarray<nb::numpy, pixel_t>>(buffer);
 }
 
-py::array_t<pixel_t, py::array::c_style>
+nb::ndarray<nb::numpy, pixel_t>
 ALEPythonInterface::getScreenGrayscale() {
   int32_t w = environment->getScreen().width();
   int32_t h = environment->getScreen().height();
 
-  // Buffer info args:
-  //   ptr: nullptr
-  //   itemsize: sizeof(pixel_t)
-  //   format: format_descriptor<pixel_t>::format()
-  //   ndims: 2
-  //   shape: { height, width }
-  //   strides: { itemsize * w, itemsize } -- row major
+  // Create new array with shape {h, w}
+  size_t shape[2] = {static_cast<size_t>(h), static_cast<size_t>(w)};
+  auto buffer = nb::steal(nb::detail::ndarray_new(
+      nb::handle(nb::dtype<pixel_t>().raw_dtype()),
+      2, shape, nb::handle(nullptr), nullptr, nb::dtype<pixel_t>()));
 
-   py::buffer_info info = py::buffer_info(
-      nullptr, sizeof(pixel_t), py::format_descriptor<pixel_t>::format(), 2,
-      {h, w}, {sizeof(pixel_t) * w, sizeof(pixel_t)});
-
-  // Construct buffer with given info
-  py::array_t<pixel_t, py::array::c_style> buffer(info);
   // Call our overloaded getScreenGrayscale function
-  this->getScreenGrayscale(buffer);
+  this->getScreenGrayscale(nb::cast<nb::ndarray<nb::numpy, pixel_t, nb::c_contig>>(buffer));
 
-  return buffer;
+  return nb::cast<nb::ndarray<nb::numpy, pixel_t>>(buffer);
 }
 
-const py::array_t<uint8_t, py::array::c_style> ALEPythonInterface::getAudio() {
+nb::ndarray<nb::numpy, uint8_t> ALEPythonInterface::getAudio() {
   const std::vector<uint8_t> &audio = ALEInterface::getAudio();
 
-  // Construct new py::array which copies audio data
-  py::array_t<uint8_t, py::array::c_style> audio_array(audio.size(), audio.data());
-  return audio_array;
+  // Create new array and copy data
+  size_t shape[1] = {audio.size()};
+  auto buffer = nb::steal(nb::detail::ndarray_new(
+      nb::handle(nb::dtype<uint8_t>().raw_dtype()),
+      1, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
+
+  auto array = nb::cast<nb::ndarray<nb::numpy, uint8_t, nb::c_contig>>(buffer);
+  std::copy(audio.data(), audio.data() + audio.size(), array.data());
+
+  return nb::cast<nb::ndarray<nb::numpy, uint8_t>>(buffer);
 }
 
 void ALEPythonInterface::getAudio(
-    py::array_t<uint8_t, py::array::c_style> &buffer) {
-  py::buffer_info info = buffer.request();
-  if (info.ndim != 1) {
+    nb::ndarray<nb::numpy, uint8_t, nb::c_contig> buffer) {
+  if (buffer.ndim() != 1) {
     throw std::runtime_error("Expected a numpy array with one dimension.");
   }
 
   const std::vector<uint8_t> &audio = ALEInterface::getAudio();
 
-  if (info.shape[0] != audio.size()) {
+  if (buffer.shape(0) != audio.size()) {
     std::stringstream msg;
-    msg << "Invalid shape (" << info.shape[0] << "), "
+    msg << "Invalid shape (" << buffer.shape(0) << "), "
         << "expecting shape (" << audio.size() << ")";
     throw std::runtime_error(msg.str());
   }
 
   // Get mutable data from buffer arg and copy audio data
-  uint8_t *dst = (uint8_t *)buffer.mutable_data();
+  uint8_t *dst = buffer.data();
   std::copy(audio.data(), audio.data() + audio.size(), dst);
 }
 
-const py::array_t<uint8_t, py::array::c_style> ALEPythonInterface::getRAM() {
+nb::ndarray<nb::numpy, uint8_t> ALEPythonInterface::getRAM() {
   const ALERAM& ram = ALEInterface::getRAM();
 
-  // Construct new py::array which copies RAM
-  py::array_t<uint8_t, py::array::c_style> ram_array(ram.size(), ram.array());
-  return ram_array;
+  // Create new array and copy data
+  size_t shape[1] = {static_cast<size_t>(ram.size())};
+  auto buffer = nb::steal(nb::detail::ndarray_new(
+      nb::handle(nb::dtype<uint8_t>().raw_dtype()),
+      1, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
+
+  auto array = nb::cast<nb::ndarray<nb::numpy, uint8_t, nb::c_contig>>(buffer);
+  std::copy(ram.array(), ram.array() + ram.size(), array.data());
+
+  return nb::cast<nb::ndarray<nb::numpy, uint8_t>>(buffer);
 }
 
 void ALEPythonInterface::getRAM(
-    py::array_t<uint8_t, py::array::c_style>& buffer) {
+    nb::ndarray<nb::numpy, uint8_t, nb::c_contig> buffer) {
   const ALERAM& ram = ALEInterface::getRAM();
 
-  py::buffer_info info = buffer.request();
-  if (info.ndim != 1) {
+  if (buffer.ndim() != 1) {
     throw std::runtime_error("Expected a numpy array with one dimension.");
   }
 
-  if (info.shape[0] != ram.size()) {
+  if (buffer.shape(0) != ram.size()) {
     std::stringstream msg;
-    msg << "Invalid shape (" << info.shape[0] << "), "
+    msg << "Invalid shape (" << buffer.shape(0) << "), "
         << "expecting shape (" << ram.size() << ")";
     throw std::runtime_error(msg.str());
   }
 
   // Get mutable data from buffer arg and copy RAM
-  pixel_t* dst = (pixel_t*)buffer.mutable_data();
+  uint8_t* dst = buffer.data();
   std::copy(ram.array(), ram.array() + ram.size(), dst);
 }
 

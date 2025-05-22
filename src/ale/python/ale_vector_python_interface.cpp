@@ -1,43 +1,47 @@
 #include "ale_vector_python_interface.hpp"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
-#include <pybind11/numpy.h>
+
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/filesystem.h>
+#include <nanobind/stl/tuple.h>
+#include <nanobind/ndarray.h>
+
 #include <vector>
 #include <cmath>
 #include <tuple>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 // Function to add vector environment bindings to an existing module
-void init_vector_module(py::module& m) {
+void init_vector_module(nb::module_& m) {
     // Define ALEVectorInterface class
-    py::class_<ale::vector::ALEVectorInterface>(m, "ALEVectorInterface")
-        .def(py::init<const fs::path, int, int, int, int, int, bool, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int>(),
-             py::arg("rom_path"),
-             py::arg("num_envs"),
-             py::arg("frame_skip") = 4,
-             py::arg("stack_num") = 4,
-             py::arg("img_height") = 84,
-             py::arg("img_width") = 84,
-             py::arg("grayscale") = true,
-             py::arg("maxpool") = true,
-             py::arg("noop_max") = 30,
-             py::arg("use_fire_reset") = true,
-             py::arg("episodic_life") = false,
-             py::arg("life_loss_info") = false,
-             py::arg("reward_clipping") = true,
-             py::arg("max_episode_steps") = 108000,
-             py::arg("repeat_action_probability") = 0.0f,
-             py::arg("full_action_space") = false,
-             py::arg("batch_size") = 0,
-             py::arg("num_threads") = 0,
-             py::arg("thread_affinity_offset") = -1)
+    nb::class_<ale::vector::ALEVectorInterface>(m, "ALEVectorInterface")
+        .def(nb::init<const fs::path, int, int, int, int, int, bool, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int>(),
+             "rom_path"_a,
+             "num_envs"_a,
+             "frame_skip"_a = 4,
+             "stack_num"_a = 4,
+             "img_height"_a = 84,
+             "img_width"_a = 84,
+             "grayscale"_a = true,
+             "maxpool"_a = true,
+             "noop_max"_a = 30,
+             "use_fire_reset"_a = true,
+             "episodic_life"_a = false,
+             "life_loss_info"_a = false,
+             "reward_clipping"_a = true,
+             "max_episode_steps"_a = 108000,
+             "repeat_action_probability"_a = 0.0f,
+             "full_action_space"_a = false,
+             "batch_size"_a = 0,
+             "num_threads"_a = 0,
+             "thread_affinity_offset"_a = -1)
         .def("reset", [](ale::vector::ALEVectorInterface& self, const std::vector<int> reset_indices, const std::vector<int> reset_seeds) {
             // Call C++ reset method with GIL released
-            py::gil_scoped_release release;
+            nb::gil_scoped_release release;
             auto timesteps = self.reset(reset_indices, reset_seeds);
-            py::gil_scoped_acquire acquire;
+            nb::gil_scoped_acquire acquire;
 
             // Get shape information
             int num_envs = timesteps.size();
@@ -48,24 +52,40 @@ void init_vector_module(py::module& m) {
             int channels = self.is_grayscale() ? 1 : 3;
 
             // Create a single NumPy array for all observations
-            py::array_t<uint8_t> observations;
+            nb::ndarray<nb::numpy, uint8_t> observations;
             if (self.is_grayscale()) {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
+                size_t shape[4] = {static_cast<size_t>(num_envs), static_cast<size_t>(stack_num), static_cast<size_t>(height), static_cast<size_t>(width)};
+                observations = nb::steal(nb::detail::ndarray_new(
+                    nb::handle(nb::dtype<uint8_t>().raw_dtype()),
+                    4, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
             } else {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
+                size_t shape[5] = {static_cast<size_t>(num_envs), static_cast<size_t>(stack_num), static_cast<size_t>(height), static_cast<size_t>(width), 3};
+                observations = nb::steal(nb::detail::ndarray_new(
+                    nb::handle(nb::dtype<uint8_t>().raw_dtype()),
+                    5, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
             }
-            auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
+            auto observations_ptr = observations.data();
 
             // Create arrays for info fields
-            py::array_t<int> env_ids(num_envs);
-            py::array_t<int> lives(num_envs);
-            py::array_t<int> frame_numbers(num_envs);
-            py::array_t<int> episode_frame_numbers(num_envs);
+            size_t env_shape[1] = {static_cast<size_t>(num_envs)};
 
-            auto env_ids_ptr = static_cast<int*>(env_ids.mutable_data());
-            auto lives_ptr = static_cast<int*>(lives.mutable_data());
-            auto frame_numbers_ptr = static_cast<int*>(frame_numbers.mutable_data());
-            auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
+            auto env_ids = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+            auto lives = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+            auto frame_numbers = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+            auto episode_frame_numbers = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+
+            auto env_ids_array = nb::cast<nb::ndarray<nb::numpy, int>>(env_ids);
+            auto lives_array = nb::cast<nb::ndarray<nb::numpy, int>>(lives);
+            auto frame_numbers_array = nb::cast<nb::ndarray<nb::numpy, int>>(frame_numbers);
+            auto episode_frame_numbers_array = nb::cast<nb::ndarray<nb::numpy, int>>(episode_frame_numbers);
 
             // Copy data from observations to NumPy arrays
             size_t obs_size = stack_num * height * width * channels;
@@ -80,27 +100,27 @@ void init_vector_module(py::module& m) {
                 );
 
                 // Copy info fields
-                env_ids_ptr[i] = timestep.env_id;
-                lives_ptr[i] = timestep.lives;
-                frame_numbers_ptr[i] = timestep.frame_number;
-                episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
+                env_ids_array.data()[i] = timestep.env_id;
+                lives_array.data()[i] = timestep.lives;
+                frame_numbers_array.data()[i] = timestep.frame_number;
+                episode_frame_numbers_array.data()[i] = timestep.episode_frame_number;
             }
 
             // Create info dict
-            py::dict info;
+            nb::dict info;
             info["env_id"] = env_ids;
             info["lives"] = lives;
             info["frame_number"] = frame_numbers;
             info["episode_frame_number"] = episode_frame_numbers;
 
-            return py::make_tuple(observations, info);
+            return nb::make_tuple(observations, info);
         })
         .def("send", [](ale::vector::ALEVectorInterface& self, const std::vector<int> action_ids, const std::vector<float> paddle_strengths) {
             self.send(action_ids, paddle_strengths);
         })
         .def("recv", [](ale::vector::ALEVectorInterface& self) {
             const auto timesteps = self.recv();
-            py::gil_scoped_acquire acquire;
+            nb::gil_scoped_acquire acquire;
 
             // Get shape information
             int num_envs = timesteps.size();
@@ -111,32 +131,56 @@ void init_vector_module(py::module& m) {
             int channels = self.is_grayscale() ? 1 : 3;
 
             // Create NumPy arrays
-            py::array_t<uint8_t> observations;
+            nb::ndarray<nb::numpy, uint8_t> observations;
             if (self.is_grayscale()) {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
+                size_t shape[4] = {static_cast<size_t>(num_envs), static_cast<size_t>(stack_num), static_cast<size_t>(height), static_cast<size_t>(width)};
+                observations = nb::steal(nb::detail::ndarray_new(
+                    nb::handle(nb::dtype<uint8_t>().raw_dtype()),
+                    4, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
             } else {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
+                size_t shape[5] = {static_cast<size_t>(num_envs), static_cast<size_t>(stack_num), static_cast<size_t>(height), static_cast<size_t>(width), 3};
+                observations = nb::steal(nb::detail::ndarray_new(
+                    nb::handle(nb::dtype<uint8_t>().raw_dtype()),
+                    5, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
             }
-            py::array_t<int> rewards(num_envs);
-            py::array_t<bool> terminations(num_envs);
-            py::array_t<bool> truncations(num_envs);
-            py::array_t<int> env_ids(num_envs);
-            py::array_t<int> lives(num_envs);
-            py::array_t<int> frame_numbers(num_envs);
-            py::array_t<int> episode_frame_numbers(num_envs);
 
-            // Get pointers to the arrays' data
-            auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
-            auto rewards_ptr = static_cast<int*>(rewards.mutable_data());
-            auto terminations_ptr = static_cast<bool*>(terminations.mutable_data());
-            auto truncations_ptr = static_cast<bool*>(truncations.mutable_data());
-            auto env_ids_ptr = static_cast<int*>(env_ids.mutable_data());
-            auto lives_ptr = static_cast<int*>(lives.mutable_data());
-            auto frame_numbers_ptr = static_cast<int*>(frame_numbers.mutable_data());
-            auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
+            size_t env_shape[1] = {static_cast<size_t>(num_envs)};
+
+            auto rewards = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+            auto terminations = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<bool>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<bool>()));
+            auto truncations = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<bool>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<bool>()));
+            auto env_ids = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+            auto lives = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+            auto frame_numbers = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+            auto episode_frame_numbers = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<int>().raw_dtype()),
+                1, env_shape, nb::handle(nullptr), nullptr, nb::dtype<int>()));
+
+            // Cast to typed arrays
+            auto rewards_array = nb::cast<nb::ndarray<nb::numpy, int>>(rewards);
+            auto terminations_array = nb::cast<nb::ndarray<nb::numpy, bool>>(terminations);
+            auto truncations_array = nb::cast<nb::ndarray<nb::numpy, bool>>(truncations);
+            auto env_ids_array = nb::cast<nb::ndarray<nb::numpy, int>>(env_ids);
+            auto lives_array = nb::cast<nb::ndarray<nb::numpy, int>>(lives);
+            auto frame_numbers_array = nb::cast<nb::ndarray<nb::numpy, int>>(frame_numbers);
+            auto episode_frame_numbers_array = nb::cast<nb::ndarray<nb::numpy, int>>(episode_frame_numbers);
 
             // Copy data from observations to NumPy arrays
             const size_t obs_size = stack_num * height * width * channels;
+            auto observations_ptr = observations.data();
+
             for (int i = 0; i < num_envs; i++) {
                 const auto& timestep = timesteps[i];
 
@@ -148,32 +192,32 @@ void init_vector_module(py::module& m) {
                 );
 
                 // Copy other fields
-                rewards_ptr[i] = timestep.reward;
-                terminations_ptr[i] = timestep.terminated;
-                truncations_ptr[i] = timestep.truncated;
-                env_ids_ptr[i] = timestep.env_id;
-                lives_ptr[i] = timestep.lives;
-                frame_numbers_ptr[i] = timestep.frame_number;
-                episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
+                rewards_array.data()[i] = timestep.reward;
+                terminations_array.data()[i] = timestep.terminated;
+                truncations_array.data()[i] = timestep.truncated;
+                env_ids_array.data()[i] = timestep.env_id;
+                lives_array.data()[i] = timestep.lives;
+                frame_numbers_array.data()[i] = timestep.frame_number;
+                episode_frame_numbers_array.data()[i] = timestep.episode_frame_number;
             }
 
             // Create info dict
-            py::dict info;
+            nb::dict info;
             info["env_id"] = env_ids;
             info["lives"] = lives;
             info["frame_number"] = frame_numbers;
             info["episode_frame_number"] = episode_frame_numbers;
 
-            return py::make_tuple(observations, rewards, terminations, truncations, info);
+            return nb::make_tuple(observations, rewards, terminations, truncations, info);
         })
         .def("get_action_set", &ale::vector::ALEVectorInterface::get_action_set)
         .def("get_num_envs", &ale::vector::ALEVectorInterface::get_num_envs)
         .def("get_observation_shape", [](ale::vector::ALEVectorInterface& self) {
             auto shape = self.get_observation_shape();
             if (self.is_grayscale()) {
-                return py::make_tuple(std::get<0>(shape), std::get<1>(shape), std::get<2>(shape));
+                return nb::make_tuple(std::get<0>(shape), std::get<1>(shape), std::get<2>(shape));
             } else {
-                return py::make_tuple(std::get<0>(shape), std::get<1>(shape), std::get<2>(shape), std::get<3>(shape));
+                return nb::make_tuple(std::get<0>(shape), std::get<1>(shape), std::get<2>(shape), std::get<3>(shape));
             }
         })
         .def("handle", [](ale::vector::ALEVectorInterface& self) {
@@ -181,8 +225,13 @@ void init_vector_module(py::module& m) {
             auto ptr = self.get_vectorizer();
 
             // Create a NumPy array with the correct size to hold the pointer
-            py::array_t<uint8_t> handle_array(sizeof(ptr));
-            auto handle_ptr = static_cast<uint8_t*>(handle_array.mutable_data());
+            size_t shape[1] = {sizeof(ptr)};
+            auto handle_array = nb::steal(nb::detail::ndarray_new(
+                nb::handle(nb::dtype<uint8_t>().raw_dtype()),
+                1, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
+
+            auto handle_typed = nb::cast<nb::ndarray<nb::numpy, uint8_t>>(handle_array);
+            auto handle_ptr = handle_typed.data();
 
             // Copy the pointer value into the byte array
             std::memcpy(handle_ptr, &ptr, sizeof(ptr));

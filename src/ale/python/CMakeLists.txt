@@ -1,16 +1,15 @@
 find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
 include(FetchContent)
-set(PYBIND11_FINDPYTHON ON)
-set(PYBIND11_VER 2.13.1)
-find_package(pybind11 ${PYBIND11_VER} QUIET)
+set(NANOBIND_VER 2.7.0)
+find_package(nanobind ${NANOBIND_VER} QUIET)
 
-if(NOT pybind11_FOUND)
+if(NOT nanobind_FOUND)
     FetchContent_Declare(
-        pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11
-        GIT_TAG v${PYBIND11_VER})
-    FetchContent_MakeAvailable(pybind11)
+        nanobind
+        GIT_REPOSITORY https://github.com/wjakob/nanobind
+        GIT_TAG v${NANOBIND_VER})
+    FetchContent_MakeAvailable(nanobind)
 endif()
 
 # If vector library is enabled, include the vector Python interface
@@ -28,28 +27,23 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
 
 #    find_package(CUDAToolkit REQUIRED)
 
-    add_library(ale-py MODULE ale_python_interface.cpp ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
+    nanobind_add_module(ale-py ale_python_interface.cpp ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
     set_target_properties(ale-py PROPERTIES POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 17)
     target_include_directories(ale-py PUBLIC ${XLA_DIR})
     target_compile_definitions(ale-py PRIVATE BUILD_VECTOR_LIB BUILD_VECTOR_XLA_LIB)
 
 elseif (BUILD_VECTOR_LIB)
-    add_library(ale-py MODULE ale_python_interface.cpp ale_vector_python_interface.cpp)
+    nanobind_add_module(ale-py ale_python_interface.cpp ale_vector_python_interface.cpp)
     target_compile_definitions(ale-py PRIVATE BUILD_VECTOR_LIB)
 else ()
-    add_library(ale-py MODULE ale_python_interface.cpp)
+    nanobind_add_module(ale-py ale_python_interface.cpp)
 endif()
 
-# Depend on the ALE and pybind11 module
+# Depend on the ALE library
 target_link_libraries(ale-py PUBLIC ale ale-lib)
-target_link_libraries(ale-py PRIVATE pybind11::module)
 
 # The native module is imported as _ale_py
-# Make sure to set the proper prefix and extension from pybind11
-set_target_properties(ale-py PROPERTIES
-    OUTPUT_NAME _ale_py
-    PREFIX "${PYTHON_MODULE_PREFIX}"
-    SUFFIX "${PYTHON_MODULE_EXTENSION}")
+set_target_properties(ale-py PROPERTIES OUTPUT_NAME _ale_py)
 
 # To test ale-py we need to make sure that all generated resources
 # are in CMAKE_CURRENT_BINARY_DIR, i.e., build/src/python.
