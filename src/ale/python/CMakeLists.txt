@@ -1,8 +1,9 @@
-find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
 execute_process(
-  COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+  COMMAND "${Python3_EXECUTABLE}" -m nanobind --cmake_dir
   OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE nanobind_ROOT)
+message(STATUS "nanobind root: ${nanobind_ROOT}")
 find_package(nanobind CONFIG REQUIRED)
 
 # If vector library is enabled, include the vector Python interface
