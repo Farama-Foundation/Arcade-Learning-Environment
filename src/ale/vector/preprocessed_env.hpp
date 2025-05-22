@@ -195,7 +195,10 @@ namespace ale::vector {
             game_over_ = false;
 
             const int action_id = current_action_.action_id;
-            const Action action = (action_id < 0 || action_id >= static_cast<int>(action_set_.size())) ? PLAYER_A_NOOP : action_set_[action_id];
+            if (action_id < 0 || action_id >= action_set_.size()) {
+                throw std::out_of_range("Stepping sub-environment with action_id: " + std::to_string(action_id) + ", however, this is either less than zero or greater than available actions (" + std::to_string(action_set_.size()) + ")");
+            }
+            const Action action = action_set_[action_id];
             const float strength = current_action_.paddle_strength;
 
             // Execute action for frame_skip frames

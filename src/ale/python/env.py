@@ -276,10 +276,11 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         else:
             raise error.Error(f"Invalid frameskip type: {self._frameskip}")
 
-        # action formatting
         if self.continuous:
             # compute the x, y, fire of the joystick
             assert isinstance(action, np.ndarray)
+            assert action.dtype == np.float32
+            assert action.shape == (3,)
             x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
             action_idx = self.map_action_idx(
                 left_center_right=(
