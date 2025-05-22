@@ -11,6 +11,12 @@
 #include "ale/vector/preprocessed_env.hpp"
 #include "ale/vector/utils.hpp"
 
+#include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/filesystem.h>
+
+namespace nb = nanobind;
 namespace fs = std::filesystem;
 
 namespace ale::vector {

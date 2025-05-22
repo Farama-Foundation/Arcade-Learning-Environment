@@ -21,8 +21,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/optional.h>
-#include <nanobind/stl/vector.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
 #include <nanobind/stl/filesystem.h>
 
 #include "ale/ale_interface.hpp"
@@ -34,7 +34,6 @@
 #ifdef BUILD_VECTOR_XLA_SUPPORT
     #include "ale_vector_xla_interface.hpp"
 #endif
-
 
 namespace nb = nanobind;
 void init_vector_module(nb::module_ &m);
@@ -48,13 +47,13 @@ class ALEPythonInterface : public ALEInterface {
     public:
         using ALEInterface::ALEInterface;
 
-        void getScreen(nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer);
-        void getScreenRGB(nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer);
-        void getScreenGrayscale(nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer);
+        void getScreen(nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>& buffer);
+        void getScreenRGB(nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any, 3>, nb::c_contig>& buffer);
+        void getScreenGrayscale(nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>& buffer);
 
-        nb::ndarray<nb::numpy, pixel_t> getScreen();
-        nb::ndarray<nb::numpy, pixel_t> getScreenRGB();
-        nb::ndarray<nb::numpy, pixel_t> getScreenGrayscale();
+        nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig> getScreen();
+        nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any, 3>, nb::c_contig> getScreenRGB();
+        nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig> getScreenGrayscale();
 
         inline reward_t act(unsigned int action, const float paddle_strength = 1.0) {
             return ALEInterface::act(static_cast<Action>(action), paddle_strength);
@@ -66,8 +65,8 @@ class ALEPythonInterface : public ALEInterface {
         }
 
         inline uint32_t getAudioSize() const { return ALEInterface::getAudio().size(); }
-        nb::ndarray<nb::numpy, uint8_t> getAudio();
-        void getAudio(nb::ndarray<nb::numpy, uint8_t, nb::c_contig> buffer);
+        const nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig> getAudio();
+        void getAudio(nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>& buffer);
 
         // Implicitly cast std::string -> fs::path
         inline void loadROM(const std::string &rom_file) {
@@ -80,18 +79,18 @@ class ALEPythonInterface : public ALEInterface {
         }
 
         inline uint32_t getRAMSize() { return ALEInterface::getRAM().size(); }
-        nb::ndarray<nb::numpy, uint8_t> getRAM();
-        void getRAM(nb::ndarray<nb::numpy, uint8_t, nb::c_contig> buffer);
+        const nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig> getRAM();
+        void getRAM(nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>& buffer);
 };
 
 } // namespace ale
 
 NB_MODULE(_ale_py, m) {
-    m.attr("__version__") = ALE_VERSION;
+    m.attr("__version__") = nb::str(ALE_VERSION);
 #ifdef ALE_SDL_SUPPORT
-    m.attr("SDL_SUPPORT") = true;
+    m.attr("SDL_SUPPORT") = nb::bool_(true);
 #else
-    m.attr("SDL_SUPPORT") = false;
+    m.attr("SDL_SUPPORT") = nb::bool_(false);
 #endif
 
     nb::enum_<ale::Action>(m, "Action")
@@ -132,12 +131,13 @@ NB_MODULE(_ale_py, m) {
         .def("getCurrentMode", &ale::ALEState::getCurrentMode)
         .def("serialize", &ale::ALEState::serialize)
         .def("__eq__", &ale::ALEState::equals)
-        .def("__getstate__", [](const ale::ALEState& a) {
-            return nb::bytes(a.serialize().data(), a.serialize().size());
+        .def("__getstate__", [](ale::ALEState& a) {
+            return nb::make_tuple(nb::bytes(a.serialize()));
         })
-        .def("__setstate__", [](ale::ALEState& a, nb::bytes state) {
-            std::string state_str(static_cast<const char*>(state.data()), state.size());
-            a = ale::ALEState(state_str);
+        .def("__setstate__", [](ale::ALEState &state, const nb::tuple &t) {
+            if (t.size() != 1)
+                throw std::runtime_error("Invalid ALEState state...");
+            new (&state) ale::ALEState(t[0].cast<std::string>());
         });
 
     nb::class_<ale::ALEPythonInterface>(m, "ALEInterface")
@@ -159,7 +159,7 @@ NB_MODULE(_ale_py, m) {
         .def("act", &ale::ALEInterface::act,
             "action"_a, "paddle_strength"_a = 1.0)
         .def("game_over", &ale::ALEPythonInterface::game_over,
-            "with_truncation"_a = true)
+            nb::kw_only(), "with_truncation"_a = nb::bool_(true))
         .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
         .def("reset_game", &ale::ALEPythonInterface::reset_game)
         .def("getAvailableModes", &ale::ALEPythonInterface::getAvailableModes)
@@ -171,21 +171,21 @@ NB_MODULE(_ale_py, m) {
         .def("getFrameNumber", &ale::ALEPythonInterface::getFrameNumber)
         .def("lives", &ale::ALEPythonInterface::lives)
         .def("getEpisodeFrameNumber", &ale::ALEPythonInterface::getEpisodeFrameNumber)
-        .def("getScreen", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, ale::pixel_t, nb::c_contig>)>(&ale::ALEPythonInterface::getScreen))
-        .def("getScreen", static_cast<nb::ndarray<nb::numpy, ale::pixel_t>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreen))
-        .def("getScreenRGB", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, ale::pixel_t, nb::c_contig>)>(&ale::ALEPythonInterface::getScreenRGB))
-        .def("getScreenRGB", static_cast<nb::ndarray<nb::numpy, ale::pixel_t>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreenRGB))
-        .def("getScreenGrayscale", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, ale::pixel_t, nb::c_contig>)>(&ale::ALEPythonInterface::getScreenGrayscale))
-        .def("getScreenGrayscale", static_cast<nb::ndarray<nb::numpy, ale::pixel_t>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreenGrayscale))
+        .def("getScreen", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, ale::pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>&)>(&ale::ALEPythonInterface::getScreen))
+        .def("getScreen", static_cast<nb::ndarray<nb::numpy, ale::pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreen))
+        .def("getScreenRGB", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, ale::pixel_t, nb::shape<nb::any, nb::any, 3>, nb::c_contig>&)>(&ale::ALEPythonInterface::getScreenRGB))
+        .def("getScreenRGB", static_cast<nb::ndarray<nb::numpy, ale::pixel_t, nb::shape<nb::any, nb::any, 3>, nb::c_contig>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreenRGB))
+        .def("getScreenGrayscale", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, ale::pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>&)>(&ale::ALEPythonInterface::getScreenGrayscale))
+        .def("getScreenGrayscale", static_cast<nb::ndarray<nb::numpy, ale::pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreenGrayscale))
         .def("getScreenDims", &ale::ALEPythonInterface::getScreenDims)
         .def("getAudioSize", &ale::ALEPythonInterface::getAudioSize)
-        .def("getAudio", static_cast<nb::ndarray<nb::numpy, uint8_t> (ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getAudio))
-        .def("getAudio", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, uint8_t, nb::c_contig>)>(&ale::ALEPythonInterface::getAudio))
+        .def("getAudio", static_cast<const nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig> (ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getAudio))
+        .def("getAudio", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>&)>(&ale::ALEPythonInterface::getAudio))
         .def("getRAMSize", &ale::ALEPythonInterface::getRAMSize)
-        .def("getRAM", static_cast<nb::ndarray<nb::numpy, uint8_t> (ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getRAM))
-        .def("getRAM", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, uint8_t, nb::c_contig>)>(&ale::ALEPythonInterface::getRAM))
+        .def("getRAM", static_cast<const nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig> (ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getRAM))
+        .def("getRAM", static_cast<void (ale::ALEPythonInterface::*)(nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>&)>(&ale::ALEPythonInterface::getRAM))
         .def("setRAM", &ale::ALEPythonInterface::setRAM)
-        .def("cloneState", &ale::ALEPythonInterface::cloneState, "include_rng"_a = false)
+        .def("cloneState", &ale::ALEPythonInterface::cloneState, nb::kw_only(), "include_rng"_a = nb::bool_(false))
         .def("restoreState", &ale::ALEPythonInterface::restoreState)
         .def("cloneSystemState", &ale::ALEPythonInterface::cloneSystemState)
         .def("restoreSystemState", &ale::ALEPythonInterface::restoreSystemState)

@@ -86,6 +86,7 @@ norecursedirs = ["vcpkg", "build"]
 skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
+environment = "PYTHON_EXECUTABLE=$(python -c 'import sys; print(sys.executable)')"
 manylinux-x86_64-image = "manylinux-vcpkg:latest"
 
 [tool.cibuildwheel.linux]

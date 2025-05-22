@@ -19,7 +19,8 @@
 namespace ale {
 
 void ALEPythonInterface::getScreen(
-    nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer) {
+    nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>& buffer) {
+
   if (buffer.ndim() != 2) {
     throw std::runtime_error("Expected a numpy array with two dimensions.");
   }
@@ -37,11 +38,12 @@ void ALEPythonInterface::getScreen(
   pixel_t* src = environment->getScreen().getArray();
   pixel_t* dst = buffer.data();
 
-  std::copy(src, src + (w * h * sizeof(pixel_t)), dst);
+  std::copy(src, src + (w * h), dst);
 }
 
 void ALEPythonInterface::getScreenRGB(
-    nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer) {
+    nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any, 3>, nb::c_contig>& buffer) {
+
   if (buffer.ndim() != 3) {
     throw std::runtime_error("Expected a numpy array with three dimensions.");
   }
@@ -63,7 +65,8 @@ void ALEPythonInterface::getScreenRGB(
 }
 
 void ALEPythonInterface::getScreenGrayscale(
-    nb::ndarray<nb::numpy, pixel_t, nb::c_contig> buffer) {
+    nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>& buffer) {
+
   if (buffer.ndim() != 2) {
     throw std::runtime_error("Expected a numpy array with two dimensions.");
   }
@@ -84,72 +87,65 @@ void ALEPythonInterface::getScreenGrayscale(
   theOSystem->colourPalette().applyPaletteGrayscale(dst, src, h * w);
 }
 
-nb::ndarray<nb::numpy, pixel_t> ALEPythonInterface::getScreen() {
+nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig> ALEPythonInterface::getScreen() {
   int32_t w = environment->getScreen().width();
   int32_t h = environment->getScreen().height();
 
-  // Create new array with shape {h, w}
-  size_t shape[2] = {static_cast<size_t>(h), static_cast<size_t>(w)};
-  auto buffer = nb::steal(nb::detail::ndarray_new(
-      nb::handle(nb::dtype<pixel_t>().raw_dtype()),
-      2, shape, nb::handle(nullptr), nullptr, nb::dtype<pixel_t>()));
+  // Create ndarray
+  auto buffer = nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>(
+      nullptr, {h, w});
 
   // Call our overloaded getScreen function
-  this->getScreen(nb::cast<nb::ndarray<nb::numpy, pixel_t, nb::c_contig>>(buffer));
+  this->getScreen(buffer);
 
-  return nb::cast<nb::ndarray<nb::numpy, pixel_t>>(buffer);
+  return buffer;
 }
 
-nb::ndarray<nb::numpy, pixel_t> ALEPythonInterface::getScreenRGB() {
+nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any, 3>, nb::c_contig> ALEPythonInterface::getScreenRGB() {
   int32_t h = environment->getScreen().height();
   int32_t w = environment->getScreen().width();
 
-  // Create new array with shape {h, w, 3}
-  size_t shape[3] = {static_cast<size_t>(h), static_cast<size_t>(w), 3};
-  auto buffer = nb::steal(nb::detail::ndarray_new(
-      nb::handle(nb::dtype<pixel_t>().raw_dtype()),
-      3, shape, nb::handle(nullptr), nullptr, nb::dtype<pixel_t>()));
+  // Create ndarray
+  auto buffer = nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any, 3>, nb::c_contig>(
+      nullptr, {h, w, 3});
 
   // Call our overloaded getScreenRGB function
-  this->getScreenRGB(nb::cast<nb::ndarray<nb::numpy, pixel_t, nb::c_contig>>(buffer));
+  this->getScreenRGB(buffer);
 
-  return nb::cast<nb::ndarray<nb::numpy, pixel_t>>(buffer);
+  return buffer;
 }
 
-nb::ndarray<nb::numpy, pixel_t>
+nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>
 ALEPythonInterface::getScreenGrayscale() {
   int32_t w = environment->getScreen().width();
   int32_t h = environment->getScreen().height();
 
-  // Create new array with shape {h, w}
-  size_t shape[2] = {static_cast<size_t>(h), static_cast<size_t>(w)};
-  auto buffer = nb::steal(nb::detail::ndarray_new(
-      nb::handle(nb::dtype<pixel_t>().raw_dtype()),
-      2, shape, nb::handle(nullptr), nullptr, nb::dtype<pixel_t>()));
+  // Create ndarray
+  auto buffer = nb::ndarray<nb::numpy, pixel_t, nb::shape<nb::any, nb::any>, nb::c_contig>(
+      nullptr, {h, w});
 
   // Call our overloaded getScreenGrayscale function
-  this->getScreenGrayscale(nb::cast<nb::ndarray<nb::numpy, pixel_t, nb::c_contig>>(buffer));
+  this->getScreenGrayscale(buffer);
 
-  return nb::cast<nb::ndarray<nb::numpy, pixel_t>>(buffer);
+  return buffer;
 }
 
-nb::ndarray<nb::numpy, uint8_t> ALEPythonInterface::getAudio() {
+const nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig> ALEPythonInterface::getAudio() {
   const std::vector<uint8_t> &audio = ALEInterface::getAudio();
 
-  // Create new array and copy data
-  size_t shape[1] = {audio.size()};
-  auto buffer = nb::steal(nb::detail::ndarray_new(
-      nb::handle(nb::dtype<uint8_t>().raw_dtype()),
-      1, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
+  // Create ndarray from data
+  auto buffer = nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>(
+      nullptr, {audio.size()});
 
-  auto array = nb::cast<nb::ndarray<nb::numpy, uint8_t, nb::c_contig>>(buffer);
-  std::copy(audio.data(), audio.data() + audio.size(), array.data());
+  // Copy data
+  std::copy(audio.data(), audio.data() + audio.size(), buffer.data());
 
-  return nb::cast<nb::ndarray<nb::numpy, uint8_t>>(buffer);
+  return buffer;
 }
 
 void ALEPythonInterface::getAudio(
-    nb::ndarray<nb::numpy, uint8_t, nb::c_contig> buffer) {
+    nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>& buffer) {
+
   if (buffer.ndim() != 1) {
     throw std::runtime_error("Expected a numpy array with one dimension.");
   }
@@ -168,23 +164,21 @@ void ALEPythonInterface::getAudio(
   std::copy(audio.data(), audio.data() + audio.size(), dst);
 }
 
-nb::ndarray<nb::numpy, uint8_t> ALEPythonInterface::getRAM() {
+const nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig> ALEPythonInterface::getRAM() {
   const ALERAM& ram = ALEInterface::getRAM();
 
-  // Create new array and copy data
-  size_t shape[1] = {static_cast<size_t>(ram.size())};
-  auto buffer = nb::steal(nb::detail::ndarray_new(
-      nb::handle(nb::dtype<uint8_t>().raw_dtype()),
-      1, shape, nb::handle(nullptr), nullptr, nb::dtype<uint8_t>()));
+  // Create ndarray from data
+  auto buffer = nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>(
+      nullptr, {ram.size()});
 
-  auto array = nb::cast<nb::ndarray<nb::numpy, uint8_t, nb::c_contig>>(buffer);
-  std::copy(ram.array(), ram.array() + ram.size(), array.data());
+  // Copy data
+  std::copy(ram.array(), ram.array() + ram.size(), buffer.data());
 
-  return nb::cast<nb::ndarray<nb::numpy, uint8_t>>(buffer);
+  return buffer;
 }
 
 void ALEPythonInterface::getRAM(
-    nb::ndarray<nb::numpy, uint8_t, nb::c_contig> buffer) {
+    nb::ndarray<nb::numpy, uint8_t, nb::shape<nb::any>, nb::c_contig>& buffer) {
   const ALERAM& ram = ALEInterface::getRAM();
 
   if (buffer.ndim() != 1) {
