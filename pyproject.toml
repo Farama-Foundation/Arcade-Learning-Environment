@@ -85,7 +85,8 @@ norecursedirs = ["vcpkg", "build"]
 skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
 
 build-frontend = "build"
-manylinux-x86_64-image = "manylinux-vcpkg:latest"
+manylinux-x86_64-image = "manylinux-x86_64-vcpkg:latest"
+manylinux-aarch64-image = "manylinux-aarch64-vcpkg:latest"
 
 [tool.cibuildwheel.linux]
 environment-pass = ["GITHUB_REF"]
@@ -109,3 +110,8 @@ environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows"
 [[tool.cibuildwheel.overrides]]
 select = "*-manylinux_x86_64"
 environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-linux-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
+
+# Linux ARM64 (manylinux)
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux_aarch64"
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-linux-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
