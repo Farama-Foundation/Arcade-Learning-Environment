@@ -1,4 +1,4 @@
-find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
 include(FetchContent)
 set(NANOBIND_VER 2.7.0)
