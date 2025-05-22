@@ -84,7 +84,7 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping=reward_clipping,
             max_episode_steps=max_num_frames_per_episode,
             repeat_action_probability=repeat_action_probability,
-            full_action_space=full_action_space,
+            full_action_space=full_action_space or continuous,
             batch_size=batch_size,
             num_threads=num_threads,
             thread_affinity_offset=thread_affinity_offset,
@@ -96,10 +96,9 @@ class AtariVectorEnv(VectorEnv):
         self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
         for h in (-1, 0, 1):
             for v in (-1, 0, 1):
-                for f in (False, True):
-                    self.map_action_idx[h, v, f] = AtariEnv.map_action_idx(
-                        h, v, f
-                    ).value
+                for f in (0, 1):
+                    action = AtariEnv.map_action_idx(h, v, bool(f)).value
+                    self.map_action_idx[h + 1, v + 1, f] = action
 
         # Set up the observation space based on grayscale or RGB format
         obs_shape = (stack_num, img_height, img_width)
@@ -181,15 +180,19 @@ class AtariVectorEnv(VectorEnv):
             x = actions[:, 0] * np.cos(actions[:, 1])
             y = actions[:, 0] * np.sin(actions[:, 1])
 
-            horizontal = -(x < self.continuous_action_threshold) + (
-                x > self.continuous_action_threshold
+            horizontal = (
+                -(x < self.continuous_action_threshold).astype(np.int32)
+                + (x > self.continuous_action_threshold).astype(np.int32)
+                + 1
             )
-            vertical = -(y < self.continuous_action_threshold) + (
-                y > self.continuous_action_threshold
+            vertical = (
+                -(y < self.continuous_action_threshold).astype(np.int32)
+                + (y > self.continuous_action_threshold).astype(np.int32)
+                + 1
             )
-            fire = actions[:, 2] > self.continuous_action_threshold
+            fire = (actions[:, 2] > self.continuous_action_threshold).astype(np.int32)
 
-            action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
+            action_ids = self.map_action_idx[horizontal, vertical, fire]
             paddle_strength = actions[:, 0]
             self.ale.send(action_ids, paddle_strength)
         else:
