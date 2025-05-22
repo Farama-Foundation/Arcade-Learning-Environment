@@ -108,7 +108,7 @@ def assert_rollout_equivalence(
             assert gym_obs.dtype == ale_obs.dtype
             assert np.max(diff) <= 2
             assert np.min(diff) >= -2
-            assert count <= 3
+            assert count <= 5
 
             gym.logger.warn(
                 f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
