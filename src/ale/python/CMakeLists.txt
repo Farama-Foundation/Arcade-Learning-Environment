@@ -1,18 +1,18 @@
-find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
 execute_process(
-  COMMAND "${Python3_EXECUTABLE}" -m nanobind --cmake_dir
+  COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
   OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE nanobind_ROOT)
 find_package(nanobind CONFIG REQUIRED)
 
 # If vector library is enabled, include the vector Python interface
 # XLA Integration
 if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
-#    message(STATUS "Python Executable: '${Python3_EXECUTABLE}'")
-#    message(STATUS "Python3_SITELIB=${Python3_SITELIB}, Python3_SITEARCH=${Python3_SITEARCH}")
+#    message(STATUS "Python Executable: '${Python_EXECUTABLE}'")
+#    message(STATUS "Python3_SITELIB=${Python_SITELIB}, Python3_SITEARCH=${Python_SITEARCH}")
     execute_process(
-        COMMAND "${Python3_EXECUTABLE}" "-c"
-        "import sys; sys.path.append(r'${Python3_SITELIB}'); sys.path.append(r'${Python3_SITEARCH}'); from jax import ffi; print(ffi.include_dir())"
+        COMMAND "${Python_EXECUTABLE}" "-c"
+        "import sys; sys.path.append(r'${Python_SITELIB}'); sys.path.append(r'${Python_SITEARCH}'); from jax import ffi; print(ffi.include_dir())"
         OUTPUT_STRIP_TRAILING_WHITESPACE
         OUTPUT_VARIABLE XLA_DIR
     )
