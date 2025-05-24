@@ -31,16 +31,19 @@ namespace ale::vector {
          * @param num_threads The number of worker threads to use (0 means use hardware concurrency)
          * @param thread_affinity_offset The CPU core offset for thread affinity (-1 means no affinity)
          * @param env_factory Function that creates environment instances
+         * @param autoreset_mode Specify how to automatically reset the sub-environments after an episode ends
          */
         explicit AsyncVectorizer(
             const int num_envs,
             const int batch_size = 0,
             const int num_threads = 0,
             const int thread_affinity_offset = -1,
-            const std::function<std::unique_ptr<PreprocessedAtariEnv>(int)> &env_factory = nullptr
+            const std::function<std::unique_ptr<PreprocessedAtariEnv>(int)> &env_factory = nullptr,
+            const AutoresetMode autoreset_mode = AutoresetMode::NextStep
         ) : num_envs_(num_envs),
             batch_size_(batch_size > 0 ? batch_size : num_envs),
             is_sync_(batch_size_ == num_envs_),
+            autoreset_mode_(autoreset_mode),
             stop_(false),
             stepping_env_num_(0),
             action_buffer_queue_(new ActionBufferQueue(num_envs_)),
@@ -106,7 +109,7 @@ namespace ale::vector {
                 ActionSlice action;
                 action.env_id = env_id;
                 action.order = is_sync_ ? static_cast<int>(i) : -1;
-                action.force_reset = true;
+                action.autoreset = true;
 
                 reset_actions.emplace_back(action);
             }
@@ -127,14 +130,14 @@ namespace ale::vector {
             std::vector<ActionSlice> action_slices;
             action_slices.reserve(actions.size());
 
-            for (int i = 0; i < actions.size(); i++) {
+            for (size_t i = 0; i < actions.size(); i++) {
                 const int env_id = actions[i].env_id;
                 envs_[env_id]->set_action(actions[i]);
 
                 ActionSlice action;
                 action.env_id = env_id;
                 action.order = is_sync_ ? i : -1;
-                action.force_reset = false;
+                action.autoreset = false;
 
                 action_slices.emplace_back(action);
             }
@@ -196,7 +199,8 @@ namespace ale::vector {
         int batch_size_;                                  // Batch size for processing
         int num_threads_;                                 // Number of worker threads
         bool is_sync_;                                    // Whether to operate in synchronous mode
-        int obs_size_;
+        int obs_size_;                                    // The size of the observations (width * height * channels)
+        AutoresetMode autoreset_mode_;                    // How to reset sub-environments after an episode ends
 
         std::atomic<bool> stop_;                          // Signal to stop worker threads
         std::atomic<int> stepping_env_num_;               // Number of environments currently stepping
@@ -219,15 +223,45 @@ namespace ale::vector {
                     const int env_id = action.env_id;
                     const int order = action.order;
 
-                    if (action.force_reset || envs_[env_id]->is_episode_over()) {
-                        envs_[env_id]->reset();
-                    } else {
-                        envs_[env_id]->step();
-                    }
+                    if (autoreset_mode_ == AutoresetMode::NextStep) {
+                        if (action.autoreset || envs_[env_id]->is_episode_over()) {
+                            envs_[env_id]->reset();
+                        } else {
+                            envs_[env_id]->step();
+                        }
 
-                    // Get timestep and write to state buffer
-                    Timestep timestep = envs_[env_id]->get_timestep();
-                    state_buffer_queue_->write(timestep, order);
+                        // Get timestep and write to state buffer
+                        Timestep timestep = envs_[env_id]->get_timestep();
+                        state_buffer_queue_->write(timestep, order);
+                    } else if (autoreset_mode_ == AutoresetMode::SameStep) {
+                        if (envs_[env_id]->is_episode_over()) {
+                            envs_[env_id]->reset();
+                        } else {
+                            envs_[env_id]->step();
+                        }
+
+                        // Get timestep and write to state buffer
+                        Timestep timestep = envs_[env_id]->get_timestep();
+                        std::vector<uint8_t> final_observation = timestep.observation;
+                        int reward = timestep.reward;
+                        bool terminated = timestep.terminated;
+                        bool truncated = timestep.truncated;
+
+                        envs_[env_id]->reset();
+                        timestep = envs_[env_id]->get_timestep();
+                        timestep.final_observation = final_observation;
+                        timestep.reward = reward;
+                        timestep.terminated = terminated;
+                        timestep.truncated = truncated;
+
+                        state_buffer_queue_->write(timestep, order);
+
+                    } else if (autoreset_mode_ == AutoresetMode::Disabled) {
+                        // assert that autoreset and is_episode_over is false
+                        envs_[env_id]->step();
+                    } else {
+                        throw std::runtime_error("Invalid autoreset mode");
+                    }
                 } catch (const std::exception& e) {
                     // Log error but continue processing
                     std::cerr << "Error in worker thread: " << e.what() << std::endl;

@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <tuple>
+#include <string>
 
 namespace py = pybind11;
 
@@ -13,7 +14,7 @@ namespace py = pybind11;
 void init_vector_module(py::module& m) {
     // Define ALEVectorInterface class
     py::class_<ale::vector::ALEVectorInterface>(m, "ALEVectorInterface")
-        .def(py::init<const fs::path, int, int, int, int, int, bool, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int>(),
+        .def(py::init<const fs::path, int, int, int, int, int, bool, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int, std::string>(),
              py::arg("rom_path"),
              py::arg("num_envs"),
              py::arg("frame_skip") = 4,
@@ -32,7 +33,8 @@ void init_vector_module(py::module& m) {
              py::arg("full_action_space") = false,
              py::arg("batch_size") = 0,
              py::arg("num_threads") = 0,
-             py::arg("thread_affinity_offset") = -1)
+             py::arg("thread_affinity_offset") = -1,
+             py::arg("autoreset_mode") = "NextStep")
         .def("reset", [](ale::vector::ALEVectorInterface& self, const std::vector<int> reset_indices, const std::vector<int> reset_seeds) {
             // Call C++ reset method with GIL released
             py::gil_scoped_release release;

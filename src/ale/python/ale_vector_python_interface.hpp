@@ -53,7 +53,7 @@ namespace ale::vector {
          */
         ALEVectorInterface(
             const fs::path &rom_path,
-            int num_envs,
+            const int num_envs,
             const int frame_skip = 4,
             const int stack_num = 4,
             const int img_height = 84,
@@ -68,9 +68,10 @@ namespace ale::vector {
             const int max_episode_steps = 108000,
             const float repeat_action_probability = 0.0f,
             const bool full_action_space = false,
-            int batch_size = 0,
-            int num_threads = 0,
-            int thread_affinity_offset = -1
+            const int batch_size = 0,
+            const int num_threads = 0,
+            const int thread_affinity_offset = -1,
+            const std::string &autoreset_mode = "NextStep"
         ) : rom_path_(rom_path),
             num_envs_(num_envs),
             frame_skip_(frame_skip),
@@ -113,13 +114,25 @@ namespace ale::vector {
                 );
             };
 
+            AutoresetMode autoreset_mode_;
+            if (autoreset_mode == "NextStep") {
+                autoreset_mode_ = AutoresetMode::NextStep;
+            } else if (autoreset_mode == "SameStep") {
+                autoreset_mode_ = AutoresetMode::SameStep;
+            } else if (autoreset_mode == "Disabled") {
+                autoreset_mode_ = AutoresetMode::Disabled;
+            } else {
+                throw std::invalid_argument("Invalid autoreset_mode: " + autoreset_mode + ", expected values: 'NextStep', 'SameStep', 'Disabled'");
+            }
+
             // Create vectorizer
             vectorizer_ = std::make_unique<AsyncVectorizer>(
                 num_envs,
                 batch_size,
                 num_threads,
                 thread_affinity_offset,
-                env_factory
+                env_factory,
+                autoreset_mode_
             );
 
             // Initialize the action set (assuming all environments have the same action set)
@@ -154,7 +167,7 @@ namespace ale::vector {
             std::vector<EnvironmentAction> environment_actions;
             environment_actions.resize(action_ids.size());
 
-            for (int i = 0; i < action_ids.size(); i++) {
+            for (size_t i = 0; i < action_ids.size(); i++) {
                 EnvironmentAction env_action;
                 env_action.env_id = received_env_ids_[i];
                 env_action.action_id = action_ids[i];
@@ -171,7 +184,7 @@ namespace ale::vector {
         */
         std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = vectorizer_->recv();
-            for (int i = 0; i < timesteps.size(); i++) {
+            for (size_t i = 0; i < timesteps.size(); i++) {
                 received_env_ids_[i] = timesteps[i].env_id;
             }
             return timesteps;

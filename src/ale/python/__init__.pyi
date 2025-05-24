@@ -198,6 +198,7 @@ class ALEVectorInterface:
         batch_size: int,
         num_threads: int,
         thread_affinity_offset: int,
+        autoreset_mode: str
     ) -> None: ...
     def reset(
         self, reset_indices: np.ndarray, reset_seeds: np.ndarray

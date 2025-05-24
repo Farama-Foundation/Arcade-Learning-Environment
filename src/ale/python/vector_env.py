@@ -11,7 +11,7 @@ from ale_py import roms
 from ale_py.env import AtariEnv
 from gymnasium.core import ObsType
 from gymnasium.spaces import Box, Discrete
-from gymnasium.vector import VectorEnv
+from gymnasium.vector import VectorEnv, AutoresetMode
 
 
 class AtariVectorEnv(VectorEnv):
@@ -30,6 +30,7 @@ class AtariVectorEnv(VectorEnv):
         full_action_space: bool = False,
         continuous: bool = False,
         continuous_action_threshold: float = 0.5,
+        autoreset_mode: AutoresetMode = AutoresetMode.NEXT_STEP,
         # Preprocessing values
         img_height: int = 84,
         img_width: int = 84,
@@ -88,6 +89,7 @@ class AtariVectorEnv(VectorEnv):
             batch_size=batch_size,
             num_threads=num_threads,
             thread_affinity_offset=thread_affinity_offset,
+            autoreset_mode=autoreset_mode.value if isinstance(autoreset_mode, AutoresetMode) else autoreset_mode,
         )
 
         self.continuous = continuous
@@ -121,6 +123,7 @@ class AtariVectorEnv(VectorEnv):
 
         self.batch_size = num_envs if batch_size == 0 else batch_size
         self.num_envs = num_envs
+        self.metadata["autoreset_mode"] = autoreset_mode.value
         self.observation_space = gymnasium.vector.utils.batch_space(
             self.single_observation_space, self.batch_size
         )
