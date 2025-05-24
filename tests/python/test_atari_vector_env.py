@@ -62,16 +62,29 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width, grayscale
     envs.close()
 
 
-def obs_equivalence(gym_obs, ale_obs, i, **log_kwargs):
-    # There is a difference between the MacOS ARM and Python implement with minimal differences
-    diff = gym_obs.astype(np.int32) - ale_obs.astype(np.int32)
+def obs_equivalence(obs_1, obs_2, i, **log_kwargs):
+    """Tests the equivalence between two observations.
+
+    This is critical as we found that MacOS ARM and Python implementation had minor differences in output.
+    Appearing when testing the Gymnasium and ALE vectorized environments.
+    These differences are normally between 2 or 3 pixel of max difference of 1 or 2.
+
+    As a result, we couldn't use `data_equivalence` and need this function.
+    """
+    diff = obs_1.astype(np.int32) - obs_2.astype(np.int32)
     count = np.count_nonzero(diff)
     if count > 1:
-        assert gym_obs.shape == ale_obs.shape, i
-        assert gym_obs.dtype == ale_obs.dtype, i
-        assert np.max(diff) <= 2, i
-        assert np.min(diff) >= -2, i
-        assert count <= 5, i
+        assert obs_1.shape == obs_2.shape, i
+        assert obs_1.dtype == obs_2.dtype, i
+        assert (
+            count <= 5
+        ), f"timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
+        assert (
+            np.max(diff) <= 2
+        ), f"timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
+        assert (
+            np.min(diff) >= -2
+        ), f"timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
 
         gym.logger.warn(
             f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}, params={log_kwargs}"
@@ -306,11 +319,13 @@ def test_episodic_life_equivalence(num_envs=8):
 def test_episodic_life_and_life_loss_info(
     num_envs=4, rollout_length=1000, reset_seed=123, action_seed=123
 ):
-    standard_envs = AtariVectorEnv(game="pong", num_envs=num_envs)
+    standard_envs = AtariVectorEnv(game="breakout", num_envs=num_envs)
     episodic_life_envs = AtariVectorEnv(
-        game="pong", num_envs=num_envs, episodic_life=True
+        game="breakout", num_envs=num_envs, episodic_life=True
     )
-    life_loss_envs = AtariVectorEnv(game="pong", num_envs=num_envs, life_loss_info=True)
+    life_loss_envs = AtariVectorEnv(
+        game="breakout", num_envs=num_envs, life_loss_info=True
+    )
 
     standard_envs.action_space.seed(action_seed)
     standard_obs, standard_info = standard_envs.reset(seed=reset_seed)
@@ -322,7 +337,10 @@ def test_episodic_life_and_life_loss_info(
     assert data_equivalence(standard_info, episodic_life_info)
     assert data_equivalence(standard_info, life_loss_info)
 
-    life_lost = False
+    previous_lives = standard_info["lives"]
+    assert np.all(previous_lives > 0)
+
+    rollout_life_lost = False
     for i in range(rollout_length):
         actions = standard_envs.action_space.sample()
 
@@ -341,13 +359,21 @@ def test_episodic_life_and_life_loss_info(
             life_loss_info,
         ) = life_loss_envs.step(actions)
 
+        lives = standard_info["lives"]
+        action_life_lost = previous_lives > lives
+
         assert obs_equivalence(standard_obs, life_loss_obs, i=i, life_loss=True)
         assert data_equivalence(standard_rewards, life_loss_rewards)
-        assert data_equivalence(standard_terminations, life_loss_terminations)
+        assert np.all(
+            np.logical_or(standard_terminations, action_life_lost)
+            == life_loss_terminations
+        )
         assert data_equivalence(standard_truncations, life_loss_truncations)
         assert data_equivalence(standard_info, life_loss_info)
 
-        if not life_lost:
+        if not rollout_life_lost:
+            rollout_life_lost = life_loss_terminations.any()
+
             (
                 episodic_life_obs,
                 episodic_life_rewards,
@@ -360,13 +386,16 @@ def test_episodic_life_and_life_loss_info(
                 standard_obs, episodic_life_obs, i=i, episodic_life=True
             )
             assert data_equivalence(standard_rewards, episodic_life_rewards)
-            assert data_equivalence(standard_terminations, episodic_life_terminations)
+            assert np.all(
+                np.logical_or(standard_terminations, action_life_lost)
+                == episodic_life_terminations
+            )
             assert data_equivalence(standard_truncations, episodic_life_truncations)
             assert data_equivalence(standard_info, episodic_life_info)
 
-            life_lost = standard_terminations.any()
+        previous_lives = standard_info["lives"]
 
-    assert life_lost, "No life lost in rollout"
+    assert rollout_life_lost, "No life lost in rollout"
 
     standard_envs.close()
     episodic_life_envs.close()
