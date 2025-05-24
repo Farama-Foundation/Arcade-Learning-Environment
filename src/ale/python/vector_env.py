@@ -198,7 +198,9 @@ class AtariVectorEnv(VectorEnv):
         else:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.int64 or actions.dtype == np.int32
-            assert actions.shape == (self.batch_size,)
+            assert actions.shape == (
+                self.batch_size,
+            ), f"{actions.shape=}, {self.batch_size=}"
 
             paddle_strength = np.ones(self.batch_size)
             self.ale.send(actions, paddle_strength)
@@ -304,7 +306,9 @@ class AtariVectorEnv(VectorEnv):
             else:
                 assert isinstance(actions, np.ndarray)
                 assert actions.dtype == np.int64 or actions.dtype == np.int32
-                assert actions.shape == (self.batch_size,)
+                assert actions.shape == (
+                    self.batch_size,
+                ), f"{actions.shape=}, {self.batch_size=}"
 
                 action_ids = actions
                 paddle_strength = np.ones(self.batch_size)
