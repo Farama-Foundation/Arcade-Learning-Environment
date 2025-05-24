@@ -258,5 +258,30 @@ def test_batch_size_async():
     pass  # TODO
 
 
-def test_episodic_life_and_life_loss_info():
-    pass  # TODO
+
+def test_episodic_life_and_life_loss_info(num_envs=8, rollout_length=100, reset_seed=123, action_seed=123):
+    standard_envs = AtariVectorEnv(game="pong", num_envs=num_envs)
+    episodic_life_envs = AtariVectorEnv(game="pong", num_envs=num_envs, episodic_life=True)
+    life_loss_envs = AtariVectorEnv(game="pong", num_envs=num_envs, life_loss_info=True)
+
+    standard_envs.action_space.seed(action_seed)
+    standard_obs, standard_info = standard_envs.reset(seed=reset_seed)
+    episodic_life_obs, episodic_life_info = episodic_life_envs.reset(seed=reset_seed)
+    life_loss_obs, life_loss_info = life_loss_envs.reset(seed=reset_seed)
+
+    assert obs_equivalence(standard_obs, episodic_life_obs)
+    assert obs_equivalence(standard_obs, life_loss_obs)
+
+    assert data_equivalence(standard_info, episodic_life_info)
+    assert data_equivalence(standard_info, life_loss_info)
+
+    for i in range(rollout_length):
+        actions = standard_envs.action_space.sample()
+
+        standard_obs, standard_rewards, standard_terminations, standard_truncations, standard_info = standard_envs.step(actions)
+        episodic_life_obs, episodic_life_rewards, episodic_life_terminations, episodic_life_truncations, episodic_life_info = episodic_life_envs.step(actions)
+        life_loss_obs, life_loss_rewards, life_loss_terminations, life_loss_truncations, life_loss_info = life_loss_envs.step(actions)
+
+    standard_envs.close()
+    episodic_life_envs.close()
+    life_loss_envs.close()
