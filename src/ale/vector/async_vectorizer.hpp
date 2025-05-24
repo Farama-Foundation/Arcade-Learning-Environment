@@ -49,6 +49,10 @@ namespace ale::vector {
             action_buffer_queue_(new ActionBufferQueue(num_envs_)),
             state_buffer_queue_(new StateBufferQueue(batch_size_, num_envs_)) {
 
+            if (batch_size_ != num_envs_ && autoreset_mode_ == AutoresetMode::Disabled) {
+                throw std::invalid_argument("Autoreset mode must be set to NextStep or SameStep when batch size is not equal to number of environments");
+            }
+
             // Create environments
             envs_.resize(num_envs_);
             for (int i = 0; i < num_envs_; ++i) {
