@@ -92,12 +92,8 @@ def obs_equivalence(obs_1, obs_2, i, **log_kwargs):
     return True
 
 
-def assert_rollout_equivalence(
-    gym_envs,
-    ale_envs,
-    rollout_length=100,
-    reset_seed=123,
-    action_seed=123,
+def assert_gym_ale_rollout_equivalence(
+    gym_envs, ale_envs, rollout_length=100, reset_seed=123, action_seed=123, **kwargs
 ):
     """Test if both environments produce similar results over a short rollout."""
     assert gym_envs.num_envs == ale_envs.num_envs
@@ -129,21 +125,7 @@ def assert_rollout_equivalence(
             ale_envs.step(actions)
         )
 
-        if not data_equivalence(gym_obs, ale_obs):
-            # For MacOS ARM, there is a known problem where there is a max difference of 1 for 1 or 2 pixels
-            diff = gym_obs.astype(np.int32) - ale_obs.astype(np.int32)
-            count = np.count_nonzero(diff)
-
-            assert gym_obs.shape == ale_obs.shape
-            assert gym_obs.dtype == ale_obs.dtype
-            assert np.max(diff) <= 2
-            assert np.min(diff) >= -2
-            assert count <= 5
-
-            gym.logger.warn(
-                f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
-            )
-
+        assert obs_equivalence(gym_obs, ale_obs, i, **kwargs)
         assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), i
         assert data_equivalence(gym_terminations, ale_terminations), i
         assert data_equivalence(gym_truncations, ale_truncations), i
@@ -197,7 +179,15 @@ def test_obs_params_equivalence(
         grayscale=grayscale,
     )
 
-    assert_rollout_equivalence(gym_envs, ale_envs)
+    assert_gym_ale_rollout_equivalence(
+        gym_envs,
+        ale_envs,
+        stack_num=stack_num,
+        img_height=img_height,
+        img_width=img_width,
+        frame_skip=frame_skip,
+        grayscale=grayscale,
+    )
 
 
 @pytest.mark.parametrize("continuous_action_threshold", (0.2, 0.5, 0.8))
@@ -228,7 +218,12 @@ def test_continuous_equivalence(continuous_action_threshold, num_envs=8):
         continuous_action_threshold=continuous_action_threshold,
     )
 
-    assert_rollout_equivalence(gym_envs, ale_envs)
+    assert_gym_ale_rollout_equivalence(
+        gym_envs,
+        ale_envs,
+        continuous=True,
+        continuous_action_threshold=continuous_action_threshold,
+    )
 
 
 @pytest.mark.parametrize(
@@ -313,11 +308,11 @@ def test_episodic_life_equivalence(num_envs=8):
         episodic_life=True,
     )
 
-    assert_rollout_equivalence(gym_envs, ale_envs)
+    assert_gym_ale_rollout_equivalence(gym_envs, ale_envs, episodic_life=True)
 
 
 def test_episodic_life_and_life_loss_info(
-    num_envs=4, rollout_length=1000, reset_seed=123, action_seed=123
+    num_envs=8, rollout_length=1000, reset_seed=123, action_seed=123
 ):
     standard_envs = AtariVectorEnv(game="breakout", num_envs=num_envs)
     episodic_life_envs = AtariVectorEnv(
