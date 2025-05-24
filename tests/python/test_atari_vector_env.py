@@ -254,9 +254,54 @@ def test_determinism(
     envs_2.close()
 
 
-def test_batch_size_async():
-    pass  # TODO
+def test_batch_size_async(batch_size=4, num_envs=8, rollout_length=100, reset_seed=123, action_seed=123):
+    sync_envs = AtariVectorEnv(game="pong", num_envs=num_envs)
+    async_envs = AtariVectorEnv(game="pong", num_envs=num_envs, batch_size=batch_size)
+    assert sync_envs.num_envs == async_envs.num_envs
 
+    assert sync_envs.single_action_space == async_envs.single_action_space
+    assert sync_envs.single_observation_space == async_envs.single_observation_space
+    assert sync_envs.action_space != async_envs.action_space
+    assert sync_envs.observation_space != async_envs.observation_space
 
-def test_episodic_life_and_life_loss_info():
-    pass  # TODO
+    sync_envs.action_space.seed(action_seed)
+    actions = [sync_envs.action_space.sample() for _ in range(rollout_length)]
+    async_env_timestep = np.zeros(num_envs, dtype=np.int32)
+
+    sync_obs, sync_info = sync_envs.reset(seed=reset_seed)
+    sync_info.pop("env_id")
+    async_obs, async_info = async_envs.reset(seed=reset_seed)
+    async_env_ids = async_info.pop("env_id")
+
+    sync_observations = [sync_obs]
+    sync_rewards = [np.zeros(num_envs, dtype=np.int32)]
+    sync_terminations = [np.zeros(num_envs, dtype=bool)]
+    sync_truncations = [np.zeros(num_envs, dtype=bool)]
+    sync_infos = [sync_info]
+
+    for async_i, env_id in enumerate(async_env_ids):
+        async_t = async_env_timestep[env_id]
+        assert data_equivalence(sync_observations[async_t][env_id], async_obs[async_i]), f'{i}, {async_i}, {env_id}'
+        # assert data_equivalence(sync_infos[async_t][env_id], async_info[async_i]), f'{i}, {async_i}, {env_id}'
+    async_env_timestep[async_env_ids] += 1
+
+    for i in range(rollout_length):
+        obs, rewards, terminations, truncations, info = sync_envs.step(actions[i])
+        sync_observations.append(obs)
+        sync_rewards.append(rewards)
+        sync_terminations.append(terminations)
+        sync_truncations.append(truncations)
+        sync_infos.append(info)
+
+        async_actions = np.array([actions[async_env_timestep[env_id]][env_id] for env_id in async_env_ids])
+        async_obs, async_rewards, async_terminations, async_truncations, async_info = async_envs.step(async_actions)
+        async_env_ids = async_info.pop("env_id")
+
+        for async_i, env_id in enumerate(async_env_ids):
+            async_t = async_env_timestep[env_id]
+            assert data_equivalence(sync_observations[async_t][env_id], async_obs[async_i]), f'{i}, {async_i}, {env_id}'
+            assert data_equivalence(sync_rewards[async_t][env_id], async_rewards[async_i]), f'{i}, {async_i}, {env_id}'
+            assert data_equivalence(sync_terminations[async_t][env_id], async_terminations[async_i]), f'{i}, {async_i}, {env_id}'
+            assert data_equivalence(sync_truncations[async_t][env_id], async_truncations[async_i]), f'{i}, {async_i}, {env_id}'
+            # assert data_equivalence(sync_infos[async_t][env_id], async_info[async_i]), f'{i}, {async_i}, {env_id}'
+        async_env_timestep[async_env_ids] += 1
