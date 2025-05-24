@@ -239,7 +239,7 @@ namespace ale::vector {
             timestep.env_id = env_id_;
 
             timestep.reward = reward_;
-            timestep.terminated = game_over_ || (life_loss_info_ && was_life_loss_);
+            timestep.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_loss_);
             timestep.truncated = elapsed_step_ >= max_episode_steps_;
 
             timestep.lives = lives_;
@@ -265,7 +265,7 @@ namespace ale::vector {
          * Check if the episode is over (terminated or truncated)
          */
         bool is_episode_over() const {
-            return game_over_ || elapsed_step_ >= max_episode_steps_;
+            return game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_loss_);
         }
 
         /**
