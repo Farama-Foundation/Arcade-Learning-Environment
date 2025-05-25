@@ -257,6 +257,12 @@ def test_determinism(
 def test_batch_size_async(
     batch_size=4, num_envs=8, rollout_length=100, reset_seed=123, action_seed=123
 ):
+    """Tests asynchronous feature of the vector environment.
+
+    Using a batch_size < num_envs then the first N sub-environments results are returned.
+    We use the synchronous (all sub-environments) as the baseline and compare a sub-environment's results
+       to for the synchronous's result for the same action.
+    """
     sync_envs = AtariVectorEnv(game="pong", num_envs=num_envs)
     async_envs = AtariVectorEnv(game="pong", num_envs=num_envs, batch_size=batch_size)
     assert sync_envs.num_envs == async_envs.num_envs
@@ -271,9 +277,11 @@ def test_batch_size_async(
     async_env_timestep = np.zeros(num_envs, dtype=np.int32)
 
     sync_obs, sync_info = sync_envs.reset(seed=reset_seed)
-    sync_info.pop("env_id")
+    sync_env_ids = sync_info.pop("env_id")
+    assert sync_env_ids == np.arange(num_envs)
     async_obs, async_info = async_envs.reset(seed=reset_seed)
     async_env_ids = async_info.pop("env_id")
+    assert async_env_ids.shape == (batch_size,)
 
     sync_observations = [sync_obs]
     sync_rewards = [np.zeros(num_envs, dtype=np.int32)]
@@ -296,6 +304,8 @@ def test_batch_size_async(
         sync_rewards.append(rewards)
         sync_terminations.append(terminations)
         sync_truncations.append(truncations)
+        sync_env_ids = info.pop("env_id")
+        assert sync_env_ids.shape == np.arange(num_envs)
         sync_infos.append(info)
 
         async_actions = np.array(
@@ -308,6 +318,7 @@ def test_batch_size_async(
             async_envs.step(async_actions)
         )
         async_env_ids = async_info.pop("env_id")
+        assert async_env_ids.shape == (batch_size,)
 
         for async_i, env_id in enumerate(async_env_ids):
             async_t = async_env_timestep[env_id]
