@@ -89,7 +89,7 @@ def assert_rollout_equivalence(
     assert data_equivalence(gym_info, ale_info)
 
     ale_envs.action_space.seed(action_seed)
-    for i in range(rollout_length):
+    for t in range(rollout_length):
         actions = ale_envs.action_space.sample()
 
         gym_obs, gym_rewards, gym_terminations, gym_truncations, gym_info = (
@@ -111,12 +111,12 @@ def assert_rollout_equivalence(
             assert count <= 5
 
             gym.logger.warn(
-                f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
+                f"rollout obs diff for timestep={t}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
             )
 
-        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), i
-        assert data_equivalence(gym_terminations, ale_terminations), i
-        assert data_equivalence(gym_truncations, ale_truncations), i
+        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+        assert data_equivalence(gym_terminations, ale_terminations), t
+        assert data_equivalence(gym_truncations, ale_truncations), t
 
         gym_info = {
             key: value.astype(np.int32)
@@ -124,8 +124,8 @@ def assert_rollout_equivalence(
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
-        assert np.all(env_ids == np.arange(gym_envs.num_envs)), i
-        assert data_equivalence(gym_info, ale_info), i
+        assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
+        assert data_equivalence(gym_info, ale_info), t
 
     gym_envs.close()
     ale_envs.close()
@@ -157,17 +157,47 @@ def test_obs_params_equivalence(
     ale_envs = AtariVectorEnv(
         game="breakout",
         num_envs=num_envs,
+        noop_max=0,
+        use_fire_reset=False,
+        reward_clipping=False,
         frameskip=frame_skip,
         img_height=img_height,
         img_width=img_width,
         stack_num=stack_num,
-        noop_max=0,
-        use_fire_reset=False,
         maxpool=frame_skip > 1,
         grayscale=grayscale,
     )
 
     assert_rollout_equivalence(gym_envs, ale_envs)
+
+
+def test_max_num_frames_per_episode(max_num_frames_per_episode=500, num_envs=8, rollout_length=3_000):
+    gym_envs = gym.vector.SyncVectorEnv(
+        [
+            lambda: gym.wrappers.FrameStackObservation(
+                gym.wrappers.AtariPreprocessing(
+                    gym.make(
+                        "MsPacmanNoFrameskip-v4",
+                        max_num_frames_per_episode=max_num_frames_per_episode,
+                    ),
+                    noop_max=0,
+                ),
+                stack_size=4,
+                padding_type="zero",
+            )
+            for _ in range(num_envs)
+        ],
+    )
+    ale_envs = AtariVectorEnv(
+        game="ms_pacman",
+        num_envs=num_envs,
+        noop_max=0,
+        use_fire_reset=False,
+        reward_clipping=False,
+        max_num_frames_per_episode=max_num_frames_per_episode,
+    )
+
+    assert_rollout_equivalence(gym_envs, ale_envs, rollout_length=rollout_length)
 
 
 @pytest.mark.parametrize("continuous_action_threshold", (0.2, 0.5, 0.8))
@@ -194,6 +224,7 @@ def test_continuous_equivalence(continuous_action_threshold, num_envs=8):
         num_envs=num_envs,
         noop_max=0,
         use_fire_reset=False,
+        reward_clipping=False,
         continuous=True,
         continuous_action_threshold=continuous_action_threshold,
     )
