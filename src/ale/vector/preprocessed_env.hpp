@@ -167,7 +167,7 @@ namespace ale::vector {
             std::fill(raw_frames_[1].begin(), raw_frames_[1].end(), 0);
 
             // Clear the frame stack
-            for (int stack_id = 0; stack_id < stack_num_ - 1; ++stack_id) {
+            for (int stack_id = 0; stack_id < stack_num_; ++stack_id) {
                 std::fill(frame_stack_[stack_id].begin(), frame_stack_[stack_id].end(), 0);
             }
             process_screen();
