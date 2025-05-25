@@ -171,7 +171,9 @@ def test_obs_params_equivalence(
     assert_rollout_equivalence(gym_envs, ale_envs)
 
 
-def test_max_num_frames_per_episode(max_num_frames_per_episode=500, num_envs=8, rollout_length=3_000):
+def test_max_num_frames_per_episode(
+    max_num_frames_per_episode=500, num_envs=8, rollout_length=3_000
+):
     gym_envs = gym.vector.SyncVectorEnv(
         [
             lambda: gym.wrappers.FrameStackObservation(
