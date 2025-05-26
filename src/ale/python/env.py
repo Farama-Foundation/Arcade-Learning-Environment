@@ -296,6 +296,9 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
             strength = action[0]
         else:
+            assert (
+                action in self._action_set
+            ), f"{action} isn't within the action_set ({self._action_set})"
             action_idx = self._action_set[action]
             strength = 1.0
 
