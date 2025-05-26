@@ -279,8 +279,97 @@ def test_determinism(
     envs_2.close()
 
 
-def test_batch_size_async():
-    pass  # TODO
+def test_batch_size_async(
+    batch_size=4, num_envs=8, rollout_length=100, reset_seed=123, action_seed=123
+):
+    """Tests asynchronous feature of the vector environment.
+
+    Using a batch_size < num_envs then the first N sub-environments results are returned.
+    We use the synchronous (all sub-environments) as the baseline and compare a sub-environment's results
+       to for the synchronous's result for the same action.
+    """
+    sync_envs = AtariVectorEnv(game="pong", num_envs=num_envs)
+    async_envs = AtariVectorEnv(game="pong", num_envs=num_envs, batch_size=batch_size)
+    assert sync_envs.num_envs == async_envs.num_envs
+
+    assert sync_envs.single_action_space == async_envs.single_action_space
+    assert sync_envs.single_observation_space == async_envs.single_observation_space
+    assert sync_envs.action_space != async_envs.action_space
+    assert sync_envs.observation_space != async_envs.observation_space
+
+    sync_envs.action_space.seed(action_seed)
+    actions = [sync_envs.action_space.sample() for _ in range(rollout_length)]
+    async_env_timestep = np.zeros(num_envs, dtype=np.int32)
+
+    sync_obs, sync_info = sync_envs.reset(seed=reset_seed)
+    sync_env_ids = sync_info.pop("env_id")
+    assert np.all(sync_env_ids == np.arange(num_envs)), f"{sync_env_ids=}"
+    async_obs, async_info = async_envs.reset(seed=reset_seed)
+    async_env_ids = async_info.pop("env_id")
+    assert async_env_ids.shape == (batch_size,), f"{async_env_ids=}"
+
+    sync_observations = [sync_obs]
+    sync_rewards = [np.zeros(num_envs, dtype=np.int32)]
+    sync_terminations = [np.zeros(num_envs, dtype=bool)]
+    sync_truncations = [np.zeros(num_envs, dtype=bool)]
+    sync_infos = [sync_info]
+
+    for async_i, env_id in enumerate(async_env_ids):
+        async_t = async_env_timestep[env_id]
+        assert data_equivalence(sync_observations[async_t][env_id], async_obs[async_i])
+        assert all(
+            data_equivalence(sync_infos[async_t][key][env_id], async_info[key][async_i])
+            for key in sync_info
+        )
+    async_env_timestep[async_env_ids] += 1
+
+    for t in range(rollout_length):
+        obs, rewards, terminations, truncations, info = sync_envs.step(actions[t])
+        sync_observations.append(obs)
+        sync_rewards.append(rewards)
+        sync_terminations.append(terminations)
+        sync_truncations.append(truncations)
+        sync_env_ids = info.pop("env_id")
+        assert np.all(sync_env_ids == np.arange(num_envs)), f"{sync_env_ids=}"
+        sync_infos.append(info)
+
+        async_actions = np.array(
+            [
+                actions[async_env_timestep[env_id] - 1][env_id]
+                for env_id in async_env_ids
+            ]
+        )
+        async_obs, async_rewards, async_terminations, async_truncations, async_info = (
+            async_envs.step(async_actions)
+        )
+        async_env_ids = async_info.pop("env_id")
+        assert async_env_ids.shape == (batch_size,), f"{async_env_ids=}"
+
+        for async_i, env_id in enumerate(async_env_ids):
+            async_t = async_env_timestep[env_id]
+
+            assert data_equivalence(
+                sync_observations[async_t][env_id], async_obs[async_i]
+            )
+            assert data_equivalence(
+                sync_rewards[async_t][env_id], async_rewards[async_i]
+            )
+            assert data_equivalence(
+                sync_terminations[async_t][env_id], async_terminations[async_i]
+            )
+            assert data_equivalence(
+                sync_truncations[async_t][env_id], async_truncations[async_i]
+            )
+            assert all(
+                data_equivalence(
+                    sync_infos[async_t][key][env_id], async_info[key][async_i]
+                )
+                for key in sync_info
+            )
+        async_env_timestep[async_env_ids] += 1
+
+    sync_envs.close()
+    async_envs.close()
 
 
 def test_episodic_life_equivalence(num_envs=8):
