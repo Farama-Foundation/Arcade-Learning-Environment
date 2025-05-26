@@ -303,10 +303,10 @@ def test_batch_size_async(
 
     sync_obs, sync_info = sync_envs.reset(seed=reset_seed)
     sync_env_ids = sync_info.pop("env_id")
-    assert sync_env_ids == np.arange(num_envs)
+    assert np.all(sync_env_ids == np.arange(num_envs)), f"{sync_env_ids=}"
     async_obs, async_info = async_envs.reset(seed=reset_seed)
     async_env_ids = async_info.pop("env_id")
-    assert async_env_ids.shape == (batch_size,)
+    assert async_env_ids.shape == (batch_size,), f"{async_env_ids=}"
 
     sync_observations = [sync_obs]
     sync_rewards = [np.zeros(num_envs, dtype=np.int32)]
@@ -330,7 +330,7 @@ def test_batch_size_async(
         sync_terminations.append(terminations)
         sync_truncations.append(truncations)
         sync_env_ids = info.pop("env_id")
-        assert sync_env_ids.shape == np.arange(num_envs)
+        assert np.all(sync_env_ids == np.arange(num_envs)), f"{sync_env_ids=}"
         sync_infos.append(info)
 
         async_actions = np.array(
@@ -343,7 +343,7 @@ def test_batch_size_async(
             async_envs.step(async_actions)
         )
         async_env_ids = async_info.pop("env_id")
-        assert async_env_ids.shape == (batch_size,)
+        assert async_env_ids.shape == (batch_size,), f"{async_env_ids=}"
 
         for async_i, env_id in enumerate(async_env_ids):
             async_t = async_env_timestep[env_id]
