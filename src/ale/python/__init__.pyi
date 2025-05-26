@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List, Optional, Tuple, TypeAlias, overload
 
+import gymnasium as gym
 import numpy as np
 import numpy.typing as npt
 from ale_py import _ale_py
@@ -198,7 +199,7 @@ class ALEVectorInterface:
         batch_size: int,
         num_threads: int,
         thread_affinity_offset: int,
-        autoreset_mode: str
+        autoreset_mode: str | gym.vector.AutoresetMode,
     ) -> None: ...
     def reset(
         self, reset_indices: np.ndarray, reset_seeds: np.ndarray

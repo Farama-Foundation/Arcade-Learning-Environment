@@ -111,13 +111,17 @@ void init_vector_module(py::module& m) {
             int height = std::get<1>(shape_info);
             int width = std::get<2>(shape_info);
             int channels = self.is_grayscale() ? 1 : 3;
+            ale::vector::AutoresetMode autoreset_mode = self.get_autoreset_mode();
 
             // Create NumPy arrays
             py::array_t<uint8_t> observations;
+            py::array_t<uint8_t> final_observations;
             if (self.is_grayscale()) {
                 observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
+                final_observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
             } else {
                 observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
+                final_observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
             }
             py::array_t<int> rewards(num_envs);
             py::array_t<bool> terminations(num_envs);
@@ -136,6 +140,8 @@ void init_vector_module(py::module& m) {
             auto lives_ptr = static_cast<int*>(lives.mutable_data());
             auto frame_numbers_ptr = static_cast<int*>(frame_numbers.mutable_data());
             auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
+
+            auto final_observations_ptr = static_cast<uint8_t*>(final_observations.mutable_data());
 
             // Copy data from observations to NumPy arrays
             const size_t obs_size = stack_num * height * width * channels;
@@ -157,6 +163,14 @@ void init_vector_module(py::module& m) {
                 lives_ptr[i] = timestep.lives;
                 frame_numbers_ptr[i] = timestep.frame_number;
                 episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
+
+                if (autoreset_mode == ale::vector::AutoresetMode::SameStep) {
+                    std::memcpy(
+                        final_observations_ptr + i * obs_size,
+                        timestep.final_observation.data(),
+                        obs_size * sizeof(uint8_t)
+                    );
+                }
             }
 
             // Create info dict
@@ -165,6 +179,10 @@ void init_vector_module(py::module& m) {
             info["lives"] = lives;
             info["frame_number"] = frame_numbers;
             info["episode_frame_number"] = episode_frame_numbers;
+
+            if (autoreset_mode == ale::vector::AutoresetMode::SameStep) {
+                info["final_obs"] = final_observations;
+            }
 
             return py::make_tuple(observations, rewards, terminations, truncations, info);
         })

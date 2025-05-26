@@ -114,15 +114,12 @@ namespace ale::vector {
                 );
             };
 
-            AutoresetMode autoreset_mode_;
             if (autoreset_mode == "NextStep") {
                 autoreset_mode_ = AutoresetMode::NextStep;
             } else if (autoreset_mode == "SameStep") {
                 autoreset_mode_ = AutoresetMode::SameStep;
-            } else if (autoreset_mode == "Disabled") {
-                autoreset_mode_ = AutoresetMode::Disabled;
             } else {
-                throw std::invalid_argument("Invalid autoreset_mode: " + autoreset_mode + ", expected values: 'NextStep', 'SameStep', 'Disabled'");
+                throw std::invalid_argument("Invalid autoreset_mode: " + autoreset_mode + ", expected values: 'NextStep' or 'SameStep'");
             }
 
             // Create vectorizer
@@ -182,7 +179,7 @@ namespace ale::vector {
         /**
         * Returns the environment's data for the environments
         */
-        std::vector<Timestep> recv() {
+        const std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = vectorizer_->recv();
             for (size_t i = 0; i < timesteps.size(); i++) {
                 received_env_ids_[i] = timesteps[i].env_id;
@@ -204,7 +201,7 @@ namespace ale::vector {
          *
          * @return Number of environments
          */
-        int get_num_envs() const {
+        const int get_num_envs() const {
             return num_envs_;
         }
 
@@ -213,7 +210,7 @@ namespace ale::vector {
          *
          * @return Tuple of (stack_num, height, width, 0) if grayscale or (stack_num, height, width, 3) if RGB
          */
-        std::tuple<int, int, int, int> get_observation_shape() const {
+        const std::tuple<int, int, int, int> get_observation_shape() const {
             if (grayscale_) {
                 return std::make_tuple(stack_num_, img_height_, img_width_, 0);
             } else {
@@ -226,8 +223,17 @@ namespace ale::vector {
          *
          * @return true if observations are grayscale, false if RGB
          */
-        bool is_grayscale() const {
+        const bool is_grayscale() const {
             return grayscale_;
+        }
+
+        /**
+         * Get the async_vectorizer's autoreset mode
+         *
+         * @return the autoreset mode of the async_vectorizer
+         */
+        const AutoresetMode get_autoreset_mode() const {
+            return autoreset_mode_;
         }
 
         /**
@@ -235,7 +241,7 @@ namespace ale::vector {
          *
          * @return pointer for the underlying vectorizer
          */
-        AsyncVectorizer* get_vectorizer() const {
+        const AsyncVectorizer* get_vectorizer() const {
             return vectorizer_.get();
         }
 
@@ -257,6 +263,7 @@ namespace ale::vector {
         int max_episode_steps_;                   // Max steps per episode
         float repeat_action_probability_;         // Repeat actions probability for sticky actions
         bool full_action_space_;                  // Use full action space
+        AutoresetMode autoreset_mode_;
 
         std::vector<int> received_env_ids_;        // Vector of environment ids for the most recently received data
 

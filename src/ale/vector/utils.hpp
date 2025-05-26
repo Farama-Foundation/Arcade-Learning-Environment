@@ -56,9 +56,8 @@ namespace ale::vector {
     };
 
     enum class AutoresetMode {
-        NextStep,
-        SameStep,
-        Disabled,
+        NextStep,  // Will reset the sub-environment in the next step if the episode ended in the previous timestep
+        SameStep   // Will reset the sub-environment in the same timestep if the episode ended
     };
 
     /**

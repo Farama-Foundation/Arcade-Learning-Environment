@@ -48,10 +48,6 @@ namespace ale::vector {
             action_buffer_queue_(new ActionBufferQueue(num_envs_)),
             state_buffer_queue_(new StateBufferQueue(batch_size_, num_envs_)) {
 
-            if (batch_size_ != num_envs_ && autoreset_mode_ == AutoresetMode::Disabled) {
-                throw std::invalid_argument("Autoreset mode must be set to NextStep or SameStep when batch size is not equal to number of environments");
-            }
-
             // Create environments
             envs_.resize(num_envs_);
             for (int i = 0; i < num_envs_; ++i) {
@@ -148,7 +144,7 @@ namespace ale::vector {
          *
          * @return Vector of timesteps from the environments
          */
-        std::vector<Timestep> recv() {
+        const std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = state_buffer_queue_->collect();
             return timesteps;
         }
@@ -160,21 +156,25 @@ namespace ale::vector {
          * @param actions Vector of actions for the environments
          * @return Vector of timesteps from the environments
          */
-        std::vector<Timestep> step(const std::vector<EnvironmentAction>& actions) {
+        const std::vector<Timestep> step(const std::vector<EnvironmentAction>& actions) {
             send(actions);
             return recv();
         }
 
-        int get_num_envs() const {
+        const int get_num_envs() const {
             return num_envs_;
         }
 
-        int get_batch_size() const {
+        const int get_batch_size() const {
             return batch_size_;
         }
 
-        int get_obs_size() const {
+        const int get_obs_size() const {
             return obs_size_;
+        }
+
+        const AutoresetMode get_autoreset() const {
+            return autoreset_mode_;
         }
 
     private:
@@ -214,31 +214,24 @@ namespace ale::vector {
                         Timestep timestep = envs_[env_id]->get_timestep();
                         state_buffer_queue_->write(timestep);
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
+                        envs_[env_id]->step();
+                        Timestep timestep = envs_[env_id]->get_timestep();
+
                         if (envs_[env_id]->is_episode_over()) {
+                            std::vector<uint8_t> final_observation = timestep.observation;
+                            int reward = timestep.reward;
+                            bool terminated = timestep.terminated;
+                            bool truncated = timestep.truncated;
+
                             envs_[env_id]->reset();
-                        } else {
-                            envs_[env_id]->step();
+                            timestep = envs_[env_id]->get_timestep();
+                            timestep.final_observation = final_observation;
+                            timestep.reward = reward;
+                            timestep.terminated = terminated;
+                            timestep.truncated = truncated;
                         }
 
-                        // Get timestep and write to state buffer
-                        Timestep timestep = envs_[env_id]->get_timestep();
-                        std::vector<uint8_t> final_observation = timestep.observation;
-                        int reward = timestep.reward;
-                        bool terminated = timestep.terminated;
-                        bool truncated = timestep.truncated;
-
-                        envs_[env_id]->reset();
-                        timestep = envs_[env_id]->get_timestep();
-                        timestep.final_observation = final_observation;
-                        timestep.reward = reward;
-                        timestep.terminated = terminated;
-                        timestep.truncated = truncated;
-
-                        state_buffer_queue_->write(timestep, order);
-
-                    } else if (autoreset_mode_ == AutoresetMode::Disabled) {
-                        // assert that autoreset and is_episode_over is false
-                        envs_[env_id]->step();
+                        state_buffer_queue_->write(timestep);
                     } else {
                         throw std::runtime_error("Invalid autoreset mode");
                     }
