@@ -208,7 +208,7 @@ namespace ale::vector {
 
                 game_over_ = env_->game_over();
                 elapsed_step_++;
-                was_life_lost_ = env_->lives() < lives_;
+                was_life_lost_ = env_->lives() < lives_ && env_->lives() > 0;
 
                 if (game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_)) {
                     break;
@@ -239,7 +239,7 @@ namespace ale::vector {
 
             timestep.reward = reward_;
             timestep.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
-            timestep.truncated = elapsed_step_ >= max_episode_steps_;
+            timestep.truncated = elapsed_step_ >= max_episode_steps_ && !timestep.terminated;
 
             timestep.lives = lives_;
             timestep.frame_number = env_->getFrameNumber();
