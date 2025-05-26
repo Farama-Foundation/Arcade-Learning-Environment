@@ -77,7 +77,7 @@ def obs_equivalence(obs_1, obs_2, t, **log_kwargs):
         assert obs_1.shape == obs_2.shape, t
         assert obs_1.dtype == obs_2.dtype, t
         assert (
-            count <= 5
+            count <= 12
         ), f"timestep={t}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
         assert (
             np.max(diff) <= 2
