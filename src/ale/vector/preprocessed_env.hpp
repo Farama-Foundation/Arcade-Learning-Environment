@@ -144,6 +144,11 @@ namespace ale::vector {
             }
             env_->reset_game();
 
+            // Press FIRE if required by the environment
+            if (use_fire_reset_ && has_fire_action_) {
+                env_->act(PLAYER_A_FIRE);
+            }
+
             // Perform no-op steps
             int noop_steps = noop_generator_(rng_gen_) - static_cast<int>(use_fire_reset_ && has_fire_action_);
             while (noop_steps > 0) {
@@ -152,11 +157,6 @@ namespace ale::vector {
                     env_->reset_game();
                 }
                 noop_steps--;
-            }
-
-            // Press FIRE if required by the environment
-            if (use_fire_reset_ && has_fire_action_) {
-                env_->act(PLAYER_A_FIRE);
             }
 
             // Get the screen data and process it
@@ -175,6 +175,7 @@ namespace ale::vector {
 
             // Update state
             elapsed_step_ = 0;
+            reward_ = 0;
             game_over_ = false;
             lives_ = env_->lives();
             was_life_lost_ = false;
@@ -263,7 +264,7 @@ namespace ale::vector {
          * Check if the episode is over (terminated or truncated)
          */
         bool is_episode_over() const {
-            return game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_loss_);
+            return game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_);
         }
 
         /**
