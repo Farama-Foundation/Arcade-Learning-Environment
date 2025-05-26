@@ -125,10 +125,10 @@ def assert_gym_ale_rollout_equivalence(
             ale_envs.step(actions)
         )
 
-        assert obs_equivalence(gym_obs, ale_obs, i, **kwargs)
-        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), i
-        assert data_equivalence(gym_terminations, ale_terminations), i
-        assert data_equivalence(gym_truncations, ale_truncations), i
+        assert obs_equivalence(gym_obs, ale_obs, t, **kwargs)
+        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+        assert data_equivalence(gym_terminations, ale_terminations), t
+        assert data_equivalence(gym_truncations, ale_truncations), t
 
         gym_info = {
             key: value.astype(np.int32)
@@ -219,7 +219,9 @@ def test_max_num_frames_per_episode(
         max_num_frames_per_episode=max_num_frames_per_episode,
     )
 
-    assert_gym_ale_rollout_equivalence(gym_envs, ale_envs, rollout_length=rollout_length)
+    assert_gym_ale_rollout_equivalence(
+        gym_envs, ale_envs, rollout_length=rollout_length
+    )
 
 
 @pytest.mark.parametrize("continuous_action_threshold", (0.2, 0.5, 0.8))
