@@ -19,7 +19,6 @@ namespace ale::vector {
      */
     struct ActionSlice {
         int env_id;        // ID of the environment to apply the action to
-        int order;         // Order in the batch for synchronous operation (-1 for async)
         bool autoreset;    // Whether to force a reset of the environment
     };
 
@@ -124,108 +123,103 @@ namespace ale::vector {
 
     /**
      * StateBufferQueue handles the collection of timesteps from environments
+     *
+     * Two modes of operation:
+     * 1. Ordered mode (batch_size == num_envs): Waits for all env_ids to be filled
+     * 2. Unordered mode (batch_size != num_envs): Uses circular buffer for continuous operation
      */
     class StateBufferQueue {
     public:
         StateBufferQueue(const std::size_t batch_size, const std::size_t num_envs)
             : batch_size_(batch_size),
-              num_buffers_((num_envs / batch_size + 2) * 2),
-              current_buffer_(0),
-              timesteps_(num_buffers_),
-              buffer_count_(num_buffers_, 0),
-              buffer_filled_(num_buffers_, false),
-              ready_sem_(0) {
-
-            // Initialize the timesteps vectors
-            for (auto& ts : timesteps_) {
-                ts.reserve(batch_size_);
-            }
+              num_envs_(num_envs),
+              ordered_mode_(batch_size == num_envs),
+              timesteps_(num_envs_),
+              count_(0),
+              write_idx_(0),
+              read_idx_(0),
+              ready_cv_() {
         }
 
         /**
-     * Write a timestep to the buffer
-     */
-        void write(const Timestep& timestep, const int order = -1) {
+         * Write a timestep to the buffer
+         */
+        void write(const Timestep& timestep) {
             std::unique_lock lock(mutex_);
 
-            // Determine which buffer to write to
-            const size_t buffer_idx = current_buffer_;
-
-            // If using ordered timesteps (order >= 0), place in the correct position
-            if (order >= 0) {
-                // Ensure we have enough space
-                if (timesteps_[buffer_idx].size() <= static_cast<size_t>(order)) {
-                    timesteps_[buffer_idx].resize(order + 1);
-                }
-                // Place at the specific order position
-                timesteps_[buffer_idx][order] = timestep;
+            if (ordered_mode_) {
+                // In ordered mode, place timestep at env_id position
+                const int env_id = timestep.env_id;
+                timesteps_[env_id] = timestep;
+                count_++;
             } else {
-                // For unordered timesteps
-                timesteps_[buffer_idx].push_back(timestep);
+                // In unordered mode, use circular buffer
+                timesteps_[write_idx_] = timestep;
+                write_idx_ = (write_idx_ + 1) % num_envs_;
+                count_++;
             }
 
-            buffer_count_[buffer_idx]++;
-
-            // Check if the buffer is full
-            if (buffer_count_[buffer_idx] >= batch_size_) {
-                buffer_filled_[buffer_idx] = true;
-                ready_sem_.signal();
+            // Signal if we have enough for a batch
+            if (count_ >= batch_size_) {
+                ready_cv_.notify_one();
             }
-
-            lock.unlock();
         }
 
         /**
-         * Wait for Timestep to be ready and return them
+         * Collect timesteps when ready and return them
          *
-         * @param additional_wait Number of additional timesteps to wait for
          * @return Vector of timesteps
          */
-        std::vector<Timestep> wait(const int additional_wait = 0) {
-            while (!ready_sem_.wait()) {}
-
+        std::vector<Timestep> collect() {
             std::unique_lock lock(mutex_);
 
-            // Find a filled buffer
-            const size_t buffer_idx = current_buffer_;
+            // Wait until we have enough timesteps
+            ready_cv_.wait(lock, [this] { return count_ >= batch_size_; });
 
-            // If we're waiting for additional timesteps
-            if (additional_wait > 0) {
-                // This would handle the case where we're synchronously waiting
-                // for the batch to complete
-                buffer_count_[buffer_idx] += additional_wait;
-                if (buffer_count_[buffer_idx] >= batch_size_) {
-                    buffer_filled_[buffer_idx] = true;
-                }
-            }
-
+            // Collect the results
             std::vector<Timestep> result;
-            if (buffer_filled_[buffer_idx]) {
-                // Get the timesteps
-                result = std::move(timesteps_[buffer_idx]);
+            result.reserve(batch_size_);
 
-                // Reset the buffer
-                timesteps_[buffer_idx].clear();
-                timesteps_[buffer_idx].reserve(batch_size_);
-                buffer_count_[buffer_idx] = 0;
-                buffer_filled_[buffer_idx] = false;
+            if (ordered_mode_) {
+                // In ordered mode, read in env_id order
+                for (size_t i = 0; i < batch_size_; ++i) {
+                    result.push_back(std::move(timesteps_[i]));
+                }
 
-                // Move to the next buffer
-                current_buffer_ = (current_buffer_ + 1) % num_buffers_;
+                // Reset for ordered mode
+                count_ = 0;
+            } else {
+                // In unordered mode, read from circular buffer
+                for (size_t i = 0; i < batch_size_; ++i) {
+                    result.push_back(std::move(timesteps_[read_idx_]));
+                    read_idx_ = (read_idx_ + 1) % num_envs_;
+                }
+
+                // Update count
+                count_ -= batch_size_;
             }
 
             return result;
         }
 
+        /**
+         * Get the number of timesteps currently buffered
+         */
+        size_t filled_timesteps() const {
+            std::unique_lock lock(mutex_);
+            return count_;
+        }
+
     private:
-        std::size_t batch_size_;                     // Size of each batch
-        std::size_t num_buffers_;                    // Number of circular buffers
-        std::size_t current_buffer_;                 // Current buffer index
-        std::vector<std::vector<Timestep>> timesteps_;  // Timesteps storage
-        std::vector<std::size_t> buffer_count_;      // Count of timesteps in each buffer
-        std::vector<bool> buffer_filled_;            // Whether each buffer is filled
-        std::mutex mutex_;                           // Mutex for thread safety
-        moodycamel::LightweightSemaphore ready_sem_; // Semaphore for ready buffer
+        const std::size_t batch_size_;                  // Size of each batch
+        const std::size_t num_envs_;                    // Number of environments
+        const bool ordered_mode_;                       // Whether we're in ordered mode
+        std::vector<Timestep> timesteps_;               // Buffer for timesteps
+        std::size_t count_;                             // Current count of available timesteps
+        std::size_t write_idx_;                         // Write position (for unordered mode)
+        std::size_t read_idx_;                          // Read position (for unordered mode)
+        mutable std::mutex mutex_;                      // Mutex for thread safety
+        std::condition_variable ready_cv_;              // Condition variable for signaling
     };
 }
 

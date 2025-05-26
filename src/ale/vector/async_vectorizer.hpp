@@ -45,7 +45,6 @@ namespace ale::vector {
             is_sync_(batch_size_ == num_envs_),
             autoreset_mode_(autoreset_mode),
             stop_(false),
-            stepping_env_num_(0),
             action_buffer_queue_(new ActionBufferQueue(num_envs_)),
             state_buffer_queue_(new StateBufferQueue(batch_size_, num_envs_)) {
 
@@ -112,14 +111,9 @@ namespace ale::vector {
 
                 ActionSlice action;
                 action.env_id = env_id;
-                action.order = is_sync_ ? static_cast<int>(i) : -1;
                 action.autoreset = true;
 
                 reset_actions.emplace_back(action);
-            }
-
-            if (is_sync_) {
-                stepping_env_num_ += reset_indices.size();
             }
 
             action_buffer_queue_->enqueue_bulk(reset_actions);
@@ -140,14 +134,9 @@ namespace ale::vector {
 
                 ActionSlice action;
                 action.env_id = env_id;
-                action.order = is_sync_ ? i : -1;
                 action.autoreset = false;
 
                 action_slices.emplace_back(action);
-            }
-
-            if (is_sync_) {
-                stepping_env_num_ += actions.size();
             }
 
             action_buffer_queue_->enqueue_bulk(action_slices);
@@ -160,17 +149,7 @@ namespace ale::vector {
          * @return Vector of timesteps from the environments
          */
         std::vector<Timestep> recv() {
-            int additional_wait = 0;
-            if (is_sync_ && stepping_env_num_ < batch_size_) {
-                additional_wait = batch_size_ - stepping_env_num_;
-            }
-
-            std::vector<Timestep> timesteps = state_buffer_queue_->wait(additional_wait);
-
-            if (is_sync_) {
-                stepping_env_num_ -= timesteps.size();
-            }
-
+            std::vector<Timestep> timesteps = state_buffer_queue_->collect();
             return timesteps;
         }
 
@@ -207,7 +186,6 @@ namespace ale::vector {
         AutoresetMode autoreset_mode_;                    // How to reset sub-environments after an episode ends
 
         std::atomic<bool> stop_;                          // Signal to stop worker threads
-        std::atomic<int> stepping_env_num_;               // Number of environments currently stepping
         std::vector<std::thread> workers_;                // Worker threads
         std::unique_ptr<ActionBufferQueue> action_buffer_queue_;  // Queue for actions
         std::unique_ptr<StateBufferQueue> state_buffer_queue_;    // Queue for observations
@@ -225,8 +203,6 @@ namespace ale::vector {
                     }
 
                     const int env_id = action.env_id;
-                    const int order = action.order;
-
                     if (autoreset_mode_ == AutoresetMode::NextStep) {
                         if (action.autoreset || envs_[env_id]->is_episode_over()) {
                             envs_[env_id]->reset();
@@ -236,7 +212,7 @@ namespace ale::vector {
 
                         // Get timestep and write to state buffer
                         Timestep timestep = envs_[env_id]->get_timestep();
-                        state_buffer_queue_->write(timestep, order);
+                        state_buffer_queue_->write(timestep);
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
                         if (envs_[env_id]->is_episode_over()) {
                             envs_[env_id]->reset();
