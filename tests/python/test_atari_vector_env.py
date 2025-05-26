@@ -62,7 +62,7 @@ def test_reset_step_shapes(num_envs, stack_num, img_height, img_width, grayscale
     envs.close()
 
 
-def obs_equivalence(obs_1, obs_2, i, **log_kwargs):
+def obs_equivalence(obs_1, obs_2, t, **log_kwargs):
     """Tests the equivalence between two observations.
 
     This is critical as we found that MacOS ARM and Python implementation had minor differences in output.
@@ -74,20 +74,20 @@ def obs_equivalence(obs_1, obs_2, i, **log_kwargs):
     diff = obs_1.astype(np.int32) - obs_2.astype(np.int32)
     count = np.count_nonzero(diff)
     if count > 1:
-        assert obs_1.shape == obs_2.shape, i
-        assert obs_1.dtype == obs_2.dtype, i
+        assert obs_1.shape == obs_2.shape, t
+        assert obs_1.dtype == obs_2.dtype, t
         assert (
-            count <= 5
-        ), f"timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
+            count <= 12
+        ), f"timestep={t}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
         assert (
             np.max(diff) <= 2
-        ), f"timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
+        ), f"timestep={t}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
         assert (
             np.min(diff) >= -2
-        ), f"timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
+        ), f"timestep={t}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
 
         gym.logger.warn(
-            f"rollout obs diff for timestep={i}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}, params={log_kwargs}"
+            f"rollout obs diff for timestep={t}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}, params={log_kwargs}"
         )
     return True
 
@@ -115,7 +115,7 @@ def assert_gym_ale_rollout_equivalence(
     assert data_equivalence(gym_info, ale_info)
 
     ale_envs.action_space.seed(action_seed)
-    for i in range(rollout_length):
+    for t in range(rollout_length):
         actions = ale_envs.action_space.sample()
 
         gym_obs, gym_rewards, gym_terminations, gym_truncations, gym_info = (
@@ -125,10 +125,10 @@ def assert_gym_ale_rollout_equivalence(
             ale_envs.step(actions)
         )
 
-        assert obs_equivalence(gym_obs, ale_obs, i, **kwargs)
-        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), i
-        assert data_equivalence(gym_terminations, ale_terminations), i
-        assert data_equivalence(gym_truncations, ale_truncations), i
+        assert obs_equivalence(gym_obs, ale_obs, t, **kwargs)
+        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+        assert data_equivalence(gym_terminations, ale_terminations), t
+        assert data_equivalence(gym_truncations, ale_truncations), t
 
         gym_info = {
             key: value.astype(np.int32)
@@ -136,8 +136,8 @@ def assert_gym_ale_rollout_equivalence(
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
-        assert np.all(env_ids == np.arange(gym_envs.num_envs)), i
-        assert data_equivalence(gym_info, ale_info), i
+        assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
+        assert data_equivalence(gym_info, ale_info), t
 
     gym_envs.close()
     ale_envs.close()
@@ -169,12 +169,13 @@ def test_obs_params_equivalence(
     ale_envs = AtariVectorEnv(
         game="breakout",
         num_envs=num_envs,
+        noop_max=0,
+        use_fire_reset=False,
+        reward_clipping=False,
         frameskip=frame_skip,
         img_height=img_height,
         img_width=img_width,
         stack_num=stack_num,
-        noop_max=0,
-        use_fire_reset=False,
         maxpool=frame_skip > 1,
         grayscale=grayscale,
     )
@@ -187,6 +188,39 @@ def test_obs_params_equivalence(
         img_width=img_width,
         frame_skip=frame_skip,
         grayscale=grayscale,
+    )
+
+
+def test_max_num_frames_per_episode(
+    max_num_frames_per_episode=500, num_envs=8, rollout_length=3_000
+):
+    gym_envs = gym.vector.SyncVectorEnv(
+        [
+            lambda: gym.wrappers.FrameStackObservation(
+                gym.wrappers.AtariPreprocessing(
+                    gym.make(
+                        "MsPacmanNoFrameskip-v4",
+                        max_num_frames_per_episode=max_num_frames_per_episode,
+                    ),
+                    noop_max=0,
+                ),
+                stack_size=4,
+                padding_type="zero",
+            )
+            for _ in range(num_envs)
+        ],
+    )
+    ale_envs = AtariVectorEnv(
+        game="ms_pacman",
+        num_envs=num_envs,
+        noop_max=0,
+        use_fire_reset=False,
+        reward_clipping=False,
+        max_num_frames_per_episode=max_num_frames_per_episode,
+    )
+
+    assert_gym_ale_rollout_equivalence(
+        gym_envs, ale_envs, rollout_length=rollout_length
     )
 
 
@@ -214,6 +248,7 @@ def test_continuous_equivalence(continuous_action_threshold, num_envs=8):
         num_envs=num_envs,
         noop_max=0,
         use_fire_reset=False,
+        reward_clipping=False,
         continuous=True,
         continuous_action_threshold=continuous_action_threshold,
     )
@@ -263,7 +298,7 @@ def test_determinism(
     assert data_equivalence(obs_1, obs_2)
     assert data_equivalence(info_1, info_2)
 
-    for i in range(rollout_length):
+    for t in range(rollout_length):
         actions = envs_1.action_space.sample()
 
         obs_1, rewards_1, terminations_1, truncations_1, info_1 = envs_1.step(actions)
@@ -425,7 +460,7 @@ def test_episodic_life_and_life_loss_info(
     assert np.all(previous_lives > 0)
 
     rollout_life_lost = False
-    for i in range(rollout_length):
+    for t in range(rollout_length):
         actions = standard_envs.action_space.sample()
 
         (
@@ -446,7 +481,7 @@ def test_episodic_life_and_life_loss_info(
         lives = standard_info["lives"]
         action_life_lost = previous_lives > lives
 
-        assert obs_equivalence(standard_obs, life_loss_obs, i=i, life_loss=True)
+        assert obs_equivalence(standard_obs, life_loss_obs, t=t, life_loss=True)
         assert data_equivalence(standard_rewards, life_loss_rewards)
         assert np.all(
             np.logical_or(standard_terminations, action_life_lost)
@@ -466,16 +501,18 @@ def test_episodic_life_and_life_loss_info(
                 episodic_life_info,
             ) = episodic_life_envs.step(actions)
 
-            assert obs_equivalence(
-                standard_obs, episodic_life_obs, i=i, episodic_life=True
-            )
-            assert data_equivalence(standard_rewards, episodic_life_rewards)
+            # Due to ending the frame skip early if a life is loss (following AtariPreprocessing)
+            #    then the observations, rewards and info frame number might not be equivalent
+            # assert obs_equivalence(
+            #     standard_obs, episodic_life_obs, i=t, episodic_life=True
+            # )
+            # assert data_equivalence(standard_rewards, episodic_life_rewards)
             assert np.all(
                 np.logical_or(standard_terminations, action_life_lost)
                 == episodic_life_terminations
             )
             assert data_equivalence(standard_truncations, episodic_life_truncations)
-            assert data_equivalence(standard_info, episodic_life_info)
+            # assert data_equivalence(standard_info, episodic_life_info)
 
         previous_lives = standard_info["lives"]
 

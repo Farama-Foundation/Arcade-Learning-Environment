@@ -10,6 +10,7 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "ale/common/Constants.h"
 #include "ale/ale_interface.hpp"
 #include "utils.hpp"
 
@@ -77,7 +78,7 @@ namespace ale::vector {
             rng_gen_(seed == -1 ? std::random_device{}() : seed),
             elapsed_step_(max_episode_steps + 1),
             // Uninitialised variables
-            game_over_(false), lives_(0), was_life_loss_(false), reward_(0),
+            game_over_(false), lives_(0), was_life_lost_(false), reward_(0),
             current_action_(EnvironmentAction()), current_seed_(0)
         {
             // Turn off verbosity
@@ -143,6 +144,11 @@ namespace ale::vector {
             }
             env_->reset_game();
 
+            // Press FIRE if required by the environment
+            if (use_fire_reset_ && has_fire_action_) {
+                env_->act(PLAYER_A_FIRE);
+            }
+
             // Perform no-op steps
             int noop_steps = noop_generator_(rng_gen_) - static_cast<int>(use_fire_reset_ && has_fire_action_);
             while (noop_steps > 0) {
@@ -151,11 +157,6 @@ namespace ale::vector {
                     env_->reset_game();
                 }
                 noop_steps--;
-            }
-
-            // Press FIRE if required by the environment
-            if (use_fire_reset_ && has_fire_action_) {
-                env_->act(PLAYER_A_FIRE);
             }
 
             // Get the screen data and process it
@@ -174,9 +175,10 @@ namespace ale::vector {
 
             // Update state
             elapsed_step_ = 0;
+            reward_ = 0;
             game_over_ = false;
             lives_ = env_->lives();
-            was_life_loss_ = false;
+            was_life_lost_ = false;
             current_action_.action_id = PLAYER_A_NOOP;
         }
 
@@ -191,9 +193,7 @@ namespace ale::vector {
          * Steps the environment using the current action
          */
         void step() {
-            float reward = 0.0;
-            game_over_ = false;
-
+            // Convert the current action to Action and Paddle Strength
             const int action_id = current_action_.action_id;
             if (action_id < 0 || action_id >= action_set_.size()) {
                 throw std::out_of_range("Stepping sub-environment with action_id: " + std::to_string(action_id) + ", however, this is either less than zero or greater than available actions (" + std::to_string(action_set_.size()) + ")");
@@ -202,13 +202,16 @@ namespace ale::vector {
             const float strength = current_action_.paddle_strength;
 
             // Execute action for frame_skip frames
-            for (int skip_id = frame_skip_; skip_id > 0 && !game_over_; --skip_id) {
+            reward_t reward = 0;
+            for (int skip_id = frame_skip_; skip_id > 0; --skip_id) {
                 reward += env_->act(action, strength);
 
                 game_over_ = env_->game_over();
-                // Handle episodic life
-                if (episodic_life_ && env_->lives() < lives_ && env_->lives() > 0) {
-                    game_over_ = true;
+                elapsed_step_++;
+                was_life_lost_ = env_->lives() < lives_ && env_->lives() > 0;
+
+                if (game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_)) {
+                    break;
                 }
 
                 // Captures last two frames for maxpooling
@@ -221,12 +224,8 @@ namespace ale::vector {
                 }
             }
 
-            // Process the screen
-            process_screen();
-
             // Update state
-            elapsed_step_++;
-            was_life_loss_ = env_->lives() < lives_;
+            process_screen();
             lives_ = env_->lives();
             reward_ = reward_clipping_ ? std::clamp<int>(reward, -1, 1) : reward;
         }
@@ -239,8 +238,8 @@ namespace ale::vector {
             timestep.env_id = env_id_;
 
             timestep.reward = reward_;
-            timestep.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_loss_);
-            timestep.truncated = elapsed_step_ >= max_episode_steps_;
+            timestep.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
+            timestep.truncated = elapsed_step_ >= max_episode_steps_ && !timestep.terminated;
 
             timestep.lives = lives_;
             timestep.frame_number = env_->getFrameNumber();
@@ -265,7 +264,7 @@ namespace ale::vector {
          * Check if the episode is over (terminated or truncated)
          */
         bool is_episode_over() const {
-            return game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_loss_);
+            return game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_);
         }
 
         /**
@@ -374,8 +373,8 @@ namespace ale::vector {
         int elapsed_step_;                   // Current step in the episode
         bool game_over_;                     // Whether the game is over
         int lives_;                          // Current number of lives
-        bool was_life_loss_;                 // If a life is loss from a step
-        float reward_;                       // Last reward received
+        bool was_life_lost_;                 // If a life is loss from a step
+        reward_t reward_;                    // Last reward received
 
         EnvironmentAction current_action_;   // Current action to take
         int current_seed_;                   // Current seed to update

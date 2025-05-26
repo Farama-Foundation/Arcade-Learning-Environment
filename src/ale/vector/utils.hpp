@@ -10,6 +10,7 @@
     #define MOODYCAMEL_DELETE_FUNCTION = delete
 #endif
 
+#include "ale/common/Constants.h"
 #include "ale/external/lightweightsemaphore.h"
 
 namespace ale::vector {
@@ -37,7 +38,7 @@ namespace ale::vector {
     struct Timestep {
         int env_id;                       // ID of the environment this observation is from
         std::vector<uint8_t> observation; // Screen pixel data
-        float reward;                     // Reward received in this step
+        reward_t reward;                  // Reward received in this step
         bool terminated;                  // Whether the game ended
         bool truncated;                   // Whether the episode was truncated due to a time limit
         int lives;                        // Remaining lives in the game
