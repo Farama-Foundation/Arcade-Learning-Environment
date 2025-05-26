@@ -256,6 +256,7 @@ namespace ale::vector {
                     frame_size
                 );
             }
+            timestep.final_observation = &timestep.observation;
 
             return timestep;
         }

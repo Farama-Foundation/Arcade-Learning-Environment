@@ -218,7 +218,7 @@ namespace ale::vector {
                         Timestep timestep = envs_[env_id]->get_timestep();
 
                         if (envs_[env_id]->is_episode_over()) {
-                            std::vector<uint8_t> final_observation = timestep.observation;
+                            std::vector<uint8_t>* final_observation = &timestep.observation;
                             int reward = timestep.reward;
                             bool terminated = timestep.terminated;
                             bool truncated = timestep.truncated;

@@ -42,7 +42,7 @@ void init_vector_module(py::module& m) {
             py::gil_scoped_acquire acquire;
 
             // Get shape information
-            int num_envs = timesteps.size();
+            int batch_size = timesteps.size();
             auto obs_shape = self.get_observation_shape();
             int stack_num = std::get<0>(obs_shape);
             int height = std::get<1>(obs_shape);
@@ -52,17 +52,17 @@ void init_vector_module(py::module& m) {
             // Create a single NumPy array for all observations
             py::array_t<uint8_t> observations;
             if (self.is_grayscale()) {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
+                observations = py::array_t<uint8_t>({batch_size, stack_num, height, width});
             } else {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
+                observations = py::array_t<uint8_t>({batch_size, stack_num, height, width, 3});
             }
             auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
 
             // Create arrays for info fields
-            py::array_t<int> env_ids(num_envs);
-            py::array_t<int> lives(num_envs);
-            py::array_t<int> frame_numbers(num_envs);
-            py::array_t<int> episode_frame_numbers(num_envs);
+            py::array_t<int> env_ids(batch_size);
+            py::array_t<int> lives(batch_size);
+            py::array_t<int> frame_numbers(batch_size);
+            py::array_t<int> episode_frame_numbers(batch_size);
 
             auto env_ids_ptr = static_cast<int*>(env_ids.mutable_data());
             auto lives_ptr = static_cast<int*>(lives.mutable_data());
@@ -71,7 +71,7 @@ void init_vector_module(py::module& m) {
 
             // Copy data from observations to NumPy arrays
             size_t obs_size = stack_num * height * width * channels;
-            for (int i = 0; i < num_envs; i++) {
+            for (int i = 0; i < batch_size; i++) {
                 const auto& timestep = timesteps[i];
 
                 // Copy screen data
@@ -105,7 +105,7 @@ void init_vector_module(py::module& m) {
             py::gil_scoped_acquire acquire;
 
             // Get shape information
-            int num_envs = timesteps.size();
+            int batch_size = timesteps.size();
             const auto shape_info = self.get_observation_shape();
             int stack_num = std::get<0>(shape_info);
             int height = std::get<1>(shape_info);
@@ -115,21 +115,18 @@ void init_vector_module(py::module& m) {
 
             // Create NumPy arrays
             py::array_t<uint8_t> observations;
-            py::array_t<uint8_t> final_observations;
             if (self.is_grayscale()) {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
-                final_observations = py::array_t<uint8_t>({num_envs, stack_num, height, width});
+                observations = py::array_t<uint8_t>({batch_size, stack_num, height, width});
             } else {
-                observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
-                final_observations = py::array_t<uint8_t>({num_envs, stack_num, height, width, 3});
+                observations = py::array_t<uint8_t>({batch_size, stack_num, height, width, 3});
             }
-            py::array_t<int> rewards(num_envs);
-            py::array_t<bool> terminations(num_envs);
-            py::array_t<bool> truncations(num_envs);
-            py::array_t<int> env_ids(num_envs);
-            py::array_t<int> lives(num_envs);
-            py::array_t<int> frame_numbers(num_envs);
-            py::array_t<int> episode_frame_numbers(num_envs);
+            py::array_t<int> rewards(batch_size);
+            py::array_t<bool> terminations(batch_size);
+            py::array_t<bool> truncations(batch_size);
+            py::array_t<int> env_ids(batch_size);
+            py::array_t<int> lives(batch_size);
+            py::array_t<int> frame_numbers(batch_size);
+            py::array_t<int> episode_frame_numbers(batch_size);
 
             // Get pointers to the arrays' data
             auto observations_ptr = static_cast<uint8_t*>(observations.mutable_data());
@@ -141,11 +138,9 @@ void init_vector_module(py::module& m) {
             auto frame_numbers_ptr = static_cast<int*>(frame_numbers.mutable_data());
             auto episode_frame_numbers_ptr = static_cast<int*>(episode_frame_numbers.mutable_data());
 
-            auto final_observations_ptr = static_cast<uint8_t*>(final_observations.mutable_data());
-
             // Copy data from observations to NumPy arrays
             const size_t obs_size = stack_num * height * width * channels;
-            for (int i = 0; i < num_envs; i++) {
+            for (int i = 0; i < batch_size; i++) {
                 const auto& timestep = timesteps[i];
 
                 // Copy screen data
@@ -163,14 +158,6 @@ void init_vector_module(py::module& m) {
                 lives_ptr[i] = timestep.lives;
                 frame_numbers_ptr[i] = timestep.frame_number;
                 episode_frame_numbers_ptr[i] = timestep.episode_frame_number;
-
-                if (autoreset_mode == ale::vector::AutoresetMode::SameStep) {
-                    std::memcpy(
-                        final_observations_ptr + i * obs_size,
-                        timestep.final_observation.data(),
-                        obs_size * sizeof(uint8_t)
-                    );
-                }
             }
 
             // Create info dict
@@ -181,7 +168,32 @@ void init_vector_module(py::module& m) {
             info["episode_frame_number"] = episode_frame_numbers;
 
             if (autoreset_mode == ale::vector::AutoresetMode::SameStep) {
-                info["final_obs"] = final_observations;
+                bool any_terminated = std::any_of(terminations_ptr, terminations_ptr + batch_size, [](bool b) { return b; });
+                bool any_truncated = std::any_of(truncations_ptr, truncations_ptr + batch_size, [](bool b) { return b; });
+
+                if (any_terminated || any_truncated) {
+                    py::array_t<uint8_t> final_observations;
+                    if (self.is_grayscale()) {
+                        final_observations = py::array_t<uint8_t>({batch_size, stack_num, height, width});
+                    } else {
+                        final_observations = py::array_t<uint8_t>({batch_size, stack_num, height, width, 3});
+                    }
+
+                    auto final_observations_ptr = static_cast<uint8_t*>(final_observations.mutable_data());
+
+                    for (int i = 0; i < batch_size; i++) {
+                        const auto& timestep = timesteps[i];
+
+                        // Copy screen data
+                        std::memcpy(
+                            final_observations_ptr + i * obs_size,
+                            timestep.final_observation->data(),
+                            obs_size * sizeof(uint8_t)
+                        );
+                    }
+
+                    info["final_obs"] = &final_observations;
+                }
             }
 
             return py::make_tuple(observations, rewards, terminations, truncations, info);

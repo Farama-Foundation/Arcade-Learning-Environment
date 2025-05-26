@@ -45,7 +45,7 @@ namespace ale::vector {
         int frame_number;                 // Frame number since the beginning of the game
         int episode_frame_number;         // Frame number since the beginning of the episode
 
-        std::vector<uint8_t> final_observation; // Screen pixel data for previous episode last observation with Autoresetmode == SameStep
+        std::vector<uint8_t>* final_observation; // Screen pixel data for previous episode last observation with Autoresetmode == SameStep
     };
 
     /**
