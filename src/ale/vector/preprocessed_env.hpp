@@ -62,8 +62,8 @@ namespace ale::vector {
             const int seed = -1
         ) : env_id_(env_id),
             rom_path_(rom_path),
-            obs_height_(obs_height),
-            obs_width_(obs_width),
+            obs_frame_height_(obs_height),
+            obs_frame_width_(obs_width),
             frame_skip_(frame_skip),
             maxpool_(maxpool),
             obs_format_(obs_format),
@@ -116,14 +116,19 @@ namespace ale::vector {
                 noop_generator_ = std::uniform_int_distribution<>(0, 0);
             }
 
+            const ALEScreen& screen = env_->getScreen();
+            raw_frame_height_ = screen.height();
+            raw_frame_width_ = screen.width();
+            raw_frame_size_ = raw_frame_height_ * raw_frame_width_;
+            obs_frame_size_ = obs_frame_height_ * obs_frame_width_ * channels_per_frame_;
+
             // Initialize the buffers
             for (int i = 0; i < 2; ++i) {
-                raw_frames_.emplace_back(210 * 160 * channels_per_frame_);
+                raw_frames_.emplace_back(raw_frame_size_ * channels_per_frame_);
             }
-            const int frame_size = obs_height_ * obs_width_ * channels_per_frame_;
-            resized_frame_.resize(frame_size, 0);
+            resized_frame_.resize(obs_frame_size_, 0);
             for (int i = 0; i < stack_num_; ++i) {
-                frame_stack_.push_back(std::vector<uint8_t>(frame_size, 0));
+                frame_stack_.push_back(std::vector<uint8_t>(obs_frame_size_, 0));
             }
         }
 
@@ -246,14 +251,12 @@ namespace ale::vector {
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
             // Combine stacked frames into a single observation
-            const size_t frame_size = obs_height_ * obs_width_ * channels_per_frame_;
-            timestep.observation.resize(frame_size * stack_num_);
-
+            timestep.observation.resize(obs_frame_size_ * stack_num_);
             for (int i = 0; i < stack_num_; ++i) {
                 std::memcpy(
-                    timestep.observation.data() + i * frame_size,
+                    timestep.observation.data() + i * obs_frame_size_,
                     frame_stack_[i].data(),
-                    frame_size
+                    obs_frame_size_
                 );
             }
 
@@ -278,7 +281,7 @@ namespace ale::vector {
          * Get observation size
          */
         int get_obs_size() const {
-            return obs_height_ * obs_width_ * channels_per_frame_ * stack_num_;
+            return obs_frame_size_ * stack_num_;
         }
 
         /**
@@ -297,7 +300,7 @@ namespace ale::vector {
             uint8_t* ale_screen_data = screen.getArray();
 
             env_->theOSystem->colourPalette().applyPaletteGrayscale(
-                buffer, ale_screen_data, screen.width() * screen.height()
+                buffer, ale_screen_data, raw_frame_size_
             );
         }
 
@@ -309,7 +312,7 @@ namespace ale::vector {
             uint8_t* ale_screen_data = screen.getArray();
 
             env_->theOSystem->colourPalette().applyPaletteRGB(
-                buffer, ale_screen_data, screen.width() * screen.height()
+                buffer, ale_screen_data, raw_frame_size_
             );
         }
 
@@ -317,29 +320,24 @@ namespace ale::vector {
          * Process the screen and update the frame stack
          */
         void process_screen() {
-            int raw_height = 210;
-            int raw_width = 160;
-
             // Maxpool raw frames if required (different for grayscale and RGB)
             if (maxpool_) {
-                int raw_size = raw_height * raw_width * channels_per_frame_;
-                for (int i = 0; i < raw_size; ++i) {
+                for (int i = 0; i < raw_frame_size_; ++i) {
                     raw_frames_[0][i] = std::max(raw_frames_[0][i], raw_frames_[1][i]);
                 }
             }
 
             // Resize the raw frame based on format
-            if (obs_height_ != raw_height || obs_width_ != raw_width) {
+            if (obs_frame_height_ != raw_frame_height_ || obs_frame_width_ != raw_frame_width_) {
                 auto cv2_format = (obs_format_ == ObsFormat::Grayscale) ? CV_8UC1 : CV_8UC3;
-                cv::Mat src_img(raw_height, raw_width, cv2_format, raw_frames_[0].data());
-                cv::Mat dst_img(obs_height_, obs_width_, cv2_format, resized_frame_.data());
+                cv::Mat src_img(raw_frame_height_, raw_frame_width_, cv2_format, raw_frames_[0].data());
+                cv::Mat dst_img(obs_frame_height_, obs_frame_width_, cv2_format, resized_frame_.data());
 
                 // Use INTER_AREA for downsampling to avoid moiré patterns
                 cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
             } else {
                 // No resize needed, just copy
-                int original_shape = raw_height * raw_width * channels_per_frame_;
-                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), original_shape);
+                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), raw_frame_size_);
             }
 
             // Update frame stack - remove oldest frame and add new one
@@ -352,13 +350,19 @@ namespace ale::vector {
         std::unique_ptr<ALEInterface> env_;  // ALE interface
 
         ActionVect action_set_;              // Available actions
-        int obs_height_;                     // Height to resize frames to for observations
-        int obs_width_;                      // Width to resize frames to for observations
-        int frame_skip_;                     // Number of frames for which to repeat the action
-        bool maxpool_;                       // Whether to maxpool observations
+
         ObsFormat obs_format_;               // Format of observations (grayscale or RGB)
         int channels_per_frame_;             // The number of channels for each frame based on obs_format
+        int raw_frame_height_;               // The raw frame height
+        int raw_frame_width_;                // The raw frame width
+        int raw_frame_size_;                 // The raw frame size (height * width)
+        int obs_frame_height_;               // Height to resize frames to for observations
+        int obs_frame_width_;                // Width to resize frames to for observations
+        int obs_frame_size_;                 // Observation frame size (height * width * channels)
         int stack_num_;                      // Number of frames to stack for observations
+
+        int frame_skip_;                     // Number of frames for which to repeat the action
+        bool maxpool_;                       // Whether to maxpool observations
         int noop_max_;                       // Maximum number of no-ops at reset
         bool use_fire_reset_;                // Whether to press FIRE during reset
         bool has_fire_action_;               // Whether FIRE action is available for reset

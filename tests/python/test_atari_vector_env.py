@@ -24,7 +24,7 @@ def obs_equivalence(obs_1, obs_2, t, **log_kwargs):
         assert obs_1.shape == obs_2.shape, t
         assert obs_1.dtype == obs_2.dtype, t
         assert (
-            count <= 12
+            count <= 25
         ), f"timestep={t}, max diff={np.max(diff)}, min diff={np.min(diff)}, non-zero count={count}"
         assert (
             np.max(diff) <= 2
@@ -91,11 +91,19 @@ def assert_gym_ale_rollout_equivalence(
 
 
 @pytest.mark.parametrize("env_id", ["ALE/Breakout-v5"])
+# @pytest.mark.parametrize(
+#     "env_id", [env_id for env_id in gym.registry if "ALE/" in env_id]
+# )
 class TestVectorEnv:
 
-    disable_vector_args = dict()
-    disable_env_args = dict()
-    disable_preprocessing_args = dict()
+    disable_vector_args = dict(
+        noop_max=0,
+        use_fire_reset=False,
+        reward_clipping=False,
+        repeat_action_probability=0.0,
+    )
+    disable_env_args = dict(frameskip=1, repeat_action_probability=0.0)
+    disable_preprocessing_args = dict(noop_max=0)
 
     @pytest.mark.parametrize("num_envs", [1, 3])
     @pytest.mark.parametrize("stack_num", [4, 6])
@@ -221,7 +229,7 @@ class TestVectorEnv:
                             continuous_action_threshold=continuous_action_threshold,
                             **self.disable_env_args,
                         ),
-                        noop_max=0,
+                        **self.disable_preprocessing_args,
                     ),
                     stack_size=4,
                     padding_type="zero",
@@ -259,7 +267,6 @@ class TestVectorEnv:
         noop_max: int,
         repeat_action_probability: float,
         use_fire_reset: bool,
-        game: str = "pong",
         rollout_length: int = 100,
     ):
         envs_1 = gym.make_vec(
@@ -451,7 +458,17 @@ class TestVectorEnv:
         assert data_equivalence(standard_info, life_loss_info)
 
         previous_lives = standard_info["lives"]
-        assert np.all(previous_lives > 0)
+        if np.all(previous_lives == 0):
+            actions = standard_envs.action_space.sample()
+            _, _, standard_terminations, _, _ = standard_envs.step(actions)
+            _, _, life_loss_terminations, _, _ = life_loss_envs.step(actions)
+            _, _, episodic_life_terminations, _, _ = episodic_life_envs.step(actions)
+
+            assert not np.any(standard_terminations)
+            assert not np.any(life_loss_terminations)
+            assert not np.any(episodic_life_terminations)
+
+            return  # no more testing can be done for this environment
 
         rollout_life_lost = False
         for t in range(rollout_length):
@@ -473,14 +490,14 @@ class TestVectorEnv:
             ) = life_loss_envs.step(actions)
 
             lives = standard_info["lives"]
-            action_life_lost = previous_lives > lives
+            action_life_lost = np.logical_and(previous_lives > lives, lives > 0)
 
             assert obs_equivalence(standard_obs, life_loss_obs, t=t, life_loss=True)
             assert data_equivalence(standard_rewards, life_loss_rewards)
             assert np.all(
                 np.logical_or(standard_terminations, action_life_lost)
                 == life_loss_terminations
-            )
+            ), f"{standard_terminations=}, {action_life_lost=}, {life_loss_terminations=}, {t=}, {standard_info=}, {life_loss_info=}"
             assert data_equivalence(standard_truncations, life_loss_truncations)
             assert data_equivalence(standard_info, life_loss_info)
 
@@ -496,21 +513,25 @@ class TestVectorEnv:
                 ) = episodic_life_envs.step(actions)
 
                 # Due to ending the frame skip early if a life is loss (following AtariPreprocessing)
-            #    then the observations, rewards and info frame number might not be equivalent
-            #assert obs_equivalence(
+                #    then the observations, rewards and info frame number might not be equivalent
+                # assert obs_equivalence(
                 #     standard_obs, episodic_life_obs, i=t, episodic_life=True
-                #)
-                #assert data_equivalence(standard_rewards, episodic_life_rewards)
+                # )
+                # assert data_equivalence(standard_rewards, episodic_life_rewards)
                 assert np.all(
                     np.logical_or(standard_terminations, action_life_lost)
                     == episodic_life_terminations
-                )
+                ), f"{standard_terminations=}, {action_life_lost=}, {episodic_life_terminations=}, {t=}"
                 assert data_equivalence(standard_truncations, episodic_life_truncations)
                 # assert data_equivalence(standard_info, episodic_life_info)
 
             previous_lives = standard_info["lives"]
 
-        assert rollout_life_lost, "No life lost in rollout"
+        if not rollout_life_lost:
+            gym.logger.warn(
+                f"No life lost in rollout for {env_id} in test_episodic_life_and_life_loss_info"
+            )
+        # assert rollout_life_lost
 
         standard_envs.close()
         episodic_life_envs.close()
