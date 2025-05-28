@@ -50,7 +50,7 @@ namespace ale::vector {
             for (int i = 0; i < num_envs_; ++i) {
                 envs_[i] = env_factory(i);
             }
-            obs_size_ = envs_[0]->get_obs_size();
+            stacked_obs_size_ = envs_[0]->get_stacked_obs_size();
 
             // Setup worker threads
             const std::size_t processor_count = std::thread::hardware_concurrency();
@@ -166,8 +166,8 @@ namespace ale::vector {
             return batch_size_;
         }
 
-        int get_obs_size() const {
-            return obs_size_;
+        int get_stacked_obs_size() const {
+            return stacked_obs_size_;
         }
 
     private:
@@ -175,7 +175,7 @@ namespace ale::vector {
         int batch_size_;                                  // Batch size for processing
         int num_threads_;                                 // Number of worker threads
         bool is_sync_;                                    // Whether to operate in synchronous mode
-        int obs_size_;                                    // The observation size (height * width * channels)
+        int stacked_obs_size_;                            // The observation size (stack-num * height * width * channels)
 
         std::atomic<bool> stop_;                          // Signal to stop worker threads
         std::vector<std::thread> workers_;                // Worker threads
