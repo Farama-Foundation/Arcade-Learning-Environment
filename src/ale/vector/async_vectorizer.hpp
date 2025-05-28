@@ -107,7 +107,7 @@ namespace ale::vector {
 
                 ActionSlice action;
                 action.env_id = env_id;
-                action.autoreset = true;
+                action.force_reset = true;
 
                 reset_actions.emplace_back(action);
             }
@@ -130,7 +130,7 @@ namespace ale::vector {
 
                 ActionSlice action;
                 action.env_id = env_id;
-                action.autoreset = false;
+                action.force_reset = false;
 
                 action_slices.emplace_back(action);
             }
@@ -204,7 +204,7 @@ namespace ale::vector {
 
                     const int env_id = action.env_id;
                     if (autoreset_mode_ == AutoresetMode::NextStep) {
-                        if (action.autoreset || envs_[env_id]->is_episode_over()) {
+                        if (action.force_reset || envs_[env_id]->is_episode_over()) {
                             envs_[env_id]->reset();
                         } else {
                             envs_[env_id]->step();
@@ -214,21 +214,28 @@ namespace ale::vector {
                         Timestep timestep = envs_[env_id]->get_timestep();
                         state_buffer_queue_->write(timestep);
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
-                        envs_[env_id]->step();
-                        Timestep timestep = envs_[env_id]->get_timestep();
-
-                        if (envs_[env_id]->is_episode_over()) {
-                            std::vector<uint8_t>* final_observation = &timestep.observation;
-                            int reward = timestep.reward;
-                            bool terminated = timestep.terminated;
-                            bool truncated = timestep.truncated;
-
+                        Timestep timestep;
+                        if (action.force_reset) {
                             envs_[env_id]->reset();
                             timestep = envs_[env_id]->get_timestep();
-                            timestep.final_observation = final_observation;
-                            timestep.reward = reward;
-                            timestep.terminated = terminated;
-                            timestep.truncated = truncated;
+                        } else {
+                            envs_[env_id]->step();
+                            timestep = envs_[env_id]->get_timestep();
+
+                            if (envs_[env_id]->is_episode_over()) {
+                                std::cout << "same step autoresetting" << std::endl;
+                                std::vector<uint8_t>* final_observation = &timestep.observation;
+                                int reward = timestep.reward;
+                                bool terminated = timestep.terminated;
+                                bool truncated = timestep.truncated;
+
+                                envs_[env_id]->reset();
+                                timestep = envs_[env_id]->get_timestep();
+                                timestep.final_observation = final_observation;
+                                timestep.reward = reward;
+                                timestep.terminated = terminated;
+                                timestep.truncated = truncated;
+                            }
                         }
 
                         state_buffer_queue_->write(timestep);

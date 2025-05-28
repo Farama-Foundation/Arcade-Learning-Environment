@@ -538,111 +538,110 @@ class TestVectorEnv:
         episodic_life_envs.close()
         life_loss_envs.close()
 
-
-def test_same_step_autoreset_mode(
-    num_envs=4, reset_seed=123, action_seed=123, rollout_length=100
-):
-    """Test if both environments produce similar results over a short rollout."""
-    gym_envs = gym.vector.SyncVectorEnv(
-        [
-            lambda: gym.wrappers.FrameStackObservation(
-                gym.wrappers.AtariPreprocessing(
-                    gym.make(
-                        "BreakoutNoFrameskip-v4",
+    def test_same_step_autoreset_mode(
+        self, env_id, num_envs=4, reset_seed=123, action_seed=123, rollout_length=100
+    ):
+        """Test if both environments produce similar results over a short rollout."""
+        gym_envs = gym.vector.SyncVectorEnv(
+            [
+                lambda: gym.wrappers.FrameStackObservation(
+                    gym.wrappers.AtariPreprocessing(
+                        gym.make(
+                            env_id,
+                            **self.disable_env_args,
+                        ),
+                        terminal_on_life_loss=True,  # to ensure some terminations
+                        **self.disable_preprocessing_args,
                     ),
-                    noop_max=0,
-                    terminal_on_life_loss=True,
-                ),
-                stack_size=4,
-                padding_type="zero",
-            )
-            for _ in range(num_envs)
-        ],
-        autoreset_mode=gym.vector.AutoresetMode.SAME_STEP,
-    )
-    ale_envs = AtariVectorEnv(
-        game="breakout",
-        num_envs=num_envs,
-        noop_max=0,
-        use_fire_reset=False,
-        episodic_life=True,
-        autoreset_mode=gym.vector.AutoresetMode.SAME_STEP,
-    )
-    assert (
-        gym_envs.metadata["autoreset_mode"] == ale_envs.metadata["autoreset_mode"]
-    ), f"{gym_envs.metadata=}, {ale_envs.metadata=}"
-
-    gym_obs, gym_info = gym_envs.reset(seed=reset_seed)
-    ale_obs, ale_info = ale_envs.reset(seed=reset_seed)
-
-    assert data_equivalence(gym_obs, ale_obs)
-
-    gym_info = {
-        key: value.astype(np.int32)
-        for key, value in gym_info.items()
-        if not key.startswith("_") and key != "seeds"
-    }
-    env_ids = ale_info.pop("env_id")
-    assert np.all(env_ids == np.arange(gym_envs.num_envs))
-    assert data_equivalence(gym_info, ale_info)
-
-    ale_envs.action_space.seed(action_seed)
-    has_autoreset = False
-    for t in range(rollout_length):
-        actions = ale_envs.action_space.sample()
-
-        gym_obs, gym_rewards, gym_terminations, gym_truncations, gym_info = (
-            gym_envs.step(actions)
+                    stack_size=4,
+                    padding_type="zero",
+                )
+                for _ in range(num_envs)
+            ],
+            autoreset_mode=gym.vector.AutoresetMode.SAME_STEP,
         )
-        ale_obs, ale_rewards, ale_terminations, ale_truncations, ale_info = (
-            ale_envs.step(actions)
+        ale_envs = gym.make_vec(
+            env_id,
+            num_envs,
+            episodic_life=True,
+            autoreset_mode=gym.vector.AutoresetMode.SAME_STEP,
+            **self.disable_vector_args,
         )
+        assert (
+            gym_envs.metadata["autoreset_mode"] == ale_envs.metadata["autoreset_mode"]
+        ), f"{gym_envs.metadata=}, {ale_envs.metadata=}"
 
-        assert obs_equivalence(gym_obs, ale_obs, t, autoreset_mode="SAME-STEP"), t
-        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
-        assert data_equivalence(gym_terminations, ale_terminations), t
-        assert data_equivalence(gym_truncations, ale_truncations), t
+        gym_obs, gym_info = gym_envs.reset(seed=reset_seed)
+        ale_obs, ale_info = ale_envs.reset(seed=reset_seed)
 
+        assert data_equivalence(gym_obs, ale_obs)
+
+        gym_info = {
+            key: value.astype(np.int32)
+            for key, value in gym_info.items()
+            if not key.startswith("_") and key != "seeds"
+        }
         env_ids = ale_info.pop("env_id")
-        assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
+        assert np.all(env_ids == np.arange(gym_envs.num_envs))
+        assert data_equivalence(gym_info, ale_info)
 
-        episode_over = np.logical_or(gym_terminations, gym_truncations)
-        reset_mask = np.where(episode_over)
-        if np.any(reset_mask):
-            has_autoreset = True
+        ale_envs.action_space.seed(action_seed)
+        has_autoreset = False
+        for t in range(rollout_length):
+            actions = ale_envs.action_space.sample()
 
-            gym_final_obs = np.array(
-                [
-                    final_obs if episode_over else obs
-                    for final_obs, obs, episode_over in zip(
-                        gym_info.pop("final_obs"), gym_obs, episode_over
-                    )
-                ]
+            gym_obs, gym_rewards, gym_terminations, gym_truncations, gym_info = (
+                gym_envs.step(actions)
             )
-            gym_info.pop("final_info")  # ALEV doesn't return final info
-            gym_info = {
-                key: value.astype(np.int32)
-                for key, value in gym_info.items()
-                if not key.startswith("_")
-            }
+            ale_obs, ale_rewards, ale_terminations, ale_truncations, ale_info = (
+                ale_envs.step(actions)
+            )
 
-            ale_final_obs = ale_info.pop("final_obs")
-            assert data_equivalence(
-                gym_info, ale_info
-            ), f"{gym_info=}, {ale_info=}, {t=}"
-            assert obs_equivalence(
-                gym_final_obs, ale_final_obs, t, autoreset_mode="SAME-STEP"
-            ), t
-        else:
-            gym_info = {
-                key: value.astype(np.int32)
-                for key, value in gym_info.items()
-                if not key.startswith("_") and key != "seeds"
-            }
+            assert obs_equivalence(gym_obs, ale_obs, t, autoreset_mode="SAME-STEP"), t
+            assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+            assert data_equivalence(gym_terminations, ale_terminations), t
+            assert data_equivalence(gym_truncations, ale_truncations), t
 
-            assert data_equivalence(gym_info, ale_info), t
+            env_ids = ale_info.pop("env_id")
+            assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
 
-    assert has_autoreset
+            episode_over = np.logical_or(gym_terminations, gym_truncations)
+            if np.any(episode_over):
+                has_autoreset = True
 
-    gym_envs.close()
-    ale_envs.close()
+                gym_final_obs = np.array(
+                    [
+                        final_obs if ep_over else obs
+                        for final_obs, obs, ep_over in zip(
+                            gym_info.pop("final_obs"), gym_obs, episode_over
+                        )
+                    ]
+                )
+                gym_info.pop("final_info")  # ALEV doesn't return final info
+                gym_info = {
+                    key: value.astype(np.int32)
+                    for key, value in gym_info.items()
+                    if not key.startswith("_")
+                }
+
+                ale_final_obs = ale_info.pop("final_obs")
+                assert data_equivalence(
+                    gym_info, ale_info
+                ), f"{gym_info=}, {ale_info=}, {t=}"
+
+                assert obs_equivalence(
+                    gym_final_obs, ale_final_obs, t, autoreset_mode="SAME-STEP"
+                ), t
+            else:
+                gym_info = {
+                    key: value.astype(np.int32)
+                    for key, value in gym_info.items()
+                    if not key.startswith("_") and key != "seeds"
+                }
+
+                assert data_equivalence(gym_info, ale_info), t
+
+        assert has_autoreset
+
+        gym_envs.close()
+        ale_envs.close()

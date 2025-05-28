@@ -178,7 +178,6 @@ void init_vector_module(py::module& m) {
                     } else {
                         final_observations = py::array_t<uint8_t>({batch_size, stack_num, height, width, 3});
                     }
-
                     auto final_observations_ptr = static_cast<uint8_t*>(final_observations.mutable_data());
 
                     for (int i = 0; i < batch_size; i++) {
