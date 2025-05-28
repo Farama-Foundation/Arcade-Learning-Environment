@@ -20,7 +20,7 @@ namespace ale::vector {
      */
     struct ActionSlice {
         int env_id;        // ID of the environment to apply the action to
-        bool autoreset;    // Whether to force a reset of the environment
+        bool force_reset;  // Whether to force a reset of the environment
     };
 
     /**
