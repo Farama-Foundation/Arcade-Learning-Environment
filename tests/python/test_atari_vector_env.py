@@ -181,7 +181,7 @@ class TestVectorEnv:
             [
                 lambda: gym.wrappers.FrameStackObservation(
                     gym.wrappers.AtariPreprocessing(
-                        gym.make(env_id),
+                        gym.make(env_id, **self.disable_env_args),
                         frame_skip=frame_skip,
                         screen_size=(img_width, img_height),
                         grayscale_obs=grayscale,
