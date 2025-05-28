@@ -420,9 +420,7 @@ class TestVectorEnv:
             [
                 lambda: gym.wrappers.FrameStackObservation(
                     gym.wrappers.AtariPreprocessing(
-                        gym.make(
-                            "BreakoutNoFrameskip-v4",
-                        ),
+                        gym.make(env_id, **self.disable_env_args),
                         terminal_on_life_loss=True,
                         **self.disable_preprocessing_args,
                     ),

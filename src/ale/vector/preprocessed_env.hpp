@@ -120,15 +120,16 @@ namespace ale::vector {
             raw_frame_height_ = screen.height();
             raw_frame_width_ = screen.width();
             raw_frame_size_ = raw_frame_height_ * raw_frame_width_;
-            obs_frame_size_ = obs_frame_height_ * obs_frame_width_ * channels_per_frame_;
+            raw_size_ = raw_frame_height_ * raw_frame_width_ * channels_per_frame_;
+            obs_size_ = obs_frame_height_ * obs_frame_width_ * channels_per_frame_;
 
             // Initialize the buffers
             for (int i = 0; i < 2; ++i) {
-                raw_frames_.emplace_back(raw_frame_size_ * channels_per_frame_);
+                raw_frames_.emplace_back(raw_size_);
             }
-            resized_frame_.resize(obs_frame_size_, 0);
+            resized_frame_.resize(obs_size_, 0);
             for (int i = 0; i < stack_num_; ++i) {
-                frame_stack_.push_back(std::vector<uint8_t>(obs_frame_size_, 0));
+                frame_stack_.push_back(std::vector<uint8_t>(obs_size_, 0));
             }
         }
 
@@ -251,12 +252,12 @@ namespace ale::vector {
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
             // Combine stacked frames into a single observation
-            timestep.observation.resize(obs_frame_size_ * stack_num_);
+            timestep.observation.resize(obs_size_ * stack_num_);
             for (int i = 0; i < stack_num_; ++i) {
                 std::memcpy(
-                    timestep.observation.data() + i * obs_frame_size_,
+                    timestep.observation.data() + i * obs_size_,
                     frame_stack_[i].data(),
-                    obs_frame_size_
+                    obs_size_
                 );
             }
 
@@ -266,7 +267,7 @@ namespace ale::vector {
         /**
          * Check if the episode is over (terminated or truncated)
          */
-        bool is_episode_over() const {
+        const bool is_episode_over() const {
             return game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_);
         }
 
@@ -280,14 +281,14 @@ namespace ale::vector {
         /**
          * Get observation size
          */
-        int get_obs_size() const {
-            return obs_frame_size_ * stack_num_;
+        const int get_stacked_obs_size() const {
+            return obs_size_ * stack_num_;
         }
 
         /**
          * Get channels per frame
          */
-        int get_channels_per_frame() const {
+        const int get_channels_per_frame() const {
             return channels_per_frame_;
         }
 
@@ -322,7 +323,7 @@ namespace ale::vector {
         void process_screen() {
             // Maxpool raw frames if required (different for grayscale and RGB)
             if (maxpool_) {
-                for (int i = 0; i < raw_frame_size_; ++i) {
+                for (int i = 0; i < raw_size_; ++i) {
                     raw_frames_[0][i] = std::max(raw_frames_[0][i], raw_frames_[1][i]);
                 }
             }
@@ -337,7 +338,7 @@ namespace ale::vector {
                 cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
             } else {
                 // No resize needed, just copy
-                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), raw_frame_size_);
+                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), raw_size_);
             }
 
             // Update frame stack - remove oldest frame and add new one
@@ -356,9 +357,10 @@ namespace ale::vector {
         int raw_frame_height_;               // The raw frame height
         int raw_frame_width_;                // The raw frame width
         int raw_frame_size_;                 // The raw frame size (height * width)
+        int raw_size_;
         int obs_frame_height_;               // Height to resize frames to for observations
         int obs_frame_width_;                // Width to resize frames to for observations
-        int obs_frame_size_;                 // Observation frame size (height * width * channels)
+        int obs_size_;                       // Observation size (height * width * channels)
         int stack_num_;                      // Number of frames to stack for observations
 
         int frame_skip_;                     // Number of frames for which to repeat the action

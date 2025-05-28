@@ -64,10 +64,10 @@ ffi::Error XLAResetImpl(
             return ffi::Error::Internal("Number of timesteps is wrong");
         }
 
-        size_t obs_size = vectorizer->get_obs_size();
+        size_t stacked_obs_size = vectorizer->get_stacked_obs_size();
 
         // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() != vectorizer->get_batch_size() * obs_size) {
+        if (observations_buffer->element_count() != vectorizer->get_batch_size() * stacked_obs_size) {
             return ffi::Error::Internal("Observations buffer is the wrong size");
         }
 
@@ -75,9 +75,9 @@ ffi::Error XLAResetImpl(
             const auto& timestep = timesteps[i];
 
             std::memcpy(
-                observations_buffer->typed_data() + i * obs_size,
+                observations_buffer->typed_data() + i * stacked_obs_size,
                 timestep.observation.data(),
-                obs_size
+                stacked_obs_size
             );
             env_ids_buffer->typed_data()[i] = timestep.env_id;
             lives_buffer->typed_data()[i] = timestep.lives;
@@ -175,10 +175,10 @@ ffi::Error XLAStepImpl(
             return ffi::Error::Internal("Number of timesteps is wrong");
         }
 
-        size_t obs_size = vectorizer->get_obs_size();
+        size_t stacked_obs_size = vectorizer->get_stacked_obs_size();
 
         // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() != vectorizer->get_batch_size() * obs_size) {
+        if (observations_buffer->element_count() != vectorizer->get_batch_size() * stacked_obs_size) {
             return ffi::Error::Internal("Observations buffer is the wrong size");
         }
 
@@ -186,9 +186,9 @@ ffi::Error XLAStepImpl(
             const auto& timestep = timesteps[i];
 
             std::memcpy(
-                observations_buffer->typed_data() + i * obs_size,
+                observations_buffer->typed_data() + i * stacked_obs_size,
                 timestep.observation.data(),
-                obs_size
+                stacked_obs_size
             );
             rewards_buffer->typed_data()[i] = timestep.reward;
             terminations_buffer->typed_data()[i] = timestep.terminated;
