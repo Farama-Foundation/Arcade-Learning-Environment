@@ -5,7 +5,7 @@ import gymnasium
 import numpy as np
 import pytest
 from ale_py.env import AtariEnv
-from gymnasium.utils.env_checker import check_env
+from gymnasium.utils.env_checker import check_env, data_equivalence
 from utils import tetris_env, tetris_rom_path  # noqa: F401
 
 _VALID_WARNINGS = [
@@ -279,3 +279,32 @@ def test_sound_obs():
         check_env(env.unwrapped, skip_render_check=True)
 
     assert caught_warnings == [], [caught.message.args[0] for caught in caught_warnings]
+
+
+def test_determinism(
+    env_id="ALE/Pong-v5", reset_seed=123, action_seed=123, rollout_length=100
+):
+    env_1 = gymnasium.make(env_id)
+    env_2 = gymnasium.make(env_id)
+
+    obs_1, info_1 = env_1.reset(seed=reset_seed)
+    obs_2, info_2 = env_2.reset(seed=reset_seed)
+
+    assert data_equivalence(obs_1, obs_2)
+    assert data_equivalence(info_1, info_2)
+
+    env_1.action_space.seed(action_seed)
+    for t in range(rollout_length):
+        action = env_1.action_space.sample()
+
+        obs_1, reward_1, terminated_1, truncated_1, info_1 = env_1.step(action)
+        obs_2, reward_2, terminated_2, truncated_2, info_2 = env_2.step(action)
+
+        assert data_equivalence(obs_1, obs_2)
+        assert data_equivalence(reward_1, reward_2)
+        assert data_equivalence(terminated_1, terminated_2)
+        assert data_equivalence(truncated_1, truncated_2)
+        assert data_equivalence(info_1, info_2)
+
+    env_1.close()
+    env_2.close()
