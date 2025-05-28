@@ -46,7 +46,8 @@ namespace ale::vector {
             autoreset_mode_(autoreset_mode),
             stop_(false),
             action_buffer_queue_(new ActionBufferQueue(num_envs_)),
-            state_buffer_queue_(new StateBufferQueue(batch_size_, num_envs_)) {
+            state_buffer_queue_(new StateBufferQueue(batch_size_, num_envs_)),
+            final_obs_storage_(num_envs_) {
 
             // Create environments
             envs_.resize(num_envs_);
@@ -191,6 +192,8 @@ namespace ale::vector {
         std::unique_ptr<StateBufferQueue> state_buffer_queue_;    // Queue for observations
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
+        mutable std::vector<std::vector<uint8_t>> final_obs_storage_;  // For same-step autoreset
+
         /**
          * Worker thread function that processes environment steps
          */
@@ -212,33 +215,38 @@ namespace ale::vector {
 
                         // Get timestep and write to state buffer
                         Timestep timestep = envs_[env_id]->get_timestep();
+                        timestep.final_observation = nullptr;  // Not used in NextStep mode
                         state_buffer_queue_->write(timestep);
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
-                        Timestep timestep;
                         if (action.force_reset) {
+                            // on standard `reset`
                             envs_[env_id]->reset();
-                            timestep = envs_[env_id]->get_timestep();
+                            Timestep timestep = envs_[env_id]->get_timestep();
+                            timestep.final_observation = nullptr;
+                            state_buffer_queue_->write(timestep);
                         } else {
                             envs_[env_id]->step();
-                            timestep = envs_[env_id]->get_timestep();
+                            Timestep step_timestep = envs_[env_id]->get_timestep();
 
+                            // if episode over, autoreset
                             if (envs_[env_id]->is_episode_over()) {
-                                std::cout << "same step autoresetting" << std::endl;
-                                std::vector<uint8_t>* final_observation = &timestep.observation;
-                                int reward = timestep.reward;
-                                bool terminated = timestep.terminated;
-                                bool truncated = timestep.truncated;
+                                final_obs_storage_[env_id] = step_timestep.observation;
 
                                 envs_[env_id]->reset();
-                                timestep = envs_[env_id]->get_timestep();
-                                timestep.final_observation = final_observation;
-                                timestep.reward = reward;
-                                timestep.terminated = terminated;
-                                timestep.truncated = truncated;
+                                Timestep reset_timestep = envs_[env_id]->get_timestep();
+
+                                reset_timestep.final_observation = &final_obs_storage_[env_id];
+                                reset_timestep.reward = step_timestep.reward;
+                                reset_timestep.terminated = step_timestep.terminated;
+                                reset_timestep.truncated = step_timestep.truncated;
+
+                                // Write the reset timestep with the some of the step timestep data
+                                state_buffer_queue_->write(reset_timestep);
+                            } else {
+                                step_timestep.final_observation = nullptr;
+                                state_buffer_queue_->write(step_timestep);
                             }
                         }
-
-                        state_buffer_queue_->write(timestep);
                     } else {
                         throw std::runtime_error("Invalid autoreset mode");
                     }

@@ -260,7 +260,9 @@ namespace ale::vector {
                     obs_size_
                 );
             }
-            timestep.final_observation = &timestep.observation;
+
+            // Initialize as nullptr and set in AsyncVectorizer if needed
+            timestep.final_observation = nullptr;
 
             return timestep;
         }

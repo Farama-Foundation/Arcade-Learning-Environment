@@ -183,15 +183,18 @@ void init_vector_module(py::module& m) {
                     for (int i = 0; i < batch_size; i++) {
                         const auto& timestep = timesteps[i];
 
-                        // Copy screen data
+                        // Use final_observation if available, otherwise use current observation
+                        const std::vector<uint8_t>* obs_data = (timestep.terminated || timestep.truncated) ?
+                            timestep.final_observation : &timestep.observation;
+
                         std::memcpy(
                             final_observations_ptr + i * obs_size,
-                            timestep.final_observation->data(),
+                            obs_data->data(),
                             obs_size * sizeof(uint8_t)
                         );
                     }
 
-                    info["final_obs"] = &final_observations;
+                    info["final_obs"] = final_observations;
                 }
             }
 
