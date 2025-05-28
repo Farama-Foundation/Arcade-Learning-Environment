@@ -53,7 +53,7 @@ namespace ale::vector {
             for (int i = 0; i < num_envs_; ++i) {
                 envs_[i] = env_factory(i);
             }
-            obs_size_ = envs_[0]->get_obs_size();
+            stacked_obs_size_ = envs_[0]->get_stacked_obs_size();
 
             // Setup worker threads
             const std::size_t processor_count = std::thread::hardware_concurrency();
@@ -169,8 +169,8 @@ namespace ale::vector {
             return batch_size_;
         }
 
-        const int get_obs_size() const {
-            return obs_size_;
+        const int get_stacked_obs_size() const {
+            return stacked_obs_size_;
         }
 
         const AutoresetMode get_autoreset() const {
@@ -182,7 +182,7 @@ namespace ale::vector {
         int batch_size_;                                  // Batch size for processing
         int num_threads_;                                 // Number of worker threads
         bool is_sync_;                                    // Whether to operate in synchronous mode
-        int obs_size_;                                    // The size of the observations (width * height * channels)
+        int stacked_obs_size_;                            // The observation size (stack-num * width * height * channels)
         AutoresetMode autoreset_mode_;                    // How to reset sub-environments after an episode ends
 
         std::atomic<bool> stop_;                          // Signal to stop worker threads

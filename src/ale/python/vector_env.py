@@ -265,6 +265,7 @@ class AtariVectorEnv(VectorEnv):
                     ),  # episode frame number
                 ),
                 vmap_method="broadcast_all",
+                has_side_effect=True,
             )
 
             if reset_mask is not None:
@@ -343,6 +344,7 @@ class AtariVectorEnv(VectorEnv):
                     ),  # episode frame number
                 ),
                 vmap_method="broadcast_all",
+                has_side_effect=True,
             )
 
             (
