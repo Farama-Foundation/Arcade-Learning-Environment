@@ -43,7 +43,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: .github/docker/manylinux-vcpkg.Dockerfile
+        file: .github/docker/manylinux-x86_64-vcpkg.Dockerfile
         tags: manylinux-vcpkg:latest
         push: false
         load: true
