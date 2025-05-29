@@ -425,7 +425,28 @@
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>The Arcade Learning Environment (ALE) Vector Environment provides a high-performance implementation for running multiple Atari environments in parallel. This implementation utilizes native C++ code with multi-threading to achieve significant performance improvements, especially when running many environments simultaneously.</p>
-<p>The vector environment is equivalent to <code class="docutils literal notranslate"><span class="pre">FrameStackObservation(AtariPreprocessing(gym.make(&quot;ALE/{AtariGame}-v5&quot;)),</span> <span class="pre">stack_size=4)</span></code>.</p>
+<p>The vector environment is equivalent to FrameStackObservation + AtariPreprocessing from Gymnasium as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gym_envs</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">SyncVectorEnv</span><span class="p">(</span>
+  <span class="p">[</span>
+      <span class="k">lambda</span><span class="p">:</span> <span class="n">gym</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">FrameStackObservation</span><span class="p">(</span>
+          <span class="n">gym</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">AtariPreprocessing</span><span class="p">(</span>
+              <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">env_id</span><span class="p">,</span> <span class="n">frameskip</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+          <span class="p">),</span>
+          <span class="n">stack_size</span><span class="o">=</span><span class="n">stack_num</span><span class="p">,</span>
+          <span class="n">padding_type</span><span class="o">=</span><span class="s2">&quot;zero&quot;</span><span class="p">,</span>
+      <span class="p">)</span>
+      <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_envs</span><span class="p">)</span>
+  <span class="p">],</span>
+<span class="p">)</span>
+<span class="n">ale_envs</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make_vec</span><span class="p">(</span>
+  <span class="n">env_id</span><span class="p">,</span>
+  <span class="n">num_envs</span><span class="p">,</span>
+  <span class="n">use_fire_reset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+  <span class="n">reward_clipping</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+  <span class="n">repeat_action_probability</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="key-features">
 <h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
@@ -445,7 +466,7 @@
 <li><p><strong>Performance Optimizations</strong>:</p>
 <ul>
 <li><p>Native C++ implementation</p></li>
-<li><p>Next-step autoreset (see <a class="reference external" href="https://farama.org/Vector-Autoreset-Mode">blog</a> for more detail)</p></li>
+<li><p>Same-step and Next-step autoreset (see <a class="reference external" href="https://farama.org/Vector-Autoreset-Mode">blog</a> for more detail)</p></li>
 <li><p>Multi-threading for parallel execution</p></li>
 <li><p>Thread affinity options for better performance on multi-core systems</p></li>
 <li><p>Batch processing capabilities</p></li>
@@ -468,7 +489,7 @@
 
 <span class="c1"># Create a vector environment with 4 parallel instances of Breakout</span>
 <span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span>
-    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span>
+    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;breakout&quot;</span><span class="p">,</span>  <span class="c1"># The ROM id not name, i.e., camel case compared to `gymnasium.make` name versions</span>
     <span class="n">num_envs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -490,7 +511,7 @@
 <p>The vector environment provides numerous configuration options:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span>
     <span class="c1"># Required parameters</span>
-    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span>          <span class="c1"># ROM name in snake_case</span>
+    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;breakout&quot;</span><span class="p">,</span>          <span class="c1"># The ROM id not name, i.e., camel case compared to Gymnasium.make name versions</span>
     <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>               <span class="c1"># Number of parallel environments</span>
 
     <span class="c1"># Preprocessing parameters</span>
@@ -499,20 +520,25 @@
     <span class="n">stack_num</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>              <span class="c1"># Number of frames to stack</span>
     <span class="n">img_height</span><span class="o">=</span><span class="mi">84</span><span class="p">,</span>            <span class="c1"># Height to resize frames to</span>
     <span class="n">img_width</span><span class="o">=</span><span class="mi">84</span><span class="p">,</span>             <span class="c1"># Width to resize frames to</span>
+    <span class="n">maxpool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>             <span class="c1"># If to maxpool sequential frames</span>
+    <span class="n">reward_clipping</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>     <span class="c1"># If to clip environment step rewards between -1 and 1</span>
 
     <span class="c1"># Environment behavior</span>
     <span class="n">noop_max</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>              <span class="c1"># Maximum number of no-ops at reset</span>
     <span class="n">fire_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>          <span class="c1"># Press FIRE on reset for games that require it</span>
     <span class="n">episodic_life</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>      <span class="c1"># End episodes on life loss</span>
+    <span class="n">life_loss_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>     <span class="c1"># Return termination signal on life loss but don&#39;t reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.</span>
     <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">108000</span><span class="p">,</span> <span class="c1"># Max frames per episode (27000 steps * 4 frame skip)</span>
     <span class="n">repeat_action_probability</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>  <span class="c1"># Sticky actions probability</span>
     <span class="n">full_action_space</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Use full action space (not minimal)</span>
+    <span class="n">continuous</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>         <span class="c1"># If to use continuous actions</span>
+    <span class="n">continuous_action_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># The threshold at which to use continuous actions</span>
 
     <span class="c1"># Performance options</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>             <span class="c1"># Number of environments to process at once (default=0 is the `num_envs`)</span>
+    <span class="n">autoreset_mode</span><span class="o">=</span><span class="n">gym</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">AutoresetMode</span><span class="o">.</span><span class="n">NEXT_STEP</span><span class="p">,</span>  <span class="c1"># How reset sub-environments when they terminated (https://farama.org/Vector-Autoreset-Mode)</span>
     <span class="n">num_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>            <span class="c1"># Number of worker threads (0=auto)</span>
     <span class="n">thread_affinity_offset</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="c1"># CPU core offset for thread affinity (-1=no affinity)</span>
-    <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>                   <span class="c1"># Random seed</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -529,10 +555,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">stack_size</span></code>: Number of stacked frames (typically 4)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>: Image dimensions (typically 84x84)</p></li>
 </ul>
-<p>This differs from the standard Gymnasium Atari environment format which uses:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">observations</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_envs</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>  <span class="c1"># Without num_envs</span>
-</pre></div>
-</div>
+<p>Additionally, with <code class="docutils literal notranslate"><span class="pre">grayscale=True</span></code> then the shape is <code class="docutils literal notranslate"><span class="pre">(num_envs,</span> <span class="pre">stack_size,</span> <span class="pre">height,</span> <span class="pre">width,</span> <span class="pre">3)</span></code> for RGB frames.</p>
 </section>
 <section id="performance-considerations">
 <h2>Performance Considerations<a class="headerlink" href="#performance-considerations" title="Link to this heading">¶</a></h2>
@@ -570,51 +593,6 @@ which is critical as the first (batch size) observations are returned for <code 
 <p>On systems with multiple CPU cores, setting thread affinity can improve performance:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set thread affinity starting from core 0</span>
 <span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">thread_affinity_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
-<section id="training-example-with-pytorch">
-<h3>Training Example with PyTorch<a class="headerlink" href="#training-example-with-pytorch" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ale_py.vector_env</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorAtariEnv</span>
-
-<span class="c1"># Create environment</span>
-<span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-
-<span class="c1"># Initialize model (simplified example)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3136</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">envs</span><span class="o">.</span><span class="n">single_action_space</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
-<span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-<span class="c1"># Reset environment</span>
-<span class="n">observations</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-
-<span class="c1"># Training loop</span>
-<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="c1"># Convert observations to PyTorch tensors</span>
-    <span class="n">obs_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">observations</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.0</span>
-
-    <span class="c1"># Get actions from model</span>
-    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-        <span class="n">q_values</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">obs_tensor</span><span class="p">)</span>
-        <span class="n">actions</span> <span class="o">=</span> <span class="n">q_values</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-
-    <span class="c1"># Step the environment</span>
-    <span class="n">observations</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">terminations</span><span class="p">,</span> <span class="n">truncations</span><span class="p">,</span> <span class="n">infos</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -707,10 +685,6 @@ which is critical as the first (batch size) observations are returned for <code 
 <li><a class="reference internal" href="#thread-affinity">Thread Affinity</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#examples">Examples</a><ul>
-<li><a class="reference internal" href="#training-example-with-pytorch">Training Example with PyTorch</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -745,7 +719,7 @@ which is critical as the first (batch size) observations are returned for <code 
     
     
 
-    <script src="../_static/documentation_options.js?v=c9b6e68e"></script>
+    <script src="../_static/documentation_options.js?v=34c6d9c8"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>
