@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" shape-rendering="crispEdges">
+  <style>
+    #eyes > rect {
+        fill: #535353;
+    }
+    @media (prefers-color-scheme: dark) {
+        #eyes > rect {
+            fill: #e9ecef;
+        }
+    }
+  </style>
+
+  <g id="body">
+    <!-- First three rows -->
+    <rect fill="#ffb012" x="48" y="0" width="32" height="8" />
+    <rect fill="#ffb012" x="32" y="8" width="64" height="8" />
+    <rect fill="#ffb012" x="24" y="16" width="80" height="8" />
+
+    <!-- First eye row -->
+    <rect fill="#ffb012" x="16" y="24" width="24" height="8" />
+    <rect fill="#ffb012" x="56" y="24" width="32" height="8" />
+    <rect fill="#ffb012" x="104" y="24" width="8" height="8" />
+
+    <rect fill="#ffb012" x="16" y="32" width="16" height="96" />
+    <rect fill="#ffb012" x="8" y="48" width="8" height="72" />
+
+    <!-- Left eye bottom square -->
+    <rect fill="#ffb012" x="32" y="56" width="8" height="8" />
+    <!-- Center bottom -->
+    <rect fill="#ffb012" x="56" y="56" width="32" height="8" />
+    <!-- Center column -->
+    <rect fill="#ffb012" x="64" y="32" width="16" height="24" />
+    <!-- Center right -->
+    <rect fill="#ffb012" x="104" y="48" width="16" height="16" />
+
+    <!-- Big bottom rect -->
+    <rect fill="#ffb012" x="8" y="64" width="112" height="48" />
+
+    <!-- Bottom left 8x8 -->
+    <rect fill="#ffb012" x="32" y="112" width="8" height="8" />
+    <!-- Bottom center 32x8 -->
+    <rect fill="#ffb012" x="48" y="112" width="32" height="8" />
+    <!-- Bottom center 8 x 16 -->
+    <rect fill="#ffb012" x="56" y="120" width="16" height="8" />
+    <!-- Bottom center 8 x 16 -->
+    <rect fill="#ffb012" x="88" y="112" width="32" height="8" />
+    <!-- Bottom center 8 x 16 -->
+    <rect fill="#ffb012" x="96" y="120" width="16" height="8" />
+  </g>
+
+  <g id="eyes">
+    <!-- Left eye -->
+    <rect x="48" y="40" width="16" height="16" />
+    <!-- Right eye -->
+    <rect x="96" y="40" width="16" height="16" />
+  </g>
+</svg>
