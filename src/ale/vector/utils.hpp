@@ -20,7 +20,7 @@ namespace ale::vector {
      */
     struct ActionSlice {
         int env_id;        // ID of the environment to apply the action to
-        bool autoreset;  // Whether to force a reset of the environment
+        bool force_reset;  // Whether to force a reset of the environment
     };
 
     /**
@@ -44,6 +44,8 @@ namespace ale::vector {
         int lives;                        // Remaining lives in the game
         int frame_number;                 // Frame number since the beginning of the game
         int episode_frame_number;         // Frame number since the beginning of the episode
+
+        std::vector<uint8_t>* final_observation; // Screen pixel data for previous episode last observation with Autoresetmode == SameStep
     };
 
     /**
@@ -52,6 +54,11 @@ namespace ale::vector {
     enum class ObsFormat {
         Grayscale,  // Single channel grayscale observations
         RGB         // Three channel RGB observations
+    };
+
+    enum class AutoresetMode {
+        NextStep,  // Will reset the sub-environment in the next step if the episode ended in the previous timestep
+        SameStep   // Will reset the sub-environment in the same timestep if the episode ended
     };
 
     /**
