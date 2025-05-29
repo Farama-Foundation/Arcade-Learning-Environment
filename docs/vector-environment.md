@@ -4,7 +4,28 @@
 
 The Arcade Learning Environment (ALE) Vector Environment provides a high-performance implementation for running multiple Atari environments in parallel. This implementation utilizes native C++ code with multi-threading to achieve significant performance improvements, especially when running many environments simultaneously.
 
-The vector environment is equivalent to `FrameStackObservation(AtariPreprocessing(gym.make("ALE/{AtariGame}-v5")), stack_size=4)`.
+The vector environment is equivalent to FrameStackObservation + AtariPreprocessing from Gymnasium as
+```
+gym_envs = gym.vector.SyncVectorEnv(
+  [
+      lambda: gym.wrappers.FrameStackObservation(
+          gym.wrappers.AtariPreprocessing(
+              gym.make(env_id, frameskip=1),
+          ),
+          stack_size=stack_num,
+          padding_type="zero",
+      )
+      for _ in range(num_envs)
+  ],
+)
+ale_envs = gym.make_vec(
+  env_id,
+  num_envs,
+  use_fire_reset=False,
+  reward_clipping=False,
+  repeat_action_probability=0.0,
+)
+```
 
 ## Key Features
 
@@ -19,7 +40,7 @@ The vector environment is equivalent to `FrameStackObservation(AtariPreprocessin
   - Episodic life modes
 - **Performance Optimizations**:
   - Native C++ implementation
-  - Next-step autoreset (see [blog](https://farama.org/Vector-Autoreset-Mode) for more detail)
+  - Same-step and Next-step autoreset (see [blog](https://farama.org/Vector-Autoreset-Mode) for more detail)
   - Multi-threading for parallel execution
   - Thread affinity options for better performance on multi-core systems
   - Batch processing capabilities
@@ -41,7 +62,7 @@ from ale_py.vector_env import VectorAtariEnv
 
 # Create a vector environment with 4 parallel instances of Breakout
 envs = VectorAtariEnv(
-    game="breakout",  # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions
+    game="breakout",  # The ROM id not name, i.e., camel case compared to `gymnasium.make` name versions
     num_envs=4,
 )
 
@@ -73,20 +94,24 @@ envs = VectorAtariEnv(
     img_height=84,            # Height to resize frames to
     img_width=84,             # Width to resize frames to
     maxpool=True,             # If to maxpool sequential frames
+    reward_clipping=True,     # If to clip environment step rewards between -1 and 1
 
     # Environment behavior
     noop_max=30,              # Maximum number of no-ops at reset
     fire_reset=True,          # Press FIRE on reset for games that require it
     episodic_life=False,      # End episodes on life loss
+    life_loss_info=False,     # Return termination signal on life loss but don't reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.
     max_episode_steps=108000, # Max frames per episode (27000 steps * 4 frame skip)
     repeat_action_probability=0.0,  # Sticky actions probability
     full_action_space=False,  # Use full action space (not minimal)
+    continuous=False,         # If to use continuous actions
+    continuous_action_threshold=0.5,  # The threshold at which to use continuous actions
 
     # Performance options
     batch_size=0,             # Number of environments to process at once (default=0 is the `num_envs`)
+    autoreset_mode=gym.vector.AutoresetMode.NEXT_STEP,  # How reset sub-environments when they terminated (https://farama.org/Vector-Autoreset-Mode)
     num_threads=0,            # Number of worker threads (0=auto)
     thread_affinity_offset=-1,# CPU core offset for thread affinity (-1=no affinity)
-    seed=0,                   # Random seed
 )
 ```
 
