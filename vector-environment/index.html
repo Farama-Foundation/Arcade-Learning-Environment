@@ -485,10 +485,10 @@
 <h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
 <section id="creating-a-vector-environment">
 <h3>Creating a Vector Environment<a class="headerlink" href="#creating-a-vector-environment" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ale_py.vector_env</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorAtariEnv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ale_py.vector_env</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtariVectorEnv</span>
 
 <span class="c1"># Create a vector environment with 4 parallel instances of Breakout</span>
-<span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span>
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span>
     <span class="n">game</span><span class="o">=</span><span class="s2">&quot;breakout&quot;</span><span class="p">,</span>  <span class="c1"># The ROM id not name, i.e., camel case compared to `gymnasium.make` name versions</span>
     <span class="n">num_envs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
 <span class="p">)</span>
@@ -509,30 +509,31 @@
 <section id="advanced-configuration">
 <h2>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading">¶</a></h2>
 <p>The vector environment provides numerous configuration options:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span>
     <span class="c1"># Required parameters</span>
-    <span class="n">game</span><span class="o">=</span><span class="s2">&quot;breakout&quot;</span><span class="p">,</span>          <span class="c1"># The ROM id not name, i.e., camel case compared to Gymnasium.make name versions</span>
-    <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>               <span class="c1"># Number of parallel environments</span>
+    <span class="n">game</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;breakout&quot;</span><span class="p">,</span>          <span class="c1"># The ROM id not name, i.e., camel case compared to Gymnasium.make name versions</span>
+    <span class="n">num_envs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>               <span class="c1"># Number of parallel environments</span>
+    <span class="o">*</span><span class="p">,</span>
 
     <span class="c1"># Preprocessing parameters</span>
-    <span class="n">frame_skip</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>             <span class="c1"># Number of frames to skip (action repeat)</span>
-    <span class="n">grayscale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>           <span class="c1"># Use grayscale observations</span>
-    <span class="n">stack_num</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>              <span class="c1"># Number of frames to stack</span>
-    <span class="n">img_height</span><span class="o">=</span><span class="mi">84</span><span class="p">,</span>            <span class="c1"># Height to resize frames to</span>
-    <span class="n">img_width</span><span class="o">=</span><span class="mi">84</span><span class="p">,</span>             <span class="c1"># Width to resize frames to</span>
-    <span class="n">maxpool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>             <span class="c1"># If to maxpool sequential frames</span>
-    <span class="n">reward_clipping</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>     <span class="c1"># If to clip environment step rewards between -1 and 1</span>
+    <span class="n">frameskip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>             <span class="c1"># Number of frames to skip (action repeat)</span>
+    <span class="n">grayscale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>         <span class="c1"># Use grayscale observations</span>
+    <span class="n">stack_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>             <span class="c1"># Number of frames to stack</span>
+    <span class="n">img_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">84</span><span class="p">,</span>           <span class="c1"># Height to resize frames to</span>
+    <span class="n">img_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">84</span><span class="p">,</span>            <span class="c1"># Width to resize frames to</span>
+    <span class="n">maxpool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>           <span class="c1"># If to maxpool sequential frames</span>
+    <span class="n">reward_clipping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># If to clip environment step rewards between -1 and 1</span>
 
     <span class="c1"># Environment behavior</span>
-    <span class="n">noop_max</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>              <span class="c1"># Maximum number of no-ops at reset</span>
-    <span class="n">fire_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>          <span class="c1"># Press FIRE on reset for games that require it</span>
-    <span class="n">episodic_life</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>      <span class="c1"># End episodes on life loss</span>
-    <span class="n">life_loss_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>     <span class="c1"># Return termination signal on life loss but don&#39;t reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.</span>
-    <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">108000</span><span class="p">,</span> <span class="c1"># Max frames per episode (27000 steps * 4 frame skip)</span>
-    <span class="n">repeat_action_probability</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>  <span class="c1"># Sticky actions probability</span>
-    <span class="n">full_action_space</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Use full action space (not minimal)</span>
-    <span class="n">continuous</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>         <span class="c1"># If to use continuous actions</span>
-    <span class="n">continuous_action_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># The threshold at which to use continuous actions</span>
+    <span class="n">noop_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>             <span class="c1"># Maximum number of no-ops at reset</span>
+    <span class="n">use_fire_reset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>    <span class="c1"># Press FIRE on reset for games that require it</span>
+    <span class="n">episodic_life</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>    <span class="c1"># End episodes on life loss</span>
+    <span class="n">life_loss_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>   <span class="c1"># Return termination signal on life loss but don&#39;t reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.</span>
+    <span class="n">max_num_frames_per_episode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">108000</span><span class="p">,</span> <span class="c1"># Max frames per episode (27000 steps * 4 frame skip)</span>
+    <span class="n">repeat_action_probability</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>   <span class="c1"># Sticky actions probability</span>
+    <span class="n">full_action_space</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>          <span class="c1"># Use full action space (not minimal)</span>
+    <span class="n">continuous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                 <span class="c1"># If to use continuous actions</span>
+    <span class="n">continuous_action_threshold</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># The threshold at which to use continuous actions</span>
 
     <span class="c1"># Performance options</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>             <span class="c1"># Number of environments to process at once (default=0 is the `num_envs`)</span>
@@ -581,7 +582,7 @@ For optimal performance, set <code class="docutils literal notranslate"><span cl
 <h3>Batch Size<a class="headerlink" href="#batch-size" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> parameter controls how many environments are processed simultaneously by the worker threads:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process environments in batches of 4</span>
-<span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A smaller batch size can improve latency while a larger batch size can improve throughput.
@@ -592,7 +593,7 @@ which is critical as the first (batch size) observations are returned for <code 
 <h3>Thread Affinity<a class="headerlink" href="#thread-affinity" title="Link to this heading">¶</a></h3>
 <p>On systems with multiple CPU cores, setting thread affinity can improve performance:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set thread affinity starting from core 0</span>
-<span class="n">envs</span> <span class="o">=</span> <span class="n">VectorAtariEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">thread_affinity_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">&quot;Breakout&quot;</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">thread_affinity_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
