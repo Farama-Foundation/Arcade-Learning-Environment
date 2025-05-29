@@ -38,7 +38,6 @@ classifiers = [
 dependencies = [
     "numpy>1.20",
     "importlib-metadata>=4.10.0; python_version < '3.10'",
-    "importlib-resources; python_version < '3.9'",
     "typing-extensions; python_version < '3.11'"
 ]
 dynamic = ["version"]
@@ -72,7 +71,7 @@ packages = [
     "ale_py.roms",
 ]
 package-dir = {ale_py = "src/ale/python"}
-package-data = {"ale_py" = ["py.typed", "*.py", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
+package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"
