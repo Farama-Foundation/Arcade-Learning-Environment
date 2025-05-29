@@ -58,10 +58,10 @@ Optionally, users can build the project locally, requiring VCPKG, that will inst
 ### Creating a Vector Environment
 
 ```python
-from ale_py.vector_env import VectorAtariEnv
+from ale_py.vector_env import AtariVectorEnv
 
 # Create a vector environment with 4 parallel instances of Breakout
-envs = VectorAtariEnv(
+envs = AtariVectorEnv(
     game="breakout",  # The ROM id not name, i.e., camel case compared to `gymnasium.make` name versions
     num_envs=4,
 )
@@ -82,30 +82,31 @@ envs.close()
 The vector environment provides numerous configuration options:
 
 ```python
-envs = VectorAtariEnv(
+envs = AtariVectorEnv(
     # Required parameters
-    game="breakout",          # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions
-    num_envs=8,               # Number of parallel environments
+    game: str = "breakout",          # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions
+    num_envs: int = 1,               # Number of parallel environments
+    *,
 
     # Preprocessing parameters
-    frame_skip=4,             # Number of frames to skip (action repeat)
-    grayscale=True,           # Use grayscale observations
-    stack_num=4,              # Number of frames to stack
-    img_height=84,            # Height to resize frames to
-    img_width=84,             # Width to resize frames to
-    maxpool=True,             # If to maxpool sequential frames
-    reward_clipping=True,     # If to clip environment step rewards between -1 and 1
+    frameskip: int = 4,             # Number of frames to skip (action repeat)
+    grayscale: bool = True,         # Use grayscale observations
+    stack_num: int = 4,             # Number of frames to stack
+    img_height: int = 84,           # Height to resize frames to
+    img_width: int = 84,            # Width to resize frames to
+    maxpool: bool = True,           # If to maxpool sequential frames
+    reward_clipping: bool = True,   # If to clip environment step rewards between -1 and 1
 
     # Environment behavior
-    noop_max=30,              # Maximum number of no-ops at reset
-    fire_reset=True,          # Press FIRE on reset for games that require it
-    episodic_life=False,      # End episodes on life loss
-    life_loss_info=False,     # Return termination signal on life loss but don't reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.
-    max_episode_steps=108000, # Max frames per episode (27000 steps * 4 frame skip)
-    repeat_action_probability=0.0,  # Sticky actions probability
-    full_action_space=False,  # Use full action space (not minimal)
-    continuous=False,         # If to use continuous actions
-    continuous_action_threshold=0.5,  # The threshold at which to use continuous actions
+    noop_max: int = 30,             # Maximum number of no-ops at reset
+    use_fire_reset: bool = True,    # Press FIRE on reset for games that require it
+    episodic_life: bool = False,    # End episodes on life loss
+    life_loss_info: bool = False,   # Return termination signal on life loss but don't reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.
+    max_num_frames_per_episode: int = 108000, # Max frames per episode (27000 steps * 4 frame skip)
+    repeat_action_probability: float = 0.0,   # Sticky actions probability
+    full_action_space: bool = False,          # Use full action space (not minimal)
+    continuous: bool = False,                 # If to use continuous actions
+    continuous_action_threshold: bool = 0.5,  # The threshold at which to use continuous actions
 
     # Performance options
     batch_size=0,             # Number of environments to process at once (default=0 is the `num_envs`)
@@ -157,7 +158,7 @@ The `batch_size` parameter controls how many environments are processed simultan
 
 ```python
 # Process environments in batches of 4
-envs = VectorAtariEnv(game="Breakout", num_envs=16, batch_size=4)
+envs = AtariVectorEnv(game="Breakout", num_envs=16, batch_size=4)
 ```
 
 A smaller batch size can improve latency while a larger batch size can improve throughput.
@@ -170,5 +171,5 @@ On systems with multiple CPU cores, setting thread affinity can improve performa
 
 ```python
 # Set thread affinity starting from core 0
-envs = VectorAtariEnv(game="Breakout", num_envs=8, thread_affinity_offset=0)
+envs = AtariVectorEnv(game="Breakout", num_envs=8, thread_affinity_offset=0)
 ```
