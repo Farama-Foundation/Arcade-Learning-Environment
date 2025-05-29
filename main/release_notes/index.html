@@ -422,6 +422,34 @@
             
             <section class="tex2jax_ignore mathjax_ignore" id="ale-release-notes">
 <h1>ALE Release Notes<a class="headerlink" href="#ale-release-notes" title="Link to this heading">¶</a></h1>
+<section id="release-v0-11-1">
+<h2>ALE v0.11.1<a class="headerlink" href="#release-v0-11-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-05-29 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.11.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.11.1/">PyPI</a></em></p>
+<p>In v0.11.0, <code>AtariVectorEnv</code> was added, providing a C++ based vectorizer as an experimental feature.<br>
+This release fills out the implementation with many, many bug fixes and adds a couple of features.</p>
+<p>See the documentation for using the vector environment and parameters - <a href="https://ale.farama.org/vector-environment/" rel="nofollow">https://ale.farama.org/vector-environment/</a></p>
+<h2>Bug fixes for <code>AtariVectorEnv</code></h2>
+<ul>
+<li>Vector environment wouldn't seed correctly if equal to 0 (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3043969672" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/603" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/603/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/603">#603</a>)</li>
+<li>Fix the vector continuous action implementations (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3072832319" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/607" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/607/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/607">#607</a>)</li>
+<li>Terminate an episode if episodic_life is enabled (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3088531377" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/611" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/611/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/611">#611</a>)</li>
+<li>Correctly end frame skips (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3088959905" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/613" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/613/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/613">#613</a>)</li>
+<li>For async mode ensure that only the batch size number of results are returned (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3088535621" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/612" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/612/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/612">#612</a>)</li>
+</ul>
+<h2>Features added to <code>AtariVectorEnv</code></h2>
+<ul>
+<li>Add RGB obs support (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3072129008" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/606" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/606/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/606">#606</a>)</li>
+<li>Parametrize testing for each ROMs (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3095273478" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/615" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/615/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/615">#615</a>)</li>
+<li>Add same-step autoreset mode (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3092151330" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/614" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/614/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/614">#614</a>)</li>
+<li>Add XLA support - experimental feature (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3044017444" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/604" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/604/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/604">#604</a>)</li>
+</ul>
+<h2>Other changes</h2>
+<ul>
+<li>Remove environment IDs for <code>Deterministic</code> and <code>RAM</code> (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2533530158" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/561" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/561/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/561">#561</a>)</li>
+<li>Change <code>get_keys_to_action</code> from <code>dict[ale_py.Action, tuple[int, ...]</code> to <code>dict[str, tuple[int, ...]]</code> (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3073025613" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/608" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/608/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/608">#608</a>)</li>
+<li>Add Linux ARM64 wheels (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="3078226567" data-permission-text="Title is private" data-url="https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/609" data-hovercard-type="pull_request" data-hovercard-url="/Farama-Foundation/Arcade-Learning-Environment/pull/609/hovercard" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/609">#609</a>)</li>
+</ul>
+<p><strong>Full Changelog</strong>: <a class="commit-link" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.11.0...v0.11.1"><tt>v0.11.0...v0.11.1</tt></a></p></section>
 <section id="release-v0-11-0">
 <h2>ALE v0.11.0<a class="headerlink" href="#release-v0-11-0" title="Link to this heading">¶</a></h2>
 <p><em>Released on 2025-04-26 - <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/releases/tag/v0.11.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/ale-py/v0.11.0/">PyPI</a></em></p>
@@ -899,6 +927,7 @@ simply run <code>ale-import-roms</code> which will automatically correct this fo
             <div class="toc-tree">
               <ul>
 <li><a class="reference internal" href="#">ALE Release Notes</a><ul>
+<li><a class="reference internal" href="#release-v0-11-1">ALE v0.11.1</a></li>
 <li><a class="reference internal" href="#release-v0-11-0">ALE v0.11.0</a></li>
 <li><a class="reference internal" href="#release-v0-10-2">ALE v0.10.2</a></li>
 <li><a class="reference internal" href="#release-v0-10-1">ALE v0.10.1</a></li>
