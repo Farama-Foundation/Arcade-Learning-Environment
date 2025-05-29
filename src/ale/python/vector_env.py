@@ -11,7 +11,7 @@ from ale_py import roms
 from ale_py.env import AtariEnv
 from gymnasium.core import ObsType
 from gymnasium.spaces import Box, Discrete
-from gymnasium.vector import VectorEnv
+from gymnasium.vector import AutoresetMode, VectorEnv
 
 
 class AtariVectorEnv(VectorEnv):
@@ -30,6 +30,7 @@ class AtariVectorEnv(VectorEnv):
         full_action_space: bool = False,
         continuous: bool = False,
         continuous_action_threshold: float = 0.5,
+        autoreset_mode: AutoresetMode | str = AutoresetMode.NEXT_STEP,
         # Preprocessing values
         img_height: int = 84,
         img_width: int = 84,
@@ -56,6 +57,7 @@ class AtariVectorEnv(VectorEnv):
             full_action_space: If the environment should use the full action space
             continuous: If to use the continuous action space
             continuous_action_threshold: The continuous action threshold
+            autoreset_mode: What mode to autoreset the sub-environments
             img_height: The frame height
             img_width: The frame width
             grayscale: Whether to use grayscale observations
@@ -88,6 +90,11 @@ class AtariVectorEnv(VectorEnv):
             batch_size=batch_size,
             num_threads=num_threads,
             thread_affinity_offset=thread_affinity_offset,
+            autoreset_mode=(
+                autoreset_mode.value
+                if isinstance(autoreset_mode, AutoresetMode)
+                else autoreset_mode
+            ),
         )
 
         self.continuous = continuous
@@ -121,6 +128,11 @@ class AtariVectorEnv(VectorEnv):
 
         self.batch_size = num_envs if batch_size == 0 else batch_size
         self.num_envs = num_envs
+        self.metadata["autoreset_mode"] = (
+            autoreset_mode
+            if isinstance(autoreset_mode, AutoresetMode)
+            else AutoresetMode(autoreset_mode)
+        )
         self.observation_space = gymnasium.vector.utils.batch_space(
             self.single_observation_space, self.batch_size
         )

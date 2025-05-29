@@ -261,6 +261,9 @@ namespace ale::vector {
                 );
             }
 
+            // Initialize as nullptr and set in AsyncVectorizer if needed
+            timestep.final_observation = nullptr;
+
             return timestep;
         }
 

@@ -71,7 +71,7 @@ ffi::Error XLAResetImpl(
             return ffi::Error::Internal("Observations buffer is the wrong size");
         }
 
-        for (size_t i = 0; i < vectorizer->get_batch_size(); ++i) {
+        for (int i = 0; i < vectorizer->get_batch_size(); ++i) {
             const auto& timestep = timesteps[i];
 
             std::memcpy(
@@ -182,7 +182,7 @@ ffi::Error XLAStepImpl(
             return ffi::Error::Internal("Observations buffer is the wrong size");
         }
 
-        for (size_t i = 0; i < vectorizer->get_batch_size(); ++i) {
+        for (int i = 0; i < vectorizer->get_batch_size(); ++i) {
             const auto& timestep = timesteps[i];
 
             std::memcpy(

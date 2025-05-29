@@ -53,7 +53,7 @@ namespace ale::vector {
          */
         ALEVectorInterface(
             const fs::path &rom_path,
-            int num_envs,
+            const int num_envs,
             const int frame_skip = 4,
             const int stack_num = 4,
             const int img_height = 84,
@@ -68,9 +68,10 @@ namespace ale::vector {
             const int max_episode_steps = 108000,
             const float repeat_action_probability = 0.0f,
             const bool full_action_space = false,
-            int batch_size = 0,
-            int num_threads = 0,
-            int thread_affinity_offset = -1
+            const int batch_size = 0,
+            const int num_threads = 0,
+            const int thread_affinity_offset = -1,
+            const std::string &autoreset_mode = "NextStep"
         ) : rom_path_(rom_path),
             num_envs_(num_envs),
             frame_skip_(frame_skip),
@@ -113,13 +114,22 @@ namespace ale::vector {
                 );
             };
 
+            if (autoreset_mode == "NextStep") {
+                autoreset_mode_ = AutoresetMode::NextStep;
+            } else if (autoreset_mode == "SameStep") {
+                autoreset_mode_ = AutoresetMode::SameStep;
+            } else {
+                throw std::invalid_argument("Invalid autoreset_mode: " + autoreset_mode + ", expected values: 'NextStep' or 'SameStep'");
+            }
+
             // Create vectorizer
             vectorizer_ = std::make_unique<AsyncVectorizer>(
                 num_envs,
                 batch_size,
                 num_threads,
                 thread_affinity_offset,
-                env_factory
+                env_factory,
+                autoreset_mode_
             );
 
             // Initialize the action set (assuming all environments have the same action set)
@@ -154,7 +164,7 @@ namespace ale::vector {
             std::vector<EnvironmentAction> environment_actions;
             environment_actions.resize(action_ids.size());
 
-            for (int i = 0; i < action_ids.size(); i++) {
+            for (size_t i = 0; i < action_ids.size(); i++) {
                 EnvironmentAction env_action;
                 env_action.env_id = received_env_ids_[i];
                 env_action.action_id = action_ids[i];
@@ -169,9 +179,9 @@ namespace ale::vector {
         /**
         * Returns the environment's data for the environments
         */
-        std::vector<Timestep> recv() {
+        const std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = vectorizer_->recv();
-            for (int i = 0; i < timesteps.size(); i++) {
+            for (size_t i = 0; i < timesteps.size(); i++) {
                 received_env_ids_[i] = timesteps[i].env_id;
             }
             return timesteps;
@@ -191,7 +201,7 @@ namespace ale::vector {
          *
          * @return Number of environments
          */
-        int get_num_envs() const {
+        const int get_num_envs() const {
             return num_envs_;
         }
 
@@ -200,7 +210,7 @@ namespace ale::vector {
          *
          * @return Tuple of (stack_num, height, width, 0) if grayscale or (stack_num, height, width, 3) if RGB
          */
-        std::tuple<int, int, int, int> get_observation_shape() const {
+        const std::tuple<int, int, int, int> get_observation_shape() const {
             if (grayscale_) {
                 return std::make_tuple(stack_num_, img_height_, img_width_, 0);
             } else {
@@ -213,8 +223,17 @@ namespace ale::vector {
          *
          * @return true if observations are grayscale, false if RGB
          */
-        bool is_grayscale() const {
+        const bool is_grayscale() const {
             return grayscale_;
+        }
+
+        /**
+         * Get the async_vectorizer's autoreset mode
+         *
+         * @return the autoreset mode of the async_vectorizer
+         */
+        const AutoresetMode get_autoreset_mode() const {
+            return autoreset_mode_;
         }
 
         /**
@@ -222,7 +241,7 @@ namespace ale::vector {
          *
          * @return pointer for the underlying vectorizer
          */
-        AsyncVectorizer* get_vectorizer() const {
+        const AsyncVectorizer* get_vectorizer() const {
             return vectorizer_.get();
         }
 
@@ -244,6 +263,7 @@ namespace ale::vector {
         int max_episode_steps_;                   // Max steps per episode
         float repeat_action_probability_;         // Repeat actions probability for sticky actions
         bool full_action_space_;                  // Use full action space
+        AutoresetMode autoreset_mode_;
 
         std::vector<int> received_env_ids_;        // Vector of environment ids for the most recently received data
 
