@@ -19,6 +19,8 @@ jobs:
         include:
           - runs-on: ubuntu-latest
             arch: x86_64
+          - runs-on: ubuntu-24.04-arm
+            arch: aarch64
           - runs-on: windows-latest
             arch: AMD64
           - runs-on: macos-13
@@ -43,26 +45,10 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        file: .github/docker/manylinux-x86_64-vcpkg.Dockerfile
-        tags: manylinux-vcpkg:latest
+        file: ".github/docker/manylinux-${{ matrix.arch }}-vcpkg.Dockerfile"
+        tags: "manylinux-${{ matrix.arch }}-vcpkg:latest"
         push: false
         load: true
-
-    - uses: microsoft/setup-msbuild@v2
-      if: runner.os == 'Windows'
-    # TODO(jfarebro): 02/16/2023 - There's a bug where pkg-config isn't installed on the macOS
-    # runner. See: https://github.com/actions/runner-images/pull/7125
-    - name: Install pkg-config on macOS
-      if: runner.os == 'macOS'
-      run: brew install pkg-config
-
-    - uses: lukka/run-vcpkg@v11
-      if: runner.os != 'linux'
-      with:
-        vcpkgGitCommitId: "8150939b69720adc475461978e07c2d2bf5fb76e"
-        # There's a permissions issue with the cache
-        # https://github.com/microsoft/vcpkg/issues/20121
-        doNotCache: true
 
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
@@ -102,6 +88,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: wheels-ubuntu-latest-x86_64
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-ubuntu-24.04-arm-aarch64
           path: dist
 
       - uses: actions/download-artifact@v4

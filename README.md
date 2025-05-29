@@ -23,8 +23,8 @@ Features
 - Multi-platform code (compiled and tested under macOS, Windows, and several Linux distributions).
 - Python bindings through [pybind11](https://github.com/pybind/pybind11).
 - Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
-- Visualization tools.
-- Atari roms are packaged within the pip package
+- C++ based vectorizer for acting in multiple ROMs at the same time.
+- Atari roms are packaged within the pip package.
 
 Quick Start
 ===========
@@ -80,6 +80,9 @@ env = gym.make('ALE/Breakout-v5', continuous=True, render_mode="human")
 ```
 
 For all the environments available and their description, see [gymnasium atari page](https://gymnasium.farama.org/environments/atari/).
+
+A vectorized environment with preprocessing, written in C++, is also available with `gym.make_vec("ALE/Breakout-v5", num_envs=10)`.
+See [vector-environment](https://ale.farama.org/vector-environment/) for more information.
 
 C++
 ---
