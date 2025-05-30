@@ -45,8 +45,8 @@ namespace ale::vector {
             is_sync_(batch_size_ == num_envs_),
             autoreset_mode_(autoreset_mode),
             stop_(false),
-            action_buffer_queue_(new ActionBufferQueue(num_envs_)),
-            state_buffer_queue_(new StateBufferQueue(batch_size_, num_envs_)),
+            action_queue_(new ActionQueue(num_envs_)),
+            state_buffer_(new StateBuffer(batch_size_, num_envs_)),
             final_obs_storage_(num_envs_) {
 
             // Create environments
@@ -84,7 +84,7 @@ namespace ale::vector {
             stop_ = true;
             // Send empty actions to wake up and terminate all worker threads
             const std::vector<ActionSlice> empty_actions(workers_.size());
-            action_buffer_queue_->enqueue_bulk(empty_actions);
+            action_queue_->enqueue_bulk(empty_actions);
             for (auto& worker : workers_) {
                 if (worker.joinable()) {
                     worker.join();
@@ -113,7 +113,7 @@ namespace ale::vector {
                 reset_actions.emplace_back(action);
             }
 
-            action_buffer_queue_->enqueue_bulk(reset_actions);
+            action_queue_->enqueue_bulk(reset_actions);
         }
 
         /**
@@ -136,7 +136,7 @@ namespace ale::vector {
                 action_slices.emplace_back(action);
             }
 
-            action_buffer_queue_->enqueue_bulk(action_slices);
+            action_queue_->enqueue_bulk(action_slices);
         }
 
         /**
@@ -146,7 +146,7 @@ namespace ale::vector {
          * @return Vector of timesteps from the environments
          */
         const std::vector<Timestep> recv() {
-            std::vector<Timestep> timesteps = state_buffer_queue_->collect();
+            std::vector<Timestep> timesteps = state_buffer_->collect();
             return timesteps;
         }
 
@@ -188,8 +188,8 @@ namespace ale::vector {
 
         std::atomic<bool> stop_;                          // Signal to stop worker threads
         std::vector<std::thread> workers_;                // Worker threads
-        std::unique_ptr<ActionBufferQueue> action_buffer_queue_;  // Queue for actions
-        std::unique_ptr<StateBufferQueue> state_buffer_queue_;    // Queue for observations
+        std::unique_ptr<ActionQueue> action_queue_;       // Queue for actions
+        std::unique_ptr<StateBuffer> state_buffer_;       // Queue for observations
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
         mutable std::vector<std::vector<uint8_t>> final_obs_storage_;  // For same-step autoreset
@@ -200,7 +200,7 @@ namespace ale::vector {
         void worker_function() const {
             while (!stop_) {
                 try {
-                    ActionSlice action = action_buffer_queue_->dequeue();
+                    ActionSlice action = action_queue_->dequeue();
                     if (stop_) {
                         break;
                     }
@@ -216,14 +216,14 @@ namespace ale::vector {
                         // Get timestep and write to state buffer
                         Timestep timestep = envs_[env_id]->get_timestep();
                         timestep.final_observation = nullptr;  // Not used in NextStep mode
-                        state_buffer_queue_->write(timestep);
+                        state_buffer_->write(timestep);
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
                         if (action.force_reset) {
                             // on standard `reset`
                             envs_[env_id]->reset();
                             Timestep timestep = envs_[env_id]->get_timestep();
                             timestep.final_observation = nullptr;
-                            state_buffer_queue_->write(timestep);
+                            state_buffer_->write(timestep);
                         } else {
                             envs_[env_id]->step();
                             Timestep step_timestep = envs_[env_id]->get_timestep();
@@ -241,10 +241,10 @@ namespace ale::vector {
                                 reset_timestep.truncated = step_timestep.truncated;
 
                                 // Write the reset timestep with the some of the step timestep data
-                                state_buffer_queue_->write(reset_timestep);
+                                state_buffer_->write(reset_timestep);
                             } else {
                                 step_timestep.final_observation = nullptr;
-                                state_buffer_queue_->write(step_timestep);
+                                state_buffer_->write(step_timestep);
                             }
                         }
                     } else {

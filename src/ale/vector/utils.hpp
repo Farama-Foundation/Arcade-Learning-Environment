@@ -64,9 +64,9 @@ namespace ale::vector {
     /**
      * Lock-free queue for actions to be processed by worker threads
      */
-    class ActionBufferQueue {
+    class ActionQueue {
     public:
-        explicit ActionBufferQueue(const std::size_t num_envs)
+        explicit ActionQueue(const std::size_t num_envs)
             : alloc_ptr_(0),
               done_ptr_(0),
               queue_size_(num_envs * 2),
@@ -122,15 +122,15 @@ namespace ale::vector {
     };
 
     /**
-     * StateBufferQueue handles the collection of timesteps from environments
+     * StateBuffer handles the collection of timesteps from environments
      *
      * Two modes of operation:
      * 1. Ordered mode (batch_size == num_envs): Waits for all env_ids to be filled
      * 2. Unordered mode (batch_size != num_envs): Uses circular buffer for continuous operation
      */
-    class StateBufferQueue {
+    class StateBuffer {
     public:
-        StateBufferQueue(const std::size_t batch_size, const std::size_t num_envs)
+        StateBuffer(const std::size_t batch_size, const std::size_t num_envs)
             : batch_size_(batch_size),
               num_envs_(num_envs),
               ordered_mode_(batch_size == num_envs),
@@ -138,30 +138,38 @@ namespace ale::vector {
               count_(0),
               write_idx_(0),
               read_idx_(0),
-              ready_cv_() {
+              sem_ready_(0),      // Initially no batches ready
+              sem_read_(1) {      // Allow one reader at a time
         }
 
         /**
          * Write a timestep to the buffer
+         * Multiple threads can write simultaneously
          */
         void write(const Timestep& timestep) {
-            std::unique_lock lock(mutex_);
-
             if (ordered_mode_) {
                 // In ordered mode, place timestep at env_id position
                 const int env_id = timestep.env_id;
                 timesteps_[env_id] = timestep;
-                count_++;
+
+                // Atomically increment count and check if batch is ready
+                const auto old_count = count_.fetch_add(1);
+                if (old_count + 1 == batch_size_) {
+                    // Exactly one thread will see count == batch_size_ in ordered mode
+                    sem_ready_.signal(1);
+                }
             } else {
                 // In unordered mode, use circular buffer
-                timesteps_[write_idx_] = timestep;
-                write_idx_ = (write_idx_ + 1) % num_envs_;
-                count_++;
-            }
+                // Each thread gets a unique index atomically
+                const auto idx = write_idx_.fetch_add(1) % num_envs_;
+                timesteps_[idx] = timestep;
 
-            // Signal if we have enough for a batch
-            if (count_ >= batch_size_) {
-                ready_cv_.notify_one();
+                // Atomically increment count and check if batch is ready
+                const auto old_count = count_.fetch_add(1);
+                // Signal if we just crossed a batch boundary
+                if ((old_count + 1) / batch_size_ > old_count / batch_size_) {
+                    sem_ready_.signal(1);
+                }
             }
         }
 
@@ -171,10 +179,11 @@ namespace ale::vector {
          * @return Vector of timesteps
          */
         std::vector<Timestep> collect() {
-            std::unique_lock lock(mutex_);
+            // Wait until a batch is ready
+            while (!sem_ready_.wait()) {}
 
-            // Wait until we have enough timesteps
-            ready_cv_.wait(lock, [this] { return count_ >= batch_size_; });
+            // Acquire read semaphore
+            while (!sem_read_.wait()) {}
 
             // Collect the results
             std::vector<Timestep> result;
@@ -186,18 +195,21 @@ namespace ale::vector {
                     result.push_back(std::move(timesteps_[i]));
                 }
 
-                // Reset for ordered mode
-                count_ = 0;
+                // Reset count for ordered mode (all items consumed)
+                count_.store(0);
             } else {
                 // In unordered mode, read from circular buffer
                 for (size_t i = 0; i < batch_size_; ++i) {
-                    result.push_back(std::move(timesteps_[read_idx_]));
-                    read_idx_ = (read_idx_ + 1) % num_envs_;
+                    const auto idx = read_idx_.fetch_add(1) % num_envs_;
+                    result.push_back(std::move(timesteps_[idx]));
                 }
 
-                // Update count
-                count_ -= batch_size_;
+                // Atomically decrease count by batch_size_
+                count_.fetch_sub(batch_size_);
             }
+
+            // Release read semaphore
+            sem_read_.signal(1);
 
             return result;
         }
@@ -206,20 +218,23 @@ namespace ale::vector {
          * Get the number of timesteps currently buffered
          */
         size_t filled_timesteps() const {
-            std::unique_lock lock(mutex_);
-            return count_;
+            return count_.load();
         }
 
     private:
-        const std::size_t batch_size_;                  // Size of each batch
-        const std::size_t num_envs_;                    // Number of environments
-        const bool ordered_mode_;                       // Whether we're in ordered mode
-        std::vector<Timestep> timesteps_;               // Buffer for timesteps
-        std::size_t count_;                             // Current count of available timesteps
-        std::size_t write_idx_;                         // Write position (for unordered mode)
-        std::size_t read_idx_;                          // Read position (for unordered mode)
-        mutable std::mutex mutex_;                      // Mutex for thread safety
-        std::condition_variable ready_cv_;              // Condition variable for signaling
+        const std::size_t batch_size_;                    // Size of each batch
+        const std::size_t num_envs_;                      // Number of environments
+        const bool ordered_mode_;                         // Whether we're in ordered mode
+        std::vector<Timestep> timesteps_;                 // Buffer for timesteps
+
+        // Atomic counters for lock-free operations
+        std::atomic<std::size_t> count_;                  // Current count of available timesteps
+        std::atomic<std::size_t> write_idx_;              // Write position (for unordered mode)
+        std::atomic<std::size_t> read_idx_;               // Read position (for unordered mode)
+
+        // Semaphores for coordination
+        moodycamel::LightweightSemaphore sem_ready_;      // Signals when a batch is ready for collection
+        moodycamel::LightweightSemaphore sem_read_;       // Controls access to read operations
     };
 }
 

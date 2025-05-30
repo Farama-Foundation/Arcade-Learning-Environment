@@ -317,7 +317,7 @@ class TestVectorEnv:
         env_id,
         batch_size=4,
         num_envs=8,
-        rollout_length=100,
+        rollout_length=1000,
         reset_seed=123,
         action_seed=123,
     ):
