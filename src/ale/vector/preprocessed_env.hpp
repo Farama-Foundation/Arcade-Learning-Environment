@@ -131,6 +131,10 @@ namespace ale::vector {
             for (int i = 0; i < stack_num_; ++i) {
                 frame_stack_.push_back(std::vector<uint8_t>(obs_size_, 0));
             }
+
+            current_timestep_.env_id = env_id;
+            current_timestep_.observation.resize(obs_size_ * stack_num_);
+            current_timestep_.final_observation = nullptr;
         }
 
         void set_seed(const int seed) {
@@ -239,32 +243,24 @@ namespace ale::vector {
         /**
          * Get the current observation
          */
-        Timestep get_timestep() const {
-            Timestep timestep;
-            timestep.env_id = env_id_;
-
-            timestep.reward = reward_;
-            timestep.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
-            timestep.truncated = elapsed_step_ >= max_episode_steps_ && !timestep.terminated;
-
-            timestep.lives = lives_;
-            timestep.frame_number = env_->getFrameNumber();
-            timestep.episode_frame_number = env_->getEpisodeFrameNumber();
-
-            // Combine stacked frames into a single observation
-            timestep.observation.resize(obs_size_ * stack_num_);
+        const Timestep& get_timestep() const {
+            // Copy frame stack data into pre-allocated observation buffer
             for (int i = 0; i < stack_num_; ++i) {
                 std::memcpy(
-                    timestep.observation.data() + i * obs_size_,
+                    current_timestep_.observation.data() + i * obs_size_,
                     frame_stack_[i].data(),
                     obs_size_
                 );
             }
+            current_timestep_.reward = reward_;
+            current_timestep_.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
+            current_timestep_.truncated = elapsed_step_ >= max_episode_steps_ && !current_timestep_.terminated;
 
-            // Initialize as nullptr and set in AsyncVectorizer if needed
-            timestep.final_observation = nullptr;
+            current_timestep_.lives = lives_;
+            current_timestep_.frame_number = env_->getFrameNumber();
+            current_timestep_.episode_frame_number = env_->getEpisodeFrameNumber();
 
-            return timestep;
+            return current_timestep_;
         }
 
         /**
@@ -387,6 +383,7 @@ namespace ale::vector {
 
         EnvironmentAction current_action_;   // Current action to take
         int current_seed_;                   // Current seed to update
+        mutable Timestep current_timestep_;  // Current timestep
 
         // Frame buffers
         std::vector<std::vector<uint8_t>> raw_frames_;  // Raw frame buffers for maxpooling

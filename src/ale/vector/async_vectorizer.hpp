@@ -213,34 +213,30 @@ namespace ale::vector {
                             envs_[env_id]->step();
                         }
 
-                        // Get timestep and write to state buffer
                         Timestep timestep = envs_[env_id]->get_timestep();
-                        timestep.final_observation = nullptr;  // Not used in NextStep mode
                         state_buffer_queue_->write(timestep);
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
                         if (action.force_reset) {
-                            // on standard `reset`
                             envs_[env_id]->reset();
                             Timestep timestep = envs_[env_id]->get_timestep();
-                            timestep.final_observation = nullptr;
                             state_buffer_queue_->write(timestep);
                         } else {
                             envs_[env_id]->step();
                             Timestep step_timestep = envs_[env_id]->get_timestep();
 
-                            // if episode over, autoreset
                             if (envs_[env_id]->is_episode_over()) {
+                                // Store final observation before reset
                                 final_obs_storage_[env_id] = step_timestep.observation;
 
                                 envs_[env_id]->reset();
                                 Timestep reset_timestep = envs_[env_id]->get_timestep();
 
+                                // Copy step data to reset timestep
                                 reset_timestep.final_observation = &final_obs_storage_[env_id];
                                 reset_timestep.reward = step_timestep.reward;
                                 reset_timestep.terminated = step_timestep.terminated;
                                 reset_timestep.truncated = step_timestep.truncated;
 
-                                // Write the reset timestep with the some of the step timestep data
                                 state_buffer_queue_->write(reset_timestep);
                             } else {
                                 step_timestep.final_observation = nullptr;
