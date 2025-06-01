@@ -127,10 +127,8 @@ namespace ale::vector {
             for (int i = 0; i < 2; ++i) {
                 raw_frames_.emplace_back(raw_size_);
             }
-            resized_frame_.resize(obs_size_, 0);
-            for (int i = 0; i < stack_num_; ++i) {
-                frame_stack_.push_back(std::vector<uint8_t>(obs_size_, 0));
-            }
+            frame_stack_ = std::vector<uint8_t>(stack_num_ * obs_size_, 0);
+            frame_stack_idx_ = 0;
         }
 
         void set_seed(const int seed) {
@@ -165,6 +163,10 @@ namespace ale::vector {
                 noop_steps--;
             }
 
+            // Clear the frame stack
+            std::fill(frame_stack_.begin(), frame_stack_.end(), 0);
+            frame_stack_idx_ = 0;
+
             // Get the screen data and process it
             if (obs_format_ == ObsFormat::Grayscale) {
                 get_screen_data_grayscale(raw_frames_[0].data());
@@ -173,10 +175,7 @@ namespace ale::vector {
             }
             std::fill(raw_frames_[1].begin(), raw_frames_[1].end(), 0);
 
-            // Clear the frame stack
-            for (int stack_id = 0; stack_id < stack_num_; ++stack_id) {
-                std::fill(frame_stack_[stack_id].begin(), frame_stack_[stack_id].end(), 0);
-            }
+            // Process the screen
             process_screen();
 
             // Update state
@@ -251,12 +250,13 @@ namespace ale::vector {
             timestep.frame_number = env_->getFrameNumber();
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
-            // Combine stacked frames into a single observation
+            // Copy frames from oldest to newest into a single observation
             timestep.observation.resize(obs_size_ * stack_num_);
             for (int i = 0; i < stack_num_; ++i) {
+                int src_idx = (frame_stack_idx_ + i) % stack_num_;
                 std::memcpy(
                     timestep.observation.data() + i * obs_size_,
-                    frame_stack_[i].data(),
+                    frame_stack_.data() + src_idx * obs_size_,
                     obs_size_
                 );
             }
@@ -331,22 +331,22 @@ namespace ale::vector {
                 }
             }
 
-            // Resize the raw frame based on format
+            // Get pointer to current position in circular buffer
+            uint8_t* dest_ptr = frame_stack_.data() + (frame_stack_idx_ * obs_size_);
+
+            // Resize directly into the circular buffer or copy if no resize needed
             if (obs_frame_height_ != raw_frame_height_ || obs_frame_width_ != raw_frame_width_) {
                 auto cv2_format = (obs_format_ == ObsFormat::Grayscale) ? CV_8UC1 : CV_8UC3;
                 cv::Mat src_img(raw_frame_height_, raw_frame_width_, cv2_format, raw_frames_[0].data());
-                cv::Mat dst_img(obs_frame_height_, obs_frame_width_, cv2_format, resized_frame_.data());
-
-                // Use INTER_AREA for downsampling to avoid moiré patterns
+                cv::Mat dst_img(obs_frame_height_, obs_frame_width_, cv2_format, dest_ptr);
                 cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
             } else {
-                // No resize needed, just copy
-                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), raw_size_);
+                // No resize needed, copy directly to circular buffer
+                std::memcpy(dest_ptr, raw_frames_[0].data(), raw_size_);
             }
 
-            // Update frame stack - remove oldest frame and add new one
-            frame_stack_.pop_front();
-            frame_stack_.push_back(resized_frame_);
+            // Move to next position in circular buffer
+            frame_stack_idx_ = (frame_stack_idx_ + 1) % stack_num_;
         }
 
         int env_id_;                         // Unique ID for this environment
@@ -390,8 +390,8 @@ namespace ale::vector {
 
         // Frame buffers
         std::vector<std::vector<uint8_t>> raw_frames_;  // Raw frame buffers for maxpooling
-        std::vector<uint8_t> resized_frame_;            // Resized frame buffer
-        std::deque<std::vector<uint8_t>> frame_stack_;  // Stack of recent frames
+        std::vector<uint8_t> frame_stack_;   // Stack of recent frames
+        int frame_stack_idx_;                // Frame stack index
     };
 }
 
