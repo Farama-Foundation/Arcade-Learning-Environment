@@ -70,8 +70,13 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
         """
+        rom_path = roms.get_rom_path(game)
+        assert (
+            rom_path is not None
+        ), f'{game} is not a ROM name, it should be snake_case not camel-case, i.e., "ms_pacman" not "MsPacman"'
+
         self.ale = ale_py.ALEVectorInterface(
-            rom_path=roms.get_rom_path(game),
+            rom_path=rom_path,
             num_envs=num_envs,
             frame_skip=frameskip,
             stack_num=stack_num,
