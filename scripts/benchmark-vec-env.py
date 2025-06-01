@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""
-Comprehensive benchmarking script for AtariVectorEnv performance testing.
-Tests the impact of num_envs, batch_size, autoreset_mode, and num_threads on steps per second.
+"""Comprehensive benchmarking script for AtariVectorEnv performance testing.
+
+Allows testing of the impact of `num_envs`, `batch_size`, `autoreset_mode`, and `num_threads` on steps per second and resource usage.
 """
 from __future__ import annotations
 
 import dataclasses
 import gc
+import json
 import os
 import time
 from argparse import ArgumentParser
@@ -27,7 +28,7 @@ class BenchmarkResult:
     num_envs: int
 
     env_params: dict[str, Any]
-    env_param_meaning: str
+    env_params_meaning: str
 
     mean_steps_per_second: Any
     std_steps_per_second: Any
@@ -36,6 +37,8 @@ class BenchmarkResult:
 
 
 class BenchmarkAtariVectorEnv:
+    """Benchmark class for AtariVectorEnv."""
+
     def __init__(
         self,
         num_envs_configs: list[int],
@@ -49,6 +52,9 @@ class BenchmarkAtariVectorEnv:
         """Initialize the benchmark suite.
 
         Args:
+            num_envs_configs: List of number of environments for testing
+            env_params_configs: Dictionary of environment parameter with list of testing values
+            results_filename: Filename for the results to be saved to (csv)
             game: Atari game to test
             warmup_steps: Steps to run before measurement (for JIT warmup)
             measurement_time: Time in seconds to measure for each run
@@ -81,6 +87,8 @@ class BenchmarkAtariVectorEnv:
         self, num_envs: int, env_params: dict[str, Any]
     ) -> tuple[float, float, float]:
         """Run a single benchmark and return steps per second."""
+        _, mem_initial = self.measure_system_resources()
+
         envs = AtariVectorEnv(self.game, num_envs, **env_params)
 
         # Warmup phase
@@ -107,7 +115,7 @@ class BenchmarkAtariVectorEnv:
 
         # Average resource usage during benchmark
         avg_cpu = (cpu_start + cpu_end) / 2
-        avg_memory = (mem_start + mem_end) / 2
+        avg_memory = (mem_start + mem_end) / 2 - mem_initial
 
         envs.close()
         gc.collect()
@@ -115,7 +123,7 @@ class BenchmarkAtariVectorEnv:
         return steps_per_second, avg_cpu, avg_memory
 
     def benchmark_configuration(
-        self, num_envs: int, env_params: dict[str, Any], env_param_meaning: str
+        self, num_envs: int, env_params: dict[str, Any], env_params_meaning: str
     ) -> BenchmarkResult:
         """Run multiple benchmark runs for a configuration and return aggregated results."""
         print(f"Benchmarking configuration: num-envs={num_envs}, {env_params}")
@@ -138,7 +146,7 @@ class BenchmarkAtariVectorEnv:
         result = BenchmarkResult(
             num_envs=num_envs,
             env_params=env_params,
-            env_param_meaning=env_param_meaning,
+            env_params_meaning=env_params_meaning,
             mean_steps_per_second=mean_sps,
             std_steps_per_second=std_sps,
             mean_cpu_usage=mean_cpu,
@@ -161,7 +169,11 @@ class BenchmarkAtariVectorEnv:
             for num_envs in self.num_envs_configs
         ]
         completed_configs = [
-            (row["num_envs"], row["env_params_meaning"], row["env_params"])
+            (
+                row["num_envs"],
+                row["env_params_meaning"],
+                json.loads(row["env_params"].replace("'", '"')),
+            )
             for _, row in self.results_df.iterrows()
         ]
         remaining_configs = [
@@ -187,8 +199,10 @@ class BenchmarkAtariVectorEnv:
                 (
                     self.results_df,
                     pd.DataFrame(
-                        data=dataclasses.asdict(benchmark_result),
-                        columns=self.results_df.columns,
+                        data={
+                            k: [v]
+                            for k, v in dataclasses.asdict(benchmark_result).items()
+                        }
                     ),
                 )
             )
@@ -197,84 +211,31 @@ class BenchmarkAtariVectorEnv:
 
     def plot_steps_per_second(
         self,
-        parameter_key: str = "num_envs",
-        title: str | None = None,
         save_path: str | None = None,
         figsize: tuple = (10, 6),
-        color: str = "skyblue",
     ) -> plt.Figure:
-        """
-        Plot steps per second with error bars from BenchmarkResult data.
+        """Plot steps per second with error bars from BenchmarkResult data.
 
         Args:
-            results: List of BenchmarkResult objects or DataFrame with benchmark results
-            parameter_key: Key to use for x-axis grouping ('num_envs' or key from env_params)
-            title: Plot title (optional)
             save_path: Path to save the plot (optional)
             figsize: Figure size tuple
-            color: Bar color
 
         Returns:
             matplotlib Figure object
         """
         fig, ax = plt.subplots(figsize=figsize)
 
-        # Extract parameter values and sort
-        if parameter_key == "num_envs":
-            param_values = self.results_df["num_envs"].values
-            param_label = "Number of Environments"
-        else:
-            # Extract from env_params
-            param_values = [
-                row["env_params"].get(parameter_key, "")
-                for _, row in self.results_df.iterrows()
-            ]
-            param_label = parameter_key.replace("_", " ").title()
-            # Use env_param_meaning if available and consistent
-            if self.results_df["env_param_meaning"].nunique() == 1:
-                param_label = self.results_df["env_param_meaning"].iloc[0]
-
-        # Sort by parameter values
-        sort_idx = np.argsort(param_values)
-        param_values_sorted = np.array(param_values)[sort_idx]
-        means = self.results_df["mean_steps_per_second"].values[sort_idx]
-        stds = self.results_df["std_steps_per_second"].values[sort_idx]
-
-        # Create the plot with error bars
-        x_pos = range(len(param_values_sorted))
-        ax.bar(
-            x_pos,
-            means,
-            yerr=stds,
-            capsize=5,
-            alpha=0.7,
-            color=color,
-            edgecolor="black",
-            linewidth=0.5,
-        )
-
-        # Customize the plot
-        ax.set_xlabel(param_label)
-        ax.set_ylabel("Steps per Second")
-        ax.set_title(title if title else f"Steps per Second vs {param_label}")
-        ax.set_xticks(x_pos)
-        ax.set_xticklabels(
-            [str(pv) for pv in param_values_sorted],
-            rotation=45 if len(param_values_sorted) > 5 else 0,
-        )
-        ax.grid(True, alpha=0.3)
-
-        # Add value labels on bars
-        for i, (mean, std) in enumerate(zip(means, stds)):
-            ax.text(
-                i,
-                mean + std + max(means) * 0.01,
-                f"{mean:.1f}±{std:.1f}",
-                ha="center",
-                va="bottom",
-                fontsize=9,
+        for param_meaning, group in self.results_df.groupby("env_params_meaning"):
+            ax.errorbar(
+                group["num_envs"],
+                group["mean_steps_per_second"],
+                yerr=group["std_steps_per_second"],
+                label=param_meaning,
             )
 
+        ax.set_xlabel("Number of environments")
+        ax.set_ylabel("Steps per Second")
+        ax.grid(True, alpha=0.3)
         plt.tight_layout()
 
         if save_path:
@@ -284,126 +245,43 @@ class BenchmarkAtariVectorEnv:
 
     def plot_resource_usage(
         self,
-        parameter_key: str = "num_envs",
-        resource_types: list[str] = ["cpu_usage", "memory_usage"],
-        title: str | None = None,
         save_path: str | None = None,
-        figsize: tuple = (12, 8),
+        title: str | None = "Resource Usage",
+        figsize: tuple[int, int] = (12, 8),
         colors: list[str] | None = None,
     ) -> plt.Figure:
-        """
-        Plot resource usage metrics from BenchmarkResult data.
+        """Plot resource usage metrics from BenchmarkResult data.
 
         Args:
-            results: List of BenchmarkResult objects or DataFrame with benchmark results
-            parameter_key: Key to use for x-axis grouping ('num_envs' or key from env_params)
-            resource_types: List of resource metrics to plot ('cpu_usage', 'memory_usage')
-            title: Plot title (optional)
             save_path: Path to save the plot (optional)
+            title: Plot title (optional)
             figsize: Figure size tuple
             colors: List of colors for different metrics (optional)
 
         Returns:
             matplotlib Figure object
         """
-        fig, axes = plt.subplots(len(resource_types), 1, figsize=figsize, sharex=True)
+        fig, axs = plt.subplots(1, 2, figsize=figsize, sharex=True)
 
-        # Handle single subplot case
-        if len(resource_types) == 1:
-            axes = [axes]
-
-        # Default colors if not provided
-        if not colors:
-            colors = plt.cm.Set1(np.linspace(0, 1, len(resource_types)))
-
-        # Extract parameter values and sort
-        if parameter_key == "num_envs":
-            param_values = self.results_df["num_envs"].values
-            param_label = "Number of Environments"
-        else:
-            # Extract from env_params
-            param_values = [
-                row["env_params"].get(parameter_key, "")
-                for _, row in self.results_df.iterrows()
-            ]
-            param_label = parameter_key.replace("_", " ").title()
-            # Use env_param_meaning if available and consistent
-            if self.results_df["env_param_meaning"].nunique() == 1:
-                param_label = self.results_df["env_param_meaning"].iloc[0]
-
-        # Sort by parameter values
-        sort_idx = np.argsort(param_values)
-        param_values_sorted = np.array(param_values)[sort_idx]
-        x_pos = range(len(param_values_sorted))
-
-        for idx, resource_type in enumerate(resource_types):
-            ax = axes[idx]
-
-            # Map resource type to dataframe column
-            if resource_type == "cpu_usage":
-                column_name = "mean_cpu_usage"
-            elif resource_type == "memory_usage":
-                column_name = "mean_memory_usage"
-            else:
-                column_name = f"mean_{resource_type}"
-
-            if column_name not in self.results_df.columns:
-                print(f"Warning: Column {column_name} not found in data")
-                continue
-
-            means = self.results_df[column_name].values[sort_idx]
-
-            # Create line plot (no error bars for resource usage since we only have means)
-            ax.plot(
-                x_pos,
-                means,
-                marker="o",
-                linestyle="-",
-                linewidth=2,
-                markersize=6,
-                color=colors[idx],
-                label=resource_type.replace("_", " ").title(),
+        for param_meaning, group in self.results_df.groupby("env_params_meaning"):
+            axs[0].plot(
+                group["num_envs"],
+                group["mean_cpu_usage"],
+                label=param_meaning,
+            )
+            axs[1].plot(
+                group["num_envs"], group["mean_memory_usage"], label=param_meaning
             )
 
-            # Fill area under the curve for better visualization
-            ax.fill_between(x_pos, 0, means, alpha=0.2, color=colors[idx])
-
-            # Customize subplot
-            ylabel = resource_type.replace("_", " ").title()
-            if "usage" in resource_type:
-                ylabel += " (%)"
-            elif "memory" in resource_type:
-                ylabel += " (MB)"
-
-            ax.set_ylabel(ylabel)
-            ax.grid(True, alpha=0.3)
-            ax.legend(loc="upper right")
-
-            # Add value annotations
-            for i, mean in enumerate(means):
-                if mean > 0:  # Only annotate non-zero values
-                    ax.annotate(
-                        f"{mean:.1f}",
-                        (i, mean),
-                        textcoords="offset points",
-                        xytext=(0, 10),
-                        ha="center",
-                        fontsize=8,
-                    )
-
-        # Set x-axis labels on the bottom subplot
-        axes[-1].set_xlabel(param_label)
-        axes[-1].set_xticks(x_pos)
-        axes[-1].set_xticklabels(
-            [str(pv) for pv in param_values_sorted],
-            rotation=45 if len(param_values_sorted) > 5 else 0,
-        )
-
-        # Set overall title
-        if title:
-            fig.suptitle(title, fontsize=14, y=0.98)
-        else:
-            fig.suptitle(f"Resource Usage vs {param_label}", fontsize=14, y=0.98)
+        axs[0].set_title("CPU Usage")
+        axs[1].set_title("Memory Usage")
+        axs[0].set_xlabel("Number of environments")
+        axs[1].set_xlabel("Number of environments")
+        axs[0].set_ylabel("CPU Usage (%)")
+        axs[1].set_ylabel("Memory Usage (MB)")
+        axs[0].grid(True, alpha=0.3)
+        axs[1].grid(True, alpha=0.3)
+        axs[0].legend(loc="upper right")
 
         plt.tight_layout()
 
@@ -458,6 +336,6 @@ if __name__ == "__main__":
         )
         benchmark.run_all_benchmarks()
 
-    # Create visualizations
-    benchmark.plot_steps_per_second("benchmark-limited-sps.png")
-    benchmark.plot_resource_usage("benchmark-limited-resource-usage.png")
+        # Create visualizations
+        benchmark.plot_steps_per_second("benchmark-limited-sps.png")
+        benchmark.plot_resource_usage("benchmark-limited-resource-usage.png")
