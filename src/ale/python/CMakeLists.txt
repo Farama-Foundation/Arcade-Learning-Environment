@@ -1,32 +1,22 @@
-find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
+find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
-include(FetchContent)
 set(PYBIND11_FINDPYTHON ON)
-set(PYBIND11_VER 2.13.1)
-find_package(pybind11 ${PYBIND11_VER} QUIET)
-
-if(NOT pybind11_FOUND)
-    FetchContent_Declare(
-        pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11
-        GIT_TAG v${PYBIND11_VER})
-    FetchContent_MakeAvailable(pybind11)
-endif()
+find_package(pybind11 REQUIRED)
 
 # If vector library is enabled, include the vector Python interface
 # XLA Integration
 if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
-#    message(STATUS "Python Executable: '${Python3_EXECUTABLE}'")
-#    message(STATUS "Python3_SITELIB=${Python3_SITELIB}, Python3_SITEARCH=${Python3_SITEARCH}")
+    # message(STATUS "Python Executable: '${Python_EXECUTABLE}'")
+    # message(STATUS "Python_SITELIB=${Python_SITELIB}, Python_SITEARCH=${Python_SITEARCH}")
     execute_process(
-        COMMAND "${Python3_EXECUTABLE}" "-c"
-        "import sys; sys.path.append(r'${Python3_SITELIB}'); sys.path.append(r'${Python3_SITEARCH}'); from jax import ffi; print(ffi.include_dir())"
+        COMMAND "${Python_EXECUTABLE}" "-c"
+        "import sys; sys.path.append(r'${Python_SITELIB}'); sys.path.append(r'${Python_SITEARCH}'); from jax import ffi; print(ffi.include_dir())"
         OUTPUT_STRIP_TRAILING_WHITESPACE
         OUTPUT_VARIABLE XLA_DIR
     )
-#    message(STATUS "XLA include directory: '${XLA_DIR}'")
+    # message(STATUS "XLA include directory: '${XLA_DIR}'")
 
-#    find_package(CUDAToolkit REQUIRED)
+    # find_package(CUDAToolkit REQUIRED)
 
     add_library(ale-py MODULE ale_python_interface.cpp ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
     set_target_properties(ale-py PROPERTIES POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 17)

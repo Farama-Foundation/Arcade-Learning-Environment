@@ -1,6 +1,7 @@
 [build-system]
 requires = [
     "scikit-build-core>=0.11.0",
+    "pybind11>=2.13.1",
     "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
 ]
 build-backend = "scikit_build_core.build"
@@ -69,17 +70,21 @@ changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/bl
 # Build directory
 build-dir = "build/{wheel_tag}"
 # Minimum CMake version
-cmake.minimum-version = "3.22"
+cmake.version = ">=3.27"
 # CMake build type
 cmake.build-type = "Release"
 # Verbose output for debugging
-cmake.verbose = false
+build.verbose = false
 # Install components
 install.components = ["python"]
 # Wheel configuration
 wheel.expand-macos-universal-tags = true
 # Source directory layout
 experimental = true
+
+metadata.version.provider = "scikit_build_core.metadata.regex"
+metadata.version.input = "version.txt"
+metadata.version.regex = "^(?P<value>.+)$"
 
 [tool.scikit-build.cmake.define]
 # Core build options
@@ -88,8 +93,6 @@ BUILD_PYTHON_LIB = "ON"
 BUILD_VECTOR_LIB = "ON"
 SDL_SUPPORT = "ON"
 SDL_DYNLOAD = "ON"
-# Python executable
-Python3_EXECUTABLE = { env = "PYTHON_EXECUTABLE", default = "" }
 
 #[tool.scikit-build.cmake.define.BUILD_VECTOR_XLA_LIB]
 ## Only enable XLA on supported platforms
@@ -112,8 +115,10 @@ testpaths = ["tests"]
 norecursedirs = ["vcpkg", "build"]
 
 [tool.cibuildwheel]
+environment = { CMAKE_ARGS = "-DPYBIND11_FINDPYTHON=ON" }
+
 # Skip 32-bit wheels, PyPy & musllinux
-skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
+skip = ["*-win32", "*i686", "*-musllinux*"]
 
 build-frontend = "build"
 manylinux-x86_64-image = "manylinux-x86_64-vcpkg:latest"
