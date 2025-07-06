@@ -3,6 +3,7 @@
 import os
 import re
 
+
 def parse_version(version_file):
     """Parse version from `version_file`.
 
@@ -21,10 +22,12 @@ def parse_version(version_file):
 
     return version
 
+
 def get_version():
     """Get the version for the package."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     version_file = os.path.join(current_dir, "version.txt")
     return parse_version(version_file)
+
 
 __version__ = get_version()

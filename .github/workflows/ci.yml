@@ -49,6 +49,10 @@ jobs:
             python: '3.12'
             triplet: x64-osx-mixed
 
+          - runs-on: macos-14
+            python: '3.12'
+            triplet: arm64-osx-mixed
+
           - runs-on: windows-latest
             python: '3.12'
             triplet: x64-windows
