@@ -1,9 +1,9 @@
 [build-system]
 requires = [
-    "setuptools>=77.0.0",
+    "scikit-build-core>=0.11.0",
     "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "ale-py"
@@ -64,6 +64,38 @@ test = [
 homepage = "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
 documentation = "https://ale.farama.org"
 changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
+
+[tool.scikit-build]
+# Build directory
+build-dir = "build/{wheel_tag}"
+# Minimum CMake version
+cmake.minimum-version = "3.22"
+# CMake build type
+cmake.build-type = "Release"
+# Verbose output for debugging
+cmake.verbose = false
+# Install components
+install.components = ["python"]
+# Wheel configuration
+wheel.expand-macos-universal-tags = true
+# Source directory layout
+experimental = true
+
+[tool.scikit-build.cmake.define]
+# Core build options
+BUILD_CPP_LIB = "OFF"
+BUILD_PYTHON_LIB = "ON"
+BUILD_VECTOR_LIB = "ON"
+SDL_SUPPORT = "ON"
+SDL_DYNLOAD = "ON"
+# Python executable
+Python3_EXECUTABLE = { env = "PYTHON_EXECUTABLE", default = "" }
+
+#[tool.scikit-build.cmake.define.BUILD_VECTOR_XLA_LIB]
+## Only enable XLA on supported platforms
+#when = "python_version>='3.10' and (sys_platform=='win32' or sys_platform=='linux')"
+#value = "ON"
+#default = "OFF"
 
 [tool.setuptools]
 packages = [

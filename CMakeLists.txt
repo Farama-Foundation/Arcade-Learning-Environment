@@ -74,9 +74,3 @@ project(ale VERSION ${ALE_DEFAULT_VERSION}
 
 # Main ALE src directory
 add_subdirectory(src/ale)
-
-# Only include tests in the main project
-# if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-#  enable_testing()
-#  add_subdirectory(tests)
-# endif()
