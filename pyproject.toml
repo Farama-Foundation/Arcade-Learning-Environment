@@ -82,6 +82,8 @@ wheel.expand-macos-universal-tags = true
 # Source directory layout
 experimental = true
 
+wheel.packages = ["src/ale/python"]
+
 metadata.version.provider = "scikit_build_core.metadata.regex"
 metadata.version.input = "version.txt"
 metadata.version.regex = "^(?P<value>.+)$"
@@ -99,14 +101,6 @@ SDL_DYNLOAD = "ON"
 #when = "python_version>='3.10' and (sys_platform=='win32' or sys_platform=='linux')"
 #value = "ON"
 #default = "OFF"
-
-[tool.setuptools]
-packages = [
-    "ale_py",
-    "ale_py.roms",
-]
-package-dir = {ale_py = "src/ale/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
 
 [tool.pytest.ini_options]
 minversion = "7.0"

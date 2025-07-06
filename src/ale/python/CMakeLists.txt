@@ -91,3 +91,22 @@ if (SDL_SUPPORT AND SDL_DYNLOAD)
             $<TARGET_FILE:SDL2::SDL2>
             $<TARGET_FILE_DIR:ale-py>)
 endif()
+
+install(TARGETS ale-py DESTINATION ale_py COMPONENT python)
+
+# Install Python source files including type hints
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+        DESTINATION ale_py
+        COMPONENT python
+        FILES_MATCHING
+        PATTERN "*.py"
+        PATTERN "*.pyi"
+        PATTERN "py.typed")
+
+# Install ROMs with their metadata
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/roms/
+        DESTINATION ale_py/roms
+        COMPONENT python
+        FILES_MATCHING
+        PATTERN "*.bin"
+        PATTERN "*.json")
