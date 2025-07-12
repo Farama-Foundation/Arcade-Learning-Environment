@@ -64,19 +64,12 @@ if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
   ]=])
 endif()
 
-include(ParseVersion)
-parse_version("version.txt" PREFIX ALE)
-
-project(ale VERSION ${ALE_DEFAULT_VERSION}
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" ALE_VERSION)
+string(STRIP "${ALE_VERSION}" ALE_VERSION)
+project(ale VERSION ${ALE_VERSION}
             DESCRIPTION "The Arcade Learning Environment (ALE) - a platform for AI research."
             HOMEPAGE_URL "http://www.arcadelearningenvironment.org"
             LANGUAGES CXX)
 
 # Main ALE src directory
 add_subdirectory(src/ale)
-
-# Only include tests in the main project
-# if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-#  enable_testing()
-#  add_subdirectory(tests)
-# endif()
