@@ -69,18 +69,23 @@ changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/bl
 [tool.scikit-build]
 # Build directory
 build-dir = "build/{wheel_tag}"
+# Verbose output for debugging
+build.verbose = false
+
 # Minimum CMake version
 cmake.version = ">=3.27"
 # CMake build type
 cmake.build-type = "Release"
-# Verbose output for debugging
-build.verbose = false
+
 # Install components
 install.components = ["python"]
+
 # Wheel configuration
 wheel.expand-macos-universal-tags = true
 wheel.packages = ["src/ale/python"]
 wheel.cmake = true
+wheel.install-dir = "ale_py"
+
 # Source directory layout
 experimental = true
 
@@ -95,7 +100,7 @@ BUILD_PYTHON_LIB = "ON"
 BUILD_VECTOR_LIB = "ON"
 BUILD_VECTOR_XLA_LIB = "OFF"
 SDL_SUPPORT = "ON"
-SDL_DYNLOAD = "ON"
+SDL_DYNLOAD = "OFF"
 
 [[tool.scikit-build.overrides]]
 # Only enable XLA on supported platforms
