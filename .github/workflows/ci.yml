@@ -263,7 +263,7 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install "ale_py-0.11.1-${{ matrix.wheel-name }}.whl[test]"
+        run: python -m pip install "ale_py-0.11.2-${{ matrix.wheel-name }}.whl[test]"
 
       - name: Test
         run: python -m pytest
