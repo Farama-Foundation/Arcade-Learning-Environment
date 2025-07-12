@@ -11,7 +11,20 @@
       "dependencies": [
         {
           "name": "sdl2",
-          "features": [],
+          "features": [
+            {
+              "name": "x11",
+              "platform": "linux"
+            },
+            {
+              "name": "wayland",
+              "platform": "linux"
+            },
+            {
+              "name": "alsa",
+              "platform": "linux"
+            }
+          ],
           "default-features": false
         }
       ]
