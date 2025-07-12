@@ -19,6 +19,10 @@
             {
               "name": "wayland",
               "platform": "linux"
+            },
+            {
+              "name": "alsa",
+              "platform": "linux"
             }
           ],
           "default-features": false
