@@ -98,9 +98,8 @@ metadata.version.regex = "^(?P<value>.+)$"
 BUILD_CPP_LIB = "OFF"
 BUILD_PYTHON_LIB = "ON"
 BUILD_VECTOR_LIB = "ON"
-BUILD_VECTOR_XLA_LIB = "OFF"
 SDL_SUPPORT = "ON"
-SDL_DYNLOAD = "OFF"
+SDL_DYNLOAD = "ON"
 
 [[tool.scikit-build.overrides]]
 # Only enable XLA on supported platforms

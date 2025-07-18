@@ -261,6 +261,7 @@ jobs:
 
       - name: Get ale-py version
         id: get_version
+        shell: bash
         run: echo "VERSION=$(cat version.txt)" >> $GITHUB_OUTPUT
 
       - uses: actions/download-artifact@v4

@@ -16,8 +16,6 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
     )
     # message(STATUS "XLA include directory: '${XLA_DIR}'")
 
-    # find_package(CUDAToolkit REQUIRED)
-
     add_library(ale-py MODULE ale_python_interface.cpp ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
     set_target_properties(ale-py PROPERTIES POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 17)
     target_include_directories(ale-py PUBLIC ${XLA_DIR})
@@ -70,7 +68,7 @@ add_custom_command(TARGET ale-py POST_BUILD
 # If we're dynamically loading SDL with Python we'll be building a wheel
 # so we should prepare SDL for distribution. Add rpath and copy over
 # the dynamic library. auditwheel will take care of ensuring
-# corss-platform compatability on macOS and Linux.
+# cross-platform compatability on macOS and Linux.
 if (SDL_SUPPORT AND SDL_DYNLOAD)
     set_target_properties(ale-py PROPERTIES
         INSTALL_RPATH_USE_ORIGIN TRUE
