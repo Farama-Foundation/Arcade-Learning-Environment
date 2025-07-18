@@ -70,7 +70,7 @@ changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/bl
 # Build directory
 build-dir = "build/{wheel_tag}"
 # Verbose output for debugging
-build.verbose = false
+build.verbose = true
 
 # Minimum CMake version
 cmake.version = ">=3.27"
