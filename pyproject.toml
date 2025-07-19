@@ -1,9 +1,10 @@
 [build-system]
 requires = [
-    "setuptools>=77.0.0",
+    "scikit-build-core>=0.11.0",
+    "pybind11>=2.13.1",
     "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "ale-py"
@@ -65,13 +66,45 @@ homepage = "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
 documentation = "https://ale.farama.org"
 changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
-[tool.setuptools]
-packages = [
-    "ale_py",
-    "ale_py.roms",
-]
-package-dir = {ale_py = "src/ale/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
+[tool.scikit-build]
+build-dir = "build/{wheel_tag}"
+build.verbose = true
+
+# Minimum CMake version
+cmake.version = ">=3.27"
+cmake.build-type = "Release"
+
+# Install components
+install.components = ["python"]
+
+# Wheel configuration
+wheel.expand-macos-universal-tags = true
+wheel.packages = ["src/ale/python"]
+wheel.cmake = true
+wheel.install-dir = "ale_py"
+
+# Source directory layout
+experimental = true
+
+metadata.version.provider = "scikit_build_core.metadata.regex"
+metadata.version.input = "version.txt"
+metadata.version.regex = "^(?P<value>.+)$"
+
+[[tool.scikit-build.overrides]]
+# Core build options
+if.python_version = ">=3.9"
+cmake.define.BUILD_CPP_LIB = "OFF"
+cmake.define.BUILD_PYTHON_LIB = "ON"
+cmake.define.BUILD_VECTOR_LIB = "ON"
+cmake.define.SDL_SUPPORT = "ON"
+cmake.define.SDL_DYNLOAD = "ON"
+
+[[tool.scikit-build.overrides]]
+# Only enable XLA on supported platforms
+if.python_version = ">=3.10"
+if.platform-machine = "^(x86_64|aarch64|AMD64)"
+inherit.cmake.define = "append"  # necessary for multiple overrides
+cmake.define.BUILD_VECTOR_XLA_LIB = "ON"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
@@ -80,8 +113,10 @@ testpaths = ["tests"]
 norecursedirs = ["vcpkg", "build"]
 
 [tool.cibuildwheel]
+environment = { CMAKE_ARGS = "-DPYBIND11_FINDPYTHON=ON" }
+
 # Skip 32-bit wheels, PyPy & musllinux
-skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
+skip = ["*-win32", "*i686", "*-musllinux*"]
 
 build-frontend = "build"
 manylinux-x86_64-image = "manylinux-x86_64-vcpkg:latest"
@@ -103,7 +138,7 @@ environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-osx-mi
 # Windows x64
 [[tool.cibuildwheel.overrides]]
 select = "*-win_amd64"
-environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows", VCPKG_FEATURE_FLAGS = "-compilertracking" }
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
 
 # Linux x86-64 (manylinux)
 [[tool.cibuildwheel.overrides]]

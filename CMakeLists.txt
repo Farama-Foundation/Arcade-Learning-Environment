@@ -8,6 +8,7 @@ option(BUILD_PYTHON_LIB "Build Python Interface" ON)
 
 # Enable SDL for screen and audio support
 option(SDL_SUPPORT "Enable SDL support" OFF)
+option(SDL_DYNLOAD "Dynamically load SDL" OFF)
 # Append VCPKG manifest feature
 if(SDL_SUPPORT)
   list(APPEND VCPKG_MANIFEST_FEATURES "sdl")
@@ -21,7 +22,7 @@ endif()
 
 option(BUILD_VECTOR_XLA_LIB "Build with Vector XLA Support" OFF)
 if (BUILD_VECTOR_XLA_LIB)
-  add_definitions(-BUILD_VECTOR_XLA_LIB)
+  add_definitions(-DBUILD_VECTOR_XLA_LIB)
 endif()
 
 # Set cmake module path
@@ -64,19 +65,12 @@ if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
   ]=])
 endif()
 
-include(ParseVersion)
-parse_version("version.txt" PREFIX ALE)
-
-project(ale VERSION ${ALE_DEFAULT_VERSION}
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" ALE_VERSION)
+string(STRIP "${ALE_VERSION}" ALE_VERSION)
+project(ale VERSION ${ALE_VERSION}
             DESCRIPTION "The Arcade Learning Environment (ALE) - a platform for AI research."
-            HOMEPAGE_URL "http://www.arcadelearningenvironment.org"
+            HOMEPAGE_URL "http://ale.farama.org/"
             LANGUAGES CXX)
 
 # Main ALE src directory
 add_subdirectory(src/ale)
-
-# Only include tests in the main project
-# if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-#  enable_testing()
-#  add_subdirectory(tests)
-# endif()
