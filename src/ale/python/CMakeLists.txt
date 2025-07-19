@@ -90,11 +90,12 @@ if (SDL_SUPPORT AND SDL_DYNLOAD)
             $<TARGET_FILE_DIR:ale-py>)
 endif()
 
-install(TARGETS ale-py DESTINATION ale_py COMPONENT python)
+# Install the compiled project
+install(TARGETS ale-py DESTINATION . COMPONENT python)
 
 # Install Python source files including type hints
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-        DESTINATION ale_py
+        DESTINATION .
         COMPONENT python
         FILES_MATCHING
         PATTERN "*.py"
@@ -103,7 +104,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 
 # Install ROMs with their metadata
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/roms/
-        DESTINATION ale_py/roms
+        DESTINATION roms
         COMPONENT python
         FILES_MATCHING
         PATTERN "*.bin"
