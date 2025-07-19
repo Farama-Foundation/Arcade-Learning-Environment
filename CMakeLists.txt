@@ -69,7 +69,7 @@ file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" ALE_VERSION)
 string(STRIP "${ALE_VERSION}" ALE_VERSION)
 project(ale VERSION ${ALE_VERSION}
             DESCRIPTION "The Arcade Learning Environment (ALE) - a platform for AI research."
-            HOMEPAGE_URL "http://www.arcadelearningenvironment.org"
+            HOMEPAGE_URL "http://ale.farama.org/"
             LANGUAGES CXX)
 
 # Main ALE src directory

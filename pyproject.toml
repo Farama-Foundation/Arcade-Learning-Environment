@@ -67,14 +67,11 @@ documentation = "https://ale.farama.org"
 changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
 [tool.scikit-build]
-# Build directory
 build-dir = "build/{wheel_tag}"
-# Verbose output for debugging
 build.verbose = true
 
 # Minimum CMake version
 cmake.version = ">=3.27"
-# CMake build type
 cmake.build-type = "Release"
 
 # Install components
@@ -95,7 +92,7 @@ metadata.version.regex = "^(?P<value>.+)$"
 
 [[tool.scikit-build.overrides]]
 # Core build options
-if.python_version = ">=3.10"
+if.python_version = ">=3.9"
 cmake.define.BUILD_CPP_LIB = "OFF"
 cmake.define.BUILD_PYTHON_LIB = "ON"
 cmake.define.BUILD_VECTOR_LIB = "ON"
@@ -106,6 +103,7 @@ cmake.define.SDL_DYNLOAD = "ON"
 # Only enable XLA on supported platforms
 if.python_version = ">=3.10"
 if.platform-machine = "^(x86_64|aarch64|AMD64)"
+inherit.cmake.define = "append"  # necessary for multiple overrides
 cmake.define.BUILD_VECTOR_XLA_LIB = "ON"
 
 [tool.pytest.ini_options]
@@ -140,7 +138,7 @@ environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-osx-mi
 # Windows x64
 [[tool.cibuildwheel.overrides]]
 select = "*-win_amd64"
-environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows", VCPKG_FEATURE_FLAGS = "-compilertracking" }
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
 
 # Linux x86-64 (manylinux)
 [[tool.cibuildwheel.overrides]]
