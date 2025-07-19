@@ -8,6 +8,7 @@ option(BUILD_PYTHON_LIB "Build Python Interface" ON)
 
 # Enable SDL for screen and audio support
 option(SDL_SUPPORT "Enable SDL support" OFF)
+option(SDL_DYNLOAD "Dynamically load SDL" OFF)
 # Append VCPKG manifest feature
 if(SDL_SUPPORT)
   list(APPEND VCPKG_MANIFEST_FEATURES "sdl")
@@ -21,7 +22,7 @@ endif()
 
 option(BUILD_VECTOR_XLA_LIB "Build with Vector XLA Support" OFF)
 if (BUILD_VECTOR_XLA_LIB)
-  add_definitions(-BUILD_VECTOR_XLA_LIB)
+  add_definitions(-DBUILD_VECTOR_XLA_LIB)
 endif()
 
 # Set cmake module path

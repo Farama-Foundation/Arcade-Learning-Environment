@@ -36,7 +36,8 @@ target_link_libraries(ale-py PRIVATE pybind11::module)
 # Make sure to set the proper prefix and extension from pybind11
 set_target_properties(ale-py PROPERTIES
     OUTPUT_NAME _ale_py
-    PREFIX "${PYTHON_MODULE_PREFIX}")
+    PREFIX "${PYTHON_MODULE_PREFIX}"
+    SUFFIX "${PYTHON_MODULE_EXTENSION}")
 
 # To test ale-py we need to make sure that all generated resources
 # are in CMAKE_CURRENT_BINARY_DIR, i.e., build/src/python.

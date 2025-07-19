@@ -35,6 +35,14 @@ from ale_py._ale_py import SDL_SUPPORT, Action, ALEInterface, ALEState, LoggerMo
 
 __all__ = ["Action", "ALEInterface", "ALEState", "LoggerMode", "SDL_SUPPORT"]
 
+try:
+    # As the vector interface is an optional cmake build, it's not assumed to exist
+    from ale_py._ale_py import ALEVectorInterface
+
+    __all__ += ["ALEVectorInterface"]
+except ImportError:
+    pass
+
 
 try:
     from ale_py.env import AtariEnv, AtariEnvStepMetadata
@@ -46,10 +54,5 @@ try:
 
     register_v0_v4_envs()
     register_v5_envs()
-
-    # As the vector interface is an optional cmake build, it's not assumed to exist
-    from ale_py._ale_py import ALEVectorInterface
-
-    __all__ += ["ALEVectorInterface"]
 except ImportError:
     pass

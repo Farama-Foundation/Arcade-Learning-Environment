@@ -93,18 +93,19 @@ metadata.version.provider = "scikit_build_core.metadata.regex"
 metadata.version.input = "version.txt"
 metadata.version.regex = "^(?P<value>.+)$"
 
-[tool.scikit-build.cmake.define]
+[[tool.scikit-build.overrides]]
 # Core build options
-BUILD_CPP_LIB = "OFF"
-BUILD_PYTHON_LIB = "ON"
-BUILD_VECTOR_LIB = "ON"
-SDL_SUPPORT = "ON"
-SDL_DYNLOAD = "ON"
+if.python_version = ">=3.10"
+cmake.define.BUILD_CPP_LIB = "OFF"
+cmake.define.BUILD_PYTHON_LIB = "ON"
+cmake.define.BUILD_VECTOR_LIB = "ON"
+cmake.define.SDL_SUPPORT = "ON"
+cmake.define.SDL_DYNLOAD = "ON"
 
 [[tool.scikit-build.overrides]]
 # Only enable XLA on supported platforms
 if.python_version = ">=3.10"
-if.platform-system = "^(win32|linux)"
+if.platform-machine = "^(x86_64|aarch64|AMD64)"
 cmake.define.BUILD_VECTOR_XLA_LIB = "ON"
 
 [tool.pytest.ini_options]
