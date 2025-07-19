@@ -69,7 +69,6 @@ add_custom_command(TARGET ale-py POST_BUILD
 # so we should prepare SDL for distribution. Add rpath and copy over
 # the dynamic library. auditwheel will take care of ensuring
 # cross-platform compatability on macOS and Linux.
-message(STATUS "SDL_SUPPORT=${SDL_SUPPORT} and SDL_DYNLOAD=${SDL_DYNLOAD}")
 if (SDL_SUPPORT AND SDL_DYNLOAD)
     set_target_properties(ale-py PROPERTIES
         INSTALL_RPATH_USE_ORIGIN TRUE
@@ -88,6 +87,11 @@ if (SDL_SUPPORT AND SDL_DYNLOAD)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:SDL2::SDL2>
             $<TARGET_FILE_DIR:ale-py>)
+
+    # Install SDL2 library alongside the Python module
+    install(FILES $<TARGET_FILE:SDL2::SDL2>
+            DESTINATION .
+            COMPONENT python)
 endif()
 
 # Install the compiled project
