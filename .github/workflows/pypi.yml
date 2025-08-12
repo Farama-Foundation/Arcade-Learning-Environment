@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Set up Docker Buildx
       if: runner.os == 'linux'
@@ -73,7 +73,7 @@ jobs:
 
     steps:
       # create the `ale_py-*.*.*.tar.gz` for source building
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
