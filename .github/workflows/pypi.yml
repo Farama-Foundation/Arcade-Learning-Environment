@@ -80,27 +80,27 @@ jobs:
       - run: pip install setuptools
       - run: python setup.py sdist
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: wheels-windows-latest-AMD64
           path: dist
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: wheels-ubuntu-latest-x86_64
           path: dist
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: wheels-ubuntu-24.04-arm-aarch64
           path: dist
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: wheels-macos-13-x86_64
           path: dist
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: wheels-macos-13-arm64
           path: dist
