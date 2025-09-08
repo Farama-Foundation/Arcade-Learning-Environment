@@ -74,7 +74,7 @@ jobs:
     steps:
       # create the `ale_py-*.*.*.tar.gz` for source building
       - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - run: pip install setuptools
