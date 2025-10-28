@@ -255,7 +255,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
 
