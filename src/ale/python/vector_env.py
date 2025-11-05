@@ -198,12 +198,12 @@ class AtariVectorEnv(VectorEnv):
             y = actions[:, 0] * np.sin(actions[:, 1])
 
             horizontal = (
-                -(x < self.continuous_action_threshold).astype(np.int32)
+                -(x < -self.continuous_action_threshold).astype(np.int32)
                 + (x > self.continuous_action_threshold).astype(np.int32)
                 + 1
             )
             vertical = (
-                -(y < self.continuous_action_threshold).astype(np.int32)
+                -(y < -self.continuous_action_threshold).astype(np.int32)
                 + (y > self.continuous_action_threshold).astype(np.int32)
                 + 1
             )
