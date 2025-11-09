@@ -24,8 +24,6 @@ jobs:
           - runs-on: windows-latest
             arch: AMD64
           - runs-on: macos-13
-            arch: x86_64
-          - runs-on: macos-13
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
@@ -93,11 +91,6 @@ jobs:
       - uses: actions/download-artifact@v6
         with:
           name: wheels-ubuntu-24.04-arm-aarch64
-          path: dist
-
-      - uses: actions/download-artifact@v6
-        with:
-          name: wheels-macos-13-x86_64
           path: dist
 
       - uses: actions/download-artifact@v6
