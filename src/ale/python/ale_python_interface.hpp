@@ -18,10 +18,12 @@
 
 #include <optional>
 
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/filesystem.h>
 
 #include "ale/ale_interface.hpp"
 #include "version.hpp"
@@ -34,11 +36,11 @@
 #endif
 
 
-namespace py = pybind11;
-void init_vector_module(py::module &m);
-void init_vector_module_xla(py::module &m);
+namespace nb = nanobind;
+void init_vector_module(nb::module_ &m);
+void init_vector_module_xla(nb::module_ &m);
 
-using namespace py::literals;
+using namespace nb::literals;
 
 namespace ale {
 
@@ -46,26 +48,28 @@ class ALEPythonInterface : public ALEInterface {
     public:
         using ALEInterface::ALEInterface;
 
-        void getScreen(py::array_t<pixel_t, py::array::c_style>& buffer);
-        void getScreenRGB(py::array_t<pixel_t, py::array::c_style>& buffer);
-        void getScreenGrayscale(py::array_t<pixel_t, py::array::c_style>& buffer);
+        // Screen methods use dynamic shapes (varies by game: 210x160 or 250x160)
+        void getScreen(nb::ndarray<pixel_t, nb::c_contig, nb::device::cpu>& buffer);
+        void getScreenRGB(nb::ndarray<pixel_t, nb::c_contig, nb::device::cpu>& buffer);
+        void getScreenGrayscale(nb::ndarray<pixel_t, nb::c_contig, nb::device::cpu>& buffer);
 
-        py::array_t<pixel_t, py::array::c_style> getScreen();
-        py::array_t<pixel_t, py::array::c_style> getScreenRGB();
-        py::array_t<pixel_t, py::array::c_style> getScreenGrayscale();
+        nb::ndarray<nb::numpy, pixel_t> getScreen();
+        nb::ndarray<nb::numpy, pixel_t> getScreenRGB();
+        nb::ndarray<nb::numpy, pixel_t> getScreenGrayscale();
 
         inline reward_t act(unsigned int action, const float paddle_strength = 1.0) {
             return ALEInterface::act(static_cast<Action>(action), paddle_strength);
         }
 
-        inline py::tuple getScreenDims() const {
+        inline nb::tuple getScreenDims() const {
             const ALEScreen& screen = ALEInterface::getScreen();
-            return py::make_tuple(screen.height(), screen.width());
+            return nb::make_tuple(screen.height(), screen.width());
         }
 
         inline uint32_t getAudioSize() const { return ALEInterface::getAudio().size(); }
-        const py::array_t<uint8_t, py::array::c_style> getAudio();
-        void getAudio(py::array_t<uint8_t, py::array::c_style> &buffer);
+        // Audio has static shape: (512,) across all games
+        nb::ndarray<nb::numpy, uint8_t, nb::shape<512>> getAudio();
+        void getAudio(nb::ndarray<uint8_t, nb::shape<512>, nb::c_contig, nb::device::cpu> &buffer);
 
         // Implicitly cast std::string -> fs::path
         inline void loadROM(const std::string &rom_file) {
@@ -78,21 +82,22 @@ class ALEPythonInterface : public ALEInterface {
         }
 
         inline uint32_t getRAMSize() { return ALEInterface::getRAM().size(); }
-        const py::array_t<uint8_t, py::array::c_style> getRAM();
-        void getRAM(py::array_t<uint8_t, py::array::c_style>& buffer);
+        // RAM has static shape: (128,) across all games
+        nb::ndarray<nb::numpy, uint8_t, nb::shape<128>> getRAM();
+        void getRAM(nb::ndarray<uint8_t, nb::shape<128>, nb::c_contig, nb::device::cpu>& buffer);
 };
 
 } // namespace ale
 
-PYBIND11_MODULE(_ale_py, m) {
-    m.attr("__version__") = py::str(ALE_VERSION);
+NB_MODULE(_ale_py, m) {
+    m.attr("__version__") = ALE_VERSION;
 #ifdef ALE_SDL_SUPPORT
-    m.attr("SDL_SUPPORT") = py::bool_(true);
+    m.attr("SDL_SUPPORT") = true;
 #else
-    m.attr("SDL_SUPPORT") = py::bool_(false);
+    m.attr("SDL_SUPPORT") = false;
 #endif
 
-    py::enum_<ale::Action>(m, "Action")
+    nb::enum_<ale::Action>(m, "Action")
         .value("NOOP", ale::PLAYER_A_NOOP)
         .value("FIRE", ale::PLAYER_A_FIRE)
         .value("UP", ale::PLAYER_A_UP)
@@ -113,16 +118,16 @@ PYBIND11_MODULE(_ale_py, m) {
         .value("DOWNLEFTFIRE", ale::PLAYER_A_DOWNLEFTFIRE)
         .export_values();
 
-    py::enum_<ale::Logger::mode>(m, "LoggerMode")
+    nb::enum_<ale::Logger::mode>(m, "LoggerMode")
         .value("Info", ale::Logger::mode::Info)
         .value("Warning", ale::Logger::mode::Warning)
         .value("Error", ale::Logger::mode::Error)
         .export_values();
 
-    py::class_<ale::ALEState>(m, "ALEState")
-        .def(py::init<>())
-        .def(py::init<const ale::ALEState&, const std::string&>())
-        .def(py::init<const std::string&>())
+    nb::class_<ale::ALEState>(m, "ALEState")
+        .def(nb::init<>())
+        .def(nb::init<const ale::ALEState&, const std::string&>())
+        .def(nb::init<const std::string&>())
         .def("equals", &ale::ALEState::equals)
         .def("getFrameNumber", &ale::ALEState::getFrameNumber)
         .def("getEpisodeFrameNumber", &ale::ALEState::getEpisodeFrameNumber)
@@ -130,20 +135,16 @@ PYBIND11_MODULE(_ale_py, m) {
         .def("getCurrentMode", &ale::ALEState::getCurrentMode)
         .def("serialize", &ale::ALEState::serialize)
         .def("__eq__", &ale::ALEState::equals)
-        .def(py::pickle(
-            [](ale::ALEState& a) {
-                return py::make_tuple(py::bytes(a.serialize()));
-            },
-            [](const py::tuple &t) {
-                if (t.size() != 1)
-                    throw std::runtime_error("Invalid ALEState state...");
+        .def("__getstate__", [](ale::ALEState& a) {
+            std::string serialized = a.serialize();
+            return nb::bytes(serialized.data(), serialized.size());
+        })
+        .def("__setstate__", [](ale::ALEState& a, nb::bytes state) {
+            new (&a) ale::ALEState(std::string(state.c_str(), state.size()));
+        });
 
-                ale::ALEState state(t[0].cast<std::string>());
-                return state;
-            }));
-
-    py::class_<ale::ALEPythonInterface>(m, "ALEInterface")
-        .def(py::init<>())
+    nb::class_<ale::ALEPythonInterface>(m, "ALEInterface")
+        .def(nb::init<>())
         .def("getString", &ale::ALEPythonInterface::getString)
         .def("getInt", &ale::ALEPythonInterface::getInt)
         .def("getBool", &ale::ALEPythonInterface::getBool)
@@ -152,16 +153,26 @@ PYBIND11_MODULE(_ale_py, m) {
         .def("setInt", &ale::ALEPythonInterface::setInt)
         .def("setBool", &ale::ALEPythonInterface::setBool)
         .def("setFloat", &ale::ALEPythonInterface::setFloat)
-        .def("loadROM", &ale::ALEPythonInterface::loadROM)
-        .def("loadROM", &ale::ALEInterface::loadROM)
-        .def_static("isSupportedROM", &ale::ALEPythonInterface::isSupportedROM)
-        .def_static("isSupportedROM", &ale::ALEInterface::isSupportedROM)
-        .def("act", &ale::ALEPythonInterface::act,
-            py::arg("action"), py::arg("paddle_strength") = 1.0)
-        .def("act", &ale::ALEInterface::act,
-            py::arg("action"), py::arg("paddle_strength") = 1.0)
+        .def("loadROM", [](ale::ALEPythonInterface& self, const std::string& rom) {
+            self.loadROM(rom);
+        })
+        .def("loadROM", [](ale::ALEPythonInterface& self, const fs::path& rom) {
+            self.ALEInterface::loadROM(rom);
+        })
+        .def_static("isSupportedROM", [](const std::string& rom) {
+            return ale::ALEPythonInterface::isSupportedROM(rom);
+        })
+        .def_static("isSupportedROM", [](const fs::path& rom) {
+            return ale::ALEInterface::isSupportedROM(rom);
+        })
+        .def("act", [](ale::ALEPythonInterface& self, unsigned int action, float paddle_strength) {
+            return self.act(action, paddle_strength);
+        }, nb::arg("action"), nb::arg("paddle_strength") = 1.0)
+        .def("act", [](ale::ALEPythonInterface& self, ale::Action action, float paddle_strength) {
+            return self.ALEInterface::act(action, paddle_strength);
+        }, nb::arg("action"), nb::arg("paddle_strength") = 1.0)
         .def("game_over", &ale::ALEPythonInterface::game_over,
-            py::kw_only(), py::arg("with_truncation") = py::bool_(true))
+            nb::arg("with_truncation") = true)
         .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
         .def("reset_game", &ale::ALEPythonInterface::reset_game)
         .def("getAvailableModes", &ale::ALEPythonInterface::getAvailableModes)
@@ -173,21 +184,41 @@ PYBIND11_MODULE(_ale_py, m) {
         .def("getFrameNumber", &ale::ALEPythonInterface::getFrameNumber)
         .def("lives", &ale::ALEPythonInterface::lives)
         .def("getEpisodeFrameNumber", &ale::ALEPythonInterface::getEpisodeFrameNumber)
-        .def("getScreen", static_cast<void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style> &)>(&ale::ALEPythonInterface::getScreen))
-        .def("getScreen", static_cast<py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreen))
-        .def("getScreenRGB", static_cast<void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style> &)>(&ale::ALEPythonInterface::getScreenRGB))
-        .def("getScreenRGB", static_cast<py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreenRGB))
-        .def("getScreenGrayscale", static_cast<void (ale::ALEPythonInterface::*)(py::array_t<ale::pixel_t, py::array::c_style> &)>(&ale::ALEPythonInterface::getScreenGrayscale))
-        .def("getScreenGrayscale", static_cast<py::array_t<ale::pixel_t, py::array::c_style>(ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getScreenGrayscale))
+        .def("getScreen", [](ale::ALEPythonInterface& self) {
+            return self.getScreen();
+        })
+        .def("getScreen", [](ale::ALEPythonInterface& self, nb::ndarray<ale::pixel_t, nb::c_contig, nb::device::cpu>& buffer) {
+            self.getScreen(buffer);
+        })
+        .def("getScreenRGB", [](ale::ALEPythonInterface& self) {
+            return self.getScreenRGB();
+        })
+        .def("getScreenRGB", [](ale::ALEPythonInterface& self, nb::ndarray<ale::pixel_t, nb::c_contig, nb::device::cpu>& buffer) {
+            self.getScreenRGB(buffer);
+        })
+        .def("getScreenGrayscale", [](ale::ALEPythonInterface& self) {
+            return self.getScreenGrayscale();
+        })
+        .def("getScreenGrayscale", [](ale::ALEPythonInterface& self, nb::ndarray<ale::pixel_t, nb::c_contig, nb::device::cpu>& buffer) {
+            self.getScreenGrayscale(buffer);
+        })
         .def("getScreenDims", &ale::ALEPythonInterface::getScreenDims)
         .def("getAudioSize", &ale::ALEPythonInterface::getAudioSize)
-        .def("getAudio", static_cast<const py::array_t<uint8_t, py::array::c_style> (ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getAudio))
-        .def("getAudio", static_cast<void (ale::ALEPythonInterface::*)(py::array_t<uint8_t, py::array::c_style> &)>(&ale::ALEPythonInterface::getAudio))
+        .def("getAudio", [](ale::ALEPythonInterface& self) {
+            return self.getAudio();
+        })
+        .def("getAudio", [](ale::ALEPythonInterface& self, nb::ndarray<uint8_t, nb::shape<512>, nb::c_contig, nb::device::cpu>& buffer) {
+            self.getAudio(buffer);
+        })
         .def("getRAMSize", &ale::ALEPythonInterface::getRAMSize)
-        .def("getRAM", static_cast<const py::array_t<uint8_t, py::array::c_style> (ale::ALEPythonInterface::*)()>(&ale::ALEPythonInterface::getRAM))
-        .def("getRAM", static_cast<void (ale::ALEPythonInterface::*)(py::array_t<uint8_t, py::array::c_style> &)>(&ale::ALEPythonInterface::getRAM))
+        .def("getRAM", [](ale::ALEPythonInterface& self) {
+            return self.getRAM();
+        })
+        .def("getRAM", [](ale::ALEPythonInterface& self, nb::ndarray<uint8_t, nb::shape<128>, nb::c_contig, nb::device::cpu>& buffer) {
+            self.getRAM(buffer);
+        })
         .def("setRAM", &ale::ALEPythonInterface::setRAM)
-        .def("cloneState", &ale::ALEPythonInterface::cloneState, py::kw_only(), py::arg("include_rng") = py::bool_(false))
+        .def("cloneState", &ale::ALEPythonInterface::cloneState, nb::arg("include_rng") = false)
         .def("restoreState", &ale::ALEPythonInterface::restoreState)
         .def("cloneSystemState", &ale::ALEPythonInterface::cloneSystemState)
         .def("restoreSystemState", &ale::ALEPythonInterface::restoreSystemState)
