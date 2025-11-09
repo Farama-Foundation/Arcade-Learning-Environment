@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "scikit-build-core>=0.10",
-    "nanobind>=2.0.0",
+    "nanobind>=2.1.0",
     "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'"
 ]
 build-backend = "scikit_build_core.build"

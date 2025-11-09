@@ -89,34 +89,44 @@ nb::ndarray<nb::numpy, pixel_t> ALEPythonInterface::getScreen() {
   size_t w = environment->getScreen().width();
   size_t h = environment->getScreen().height();
 
-  // Create a new numpy array with dynamic shape
-  size_t shape[2] = {h, w};
-  auto result = nb::ndarray<nb::numpy, pixel_t>(
-      nullptr, 2, shape);
+  // Allocate memory for the array
+  size_t size = h * w;
+  pixel_t* data = new pixel_t[size];
 
   // Copy data from the screen buffer
   pixel_t* src = environment->getScreen().getArray();
-  pixel_t* dst = result.data();
-  std::copy(src, src + (h * w), dst);
+  std::copy(src, src + size, data);
 
-  return result;
+  // Create capsule for cleanup
+  nb::capsule owner(data, [](void *p) noexcept {
+    delete[] (pixel_t *) p;
+  });
+
+  // Create numpy array with allocated data
+  size_t shape[2] = {h, w};
+  return nb::ndarray<nb::numpy, pixel_t>(data, 2, shape, owner);
 }
 
 nb::ndarray<nb::numpy, pixel_t> ALEPythonInterface::getScreenRGB() {
   size_t h = environment->getScreen().height();
   size_t w = environment->getScreen().width();
 
-  // Create a new numpy array with dynamic shape (h, w, 3)
-  size_t shape[3] = {h, w, 3};
-  auto result = nb::ndarray<nb::numpy, pixel_t>(
-      nullptr, 3, shape);
+  // Allocate memory for RGB array (h * w * 3)
+  size_t size = h * w * 3;
+  pixel_t* data = new pixel_t[size];
 
   // Apply RGB palette
   pixel_t* src = environment->getScreen().getArray();
-  pixel_t* dst = result.data();
-  theOSystem->colourPalette().applyPaletteRGB(dst, src, w * h);
+  theOSystem->colourPalette().applyPaletteRGB(data, src, w * h);
 
-  return result;
+  // Create capsule for cleanup
+  nb::capsule owner(data, [](void *p) noexcept {
+    delete[] (pixel_t *) p;
+  });
+
+  // Create numpy array with allocated data
+  size_t shape[3] = {h, w, 3};
+  return nb::ndarray<nb::numpy, pixel_t>(data, 3, shape, owner);
 }
 
 nb::ndarray<nb::numpy, pixel_t>
@@ -124,30 +134,40 @@ ALEPythonInterface::getScreenGrayscale() {
   size_t w = environment->getScreen().width();
   size_t h = environment->getScreen().height();
 
-  // Create a new numpy array with dynamic shape
-  size_t shape[2] = {h, w};
-  auto result = nb::ndarray<nb::numpy, pixel_t>(
-      nullptr, 2, shape);
+  // Allocate memory for the array
+  size_t size = h * w;
+  pixel_t* data = new pixel_t[size];
 
   // Apply grayscale palette
   pixel_t* src = environment->getScreen().getArray();
-  pixel_t* dst = result.data();
-  theOSystem->colourPalette().applyPaletteGrayscale(dst, src, h * w);
+  theOSystem->colourPalette().applyPaletteGrayscale(data, src, h * w);
 
-  return result;
+  // Create capsule for cleanup
+  nb::capsule owner(data, [](void *p) noexcept {
+    delete[] (pixel_t *) p;
+  });
+
+  // Create numpy array with allocated data
+  size_t shape[2] = {h, w};
+  return nb::ndarray<nb::numpy, pixel_t>(data, 2, shape, owner);
 }
 
 // Audio methods with static shape (512,)
 nb::ndarray<nb::numpy, uint8_t, nb::shape<512>> ALEPythonInterface::getAudio() {
   const std::vector<uint8_t> &audio = ALEInterface::getAudio();
 
-  // Create a new numpy array with static shape (512,)
-  size_t shape[1] = {512};
-  auto result = nb::ndarray<nb::numpy, uint8_t, nb::shape<512>>(
-      nullptr, 1, shape);
-  std::copy(audio.data(), audio.data() + audio.size(), result.data());
+  // Allocate memory for audio array
+  uint8_t* data = new uint8_t[512];
+  std::copy(audio.data(), audio.data() + audio.size(), data);
 
-  return result;
+  // Create capsule for cleanup
+  nb::capsule owner(data, [](void *p) noexcept {
+    delete[] (uint8_t *) p;
+  });
+
+  // Create numpy array with allocated data
+  size_t shape[1] = {512};
+  return nb::ndarray<nb::numpy, uint8_t, nb::shape<512>>(data, 1, shape, owner);
 }
 
 void ALEPythonInterface::getAudio(
@@ -174,13 +194,18 @@ void ALEPythonInterface::getAudio(
 nb::ndarray<nb::numpy, uint8_t, nb::shape<128>> ALEPythonInterface::getRAM() {
   const ALERAM& ram = ALEInterface::getRAM();
 
-  // Create a new numpy array with static shape (128,)
-  size_t shape[1] = {128};
-  auto result = nb::ndarray<nb::numpy, uint8_t, nb::shape<128>>(
-      nullptr, 1, shape);
-  std::copy(ram.array(), ram.array() + ram.size(), result.data());
+  // Allocate memory for RAM array
+  uint8_t* data = new uint8_t[128];
+  std::copy(ram.array(), ram.array() + ram.size(), data);
 
-  return result;
+  // Create capsule for cleanup
+  nb::capsule owner(data, [](void *p) noexcept {
+    delete[] (uint8_t *) p;
+  });
+
+  // Create numpy array with allocated data
+  size_t shape[1] = {128};
+  return nb::ndarray<nb::numpy, uint8_t, nb::shape<128>>(data, 1, shape, owner);
 }
 
 void ALEPythonInterface::getRAM(
