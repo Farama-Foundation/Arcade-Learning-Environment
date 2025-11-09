@@ -132,14 +132,10 @@ jobs:
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
-          # ale_py-0.x.x-cp310-cp310-macosx_10_15_x86_64.whl
           # ale_py-0.x.x-cp310-cp310-macosx_11_0_arm64.whl
           # ale_py-0.x.x-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+          # ale_py-0.x.x-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl
           # ale_py-0.x.x-cp310-cp310-win_amd64.whl
-          - runs-on: ubuntu-latest
-            python: '3.9'
-            wheel-name: 'cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64'
-            arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.10'
             wheel-name: 'cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64'
@@ -158,10 +154,6 @@ jobs:
             arch: 'x86_64'
 
           - runs-on: ubuntu-24.04-arm
-            python: '3.9'
-            wheel-name: 'cp39-cp39-manylinux2014_aarch64.manylinux_2_17_aarch64'
-            arch: 'aarch64'
-          - runs-on: ubuntu-24.04-arm
             python: '3.10'
             wheel-name: 'cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64'
             arch: 'aarch64'
@@ -179,10 +171,6 @@ jobs:
             arch: 'aarch64'
 
           - runs-on: windows-latest
-            python: '3.9'
-            wheel-name: 'cp39-cp39-win_amd64'
-            arch: AMD64
-          - runs-on: windows-latest
             python: '3.10'
             wheel-name: 'cp310-cp310-win_amd64'
             arch: AMD64
@@ -199,10 +187,6 @@ jobs:
             wheel-name: 'cp313-cp313-win_amd64'
             arch: AMD64
 
-          - runs-on: macos-14
-            python: '3.9'
-            wheel-name: 'cp39-cp39-macosx_13_0_arm64'
-            arch: arm64
           - runs-on: macos-14
             python: '3.10'
             wheel-name: 'cp310-cp310-macosx_13_0_arm64'
