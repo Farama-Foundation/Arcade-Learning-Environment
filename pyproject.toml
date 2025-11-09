@@ -90,11 +90,6 @@ manylinux-aarch64-image = "manylinux-aarch64-vcpkg:latest"
 [tool.cibuildwheel.linux]
 environment-pass = ["GITHUB_REF"]
 
-# macOS x86-64
-[[tool.cibuildwheel.overrides]]
-select = "*-macosx_x86_64"
-environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "13.0" }
-
 # macOS arm64
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_arm64"
