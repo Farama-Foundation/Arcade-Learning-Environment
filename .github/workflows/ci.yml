@@ -136,9 +136,9 @@ jobs:
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
-          # ale_py-0.x.x-cp310-cp310-macosx_10_15_x86_64.whl
           # ale_py-0.x.x-cp310-cp310-macosx_11_0_arm64.whl
           # ale_py-0.x.x-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+          # ale_py-0.x.x-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl
           # ale_py-0.x.x-cp310-cp310-win_amd64.whl
           - runs-on: ubuntu-latest
             python: '3.10'
