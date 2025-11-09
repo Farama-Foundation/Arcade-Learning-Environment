@@ -189,19 +189,19 @@ NB_MODULE(_ale_py, m) {
         })
         .def("getScreen", [](ale::ALEPythonInterface& self, nb::ndarray<ale::pixel_t, nb::c_contig, nb::device::cpu>& buffer) {
             self.getScreen(buffer);
-        })
+        }, nb::arg("buffer").noconvert())
         .def("getScreenRGB", [](ale::ALEPythonInterface& self) {
             return self.getScreenRGB();
         })
         .def("getScreenRGB", [](ale::ALEPythonInterface& self, nb::ndarray<ale::pixel_t, nb::c_contig, nb::device::cpu>& buffer) {
             self.getScreenRGB(buffer);
-        })
+        }, nb::arg("buffer").noconvert())
         .def("getScreenGrayscale", [](ale::ALEPythonInterface& self) {
             return self.getScreenGrayscale();
         })
         .def("getScreenGrayscale", [](ale::ALEPythonInterface& self, nb::ndarray<ale::pixel_t, nb::c_contig, nb::device::cpu>& buffer) {
             self.getScreenGrayscale(buffer);
-        })
+        }, nb::arg("buffer").noconvert())
         .def("getScreenDims", &ale::ALEPythonInterface::getScreenDims)
         .def("getAudioSize", &ale::ALEPythonInterface::getAudioSize)
         .def("getAudio", [](ale::ALEPythonInterface& self) {
@@ -209,14 +209,14 @@ NB_MODULE(_ale_py, m) {
         })
         .def("getAudio", [](ale::ALEPythonInterface& self, nb::ndarray<uint8_t, nb::shape<512>, nb::c_contig, nb::device::cpu>& buffer) {
             self.getAudio(buffer);
-        })
+        }, nb::arg("buffer").noconvert())
         .def("getRAMSize", &ale::ALEPythonInterface::getRAMSize)
         .def("getRAM", [](ale::ALEPythonInterface& self) {
             return self.getRAM();
         })
         .def("getRAM", [](ale::ALEPythonInterface& self, nb::ndarray<uint8_t, nb::shape<128>, nb::c_contig, nb::device::cpu>& buffer) {
             self.getRAM(buffer);
-        })
+        }, nb::arg("buffer").noconvert())
         .def("setRAM", &ale::ALEPythonInterface::setRAM)
         .def("cloneState", &ale::ALEPythonInterface::cloneState, nb::arg("include_rng") = false)
         .def("restoreState", &ale::ALEPythonInterface::restoreState)
