@@ -11,7 +11,8 @@ import json
 import os
 import time
 from argparse import ArgumentParser
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import gymnasium.vector
 import matplotlib.pyplot as plt

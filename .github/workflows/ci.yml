@@ -47,7 +47,11 @@ jobs:
 
           - runs-on: windows-latest
             python: '3.12'
-            triplet: x64-windows
+            triplet: x64-windows-mixed
+
+          - runs-on: macos-14
+            python: '3.12'
+            triplet: arm64-osx-mixed
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
