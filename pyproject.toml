@@ -1,9 +1,9 @@
 [build-system]
 requires = [
-    "setuptools>=77.0.0",
-    "jax >= 0.4.31; python_version > '3.9' and (sys_platform == 'win32' or sys_platform == 'linux')"
+    "scikit-build-core>=0.10",
+    "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'"
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "ale-py"
@@ -63,47 +63,61 @@ homepage = "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
 documentation = "https://ale.farama.org"
 changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
 
-[tool.setuptools]
-packages = [
-    "ale_py",
-    "ale_py.roms",
-]
-package-dir = {ale_py = "src/ale/python"}
-package-data = {"ale_py" = ["py.typed", "*.pyi", "**/*.pyi"], "ale_py.roms" = ["md5.json", "*.bin"]}
-
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q --ignore vcpkg --ignore build"
 testpaths = ["tests"]
 norecursedirs = ["vcpkg", "build"]
 
+[tool.scikit-build]
+cmake.args = [
+    "-DSDL_SUPPORT=ON",
+    "-DSDL_DYNLOAD=ON",
+    "-DBUILD_CPP_LIB=OFF",
+    "-DBUILD_PYTHON_LIB=ON",
+    "-DBUILD_VECTOR_LIB=ON"
+]
+cmake.build-type = "Release"
+metadata.version.provider = "scikit_build_core.metadata.regex"
+metadata.version.input = "version.txt"
+metadata.version.regex = "(?P<value>.+)"
+
+# Enable XLA on Windows and Linux
+[[tool.scikit-build.overrides]]
+if.platform-system = "^(win32|linux)"
+cmake.args = [
+    "-DSDL_SUPPORT=ON",
+    "-DSDL_DYNLOAD=ON",
+    "-DBUILD_CPP_LIB=OFF",
+    "-DBUILD_PYTHON_LIB=ON",
+    "-DBUILD_VECTOR_LIB=ON",
+    "-DBUILD_VECTOR_XLA_LIB=ON"  # add vector-xla-lib="ON"
+]
+
 [tool.cibuildwheel]
 # Skip 32-bit wheels, PyPy & musllinux
-skip = ["*-win32", "*i686", "pp*", "*-musllinux*"]
+skip = ["*-win32", "*i686", "*-musllinux*"]
 
 build-frontend = "build"
 manylinux-x86_64-image = "manylinux-x86_64-vcpkg:latest"
 manylinux-aarch64-image = "manylinux-aarch64-vcpkg:latest"
-
-[tool.cibuildwheel.linux]
-environment-pass = ["GITHUB_REF"]
 
 # macOS arm64
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_arm64"
 environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-osx-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking", MACOSX_DEPLOYMENT_TARGET = "13.0" }
 
-# Windows x64
+# Windows amd64
 [[tool.cibuildwheel.overrides]]
 select = "*-win_amd64"
-environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows", VCPKG_FEATURE_FLAGS = "-compilertracking" }
+environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-windows-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
 
-# Linux x86-64 (manylinux)
+# Linux x86-64
 [[tool.cibuildwheel.overrides]]
 select = "*-manylinux_x86_64"
 environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "x64-linux-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
 
-# Linux ARM64 (manylinux)
+# Linux ARM64
 [[tool.cibuildwheel.overrides]]
 select = "*-manylinux_aarch64"
 environment = { PIP_ONLY_BINARY = "numpy", VCPKG_DEFAULT_TRIPLET = "arm64-linux-mixed", VCPKG_FEATURE_FLAGS = "-compilertracking" }
