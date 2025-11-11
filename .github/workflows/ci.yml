@@ -235,4 +235,3 @@ jobs:
         with:
           name: log_data
           path: log_data.npz
-

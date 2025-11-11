@@ -1,4 +1,5 @@
 """Test equivalence between Gymnasium and Vector environments."""
+
 import os
 
 import ale_py
