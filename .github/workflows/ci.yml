@@ -228,3 +228,11 @@ jobs:
 
       - name: Test
         run: python -m pytest
+
+      - name: Upload Logs as Artifact
+        if: failure()
+        uses: actions/upload-artifact@4
+        with:
+          name: log_data
+          path: log_data.npz
+
