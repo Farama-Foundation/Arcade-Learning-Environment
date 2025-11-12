@@ -73,6 +73,13 @@ jobs:
     - name: Test
       run: python -m pytest
 
+    - name: Upload Logs as Artifact
+      if: failure()
+      uses: actions/upload-artifact@5
+      with:
+        name: log_data-scratch-${{ matrix.triplet }}.npz
+        path: ./log_data.npz
+
   build-wheels:
     name: "${{ matrix.runs-on }} • ${{ matrix.arch }}"
     needs: pre-commit
@@ -233,5 +240,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@5
         with:
-          name: log_data-${{ runner.os }}-${{ matrix.arch }}.npz
+          name: log_data-wheel-${{ runner.os }}-${{ matrix.arch }}.npz
           path: ./log_data.npz
