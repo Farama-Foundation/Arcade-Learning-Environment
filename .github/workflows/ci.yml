@@ -231,7 +231,7 @@ jobs:
 
       - name: Upload Logs as Artifact
         if: failure()
-        uses: actions/upload-artifact@4
+        uses: actions/upload-artifact@5
         with:
-          name: log_data
-          path: log_data.npz
+          name: log_data-${{ runner.os }}-${{ matrix.arch }}.npz
+          path: ./log_data.npz
