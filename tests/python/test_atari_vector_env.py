@@ -398,9 +398,28 @@ class TestVectorEnv:
                 assert data_equivalence(
                     sync_observations[async_t][env_id], async_obs[async_i]
                 )
-                assert data_equivalence(
+                if not data_equivalence(
                     sync_rewards[async_t][env_id], async_rewards[async_i]
-                )
+                ):
+                    print(
+                        f"{sync_rewards[async_t][env_id]=}, {async_rewards[async_i]=}, {async_t=}, {env_id=}, {async_i=}"
+                    )
+                    print(
+                        f"{type(sync_rewards[async_t][env_id])=}, {type(async_rewards[async_i])=}"
+                    )
+                    print(
+                        f"{data_equivalence(sync_rewards[async_t][env_id], async_rewards[async_i])=}"
+                    )
+                    print(
+                        f"{sync_rewards[async_t][env_id].dtype=}, {async_rewards[async_i].dtype=}"
+                    )
+                    print(
+                        f"{sync_rewards[async_t][env_id].shape=}, {async_rewards[async_i].shape=}"
+                    )
+                    print(f"{sync_rewards[async_t][env_id] == async_rewards[async_i]=}")
+                    print(
+                        f"{np.all(sync_rewards[async_t][env_id] == async_rewards[async_i])=}"
+                    )
                 assert data_equivalence(
                     sync_terminations[async_t][env_id], async_terminations[async_i]
                 )

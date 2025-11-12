@@ -42,7 +42,6 @@ namespace ale::vector {
             const AutoresetMode autoreset_mode = AutoresetMode::NextStep
         ) : num_envs_(num_envs),
             batch_size_(batch_size > 0 ? batch_size : num_envs),
-            is_sync_(batch_size_ == num_envs_),
             autoreset_mode_(autoreset_mode),
             stop_(false),
             action_queue_(new ActionQueue(num_envs_)),
@@ -182,7 +181,6 @@ namespace ale::vector {
         int num_envs_;                                    // Number of parallel environments
         int batch_size_;                                  // Batch size for processing
         int num_threads_;                                 // Number of worker threads
-        bool is_sync_;                                    // Whether to operate in synchronous mode
         int stacked_obs_size_;                            // The observation size (stack-num * width * height * channels)
         AutoresetMode autoreset_mode_;                    // How to reset sub-environments after an episode ends
 

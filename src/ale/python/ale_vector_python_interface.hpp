@@ -11,12 +11,13 @@
 #include "ale/vector/preprocessed_env.hpp"
 #include "ale/vector/utils.hpp"
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
-#include <pybind11/numpy.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/filesystem.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/ndarray.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 namespace fs = std::filesystem;
 
 namespace ale::vector {
