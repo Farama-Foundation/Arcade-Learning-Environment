@@ -2,12 +2,13 @@ FROM quay.io/pypa/manylinux2014_aarch64
 
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
-RUN yum install -y curl unzip zip tar glibc-static gcc gcc-c++ git cmake make
+RUN yum install -y curl unzip zip tar glibc-static gcc gcc-c++ git cmake make perl
 
-# Install CUDA Toolkit for XLA GPU support
-RUN yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/sbsa/cuda-rhel7.repo && \
-    yum install -y cuda-nvcc-12-6 cuda-cudart-devel-12-6 && \
-    yum clean all
+# Install CUDA Toolkit for XLA GPU support (using runfile installer for aarch64)
+RUN curl -fsSL -o /tmp/cuda_12.6.2_560.35.03_linux_sbsa.run \
+    https://developer.download.nvidia.com/compute/cuda/12.6.2/local_installers/cuda_12.6.2_560.35.03_linux_sbsa.run && \
+    sh /tmp/cuda_12.6.2_560.35.03_linux_sbsa.run --silent --toolkit --no-man-page --no-drm && \
+    rm /tmp/cuda_12.6.2_560.35.03_linux_sbsa.run
 
 ENV CUDA_HOME="/usr/local/cuda-12.6"
 ENV PATH="${CUDA_HOME}/bin:${PATH}"

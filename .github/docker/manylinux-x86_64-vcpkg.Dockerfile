@@ -6,6 +6,7 @@ RUN yum install -y curl unzip zip tar glibc-static
 
 # Install CUDA Toolkit for XLA GPU support
 RUN yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo && \
+    yum clean all && \
     yum install -y cuda-nvcc-12-6 cuda-cudart-devel-12-6 && \
     yum clean all
 
