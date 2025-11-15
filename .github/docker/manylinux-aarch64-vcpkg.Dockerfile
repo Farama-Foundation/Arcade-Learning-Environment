@@ -4,6 +4,15 @@ LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcad
 
 RUN yum install -y curl unzip zip tar glibc-static gcc gcc-c++ git cmake make
 
+# Install CUDA Toolkit for XLA GPU support
+RUN yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/sbsa/cuda-rhel7.repo && \
+    yum install -y cuda-nvcc-12-6 cuda-cudart-devel-12-6 && \
+    yum clean all
+
+ENV CUDA_HOME="/usr/local/cuda-12.6"
+ENV PATH="${CUDA_HOME}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}"
+
 RUN git clone https://github.com/ninja-build/ninja.git /tmp/ninja && \
     cd /tmp/ninja && \
     git checkout v1.12.1 && \
