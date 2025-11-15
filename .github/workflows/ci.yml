@@ -75,7 +75,7 @@ jobs:
 
     - name: Upload Logs as Artifact
       if: failure()
-      uses: actions/upload-artifact@5
+      uses: actions/upload-artifact@v5
       with:
         name: log_data-scratch-${{ matrix.triplet }}.npz
         path: ./log_data.npz
@@ -238,7 +238,7 @@ jobs:
 
       - name: Upload Logs as Artifact
         if: failure()
-        uses: actions/upload-artifact@5
+        uses: actions/upload-artifact@v5
         with:
           name: log_data-wheel-${{ runner.os }}-${{ matrix.arch }}.npz
           path: ./log_data.npz
