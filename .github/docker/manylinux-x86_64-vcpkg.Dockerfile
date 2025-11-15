@@ -2,7 +2,17 @@ FROM quay.io/pypa/manylinux2014_x86_64
 
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
-RUN yum install -y curl unzip zip tar glibc-static
+RUN yum install -y curl unzip zip tar glibc-static perl
+
+# Install CUDA Toolkit for XLA GPU support (using runfile installer)
+RUN curl -fsSL -o /tmp/cuda_12.6.2_560.35.03_linux.run \
+    https://developer.download.nvidia.com/compute/cuda/12.6.2/local_installers/cuda_12.6.2_560.35.03_linux.run && \
+    sh /tmp/cuda_12.6.2_560.35.03_linux.run --silent --toolkit --no-man-page --no-drm && \
+    rm /tmp/cuda_12.6.2_560.35.03_linux.run
+
+ENV CUDA_HOME="/usr/local/cuda-12.6"
+ENV PATH="${CUDA_HOME}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}"
 
 # Install vcpkg
 RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg

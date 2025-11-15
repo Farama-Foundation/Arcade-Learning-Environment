@@ -64,6 +64,22 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
+    - name: Install CUDA Toolkit (Linux)
+      if: runner.os == 'Linux'
+      uses: Jimver/cuda-toolkit@v0.2.21
+      with:
+        cuda: '12.6.2'
+        method: 'network'
+        sub-packages: '["nvcc", "cudart"]'
+
+    - name: Install CUDA Toolkit (Windows)
+      if: runner.os == 'Windows'
+      uses: Jimver/cuda-toolkit@v0.2.21
+      with:
+        cuda: '12.6.2'
+        method: 'network'
+        sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
+
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
@@ -95,6 +111,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+
+        # For Linux, the CUDA Toolkit is installed the dockerfile
+      - name: Install CUDA Toolkit (Windows)
+        if: runner.os == 'Windows'
+        uses: Jimver/cuda-toolkit@v0.2.21
+        with:
+          cuda: '12.6.2'
+          method: 'network'
+          sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
 
       - name: Set up Docker Buildx
         if: runner.os == 'linux'
