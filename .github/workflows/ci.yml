@@ -77,7 +77,7 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v5
       with:
-        name: log_data-scratch-${{ matrix.triplet }}.npz
+        name: log_data-scratch-${{ matrix.triplet }}
         path: ./log_data.npz
 
   build-wheels:
@@ -240,7 +240,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v5
         with:
-          name: log_data-wheel-${{ runner.os }}-${{ matrix.arch }}.npz
+          name: log_data-wheel-${{ runner.os }}-${{ matrix.arch }}
           path: ./log_data.npz
 
   test-numpy-1-x:
@@ -287,3 +287,10 @@ jobs:
 
       - name: Test
         run: python -m pytest
+
+      - name: Upload Logs as Artifact
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: log_data-wheel-${{ runner.os }}-${{ matrix.arch }}
+          path: ./log_data.npz
