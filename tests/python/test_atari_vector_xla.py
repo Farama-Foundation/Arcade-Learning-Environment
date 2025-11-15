@@ -4,6 +4,7 @@ from ale_py import AtariVectorEnv
 from gymnasium.utils.env_checker import data_equivalence
 
 jax = pytest.importorskip("jax")
+jnp = pytest.importorskip("jax.numpy")
 chex = pytest.importorskip("chex")
 
 
@@ -22,8 +23,9 @@ def assert_rollout_equivalence(
     obs_1, info_1 = envs_1.reset(seed=seeds)
     env_2_handle, (obs_2, info_2) = env_2_reset(env_2_handle, seed=seeds)
 
-    assert data_equivalence(obs_1, obs_2)
-    assert data_equivalence(info_1, info_2)
+    # Convert JAX arrays to numpy for comparison
+    assert data_equivalence(obs_1, np.asarray(obs_2))
+    assert data_equivalence(info_1, {k: np.asarray(v) for k, v in info_2.items()})
 
     for _ in range(rollout_length):
         actions = envs_1.action_space.sample()
@@ -33,11 +35,12 @@ def assert_rollout_equivalence(
             env_2_step(env_2_handle, actions)
         )
 
-        assert data_equivalence(obs_1, obs_2)
-        assert data_equivalence(rewards_1, rewards_2)
-        assert data_equivalence(terminations_1, terminations_2)
-        assert data_equivalence(truncations_1, truncations_2)
-        assert data_equivalence(info_1, info_2)
+        # Convert JAX arrays to numpy for comparison
+        assert data_equivalence(obs_1, np.asarray(obs_2))
+        assert data_equivalence(rewards_1, np.asarray(rewards_2))
+        assert data_equivalence(terminations_1, np.asarray(terminations_2))
+        assert data_equivalence(truncations_1, np.asarray(truncations_2))
+        assert data_equivalence(info_1, {k: np.asarray(v) for k, v in info_2.items()})
 
     envs_1.close()
     envs_2.close()
@@ -65,62 +68,66 @@ def test_obs_params(stack_num, img_height, img_width, frame_skip, grayscale):
     )
 
 
+@pytest.mark.parametrize("threshold", [0.2, 0.5, 0.8])
+def test_continuous_actions(threshold):
+    assert_rollout_equivalence(continuous=True, continuous_action_threshold=threshold)
+
+
+@pytest.mark.parametrize("continuous", [True, False])
 def test_jit(
+    continuous: bool,
     num_envs: int = 4,
     seeds: np.ndarray = np.arange(4),
     game: str = "pong",
     rollout_length: int = 100,
     **kwargs,
 ):
-    envs_1 = AtariVectorEnv(game, num_envs=num_envs, **kwargs)
-    envs_2 = AtariVectorEnv(game, num_envs=num_envs, **kwargs)
+    chex.clear_trace_counter()
+
+    envs_1 = AtariVectorEnv(game, num_envs=num_envs, continuous=continuous, **kwargs)
+    envs_2 = AtariVectorEnv(game, num_envs=num_envs, continuous=continuous, **kwargs)
 
     env_2_handle, env_2_reset, env_2_step = envs_2.xla()
 
+    # Validate reset equivalence
     obs_1, info_1 = envs_1.reset(seed=seeds)
-    env_2_handle, (obs_2, info_2) = env_2_reset(env_2_handle, seed=seeds)
+    env_2_handle, (obs_2, info_2) = env_2_reset(env_2_handle, seed=jnp.array(seeds))
+    assert data_equivalence(obs_1, np.asarray(obs_2))
+    assert data_equivalence(info_1, {k: np.asarray(v) for k, v in info_2.items()})
 
-    assert data_equivalence(obs_1, obs_2)
-    assert data_equivalence(info_1, info_2)
+    # Actions for environment rollout
+    rollout_actions = [envs_1.action_space.sample() for _ in range(rollout_length)]
 
+    # Rollout for VectorAtariEnv
+    env_rollout = [
+        envs_1.step(rollout_actions[time_step]) for time_step in range(rollout_length)
+    ]
+
+    # Rollout for VectorAtariEnv XLA
     @jax.jit
     @chex.assert_max_traces(1)
-    def actor(carry, action):
-        (handle, i) = carry
-        output = env_2_step(handle, action)
-        return (handle, action, i + 1), output
+    def actor(handle, action):
+        return env_2_step(handle, action)
 
-    actions = [envs_1.action_space.sample() for _ in range(rollout_length)]
+    _, xla_rollout = jax.lax.scan(actor, env_2_handle, xs=jnp.array(rollout_actions))
+    obs_xla, rewards_xla, terms_xla, truncs_xla, info_xla = xla_rollout
 
-    for_loop_output = [envs_1.step(action) for action in actions]
-    scan_output = jax.lax.scan(actor, (env_2_handle, 0), xs=actions)
+    # Compare the env-rollouts and the xla-rollouts
+    for i in range(rollout_length):
+        obs_1, reward_1, term_1, trunc_1, info_1 = env_rollout[i]
 
-    assert data_equivalence(for_loop_output, scan_output)
+        obs_2 = np.asarray(obs_xla[i])
+        reward_2 = np.asarray(rewards_xla[i])
+        term_2 = np.asarray(terms_xla[i])
+        trunc_2 = np.asarray(truncs_xla[i])
+        info_2 = {k: np.asarray(v[i]) for k, v in info_xla.items()}
 
-    envs_1.close()
-    envs_2.close()
+        assert data_equivalence(obs_1, obs_2)
+        assert data_equivalence(reward_1, reward_2)
+        assert data_equivalence(term_1, term_2)
+        assert data_equivalence(trunc_1, trunc_2)
+        assert data_equivalence(info_1, info_2)
 
 
-def test_vmap(num_envs: int = 4,
-    seeds: np.ndarray = np.arange(4),
-    game: str = "pong"):
-    envs_1 = AtariVectorEnv(game, num_envs=num_envs)
-    envs_2 = AtariVectorEnv(game, num_envs=num_envs)
-
-    obs_1, info_1 = envs_1.reset(seed=seeds)
-    obs_2, info_2 = envs_2.reset(seed=seeds)
-
-    assert data_equivalence(obs_1, obs_2)
-    assert data_equivalence(info_1, info_2)
-
-    @jax.vmap()
-    def actor(action, envs):
-        return envs.step(action)
-
-    actions = envs_1.action_space.sample()
-    envs_1_step = actor(actions, envs_1)
-    envs_2_step = envs_2.step(actions)
-
-    assert data_equivalence(envs_1_step, envs_2_step)
     envs_1.close()
     envs_2.close()
