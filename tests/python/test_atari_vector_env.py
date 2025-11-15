@@ -1,5 +1,7 @@
 """Test equivalence between Gymnasium and Vector environments."""
 
+import os
+
 import ale_py
 import gymnasium as gym
 import numpy as np
@@ -91,6 +93,47 @@ def assert_gym_ale_rollout_equivalence(
 
     gym_envs.close()
     ale_envs.close()
+
+
+def log_data(
+    failure_stage,
+    async_env_ids,
+    async_env_timestep,
+    sync_observations,
+    async_t,
+    env_id,
+    async_obs,
+    async_i,
+    sync_rewards,
+    async_rewards,
+    sync_terminations,
+    async_terminations,
+    sync_truncations,
+    async_truncations,
+    sync_infos,
+    async_info,
+):
+    print(os.getcwd())
+    np.savez(
+        "log_data.npz",
+        failure_stage=failure_stage,
+        async_env_timestep=async_env_timestep,
+        async_env_ids=async_env_ids,
+        sync_observations=sync_observations,
+        async_t=async_t,
+        env_id=env_id,
+        async_obs=async_obs,
+        async_i=async_i,
+        sync_rewards=sync_rewards,
+        async_rewards=async_rewards,
+        sync_terminations=sync_terminations,
+        async_terminations=async_terminations,
+        sync_truncations=sync_truncations,
+        async_truncation=async_truncations,
+        sync_infos=sync_infos,
+        async_info=async_info,
+    )
+    print(os.listdir(os.getcwd()))
 
 
 @pytest.mark.parametrize("env_id", ["ALE/Breakout-v5"])
@@ -317,7 +360,7 @@ class TestVectorEnv:
         env_id,
         batch_size=4,
         num_envs=8,
-        rollout_length=1000,
+        rollout_length=10_000,
         reset_seed=123,
         action_seed=123,
     ):
@@ -397,21 +440,106 @@ class TestVectorEnv:
 
                 assert data_equivalence(
                     sync_observations[async_t][env_id], async_obs[async_i]
+                ), log_data(
+                    "observations",
+                    async_env_ids,
+                    async_env_timestep,
+                    sync_observations,
+                    async_t,
+                    env_id,
+                    async_obs,
+                    async_i,
+                    sync_rewards,
+                    async_rewards,
+                    sync_terminations,
+                    async_terminations,
+                    sync_truncations,
+                    async_truncations,
+                    sync_infos,
+                    async_info,
                 )
                 assert data_equivalence(
                     sync_rewards[async_t][env_id], async_rewards[async_i]
+                ), log_data(
+                    "rewards",
+                    async_env_ids,
+                    async_env_timestep,
+                    sync_observations,
+                    async_t,
+                    env_id,
+                    async_obs,
+                    async_i,
+                    sync_rewards,
+                    async_rewards,
+                    sync_terminations,
+                    async_terminations,
+                    sync_truncations,
+                    async_truncations,
+                    sync_infos,
+                    async_info,
                 )
                 assert data_equivalence(
                     sync_terminations[async_t][env_id], async_terminations[async_i]
+                ), log_data(
+                    "terminations",
+                    async_env_ids,
+                    async_env_timestep,
+                    sync_observations,
+                    async_t,
+                    env_id,
+                    async_obs,
+                    async_i,
+                    sync_rewards,
+                    async_rewards,
+                    sync_terminations,
+                    async_terminations,
+                    sync_truncations,
+                    async_truncations,
+                    sync_infos,
+                    async_info,
                 )
                 assert data_equivalence(
                     sync_truncations[async_t][env_id], async_truncations[async_i]
+                ), log_data(
+                    "truncations",
+                    async_env_ids,
+                    async_env_timestep,
+                    sync_observations,
+                    async_t,
+                    env_id,
+                    async_obs,
+                    async_i,
+                    sync_rewards,
+                    async_rewards,
+                    sync_terminations,
+                    async_terminations,
+                    sync_truncations,
+                    async_truncations,
+                    sync_infos,
+                    async_info,
                 )
                 assert all(
                     data_equivalence(
                         sync_infos[async_t][key][env_id], async_info[key][async_i]
                     )
-                    for key in sync_info
+                    for key in async_info
+                ), log_data(
+                    "infos",
+                    async_env_ids,
+                    async_env_timestep,
+                    sync_observations,
+                    async_t,
+                    env_id,
+                    async_obs,
+                    async_i,
+                    sync_rewards,
+                    async_rewards,
+                    sync_terminations,
+                    async_terminations,
+                    sync_truncations,
+                    async_truncations,
+                    sync_infos,
+                    async_info,
                 )
             async_env_timestep[async_env_ids] += 1
 

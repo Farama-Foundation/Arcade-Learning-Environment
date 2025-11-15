@@ -49,7 +49,7 @@ jobs:
             python: '3.12'
             triplet: x64-windows-mixed
 
-          - runs-on: macos-14
+          - runs-on: macos-latest
             python: '3.12'
             triplet: arm64-osx-mixed
 
@@ -73,6 +73,13 @@ jobs:
     - name: Test
       run: python -m pytest
 
+    - name: Upload Logs as Artifact
+      if: failure()
+      uses: actions/upload-artifact@v5
+      with:
+        name: log_data-scratch-${{ matrix.triplet }}
+        path: ./log_data.npz
+
   build-wheels:
     name: "${{ matrix.runs-on }} • ${{ matrix.arch }}"
     needs: pre-commit
@@ -89,7 +96,7 @@ jobs:
             arch: aarch64
           - runs-on: windows-latest
             arch: AMD64
-          - runs-on: macos-13
+          - runs-on: macos-latest
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
@@ -191,19 +198,19 @@ jobs:
             wheel-name: 'cp313-cp313-win_amd64'
             arch: AMD64
 
-          - runs-on: macos-14
+          - runs-on: macos-latest
             python: '3.10'
             wheel-name: 'cp310-cp310-macosx_13_0_arm64'
             arch: arm64
-          - runs-on: macos-14
+          - runs-on: macos-latest
             python: '3.11'
             wheel-name: 'cp311-cp311-macosx_13_0_arm64'
             arch: arm64
-          - runs-on: macos-14
+          - runs-on: macos-latest
             python: '3.12'
             wheel-name: 'cp312-cp312-macosx_13_0_arm64'
             arch: arm64
-          - runs-on: macos-14
+          - runs-on: macos-latest
             python: '3.13'
             wheel-name: 'cp313-cp313-macosx_13_0_arm64'
             arch: arm64
@@ -228,6 +235,13 @@ jobs:
 
       - name: Test
         run: python -m pytest
+
+      - name: Upload Logs as Artifact
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: log_data-wheel-${{ runner.os }}-${{ matrix.arch }}
+          path: ./log_data.npz
 
   test-numpy-1-x:
     name: Test NumPy 1.X
@@ -273,3 +287,10 @@ jobs:
 
       - name: Test
         run: python -m pytest
+
+      - name: Upload Logs as Artifact
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: log_data-wheel-${{ runner.os }}-${{ matrix.arch }}
+          path: ./log_data.npz
