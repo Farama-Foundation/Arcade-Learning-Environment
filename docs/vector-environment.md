@@ -4,7 +4,28 @@
 
 The Arcade Learning Environment (ALE) Vector Environment provides a high-performance implementation for running multiple Atari environments in parallel. This implementation utilizes native C++ code with multi-threading to achieve significant performance improvements, especially when running many environments simultaneously.
 
-The vector environment is equivalent to `FrameStackObservation(AtariPreprocessing(gym.make("ALE/{AtariGame}-v5")), stack_size=4)`.
+The vector environment is equivalent to FrameStackObservation + AtariPreprocessing from Gymnasium as
+```
+gym_envs = gym.vector.SyncVectorEnv(
+  [
+      lambda: gym.wrappers.FrameStackObservation(
+          gym.wrappers.AtariPreprocessing(
+              gym.make(env_id, frameskip=1),
+          ),
+          stack_size=stack_num,
+          padding_type="zero",
+      )
+      for _ in range(num_envs)
+  ],
+)
+ale_envs = gym.make_vec(
+  env_id,
+  num_envs,
+  use_fire_reset=False,
+  reward_clipping=False,
+  repeat_action_probability=0.0,
+)
+```
 
 ## Key Features
 
@@ -19,7 +40,7 @@ The vector environment is equivalent to `FrameStackObservation(AtariPreprocessin
   - Episodic life modes
 - **Performance Optimizations**:
   - Native C++ implementation
-  - Next-step autoreset (see [blog](https://farama.org/Vector-Autoreset-Mode) for more detail)
+  - Same-step and Next-step autoreset (see [blog](https://farama.org/Vector-Autoreset-Mode) for more detail)
   - Multi-threading for parallel execution
   - Thread affinity options for better performance on multi-core systems
   - Batch processing capabilities
@@ -37,11 +58,11 @@ Optionally, users can build the project locally, requiring VCPKG, that will inst
 ### Creating a Vector Environment
 
 ```python
-from ale_py.vector_env import VectorAtariEnv
+from ale_py.vector_env import AtariVectorEnv
 
 # Create a vector environment with 4 parallel instances of Breakout
-envs = VectorAtariEnv(
-    game="Breakout",
+envs = AtariVectorEnv(
+    game="breakout",  # The ROM id not name, i.e., camel case compared to `gymnasium.make` name versions
     num_envs=4,
 )
 
@@ -61,31 +82,37 @@ envs.close()
 The vector environment provides numerous configuration options:
 
 ```python
-envs = VectorAtariEnv(
+envs = AtariVectorEnv(
     # Required parameters
-    game="Breakout",          # ROM name in snake_case
-    num_envs=8,               # Number of parallel environments
+    game: str = "breakout",          # The ROM id not name, i.e., camel case compared to Gymnasium.make name versions
+    num_envs: int = 1,               # Number of parallel environments
+    *,
 
     # Preprocessing parameters
-    frame_skip=4,             # Number of frames to skip (action repeat)
-    grayscale=True,           # Use grayscale observations
-    stack_num=4,              # Number of frames to stack
-    img_height=84,            # Height to resize frames to
-    img_width=84,             # Width to resize frames to
+    frameskip: int = 4,             # Number of frames to skip (action repeat)
+    grayscale: bool = True,         # Use grayscale observations
+    stack_num: int = 4,             # Number of frames to stack
+    img_height: int = 84,           # Height to resize frames to
+    img_width: int = 84,            # Width to resize frames to
+    maxpool: bool = True,           # If to maxpool sequential frames
+    reward_clipping: bool = True,   # If to clip environment step rewards between -1 and 1
 
     # Environment behavior
-    noop_max=30,              # Maximum number of no-ops at reset
-    fire_reset=True,          # Press FIRE on reset for games that require it
-    episodic_life=False,      # End episodes on life loss
-    max_episode_steps=108000, # Max frames per episode (27000 steps * 4 frame skip)
-    repeat_action_probability=0.0,  # Sticky actions probability
-    full_action_space=False,  # Use full action space (not minimal)
+    noop_max: int = 30,             # Maximum number of no-ops at reset
+    use_fire_reset: bool = True,    # Press FIRE on reset for games that require it
+    episodic_life: bool = False,    # End episodes on life loss
+    life_loss_info: bool = False,   # Return termination signal on life loss but don't reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.
+    max_num_frames_per_episode: int = 108000, # Max frames per episode (27000 steps * 4 frame skip)
+    repeat_action_probability: float = 0.0,   # Sticky actions probability
+    full_action_space: bool = False,          # Use full action space (not minimal)
+    continuous: bool = False,                 # If to use continuous actions
+    continuous_action_threshold: bool = 0.5,  # The threshold at which to use continuous actions
 
     # Performance options
     batch_size=0,             # Number of environments to process at once (default=0 is the `num_envs`)
+    autoreset_mode=gym.vector.AutoresetMode.NEXT_STEP,  # How reset sub-environments when they terminated (https://farama.org/Vector-Autoreset-Mode)
     num_threads=0,            # Number of worker threads (0=auto)
     thread_affinity_offset=-1,# CPU core offset for thread affinity (-1=no affinity)
-    seed=0,                   # Random seed
 )
 ```
 
@@ -102,10 +129,7 @@ Where:
 - `stack_size`: Number of stacked frames (typically 4)
 - `height`, `width`: Image dimensions (typically 84x84)
 
-This differs from the standard Gymnasium Atari environment format which uses:
-```
-observations.shape = (num_envs, stack_size, height, width)  # Without num_envs
-```
+Additionally, with `grayscale=True` then the shape is `(num_envs, stack_size, height, width, 3)` for RGB frames.
 
 ## Performance Considerations
 
@@ -134,7 +158,7 @@ The `batch_size` parameter controls how many environments are processed simultan
 
 ```python
 # Process environments in batches of 4
-envs = VectorAtariEnv(game="Breakout", num_envs=16, batch_size=4)
+envs = AtariVectorEnv(game="Breakout", num_envs=16, batch_size=4)
 ```
 
 A smaller batch size can improve latency while a larger batch size can improve throughput.
@@ -147,50 +171,5 @@ On systems with multiple CPU cores, setting thread affinity can improve performa
 
 ```python
 # Set thread affinity starting from core 0
-envs = VectorAtariEnv(game="Breakout", num_envs=8, thread_affinity_offset=0)
-```
-
-
-## Examples
-
-### Training Example with PyTorch
-
-```python
-import torch
-import numpy as np
-from ale_py.vector_env import VectorAtariEnv
-
-# Create environment
-envs = VectorAtariEnv(game="Breakout", num_envs=8)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# Initialize model (simplified example)
-model = torch.nn.Sequential(
-    torch.nn.Conv2d(4, 32, kernel_size=8, stride=4),
-    torch.nn.ReLU(),
-    torch.nn.Conv2d(32, 64, kernel_size=4, stride=2),
-    torch.nn.ReLU(),
-    torch.nn.Conv2d(64, 64, kernel_size=3, stride=1),
-    torch.nn.ReLU(),
-    torch.nn.Flatten(),
-    torch.nn.Linear(3136, 512),
-    torch.nn.ReLU(),
-    torch.nn.Linear(512, envs.single_action_space.n)
-).to(device)
-
-# Reset environment
-observations, _ = envs.reset()
-
-# Training loop
-for step in range(1000):
-    # Convert observations to PyTorch tensors
-    obs_tensor = torch.tensor(observations, dtype=torch.float32, device=device) / 255.0
-
-    # Get actions from model
-    with torch.no_grad():
-        q_values = model(obs_tensor)
-        actions = q_values.max(dim=1)[1].cpu().numpy()
-
-    # Step the environment
-    observations, rewards, terminations, truncations, infos = envs.step(actions)
+envs = AtariVectorEnv(game="Breakout", num_envs=8, thread_affinity_offset=0)
 ```

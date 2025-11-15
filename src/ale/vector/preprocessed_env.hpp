@@ -10,6 +10,7 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "ale/common/Constants.h"
 #include "ale/ale_interface.hpp"
 #include "utils.hpp"
 
@@ -29,6 +30,7 @@ namespace ale::vector {
          * @param obs_width Width to resize frames to for observations
          * @param frame_skip Number of frames for which to repeat the action
          * @param maxpool Whether to maxpool observations
+         * @param obs_format Format of observations (grayscale or RGB)
          * @param stack_num Number of frames to stack for observations
          * @param noop_max Maximum number of no-ops to perform on resets
          * @param use_fire_reset Whether to press FIRE during reset
@@ -47,6 +49,7 @@ namespace ale::vector {
             const int obs_width = 84,
             const int frame_skip = 4,
             const bool maxpool = true,
+            const ObsFormat obs_format = ObsFormat::Grayscale,
             const int stack_num = 4,
             const int noop_max = 30,
             const bool use_fire_reset = true,
@@ -59,10 +62,12 @@ namespace ale::vector {
             const int seed = -1
         ) : env_id_(env_id),
             rom_path_(rom_path),
-            obs_height_(obs_height),
-            obs_width_(obs_width),
+            obs_frame_height_(obs_height),
+            obs_frame_width_(obs_width),
             frame_skip_(frame_skip),
             maxpool_(maxpool),
+            obs_format_(obs_format),
+            channels_per_frame_(obs_format == ObsFormat::Grayscale ? 1 : 3),
             stack_num_(stack_num),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
@@ -73,10 +78,9 @@ namespace ale::vector {
             rng_gen_(seed == -1 ? std::random_device{}() : seed),
             elapsed_step_(max_episode_steps + 1),
             // Uninitialised variables
-            game_over_(false), lives_(0), was_life_loss_(false), reward_(0),
+            game_over_(false), lives_(0), was_life_lost_(false), reward_(0),
             current_action_(EnvironmentAction()), current_seed_(0)
         {
-
             // Turn off verbosity
             Logger::setMode(Logger::Error);
 
@@ -112,15 +116,19 @@ namespace ale::vector {
                 noop_generator_ = std::uniform_int_distribution<>(0, 0);
             }
 
+            const ALEScreen& screen = env_->getScreen();
+            raw_frame_height_ = screen.height();
+            raw_frame_width_ = screen.width();
+            raw_frame_size_ = raw_frame_height_ * raw_frame_width_;
+            raw_size_ = raw_frame_height_ * raw_frame_width_ * channels_per_frame_;
+            obs_size_ = obs_frame_height_ * obs_frame_width_ * channels_per_frame_;
+
             // Initialize the buffers
             for (int i = 0; i < 2; ++i) {
-                raw_frames_.emplace_back(210 * 160);
+                raw_frames_.emplace_back(raw_size_);
             }
-            resized_frame_.resize(obs_height_ * obs_width_);
-            for (int i = 0; i < stack_num_; ++i) {
-                std::vector<uint8_t> frame(obs_height_ * obs_width_, 0);
-                frame_stack_.push_back(std::move(frame));
-            }
+            frame_stack_ = std::vector<uint8_t>(stack_num_ * obs_size_, 0);
+            frame_stack_idx_ = 0;
         }
 
         void set_seed(const int seed) {
@@ -140,6 +148,11 @@ namespace ale::vector {
             }
             env_->reset_game();
 
+            // Press FIRE if required by the environment
+            if (use_fire_reset_ && has_fire_action_) {
+                env_->act(PLAYER_A_FIRE);
+            }
+
             // Perform no-op steps
             int noop_steps = noop_generator_(rng_gen_) - static_cast<int>(use_fire_reset_ && has_fire_action_);
             while (noop_steps > 0) {
@@ -150,24 +163,27 @@ namespace ale::vector {
                 noop_steps--;
             }
 
-            // Press FIRE if required by the environment
-            if (use_fire_reset_ && has_fire_action_) {
-                env_->act(PLAYER_A_FIRE);
-            }
+            // Clear the frame stack
+            std::fill(frame_stack_.begin(), frame_stack_.end(), 0);
+            frame_stack_idx_ = 0;
 
             // Get the screen data and process it
-            get_screen_data(raw_frames_[0].data());
-            std::fill(raw_frames_[1].begin(), raw_frames_[1].end(), 0);
-            for (int stack_id = 0; stack_id < stack_num_ - 1; ++stack_id) {
-                std::fill(frame_stack_[stack_id].begin(), frame_stack_[stack_id].end(), 0);
+            if (obs_format_ == ObsFormat::Grayscale) {
+                get_screen_data_grayscale(raw_frames_[0].data());
+            } else {
+                get_screen_data_rgb(raw_frames_[0].data());
             }
+            std::fill(raw_frames_[1].begin(), raw_frames_[1].end(), 0);
+
+            // Process the screen
             process_screen();
 
             // Update state
             elapsed_step_ = 0;
+            reward_ = 0;
             game_over_ = false;
             lives_ = env_->lives();
-            was_life_loss_ = false;
+            was_life_lost_ = false;
             current_action_.action_id = PLAYER_A_NOOP;
         }
 
@@ -182,35 +198,39 @@ namespace ale::vector {
          * Steps the environment using the current action
          */
         void step() {
-            float reward = 0.0;
-            game_over_ = false;
-
+            // Convert the current action to Action and Paddle Strength
             const int action_id = current_action_.action_id;
-            const Action action = (action_id < 0 || action_id >= static_cast<int>(action_set_.size())) ? PLAYER_A_NOOP : action_set_[action_id];
+            if (action_id < 0 || action_id >= action_set_.size()) {
+                throw std::out_of_range("Stepping sub-environment with action_id: " + std::to_string(action_id) + ", however, this is either less than zero or greater than available actions (" + std::to_string(action_set_.size()) + ")");
+            }
+            const Action action = action_set_[action_id];
             const float strength = current_action_.paddle_strength;
 
             // Execute action for frame_skip frames
-            for (int skip_id = frame_skip_; skip_id > 0 && !game_over_; --skip_id) {
+            reward_t reward = 0;
+            for (int skip_id = frame_skip_; skip_id > 0; --skip_id) {
                 reward += env_->act(action, strength);
 
                 game_over_ = env_->game_over();
-                // Handle episodic life
-                if (episodic_life_ && env_->lives() < lives_ && env_->lives() > 0) {
-                    game_over_ = true;
+                elapsed_step_++;
+                was_life_lost_ = env_->lives() < lives_ && env_->lives() > 0;
+
+                if (game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_)) {
+                    break;
                 }
 
                 // Captures last two frames for maxpooling
                 if (skip_id <= 2) {
-                    get_screen_data(raw_frames_[skip_id - 1].data());
+                    if (obs_format_ == ObsFormat::Grayscale) {
+                        get_screen_data_grayscale(raw_frames_[skip_id - 1].data());
+                    } else {
+                        get_screen_data_rgb(raw_frames_[skip_id - 1].data());
+                    }
                 }
             }
 
-            // Process the screen
-            process_screen();
-
             // Update state
-            elapsed_step_++;
-            was_life_loss_ = env_->lives() < lives_;
+            process_screen();
             lives_ = env_->lives();
             reward_ = reward_clipping_ ? std::clamp<int>(reward, -1, 1) : reward;
         }
@@ -223,24 +243,26 @@ namespace ale::vector {
             timestep.env_id = env_id_;
 
             timestep.reward = reward_;
-            timestep.terminated = game_over_ || (life_loss_info_ && was_life_loss_);
-            timestep.truncated = elapsed_step_ >= max_episode_steps_;
+            timestep.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
+            timestep.truncated = elapsed_step_ >= max_episode_steps_ && !timestep.terminated;
 
             timestep.lives = lives_;
             timestep.frame_number = env_->getFrameNumber();
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
 
-            // Combine stacked frames into a single observation
-            const size_t frame_size = obs_height_ * obs_width_;
-            timestep.observation.resize(frame_size * stack_num_);
-
+            // Copy frames from oldest to newest into a single observation
+            timestep.observation.resize(obs_size_ * stack_num_);
             for (int i = 0; i < stack_num_; ++i) {
+                int src_idx = (frame_stack_idx_ + i) % stack_num_;
                 std::memcpy(
-                    timestep.observation.data() + i * frame_size,
-                    frame_stack_[i].data(),
-                    frame_size
+                    timestep.observation.data() + i * obs_size_,
+                    frame_stack_.data() + src_idx * obs_size_,
+                    obs_size_
                 );
             }
+
+            // Initialize as nullptr and set in AsyncVectorizer if needed
+            timestep.final_observation = nullptr;
 
             return timestep;
         }
@@ -248,8 +270,8 @@ namespace ale::vector {
         /**
          * Check if the episode is over (terminated or truncated)
          */
-        bool is_episode_over() const {
-            return game_over_ || elapsed_step_ >= max_episode_steps_;
+        const bool is_episode_over() const {
+            return game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_);
         }
 
         /**
@@ -262,20 +284,39 @@ namespace ale::vector {
         /**
          * Get observation size
          */
-        int get_obs_size() const {
-            return obs_height_ * obs_width_ * stack_num_;
+        const int get_stacked_obs_size() const {
+            return obs_size_ * stack_num_;
+        }
+
+        /**
+         * Get channels per frame
+         */
+        const int get_channels_per_frame() const {
+            return channels_per_frame_;
         }
 
     private:
         /**
-         * Get the current screen data from ALE
+         * Get the current screen data from ALE in grayscale format
          */
-        void get_screen_data(uint8_t* buffer) const {
+        void get_screen_data_grayscale(uint8_t* buffer) const {
             const ALEScreen& screen = env_->getScreen();
             uint8_t* ale_screen_data = screen.getArray();
 
             env_->theOSystem->colourPalette().applyPaletteGrayscale(
-                buffer, ale_screen_data, screen.width() * screen.height()
+                buffer, ale_screen_data, raw_frame_size_
+            );
+        }
+
+        /**
+         * Get the current screen data from ALE in RGB format
+         */
+        void get_screen_data_rgb(uint8_t* buffer) const {
+            const ALEScreen& screen = env_->getScreen();
+            uint8_t* ale_screen_data = screen.getArray();
+
+            env_->theOSystem->colourPalette().applyPaletteRGB(
+                buffer, ale_screen_data, raw_frame_size_
             );
         }
 
@@ -283,32 +324,29 @@ namespace ale::vector {
          * Process the screen and update the frame stack
          */
         void process_screen() {
-            constexpr int raw_height = 210;
-            constexpr int raw_width = 160;
-
+            // Maxpool raw frames if required (different for grayscale and RGB)
             if (maxpool_) {
-                // Maxpool over the last two frames
-                constexpr int raw_size = raw_height * raw_width;
-                for (int i = 0; i < raw_size; ++i) {
+                for (int i = 0; i < raw_size_; ++i) {
                     raw_frames_[0][i] = std::max(raw_frames_[0][i], raw_frames_[1][i]);
                 }
             }
 
-            if (obs_height_ != raw_height && obs_width_ != raw_width) {
-                // Resize the raw frame to target dimensions
-                cv::Mat src_img(raw_height, raw_width, CV_8UC1, raw_frames_[0].data());
-                cv::Mat dst_img(obs_height_, obs_width_, CV_8UC1, resized_frame_.data());
+            // Get pointer to current position in circular buffer
+            uint8_t* dest_ptr = frame_stack_.data() + (frame_stack_idx_ * obs_size_);
 
-                // Use INTER_AREA for downsampling to avoid moiré patterns
+            // Resize directly into the circular buffer or copy if no resize needed
+            if (obs_frame_height_ != raw_frame_height_ || obs_frame_width_ != raw_frame_width_) {
+                auto cv2_format = (obs_format_ == ObsFormat::Grayscale) ? CV_8UC1 : CV_8UC3;
+                cv::Mat src_img(raw_frame_height_, raw_frame_width_, cv2_format, raw_frames_[0].data());
+                cv::Mat dst_img(obs_frame_height_, obs_frame_width_, cv2_format, dest_ptr);
                 cv::resize(src_img, dst_img, dst_img.size(), 0, 0, cv::INTER_AREA);
             } else {
-                // Otherwise, just copy the data to the resized frame
-                std::memcpy(resized_frame_.data(), raw_frames_[0].data(), raw_frames_[0].size());
+                // No resize needed, copy directly to circular buffer
+                std::memcpy(dest_ptr, raw_frames_[0].data(), raw_size_);
             }
 
-            // Push the new frame into the stack
-            frame_stack_.pop_front();
-            frame_stack_.push_back(resized_frame_);
+            // Move to next position in circular buffer
+            frame_stack_idx_ = (frame_stack_idx_ + 1) % stack_num_;
         }
 
         int env_id_;                         // Unique ID for this environment
@@ -316,11 +354,20 @@ namespace ale::vector {
         std::unique_ptr<ALEInterface> env_;  // ALE interface
 
         ActionVect action_set_;              // Available actions
-        int obs_height_;                     // Height to resize frames to for observations
-        int obs_width_;                      // Width to resize frames to for observations
+
+        ObsFormat obs_format_;               // Format of observations (grayscale or RGB)
+        int channels_per_frame_;             // The number of channels for each frame based on obs_format
+        int raw_frame_height_;               // The raw frame height
+        int raw_frame_width_;                // The raw frame width
+        int raw_frame_size_;                 // The raw frame size (height * width)
+        int raw_size_;
+        int obs_frame_height_;               // Height to resize frames to for observations
+        int obs_frame_width_;                // Width to resize frames to for observations
+        int obs_size_;                       // Observation size (height * width * channels)
+        int stack_num_;                      // Number of frames to stack for observations
+
         int frame_skip_;                     // Number of frames for which to repeat the action
         bool maxpool_;                       // Whether to maxpool observations
-        int stack_num_;                      // Number of frames to stack for observations
         int noop_max_;                       // Maximum number of no-ops at reset
         bool use_fire_reset_;                // Whether to press FIRE during reset
         bool has_fire_action_;               // Whether FIRE action is available for reset
@@ -335,16 +382,16 @@ namespace ale::vector {
         int elapsed_step_;                   // Current step in the episode
         bool game_over_;                     // Whether the game is over
         int lives_;                          // Current number of lives
-        bool was_life_loss_;                 // If a life is loss from a step
-        float reward_;                       // Last reward received
+        bool was_life_lost_;                 // If a life is loss from a step
+        reward_t reward_;                    // Last reward received
 
         EnvironmentAction current_action_;   // Current action to take
         int current_seed_;                   // Current seed to update
 
         // Frame buffers
         std::vector<std::vector<uint8_t>> raw_frames_;  // Raw frame buffers for maxpooling
-        std::vector<uint8_t> resized_frame_;            // Resized frame buffer
-        std::deque<std::vector<uint8_t>> frame_stack_;  // Stack of recent frames
+        std::vector<uint8_t> frame_stack_;   // Stack of recent frames
+        int frame_stack_idx_;                // Frame stack index
     };
 }
 

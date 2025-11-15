@@ -5,7 +5,6 @@ from __future__ import annotations
 import sys
 from functools import lru_cache
 from typing import Any, Literal
-from warnings import warn
 
 import ale_py
 import gymnasium
@@ -165,28 +164,22 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         self.load_game()
 
         # get the set of legal actions
-        if continuous and not full_action_space:
-            warn(
-                "`continuous` is set to `True`, but `full_action_space` is set to `False`. "
-                "This will error out when the continuous actions are discretized to illegal action spaces. "
-                "Therefore, `full_action_space` has been automatically set to `True`."
-            )
-        self._action_set = (
-            self.ale.getLegalActionSet()
-            if (full_action_space or continuous)
-            else self.ale.getMinimalActionSet()
-        )
+        if full_action_space or continuous:
+            self._action_set = self.ale.getLegalActionSet()
+        else:
+            self._action_set = self.ale.getMinimalActionSet()
 
         # action space
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
         if continuous:
-            # Actions are radius, theta, and fire, where first two are the
-            # parameters of polar coordinates.
+            # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
             self.action_space = spaces.Box(
-                np.array([0.0, -np.pi, 0.0]).astype(np.float32),
-                np.array([1.0, np.pi, 1.0]).astype(np.float32),
-            )  # radius, theta, fire. First two are polar coordinates.
+                low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
+                high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
+                dtype=np.float32,
+                shape=(3,),
+            )
         else:
             self.action_space = spaces.Discrete(len(self._action_set))
 
@@ -283,18 +276,19 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         else:
             raise error.Error(f"Invalid frameskip type: {self._frameskip}")
 
-        # action formatting
         if self.continuous:
             # compute the x, y, fire of the joystick
             assert isinstance(action, np.ndarray)
+            assert action.dtype == np.float32
+            assert action.shape == (3,)
             x, y = action[0] * np.cos(action[1]), action[0] * np.sin(action[1])
             action_idx = self.map_action_idx(
                 left_center_right=(
-                    -int(x < self.continuous_action_threshold)
+                    -int(x < -self.continuous_action_threshold)
                     + int(x > self.continuous_action_threshold)
                 ),
                 down_center_up=(
-                    -int(y < self.continuous_action_threshold)
+                    -int(y < -self.continuous_action_threshold)
                     + int(y > self.continuous_action_threshold)
                 ),
                 fire=(action[-1] > self.continuous_action_threshold),
@@ -352,7 +346,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         }
 
     @lru_cache(1)
-    def get_keys_to_action(self) -> dict[tuple[int, ...], ale_py.Action]:
+    def get_keys_to_action(self) -> dict[tuple[str, ...], int | np.ndarray]:
         """Return keymapping -> actions for human play.
 
         Up, down, left and right are wasd keys with fire being space.
@@ -361,12 +355,12 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         Returns:
             Dictionary of key values to actions
         """
-        UP = ord("w")
-        LEFT = ord("a")
-        RIGHT = ord("d")
-        DOWN = ord("s")
-        FIRE = ord(" ")
-        NOOP = ord("e")
+        UP = "w"
+        LEFT = "a"
+        RIGHT = "d"
+        DOWN = "s"
+        FIRE = " "
+        NOOP = "e"
 
         mapping = {
             ale_py.Action.NOOP: (NOOP,),
@@ -390,12 +384,13 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         }
 
         # Map
-        #   (key, key, ...) -> action_idx
-        # where action_idx is the integer value of the action enum
-        #
-        return {
-            tuple(sorted(mapping[act_idx])): act_idx for act_idx in self._action_set
-        }
+        #   (key, key, ...) -> action
+        if self.continuous:
+            raise AttributeError(
+                "`get_keys_to_action` can't be provided for this Atari environment as `continuous=True`."
+            )
+        else:
+            return {mapping[action]: i for i, action in enumerate(self._action_set)}
 
     @staticmethod
     @lru_cache(18)

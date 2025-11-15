@@ -11,7 +11,7 @@ from ale_py import roms
 from ale_py.env import AtariEnv
 from gymnasium.core import ObsType
 from gymnasium.spaces import Box, Discrete
-from gymnasium.vector import VectorEnv
+from gymnasium.vector import AutoresetMode, VectorEnv
 
 
 class AtariVectorEnv(VectorEnv):
@@ -30,9 +30,11 @@ class AtariVectorEnv(VectorEnv):
         full_action_space: bool = False,
         continuous: bool = False,
         continuous_action_threshold: float = 0.5,
+        autoreset_mode: AutoresetMode | str = AutoresetMode.NEXT_STEP,
         # Preprocessing values
         img_height: int = 84,
         img_width: int = 84,
+        grayscale: bool = True,
         stack_num: int = 4,
         frameskip: int = 4,
         maxpool: bool = True,
@@ -55,8 +57,10 @@ class AtariVectorEnv(VectorEnv):
             full_action_space: If the environment should use the full action space
             continuous: If to use the continuous action space
             continuous_action_threshold: The continuous action threshold
+            autoreset_mode: What mode to autoreset the sub-environments
             img_height: The frame height
-            img_width: The ƒrame width
+            img_width: The frame width
+            grayscale: Whether to use grayscale observations
             stack_num: The frame stack size
             frameskip: The number of frame skips to use for each action
             maxpool: If maxpool over subsequent frames
@@ -66,13 +70,19 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
         """
+        rom_path = roms.get_rom_path(game)
+        assert (
+            rom_path is not None
+        ), f'{game} is not a ROM name, it should be snake_case not camel-case, i.e., "ms_pacman" not "MsPacman"'
+
         self.ale = ale_py.ALEVectorInterface(
-            rom_path=roms.get_rom_path(game),
+            rom_path=rom_path,
             num_envs=num_envs,
             frame_skip=frameskip,
             stack_num=stack_num,
             img_height=img_height,
             img_width=img_width,
+            grayscale=grayscale,
             maxpool=maxpool,
             noop_max=noop_max,
             use_fire_reset=use_fire_reset,
@@ -81,36 +91,53 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping=reward_clipping,
             max_episode_steps=max_num_frames_per_episode,
             repeat_action_probability=repeat_action_probability,
-            full_action_space=full_action_space,
+            full_action_space=full_action_space or continuous,
             batch_size=batch_size,
             num_threads=num_threads,
             thread_affinity_offset=thread_affinity_offset,
+            autoreset_mode=(
+                autoreset_mode.value
+                if isinstance(autoreset_mode, AutoresetMode)
+                else autoreset_mode
+            ),
         )
 
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
+        self.grayscale = grayscale
         self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
         for h in (-1, 0, 1):
             for v in (-1, 0, 1):
-                for f in (False, True):
-                    self.map_action_idx[h, v, f] = AtariEnv.map_action_idx(
-                        h, v, f
-                    ).value
+                for f in (0, 1):
+                    action = AtariEnv.map_action_idx(h, v, bool(f)).value
+                    self.map_action_idx[h + 1, v + 1, f] = action
 
+        # Set up the observation space based on grayscale or RGB format
+        obs_shape = (stack_num, img_height, img_width)
+        if not grayscale:
+            obs_shape += (3,)
         self.single_observation_space = Box(
-            shape=(stack_num, img_height, img_width), low=0, high=255, dtype=np.uint8
+            shape=obs_shape, low=0, high=255, dtype=np.uint8
         )
+
         if self.continuous:
             # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
             self.single_action_space = Box(
                 low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
                 high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
+                dtype=np.float32,
+                shape=(3,),
             )
         else:
             self.single_action_space = Discrete(len(self.ale.get_action_set()))
 
         self.batch_size = num_envs if batch_size == 0 else batch_size
         self.num_envs = num_envs
+        self.metadata["autoreset_mode"] = (
+            autoreset_mode
+            if isinstance(autoreset_mode, AutoresetMode)
+            else AutoresetMode(autoreset_mode)
+        )
         self.observation_space = gymnasium.vector.utils.batch_space(
             self.single_observation_space, self.batch_size
         )
@@ -139,7 +166,7 @@ class AtariVectorEnv(VectorEnv):
             reset_indices = np.arange(self.num_envs)
         else:
             reset_mask = options["reset_mask"]
-            assert isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool
+            assert isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool_
             reset_indices, _ = np.where(reset_mask)
 
         if seed is None:
@@ -165,26 +192,32 @@ class AtariVectorEnv(VectorEnv):
         if self.continuous:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.float32
-            assert actions.shape == (self.batch_size, 2)
+            assert actions.shape == (self.batch_size, 3)
 
-            x = actions[0, :] * np.cos(actions[1, :])
-            y = actions[0, :] * np.sin(actions[1, :])
+            x = actions[:, 0] * np.cos(actions[:, 1])
+            y = actions[:, 0] * np.sin(actions[:, 1])
 
-            horizontal = -(x < self.continuous_action_threshold) + (
-                x > self.continuous_action_threshold
+            horizontal = (
+                -(x < -self.continuous_action_threshold).astype(np.int32)
+                + (x > self.continuous_action_threshold).astype(np.int32)
+                + 1
             )
-            vertical = -(y < self.continuous_action_threshold) + (
-                y > self.continuous_action_threshold
+            vertical = (
+                -(y < -self.continuous_action_threshold).astype(np.int32)
+                + (y > self.continuous_action_threshold).astype(np.int32)
+                + 1
             )
-            fire = actions[1, :] > self.continuous_action_threshold
+            fire = (actions[:, 2] > self.continuous_action_threshold).astype(np.int32)
 
-            action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
-            paddle_strength = actions[1, :]
+            action_ids = self.map_action_idx[horizontal, vertical, fire]
+            paddle_strength = actions[:, 0]
             self.ale.send(action_ids, paddle_strength)
         else:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.int64 or actions.dtype == np.int32
-            assert actions.shape == (self.batch_size,)
+            assert actions.shape == (
+                self.batch_size,
+            ), f"{actions.shape=}, {self.batch_size=}"
 
             paddle_strength = np.ones(self.batch_size)
             self.ale.send(actions, paddle_strength)
@@ -237,11 +270,12 @@ class AtariVectorEnv(VectorEnv):
                     ),  # episode frame number
                 ),
                 vmap_method="broadcast_all",
+                has_side_effect=True,
             )
 
             if reset_mask is not None:
                 assert (
-                    isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool
+                    isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool_
                 )
                 reset_indices, _ = np.where(reset_mask)
             else:
@@ -274,8 +308,8 @@ class AtariVectorEnv(VectorEnv):
                 assert actions.dtype == np.float32
                 assert actions.shape == (self.batch_size, 2)
 
-                x = actions[0, :] * np.cos(actions[1, :])
-                y = actions[0, :] * np.sin(actions[1, :])
+                x = actions[:, 0] * np.cos(actions[:, 1])
+                y = actions[:, 0] * np.sin(actions[:, 1])
 
                 horizontal = -(x < self.continuous_action_threshold) + (
                     x > self.continuous_action_threshold
@@ -283,21 +317,23 @@ class AtariVectorEnv(VectorEnv):
                 vertical = -(y < self.continuous_action_threshold) + (
                     y > self.continuous_action_threshold
                 )
-                fire = actions[1, :] > self.continuous_action_threshold
+                fire = actions[:, 1] > self.continuous_action_threshold
 
                 action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
-                paddle_strength = actions[1, :]
+                paddle_strength = actions[:, 1]
             else:
                 assert isinstance(actions, np.ndarray)
                 assert actions.dtype == np.int64 or actions.dtype == np.int32
-                assert actions.shape == (self.batch_size,)
+                assert actions.shape == (
+                    self.batch_size,
+                ), f"{actions.shape=}, {self.batch_size=}"
 
                 action_ids = actions
                 paddle_strength = np.ones(self.batch_size)
 
             xla_call = jax.ffi.ffi_call(
-                "atari_vector_xla_step",
-                (
+                target_name="atari_vector_xla_step",
+                result_shape_dtypes=(
                     jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
                     jax.ShapeDtypeStruct(
                         self.observation_space.shape, jnp.uint8
@@ -313,6 +349,7 @@ class AtariVectorEnv(VectorEnv):
                     ),  # episode frame number
                 ),
                 vmap_method="broadcast_all",
+                has_side_effect=True,
             )
 
             (

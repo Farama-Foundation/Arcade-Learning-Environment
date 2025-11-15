@@ -37,6 +37,7 @@ namespace ale::vector {
          * @param stack_num Number of frames to stack for observations (default: 4)
          * @param img_height Height to resize frames to (default: 84)
          * @param img_width Width to resize frames to (default: 84)
+         * @param grayscale Whether to use grayscale observations (default: true)
          * @param maxpool If to maxpool over frames (default: true)
          * @param noop_max Maximum number of no-ops to perform at reset (default: 30)
          * @param use_fire_reset Whether to press FIRE during reset (default: true)
@@ -52,11 +53,12 @@ namespace ale::vector {
          */
         ALEVectorInterface(
             const fs::path &rom_path,
-            int num_envs,
+            const int num_envs,
             const int frame_skip = 4,
             const int stack_num = 4,
             const int img_height = 84,
             const int img_width = 84,
+            const bool grayscale = true,
             const bool maxpool = true,
             const int noop_max = 30,
             const bool use_fire_reset = true,
@@ -66,15 +68,18 @@ namespace ale::vector {
             const int max_episode_steps = 108000,
             const float repeat_action_probability = 0.0f,
             const bool full_action_space = false,
-            int batch_size = 0,
-            int num_threads = 0,
-            int thread_affinity_offset = -1
+            const int batch_size = 0,
+            const int num_threads = 0,
+            const int thread_affinity_offset = -1,
+            const std::string &autoreset_mode = "NextStep"
         ) : rom_path_(rom_path),
             num_envs_(num_envs),
             frame_skip_(frame_skip),
             stack_num_(stack_num),
             img_height_(img_height),
             img_width_(img_width),
+            grayscale_(grayscale),
+            obs_format_(grayscale_ ? ObsFormat::Grayscale : ObsFormat::RGB),
             maxpool_(maxpool),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
@@ -95,6 +100,7 @@ namespace ale::vector {
                     img_width_,
                     frame_skip_,
                     maxpool_,
+                    obs_format_,
                     stack_num_,
                     noop_max_,
                     use_fire_reset_,
@@ -108,13 +114,22 @@ namespace ale::vector {
                 );
             };
 
+            if (autoreset_mode == "NextStep") {
+                autoreset_mode_ = AutoresetMode::NextStep;
+            } else if (autoreset_mode == "SameStep") {
+                autoreset_mode_ = AutoresetMode::SameStep;
+            } else {
+                throw std::invalid_argument("Invalid autoreset_mode: " + autoreset_mode + ", expected values: 'NextStep' or 'SameStep'");
+            }
+
             // Create vectorizer
             vectorizer_ = std::make_unique<AsyncVectorizer>(
                 num_envs,
                 batch_size,
                 num_threads,
                 thread_affinity_offset,
-                env_factory
+                env_factory,
+                autoreset_mode_
             );
 
             // Initialize the action set (assuming all environments have the same action set)
@@ -149,7 +164,7 @@ namespace ale::vector {
             std::vector<EnvironmentAction> environment_actions;
             environment_actions.resize(action_ids.size());
 
-            for (int i = 0; i < action_ids.size(); i++) {
+            for (size_t i = 0; i < action_ids.size(); i++) {
                 EnvironmentAction env_action;
                 env_action.env_id = received_env_ids_[i];
                 env_action.action_id = action_ids[i];
@@ -164,9 +179,9 @@ namespace ale::vector {
         /**
         * Returns the environment's data for the environments
         */
-        std::vector<Timestep> recv() {
+        const std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = vectorizer_->recv();
-            for (int i = 0; i < timesteps.size(); i++) {
+            for (size_t i = 0; i < timesteps.size(); i++) {
                 received_env_ids_[i] = timesteps[i].env_id;
             }
             return timesteps;
@@ -186,17 +201,39 @@ namespace ale::vector {
          *
          * @return Number of environments
          */
-        int get_num_envs() const {
+        const int get_num_envs() const {
             return num_envs_;
         }
 
         /**
          * Get the dimensions of the observation space
          *
-         * @return Tuple of (stack_num, height, width)
+         * @return Tuple of (stack_num, height, width, 0) if grayscale or (stack_num, height, width, 3) if RGB
          */
-        std::tuple<int, int, int> get_observation_shape() const {
-            return std::make_tuple(stack_num_, img_height_, img_width_);
+        const std::tuple<int, int, int, int> get_observation_shape() const {
+            if (grayscale_) {
+                return std::make_tuple(stack_num_, img_height_, img_width_, 0);
+            } else {
+                return std::make_tuple(stack_num_, img_height_, img_width_, 3);
+            }
+        }
+
+        /**
+         * Check if observations are grayscale
+         *
+         * @return true if observations are grayscale, false if RGB
+         */
+        const bool is_grayscale() const {
+            return grayscale_;
+        }
+
+        /**
+         * Get the async_vectorizer's autoreset mode
+         *
+         * @return the autoreset mode of the async_vectorizer
+         */
+        const AutoresetMode get_autoreset_mode() const {
+            return autoreset_mode_;
         }
 
         /**
@@ -204,7 +241,7 @@ namespace ale::vector {
          *
          * @return pointer for the underlying vectorizer
          */
-        AsyncVectorizer* get_vectorizer() const {
+        const AsyncVectorizer* get_vectorizer() const {
             return vectorizer_.get();
         }
 
@@ -215,6 +252,8 @@ namespace ale::vector {
         int stack_num_;                           // Number of frames to stack
         int img_height_;                          // Height of resized frames
         int img_width_;                           // Width of resized frames
+        bool grayscale_;                          // Whether to use grayscale observations
+        ObsFormat obs_format_;                    // Observation format based on grayscale
         bool maxpool_;                            // If to maxpool over frames
         int noop_max_;                            // Max no-ops on reset
         bool use_fire_reset_;                     // Whether to fire on reset
@@ -224,6 +263,7 @@ namespace ale::vector {
         int max_episode_steps_;                   // Max steps per episode
         float repeat_action_probability_;         // Repeat actions probability for sticky actions
         bool full_action_space_;                  // Use full action space
+        AutoresetMode autoreset_mode_;
 
         std::vector<int> received_env_ids_;        // Vector of environment ids for the most recently received data
 

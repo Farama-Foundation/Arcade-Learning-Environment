@@ -24,8 +24,8 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
     - uses: pre-commit/action@v3.0.1
@@ -45,22 +45,22 @@ jobs:
             python: '3.12'
             triplet: x64-linux-mixed
 
-          - runs-on: macos-13
-            python: '3.12'
-            triplet: x64-osx-mixed
-
           - runs-on: windows-latest
             python: '3.12'
-            triplet: x64-windows
+            triplet: x64-windows-mixed
+
+          - runs-on: macos-14
+            python: '3.12'
+            triplet: arm64-osx-mixed
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
     runs-on: ${{ matrix.runs-on }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python }}
 
@@ -85,16 +85,16 @@ jobs:
         include:
           - runs-on: ubuntu-latest
             arch: x86_64
+          - runs-on: ubuntu-24.04-arm
+            arch: aarch64
           - runs-on: windows-latest
             arch: AMD64
-          - runs-on: macos-13
-            arch: x86_64
           - runs-on: macos-13
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
         if: runner.os == 'linux'
@@ -108,8 +108,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: .github/docker/manylinux-vcpkg.Dockerfile
-          tags: manylinux-vcpkg:latest
+          file: ".github/docker/manylinux-${{ matrix.arch }}-vcpkg.Dockerfile"
+          tags: "manylinux-${{ matrix.arch }}-vcpkg:latest"
           push: false
           load: true
 
@@ -117,12 +117,12 @@ jobs:
         run: ./scripts/download_unpack_roms.sh
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.2
+        uses: pypa/cibuildwheel@v3.0
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
           path: ./wheelhouse/*.whl
@@ -136,35 +136,44 @@ jobs:
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
-          # ale_py-0.x.x-cp310-cp310-macosx_10_15_x86_64.whl
           # ale_py-0.x.x-cp310-cp310-macosx_11_0_arm64.whl
           # ale_py-0.x.x-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+          # ale_py-0.x.x-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl
           # ale_py-0.x.x-cp310-cp310-win_amd64.whl
           - runs-on: ubuntu-latest
-            python: '3.9'
-            wheel-name: 'cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64'
-            arch: 'x86_64'
-          - runs-on: ubuntu-latest
             python: '3.10'
-            wheel-name: 'cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64'
+            wheel-name: 'cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.11'
-            wheel-name: 'cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64'
+            wheel-name: 'cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.12'
-            wheel-name: 'cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64'
+            wheel-name: 'cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.13'
-            wheel-name: 'cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64'
+            wheel-name: 'cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64'
             arch: 'x86_64'
 
-          - runs-on: windows-latest
-            python: '3.9'
-            wheel-name: 'cp39-cp39-win_amd64'
-            arch: AMD64
+          - runs-on: ubuntu-24.04-arm
+            python: '3.10'
+            wheel-name: 'cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            arch: 'aarch64'
+          - runs-on: ubuntu-24.04-arm
+            python: '3.11'
+            wheel-name: 'cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            arch: 'aarch64'
+          - runs-on: ubuntu-24.04-arm
+            python: '3.12'
+            wheel-name: 'cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            arch: 'aarch64'
+          - runs-on: ubuntu-24.04-arm
+            python: '3.13'
+            wheel-name: 'cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            arch: 'aarch64'
+
           - runs-on: windows-latest
             python: '3.10'
             wheel-name: 'cp310-cp310-win_amd64'
@@ -182,31 +191,6 @@ jobs:
             wheel-name: 'cp313-cp313-win_amd64'
             arch: AMD64
 
-          - runs-on: macos-13
-            python: '3.9'
-            wheel-name: 'cp39-cp39-macosx_13_0_x86_64'
-            arch: x86_64
-          - runs-on: macos-13
-            python: '3.10'
-            wheel-name: 'cp310-cp310-macosx_13_0_x86_64'
-            arch: x86_64
-          - runs-on: macos-13
-            python: '3.11'
-            wheel-name: 'cp311-cp311-macosx_13_0_x86_64'
-            arch: x86_64
-          - runs-on: macos-13
-            python: '3.12'
-            wheel-name: 'cp312-cp312-macosx_13_0_x86_64'
-            arch: x86_64
-          - runs-on: macos-13
-            python: '3.13'
-            wheel-name: 'cp313-cp313-macosx_13_0_x86_64'
-            arch: x86_64
-
-          - runs-on: macos-14
-            python: '3.9'
-            wheel-name: 'cp39-cp39-macosx_13_0_arm64'
-            arch: arm64
           - runs-on: macos-14
             python: '3.10'
             wheel-name: 'cp310-cp310-macosx_13_0_arm64'
@@ -227,12 +211,12 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
 
@@ -240,7 +224,52 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install "ale_py-0.11.1-${{ matrix.wheel-name }}.whl[test]"
+        run: python -m pip install "ale_py-0.11.2-${{ matrix.wheel-name }}.whl[test]"
+
+      - name: Test
+        run: python -m pytest
+
+  test-numpy-1-x:
+    name: Test NumPy 1.X
+    needs: [build-wheels, build-scratch]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-latest
+            wheel-name: 'cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64'
+            arch: 'x86_64'
+          - runs-on: ubuntu-24.04-arm
+            wheel-name: 'cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            arch: 'aarch64'
+          - runs-on: windows-latest
+            wheel-name: 'cp313-cp313-win_amd64'
+            arch: AMD64
+          - runs-on: macos-14
+            wheel-name: 'cp313-cp313-macosx_13_0_arm64'
+            arch: arm64
+
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - uses: actions/download-artifact@v6
+        with:
+          name: wheels-${{ runner.os }}-${{ matrix.arch }}
+
+      - run: ls
+
+      - name: Install ALE wheel
+        # wildcarding doesn't work for some reason, therefore, update the project version here
+        run: python -m pip install "ale_py-0.11.2-${{ matrix.wheel-name }}.whl[test]"
+
+      - name: Install NumPy 1.X
+        run: python -m pip install "numpy<2.0"
 
       - name: Test
         run: python -m pytest
