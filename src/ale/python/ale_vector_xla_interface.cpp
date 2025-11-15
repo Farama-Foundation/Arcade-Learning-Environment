@@ -28,8 +28,6 @@ ffi::Error XLAResetImpl(
     ffi::ResultBuffer<ffi::S32> frame_numbers_buffer,
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
-    std::cout << "[XLA FFI] Using CPU handler for Reset" << std::endl;
-
     // Validate handle buffer size
     if (handle_buffer.element_count() != sizeof(ale::vector::AsyncVectorizer*)) {
         return ffi::Error::Internal("Incorrect handle buffer size in reset");
@@ -134,8 +132,6 @@ ffi::Error XLAResetGPUImpl(
     ffi::ResultBuffer<ffi::S32> frame_numbers_buffer,
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
-    std::cout << "[XLA FFI] Using GPU handler for Reset" << std::endl;
-
     // Validate handle buffer size
     if (handle_buffer.element_count() != sizeof(ale::vector::AsyncVectorizer*)) {
         return ffi::Error::Internal("Incorrect handle buffer size in reset (GPU)");
@@ -327,8 +323,6 @@ ffi::Error XLAStepImpl(
     ffi::ResultBuffer<ffi::S32> frame_numbers_buffer,
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
-    std::cout << "[XLA FFI] Using CPU handler for Step" << std::endl;
-
     // Validate handle buffer size
     if (handle_buffer.element_count() != sizeof(ale::vector::AsyncVectorizer*)) {
         return ffi::Error::Internal("Incorrect handle buffer size in step");
@@ -449,8 +443,6 @@ ffi::Error XLAStepGPUImpl(
     ffi::ResultBuffer<ffi::S32> frame_numbers_buffer,
     ffi::ResultBuffer<ffi::S32> episode_frame_numbers_buffer
 ) {
-    std::cout << "[XLA FFI] Using GPU handler for Step" << std::endl;
-
     // Validate handle buffer size
     if (handle_buffer.element_count() != sizeof(ale::vector::AsyncVectorizer*)) {
         return ffi::Error::Internal("Incorrect handle buffer size in step (GPU)");

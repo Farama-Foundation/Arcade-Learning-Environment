@@ -128,6 +128,5 @@ def test_jit(
         assert data_equivalence(trunc_1, trunc_2)
         assert data_equivalence(info_1, info_2)
 
-
     envs_1.close()
     envs_2.close()
