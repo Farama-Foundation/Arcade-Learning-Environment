@@ -4,11 +4,13 @@ LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcad
 
 RUN yum install -y curl unzip zip tar glibc-static perl
 
-# Install CUDA Toolkit for XLA GPU support (using runfile installer)
+# Install CUDA Toolkit for XLA GPU support (minimal installation: nvcc + cudart only)
 RUN curl -fsSL -o /tmp/cuda_12.6.2_560.35.03_linux.run \
     https://developer.download.nvidia.com/compute/cuda/12.6.2/local_installers/cuda_12.6.2_560.35.03_linux.run && \
-    sh /tmp/cuda_12.6.2_560.35.03_linux.run --silent --toolkit --no-man-page --no-drm && \
-    rm /tmp/cuda_12.6.2_560.35.03_linux.run
+    sh /tmp/cuda_12.6.2_560.35.03_linux.run --silent --toolkit --no-opengl-libs \
+    --no-man-page --no-drm --tmpdir=/tmp/cuda-install && \
+    rm -rf /tmp/cuda_12.6.2_560.35.03_linux.run /tmp/cuda-install && \
+    rm -rf /usr/local/cuda-12.6/nsight* /usr/local/cuda-12.6/libnvvp
 
 ENV CUDA_HOME="/usr/local/cuda-12.6"
 ENV PATH="${CUDA_HOME}/bin:${PATH}"
