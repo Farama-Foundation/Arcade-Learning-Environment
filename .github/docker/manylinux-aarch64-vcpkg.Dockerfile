@@ -1,32 +1,23 @@
-FROM quay.io/pypa/manylinux2014_aarch64
+FROM quay.io/pypa/manylinux_2_28_aarch64
 
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
-RUN yum install -y curl unzip zip tar glibc-static gcc gcc-c++ git cmake make perl
+RUN dnf install -y git cmake make curl unzip zip tar \
+    gcc gcc-c++ dnf-plugins-core ninja-build
 
-# Install CUDA Toolkit for XLA GPU support (using runfile installer for aarch64)
-RUN curl -fsSL -o /tmp/cuda_12.6.2_560.35.03_linux_sbsa.run \
-    https://developer.download.nvidia.com/compute/cuda/12.6.2/local_installers/cuda_12.6.2_560.35.03_linux_sbsa.run && \
-    sh /tmp/cuda_12.6.2_560.35.03_linux_sbsa.run --silent --toolkit --no-man-page --no-drm && \
-    rm /tmp/cuda_12.6.2_560.35.03_linux_sbsa.run
+RUN dnf config-manager --add-repo \
+    https://developer.download.nvidia.com/compute/cuda/repos/rhel8/sbsa/cuda-rhel8.repo
 
-ENV CUDA_HOME="/usr/local/cuda-12.6"
+RUN dnf install -y cuda-toolkit-12-6 && \
+    dnf clean all
+
+]ENV CUDA_HOME="/usr/local/cuda-12.6"
 ENV PATH="${CUDA_HOME}/bin:${PATH}"
 ENV LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}"
 
-RUN git clone https://github.com/ninja-build/ninja.git /tmp/ninja && \
-    cd /tmp/ninja && \
-    git checkout v1.12.1 && \
-    cmake -Bbuild-cmake -S. -DBUILD_TESTING=OFF && \
-    cmake --build build-cmake && \
-    cp build-cmake/ninja /usr/local/bin/ && \
-    chmod +x /usr/local/bin/ninja && \
-    ninja --version && \
-    rm -rf /tmp/ninja
-
-# Install vcpkg
-RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg
-RUN cd /opt/vcpkg && git reset --hard 9b75e789ece3f942159b8500584e35aafe3979ff
+RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg && \
+    cd /opt/vcpkg && \
+    git reset --hard 9b75e789ece3f942159b8500584e35aafe3979ff
 
 ENV VCPKG_INSTALLATION_ROOT="/opt/vcpkg"
 ENV PATH="${PATH}:/opt/vcpkg"
