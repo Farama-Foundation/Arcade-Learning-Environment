@@ -8,10 +8,12 @@ RUN dnf install -y git cmake make curl unzip zip tar \
 RUN dnf config-manager --add-repo \
     https://developer.download.nvidia.com/compute/cuda/repos/rhel8/sbsa/cuda-rhel8.repo
 
-RUN dnf install -y cuda-toolkit-12-6 && \
-    dnf clean all
+RUN dnf install -y \
+    cuda-minimal-build-12-6 \
+    cuda-cudart-devel-12-6 \
+    && dnf clean all
 
-]ENV CUDA_HOME="/usr/local/cuda-12.6"
+ENV CUDA_HOME="/usr/local/cuda-12.6"
 ENV PATH="${CUDA_HOME}/bin:${PATH}"
 ENV LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}"
 
