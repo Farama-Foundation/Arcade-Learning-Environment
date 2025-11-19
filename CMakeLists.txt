@@ -21,7 +21,7 @@ endif()
 
 option(BUILD_VECTOR_XLA_LIB "Build with Vector XLA Support" OFF)
 if (BUILD_VECTOR_XLA_LIB)
-  add_definitions(-BUILD_VECTOR_XLA_LIB)
+  add_definitions(-DBUILD_VECTOR_XLA_LIB)
 endif()
 
 # Set cmake module path

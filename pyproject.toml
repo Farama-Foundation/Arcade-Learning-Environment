@@ -49,7 +49,8 @@ vector = [
 xla = [
     "gymnasium>=1.1.0",
     "opencv-python>=3.0",
-    "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'"
+    "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'",
+    "chex; sys_platform == 'win32' or sys_platform == 'linux'",
 ]
 test = [
     "pytest>=7.0",
