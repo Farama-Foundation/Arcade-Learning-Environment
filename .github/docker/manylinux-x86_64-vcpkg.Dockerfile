@@ -3,7 +3,7 @@ FROM quay.io/pypa/manylinux_2_28_x86_64
 LABEL org.opencontainers.image.source=https://github.com/Farama-Foundation/Arcade-Learning-Environment
 
 RUN dnf install -y git cmake make curl unzip zip tar \
-    gcc gcc-c++ dnf-plugins-core
+    gcc gcc-c++ dnf-plugins-core glibc-static
 
 RUN dnf config-manager --add-repo \
     https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
