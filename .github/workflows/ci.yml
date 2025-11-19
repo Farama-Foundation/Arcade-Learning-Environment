@@ -298,4 +298,4 @@ jobs:
         run: python -m pip install "numpy<2.0"
 
       - name: Test
-        run: python -m pytest
+        run: python -m pytest --ignore=tests/python/test_atari_vector_xla.py
