@@ -263,10 +263,10 @@ jobs:
       matrix:
         include:
           - runs-on: ubuntu-latest
-            wheel-name: 'cp313-cp313-manylinux_2_27_x86_64.manylinux_2_17_x86_64'
+            wheel-name: 'cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-24.04-arm
-            wheel-name: 'cp313-cp313-manylinux_2_27_aarch64.manylinux_2_17_aarch64'
+            wheel-name: 'cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
             # NumPy 1.X is incompatible with Windows
 #          - runs-on: windows-latest
