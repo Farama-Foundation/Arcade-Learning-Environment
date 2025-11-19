@@ -64,6 +64,22 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
+    - name: Install CUDA Toolkit (Linux)
+      if: runner.os == 'Linux'
+      uses: Jimver/cuda-toolkit@v0.2.21
+      with:
+        cuda: '12.6.2'
+        method: 'network'
+        sub-packages: '["nvcc", "cudart"]'
+
+    - name: Install CUDA Toolkit (Windows)
+      if: runner.os == 'Windows'
+      uses: Jimver/cuda-toolkit@v0.2.21
+      with:
+        cuda: '12.6.2'
+        method: 'network'
+        sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
+
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
@@ -95,6 +111,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+
+        # For Linux, the CUDA Toolkit is installed the dockerfile
+      - name: Install CUDA Toolkit (Windows)
+        if: runner.os == 'Windows'
+        uses: Jimver/cuda-toolkit@v0.2.21
+        with:
+          cuda: '12.6.2'
+          method: 'network'
+          sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
 
       - name: Set up Docker Buildx
         if: runner.os == 'linux'
@@ -137,41 +162,41 @@ jobs:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
           # ale_py-0.x.x-cp310-cp310-macosx_11_0_arm64.whl
-          # ale_py-0.x.x-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-          # ale_py-0.x.x-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl
+          # ale_py-0.x.x-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+          # ale_py-0.x.x-cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl
           # ale_py-0.x.x-cp310-cp310-win_amd64.whl
           - runs-on: ubuntu-latest
             python: '3.10'
-            wheel-name: 'cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64'
+            wheel-name: 'cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.11'
-            wheel-name: 'cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64'
+            wheel-name: 'cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.12'
-            wheel-name: 'cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64'
+            wheel-name: 'cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.13'
-            wheel-name: 'cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64'
+            wheel-name: 'cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
 
           - runs-on: ubuntu-24.04-arm
             python: '3.10'
-            wheel-name: 'cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            wheel-name: 'cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
           - runs-on: ubuntu-24.04-arm
             python: '3.11'
-            wheel-name: 'cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            wheel-name: 'cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
           - runs-on: ubuntu-24.04-arm
             python: '3.12'
-            wheel-name: 'cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            wheel-name: 'cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
           - runs-on: ubuntu-24.04-arm
             python: '3.13'
-            wheel-name: 'cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            wheel-name: 'cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
 
           - runs-on: windows-latest
@@ -238,14 +263,15 @@ jobs:
       matrix:
         include:
           - runs-on: ubuntu-latest
-            wheel-name: 'cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64'
+            wheel-name: 'cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
           - runs-on: ubuntu-24.04-arm
-            wheel-name: 'cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64'
+            wheel-name: 'cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
-          - runs-on: windows-latest
-            wheel-name: 'cp313-cp313-win_amd64'
-            arch: AMD64
+            # NumPy 1.X is incompatible with Windows
+#          - runs-on: windows-latest
+#            wheel-name: 'cp313-cp313-win_amd64'
+#            arch: AMD64
           - runs-on: macos-14
             wheel-name: 'cp313-cp313-macosx_13_0_arm64'
             arch: arm64
@@ -272,4 +298,4 @@ jobs:
         run: python -m pip install "numpy<2.0"
 
       - name: Test
-        run: python -m pytest
+        run: python -m pytest --ignore=tests/python/test_atari_vector_xla.py

@@ -152,7 +152,7 @@ class AtariVectorEnv(VectorEnv):
         *,
         seed: int | np.ndarray | None = None,
         options: dict[str, Any] | None = None,
-    ) -> tuple[ObsType, dict[str, Any]]:
+    ) -> tuple[ObsType, dict[str, np.ndarray]]:
         """Resets the sub-environments.
 
         Args:
@@ -167,7 +167,7 @@ class AtariVectorEnv(VectorEnv):
         else:
             reset_mask = options["reset_mask"]
             assert isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool_
-            reset_indices, _ = np.where(reset_mask)
+            (reset_indices,) = np.where(reset_mask)
 
         if seed is None:
             reset_seeds = np.full(len(reset_indices), -1)
@@ -182,7 +182,7 @@ class AtariVectorEnv(VectorEnv):
 
     def step(
         self, actions: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, np.ndarray]]:
         """Steps through the sub-environments for which the actions are taken, return arrays for the next observations, rewards, termination, truncation and info."""
         self.send(actions)
         return self.ale.recv()
@@ -232,6 +232,7 @@ class AtariVectorEnv(VectorEnv):
     def xla(self):
         """Return XLA-compatible functions for JAX integration."""
         try:
+            import chex
             import jax
             import jax.numpy as jnp
         except ImportError as e:
@@ -240,21 +241,38 @@ class AtariVectorEnv(VectorEnv):
             ) from e
 
         if not self.is_xla_registered:
+            # Register CPU targets
             jax.ffi.register_ffi_target(
                 "atari_vector_xla_reset",
                 ale_py._ale_py.VectorXLAReset(),
+                platform="cpu",
             )
             jax.ffi.register_ffi_target(
-                "atari_vector_xla_step",
-                ale_py._ale_py.VectorXLAStep(),
+                "atari_vector_xla_step", ale_py._ale_py.VectorXLAStep(), platform="cpu"
             )
+
+            # Register GPU targets if available
+            if hasattr(ale_py._ale_py, "VectorXLAResetGPU"):
+                jax.ffi.register_ffi_target(
+                    "atari_vector_xla_reset",
+                    ale_py._ale_py.VectorXLAResetGPU(),
+                    platform="CUDA",
+                )
+                jax.ffi.register_ffi_target(
+                    "atari_vector_xla_step",
+                    ale_py._ale_py.VectorXLAStepGPU(),
+                    platform="CUDA",
+                )
+
             self.is_xla_registered = True
+
+        map_action_idx_jnp = jnp.array(self.map_action_idx)
 
         def xla_reset(
             handle: np.ndarray,
             seed: np.ndarray | None = None,
             reset_mask: np.ndarray | None = None,
-        ) -> tuple[np.ndarray, tuple[np.ndarray, dict[str, Any]]]:
+        ) -> tuple[np.ndarray, tuple[np.ndarray, dict[str, np.ndarray]]]:
             xla_call = jax.ffi.ffi_call(
                 target_name="atari_vector_xla_reset",
                 result_shape_dtypes=(
@@ -274,79 +292,91 @@ class AtariVectorEnv(VectorEnv):
             )
 
             if reset_mask is not None:
-                assert (
-                    isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool_
-                )
-                reset_indices, _ = np.where(reset_mask)
+                reset_mask = jnp.asarray(reset_mask)
+
+                chex.assert_shape(reset_mask, (self.num_envs,))
+                chex.assert_type(reset_mask, jnp.bool_)
+
+                (reset_indices,) = jnp.where(reset_mask)
+                reset_indices = reset_indices.astype(jnp.int32)
             else:
-                reset_indices = np.arange(self.num_envs)
+                reset_indices = jnp.arange(self.num_envs, dtype=jnp.int32)
 
             if seed is None:
-                reset_seeds = np.full(len(reset_indices), -1)
+                reset_seeds = jnp.full(len(reset_indices), -1, dtype=jnp.int32)
             elif isinstance(seed, int):
-                reset_seeds = np.arange(seed, seed + len(reset_indices))
-            elif isinstance(seed, np.ndarray):
-                reset_seeds = seed
+                reset_seeds = jnp.arange(
+                    seed, seed + len(reset_indices), dtype=jnp.int32
+                )
             else:
-                raise TypeError("Unsupported seed type")
+                reset_seeds = jnp.asarray(seed, dtype=jnp.int32)
+
+            chex.assert_shape(reset_seeds, (self.num_envs,))
 
             new_handle, obs, env_ids, lives, frame_numbers, episode_frame_numbers = (
                 xla_call(handle, reset_indices, reset_seeds)
             )
 
             info = {
-                "env_id": np.asarray(env_ids),
-                "lives": np.asarray(lives),
-                "frame_number": np.asarray(frame_numbers),
-                "episode_frame_number": np.asarray(episode_frame_numbers),
+                "env_id": env_ids,
+                "lives": lives,
+                "frame_number": frame_numbers,
+                "episode_frame_number": episode_frame_numbers,
             }
-            return new_handle, (np.asarray(obs), info)
+            return new_handle, (obs, info)
 
         def xla_step(handle, actions):
+            # Convert to JAX array if needed (handles both numpy arrays and JAX tracers)
+            actions = jnp.asarray(actions)
+
             if self.continuous:
-                assert isinstance(actions, np.ndarray)
-                assert actions.dtype == np.float32
-                assert actions.shape == (self.batch_size, 2)
+                actions = actions.astype(jnp.float32)
 
-                x = actions[:, 0] * np.cos(actions[:, 1])
-                y = actions[:, 0] * np.sin(actions[:, 1])
+                chex.assert_shape(actions, (self.batch_size, 3))
+                chex.assert_type(actions, jnp.float32)
 
-                horizontal = -(x < self.continuous_action_threshold) + (
-                    x > self.continuous_action_threshold
+                x = actions[:, 0] * jnp.cos(actions[:, 1])
+                y = actions[:, 0] * jnp.sin(actions[:, 1])
+
+                horizontal = (
+                    -(x < -self.continuous_action_threshold).astype(jnp.int32)
+                    + (x > self.continuous_action_threshold).astype(jnp.int32)
+                    + 1
                 )
-                vertical = -(y < self.continuous_action_threshold) + (
-                    y > self.continuous_action_threshold
+                vertical = (
+                    -(y < -self.continuous_action_threshold).astype(jnp.int32)
+                    + (y > self.continuous_action_threshold).astype(jnp.int32)
+                    + 1
                 )
-                fire = actions[:, 1] > self.continuous_action_threshold
+                fire = (actions[:, 2] > self.continuous_action_threshold).astype(
+                    jnp.int32
+                )
 
-                action_ids = self.map_action_idx[np.array([horizontal, vertical, fire])]
-                paddle_strength = actions[:, 1]
+                action_ids = map_action_idx_jnp[horizontal, vertical, fire]
+                paddle_strength = actions[:, 0]
             else:
-                assert isinstance(actions, np.ndarray)
-                assert actions.dtype == np.int64 or actions.dtype == np.int32
-                assert actions.shape == (
-                    self.batch_size,
-                ), f"{actions.shape=}, {self.batch_size=}"
+                action_ids = actions.astype(jnp.int32)
+                paddle_strength = jnp.ones(self.batch_size, dtype=jnp.float32)
 
-                action_ids = actions
-                paddle_strength = np.ones(self.batch_size)
+                chex.assert_shape(actions, (self.batch_size,))
+                chex.assert_type(actions, jnp.int32)
 
             xla_call = jax.ffi.ffi_call(
                 target_name="atari_vector_xla_step",
                 result_shape_dtypes=(
                     jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
-                    jax.ShapeDtypeStruct(
+                    jax.ShapeDtypeStruct(  # observations
                         self.observation_space.shape, jnp.uint8
-                    ),  # observations
+                    ),
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # rewards
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # terminations
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # truncations
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # lives
                     jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
-                    jax.ShapeDtypeStruct(
+                    jax.ShapeDtypeStruct(  # episode frame number
                         (self.num_envs,), jnp.int32
-                    ),  # episode frame number
+                    ),
                 ),
                 vmap_method="broadcast_all",
                 has_side_effect=True,
@@ -365,19 +395,19 @@ class AtariVectorEnv(VectorEnv):
             ) = xla_call(handle, action_ids, paddle_strength)
 
             info = {
-                "env_id": np.asarray(env_ids),
-                "lives": np.asarray(lives),
-                "frame_number": np.asarray(frame_numbers),
-                "episode_frame_number": np.asarray(episode_frame_numbers),
+                "env_id": env_ids,
+                "lives": lives,
+                "frame_number": frame_numbers,
+                "episode_frame_number": episode_frame_numbers,
             }
             return new_handle, (
-                np.asarray(obs),
-                np.asarray(rewards),
-                np.asarray(terminations),
-                np.asarray(truncations),
+                obs,
+                rewards,
+                terminations,
+                truncations,
                 info,
             )
 
         # Get the vectorizer handle and make sure it's properly formatted
-        ale_handle = np.frombuffer(self.ale.handle(), dtype=np.uint8)
+        ale_handle = jnp.frombuffer(self.ale.handle(), dtype=np.uint8)
         return ale_handle, xla_reset, xla_step
