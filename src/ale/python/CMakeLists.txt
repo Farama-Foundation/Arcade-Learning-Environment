@@ -1,20 +1,13 @@
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
-include(FetchContent)
-set(PYBIND11_FINDPYTHON ON)
-set(PYBIND11_VER 2.13.1)
-find_package(pybind11 ${PYBIND11_VER} QUIET)
+# Find nanobind (installed via pip in build-system.requires)
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+    OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE nanobind_ROOT)
+find_package(nanobind CONFIG REQUIRED)
 
-if(NOT pybind11_FOUND)
-    FetchContent_Declare(
-        pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11
-        GIT_TAG v${PYBIND11_VER})
-    FetchContent_MakeAvailable(pybind11)
-endif()
-
-# Use pybind11_add_module for proper scikit-build-core integration
-pybind11_add_module(_ale_py MODULE ale_python_interface.cpp)
+# Use nanobind_add_module for proper scikit-build-core integration
+nanobind_add_module(_ale_py MODULE ale_python_interface.cpp)
 if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
     # XLA Integration setup
     message(STATUS "Python Executable: '${Python_EXECUTABLE}'")
