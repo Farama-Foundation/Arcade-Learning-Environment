@@ -2,8 +2,8 @@
 
 #include "ale/vector/async_vectorizer.hpp"
 
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
 
 #include <vector>
 #include <cstring>  // For memcpy
@@ -14,7 +14,7 @@
 #endif
 
 namespace ffi = xla::ffi;
-namespace py = pybind11;
+namespace nb = nanobind;
 
 // CPU version of XLAReset
 ffi::Error XLAResetImpl(
@@ -661,21 +661,21 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
 #endif  // __CUDACC__
 
 template <typename T>
-py::capsule EncapsulateFFICall(T *fn) {
+nb::capsule EncapsulateFFICall(T *fn) {
     // This check is optional, but it can be helpful for avoiding invalid handlers.
     static_assert(std::is_invocable_r_v<XLA_FFI_Error *, T, XLA_FFI_CallFrame *>,
                   "Encapsulated function must be and XLA FFI handler");
-    return py::capsule(reinterpret_cast<void *>(fn));
+    return nb::capsule(reinterpret_cast<void *>(fn));
 }
 
-void init_vector_module_xla(py::module& m) {
+void init_vector_module_xla(nb::module_& m) {
     // CPU handlers
     m.def("VectorXLAReset", [] {return EncapsulateFFICall(AtariVectorEnvXLAReset); });
-    m.def("VectorXLAStep", [] {return EncapsulateFFICall(AtariVectorEnvXLAStep);});
+    m.def("VectorXLAStep", [] {return EncapsulateFFICall(AtariVectorEnvXLAStep); });
 
 #ifdef __CUDACC__
     // GPU handlers
     m.def("VectorXLAResetGPU", [] {return EncapsulateFFICall(AtariVectorEnvXLAResetGPU); });
-    m.def("VectorXLAStepGPU", [] {return EncapsulateFFICall(AtariVectorEnvXLAStepGPU);});
+    m.def("VectorXLAStepGPU", [] {return EncapsulateFFICall(AtariVectorEnvXLAStepGPU); });
 #endif
 }

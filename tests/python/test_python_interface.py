@@ -84,14 +84,18 @@ def test_get_ram(tetris):
     assert (ram == preallocate).all()
 
     preallocate = np.empty((tetris.getRAMSize()), dtype=np.int32)
-    with pytest.raises(TypeError) as exc_info:
+    with pytest.raises(
+        TypeError,
+        match=r"incompatible function arguments\. The following argument types are supported",
+    ):
         tetris.getRAM(preallocate)
-    assert exc_info.type == TypeError
 
     preallocate = np.empty(1, dtype=np.uint8)
-    with pytest.raises(RuntimeError) as exc_info:
+    with pytest.raises(
+        TypeError,
+        match=r"incompatible function arguments\. The following argument types are supported",
+    ):
         tetris.getRAM(preallocate)
-    assert exc_info.type == RuntimeError
 
 
 def test_set_ram(tetris):
