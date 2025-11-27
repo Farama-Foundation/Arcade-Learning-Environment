@@ -236,6 +236,65 @@ namespace ale::vector {
         }
 
         /**
+         * Write timestep data directly to provided destinations.
+         * Avoids allocating intermediate vectors.
+         *
+         * @param obs_dest Pointer to write linearized observation (size: stack_num * obs_size)
+         * @param meta Reference to metadata struct to populate
+         */
+        void write_timestep_to(uint8_t* obs_dest, TimestepMetadata& meta) const {
+            // Write metadata
+            meta.env_id = env_id_;
+            meta.reward = reward_;
+            meta.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
+            meta.truncated = elapsed_step_ >= max_episode_steps_ && !meta.terminated;
+            meta.lives = lives_;
+            meta.frame_number = env_->getFrameNumber();
+            meta.episode_frame_number = env_->getEpisodeFrameNumber();
+
+            // Linearize circular frame_stack directly to destination
+            for (int i = 0; i < stack_num_; ++i) {
+                const int src_idx = (frame_stack_idx_ + i) % stack_num_;
+                std::memcpy(
+                    obs_dest + i * obs_size_,
+                    frame_stack_.data() + src_idx * obs_size_,
+                    obs_size_
+                );
+            }
+        }
+
+        /**
+         * Write only observation to destination (for final_obs in SameStep mode).
+         *
+         * @param obs_dest Pointer to write linearized observation
+         */
+        void write_observation_to(uint8_t* obs_dest) const {
+            for (int i = 0; i < stack_num_; ++i) {
+                const int src_idx = (frame_stack_idx_ + i) % stack_num_;
+                std::memcpy(
+                    obs_dest + i * obs_size_,
+                    frame_stack_.data() + src_idx * obs_size_,
+                    obs_size_
+                );
+            }
+        }
+
+        /**
+         * Write only metadata (used to capture state before reset in SameStep mode).
+         *
+         * @param meta Reference to metadata struct to populate
+         */
+        void write_metadata_to(TimestepMetadata& meta) const {
+            meta.env_id = env_id_;
+            meta.reward = reward_;
+            meta.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
+            meta.truncated = elapsed_step_ >= max_episode_steps_ && !meta.terminated;
+            meta.lives = lives_;
+            meta.frame_number = env_->getFrameNumber();
+            meta.episode_frame_number = env_->getEpisodeFrameNumber();
+        }
+
+        /**
          * Get the current observation
          */
         Timestep get_timestep() const {

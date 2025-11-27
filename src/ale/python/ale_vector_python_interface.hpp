@@ -143,9 +143,9 @@ namespace ale::vector {
          *
          * @param reset_indices Vector of environment indices to be reset
          * @param reset_seeds Vector of environment seeds to use
-         * @return Timesteps from all environments after reset
+         * @return RecvResult with initial observations
          */
-        std::vector<Timestep> reset(const std::vector<int> &reset_indices, const std::vector<int> &reset_seeds) {
+        RecvResult reset(const std::vector<int> &reset_indices, const std::vector<int> &reset_seeds) {
             vectorizer_->reset(reset_indices, reset_seeds);
             return recv();
         }
@@ -178,14 +178,15 @@ namespace ale::vector {
         }
 
         /**
-        * Returns the environment's data for the environments
+        * Returns the environment's data for the environments.
+        * Returns ownership of observation buffer to caller.
         */
-        const std::vector<Timestep> recv() {
-            std::vector<Timestep> timesteps = vectorizer_->recv();
-            for (size_t i = 0; i < timesteps.size(); i++) {
-                received_env_ids_[i] = timesteps[i].env_id;
+        RecvResult recv() {
+            RecvResult result = vectorizer_->recv();
+            for (size_t i = 0; i < result.batch_size; i++) {
+                received_env_ids_[i] = result.metadata[i].env_id;
             }
-            return timesteps;
+            return result;
         }
 
         /**
@@ -235,6 +236,13 @@ namespace ale::vector {
          */
         const AutoresetMode get_autoreset_mode() const {
             return autoreset_mode_;
+        }
+
+        /**
+         * Get the size of a single stacked observation in bytes.
+         */
+        std::size_t get_stacked_obs_size() const {
+            return vectorizer_->get_stacked_obs_size();
         }
 
         /**

@@ -18,6 +18,17 @@
 
 namespace ale::vector {
     /**
+     * Result from recv() - caller takes ownership of allocated buffers.
+     */
+    struct RecvResult {
+        uint8_t* obs_data;                      // Newly allocated, caller owns
+        std::vector<TimestepMetadata> metadata; // Copied from internal buffer
+        uint8_t* final_obs_data;                // nullptr or newly allocated, caller owns
+        std::vector<uint8_t> has_final_obs;     // Which slots have final_obs (uint8_t for compatibility)
+        std::size_t batch_size;                 // Number of results
+    };
+
+    /**
      * AsyncVectorizer manages a collection of environments that can be stepped in parallel.
      * It handles the (async) distribution of actions to environments and collection of observations.
      */
@@ -45,8 +56,7 @@ namespace ale::vector {
             autoreset_mode_(autoreset_mode),
             stop_(false),
             action_queue_(new ActionQueue(num_envs_)),
-            state_buffer_(new StateBuffer(batch_size_, num_envs_)),
-            final_obs_storage_(num_envs_) {
+            pending_obs_buffer_(nullptr) {
 
             // Create environments
             envs_.resize(num_envs_);
@@ -54,6 +64,9 @@ namespace ale::vector {
                 envs_[i] = env_factory(i);
             }
             stacked_obs_size_ = envs_[0]->get_stacked_obs_size();
+
+            // Create state buffer with observation size
+            state_buffer_ = std::make_unique<StateBuffer>(batch_size_, num_envs_, stacked_obs_size_);
 
             // Setup worker threads
             const std::size_t processor_count = std::thread::hardware_concurrency();
@@ -98,6 +111,12 @@ namespace ale::vector {
          * @param seeds Vector of seeds to use on reset (use -1 to not change the environment's seed)
          */
         void reset(const std::vector<int>& reset_indices, const std::vector<int>& seeds) {
+            // Allocate output buffer BEFORE enqueueing (prevents race condition)
+            const std::size_t total_obs_size = batch_size_ * stacked_obs_size_;
+            pending_obs_buffer_ = new uint8_t[total_obs_size];
+            state_buffer_->set_output_buffer(pending_obs_buffer_);
+
+            // Prepare reset actions
             std::vector<ActionSlice> reset_actions;
             reset_actions.reserve(reset_indices.size());
 
@@ -112,6 +131,7 @@ namespace ale::vector {
                 reset_actions.emplace_back(action);
             }
 
+            // Enqueue actions - workers can now safely write to buffer
             action_queue_->enqueue_bulk(reset_actions);
         }
 
@@ -121,6 +141,12 @@ namespace ale::vector {
          * @param actions Vector of actions to send to the sub-environments
          */
         void send(const std::vector<EnvironmentAction>& actions) {
+            // Allocate output buffer BEFORE enqueueing (prevents race condition)
+            const std::size_t total_obs_size = batch_size_ * stacked_obs_size_;
+            pending_obs_buffer_ = new uint8_t[total_obs_size];
+            state_buffer_->set_output_buffer(pending_obs_buffer_);
+
+            // Prepare action slices
             std::vector<ActionSlice> action_slices;
             action_slices.reserve(actions.size());
 
@@ -135,30 +161,61 @@ namespace ale::vector {
                 action_slices.emplace_back(action);
             }
 
+            // Enqueue actions - workers can now safely write to buffer
             action_queue_->enqueue_bulk(action_slices);
         }
 
         /**
-         * Receive timesteps from the environments
-         * This is the asynchronous version that waits for results after send()
+         * Receive timesteps from the environments.
+         * Returns ownership of allocated observation buffer to caller.
          *
-         * @return Vector of timesteps from the environments
+         * @return RecvResult containing observation data and metadata
          */
-        const std::vector<Timestep> recv() {
-            std::vector<Timestep> timesteps = state_buffer_->collect();
-            return timesteps;
-        }
+        RecvResult recv() {
+            // Wait for all workers to complete
+            state_buffer_->wait_for_batch();
 
-        /**
-         * Step the environments with actions and wait for results
-         * This is a convenience method that combines send() and recv()
-         *
-         * @param actions Vector of actions for the environments
-         * @return Vector of timesteps from the environments
-         */
-        const std::vector<Timestep> step(const std::vector<EnvironmentAction>& actions) {
-            send(actions);
-            return recv();
+            // Build result
+            RecvResult result;
+            result.obs_data = pending_obs_buffer_;  // Transfer ownership
+            result.batch_size = batch_size_;
+            pending_obs_buffer_ = nullptr;
+
+            // Copy metadata (small - ~32 bytes per env)
+            result.metadata.resize(batch_size_);
+            std::memcpy(
+                result.metadata.data(),
+                state_buffer_->get_metadata(),
+                batch_size_ * sizeof(TimestepMetadata)
+            );
+
+            // Handle final_obs for SameStep mode
+            if (autoreset_mode_ == AutoresetMode::SameStep) {
+                const uint8_t* has_final = state_buffer_->get_has_final_obs();
+                bool any_final = false;
+                for (std::size_t i = 0; i < batch_size_; i++) {
+                    if (has_final[i]) {
+                        any_final = true;
+                        break;
+                    }
+                }
+
+                if (any_final) {
+                    const std::size_t total_obs_size = batch_size_ * stacked_obs_size_;
+                    result.final_obs_data = new uint8_t[total_obs_size];
+                    std::memcpy(result.final_obs_data, state_buffer_->get_final_obs_buffer(), total_obs_size);
+                    result.has_final_obs.assign(has_final, has_final + batch_size_);
+                } else {
+                    result.final_obs_data = nullptr;
+                }
+            } else {
+                result.final_obs_data = nullptr;
+            }
+
+            // Reset state buffer for next batch
+            state_buffer_->reset();
+
+            return result;
         }
 
         const int get_num_envs() const {
@@ -187,15 +244,16 @@ namespace ale::vector {
         std::atomic<bool> stop_;                          // Signal to stop worker threads
         std::vector<std::thread> workers_;                // Worker threads
         std::unique_ptr<ActionQueue> action_queue_;       // Queue for actions
-        std::unique_ptr<StateBuffer> state_buffer_;       // Queue for observations
+        std::unique_ptr<StateBuffer> state_buffer_;       // Buffer for observations and metadata
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
-        mutable std::vector<std::vector<uint8_t>> final_obs_storage_;  // For same-step autoreset
+        uint8_t* pending_obs_buffer_;                     // Buffer allocated in send(), returned in recv()
 
         /**
-         * Worker thread function that processes environment steps
+         * Worker thread function that processes environment steps.
+         * Writes results directly to pre-allocated output buffer.
          */
-        void worker_function() const {
+        void worker_function() {
             while (!stop_) {
                 try {
                     ActionSlice action = action_queue_->dequeue();
@@ -204,6 +262,10 @@ namespace ale::vector {
                     }
 
                     const int env_id = action.env_id;
+
+                    // Get write slot - pointers are into the pre-allocated output buffer
+                    WriteSlot slot = state_buffer_->allocate_write_slot(env_id);
+
                     if (autoreset_mode_ == AutoresetMode::NextStep) {
                         if (action.force_reset || envs_[env_id]->is_episode_over()) {
                             envs_[env_id]->reset();
@@ -211,45 +273,44 @@ namespace ale::vector {
                             envs_[env_id]->step();
                         }
 
-                        // Get timestep and write to state buffer
-                        Timestep timestep = envs_[env_id]->get_timestep();
-                        timestep.final_observation = nullptr;  // Not used in NextStep mode
-                        state_buffer_->write(timestep);
+                        // Write directly to output buffer (single copy: linearize frame stack)
+                        envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
+
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
                         if (action.force_reset) {
-                            // on standard `reset`
                             envs_[env_id]->reset();
-                            Timestep timestep = envs_[env_id]->get_timestep();
-                            timestep.final_observation = nullptr;
-                            state_buffer_->write(timestep);
+                            envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
                         } else {
                             envs_[env_id]->step();
-                            Timestep step_timestep = envs_[env_id]->get_timestep();
 
-                            // if episode over, autoreset
                             if (envs_[env_id]->is_episode_over()) {
-                                final_obs_storage_[env_id] = step_timestep.observation;
+                                // Save final observation before reset
+                                envs_[env_id]->write_observation_to(slot.final_obs_dest);
+                                state_buffer_->mark_slot_has_final_obs(slot.slot_index);
 
+                                // Capture pre-reset metadata
+                                TimestepMetadata pre_reset_meta;
+                                envs_[env_id]->write_metadata_to(pre_reset_meta);
+
+                                // Reset and write new observation
                                 envs_[env_id]->reset();
-                                Timestep reset_timestep = envs_[env_id]->get_timestep();
+                                envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
 
-                                reset_timestep.final_observation = &final_obs_storage_[env_id];
-                                reset_timestep.reward = step_timestep.reward;
-                                reset_timestep.terminated = step_timestep.terminated;
-                                reset_timestep.truncated = step_timestep.truncated;
-
-                                // Write the reset timestep with the some of the step timestep data
-                                state_buffer_->write(reset_timestep);
+                                // Restore pre-reset reward/terminated/truncated
+                                slot.meta->reward = pre_reset_meta.reward;
+                                slot.meta->terminated = pre_reset_meta.terminated;
+                                slot.meta->truncated = pre_reset_meta.truncated;
                             } else {
-                                step_timestep.final_observation = nullptr;
-                                state_buffer_->write(step_timestep);
+                                envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
                             }
                         }
                     } else {
                         throw std::runtime_error("Invalid autoreset mode");
                     }
+
+                    state_buffer_->mark_complete();
+
                 } catch (const std::exception& e) {
-                    // Log error but continue processing
                     std::cerr << "Error in worker thread: " << e.what() << std::endl;
                 }
             }

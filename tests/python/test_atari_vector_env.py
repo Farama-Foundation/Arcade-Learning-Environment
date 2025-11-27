@@ -434,6 +434,7 @@ class TestVectorEnv:
                 )
             async_env_timestep[async_env_ids] += 1
 
+        assert np.all(async_env_timestep > rollout_length / (num_envs * 2)), async_env_timestep
         sync_envs.close()
         async_envs.close()
 

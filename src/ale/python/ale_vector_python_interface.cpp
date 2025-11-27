@@ -40,20 +40,30 @@ void init_vector_module(nb::module_& m) {
         .def("reset", [](ale::vector::ALEVectorInterface& self, const std::vector<int> reset_indices, const std::vector<int> reset_seeds) {
             // Call C++ reset method with GIL released
             nb::gil_scoped_release release;
-            auto timesteps = self.reset(reset_indices, reset_seeds);
+            auto result = self.reset(reset_indices, reset_seeds);
             nb::gil_scoped_acquire acquire;
 
             // Get shape information
-            int batch_size = timesteps.size();
-            auto obs_shape = self.get_observation_shape();
-            int stack_num = std::get<0>(obs_shape);
-            int height = std::get<1>(obs_shape);
-            int width = std::get<2>(obs_shape);
-            int channels = self.is_grayscale() ? 1 : 3;
+            const int batch_size = result.batch_size;
+            const auto obs_shape = self.get_observation_shape();
+            const int stack_num = std::get<0>(obs_shape);
+            const int height = std::get<1>(obs_shape);
+            const int width = std::get<2>(obs_shape);
+            const bool grayscale = self.is_grayscale();
 
-            // Create a single NumPy array for all observations
-            size_t obs_total_size = batch_size * stack_num * height * width * channels;
-            uint8_t* obs_data = new uint8_t[obs_total_size];
+            // Wrap observation buffer - capsule takes ownership
+            nb::capsule obs_owner(result.obs_data, [](void *p) noexcept {
+                delete[] static_cast<uint8_t*>(p);
+            });
+
+            nb::ndarray<nb::numpy, uint8_t> observations;
+            if (grayscale) {
+                size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 4, shape, obs_owner);
+            } else {
+                size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 5, shape, obs_owner);
+            }
 
             // Create arrays for info fields
             int* env_ids_data = new int[batch_size];
@@ -61,42 +71,21 @@ void init_vector_module(nb::module_& m) {
             int* frame_numbers_data = new int[batch_size];
             int* episode_frame_numbers_data = new int[batch_size];
 
-            // Copy data from observations to arrays
-            size_t obs_size = stack_num * height * width * channels;
-            for (int i = 0; i < batch_size; i++) {
-                const auto& timestep = timesteps[i];
-
-                // Copy screen data
-                std::memcpy(
-                    obs_data + i * obs_size,
-                    timestep.observation.data(),
-                    obs_size * sizeof(uint8_t)
-                );
-
-                // Copy info fields
-                env_ids_data[i] = timestep.env_id;
-                lives_data[i] = timestep.lives;
-                frame_numbers_data[i] = timestep.frame_number;
-                episode_frame_numbers_data[i] = timestep.episode_frame_number;
+            for (size_t i = 0; i < batch_size; i++) {
+                const auto& meta = result.metadata[i];
+                env_ids_data[i] = meta.env_id;
+                lives_data[i] = meta.lives;
+                frame_numbers_data[i] = meta.frame_number;
+                episode_frame_numbers_data[i] = meta.episode_frame_number;
             }
 
             // Create capsules for cleanup
-            nb::capsule obs_owner(obs_data, [](void *p) noexcept { delete[] (uint8_t *) p; });
-            nb::capsule env_ids_owner(env_ids_data, [](void *p) noexcept { delete[] (int *) p; });
-            nb::capsule lives_owner(lives_data, [](void *p) noexcept { delete[] (int *) p; });
-            nb::capsule frame_numbers_owner(frame_numbers_data, [](void *p) noexcept { delete[] (int *) p; });
-            nb::capsule episode_frame_numbers_owner(episode_frame_numbers_data, [](void *p) noexcept { delete[] (int *) p; });
+            nb::capsule env_ids_owner(env_ids_data, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule lives_owner(lives_data, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule frame_numbers_owner(frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule episode_frame_numbers_owner(episode_frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
 
-            // Create numpy arrays with allocated data
-            nb::ndarray<nb::numpy, uint8_t> observations;
-            if (self.is_grayscale()) {
-                size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
-                observations = nb::ndarray<nb::numpy, uint8_t>(obs_data, 4, shape, obs_owner);
-            } else {
-                size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
-                observations = nb::ndarray<nb::numpy, uint8_t>(obs_data, 5, shape, obs_owner);
-            }
-
+            // Create numpy arrays
             size_t info_shape[1] = {(size_t)batch_size};
             auto env_ids = nb::ndarray<nb::numpy, int>(env_ids_data, 1, info_shape, env_ids_owner);
             auto lives = nb::ndarray<nb::numpy, int>(lives_data, 1, info_shape, lives_owner);
@@ -116,21 +105,34 @@ void init_vector_module(nb::module_& m) {
             self.send(action_ids, paddle_strengths);
         })
         .def("recv", [](ale::vector::ALEVectorInterface& self) {
-            const auto timesteps = self.recv();
+            // Release GIL while waiting for workers
+            nb::gil_scoped_release release;
+            auto result = self.recv();
             nb::gil_scoped_acquire acquire;
 
-            // Get shape information
-            int batch_size = timesteps.size();
+            // Get shape info
             const auto shape_info = self.get_observation_shape();
-            int stack_num = std::get<0>(shape_info);
-            int height = std::get<1>(shape_info);
-            int width = std::get<2>(shape_info);
-            int channels = self.is_grayscale() ? 1 : 3;
-            ale::vector::AutoresetMode autoreset_mode = self.get_autoreset_mode();
+            const int stack_num = std::get<0>(shape_info);
+            const int height = std::get<1>(shape_info);
+            const int width = std::get<2>(shape_info);
+            const int batch_size = result.batch_size;
+            const bool grayscale = self.is_grayscale();
 
-            // Allocate memory for arrays
-            size_t obs_total_size = batch_size * stack_num * height * width * channels;
-            uint8_t* obs_data = new uint8_t[obs_total_size];
+            // Wrap obs buffer - capsule takes ownership and will delete[]
+            nb::capsule obs_owner(result.obs_data, [](void *p) noexcept {
+                delete[] static_cast<uint8_t*>(p);
+            });
+
+            nb::ndarray<nb::numpy, uint8_t> observations;
+            if (grayscale) {
+                size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 4, shape, obs_owner);
+            } else {
+                size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 5, shape, obs_owner);
+            }
+
+            // Allocate metadata arrays
             int* rewards_data = new int[batch_size];
             bool* terminations_data = new bool[batch_size];
             bool* truncations_data = new bool[batch_size];
@@ -139,48 +141,27 @@ void init_vector_module(nb::module_& m) {
             int* frame_numbers_data = new int[batch_size];
             int* episode_frame_numbers_data = new int[batch_size];
 
-            // Copy data from timesteps to arrays
-            const size_t obs_size = stack_num * height * width * channels;
-            for (int i = 0; i < batch_size; i++) {
-                const auto& timestep = timesteps[i];
-
-                // Copy screen data
-                std::memcpy(
-                    obs_data + i * obs_size,
-                    timestep.observation.data(),
-                    obs_size * sizeof(uint8_t)
-                );
-
-                // Copy other fields
-                rewards_data[i] = timestep.reward;
-                terminations_data[i] = timestep.terminated;
-                truncations_data[i] = timestep.truncated;
-                env_ids_data[i] = timestep.env_id;
-                lives_data[i] = timestep.lives;
-                frame_numbers_data[i] = timestep.frame_number;
-                episode_frame_numbers_data[i] = timestep.episode_frame_number;
+            for (size_t i = 0; i < batch_size; i++) {
+                const auto& meta = result.metadata[i];
+                rewards_data[i] = meta.reward;
+                terminations_data[i] = meta.terminated;
+                truncations_data[i] = meta.truncated;
+                env_ids_data[i] = meta.env_id;
+                lives_data[i] = meta.lives;
+                frame_numbers_data[i] = meta.frame_number;
+                episode_frame_numbers_data[i] = meta.episode_frame_number;
             }
 
-            // Create capsules for cleanup
-            nb::capsule obs_owner(obs_data, [](void *p) noexcept { delete[] (uint8_t *) p; });
-            nb::capsule rewards_owner(rewards_data, [](void *p) noexcept { delete[] (int *) p; });
-            nb::capsule terminations_owner(terminations_data, [](void *p) noexcept { delete[] (bool *) p; });
-            nb::capsule truncations_owner(truncations_data, [](void *p) noexcept { delete[] (bool *) p; });
-            nb::capsule env_ids_owner(env_ids_data, [](void *p) noexcept { delete[] (int *) p; });
-            nb::capsule lives_owner(lives_data, [](void *p) noexcept { delete[] (int *) p; });
-            nb::capsule frame_numbers_owner(frame_numbers_data, [](void *p) noexcept { delete[] (int *) p; });
-            nb::capsule episode_frame_numbers_owner(episode_frame_numbers_data, [](void *p) noexcept { delete[] (int *) p; });
+            // Create capsules
+            nb::capsule rewards_owner(rewards_data, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule terminations_owner(terminations_data, [](void *p) noexcept { delete[] (bool*)p; });
+            nb::capsule truncations_owner(truncations_data, [](void *p) noexcept { delete[] (bool*)p; });
+            nb::capsule env_ids_owner(env_ids_data, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule lives_owner(lives_data, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule frame_numbers_owner(frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule episode_frame_numbers_owner(episode_frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
 
-            // Create numpy arrays with allocated data
-            nb::ndarray<nb::numpy, uint8_t> observations;
-            if (self.is_grayscale()) {
-                size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
-                observations = nb::ndarray<nb::numpy, uint8_t>(obs_data, 4, shape, obs_owner);
-            } else {
-                size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
-                observations = nb::ndarray<nb::numpy, uint8_t>(obs_data, 5, shape, obs_owner);
-            }
-
+            // Create numpy arrays
             size_t info_shape[1] = {(size_t)batch_size};
             auto rewards = nb::ndarray<nb::numpy, int>(rewards_data, 1, info_shape, rewards_owner);
             auto terminations = nb::ndarray<nb::numpy, bool>(terminations_data, 1, info_shape, terminations_owner);
@@ -190,47 +171,28 @@ void init_vector_module(nb::module_& m) {
             auto frame_numbers = nb::ndarray<nb::numpy, int>(frame_numbers_data, 1, info_shape, frame_numbers_owner);
             auto episode_frame_numbers = nb::ndarray<nb::numpy, int>(episode_frame_numbers_data, 1, info_shape, episode_frame_numbers_owner);
 
-            // Create info dict
+            // Build info dict
             nb::dict info;
             info["env_id"] = env_ids;
             info["lives"] = lives;
             info["frame_number"] = frame_numbers;
             info["episode_frame_number"] = episode_frame_numbers;
 
-            if (autoreset_mode == ale::vector::AutoresetMode::SameStep) {
-                bool any_terminated = std::any_of(terminations_data, terminations_data + batch_size, [](bool b) { return b; });
-                bool any_truncated = std::any_of(truncations_data, truncations_data + batch_size, [](bool b) { return b; });
+            // Handle final_obs for SameStep mode
+            if (result.final_obs_data != nullptr) {
+                nb::capsule final_obs_owner(result.final_obs_data, [](void *p) noexcept {
+                    delete[] static_cast<uint8_t*>(p);
+                });
 
-                if (any_terminated || any_truncated) {
-                    uint8_t* final_obs_data = new uint8_t[obs_total_size];
-
-                    for (int i = 0; i < batch_size; i++) {
-                        const auto& timestep = timesteps[i];
-
-                        // Use final_observation if available, otherwise use current observation
-                        const std::vector<uint8_t>* obs_src = (timestep.terminated || timestep.truncated) ?
-                            timestep.final_observation : &timestep.observation;
-
-                        std::memcpy(
-                            final_obs_data + i * obs_size,
-                            obs_src->data(),
-                            obs_size * sizeof(uint8_t)
-                        );
-                    }
-
-                    nb::capsule final_obs_owner(final_obs_data, [](void *p) noexcept { delete[] (uint8_t *) p; });
-
-                    nb::ndarray<nb::numpy, uint8_t> final_observations;
-                    if (self.is_grayscale()) {
-                        size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
-                        final_observations = nb::ndarray<nb::numpy, uint8_t>(final_obs_data, 4, shape, final_obs_owner);
-                    } else {
-                        size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
-                        final_observations = nb::ndarray<nb::numpy, uint8_t>(final_obs_data, 5, shape, final_obs_owner);
-                    }
-
-                    info["final_obs"] = final_observations;
+                nb::ndarray<nb::numpy, uint8_t> final_observations;
+                if (grayscale) {
+                    size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
+                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_obs_data, 4, shape, final_obs_owner);
+                } else {
+                    size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
+                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_obs_data, 5, shape, final_obs_owner);
                 }
+                info["final_obs"] = final_observations;
             }
 
             return nb::make_tuple(observations, rewards, terminations, truncations, info);

@@ -49,6 +49,30 @@ namespace ale::vector {
     };
 
     /**
+     * Lightweight metadata without observation data.
+     * Used when observations are written directly to output buffer.
+     */
+    struct TimestepMetadata {
+        int env_id;                       // ID of the environment
+        reward_t reward;                  // Reward received
+        bool terminated;                  // Whether the game ended
+        bool truncated;                   // Whether episode was truncated
+        int lives;                        // Remaining lives
+        int frame_number;                 // Frame number since game start
+        int episode_frame_number;         // Frame number since episode start
+    };
+
+    /**
+     * WriteSlot provides destinations for workers to write data directly.
+     */
+    struct WriteSlot {
+        int slot_index;           // Index in the batch
+        uint8_t* obs_dest;        // Pointer to write observation data
+        TimestepMetadata* meta;   // Pointer to write metadata
+        uint8_t* final_obs_dest;  // Pointer for final_obs (SameStep mode)
+    };
+
+    /**
      * Observation format enumeration
      */
     enum class ObsFormat {
@@ -122,119 +146,134 @@ namespace ale::vector {
     };
 
     /**
-     * StateBuffer handles the collection of timesteps from environments
+     * StateBuffer manages output buffers for vectorized environment results.
+     *
+     * The buffer is set externally before workers begin writing.
+     * Workers write directly to allocated slots, avoiding intermediate copies.
      *
      * Two modes of operation:
-     * 1. Ordered mode (batch_size == num_envs): Waits for all env_ids to be filled
-     * 2. Unordered mode (batch_size != num_envs): Uses circular buffer for continuous operation
+     * 1. Ordered mode (batch_size == num_envs): Slot index equals env_id
+     * 2. Unordered mode (batch_size != num_envs): Atomic slot allocation
      */
     class StateBuffer {
     public:
-        StateBuffer(const std::size_t batch_size, const std::size_t num_envs)
+        StateBuffer(const std::size_t batch_size, const std::size_t num_envs, const std::size_t obs_size)
             : batch_size_(batch_size),
               num_envs_(num_envs),
+              obs_size_(obs_size),
               ordered_mode_(batch_size == num_envs),
-              timesteps_(num_envs_),
+              metadata_(batch_size),
+              final_obs_buffer_(batch_size * obs_size),
+              has_final_obs_(batch_size, false),
+              output_obs_buffer_(nullptr),
               count_(0),
               write_idx_(0),
-              read_idx_(0),
-              sem_ready_(0),      // Initially no batches ready
-              sem_read_(1) {      // Allow one reader at a time
-        }
+              sem_ready_(0),
+              sem_read_(1) {}
 
         /**
-         * Write a timestep to the buffer
-         * Multiple threads can write simultaneously
-         */
-        void write(const Timestep& timestep) {
-            if (ordered_mode_) {
-                // In ordered mode, place timestep at env_id position
-                const int env_id = timestep.env_id;
-                timesteps_[env_id] = timestep;
-
-                // Atomically increment count and check if batch is ready
-                const auto old_count = count_.fetch_add(1);
-                if (old_count + 1 == batch_size_) {
-                    // Exactly one thread will see count == batch_size_ in ordered mode
-                    sem_ready_.signal(1);
-                }
-            } else {
-                // In unordered mode, use circular buffer
-                // Each thread gets a unique index atomically
-                const auto idx = write_idx_.fetch_add(1) % num_envs_;
-                timesteps_[idx] = timestep;
-
-                // Atomically increment count and check if batch is ready
-                const auto old_count = count_.fetch_add(1);
-                // Signal if we just crossed a batch boundary
-                if ((old_count + 1) / batch_size_ > old_count / batch_size_) {
-                    sem_ready_.signal(1);
-                }
-            }
-        }
-
-        /**
-         * Collect timesteps when ready and return them
+         * Set the output buffer that workers will write observations into.
+         * MUST be called before enqueueing any actions that will use this buffer.
          *
-         * @return Vector of timesteps
+         * @param obs_buffer Pointer to allocated buffer of size batch_size * obs_size
          */
-        std::vector<Timestep> collect() {
-            // Wait until a batch is ready
-            while (!sem_ready_.wait()) {}
-
-            // Acquire read semaphore
-            while (!sem_read_.wait()) {}
-
-            // Collect the results
-            std::vector<Timestep> result;
-            result.reserve(batch_size_);
-
-            if (ordered_mode_) {
-                // In ordered mode, read in env_id order
-                for (size_t i = 0; i < batch_size_; ++i) {
-                    result.push_back(std::move(timesteps_[i]));
-                }
-
-                // Reset count for ordered mode (all items consumed)
-                count_.store(0);
-            } else {
-                // In unordered mode, read from circular buffer
-                for (size_t i = 0; i < batch_size_; ++i) {
-                    const auto idx = read_idx_.fetch_add(1) % num_envs_;
-                    result.push_back(std::move(timesteps_[idx]));
-                }
-
-                // Atomically decrease count by batch_size_
-                count_.fetch_sub(batch_size_);
-            }
-
-            // Release read semaphore
-            sem_read_.signal(1);
-
-            return result;
+        void set_output_buffer(uint8_t* obs_buffer) {
+            output_obs_buffer_ = obs_buffer;
         }
 
         /**
-         * Get the number of timesteps currently buffered
+         * Allocate a write slot for a worker thread.
+         * Returns pointers for direct writing into the output buffer.
+         *
+         * Thread-safe: multiple workers can call simultaneously.
+         *
+         * @param env_id The environment ID requesting a slot
+         * @return WriteSlot with pointers into output buffers
          */
-        size_t filled_timesteps() const {
-            return count_.load();
+        WriteSlot allocate_write_slot(int env_id) {
+            WriteSlot slot;
+
+            if (ordered_mode_) {
+                // In ordered mode, slot index equals env_id
+                slot.slot_index = env_id;
+            } else {
+                // In unordered mode, atomically allocate next available slot
+                slot.slot_index = static_cast<int>(write_idx_.fetch_add(1) % batch_size_);
+            }
+
+            slot.obs_dest = output_obs_buffer_ + slot.slot_index * obs_size_;
+            slot.meta = &metadata_[slot.slot_index];
+            slot.final_obs_dest = final_obs_buffer_.data() + slot.slot_index * obs_size_;
+
+            return slot;
         }
+
+        /**
+         * Mark that a slot has final observation data (for SameStep autoreset).
+         *
+         * @param slot_index The slot index to mark
+         */
+        void mark_slot_has_final_obs(int slot_index) {
+            has_final_obs_[slot_index] = true;
+        }
+
+        /**
+         * Mark a slot as complete. Called by worker after writing all data.
+         * When all slots are complete, signals that batch is ready.
+         */
+        void mark_complete() {
+            const auto old_count = count_.fetch_add(1);
+            if (old_count + 1 == batch_size_) {
+                sem_ready_.signal(1);
+            }
+        }
+
+        /**
+         * Wait for batch to complete. Blocks until all slots are filled.
+         */
+        void wait_for_batch() {
+            while (!sem_ready_.wait()) {}
+        }
+
+        /**
+         * Reset state for next batch. Must be called after collecting results.
+         */
+        void reset() {
+            count_.store(0);
+            write_idx_.store(0);
+            std::fill(has_final_obs_.begin(), has_final_obs_.end(), false);
+            output_obs_buffer_ = nullptr;
+        }
+
+        // Accessors
+        TimestepMetadata* get_metadata() { return metadata_.data(); }
+        const TimestepMetadata* get_metadata() const { return metadata_.data(); }
+        uint8_t* get_final_obs_buffer() { return final_obs_buffer_.data(); }
+        const uint8_t* get_final_obs_buffer() const { return final_obs_buffer_.data(); }
+        uint8_t* get_has_final_obs() { return has_final_obs_.data(); }
+        const uint8_t* get_has_final_obs() const { return has_final_obs_.data(); }
+        std::size_t get_batch_size() const { return batch_size_; }
+        std::size_t get_obs_size() const { return obs_size_; }
 
     private:
-        const std::size_t batch_size_;                    // Size of each batch
-        const std::size_t num_envs_;                      // Number of environments
-        const bool ordered_mode_;                         // Whether we're in ordered mode
-        std::vector<Timestep> timesteps_;                 // Buffer for timesteps
+        const std::size_t batch_size_;
+        const std::size_t num_envs_;
+        const std::size_t obs_size_;
+        const bool ordered_mode_;
 
-        // Atomic counters for lock-free operations
-        std::atomic<std::size_t> count_;                  // Current count of available timesteps
-        std::atomic<std::size_t> write_idx_;              // Write position (for unordered mode)
-        std::atomic<std::size_t> read_idx_;               // Read position (for unordered mode)
+        // Internal storage for metadata and final observations
+        std::vector<TimestepMetadata> metadata_;
+        std::vector<uint8_t> final_obs_buffer_;
+        std::vector<uint8_t> has_final_obs_;  // uint8_t instead of bool for .data() access
 
-        // Semaphores for coordination
-        moodycamel::LightweightSemaphore sem_ready_;      // Signals when a batch is ready for collection
-        moodycamel::LightweightSemaphore sem_read_;       // Controls access to read operations
+        // External output buffer (set via set_output_buffer)
+        uint8_t* output_obs_buffer_;
+
+        // Synchronization
+        std::atomic<std::size_t> count_;
+        std::atomic<std::size_t> write_idx_;
+        moodycamel::LightweightSemaphore sem_ready_;
+        moodycamel::LightweightSemaphore sem_read_;
     };
 }
 
