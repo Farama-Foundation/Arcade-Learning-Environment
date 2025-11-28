@@ -8,6 +8,15 @@
 #include <string>
 #include <algorithm>
 
+// SIMD intrinsics for maxpooling optimization
+#if defined(__AVX2__)
+    #include <immintrin.h>
+#elif defined(__SSE2__)
+    #include <emmintrin.h>
+#elif defined(__ARM_NEON)
+    #include <arm_neon.h>
+#endif
+
 #include <opencv2/opencv.hpp>
 
 #include "ale/common/Constants.h"
@@ -326,9 +335,7 @@ namespace ale::vector {
         void process_screen() {
             // Maxpool raw frames if required (different for grayscale and RGB)
             if (maxpool_) {
-                for (int i = 0; i < raw_size_; ++i) {
-                    raw_frames_[0][i] = std::max(raw_frames_[0][i], raw_frames_[1][i]);
-                }
+                maxpool_frames(raw_frames_[0].data(), raw_frames_[1].data(), raw_size_);
             }
 
             // Get pointer to current position in circular buffer
@@ -347,6 +354,47 @@ namespace ale::vector {
 
             // Move to next position in circular buffer
             frame_stack_idx_ = (frame_stack_idx_ + 1) % stack_num_;
+        }
+
+        /**
+         * Maxpool two uint8_t frames using SIMD when available
+         * @param dst Destination buffer (will be modified in-place with max values)
+         * @param src Source buffer to compare against
+         * @param size Number of bytes to process
+         */
+        inline void maxpool_frames(uint8_t* dst, const uint8_t* src, int size) {
+            int i = 0;
+
+#if defined(__AVX2__)
+            // Process 32 bytes at a time with AVX2
+            for (; i + 32 <= size; i += 32) {
+                __m256i a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(dst + i));
+                __m256i b = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(src + i));
+                __m256i max_val = _mm256_max_epu8(a, b);
+                _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), max_val);
+            }
+#elif defined(__SSE2__)
+            // Process 16 bytes at a time with SSE2
+            for (; i + 16 <= size; i += 16) {
+                __m128i a = _mm_loadu_si128(reinterpret_cast<const __m128i*>(dst + i));
+                __m128i b = _mm_loadu_si128(reinterpret_cast<const __m128i*>(src + i));
+                __m128i max_val = _mm_max_epu8(a, b);
+                _mm_storeu_si128(reinterpret_cast<__m128i*>(dst + i), max_val);
+            }
+#elif defined(__ARM_NEON)
+            // Process 16 bytes at a time with NEON
+            for (; i + 16 <= size; i += 16) {
+                uint8x16_t a = vld1q_u8(dst + i);
+                uint8x16_t b = vld1q_u8(src + i);
+                uint8x16_t max_val = vmaxq_u8(a, b);
+                vst1q_u8(dst + i, max_val);
+            }
+#endif
+
+            // Handle remainder with scalar code
+            for (; i < size; ++i) {
+                dst[i] = std::max(dst[i], src[i]);
+            }
         }
 
         int env_id_;                         // Unique ID for this environment
