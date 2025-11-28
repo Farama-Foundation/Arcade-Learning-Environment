@@ -52,45 +52,31 @@ void init_vector_module(nb::module_& m) {
             const bool grayscale = self.is_grayscale();
 
             // Wrap observation buffer - capsule takes ownership
-            nb::capsule obs_owner(result.obs_data, [](void *p) noexcept {
+            nb::capsule obs_owner(result.observations, [](void *p) noexcept {
                 delete[] static_cast<uint8_t*>(p);
             });
 
             nb::ndarray<nb::numpy, uint8_t> observations;
             if (grayscale) {
                 size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
-                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 4, shape, obs_owner);
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.observations, 4, shape, obs_owner);
             } else {
                 size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
-                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 5, shape, obs_owner);
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.observations, 5, shape, obs_owner);
             }
 
-            // Create arrays for info fields
-            int* env_ids_data = new int[batch_size];
-            int* lives_data = new int[batch_size];
-            int* frame_numbers_data = new int[batch_size];
-            int* episode_frame_numbers_data = new int[batch_size];
+            // Create capsules - ownership transferred from BatchData
+            nb::capsule env_ids_owner(result.env_ids, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule lives_owner(result.lives, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule frame_numbers_owner(result.frame_numbers, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule episode_frame_numbers_owner(result.episode_frame_numbers, [](void *p) noexcept { delete[] (int*)p; });
 
-            for (size_t i = 0; i < batch_size; i++) {
-                const auto& meta = result.metadata[i];
-                env_ids_data[i] = meta.env_id;
-                lives_data[i] = meta.lives;
-                frame_numbers_data[i] = meta.frame_number;
-                episode_frame_numbers_data[i] = meta.episode_frame_number;
-            }
-
-            // Create capsules for cleanup
-            nb::capsule env_ids_owner(env_ids_data, [](void *p) noexcept { delete[] (int*)p; });
-            nb::capsule lives_owner(lives_data, [](void *p) noexcept { delete[] (int*)p; });
-            nb::capsule frame_numbers_owner(frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
-            nb::capsule episode_frame_numbers_owner(episode_frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
-
-            // Create numpy arrays
+            // Create numpy arrays (zero-copy - direct from BatchData)
             size_t info_shape[1] = {(size_t)batch_size};
-            auto env_ids = nb::ndarray<nb::numpy, int>(env_ids_data, 1, info_shape, env_ids_owner);
-            auto lives = nb::ndarray<nb::numpy, int>(lives_data, 1, info_shape, lives_owner);
-            auto frame_numbers = nb::ndarray<nb::numpy, int>(frame_numbers_data, 1, info_shape, frame_numbers_owner);
-            auto episode_frame_numbers = nb::ndarray<nb::numpy, int>(episode_frame_numbers_data, 1, info_shape, episode_frame_numbers_owner);
+            auto env_ids = nb::ndarray<nb::numpy, int>(result.env_ids, 1, info_shape, env_ids_owner);
+            auto lives = nb::ndarray<nb::numpy, int>(result.lives, 1, info_shape, lives_owner);
+            auto frame_numbers = nb::ndarray<nb::numpy, int>(result.frame_numbers, 1, info_shape, frame_numbers_owner);
+            auto episode_frame_numbers = nb::ndarray<nb::numpy, int>(result.episode_frame_numbers, 1, info_shape, episode_frame_numbers_owner);
 
             // Create info dict
             nb::dict info;
@@ -111,65 +97,42 @@ void init_vector_module(nb::module_& m) {
             nb::gil_scoped_acquire acquire;
 
             // Get shape info
-            const auto shape_info = self.get_observation_shape();
-            const int stack_num = std::get<0>(shape_info);
-            const int height = std::get<1>(shape_info);
-            const int width = std::get<2>(shape_info);
+            const auto obs_shape_info = self.get_observation_shape();
+            const int stack_num = std::get<0>(obs_shape_info);
+            const int height = std::get<1>(obs_shape_info);
+            const int width = std::get<2>(obs_shape_info);
             const int batch_size = result.batch_size;
             const bool grayscale = self.is_grayscale();
 
             // Wrap obs buffer - capsule takes ownership and will delete[]
-            nb::capsule obs_owner(result.obs_data, [](void *p) noexcept {
-                delete[] static_cast<uint8_t*>(p);
-            });
-
+            nb::capsule obs_owner(result.observations, [](void *p) noexcept { delete[] static_cast<uint8_t*>(p); });
             nb::ndarray<nb::numpy, uint8_t> observations;
             if (grayscale) {
                 size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
-                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 4, shape, obs_owner);
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.observations, 4, shape, obs_owner);
             } else {
                 size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
-                observations = nb::ndarray<nb::numpy, uint8_t>(result.obs_data, 5, shape, obs_owner);
+                observations = nb::ndarray<nb::numpy, uint8_t>(result.observations, 5, shape, obs_owner);
             }
 
-            // Allocate metadata arrays
-            int* rewards_data = new int[batch_size];
-            bool* terminations_data = new bool[batch_size];
-            bool* truncations_data = new bool[batch_size];
-            int* env_ids_data = new int[batch_size];
-            int* lives_data = new int[batch_size];
-            int* frame_numbers_data = new int[batch_size];
-            int* episode_frame_numbers_data = new int[batch_size];
+            // Create capsules - ownership transferred from BatchData
+            nb::capsule rewards_owner(result.rewards, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule terminations_owner(result.terminations, [](void *p) noexcept { delete[] (bool*)p; });
+            nb::capsule truncations_owner(result.truncations, [](void *p) noexcept { delete[] (bool*)p; });
+            nb::capsule env_ids_owner(result.env_ids, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule lives_owner(result.lives, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule frame_numbers_owner(result.frame_numbers, [](void *p) noexcept { delete[] (int*)p; });
+            nb::capsule episode_frame_numbers_owner(result.episode_frame_numbers, [](void *p) noexcept { delete[] (int*)p; });
 
-            for (size_t i = 0; i < batch_size; i++) {
-                const auto& meta = result.metadata[i];
-                rewards_data[i] = meta.reward;
-                terminations_data[i] = meta.terminated;
-                truncations_data[i] = meta.truncated;
-                env_ids_data[i] = meta.env_id;
-                lives_data[i] = meta.lives;
-                frame_numbers_data[i] = meta.frame_number;
-                episode_frame_numbers_data[i] = meta.episode_frame_number;
-            }
-
-            // Create capsules
-            nb::capsule rewards_owner(rewards_data, [](void *p) noexcept { delete[] (int*)p; });
-            nb::capsule terminations_owner(terminations_data, [](void *p) noexcept { delete[] (bool*)p; });
-            nb::capsule truncations_owner(truncations_data, [](void *p) noexcept { delete[] (bool*)p; });
-            nb::capsule env_ids_owner(env_ids_data, [](void *p) noexcept { delete[] (int*)p; });
-            nb::capsule lives_owner(lives_data, [](void *p) noexcept { delete[] (int*)p; });
-            nb::capsule frame_numbers_owner(frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
-            nb::capsule episode_frame_numbers_owner(episode_frame_numbers_data, [](void *p) noexcept { delete[] (int*)p; });
-
-            // Create numpy arrays
+            // Create numpy arrays (zero-copy - direct from BatchData)
             size_t info_shape[1] = {(size_t)batch_size};
-            auto rewards = nb::ndarray<nb::numpy, int>(rewards_data, 1, info_shape, rewards_owner);
-            auto terminations = nb::ndarray<nb::numpy, bool>(terminations_data, 1, info_shape, terminations_owner);
-            auto truncations = nb::ndarray<nb::numpy, bool>(truncations_data, 1, info_shape, truncations_owner);
-            auto env_ids = nb::ndarray<nb::numpy, int>(env_ids_data, 1, info_shape, env_ids_owner);
-            auto lives = nb::ndarray<nb::numpy, int>(lives_data, 1, info_shape, lives_owner);
-            auto frame_numbers = nb::ndarray<nb::numpy, int>(frame_numbers_data, 1, info_shape, frame_numbers_owner);
-            auto episode_frame_numbers = nb::ndarray<nb::numpy, int>(episode_frame_numbers_data, 1, info_shape, episode_frame_numbers_owner);
+            auto rewards = nb::ndarray<nb::numpy, int>(result.rewards, 1, info_shape, rewards_owner);
+            auto terminations = nb::ndarray<nb::numpy, bool>(result.terminations, 1, info_shape, terminations_owner);
+            auto truncations = nb::ndarray<nb::numpy, bool>(result.truncations, 1, info_shape, truncations_owner);
+            auto env_ids = nb::ndarray<nb::numpy, int>(result.env_ids, 1, info_shape, env_ids_owner);
+            auto lives = nb::ndarray<nb::numpy, int>(result.lives, 1, info_shape, lives_owner);
+            auto frame_numbers = nb::ndarray<nb::numpy, int>(result.frame_numbers, 1, info_shape, frame_numbers_owner);
+            auto episode_frame_numbers = nb::ndarray<nb::numpy, int>(result.episode_frame_numbers, 1, info_shape, episode_frame_numbers_owner);
 
             // Build info dict
             nb::dict info;
@@ -179,18 +142,19 @@ void init_vector_module(nb::module_& m) {
             info["episode_frame_number"] = episode_frame_numbers;
 
             // Handle final_obs for SameStep mode
-            if (result.final_obs_data != nullptr) {
-                nb::capsule final_obs_owner(result.final_obs_data, [](void *p) noexcept {
+            if (result.final_observations != nullptr) {
+                // Wrap the buffer directly - workers have already filled in all slots
+                nb::capsule final_obs_owner(result.final_observations, [](void *p) noexcept {
                     delete[] static_cast<uint8_t*>(p);
                 });
 
                 nb::ndarray<nb::numpy, uint8_t> final_observations;
                 if (grayscale) {
                     size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
-                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_obs_data, 4, shape, final_obs_owner);
+                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_observations, 4, shape, final_obs_owner);
                 } else {
                     size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
-                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_obs_data, 5, shape, final_obs_owner);
+                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_observations, 5, shape, final_obs_owner);
                 }
                 info["final_obs"] = final_observations;
             }

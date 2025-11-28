@@ -143,9 +143,9 @@ namespace ale::vector {
          *
          * @param reset_indices Vector of environment indices to be reset
          * @param reset_seeds Vector of environment seeds to use
-         * @return RecvResult with initial observations
+         * @return BatchData with initial observations
          */
-        RecvResult reset(const std::vector<int> &reset_indices, const std::vector<int> &reset_seeds) {
+        BatchData reset(const std::vector<int> &reset_indices, const std::vector<int> &reset_seeds) {
             vectorizer_->reset(reset_indices, reset_seeds);
             return recv();
         }
@@ -181,10 +181,10 @@ namespace ale::vector {
         * Returns the environment's data for the environments.
         * Returns ownership of observation buffer to caller.
         */
-        RecvResult recv() {
-            RecvResult result = vectorizer_->recv();
+        BatchData recv() {
+            BatchData result = vectorizer_->recv();
             for (size_t i = 0; i < result.batch_size; i++) {
-                received_env_ids_[i] = result.metadata[i].env_id;
+                received_env_ids_[i] = result.env_ids[i];
             }
             return result;
         }

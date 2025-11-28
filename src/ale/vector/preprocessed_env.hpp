@@ -240,17 +240,32 @@ namespace ale::vector {
          * Avoids allocating intermediate vectors.
          *
          * @param obs_dest Pointer to write linearized observation (size: stack_num * obs_size)
-         * @param meta Reference to metadata struct to populate
+         * @param env_id_dest Pointer to write env_id
+         * @param reward_dest Pointer to write reward
+         * @param terminated_dest Pointer to write terminated flag
+         * @param truncated_dest Pointer to write truncated flag
+         * @param lives_dest Pointer to write lives
+         * @param frame_number_dest Pointer to write frame_number
+         * @param episode_frame_number_dest Pointer to write episode_frame_number
          */
-        void write_timestep_to(uint8_t* obs_dest, TimestepMetadata& meta) const {
-            // Write metadata
-            meta.env_id = env_id_;
-            meta.reward = reward_;
-            meta.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
-            meta.truncated = elapsed_step_ >= max_episode_steps_ && !meta.terminated;
-            meta.lives = lives_;
-            meta.frame_number = env_->getFrameNumber();
-            meta.episode_frame_number = env_->getEpisodeFrameNumber();
+        void write_timestep_to(
+            uint8_t* obs_dest,
+            int* env_id_dest,
+            int* reward_dest,
+            bool* terminated_dest,
+            bool* truncated_dest,
+            int* lives_dest,
+            int* frame_number_dest,
+            int* episode_frame_number_dest
+        ) const {
+            // Write metadata directly to BatchData arrays
+            *env_id_dest = env_id_;
+            *reward_dest = reward_;
+            *terminated_dest = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
+            *truncated_dest = elapsed_step_ >= max_episode_steps_ && !(*terminated_dest);
+            *lives_dest = lives_;
+            *frame_number_dest = env_->getFrameNumber();
+            *episode_frame_number_dest = env_->getEpisodeFrameNumber();
 
             // Linearize circular frame_stack directly to destination
             for (int i = 0; i < stack_num_; ++i) {
@@ -282,48 +297,30 @@ namespace ale::vector {
         /**
          * Write only metadata (used to capture state before reset in SameStep mode).
          *
-         * @param meta Reference to metadata struct to populate
+         * @param env_id_dest Pointer to write env_id
+         * @param reward_dest Pointer to write reward
+         * @param terminated_dest Pointer to write terminated flag
+         * @param truncated_dest Pointer to write truncated flag
+         * @param lives_dest Pointer to write lives
+         * @param frame_number_dest Pointer to write frame_number
+         * @param episode_frame_number_dest Pointer to write episode_frame_number
          */
-        void write_metadata_to(TimestepMetadata& meta) const {
-            meta.env_id = env_id_;
-            meta.reward = reward_;
-            meta.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
-            meta.truncated = elapsed_step_ >= max_episode_steps_ && !meta.terminated;
-            meta.lives = lives_;
-            meta.frame_number = env_->getFrameNumber();
-            meta.episode_frame_number = env_->getEpisodeFrameNumber();
-        }
-
-        /**
-         * Get the current observation
-         */
-        Timestep get_timestep() const {
-            Timestep timestep;
-            timestep.env_id = env_id_;
-
-            timestep.reward = reward_;
-            timestep.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
-            timestep.truncated = elapsed_step_ >= max_episode_steps_ && !timestep.terminated;
-
-            timestep.lives = lives_;
-            timestep.frame_number = env_->getFrameNumber();
-            timestep.episode_frame_number = env_->getEpisodeFrameNumber();
-
-            // Copy frames from oldest to newest into a single observation
-            timestep.observation.resize(obs_size_ * stack_num_);
-            for (int i = 0; i < stack_num_; ++i) {
-                int src_idx = (frame_stack_idx_ + i) % stack_num_;
-                std::memcpy(
-                    timestep.observation.data() + i * obs_size_,
-                    frame_stack_.data() + src_idx * obs_size_,
-                    obs_size_
-                );
-            }
-
-            // Initialize as nullptr and set in AsyncVectorizer if needed
-            timestep.final_observation = nullptr;
-
-            return timestep;
+        void write_metadata_to(
+            int* env_id_dest,
+            int* reward_dest,
+            bool* terminated_dest,
+            bool* truncated_dest,
+            int* lives_dest,
+            int* frame_number_dest,
+            int* episode_frame_number_dest
+        ) const {
+            *env_id_dest = env_id_;
+            *reward_dest = reward_;
+            *terminated_dest = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
+            *truncated_dest = elapsed_step_ >= max_episode_steps_ && !(*terminated_dest);
+            *lives_dest = lives_;
+            *frame_number_dest = env_->getFrameNumber();
+            *episode_frame_number_dest = env_->getEpisodeFrameNumber();
         }
 
         /**

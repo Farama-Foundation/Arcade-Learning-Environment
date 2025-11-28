@@ -33,43 +33,20 @@ namespace ale::vector {
     };
 
     /**
-     * Timestep represents the output from an environment step
-     */
-    struct Timestep {
-        int env_id;                       // ID of the environment this observation is from
-        std::vector<uint8_t> observation; // Screen pixel data
-        reward_t reward;                  // Reward received in this step
-        bool terminated;                  // Whether the game ended
-        bool truncated;                   // Whether the episode was truncated due to a time limit
-        int lives;                        // Remaining lives in the game
-        int frame_number;                 // Frame number since the beginning of the game
-        int episode_frame_number;         // Frame number since the beginning of the episode
-
-        std::vector<uint8_t>* final_observation; // Screen pixel data for previous episode last observation with Autoresetmode == SameStep
-    };
-
-    /**
-     * Lightweight metadata without observation data.
-     * Used when observations are written directly to output buffer.
-     */
-    struct TimestepMetadata {
-        int env_id;                       // ID of the environment
-        reward_t reward;                  // Reward received
-        bool terminated;                  // Whether the game ended
-        bool truncated;                   // Whether episode was truncated
-        int lives;                        // Remaining lives
-        int frame_number;                 // Frame number since game start
-        int episode_frame_number;         // Frame number since episode start
-    };
-
-    /**
      * WriteSlot provides destinations for workers to write data directly.
+     * All pointers point into externally allocated BatchData arrays.
      */
     struct WriteSlot {
-        int slot_index;           // Index in the batch
-        uint8_t* obs_dest;        // Pointer to write observation data
-        TimestepMetadata* meta;   // Pointer to write metadata
-        uint8_t* final_obs_dest;  // Pointer for final_obs (SameStep mode)
+        int slot_index;                      // Index in the batch
+        uint8_t* obs_dest;                   // Pointer to write observation data
+        int* env_id_dest;                    // Pointer to write env_id
+        int* reward_dest;                    // Pointer to write reward
+        bool* terminated_dest;               // Pointer to write terminated flag
+        bool* truncated_dest;                // Pointer to write truncated flag
+        int* lives_dest;                     // Pointer to write lives
+        int* frame_number_dest;              // Pointer to write frame_number
+        int* episode_frame_number_dest;      // Pointer to write episode_frame_number
+        uint8_t* final_obs_dest;             // Pointer for final_obs (SameStep mode)
     };
 
     /**
@@ -162,10 +139,15 @@ namespace ale::vector {
               num_envs_(num_envs),
               obs_size_(obs_size),
               ordered_mode_(batch_size == num_envs),
-              metadata_(batch_size),
-              final_obs_buffer_(batch_size * obs_size),
-              has_final_obs_(batch_size, false),
               output_obs_buffer_(nullptr),
+              final_obs_buffer_(nullptr),
+              env_ids_buffer_(nullptr),
+              rewards_buffer_(nullptr),
+              terminations_buffer_(nullptr),
+              truncations_buffer_(nullptr),
+              lives_buffer_(nullptr),
+              frame_numbers_buffer_(nullptr),
+              episode_frame_numbers_buffer_(nullptr),
               count_(0),
               write_idx_(0),
               sem_ready_(0),
@@ -179,6 +161,45 @@ namespace ale::vector {
          */
         void set_output_buffer(uint8_t* obs_buffer) {
             output_obs_buffer_ = obs_buffer;
+        }
+
+        /**
+         * Set the final_obs output buffer for SameStep autoreset mode.
+         *
+         * @param final_obs_buffer Pointer to allocated buffer of size batch_size * obs_size
+         */
+        void set_final_obs_buffer(uint8_t* final_obs_buffer) {
+            final_obs_buffer_ = final_obs_buffer;
+        }
+
+        /**
+         * Set the metadata output buffers that workers will write into.
+         * MUST be called before enqueueing any actions that will use these buffers.
+         *
+         * @param env_ids Pointer to allocated array of size batch_size
+         * @param rewards Pointer to allocated array of size batch_size
+         * @param terminations Pointer to allocated array of size batch_size
+         * @param truncations Pointer to allocated array of size batch_size
+         * @param lives Pointer to allocated array of size batch_size
+         * @param frame_numbers Pointer to allocated array of size batch_size
+         * @param episode_frame_numbers Pointer to allocated array of size batch_size
+         */
+        void set_metadata_buffers(
+            int* env_ids,
+            int* rewards,
+            bool* terminations,
+            bool* truncations,
+            int* lives,
+            int* frame_numbers,
+            int* episode_frame_numbers
+        ) {
+            env_ids_buffer_ = env_ids;
+            rewards_buffer_ = rewards;
+            terminations_buffer_ = terminations;
+            truncations_buffer_ = truncations;
+            lives_buffer_ = lives;
+            frame_numbers_buffer_ = frame_numbers;
+            episode_frame_numbers_buffer_ = episode_frame_numbers;
         }
 
         /**
@@ -201,20 +222,26 @@ namespace ale::vector {
                 slot.slot_index = static_cast<int>(write_idx_.fetch_add(1) % batch_size_);
             }
 
-            slot.obs_dest = output_obs_buffer_ + slot.slot_index * obs_size_;
-            slot.meta = &metadata_[slot.slot_index];
-            slot.final_obs_dest = final_obs_buffer_.data() + slot.slot_index * obs_size_;
+            const int idx = slot.slot_index;
+
+            // Set observation pointers
+            slot.obs_dest = output_obs_buffer_ + idx * obs_size_;
+
+            // Set final_obs pointer (only used in SameStep mode, nullptr in NextStep mode)
+            slot.final_obs_dest = final_obs_buffer_ != nullptr
+                ? final_obs_buffer_ + idx * obs_size_
+                : nullptr;
+
+            // Set metadata pointers (directly into BatchData arrays)
+            slot.env_id_dest = &env_ids_buffer_[idx];
+            slot.reward_dest = &rewards_buffer_[idx];
+            slot.terminated_dest = &terminations_buffer_[idx];
+            slot.truncated_dest = &truncations_buffer_[idx];
+            slot.lives_dest = &lives_buffer_[idx];
+            slot.frame_number_dest = &frame_numbers_buffer_[idx];
+            slot.episode_frame_number_dest = &episode_frame_numbers_buffer_[idx];
 
             return slot;
-        }
-
-        /**
-         * Mark that a slot has final observation data (for SameStep autoreset).
-         *
-         * @param slot_index The slot index to mark
-         */
-        void mark_slot_has_final_obs(int slot_index) {
-            has_final_obs_[slot_index] = true;
         }
 
         /**
@@ -241,17 +268,18 @@ namespace ale::vector {
         void reset() {
             count_.store(0);
             write_idx_.store(0);
-            std::fill(has_final_obs_.begin(), has_final_obs_.end(), false);
             output_obs_buffer_ = nullptr;
+            final_obs_buffer_ = nullptr;
+            env_ids_buffer_ = nullptr;
+            rewards_buffer_ = nullptr;
+            terminations_buffer_ = nullptr;
+            truncations_buffer_ = nullptr;
+            lives_buffer_ = nullptr;
+            frame_numbers_buffer_ = nullptr;
+            episode_frame_numbers_buffer_ = nullptr;
         }
 
         // Accessors
-        TimestepMetadata* get_metadata() { return metadata_.data(); }
-        const TimestepMetadata* get_metadata() const { return metadata_.data(); }
-        uint8_t* get_final_obs_buffer() { return final_obs_buffer_.data(); }
-        const uint8_t* get_final_obs_buffer() const { return final_obs_buffer_.data(); }
-        uint8_t* get_has_final_obs() { return has_final_obs_.data(); }
-        const uint8_t* get_has_final_obs() const { return has_final_obs_.data(); }
         std::size_t get_batch_size() const { return batch_size_; }
         std::size_t get_obs_size() const { return obs_size_; }
 
@@ -261,13 +289,16 @@ namespace ale::vector {
         const std::size_t obs_size_;
         const bool ordered_mode_;
 
-        // Internal storage for metadata and final observations
-        std::vector<TimestepMetadata> metadata_;
-        std::vector<uint8_t> final_obs_buffer_;
-        std::vector<uint8_t> has_final_obs_;  // uint8_t instead of bool for .data() access
-
-        // External output buffer (set via set_output_buffer)
+        // External output buffers (set via set_output_buffer / set_final_obs_buffer / set_metadata_buffers)
         uint8_t* output_obs_buffer_;
+        uint8_t* final_obs_buffer_;
+        int* env_ids_buffer_;
+        int* rewards_buffer_;
+        bool* terminations_buffer_;
+        bool* truncations_buffer_;
+        int* lives_buffer_;
+        int* frame_numbers_buffer_;
+        int* episode_frame_numbers_buffer_;
 
         // Synchronization
         std::atomic<std::size_t> count_;

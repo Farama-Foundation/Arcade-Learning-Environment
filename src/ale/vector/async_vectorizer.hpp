@@ -18,14 +18,20 @@
 
 namespace ale::vector {
     /**
-     * Result from recv() - caller takes ownership of allocated buffers.
+     * Batch data from recv() - caller takes ownership of allocated buffers.
      */
-    struct RecvResult {
-        uint8_t* obs_data;                      // Newly allocated, caller owns
-        std::vector<TimestepMetadata> metadata; // Copied from internal buffer
-        uint8_t* final_obs_data;                // nullptr or newly allocated, caller owns
-        std::vector<uint8_t> has_final_obs;     // Which slots have final_obs (uint8_t for compatibility)
-        std::size_t batch_size;                 // Number of results
+    struct BatchData {
+        int* env_ids;                  // Newly allocated, caller owns
+        uint8_t* observations;         // Newly allocated, caller owns
+        int* rewards;                  // Newly allocated, caller owns
+        bool* terminations;            // Newly allocated, caller owns
+        bool* truncations;             // Newly allocated, caller owns
+        int* lives;                    // Newly allocated, caller owns
+        int* frame_numbers;            // Newly allocated, caller owns
+        int* episode_frame_numbers;    // Newly allocated, caller owns
+
+        uint8_t* final_observations;   // nullptr or newly allocated, caller owns
+        std::size_t batch_size;        // Number of results
     };
 
     /**
@@ -56,7 +62,15 @@ namespace ale::vector {
             autoreset_mode_(autoreset_mode),
             stop_(false),
             action_queue_(new ActionQueue(num_envs_)),
-            pending_obs_buffer_(nullptr) {
+            pending_obs_buffer_(nullptr),
+            pending_final_obs_(nullptr),
+            pending_env_ids_(nullptr),
+            pending_rewards_(nullptr),
+            pending_terminations_(nullptr),
+            pending_truncations_(nullptr),
+            pending_lives_(nullptr),
+            pending_frame_numbers_(nullptr),
+            pending_episode_frame_numbers_(nullptr) {
 
             // Create environments
             envs_.resize(num_envs_);
@@ -111,10 +125,34 @@ namespace ale::vector {
          * @param seeds Vector of seeds to use on reset (use -1 to not change the environment's seed)
          */
         void reset(const std::vector<int>& reset_indices, const std::vector<int>& seeds) {
-            // Allocate output buffer BEFORE enqueueing (prevents race condition)
+            // Allocate output buffers BEFORE enqueueing (prevents race condition)
             const std::size_t total_obs_size = batch_size_ * stacked_obs_size_;
             pending_obs_buffer_ = new uint8_t[total_obs_size];
             state_buffer_->set_output_buffer(pending_obs_buffer_);
+
+            // Allocate metadata buffers
+            pending_env_ids_ = new int[batch_size_];
+            pending_rewards_ = new int[batch_size_];
+            pending_terminations_ = new bool[batch_size_];
+            pending_truncations_ = new bool[batch_size_];
+            pending_lives_ = new int[batch_size_];
+            pending_frame_numbers_ = new int[batch_size_];
+            pending_episode_frame_numbers_ = new int[batch_size_];
+            state_buffer_->set_metadata_buffers(
+                pending_env_ids_,
+                pending_rewards_,
+                pending_terminations_,
+                pending_truncations_,
+                pending_lives_,
+                pending_frame_numbers_,
+                pending_episode_frame_numbers_
+            );
+
+            // In SameStep mode, also allocate final_obs buffer
+            if (autoreset_mode_ == AutoresetMode::SameStep) {
+                pending_final_obs_ = new uint8_t[total_obs_size];
+                state_buffer_->set_final_obs_buffer(pending_final_obs_);
+            }
 
             // Prepare reset actions
             std::vector<ActionSlice> reset_actions;
@@ -141,10 +179,34 @@ namespace ale::vector {
          * @param actions Vector of actions to send to the sub-environments
          */
         void send(const std::vector<EnvironmentAction>& actions) {
-            // Allocate output buffer BEFORE enqueueing (prevents race condition)
+            // Allocate output buffers BEFORE enqueueing (prevents race condition)
             const std::size_t total_obs_size = batch_size_ * stacked_obs_size_;
+
             pending_obs_buffer_ = new uint8_t[total_obs_size];
+            pending_env_ids_ = new int[batch_size_];
+            pending_rewards_ = new int[batch_size_];
+            pending_terminations_ = new bool[batch_size_];
+            pending_truncations_ = new bool[batch_size_];
+            pending_lives_ = new int[batch_size_];
+            pending_frame_numbers_ = new int[batch_size_];
+            pending_episode_frame_numbers_ = new int[batch_size_];
+
             state_buffer_->set_output_buffer(pending_obs_buffer_);
+            state_buffer_->set_metadata_buffers(
+                pending_env_ids_,
+                pending_rewards_,
+                pending_terminations_,
+                pending_truncations_,
+                pending_lives_,
+                pending_frame_numbers_,
+                pending_episode_frame_numbers_
+            );
+
+            // In SameStep mode, also allocate final_obs buffer
+            if (autoreset_mode_ == AutoresetMode::SameStep) {
+                pending_final_obs_ = new uint8_t[total_obs_size];
+                state_buffer_->set_final_obs_buffer(pending_final_obs_);
+            }
 
             // Prepare action slices
             std::vector<ActionSlice> action_slices;
@@ -169,48 +231,35 @@ namespace ale::vector {
          * Receive timesteps from the environments.
          * Returns ownership of allocated observation buffer to caller.
          *
-         * @return RecvResult containing observation data and metadata
+         * @return BatchData containing observation data and metadata
          */
-        RecvResult recv() {
+        BatchData recv() {
             // Wait for all workers to complete
             state_buffer_->wait_for_batch();
 
-            // Build result
-            RecvResult result;
-            result.obs_data = pending_obs_buffer_;  // Transfer ownership
+            // Build result - transfer ownership of all buffers (no copying!)
+            BatchData result;
+            result.observations = pending_obs_buffer_;
+            result.final_observations = pending_final_obs_;
+            result.env_ids = pending_env_ids_;
+            result.rewards = pending_rewards_;
+            result.terminations = pending_terminations_;
+            result.truncations = pending_truncations_;
+            result.lives = pending_lives_;
+            result.frame_numbers = pending_frame_numbers_;
+            result.episode_frame_numbers = pending_episode_frame_numbers_;
             result.batch_size = batch_size_;
+
+            // Clear pending pointers (ownership transferred)
             pending_obs_buffer_ = nullptr;
-
-            // Copy metadata (small - ~32 bytes per env)
-            result.metadata.resize(batch_size_);
-            std::memcpy(
-                result.metadata.data(),
-                state_buffer_->get_metadata(),
-                batch_size_ * sizeof(TimestepMetadata)
-            );
-
-            // Handle final_obs for SameStep mode
-            if (autoreset_mode_ == AutoresetMode::SameStep) {
-                const uint8_t* has_final = state_buffer_->get_has_final_obs();
-                bool any_final = false;
-                for (std::size_t i = 0; i < batch_size_; i++) {
-                    if (has_final[i]) {
-                        any_final = true;
-                        break;
-                    }
-                }
-
-                if (any_final) {
-                    const std::size_t total_obs_size = batch_size_ * stacked_obs_size_;
-                    result.final_obs_data = new uint8_t[total_obs_size];
-                    std::memcpy(result.final_obs_data, state_buffer_->get_final_obs_buffer(), total_obs_size);
-                    result.has_final_obs.assign(has_final, has_final + batch_size_);
-                } else {
-                    result.final_obs_data = nullptr;
-                }
-            } else {
-                result.final_obs_data = nullptr;
-            }
+            pending_final_obs_ = nullptr;
+            pending_env_ids_ = nullptr;
+            pending_rewards_ = nullptr;
+            pending_terminations_ = nullptr;
+            pending_truncations_ = nullptr;
+            pending_lives_ = nullptr;
+            pending_frame_numbers_ = nullptr;
+            pending_episode_frame_numbers_ = nullptr;
 
             // Reset state buffer for next batch
             state_buffer_->reset();
@@ -247,7 +296,16 @@ namespace ale::vector {
         std::unique_ptr<StateBuffer> state_buffer_;       // Buffer for observations and metadata
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
-        uint8_t* pending_obs_buffer_;                     // Buffer allocated in send(), returned in recv()
+        // Pending buffers allocated in send()/reset(), returned in recv()
+        uint8_t* pending_obs_buffer_;                     // Observations buffer
+        uint8_t* pending_final_obs_;                      // Final observations buffer (SameStep mode only)
+        int* pending_env_ids_;                            // Env IDs metadata buffer
+        int* pending_rewards_;                            // Rewards metadata buffer
+        bool* pending_terminations_;                      // Terminations metadata buffer
+        bool* pending_truncations_;                       // Truncations metadata buffer
+        int* pending_lives_;                              // Lives metadata buffer
+        int* pending_frame_numbers_;                      // Frame numbers metadata buffer
+        int* pending_episode_frame_numbers_;              // Episode frame numbers metadata buffer
 
         /**
          * Worker thread function that processes environment steps.
@@ -262,10 +320,6 @@ namespace ale::vector {
                     }
 
                     const int env_id = action.env_id;
-
-                    // Get write slot - pointers are into the pre-allocated output buffer
-                    WriteSlot slot = state_buffer_->allocate_write_slot(env_id);
-
                     if (autoreset_mode_ == AutoresetMode::NextStep) {
                         if (action.force_reset || envs_[env_id]->is_episode_over()) {
                             envs_[env_id]->reset();
@@ -273,35 +327,86 @@ namespace ale::vector {
                             envs_[env_id]->step();
                         }
 
-                        // Write directly to output buffer (single copy: linearize frame stack)
-                        envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
-
+                        // Get write slot - pointers are into the pre-allocated output buffer (after the reset or step occurs)
+                        WriteSlot slot = state_buffer_->allocate_write_slot(env_id);
+                        envs_[env_id]->write_timestep_to(
+                            slot.obs_dest,
+                            slot.env_id_dest,
+                            slot.reward_dest,
+                            slot.terminated_dest,
+                            slot.truncated_dest,
+                            slot.lives_dest,
+                            slot.frame_number_dest,
+                            slot.episode_frame_number_dest
+                        );
                     } else if (autoreset_mode_ == AutoresetMode::SameStep) {
                         if (action.force_reset) {
                             envs_[env_id]->reset();
-                            envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
+
+                            // Get write slot - pointers are into the pre-allocated output buffer (after the force reset)
+                            WriteSlot slot = state_buffer_->allocate_write_slot(env_id);
+                            envs_[env_id]->write_timestep_to(
+                                slot.obs_dest,
+                                slot.env_id_dest,
+                                slot.reward_dest,
+                                slot.terminated_dest,
+                                slot.truncated_dest,
+                                slot.lives_dest,
+                                slot.frame_number_dest,
+                                slot.episode_frame_number_dest
+                            );
                         } else {
                             envs_[env_id]->step();
 
-                            if (envs_[env_id]->is_episode_over()) {
-                                // Save final observation before reset
-                                envs_[env_id]->write_observation_to(slot.final_obs_dest);
-                                state_buffer_->mark_slot_has_final_obs(slot.slot_index);
+                            // Get write slot - pointers are into the pre-allocated output buffer (after the step)
+                            WriteSlot slot = state_buffer_->allocate_write_slot(env_id);
 
-                                // Capture pre-reset metadata
-                                TimestepMetadata pre_reset_meta;
-                                envs_[env_id]->write_metadata_to(pre_reset_meta);
+                            if (envs_[env_id]->is_episode_over()) {
+                                // Write current (final) observation before reset
+                                envs_[env_id]->write_observation_to(slot.final_obs_dest);
+
+                                // Capture pre-reset metadata temporarily (for reward/terminated/truncated)
+                                int pre_reward;
+                                bool pre_terminated, pre_truncated;
+                                envs_[env_id]->write_metadata_to(
+                                    slot.env_id_dest,
+                                    &pre_reward,
+                                    &pre_terminated,
+                                    &pre_truncated,
+                                    slot.lives_dest,
+                                    slot.frame_number_dest,
+                                    slot.episode_frame_number_dest
+                                );
 
                                 // Reset and write new observation
                                 envs_[env_id]->reset();
-                                envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
+                                envs_[env_id]->write_timestep_to(
+                                    slot.obs_dest,
+                                    slot.env_id_dest,  // overwrites with same value
+                                    slot.reward_dest,
+                                    slot.terminated_dest,
+                                    slot.truncated_dest,
+                                    slot.lives_dest,   // overwrites with reset lives
+                                    slot.frame_number_dest,
+                                    slot.episode_frame_number_dest
+                                );
 
                                 // Restore pre-reset reward/terminated/truncated
-                                slot.meta->reward = pre_reset_meta.reward;
-                                slot.meta->terminated = pre_reset_meta.terminated;
-                                slot.meta->truncated = pre_reset_meta.truncated;
+                                *slot.reward_dest = pre_reward;
+                                *slot.terminated_dest = pre_terminated;
+                                *slot.truncated_dest = pre_truncated;
                             } else {
-                                envs_[env_id]->write_timestep_to(slot.obs_dest, *slot.meta);
+                                // No episode over
+                                envs_[env_id]->write_timestep_to(
+                                    slot.obs_dest,
+                                    slot.env_id_dest,
+                                    slot.reward_dest,
+                                    slot.terminated_dest,
+                                    slot.truncated_dest,
+                                    slot.lives_dest,
+                                    slot.frame_number_dest,
+                                    slot.episode_frame_number_dest
+                                );
                             }
                         }
                     } else {
@@ -317,8 +422,8 @@ namespace ale::vector {
         }
 
         /**
-     * Set thread affinity for worker threads
-     */
+         * Set thread affinity for worker threads
+         */
         void set_thread_affinity(const int thread_affinity_offset, const int processor_count) {
             for (size_t tid = 0; tid < workers_.size(); ++tid) {
                 size_t core_id = (thread_affinity_offset + tid) % processor_count;
