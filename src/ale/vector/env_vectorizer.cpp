@@ -3,6 +3,7 @@
 #if defined(__linux__)
     #include <pthread.h>
 #elif defined(_WIN32)
+    #define NOMINMAX  // Prevent Windows.h from defining min/max macros
     #include <windows.h>
 #elif defined(__APPLE__)
     #include <mach/thread_policy.h>
