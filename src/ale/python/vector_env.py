@@ -134,9 +134,12 @@ class AtariVectorEnv(VectorEnv):
         self.batch_size = num_envs if batch_size == 0 else batch_size
         self.num_envs = num_envs
         self.autoreset_mode = AutoresetMode(autoreset_mode)
-        self.metadata["autoreset_mode"] = self.autoreset_mode.value
+        self.metadata["autoreset_mode"] = self.autoreset_mode
 
-        assert not (self.autoreset_mode == AutoresetMode.DISABLED and self.batch_size != self.num_envs)
+        assert not (
+            self.autoreset_mode == AutoresetMode.DISABLED
+            and self.batch_size != self.num_envs
+        )
 
         self.observation_space = gymnasium.vector.utils.batch_space(
             self.single_observation_space, self.batch_size
@@ -231,7 +234,10 @@ class AtariVectorEnv(VectorEnv):
 
     def xla(self):
         """Return XLA-compatible functions for JAX integration."""
-        assert self.autoreset_mode == AutoresetMode.NEXT_STEP or self.autoreset_mode == AutoresetMode.DISABLED
+        assert (
+            self.autoreset_mode == AutoresetMode.NEXT_STEP
+            or self.autoreset_mode == AutoresetMode.DISABLED
+        )
 
         try:
             import chex

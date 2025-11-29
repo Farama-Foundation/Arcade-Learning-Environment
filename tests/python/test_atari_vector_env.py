@@ -434,7 +434,9 @@ class TestVectorEnv:
                 )
             async_env_timestep[async_env_ids] += 1
 
-        assert np.all(async_env_timestep > rollout_length / (num_envs * 2)), async_env_timestep
+        assert np.all(
+            async_env_timestep > rollout_length / (num_envs * 2)
+        ), async_env_timestep
         sync_envs.close()
         async_envs.close()
 
@@ -644,7 +646,12 @@ class TestVectorEnv:
 
                 for i, ep_over in enumerate(episode_over):
                     if ep_over:
-                        assert obs_equivalence(gym_final_obs[i], ale_final_obs[i], t, autoreset_mode="SAME-STEP"), t
+                        assert obs_equivalence(
+                            gym_final_obs[i],
+                            ale_final_obs[i],
+                            t,
+                            autoreset_mode="SAME-STEP",
+                        ), t
             else:
                 gym_info = {
                     key: value.astype(np.int32)
