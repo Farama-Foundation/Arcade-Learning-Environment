@@ -7,6 +7,15 @@
 #include <algorithm>
 #include <filesystem>
 
+// SIMD intrinsics for maxpooling optimization
+#if defined(__AVX2__)
+    #include <immintrin.h>
+#elif defined(__SSE2__)
+    #include <emmintrin.h>
+#elif defined(__ARM_NEON)
+    #include <arm_neon.h>
+#endif
+
 #include <opencv2/opencv.hpp>
 
 #include "ale/common/Constants.h"
