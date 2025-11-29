@@ -24,6 +24,34 @@ if (BUILD_VECTOR_XLA_LIB)
   add_definitions(-DBUILD_VECTOR_XLA_LIB)
 endif()
 
+# Sanitizer support for debugging (thread, address, undefined)
+# Usage: -DENABLE_SANITIZER=thread or -DENABLE_SANITIZER=address
+set(ENABLE_SANITIZER "" CACHE STRING "Enable sanitizer (thread, address, or empty to disable)")
+set_property(CACHE ENABLE_SANITIZER PROPERTY STRINGS "" "thread" "address")
+
+if(ENABLE_SANITIZER)
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    message(WARNING "Sanitizers are best supported with Clang or GCC. Current compiler: ${CMAKE_CXX_COMPILER_ID}")
+  endif()
+
+  if(ENABLE_SANITIZER STREQUAL "thread")
+    message(STATUS "Building with Thread Sanitizer (TSan)")
+    add_compile_options(-fsanitize=thread -g -O1)
+    add_link_options(-fsanitize=thread)
+    # TSan requires PIE on some platforms
+    if(UNIX AND NOT APPLE)
+      add_compile_options(-fPIE)
+      add_link_options(-pie)
+    endif()
+  elseif(ENABLE_SANITIZER STREQUAL "address")
+    message(STATUS "Building with Address Sanitizer (ASan) + Undefined Behavior Sanitizer (UBSan)")
+    add_compile_options(-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -g -O1)
+    add_link_options(-fsanitize=address -fsanitize=undefined)
+  else()
+    message(FATAL_ERROR "Invalid sanitizer '${ENABLE_SANITIZER}'. Choose 'thread' or 'address'.")
+  endif()
+endif()
+
 # Set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
