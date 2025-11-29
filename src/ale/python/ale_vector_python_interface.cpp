@@ -141,22 +141,36 @@ void init_vector_module(nb::module_& m) {
             info["frame_number"] = frame_numbers;
             info["episode_frame_number"] = episode_frame_numbers;
 
-            // Handle final_obs for SameStep mode
+            // Handle final_obs for SameStep mode - only include if any env terminated/truncated
             if (result.final_observations != nullptr) {
-                // Wrap the buffer directly - workers have already filled in all slots
-                nb::capsule final_obs_owner(result.final_observations, [](void *p) noexcept {
-                    delete[] static_cast<uint8_t*>(p);
-                });
-
-                nb::ndarray<nb::numpy, uint8_t> final_observations;
-                if (grayscale) {
-                    size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
-                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_observations, 4, shape, final_obs_owner);
-                } else {
-                    size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
-                    final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_observations, 5, shape, final_obs_owner);
+                // Check if any environment actually terminated or truncated
+                bool any_done = false;
+                for (size_t i = 0; i < batch_size; i++) {
+                    if (result.terminations[i] || result.truncations[i]) {
+                        any_done = true;
+                        break;
+                    }
                 }
-                info["final_obs"] = final_observations;
+
+                if (any_done) {
+                    // Wrap the buffer directly - workers have already filled in all slots
+                    nb::capsule final_obs_owner(result.final_observations, [](void *p) noexcept {
+                        delete[] static_cast<uint8_t*>(p);
+                    });
+
+                    nb::ndarray<nb::numpy, uint8_t> final_observations;
+                    if (grayscale) {
+                        size_t shape[4] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width};
+                        final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_observations, 4, shape, final_obs_owner);
+                    } else {
+                        size_t shape[5] = {(size_t)batch_size, (size_t)stack_num, (size_t)height, (size_t)width, 3};
+                        final_observations = nb::ndarray<nb::numpy, uint8_t>(result.final_observations, 5, shape, final_obs_owner);
+                    }
+                    info["final_obs"] = final_observations;
+                } else {
+                    // No environments terminated - delete the unused buffer
+                    delete[] result.final_observations;
+                }
             }
 
             return nb::make_tuple(observations, rewards, terminations, truncations, info);

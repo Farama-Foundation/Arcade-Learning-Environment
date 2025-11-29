@@ -151,7 +151,8 @@ namespace ale::vector {
               count_(0),
               write_idx_(0),
               sem_ready_(0),
-              sem_read_(1) {}
+              sem_read_(1),
+              sem_slots_(batch_size) {}  // Initialize with batch_size permits
 
         /**
          * Set the output buffer that workers will write observations into.
@@ -207,11 +208,17 @@ namespace ale::vector {
          * Returns pointers for direct writing into the output buffer.
          *
          * Thread-safe: multiple workers can call simultaneously.
+         * In unordered mode, blocks if all slots are occupied.
          *
          * @param env_id The environment ID requesting a slot
          * @return WriteSlot with pointers into output buffers
          */
         WriteSlot allocate_write_slot(int env_id) {
+            // In unordered mode, block if all slots are occupied
+            if (!ordered_mode_) {
+                while (!sem_slots_.wait()) {}  // Acquire permit, blocks if none available
+            }
+
             WriteSlot slot;
 
             if (ordered_mode_) {
@@ -279,6 +286,17 @@ namespace ale::vector {
             episode_frame_numbers_buffer_ = nullptr;
         }
 
+        /**
+         * Release all slots for the next batch.
+         * Called by recv() after transferring buffer ownership to Python.
+         * This allows waiting workers to proceed and allocate slots.
+         */
+        void release_slots() {
+            if (!ordered_mode_) {
+                sem_slots_.signal(batch_size_);  // Release batch_size permits
+            }
+        }
+
         // Accessors
         std::size_t get_batch_size() const { return batch_size_; }
         std::size_t get_obs_size() const { return obs_size_; }
@@ -305,6 +323,7 @@ namespace ale::vector {
         std::atomic<std::size_t> write_idx_;
         moodycamel::LightweightSemaphore sem_ready_;
         moodycamel::LightweightSemaphore sem_read_;
+        moodycamel::LightweightSemaphore sem_slots_;  // Controls slot availability
     };
 }
 

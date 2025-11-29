@@ -61,6 +61,7 @@ namespace ale::vector {
             batch_size_(batch_size > 0 ? batch_size : num_envs),
             autoreset_mode_(autoreset_mode),
             stop_(false),
+            first_batch_(true),
             action_queue_(new ActionQueue(num_envs_)),
             pending_obs_buffer_(nullptr),
             pending_final_obs_(nullptr),
@@ -129,6 +130,12 @@ namespace ale::vector {
             const std::size_t total_obs_size = batch_size_ * stacked_obs_size_;
             pending_obs_buffer_ = new uint8_t[total_obs_size];
             state_buffer_->set_output_buffer(pending_obs_buffer_);
+
+            // Release slots from previous batch (but not on first batch)
+            if (!first_batch_) {
+                state_buffer_->release_slots();
+            }
+            first_batch_ = false;
 
             // Allocate metadata buffers
             pending_env_ids_ = new int[batch_size_];
@@ -201,6 +208,12 @@ namespace ale::vector {
                 pending_frame_numbers_,
                 pending_episode_frame_numbers_
             );
+
+            // Release slots from previous batch (but not on first batch)
+            if (!first_batch_) {
+                state_buffer_->release_slots();
+            }
+            first_batch_ = false;
 
             // In SameStep mode, also allocate final_obs buffer
             if (autoreset_mode_ == AutoresetMode::SameStep) {
@@ -291,6 +304,7 @@ namespace ale::vector {
         AutoresetMode autoreset_mode_;                    // How to reset sub-environments after an episode ends
 
         std::atomic<bool> stop_;                          // Signal to stop worker threads
+        bool first_batch_;                                // Track if this is the first batch (don't release permits)
         std::vector<std::thread> workers_;                // Worker threads
         std::unique_ptr<ActionQueue> action_queue_;       // Queue for actions
         std::unique_ptr<StateBuffer> state_buffer_;       // Buffer for observations and metadata

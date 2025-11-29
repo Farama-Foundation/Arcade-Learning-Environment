@@ -629,14 +629,7 @@ class TestVectorEnv:
             if np.any(episode_over):
                 has_autoreset = True
 
-                gym_final_obs = np.array(
-                    [
-                        final_obs if ep_over else obs
-                        for final_obs, obs, ep_over in zip(
-                            gym_info.pop("final_obs"), gym_obs, episode_over
-                        )
-                    ]
-                )
+                gym_final_obs = gym_info.pop("final_obs")
                 gym_info.pop("final_info")  # ALEV doesn't return final info
                 gym_info = {
                     key: value.astype(np.int32)
@@ -649,9 +642,9 @@ class TestVectorEnv:
                     gym_info, ale_info
                 ), f"{gym_info=}, {ale_info=}, {t=}"
 
-                assert obs_equivalence(
-                    gym_final_obs, ale_final_obs, t, autoreset_mode="SAME-STEP"
-                ), t
+                for i, ep_over in enumerate(episode_over):
+                    if ep_over:
+                        assert obs_equivalence(gym_final_obs[i], ale_final_obs[i], t, autoreset_mode="SAME-STEP"), t
             else:
                 gym_info = {
                     key: value.astype(np.int32)
