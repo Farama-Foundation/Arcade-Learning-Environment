@@ -2,6 +2,46 @@
 
 namespace ale::vector {
 
+/**
+ * Maxpool two uint8_t frames using SIMD when available
+ * @param dst Destination buffer (will be modified in-place with max values)
+ * @param src Source buffer to compare against
+ * @param size Number of bytes to process
+ */
+inline void maxpool_frames(uint8_t* dst, const uint8_t* src, int size) {
+    int i = 0;
+
+#if defined(__AVX2__)
+    // Process 32 bytes at a time with AVX2
+    for (; i + 32 <= size; i += 32) {
+        __m256i a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(dst + i));
+        __m256i b = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(src + i));
+        __m256i max_val = _mm256_max_epu8(a, b);
+        _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), max_val);
+    }
+#elif defined(__SSE2__)
+    // Process 16 bytes at a time with SSE2
+    for (; i + 16 <= size; i += 16) {
+        __m128i a = _mm_loadu_si128(reinterpret_cast<const __m128i*>(dst + i));
+        __m128i b = _mm_loadu_si128(reinterpret_cast<const __m128i*>(src + i));
+        __m128i max_val = _mm_max_epu8(a, b);
+        _mm_storeu_si128(reinterpret_cast<__m128i*>(dst + i), max_val);
+    }
+#elif defined(__ARM_NEON)
+    // Process 16 bytes at a time with NEON
+    for (; i + 16 <= size; i += 16) {
+        uint8x16_t a = vld1q_u8(dst + i);
+        uint8x16_t b = vld1q_u8(src + i);
+        uint8x16_t max_val = vmaxq_u8(a, b);
+        vst1q_u8(dst + i, max_val);
+    }
+#endif
+    // Handle remainder with scalar code
+    for (; i < size; ++i) {
+        dst[i] = std::max(dst[i], src[i]);
+    }
+}
+
 PreprocessedEnv::PreprocessedEnv(
     int env_id,
     const fs::path& rom_path,
@@ -22,13 +62,13 @@ PreprocessedEnv::PreprocessedEnv(
     int seed
 ) : env_id_(env_id),
     rom_path_(rom_path),
-    obs_frame_height_(img_height),
-    obs_frame_width_(img_width),
-    frame_skip_(frame_skip),
-    maxpool_(maxpool),
     obs_format_(grayscale ? ObsFormat::Grayscale : ObsFormat::RGB),
     channels_per_frame_(grayscale ? 1 : 3),
+    obs_frame_height_(img_height),
+    obs_frame_width_(img_width),
     stack_num_(stack_num),
+    frame_skip_(frame_skip),
+    maxpool_(maxpool),
     noop_max_(noop_max),
     use_fire_reset_(use_fire_reset),
     has_fire_action_(false),
@@ -260,46 +300,6 @@ void PreprocessedEnv::process_screen() {
 
     // Move to next position in circular buffer
     frame_stack_idx_ = (frame_stack_idx_ + 1) % stack_num_;
-}
-
-/**
- * Maxpool two uint8_t frames using SIMD when available
- * @param dst Destination buffer (will be modified in-place with max values)
- * @param src Source buffer to compare against
- * @param size Number of bytes to process
- */
-inline void maxpool_frames(uint8_t* dst, const uint8_t* src, int size) {
-    int i = 0;
-
-#if defined(__AVX2__)
-    // Process 32 bytes at a time with AVX2
-    for (; i + 32 <= size; i += 32) {
-        __m256i a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(dst + i));
-        __m256i b = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(src + i));
-        __m256i max_val = _mm256_max_epu8(a, b);
-        _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), max_val);
-    }
-#elif defined(__SSE2__)
-    // Process 16 bytes at a time with SSE2
-    for (; i + 16 <= size; i += 16) {
-        __m128i a = _mm_loadu_si128(reinterpret_cast<const __m128i*>(dst + i));
-        __m128i b = _mm_loadu_si128(reinterpret_cast<const __m128i*>(src + i));
-        __m128i max_val = _mm_max_epu8(a, b);
-        _mm_storeu_si128(reinterpret_cast<__m128i*>(dst + i), max_val);
-    }
-#elif defined(__ARM_NEON)
-    // Process 16 bytes at a time with NEON
-    for (; i + 16 <= size; i += 16) {
-        uint8x16_t a = vld1q_u8(dst + i);
-        uint8x16_t b = vld1q_u8(src + i);
-        uint8x16_t max_val = vmaxq_u8(a, b);
-        vst1q_u8(dst + i, max_val);
-    }
-#endif
-    // Handle remainder with scalar code
-    for (; i < size; ++i) {
-        dst[i] = std::max(dst[i], src[i]);
-    }
 }
 
 }  // namespace ale::vector
