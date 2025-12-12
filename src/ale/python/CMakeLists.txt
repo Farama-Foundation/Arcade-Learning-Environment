@@ -20,18 +20,25 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
     )
     message(STATUS "XLA include directory: '${XLA_DIR}'")
 
-    # Find CUDA toolkit for headers and linking
-    find_package(CUDAToolkit REQUIRED)
+    # Find CUDA toolkit for headers and linking (optional - XLA disabled if not found)
+    find_package(CUDAToolkit QUIET)
 
-    target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
-    target_include_directories(_ale_py PUBLIC ${XLA_DIR})
-    target_include_directories(_ale_py PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
-    target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_LIB BUILD_VECTOR_XLA_LIB)
-    target_link_libraries(_ale_py PRIVATE CUDA::cudart)
+    if (CUDAToolkit_FOUND)
+        message(STATUS "CUDA Toolkit found: ${CUDAToolkit_VERSION}")
+        target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
+        target_include_directories(_ale_py PUBLIC ${XLA_DIR})
+        target_include_directories(_ale_py PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
+        target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_LIB BUILD_VECTOR_XLA_LIB)
+        target_link_libraries(_ale_py PRIVATE CUDA::cudart)
 
-    set_target_properties(_ale_py PROPERTIES
-        POSITION_INDEPENDENT_CODE ON
-    )
+        set_target_properties(_ale_py PROPERTIES
+            POSITION_INDEPENDENT_CODE ON
+        )
+    else()
+        message(WARNING "CUDA Toolkit not found - disabling XLA support. Install CUDA Toolkit to enable XLA.")
+        target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp)
+        target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_LIB)
+    endif()
 elseif (BUILD_VECTOR_LIB)
     target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp)
     target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_LIB)
