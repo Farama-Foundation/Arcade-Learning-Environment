@@ -127,7 +127,7 @@ jobs:
             arch: aarch64
           - runs-on: windows-latest
             arch: AMD64
-          - runs-on: macos-13
+          - runs-on: macos-latest
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
