@@ -16,13 +16,9 @@ endif()
 option(BUILD_VECTOR_LIB "Build Vector Interface" OFF)
 if (BUILD_VECTOR_LIB)
   list(APPEND VCPKG_MANIFEST_FEATURES "vector")
-  add_definitions(-DBUILD_VECTOR_LIB)
 endif()
 
 option(BUILD_VECTOR_XLA_LIB "Build with Vector XLA Support" OFF)
-if (BUILD_VECTOR_XLA_LIB)
-  add_definitions(-DBUILD_VECTOR_XLA_LIB)
-endif()
 
 option(BUILD_WASM_LIB "Build WebAssembly Interface" OFF)
 if (BUILD_WASM_LIB)
