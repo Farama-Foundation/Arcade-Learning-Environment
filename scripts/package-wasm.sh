@@ -62,4 +62,3 @@ echo ""
 echo "Done! Packages created:"
 echo "  NPM:        $BASE_DIR/dist/npm/"
 echo "  Standalone: $BASE_DIR/dist/ale-wasm-$VERSION.zip"
-

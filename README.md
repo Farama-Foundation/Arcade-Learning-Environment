@@ -25,7 +25,7 @@ Features
 - Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
 - C++ based vectorizer for acting in multiple ROMs at the same time.
 - Atari roms are packaged within the pip package.
-- WebAssembly support for 
+- WebAssembly support for
 
 Quick Start
 ===========
