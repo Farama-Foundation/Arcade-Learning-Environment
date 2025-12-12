@@ -1,8 +1,10 @@
 # workflow on publish
-# 1. build the wheels for relevant systems
+# 1. build the wheels for linux intel / arm, macos arm and windows
 # 2. download artifacts and upload to PyPI
+# 3. build WASM and create NPM package and standalone bundle
+# 4. upload WASM standalone bundle to GitHub release and publish NPM package (if NPM_TOKEN is available)
 
-name: Push wheels to pypi
+name: Build and publish releases
 
 on:
   release:
@@ -100,6 +102,11 @@ jobs:
 
       - run: ls dist/
 
+      - name: Upload wheels to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.wheel
+
       - name: Publish to PyPi test
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -107,3 +114,72 @@ jobs:
           password: ${{ secrets.PYPI_TOKEN }}
           packages-dir: dist/
           print-hash: true
+
+  build-wasm:
+    name: Build WASM
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: '3.1.68'
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh
+          echo "VCPKG_ROOT=$GITHUB_WORKSPACE/vcpkg" >> $GITHUB_ENV
+
+      - name: Install vcpkg dependencies
+        run: |
+          $VCPKG_ROOT/vcpkg install zlib:wasm32-emscripten \
+            --overlay-triplets=cmake/custom-triplets
+
+      - name: Download and unpack ROMs
+        run: ./scripts/download_unpack_roms.sh
+
+      - name: Build and package WASM
+        run: ./scripts/package-wasm.sh
+        env:
+          EMSDK_PATH: ${{ env.EMSDK }}
+
+      - name: Upload standalone bundle to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+
+      - name: Upload NPM package artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: npm-package
+          path: dist/npm/
+
+#  push-npm:
+#    name: Publish to NPM
+#    runs-on: ubuntu-latest
+#    needs: build-wasm
+#    # Only publish to NPM if token is available
+#    if: ${{ secrets.NPM_TOKEN != '' }}
+#
+#    steps:
+#      - uses: actions/download-artifact@v6
+#        with:
+#          name: npm-package
+#          path: dist/npm/
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '20'
+#          registry-url: 'https://registry.npmjs.org'
+#
+#      - name: Publish to NPM
+#        run: |
+#          cd dist/npm
+#          npm publish --access public
+#        env:
+#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

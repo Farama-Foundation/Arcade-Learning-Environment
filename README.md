@@ -25,6 +25,7 @@ Features
 - Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
 - C++ based vectorizer for acting in multiple ROMs at the same time.
 - Atari roms are packaged within the pip package.
+- WebAssembly support for 
 
 Quick Start
 ===========
@@ -107,6 +108,32 @@ Finally, you can link against the ALE in your own CMake project as follows
 find_package(ale REQUIRED)
 target_link_libraries(YourTarget ale::ale-lib)
 ```
+
+WebAssembly
+---
+
+The ALE can be compiled to WebAssembly for use directly in web browsers, enabling interactive demos, educational tools, and browser-based RL experiments without any installation.
+
+This be used through NPM (`> npm install @farama/ale-wasm`) or through a standalone compiled zip (see the release artifacts).
+
+**Example NPM usage:**
+```javascript
+import createALEModule from '@farama/ale-wasm';
+
+const ALE = await createALEModule();
+const ale = new ALE.ALEInterface();
+
+await ale.loadROMFromURL('https://example.com/breakout.bin');
+ale.resetGame();
+
+while (!ale.gameOver()) {
+    const actions = ale.getMinimalActionSet();
+    const action = actions[Math.floor(Math.random() * actions.length)];
+    const reward = ale.act(action);
+}
+```
+
+For more examples for NPM and standalone installs, see [docs/wasm/](docs/wasm/).
 
 Citing
 ======

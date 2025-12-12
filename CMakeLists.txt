@@ -24,6 +24,19 @@ if (BUILD_VECTOR_XLA_LIB)
   add_definitions(-DBUILD_VECTOR_XLA_LIB)
 endif()
 
+option(BUILD_WASM_LIB "Build WebAssembly Interface" OFF)
+if (BUILD_WASM_LIB)
+  add_definitions(-DBUILD_WASM_LIB)
+  # WASM builds disable incompatible features
+  set(BUILD_PYTHON_LIB OFF CACHE BOOL "Python not supported in WASM build" FORCE)
+  set(BUILD_VECTOR_LIB OFF CACHE BOOL "Vector lib requires threading not well-supported in WASM" FORCE)
+  set(BUILD_CPP_LIB OFF CACHE BOOL "Building WASM interface instead" FORCE)
+  set(BUILD_VECTOR_XLA_LIB OFF CACHE BOOL "XLA not supported in WASM build" FORCE)
+  # SDL is required for WASM (Emscripten provides SDL2 compatibility layer)
+  set(SDL_SUPPORT ON CACHE BOOL "SDL required for WASM" FORCE)
+  list(APPEND VCPKG_MANIFEST_FEATURES "sdl")
+endif()
+
 # Set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
