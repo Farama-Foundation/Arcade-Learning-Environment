@@ -32,17 +32,6 @@ jobs:
           version: '3.1.68'
           actions-cache-folder: 'emsdk-cache'
 
-      - name: Setup vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          ./vcpkg/bootstrap-vcpkg.sh
-          echo "VCPKG_ROOT=$GITHUB_WORKSPACE/vcpkg" >> $GITHUB_ENV
-
-      - name: Install vcpkg dependencies
-        run: |
-          $VCPKG_ROOT/vcpkg install zlib:wasm32-emscripten \
-            --overlay-triplets=cmake/custom-triplets
-
       - name: Download and unpack ROMs
         run: ./scripts/download_unpack_roms.sh
 
@@ -56,10 +45,7 @@ jobs:
           echo "=== Package Contents ==="
           ls -lh dist/npm/
           echo ""
-          echo "=== File Sizes ==="
-          du -h dist/npm/ale.js dist/npm/ale.wasm dist/npm/ale.data
-          echo ""
-          echo "=== Standalone Bundle ==="
+          echo "=== Bundle Contents ==="
           ls -lh dist/*.zip
 
       - name: Upload NPM package artifact
