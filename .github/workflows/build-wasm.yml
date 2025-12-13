@@ -39,6 +39,7 @@ jobs:
         run: ./scripts/package-wasm.sh
         env:
           EMSDK_PATH: ${{ env.EMSDK }}
+          VCPKG_ROOT: ${{ env.VCPKG_INSTALLATION_ROOT }}
 
       - name: Display package info
         run: |
