@@ -36,10 +36,9 @@ jobs:
         run: ./scripts/download_unpack_roms.sh
 
       - name: Build and package WASM
-        run: ./scripts/package-wasm.sh
-        env:
-          EMSDK_PATH: ${{ env.EMSDK }}
-          VCPKG_ROOT: ${{ env.VCPKG_INSTALLATION_ROOT }}
+        run: |
+          export VCPKG_ROOT="${VCPKG_INSTALLATION_ROOT}"
+          ./scripts/package-wasm.sh
 
       - name: Display package info
         run: |
