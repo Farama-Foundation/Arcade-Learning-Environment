@@ -177,35 +177,29 @@ public:
             rgba_buffer[i * 4 + 3] = 255;
         }
 
-        // Use JavaScript to render to canvas by passing individual bytes
-        EM_ASM({
-            const canvasId = UTF8ToString($0);
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) {
-                console.error('Canvas not found: ' + canvasId);
-                return;
-            }
-            const ctx = canvas.getContext('2d');
-            const width = $1;
-            const height = $2;
-            const dataPtr = $3;
-            const dataSize = $4;
+        // Use embind val to interact with JavaScript DOM
+        val document = val::global("document");
+        val canvas = document.call<val>("getElementById", canvasId);
+        if (canvas.isNull() || canvas.isUndefined()) {
+            val console = val::global("console");
+            console.call<void>("error", std::string("Canvas not found: ") + canvasId);
+            return;
+        }
 
-            // Copy data from WASM heap to JavaScript
-            const data = new Uint8ClampedArray(dataSize);
-            for (let i = 0; i < dataSize; i++) {
-                data[i] = HEAPU8[dataPtr + i];
-            }
-            const imageData = new ImageData(data, width, height);
+        val ctx = canvas.call<val>("getContext", std::string("2d"));
 
-            // Set canvas size if needed
-            if (canvas.width !== width || canvas.height !== height) {
-                canvas.width = width;
-                canvas.height = height;
-            }
+        // Set canvas size if needed
+        if (canvas["width"].as<int>() != width || canvas["height"].as<int>() != height) {
+            canvas.set("width", width);
+            canvas.set("height", height);
+        }
 
-            ctx.putImageData(imageData, 0, 0);
-        }, canvasId.c_str(), width, height, rgba_buffer.data(), rgba_buffer.size());
+        // Create ImageData from RGBA buffer
+        val uint8ClampedArray = val::global("Uint8ClampedArray").new_(
+            typed_memory_view(rgba_buffer.size(), rgba_buffer.data())
+        );
+        val imageData = val::global("ImageData").new_(uint8ClampedArray, width, height);
+        ctx.call<void>("putImageData", imageData, 0, 0);
     }
 
     // Get screen dimensions

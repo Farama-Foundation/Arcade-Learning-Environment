@@ -21,16 +21,16 @@ Features
 - Emulation core uncoupled from rendering and sound generation modules for fast emulation with minimal library dependencies.
 - Automatic extraction of game score and end-of-game signal for more than 100  Atari 2600 games.
 - Multi-platform code (compiled and tested under macOS, Windows, and several Linux distributions).
-- Python bindings through [pybind11](https://github.com/pybind/pybind11).
+- Python bindings through [nanobind](https://github.com/wjakob/nanobind).
 - Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
-- C++ based vectorizer for acting in multiple ROMs at the same time.
 - Atari roms are packaged within the pip package.
-- WebAssembly support for
+- C++ based vectorizer for acting in multiple ROMs at the same time.
+- WebAssembly support for running ALE in the Browser
 
 Quick Start
 ===========
 
-The ALE currently supports three different interfaces: C++, Python, and Gymnasium.
+The ALE currently supports three different interfaces: C++, Python, Gymnasium and WASM.
 
 Python
 ------
@@ -118,12 +118,12 @@ This be used through NPM (`> npm install @farama/ale-wasm`) or through a standal
 
 **Example NPM usage:**
 ```javascript
-import createALEModule from '@farama/ale-wasm';
+import createALEModule from './ale.js';
 
 const ALE = await createALEModule();
 const ale = new ALE.ALEInterface();
 
-await ale.loadROMFromURL('https://example.com/breakout.bin');
+await ale.loadROM('roms/breakout.bin');
 ale.resetGame();
 
 while (!ale.gameOver()) {

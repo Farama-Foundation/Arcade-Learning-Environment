@@ -9,15 +9,15 @@ WebAssembly support brings ALE to the browser, opening up new possibilities for:
 - **Interactive Demonstrations** - Showcase RL algorithms with live, interactive visualizations
 - **Educational Applications** - Teach reinforcement learning concepts with hands-on browser-based examples
 - **Research Tools** - Rapid prototyping and visual debugging of RL algorithms
-- **Web-based Training** - Run lightweight RL training directly in the browser
-- **Accessibility** - Make ALE available to anyone with a web browser, no installation required
 
 Be aware that vectorized environments, JAX integration and the direct python bindings are not supported.
 Below we describe how to install and use the WASM module for your web apps.
 
+An [example html file](wasm/example.html) is available for users to develop from.
+
 ## Installation
 
-### Option 1: npm Package (Recommended)
+### Option 1: npm Package
 
 Install ALE via npm:
 
@@ -50,24 +50,10 @@ Download the standalone bundle from [GitHub Releases](https://github.com/Farama-
   async function init() {
     const ALE = await createALEModule();
     const ale = new ALE.ALEInterface();
-    console.log('ALE Version:', ALE.ALEInterface.getVersion());
   }
   init();
 </script>
 ```
-
-Or with ES6 modules:
-
-```html
-<script type="module">
-  import createALEModule from './ale.js';
-
-  const ALE = await createALEModule();
-  const ale = new ALE.ALEInterface();
-</script>
-```
-
-**Important:** The WASM files must be served via HTTP/HTTPS (not `file://`). Use a local development server like `python -m http.server` or `npx serve`.
 
 ## Usage
 
@@ -276,17 +262,14 @@ ALE.ALEInterface.getVersion(): string
 - Memory growth: enabled
 
 **Solutions:**
-- Increase memory limits in `src/ale/wasm/CMakeLists.txt` if needed
 - Check for memory leaks in game loop
-- Reduce ROM count or screen buffer allocations
+- Reduce screen buffer allocations
 
 ### Slow Performance
 
 **Causes & Solutions:**
-- ❌ Rendering every frame → ✅ Disable rendering during training
 - ❌ Large canvas size → ✅ Use native resolution (160x210)
 - ❌ Browser throttling → ✅ Keep tab focused or use Web Workers
-- ❌ Debug build → ✅ Use Release build (`-O3`)
 
 ### ROM Loading Issues
 
@@ -295,7 +278,7 @@ ALE.ALEInterface.getVersion(): string
 **Causes & Solutions:**
 - ❌ Invalid ROM file → ✅ Verify ROM is valid Atari 2600 ROM
 - ❌ ROM not in virtual filesystem → ✅ Use helper methods
-- ❌ Path incorrect → ✅ Use absolute paths in virtual filesystem
+- ❌ Path incorrect → ✅ Use absolute paths
 
 ## Advanced Usage
 
