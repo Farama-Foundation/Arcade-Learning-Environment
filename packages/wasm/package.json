@@ -18,13 +18,13 @@
   "keywords": [
     "reinforcement-learning",
     "atari",
+    "ale_py",
     "emulator",
     "webassembly",
     "wasm",
     "machine-learning",
     "ai",
-    "arcade",
-    "gymnasium"
+    "arcade"
   ],
   "author": "Farama Foundation",
   "license": "GPL-2.0",

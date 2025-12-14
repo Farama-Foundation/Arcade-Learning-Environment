@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALE WASM Interface Testing Example</title>
+
+    <!-- ============================================================ -->
+    <!-- CONFIGURATION: Choose Build Type                            -->
+    <!-- ============================================================ -->
+    <!-- Uncomment ONE of the following sections to select build:    -->
+    <!-- - STANDALONE: Default, loads ale.js from local directory    -->
+    <!-- - NPM/ES MODULE: Import from npm package or CDN             -->
+    <!-- ============================================================ -->
+
+    <!-- OPTION 1: STANDALONE BUILD (default) -->
+    <script src="ale.js"></script>
+    <script>
+        async function initALE() {
+            console.log('📦 Loading: Standalone build (script tag)');
+            return await createALEModule();
+        }
+        // Auto-initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            await main();
+        });
+    </script>
+
+    <!-- OPTION 2: NPM/ES MODULE BUILD (uncomment to use, comment out OPTION 1 above) -->
+    <!-- TODO -->
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f6feb 0%, #388bfd 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: white;
+            font-size: 2em;
+        }
+
+        .header .version {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .panel h2 {
+            margin: 0 0 15px 0;
+            color: #58a6ff;
+            font-size: 1.3em;
+            border-bottom: 2px solid #21262d;
+            padding-bottom: 10px;
+        }
+
+        .panel h3 {
+            margin: 15px 0 10px 0;
+            color: #8b949e;
+            font-size: 1em;
+        }
+
+        .canvas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .canvas-container {
+            background: #0d1117;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .canvas-container h4 {
+            margin: 0 0 8px 0;
+            color: #8b949e;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            border: 2px solid #30363d;
+            border-radius: 4px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            background: #000;
+        }
+
+        .ram-canvas {
+            height: 128px;
+        }
+
+        select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px 5px 5px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.primary {
+            background: #238636;
+            color: white;
+        }
+
+        button.primary:hover:not(:disabled) {
+            background: #2ea043;
+        }
+
+        button.secondary {
+            background: #1f6feb;
+            color: white;
+        }
+
+        button.secondary:hover:not(:disabled) {
+            background: #388bfd;
+        }
+
+        button.danger {
+            background: #da3633;
+            color: white;
+        }
+
+        button.danger:hover:not(:disabled) {
+            background: #f85149;
+        }
+
+        button.warning {
+            background: #9e6a03;
+            color: white;
+        }
+
+        button.warning:hover:not(:disabled) {
+            background: #bb8009;
+        }
+
+        button:disabled {
+            background: #21262d;
+            color: #484f58;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        button.active {
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.4);
+        }
+
+        .status {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .status.loading {
+            background: #1f1f23;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+
+        .status.success {
+            background: #0f2e1a;
+            border-color: #238636;
+            color: #3fb950;
+        }
+
+        .status.error {
+            background: #2c1012;
+            border-color: #da3633;
+            color: #f85149;
+        }
+
+        .status.playing {
+            background: #1f1f23;
+            border-color: #a371f7;
+            color: #d2a8ff;
+        }
+
+        .log-container {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .log-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .log-entry .timestamp {
+            color: #8b949e;
+            margin-right: 10px;
+        }
+
+        .log-entry.error {
+            color: #f85149;
+        }
+
+        .log-entry.warning {
+            color: #d29922;
+        }
+
+        .log-entry.info {
+            color: #58a6ff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .stat-item {
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            text-align: center;
+        }
+
+        .stat-item strong {
+            display: block;
+            color: #8b949e;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .stat-item span {
+            font-size: 1.5em;
+            color: #58a6ff;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .action-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            font-size: 0.8em;
+            color: #8b949e;
+            cursor: default;
+        }
+
+        .action-btn.minimal {
+            background: #1f6feb;
+            color: white;
+            border-color: #1f6feb;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .mode-difficulty-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .rom-loading-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 10px 0;
+        }
+
+        .rom-loading-option {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .state-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 10px 20px;
+            background: #238636;
+            color: white;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .file-input-label:hover {
+            background: #2ea043;
+        }
+
+        label {
+            display: block;
+            color: #8b949e;
+            margin: 10px 0 5px 0;
+            font-size: 0.9em;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .url-input-group input {
+            flex: 1;
+            padding: 10px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+        }
+
+        .fps-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #3fb950;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ALE WASM Interface Testing Example</h1>
+        <div class="version" id="versionInfo">Loading...</div>
+    </div>
+
+    <div id="status" class="status loading">Initializing ALE WASM module...</div>
+
+    <!-- ROM Loading Panel -->
+    <div class="panel">
+        <h2>ROM Loading</h2>
+
+        <div class="rom-loading-grid">
+            <div class="rom-loading-option">
+                <h3>Select Preloaded ROM</h3>
+                <select id="romSelect" disabled>
+                    <option value="">-- Loading ROMs... --</option>
+                </select>
+                <button id="loadRomBtn" class="primary" disabled style="width: 100%; margin-top: 10px;">Load ROM</button>
+            </div>
+
+            <div class="rom-loading-option">
+                <h3>Upload ROM File</h3>
+                <div class="file-input-wrapper">
+                    <input type="file" id="romFile" accept=".bin,.a26" disabled>
+                    <label for="romFile" class="file-input-label">Choose ROM File</label>
+                </div>
+                <div style="color: #8b949e; font-size: 0.85em; margin-top: 5px;" id="fileName">No file selected</div>
+            </div>
+
+            <div class="rom-loading-option">
+                <h3>Load ROM from URL</h3>
+                <div class="url-input-group" style="flex-direction: column;">
+                    <input type="text" id="romUrlInput" placeholder="https://example.com/rom.bin" disabled>
+                    <button id="loadRomFromUrlBtn" class="secondary" disabled style="width: 100%;">Load from URL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rendering Panel -->
+    <div class="panel">
+        <h2>Screen Rendering</h2>
+        <div class="canvas-grid">
+            <div class="canvas-container">
+                <h4>RGB Screen (getScreenRGB)</h4>
+                <div style="position: relative;">
+                    <canvas id="rgbCanvas" width="160" height="210"></canvas>
+                    <div class="fps-counter" id="fpsCounter">0 FPS</div>
+                </div>
+            </div>
+            <div class="canvas-container">
+                <h4>Grayscale (getScreenGrayscale)</h4>
+                <canvas id="grayscaleCanvas" width="160" height="210"></canvas>
+            </div>
+            <div class="canvas-container">
+                <h4>ImageData (getScreenImageData)</h4>
+                <canvas id="imageDataCanvas" width="160" height="210"></canvas>
+            </div>
+            <div class="canvas-container">
+                <h4>Direct Render (renderToCanvas)</h4>
+                <canvas id="directRenderCanvas" width="160" height="210"></canvas>
+            </div>
+            <div class="canvas-container">
+                <h4>RAM Visualization (getRAM)</h4>
+                <canvas id="ramCanvas" width="128" height="128" class="ram-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Controls Panel -->
+    <div class="panel">
+        <h2>Game Controls</h2>
+
+        <div class="button-group">
+            <button id="playBtn" class="primary" disabled>▶ Play</button>
+            <button id="pauseBtn" class="secondary" disabled>⏸ Pause</button>
+            <button id="stepBtn" class="secondary" disabled>⏭ Step</button>
+            <button id="resetBtn" class="danger" disabled>🔄 Reset Game</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <strong>Reward</strong>
+                <span id="rewardStat">0</span>
+            </div>
+            <div class="stat-item">
+                <strong>Lives</strong>
+                <span id="livesStat">0</span>
+            </div>
+            <div class="stat-item">
+                <strong>Frame #</strong>
+                <span id="frameStat">0</span>
+            </div>
+            <div class="stat-item">
+                <strong>Episode Frame</strong>
+                <span id="episodeFrameStat">0</span>
+            </div>
+            <div class="stat-item">
+                <strong>Game Over</strong>
+                <span id="gameOverStat">false</span>
+            </div>
+            <div class="stat-item">
+                <strong>Truncated</strong>
+                <span id="truncatedStat">false</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- State Management Panel -->
+    <div class="panel">
+        <h2>State Management</h2>
+        <div class="state-buttons">
+            <button id="saveStateBtn" class="warning" disabled>💾 Save State</button>
+            <button id="loadStateBtn" class="warning" disabled>📂 Load State</button>
+        </div>
+        <div style="color: #8b949e; font-size: 0.85em; margin-top: 10px;" id="stateInfo">No saved state</div>
+    </div>
+
+    <!-- Actions Panel -->
+    <div class="panel">
+        <h2>Action Space</h2>
+        <p style="color: #8b949e; font-size: 0.9em; margin: 0 0 10px 0;">
+            <span style="color: #1f6feb;">■</span> Minimal actions are highlighted
+            <span style="margin-left: 15px; color: #8b949e;">■</span> Legal-only actions are grey
+        </p>
+        <div id="actionSpaceGrid" class="action-grid">
+            <div style="color: #8b949e;">Load a ROM to see actions</div>
+        </div>
+    </div>
+
+    <!-- Mode & Difficulty Panel -->
+    <div class="panel">
+        <h2>Mode & Difficulty Settings</h2>
+
+        <div class="mode-difficulty-grid">
+            <div>
+                <label>Game Mode</label>
+                <select id="modeSelect" disabled>
+                    <option value="">Load ROM first</option>
+                </select>
+                <div style="color: #8b949e; font-size: 0.85em; margin-top: 5px;">
+                    Current: <span id="currentMode">-</span>
+                </div>
+            </div>
+
+            <div>
+                <label>Difficulty</label>
+                <select id="difficultySelect" disabled>
+                    <option value="">Load ROM first</option>
+                </select>
+                <div style="color: #8b949e; font-size: 0.85em; margin-top: 5px;">
+                    Current: <span id="currentDifficulty">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Loop Log Panel -->
+    <div class="panel">
+        <h2>Game Loop Log</h2>
+        <div class="log-container" id="gameLog">
+            <div class="log-entry info">
+                <span class="timestamp">--:--:--</span>
+                <span>Waiting for initialization...</span>
+            </div>
+        </div>
+        <button id="clearLogBtn" class="secondary" style="margin-top: 10px;">Clear Log</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Main Application Code (works with either build option)      -->
+    <!-- ============================================================ -->
+    <script>
+        // Action name mapping
+        const ACTION_NAMES = {
+            0: 'NOOP',
+            1: 'FIRE',
+            2: 'UP',
+            3: 'RIGHT',
+            4: 'LEFT',
+            5: 'DOWN',
+            6: 'UPRIGHT',
+            7: 'UPLEFT',
+            8: 'DOWNRIGHT',
+            9: 'DOWNLEFT',
+            10: 'UPFIRE',
+            11: 'RIGHTFIRE',
+            12: 'LEFTFIRE',
+            13: 'DOWNFIRE',
+            14: 'UPRIGHTFIRE',
+            15: 'UPLEFTFIRE',
+            16: 'DOWNRIGHTFIRE',
+            17: 'DOWNLEFTFIRE'
+        };
+
+        let ALE, ale;
+        let isPlaying = false;
+        let animationFrameId = null;
+        let totalReward = 0;
+        let savedState = null;
+        let minimalActions = [];
+        let legalActions = [];
+
+        // FPS tracking
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let fps = 0;
+
+        // DOM elements
+        const statusDiv = document.getElementById('status');
+        const versionInfo = document.getElementById('versionInfo');
+        const gameLog = document.getElementById('gameLog');
+        const romSelect = document.getElementById('romSelect');
+        const loadRomBtn = document.getElementById('loadRomBtn');
+        const romFileInput = document.getElementById('romFile');
+        const romUrlInput = document.getElementById('romUrlInput');
+        const loadRomFromUrlBtn = document.getElementById('loadRomFromUrlBtn');
+
+        // Canvas contexts
+        const rgbCanvas = document.getElementById('rgbCanvas');
+        const rgbCtx = rgbCanvas.getContext('2d');
+        const grayscaleCanvas = document.getElementById('grayscaleCanvas');
+        const grayscaleCtx = grayscaleCanvas.getContext('2d');
+        const imageDataCanvas = document.getElementById('imageDataCanvas');
+        const imageDataCtx = imageDataCanvas.getContext('2d');
+        const directRenderCanvas = document.getElementById('directRenderCanvas');
+        const ramCanvas = document.getElementById('ramCanvas');
+        const ramCtx = ramCanvas.getContext('2d');
+
+        // Utility functions
+        function updateStatus(message, type = 'loading') {
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `<span class="timestamp">${timestamp}</span><span>${message}</span>`;
+            gameLog.appendChild(entry);
+            gameLog.scrollTop = gameLog.scrollHeight;
+        }
+
+        function updateStats() {
+            document.getElementById('rewardStat').textContent = totalReward;
+            document.getElementById('livesStat').textContent = ale.lives();
+            document.getElementById('frameStat').textContent = ale.getFrameNumber();
+            document.getElementById('episodeFrameStat').textContent = ale.getEpisodeFrameNumber();
+            document.getElementById('gameOverStat').textContent = ale.gameOver();
+            document.getElementById('truncatedStat').textContent = ale.gameTruncated();
+        }
+
+        function logGameState() {
+            const gameOver = ale.gameOver();
+            const truncated = ale.gameTruncated();
+            const lives = ale.lives();
+            const frame = ale.getFrameNumber();
+            const episodeFrame = ale.getEpisodeFrameNumber();
+
+            if (gameOver) {
+                addLog(`⚠ Game Over | Lives: ${lives} | Frame: ${frame} | Episode: ${episodeFrame}`, 'warning');
+            } else if (truncated) {
+                addLog(`⚠ Game Truncated | Lives: ${lives} | Frame: ${frame} | Episode: ${episodeFrame}`, 'warning');
+            }
+        }
+
+        // Rendering functions
+        function renderRGB() {
+            const width = ale.getScreenWidth();
+            const height = ale.getScreenHeight();
+            const rgb = ale.getScreenRGB();
+
+            const imageData = new Uint8ClampedArray(width * height * 4);
+            for (let i = 0; i < width * height; i++) {
+                imageData[i * 4] = rgb[i * 3];
+                imageData[i * 4 + 1] = rgb[i * 3 + 1];
+                imageData[i * 4 + 2] = rgb[i * 3 + 2];
+                imageData[i * 4 + 3] = 255;
+            }
+
+            rgbCtx.putImageData(new ImageData(imageData, width, height), 0, 0);
+        }
+
+        function renderGrayscale() {
+            const width = ale.getScreenWidth();
+            const height = ale.getScreenHeight();
+            const grayscale = ale.getScreenGrayscale();
+
+            const imageData = new Uint8ClampedArray(width * height * 4);
+            for (let i = 0; i < width * height; i++) {
+                const gray = grayscale[i];
+                imageData[i * 4] = gray;
+                imageData[i * 4 + 1] = gray;
+                imageData[i * 4 + 2] = gray;
+                imageData[i * 4 + 3] = 255;
+            }
+
+            grayscaleCtx.putImageData(new ImageData(imageData, width, height), 0, 0);
+        }
+
+        function renderImageData() {
+            // Uses getScreenImageData which returns an ImageData object directly
+            const imageData = ale.getScreenImageData();
+            imageDataCtx.putImageData(imageData, 0, 0);
+        }
+
+        function renderDirect() {
+            // Uses renderToCanvas which renders directly to the canvas by ID
+            ale.renderToCanvas('directRenderCanvas');
+        }
+
+        function renderRAM() {
+            const ram = ale.getRAM();
+            const imageData = ramCtx.createImageData(128, 128);
+
+            for (let i = 0; i < 128; i++) {
+                const value = ram[i];
+                // Create a heatmap visualization
+                const r = value;
+                const g = 128;
+                const b = 255 - value;
+
+                // Draw a vertical bar for each RAM value
+                for (let y = 0; y < 128; y++) {
+                    const idx = (y * 128 + i) * 4;
+                    const intensity = y < (128 - value) ? 0.1 : 1;
+                    imageData.data[idx] = r * intensity;
+                    imageData.data[idx + 1] = g * intensity;
+                    imageData.data[idx + 2] = b * intensity;
+                    imageData.data[idx + 3] = 255;
+                }
+            }
+
+            ramCtx.putImageData(imageData, 0, 0);
+        }
+
+        function renderAll() {
+            renderRGB();
+            renderGrayscale();
+            renderImageData();
+            renderDirect();
+            renderRAM();
+            updateStats();
+        }
+
+        // ROM loading functions
+        function populateRomList() {
+            try {
+                const files = ALE.FS.readdir('/roms');
+                const roms = files.filter(f => f !== '.' && f !== '..' && f.endsWith('.bin')).sort();
+
+                if (roms.length > 0) {
+                    romSelect.innerHTML = `<option value="">-- Select a ROM (${roms.length} available) --</option>`;
+                    roms.forEach(rom => {
+                        const option = document.createElement('option');
+                        option.value = '/roms/' + rom;
+                        const displayName = rom.replace('.bin', '').replace(/_/g, ' ');
+                        option.textContent = displayName;
+                        romSelect.appendChild(option);
+                    });
+                    romSelect.disabled = false;
+                    loadRomBtn.disabled = false;
+                } else {
+                    romSelect.innerHTML = '<option value="">No preloaded ROMs found</option>';
+                }
+            } catch (e) {
+                romSelect.innerHTML = '<option value="">ROMs directory not found</option>';
+                addLog('No preloaded ROMs directory found', 'warning');
+            }
+        }
+
+        function onRomLoaded(romName) {
+            addLog(`✓ ROM loaded: ${romName}`, 'success');
+
+            // Get action sets
+            legalActions = ale.getLegalActionSet();
+            minimalActions = ale.getMinimalActionSet();
+
+            // Display actions
+            displayActions();
+
+            // Get and display modes
+            const modes = ale.getAvailableModes();
+            const modeSelect = document.getElementById('modeSelect');
+            modeSelect.innerHTML = '';
+            modes.forEach(mode => {
+                const option = document.createElement('option');
+                option.value = mode;
+                option.textContent = `Mode ${mode}`;
+                modeSelect.appendChild(option);
+            });
+            modeSelect.disabled = modes.length === 0;
+            document.getElementById('currentMode').textContent = ale.getMode();
+
+            // Get and display difficulties
+            const difficulties = ale.getAvailableDifficulties();
+            const difficultySelect = document.getElementById('difficultySelect');
+            difficultySelect.innerHTML = '';
+            difficulties.forEach(diff => {
+                const option = document.createElement('option');
+                option.value = diff;
+                option.textContent = `Difficulty ${diff}`;
+                difficultySelect.appendChild(option);
+            });
+            difficultySelect.disabled = difficulties.length === 0;
+            document.getElementById('currentDifficulty').textContent = ale.getDifficulty();
+
+            // Enable controls
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('stepBtn').disabled = false;
+            document.getElementById('resetBtn').disabled = false;
+            document.getElementById('saveStateBtn').disabled = false;
+
+            // Initial render
+            renderAll();
+
+            updateStatus(`Ready to play: ${romName}`, 'success');
+        }
+
+        function displayActions() {
+            const actionGrid = document.getElementById('actionSpaceGrid');
+            actionGrid.innerHTML = '';
+
+            // Create a Set for fast lookup of minimal actions
+            const minimalSet = new Set(minimalActions);
+
+            // Display all legal actions, highlighting minimal ones
+            legalActions.forEach(action => {
+                const btn = document.createElement('div');
+                btn.className = minimalSet.has(action) ? 'action-btn minimal' : 'action-btn';
+                btn.textContent = `${action}: ${ACTION_NAMES[action] || 'UNKNOWN'}`;
+                actionGrid.appendChild(btn);
+            });
+
+            addLog(`Legal actions: [${legalActions.join(', ')}]`, 'info');
+            addLog(`Minimal actions: [${minimalActions.join(', ')}]`, 'info');
+        }
+
+        // Main initialization function (called from initALE)
+        async function main() {
+            try {
+                updateStatus('Loading ALE WASM module...', 'loading');
+                addLog('Initializing ALE WASM module...', 'info');
+
+                ALE = await initALE();
+                ale = new ALE.ALEInterface();
+
+                const version = ALE.ALEInterface.getVersion();
+                versionInfo.textContent = `ALE Version: ${version}`;
+                addLog(`ALE ${version} initialized successfully`, 'success');
+
+                // Configure ALE
+                ale.setBool('display_screen', false);
+                ale.setBool('sound', false);
+                ale.setFloat('repeat_action_probability', 0.0);
+
+                populateRomList();
+
+                romFileInput.disabled = false;
+                romUrlInput.disabled = false;
+                loadRomFromUrlBtn.disabled = false;
+
+                updateStatus('ALE ready. Load a ROM to begin.', 'success');
+
+            } catch (error) {
+                console.error('Failed to initialize ALE:', error);
+                updateStatus(`Error: ${error.message}`, 'error');
+                addLog(`Error initializing ALE: ${error.message}`, 'error');
+            }
+        }
+
+        // Event listeners
+        loadRomBtn.addEventListener('click', () => {
+            const romPath = romSelect.value;
+            if (!romPath) {
+                updateStatus('Please select a ROM first', 'error');
+                return;
+            }
+
+            try {
+                ale.loadROM(romPath);
+                const displayName = romSelect.options[romSelect.selectedIndex].textContent;
+                onRomLoaded(displayName);
+            } catch (error) {
+                updateStatus(`Error loading ROM: ${error.message}`, 'error');
+                addLog(`Error loading ROM: ${error.message}`, 'error');
+            }
+        });
+
+        romFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = file.name;
+            updateStatus('Loading ROM from file...', 'loading');
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
+
+                // Write to virtual filesystem
+                const romPath = `/uploaded_${file.name}`;
+                ALE.FS.writeFile(romPath, uint8Array);
+
+                ale.loadROM(romPath);
+                onRomLoaded(file.name);
+            } catch (error) {
+                updateStatus(`Error loading ROM: ${error.message}`, 'error');
+                addLog(`Error loading ROM from file: ${error.message}`, 'error');
+            }
+        });
+
+        loadRomFromUrlBtn.addEventListener('click', async () => {
+            const url = romUrlInput.value.trim();
+            if (!url) {
+                updateStatus('Please enter a URL', 'error');
+                return;
+            }
+
+            updateStatus('Downloading ROM from URL...', 'loading');
+            addLog(`Downloading ROM from: ${url}`, 'info');
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const arrayBuffer = await response.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
+
+                const filename = url.split('/').pop() || 'downloaded.bin';
+                const romPath = `/downloaded_${filename}`;
+                ALE.FS.writeFile(romPath, uint8Array);
+
+                ale.loadROM(romPath);
+                onRomLoaded(filename);
+            } catch (error) {
+                updateStatus(`Error loading ROM from URL: ${error.message}`, 'error');
+                addLog(`Error downloading ROM: ${error.message}`, 'error');
+            }
+        });
+
+        // Game control functions
+        function gameLoop() {
+            if (!isPlaying) return;
+
+            // Take random action
+            const action = minimalActions[Math.floor(Math.random() * minimalActions.length)];
+            const reward = ale.act(action);
+            totalReward += reward;
+
+            if (reward !== 0) {
+                addLog(`Action ${action} (${ACTION_NAMES[action]}) → Reward: ${reward}`, 'info');
+            }
+
+            // Check game state
+            logGameState();
+
+            // Render
+            renderAll();
+
+            // FPS calculation
+            frameCount++;
+            const now = performance.now();
+            if (now - lastFrameTime >= 1000) {
+                fps = frameCount;
+                document.getElementById('fpsCounter').textContent = `${fps} FPS`;
+                frameCount = 0;
+                lastFrameTime = now;
+            }
+
+            // Auto-stop on game over
+            if (ale.gameOver()) {
+                pause();
+                return;
+            }
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function play() {
+            if (isPlaying) return;
+            isPlaying = true;
+            updateStatus('Playing...', 'playing');
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+            addLog('▶ Game started', 'info');
+            gameLoop();
+        }
+
+        function pause() {
+            isPlaying = false;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            updateStatus('Paused', 'success');
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            addLog('⏸ Game paused', 'info');
+        }
+
+        function step() {
+            if (isPlaying) return;
+
+            const action = minimalActions[Math.floor(Math.random() * minimalActions.length)];
+            const reward = ale.act(action);
+            totalReward += reward;
+
+            addLog(`⏭ Step | Action: ${action} (${ACTION_NAMES[action]}) | Reward: ${reward}`, 'info');
+            logGameState();
+            renderAll();
+        }
+
+        function reset() {
+            pause();
+            ale.resetGame();
+            totalReward = 0;
+            renderAll();
+            addLog('🔄 Game reset', 'info');
+            updateStatus('Game reset', 'success');
+        }
+
+        // State management
+        function saveState() {
+            try {
+                // saveState returns a Uint8Array view into WASM memory
+                // We need to copy it to preserve the data
+                const stateView = ale.saveState();
+                savedState = new Uint8Array(stateView);
+
+                document.getElementById('stateInfo').textContent = `State saved (${savedState.length} bytes)`;
+                document.getElementById('loadStateBtn').disabled = false;
+                addLog(`💾 State saved (${savedState.length} bytes)`, 'success');
+            } catch (error) {
+                const errorMsg = error?.message || error?.toString() || 'Unknown error';
+                addLog(`Error saving state: ${errorMsg}`, 'error');
+                console.error('Save state error:', error);
+            }
+        }
+
+        function loadState() {
+            if (!savedState) {
+                addLog('No saved state available', 'warning');
+                return;
+            }
+
+            try {
+                ale.loadState(savedState);
+                renderAll();
+                addLog('📂 State loaded successfully', 'success');
+                updateStatus('State loaded successfully', 'success');
+            } catch (error) {
+                const errorMsg = error?.message || error?.toString() || 'Unknown error';
+                addLog(`Error loading state: ${errorMsg}`, 'error');
+                console.error('Load state error:', error);
+                updateStatus(`Error loading state: ${errorMsg}`, 'error');
+            }
+        }
+
+        // Mode and difficulty
+        document.getElementById('modeSelect').addEventListener('change', (e) => {
+            const mode = parseInt(e.target.value);
+            ale.setMode(mode);
+            document.getElementById('currentMode').textContent = ale.getMode();
+            addLog(`Mode changed to ${mode}`, 'info');
+        });
+
+        document.getElementById('difficultySelect').addEventListener('change', (e) => {
+            const difficulty = parseInt(e.target.value);
+            ale.setDifficulty(difficulty);
+            document.getElementById('currentDifficulty').textContent = ale.getDifficulty();
+            addLog(`Difficulty changed to ${difficulty}`, 'info');
+        });
+
+        // Button event listeners
+        document.getElementById('playBtn').addEventListener('click', play);
+        document.getElementById('pauseBtn').addEventListener('click', pause);
+        document.getElementById('stepBtn').addEventListener('click', step);
+        document.getElementById('resetBtn').addEventListener('click', reset);
+        document.getElementById('saveStateBtn').addEventListener('click', saveState);
+        document.getElementById('loadStateBtn').addEventListener('click', loadState);
+        document.getElementById('clearLogBtn').addEventListener('click', () => {
+            gameLog.innerHTML = '';
+            addLog('Log cleared', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -56,41 +56,6 @@ if (Module.ALEInterface) {
         });
     };
 
-    // Helper to get screen as ImageData for direct canvas rendering
-    Module.ALEInterface.prototype.getScreenImageData = function() {
-        const width = this.getScreenWidth();
-        const height = this.getScreenHeight();
-        const rgb = this.getScreenRGB();
-
-        // Convert RGB to RGBA (RGB data is in interleaved format: RGBRGBRGB...)
-        const rgba = new Uint8ClampedArray(width * height * 4);
-        for (let i = 0; i < width * height; i++) {
-            rgba[i * 4] = rgb[i * 3];         // R
-            rgba[i * 4 + 1] = rgb[i * 3 + 1]; // G
-            rgba[i * 4 + 2] = rgb[i * 3 + 2]; // B
-            rgba[i * 4 + 3] = 255;            // A
-        }
-
-        return new ImageData(rgba, width, height);
-    };
-
-    // Helper to render directly to a canvas
-    Module.ALEInterface.prototype.renderToCanvas = function(canvas) {
-        const ctx = canvas.getContext('2d');
-        const imageData = this.getScreenImageData();
-
-        // Create temporary canvas at native resolution
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = imageData.width;
-        tempCanvas.height = imageData.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.putImageData(imageData, 0, 0);
-
-        // Scale to target canvas
-        ctx.imageSmoothingEnabled = false;  // Pixelated scaling for retro look
-        ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-    };
-
     console.log('[ALE] ALE Interface ready. Version: ' + Module.ALEInterface.getVersion());
 } else {
     console.warn('[ALE] ALEInterface not found. Bindings may not be loaded correctly.');

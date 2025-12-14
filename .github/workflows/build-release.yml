@@ -1,7 +1,7 @@
-# workflow on publish
-# 1. build the wheels for linux intel / arm, macos arm and windows
-# 2. download artifacts and upload to PyPI
-# 3. build WASM and create NPM package and standalone bundle
+# workflow on version release
+# 1. build python wheels for linux intel / arm, macos arm and windows
+# 2. upload python wheels to PyPI and GitHub release
+# 3. build WASM and create NPM package + standalone bundle
 # 4. upload WASM standalone bundle to GitHub release and publish NPM package (if NPM_TOKEN is available)
 
 name: Build and publish releases

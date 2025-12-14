@@ -135,6 +135,79 @@ public:
         return val(typed_memory_view(screen_buffer.size(), screen_buffer.data()));
     }
 
+    // Get screen as RGBA ImageData format (ready for Canvas ImageData)
+    val getScreenImageData() {
+        screen_buffer.clear();
+        ale.getScreenRGB(screen_buffer);
+
+        const int width = ale.getScreen().width();
+        const int height = ale.getScreen().height();
+
+        // Convert RGB to RGBA format
+        std::vector<unsigned char> rgba_buffer(width * height * 4);
+        for (int i = 0; i < width * height; i++) {
+            rgba_buffer[i * 4] = screen_buffer[i * 3];       // R
+            rgba_buffer[i * 4 + 1] = screen_buffer[i * 3 + 1]; // G
+            rgba_buffer[i * 4 + 2] = screen_buffer[i * 3 + 2]; // B
+            rgba_buffer[i * 4 + 3] = 255;                       // A
+        }
+
+        // Create and return ImageData object
+        val imageDataConstructor = val::global("ImageData");
+        val uint8ClampedArray = val::global("Uint8ClampedArray").new_(
+            typed_memory_view(rgba_buffer.size(), rgba_buffer.data())
+        );
+        return imageDataConstructor.new_(uint8ClampedArray, width, height);
+    }
+
+    // Render to canvas element (takes canvas ID as string)
+    void renderToCanvas(const std::string& canvasId) {
+        const int width = ale.getScreen().width();
+        const int height = ale.getScreen().height();
+
+        screen_buffer.clear();
+        ale.getScreenRGB(screen_buffer);
+
+        // Convert RGB to RGBA
+        std::vector<unsigned char> rgba_buffer(width * height * 4);
+        for (int i = 0; i < width * height; i++) {
+            rgba_buffer[i * 4] = screen_buffer[i * 3];
+            rgba_buffer[i * 4 + 1] = screen_buffer[i * 3 + 1];
+            rgba_buffer[i * 4 + 2] = screen_buffer[i * 3 + 2];
+            rgba_buffer[i * 4 + 3] = 255;
+        }
+
+        // Use JavaScript to render to canvas by passing individual bytes
+        EM_ASM({
+            const canvasId = UTF8ToString($0);
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.error('Canvas not found: ' + canvasId);
+                return;
+            }
+            const ctx = canvas.getContext('2d');
+            const width = $1;
+            const height = $2;
+            const dataPtr = $3;
+            const dataSize = $4;
+
+            // Copy data from WASM heap to JavaScript
+            const data = new Uint8ClampedArray(dataSize);
+            for (let i = 0; i < dataSize; i++) {
+                data[i] = HEAPU8[dataPtr + i];
+            }
+            const imageData = new ImageData(data, width, height);
+
+            // Set canvas size if needed
+            if (canvas.width !== width || canvas.height !== height) {
+                canvas.width = width;
+                canvas.height = height;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }, canvasId.c_str(), width, height, rgba_buffer.data(), rgba_buffer.size());
+    }
+
     // Get screen dimensions
     int getScreenWidth() const {
         return ale.getScreen().width();
@@ -197,13 +270,25 @@ public:
     }
 
     // Save/restore state
-    std::string saveState() {
+    val saveState() {
         ALEState state = ale.cloneState();
-        // Serialize state to string (simple approach - could be optimized)
-        return state.serialize();
+        std::string serialized = state.serialize();
+
+        // Return as Uint8Array to preserve binary data
+        std::vector<unsigned char> buffer(serialized.begin(), serialized.end());
+        return val(typed_memory_view(buffer.size(), buffer.data()));
     }
 
-    void loadState(const std::string& serialized) {
+    void loadState(const val& uint8Array) {
+        // Convert Uint8Array to std::string
+        const unsigned int length = uint8Array["length"].as<unsigned int>();
+        std::string serialized;
+        serialized.reserve(length);
+
+        for (unsigned int i = 0; i < length; i++) {
+            serialized.push_back(uint8Array[i].as<unsigned char>());
+        }
+
         ALEState state(serialized);
         ale.restoreState(state);
     }
@@ -241,6 +326,8 @@ EMSCRIPTEN_BINDINGS(ale_module) {
         // Screen access
         .function("getScreenRGB", &ale_wasm::ALEInterfaceWrapper::getScreenRGB)
         .function("getScreenGrayscale", &ale_wasm::ALEInterfaceWrapper::getScreenGrayscale)
+        .function("getScreenImageData", &ale_wasm::ALEInterfaceWrapper::getScreenImageData)
+        .function("renderToCanvas", &ale_wasm::ALEInterfaceWrapper::renderToCanvas)
         .function("getScreenWidth", &ale_wasm::ALEInterfaceWrapper::getScreenWidth)
         .function("getScreenHeight", &ale_wasm::ALEInterfaceWrapper::getScreenHeight)
         // RAM access
