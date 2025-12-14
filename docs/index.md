@@ -43,6 +43,7 @@ env-spec
 environments
 vector-environment
 multi-agent-environments
+wasm
 faq
 citing
 ```
