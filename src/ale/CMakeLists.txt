@@ -76,6 +76,11 @@ if (BUILD_PYTHON_LIB)
   add_subdirectory(python)
 endif()
 
+# WebAssembly Library
+if (BUILD_WASM_LIB)
+  add_subdirectory(wasm)
+endif()
+
 # Install cpp-lib and CMake config & pkg-config
 if (UNIX AND BUILD_CPP_LIB)
   include(GNUInstallDirs)

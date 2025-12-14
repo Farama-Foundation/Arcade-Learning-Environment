@@ -1,0 +1,47 @@
+{
+  "name": "@farama/ale-wasm",
+  "version": "0.11.2",
+  "description": "Arcade Learning Environment (ALE) compiled to WebAssembly for browser-based Atari 2600 emulation and reinforcement learning",
+  "main": "ale.js",
+  "types": "ale.d.ts",
+  "files": [
+    "ale.js",
+    "ale.wasm",
+    "ale.data",
+    "ale.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "reinforcement-learning",
+    "atari",
+    "ale_py",
+    "emulator",
+    "webassembly",
+    "wasm",
+    "machine-learning",
+    "ai",
+    "arcade"
+  ],
+  "author": "Farama Foundation",
+  "license": "GPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Farama-Foundation/Arcade-Learning-Environment.git",
+    "directory": "packages/wasm"
+  },
+  "bugs": {
+    "url": "https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues"
+  },
+  "homepage": "https://github.com/Farama-Foundation/Arcade-Learning-Environment#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browser": {
+    "fs": false,
+    "path": false
+  }
+}

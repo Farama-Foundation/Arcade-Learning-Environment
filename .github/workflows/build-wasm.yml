@@ -1,0 +1,61 @@
+# WebAssembly Build Workflow
+# Builds ALE for WebAssembly using Emscripten and creates distribution packages
+
+name: WASM Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: false
+  push:
+    paths-ignore:
+      - "docs/**"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build-wasm:
+    name: Build WASM
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: '3.1.68'
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: Download and unpack ROMs
+        run: ./scripts/download_unpack_roms.sh
+
+      - name: Build and package WASM
+        run: |
+          export VCPKG_ROOT="${VCPKG_INSTALLATION_ROOT}"
+          ./scripts/package-wasm.sh
+
+      - name: Display package info
+        run: |
+          echo "=== Package Contents ==="
+          ls -lh dist/npm/
+          echo ""
+          echo "=== Bundle Contents ==="
+          ls -lh dist/*.zip
+
+      - name: Upload NPM package artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: npm-package
+          path: dist/npm/
+
+      - name: Upload standalone bundle artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: ale-wasm-bundle
+          path: dist/*.zip
