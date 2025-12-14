@@ -1,0 +1,126 @@
+# Valgrind suppression file for Python and ALE
+# This file suppresses known false positives from Python's memory management
+# Usage: valgrind --suppressions=.valgrind-python.supp <command>
+
+# Python's PyMalloc arena allocator intentionally pools memory
+{
+   python_pymalloc
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:_PyObject_Malloc
+}
+
+{
+   python_arena
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:_PyArena_*
+}
+
+{
+   python_dict
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:PyDict_*
+}
+
+{
+   python_list
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:PyList_*
+}
+
+{
+   python_tuple
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:PyTuple_*
+}
+
+{
+   python_unicode
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:PyUnicode_*
+}
+
+{
+   python_type
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:PyType_*
+}
+
+{
+   python_import
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:PyImport_*
+}
+
+# NumPy can have similar pooling behavior
+{
+   numpy_array
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   obj:*/numpy/*.so
+}
+
+# pybind11/nanobind related
+{
+   pybind11_internals
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:*pybind11*
+}
+
+# SDL library (if enabled)
+{
+   sdl_init
+   Memcheck:Leak
+   match-leak-kinds: possible,reachable
+   ...
+   fun:SDL_*
+}
+
+# Helgrind suppressions for known thread-safe patterns
+
+# Python GIL is thread-safe by design
+{
+   python_gil
+   Helgrind:Race
+   ...
+   fun:PyGILState_*
+}
+
+{
+   python_threadstate
+   Helgrind:Race
+   ...
+   fun:PyThreadState_*
+}
+
+# C++ standard library threading
+{
+   libstdc++_thread
+   Helgrind:Race
+   ...
+   obj:*/libstdc++.so*
+}
+
+{
+   libstdc++_once
+   Helgrind:Race
+   fun:__once_proxy
+}
