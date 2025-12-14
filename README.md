@@ -21,15 +21,16 @@ Features
 - Emulation core uncoupled from rendering and sound generation modules for fast emulation with minimal library dependencies.
 - Automatic extraction of game score and end-of-game signal for more than 100  Atari 2600 games.
 - Multi-platform code (compiled and tested under macOS, Windows, and several Linux distributions).
-- Python bindings through [pybind11](https://github.com/pybind/pybind11).
+- Python bindings through [nanobind](https://github.com/wjakob/nanobind).
 - Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
-- C++ based vectorizer for acting in multiple ROMs at the same time.
 - Atari roms are packaged within the pip package.
+- C++ based vectorizer for acting in multiple ROMs at the same time.
+- WebAssembly support for running ALE in the Browser
 
 Quick Start
 ===========
 
-The ALE currently supports three different interfaces: C++, Python, and Gymnasium.
+The ALE currently supports three different interfaces: C++, Python, Gymnasium and WASM.
 
 Python
 ------
@@ -107,6 +108,32 @@ Finally, you can link against the ALE in your own CMake project as follows
 find_package(ale REQUIRED)
 target_link_libraries(YourTarget ale::ale-lib)
 ```
+
+WebAssembly
+---
+
+The ALE can be compiled to WebAssembly for use directly in web browsers, enabling interactive demos, educational tools, and browser-based RL experiments without any installation.
+
+This be used through NPM (`> npm install @farama/ale-wasm`) or through a standalone compiled zip (see the release artifacts).
+
+**Example NPM usage:**
+```javascript
+import createALEModule from './ale.js';
+
+const ALE = await createALEModule();
+const ale = new ALE.ALEInterface();
+
+await ale.loadROM('roms/breakout.bin');
+ale.resetGame();
+
+while (!ale.gameOver()) {
+    const actions = ale.getMinimalActionSet();
+    const action = actions[Math.floor(Math.random() * actions.length)];
+    const reward = ale.act(action);
+}
+```
+
+For more examples for NPM and standalone installs, see [docs/wasm/](docs/wasm/).
 
 Citing
 ======
