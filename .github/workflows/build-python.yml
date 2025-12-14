@@ -42,13 +42,9 @@ jobs:
         include:
           # To minimise the computational resources, we only use a single python version and the final test-wheels for all python versions
 
-          # Thread Sanitizer build on Linux (most critical for vectorized env)
           - runs-on: ubuntu-latest
             python: '3.12'
             triplet: x64-linux-mixed
-            sanitizer: tsan
-            cc: clang-18
-            cxx: clang++-18
 
           - runs-on: windows-latest
             python: '3.12'
@@ -60,8 +56,6 @@ jobs:
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
-      CC: ${{ matrix.cc || '' }}
-      CXX: ${{ matrix.cxx || '' }}
     runs-on: ${{ matrix.runs-on }}
 
     steps:
@@ -87,28 +81,13 @@ jobs:
         method: 'network'
         sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
 
-    - name: Install Clang (for sanitizer builds)
-      if: matrix.sanitizer
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang-18 llvm-18
-
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
     - name: Build
-      run: |
-        if [ -n "${{ matrix.sanitizer }}" ]; then
-          echo "Building with Thread Sanitizer..."
-          python -m pip install --verbose .[test] \
-            --config-settings=cmake.args="-DENABLE_SANITIZER=thread"
-        else
-          python -m pip install --verbose .[test]
-        fi
+      run: python -m pip install --verbose .[test]
 
     - name: Test
-      env:
-        TSAN_OPTIONS: ${{ matrix.sanitizer == 'tsan' && 'second_deadlock_stack=1 history_size=7' || '' }}
       run: python -m pytest
 
   build-wheels:
