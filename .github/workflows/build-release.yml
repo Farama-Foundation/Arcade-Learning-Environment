@@ -80,22 +80,22 @@ jobs:
       - run: pip install setuptools
       - run: python setup.py sdist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: wheels-windows-latest-AMD64
           path: dist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: wheels-ubuntu-latest-x86_64
           path: dist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: wheels-ubuntu-24.04-arm-aarch64
           path: dist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: wheels-macos-latest-arm64
           path: dist
@@ -166,7 +166,7 @@ jobs:
 #    if: ${{ secrets.NPM_TOKEN != '' }}
 #
 #    steps:
-#      - uses: actions/download-artifact@v6
+#      - uses: actions/download-artifact@v7
 #        with:
 #          name: npm-package
 #          path: dist/npm/
