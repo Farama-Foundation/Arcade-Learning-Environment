@@ -49,13 +49,13 @@ jobs:
           ls -lh dist/*.zip
 
       - name: Upload NPM package artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: npm-package
           path: dist/npm/
 
       - name: Upload standalone bundle artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ale-wasm-bundle
           path: dist/*.zip

@@ -147,7 +147,7 @@ jobs:
           CIBW_ARCHS: "${{ matrix.arch }}"
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
           path: ./wheelhouse/*.whl
