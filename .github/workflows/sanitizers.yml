@@ -1,5 +1,6 @@
 # Sanitizers and memory checkers for detecting threading issues and memory leaks
-# Runs all sanitizers on every PR and push to master/main
+# TSan and ASan run on every PR and push to master
+# Valgrind runs only on releases, manual dispatch, or when PR has "run-valgrind" label
 
 name: Sanitizers
 
@@ -9,6 +10,8 @@ on:
   push:
     branches:
       - master
+  release:
+    types: [published]
 
 jobs:
   thread-sanitizer:
@@ -103,6 +106,10 @@ jobs:
   valgrind:
     name: "Valgrind (Memcheck + Helgrind)"
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'release' ||
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'run-valgrind')
 
     env:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
