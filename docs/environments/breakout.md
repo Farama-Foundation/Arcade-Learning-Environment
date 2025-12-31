@@ -27,9 +27,9 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 
 ## Actions
 
-Breakout has the action space of `Discrete(4)` with the table below listing the meaning of each action's meanings.
-To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
-initialization or by passing `full_action_space=True` to `gymnasium.make`.
+Breakout has the action space of `Discrete(4)` with the table below listing the meaning of each action's meanings. 
+To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during initialization or by passing `full_action_space=True` to `gymnasium.make`. 
+To make the ball appear at start of an episode or after loss of a life, action `FIRE` (Value 1) needs to be pressed.
 
 |   Value | Meaning   |
 |---------|-----------|
