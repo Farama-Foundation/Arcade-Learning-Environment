@@ -79,7 +79,7 @@ html_theme_options = {
     "description": "The Arcade Learning Environment (ALE) -- a platform for AI research.",
     "image": "img/ale.svg",
     "versioning": True,
-    "source_repository": "https://github.com/Farama-Foundation/arcade-Learning-Environment/",
+    "source_repository": "https://github.com/Farama-Foundation/Arcade-Learning-Environment/",
     "source_branch": "main",
     "source_directory": "docs/",
 }
