@@ -1,0 +1,150 @@
+# Sanitizers and memory checkers for detecting threading issues and memory leaks
+# Runs all sanitizers on every PR and push to master/main
+
+name: Sanitizers
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  thread-sanitizer:
+    name: "Thread Sanitizer"
+    runs-on: ubuntu-latest
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+      CC: clang-18
+      CXX: clang++-18
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Clang
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-18 llvm-18
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Build with Thread Sanitizer
+      run: |
+        pip install --verbose -e .[test] \
+          --config-settings=cmake.args="-DENABLE_SANITIZER=thread"
+
+    - name: Run tests with Thread Sanitizer
+      env:
+        TSAN_OPTIONS: "second_deadlock_stack=1 history_size=7 halt_on_error=1"
+      run: |
+        # Find and preload the TSan runtime library
+        CLANG_VERSION=$(clang-18 --version | grep -oP 'clang version \K[0-9]+')
+        TSAN_LIB=$(find /usr/lib/llvm-${CLANG_VERSION}/lib/clang -name "libclang_rt.tsan-x86_64.so" 2>/dev/null | head -1)
+        echo "Preloading TSan runtime: $TSAN_LIB"
+
+        echo "Running vector environment tests (most likely to have threading issues)..."
+        LD_PRELOAD="$TSAN_LIB" python -m pytest tests/python/test_atari_vector_env.py -v -x
+
+        echo "Running all tests..."
+        LD_PRELOAD="$TSAN_LIB" python -m pytest -v
+
+  address-sanitizer:
+    name: "Address Sanitizer + UBSan"
+    runs-on: ubuntu-latest
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+      CC: clang-18
+      CXX: clang++-18
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Clang
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-18 llvm-18
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Build with Address Sanitizer
+      run: |
+        pip install --verbose -e .[test] \
+          --config-settings=cmake.args="-DENABLE_SANITIZER=address"
+
+    - name: Run tests with Address Sanitizer
+      env:
+        ASAN_OPTIONS: "detect_leaks=1:check_initialization_order=1:halt_on_error=1"
+        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1"
+      run: |
+        # Find and preload the ASan runtime library
+        CLANG_VERSION=$(clang-18 --version | grep -oP 'clang version \K[0-9]+')
+        ASAN_LIB=$(find /usr/lib/llvm-${CLANG_VERSION}/lib/clang -name "libclang_rt.asan-x86_64.so" 2>/dev/null | head -1)
+        echo "Preloading ASan runtime: $ASAN_LIB"
+
+        echo "Running vector environment tests..."
+        LD_PRELOAD="$ASAN_LIB" python -m pytest tests/python/test_atari_vector_env.py -v -x
+
+        echo "Running all tests..."
+        LD_PRELOAD="$ASAN_LIB" python -m pytest -v
+
+  valgrind:
+    name: "Valgrind (Memcheck + Helgrind)"
+    runs-on: ubuntu-latest
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Valgrind
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Build with debug symbols
+      run: |
+        pip install --verbose -e .[test] \
+          --config-settings=cmake.args="-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+
+    - name: Run Memcheck (memory leaks)
+      run: |
+        valgrind \
+          --tool=memcheck \
+          --leak-check=full \
+          --show-leak-kinds=definite \
+          --errors-for-leak-kinds=definite \
+          --track-origins=yes \
+          --suppressions=.valgrind-python.supp \
+          --error-exitcode=1 \
+          python -m pytest tests/python/test_atari_vector_env.py -v
+      continue-on-error: true
+
+    - name: Run Helgrind (thread errors)
+      run: |
+        valgrind \
+          --tool=helgrind \
+          --suppressions=.valgrind-python.supp \
+          --error-exitcode=1 \
+          python -m pytest tests/python/test_atari_vector_env.py -v
+      continue-on-error: true
