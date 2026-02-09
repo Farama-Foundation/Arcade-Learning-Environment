@@ -2746,30 +2746,41 @@ void TIA::poke(uint16_t addr, uint8_t value)
       myPOSM1 += ourCompleteMotionTable[x][myHMM1];
       myPOSBL += ourCompleteMotionTable[x][myHMBL];
 
-      if(myPOSP0 >= 160)
-        myPOSP0 -= 160;
-      else if(myPOSP0 < 0)
-        myPOSP0 += 160;
+      // ============================================================================
+      // FIX FOR ALE ISSUE #11 - TIA SEGFAULT IN MONTEZUMA'S REVENGE
+      // ============================================================================
+      //
+      // This fix addresses a long-standing bug (since 2013) that causes rare
+      // segmentation faults, particularly in Montezuma's Revenge after hours of play.
+      //
+      // ROOT CAUSE:
+      // The player position variables (myPOSP0, myPOSP1, etc.) are int16_t and can
+      // accumulate values outside the valid range [0, 159] through repeated HMOVE
+      // operations. The original bounds checking only added/subtracted 160 once,
+      // which is insufficient if the position drifts further out of bounds.
+      //
+      // When these out-of-bounds values are later used as array indices in
+      // ourPlayerPositionResetWhenTable[8][160][160] (in case 0x10/0x11 for RESP0/RESP1),
+      // it causes an array index out-of-bounds access, resulting in a segfault.
+      //
+      // THE FIX:
+      // Use proper modular arithmetic to guarantee positions are always in [0, 159].
+      // The formula ((pos % 160) + 160) % 160 handles both negative values and
+      // values >= 160 correctly, wrapping them into the valid range.
+      //
+      // Note: Modern Stella (v6.0+) completely rewrote the TIA using an OOP design
+      // that avoids lookup tables altogether, but ALE still uses the legacy approach.
+      //
+      // See: https://github.com/mgbellemare/Arcade-Learning-Environment/issues/11
+      // ============================================================================
 
-      if(myPOSP1 >= 160)
-        myPOSP1 -= 160;
-      else if(myPOSP1 < 0)
-        myPOSP1 += 160;
+      // Normalize all positions to valid range [0, 159] using proper modular arithmetic
+      myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
+      myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
+      myPOSM0 = ((myPOSM0 % 160) + 160) % 160;
+      myPOSM1 = ((myPOSM1 % 160) + 160) % 160;
+      myPOSBL = ((myPOSBL % 160) + 160) % 160;
 
-      if(myPOSM0 >= 160)
-        myPOSM0 -= 160;
-      else if(myPOSM0 < 0)
-        myPOSM0 += 160;
-
-      if(myPOSM1 >= 160)
-        myPOSM1 -= 160;
-      else if(myPOSM1 < 0)
-        myPOSM1 += 160;
-
-      if(myPOSBL >= 160)
-        myPOSBL -= 160;
-      else if(myPOSBL < 0)
-        myPOSBL += 160;
 
       myCurrentBLMask = &ourBallMaskTable[myPOSBL & 0x03]
           [(myCTRLPF & 0x30) >> 4][160 - (myPOSBL & 0xFC)];
