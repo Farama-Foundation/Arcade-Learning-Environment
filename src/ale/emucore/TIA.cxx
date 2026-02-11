@@ -465,6 +465,13 @@ bool TIA::load(Deserializer& in)
     myPOSM1 = (int16_t) in.getInt();
     myPOSBL = (int16_t) in.getInt();
 
+    // Ensure restored positions are in valid range [0, 159]
+    myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
+    myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
+    myPOSM0 = ((myPOSM0 % 160) + 160) % 160;
+    myPOSM1 = ((myPOSM1 % 160) + 160) % 160;
+    myPOSBL = ((myPOSBL % 160) + 160) % 160;
+
     myCurrentGRP0 = (uint8_t) in.getInt();
     myCurrentGRP1 = (uint8_t) in.getInt();
 
@@ -2293,6 +2300,10 @@ void TIA::poke(uint16_t addr, uint8_t value)
       int newx = hpos < HBLANK ? 3 : (((hpos - HBLANK) + 5) % 160);
 
       // Find out under what condition the player is being reset
+      // Clamp position to valid range to prevent out-of-bounds table access
+      // See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
+      if(myPOSP0 < 0 || myPOSP0 >= 160)
+        myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
       int8_t when = ourPlayerPositionResetWhenTable[myNUSIZ0 & 7][myPOSP0][newx];
 
       // Player is being reset during the display of one of its copies
@@ -2337,6 +2348,10 @@ void TIA::poke(uint16_t addr, uint8_t value)
       int newx = hpos < HBLANK ? 3 : (((hpos - HBLANK) + 5) % 160);
 
       // Find out under what condition the player is being reset
+      // Clamp position to valid range to prevent out-of-bounds table access
+      // See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
+      if(myPOSP1 < 0 || myPOSP1 >= 160)
+        myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
       int8_t when = ourPlayerPositionResetWhenTable[myNUSIZ1 & 7][myPOSP1][newx];
 
       // Player is being reset during the display of one of its copies
@@ -2746,30 +2761,15 @@ void TIA::poke(uint16_t addr, uint8_t value)
       myPOSM1 += ourCompleteMotionTable[x][myHMM1];
       myPOSBL += ourCompleteMotionTable[x][myHMBL];
 
-      if(myPOSP0 >= 160)
-        myPOSP0 -= 160;
-      else if(myPOSP0 < 0)
-        myPOSP0 += 160;
-
-      if(myPOSP1 >= 160)
-        myPOSP1 -= 160;
-      else if(myPOSP1 < 0)
-        myPOSP1 += 160;
-
-      if(myPOSM0 >= 160)
-        myPOSM0 -= 160;
-      else if(myPOSM0 < 0)
-        myPOSM0 += 160;
-
-      if(myPOSM1 >= 160)
-        myPOSM1 -= 160;
-      else if(myPOSM1 < 0)
-        myPOSM1 += 160;
-
-      if(myPOSBL >= 160)
-        myPOSBL -= 160;
-      else if(myPOSBL < 0)
-        myPOSBL += 160;
+      // Wrap positions to [0, 159] using modular arithmetic.
+      // The original single-step correction (e.g. if >= 160 then -= 160)
+      // is only safe when the motion delta is in [-15, +8]. Using modulo
+      // handles any value and guards against cumulative drift.
+      myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
+      myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
+      myPOSM0 = ((myPOSM0 % 160) + 160) % 160;
+      myPOSM1 = ((myPOSM1 % 160) + 160) % 160;
+      myPOSBL = ((myPOSBL % 160) + 160) % 160;
 
       myCurrentBLMask = &ourBallMaskTable[myPOSBL & 0x03]
           [(myCTRLPF & 0x30) >> 4][160 - (myPOSBL & 0xFC)];
