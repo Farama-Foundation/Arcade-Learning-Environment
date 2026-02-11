@@ -422,6 +422,89 @@ def test_display_screen(ale, tetris_rom_path):
     assert True
 
 
+def _find_tia_pos_offsets(data):
+    """Find byte offsets of TIA position registers in serialized ALE state.
+
+    The TIA section starts with a putString("TIA") = 4-byte length + "TIA".
+    Position registers (myPOSP0..myPOSBL) are 5 consecutive putInt values
+    at a fixed offset from the section start. Each putInt/putBool is 4 bytes.
+    """
+    # Find the "TIA" device marker: putString writes 4-byte LE length then chars
+    tia_len = int.to_bytes(3, 4, "little")  # length prefix for "TIA"
+    marker = tia_len + b"TIA"
+    idx = data.find(marker)
+    assert idx >= 0, "TIA section not found in serialized state"
+
+    # Count bytes from section start to myPOSP0.
+    # Order in TIA::save: putString("TIA"), then 8 ints, 1 int, 4 ints,
+    # 4 ints, 2 ints, 2 bools, 5 ints, 4 bools, 5 ints, 5 bools, 1 int,
+    # then myPOSP0..myPOSBL (5 ints).
+    # Total fields before myPOSP0: 8+1+4+4+2+2+5+4+5+5+1 = 41 putInt/putBool
+    # Each is 4 bytes. Plus the 7-byte string header.
+    offset = idx + 7 + 41 * 4  # = idx + 171
+    return offset
+
+
+def _write_le_int(data, offset, value):
+    """Write a signed 32-bit little-endian int into a bytearray."""
+    data[offset : offset + 4] = value.to_bytes(4, "little", signed=True)
+
+
+def _read_le_int(data, offset):
+    """Read a signed 32-bit little-endian int from bytes."""
+    return int.from_bytes(data[offset : offset + 4], "little", signed=True)
+
+
+def test_restore_state_with_corrupted_positions(tetris):
+    """Restoring a state with out-of-bounds TIA positions must not crash.
+
+    Without the bounds-validation fix in TIA::load, injecting position
+    values outside [0, 159] causes a segfault on the next frame due to
+    an out-of-bounds access in ourPlayerPositionResetWhenTable.
+    See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
+    """
+    # Play a few frames to get a non-trivial state
+    for _ in range(50):
+        tetris.act(0)
+
+    state = tetris.cloneState()
+    raw = bytearray(state.__getstate__())
+
+    pos_offset = _find_tia_pos_offsets(raw)
+
+    # Verify we found the right spot: positions should be small non-negative
+    for i in range(5):
+        val = _read_le_int(raw, pos_offset + i * 4)
+        assert 0 <= val < 160, f"Position register {i} has unexpected value {val}"
+
+    # Inject out-of-bounds values into all 5 position registers
+    bad_values = [-500, 9999, -1, 160, 32000]
+    for i, bad in enumerate(bad_values):
+        _write_le_int(raw, pos_offset + i * 4, bad)
+
+    # Restore the corrupted state — this exercises TIA::load validation
+    corrupted = ale_py.ALEState.__new__(ale_py.ALEState)
+    corrupted.__setstate__(bytes(raw))
+    tetris.restoreState(corrupted)
+
+    # Verify positions were wrapped to expected values: ((x % 160) + 160) % 160
+    restored_raw = tetris.cloneState().__getstate__()
+    restored_offset = _find_tia_pos_offsets(restored_raw)
+    expected_values = [140, 79, 159, 0, 0]  # for [-500, 9999, -1, 160, 32000]
+    for i, expected in enumerate(expected_values):
+        val = _read_le_int(restored_raw, restored_offset + i * 4)
+        assert val == expected, (
+            f"Position register {i}: input {bad_values[i]} should wrap to "
+            f"{expected}, got {val}"
+        )
+
+    # Play 200 frames — without the fix this would segfault
+    for _ in range(200):
+        tetris.act(0)
+        if tetris.game_over():
+            tetris.reset_game()
+
+
 def test_set_logger(ale):
     ale.setLoggerMode(ale_py.LoggerMode.Info)
     ale.setLoggerMode(ale_py.LoggerMode.Warning)
