@@ -142,33 +142,38 @@ namespace ale::vector {
               timesteps_(num_envs_),
               slot_ready_(num_envs_),
               count_(0),
-              sem_ready_(0),
-              sem_read_(1) {
+              sem_ready_(0),      // Initially no batches ready
+              sem_read_(1) {      // Allow one reader at a time
             for (size_t i = 0; i < num_envs_; ++i) {
                 slot_ready_[i].store(false, std::memory_order_relaxed);
             }
         }
 
         /**
-         * Write a timestep to the buffer.
+         * Write a timestep to the buffer
          * Multiple threads can write simultaneously — each env_id maps to a unique slot.
          */
         void write(const Timestep& timestep) {
+            // Place timestep at env_id position
             const int env_id = timestep.env_id;
             timesteps_[env_id] = timestep;
 
             if (ordered_mode_) {
+                // Atomically increment count and check if batch is ready
                 const auto old_count = count_.fetch_add(1);
                 if (old_count + 1 == batch_size_) {
+                    // Exactly one thread will see count == batch_size_ in ordered mode
                     sem_ready_.signal(1);
                 }
             } else {
-                // Mark slot ready BEFORE incrementing count.
+                // In unordered mode, mark slot ready BEFORE incrementing count.
                 // The release fence ensures the timestep write is visible
                 // before any reader sees this slot as ready.
                 slot_ready_[env_id].store(true, std::memory_order_release);
 
+                // Atomically increment count and check if batch is ready
                 const auto old_count = count_.fetch_add(1);
+                // Signal if we just crossed a batch boundary
                 if ((old_count + 1) / batch_size_ > old_count / batch_size_) {
                     sem_ready_.signal(1);
                 }
@@ -176,25 +181,33 @@ namespace ale::vector {
         }
 
         /**
-         * Collect timesteps when ready and return them.
+         * Collect timesteps when ready and return them
          *
          * @return Vector of timesteps
          */
         std::vector<Timestep> collect() {
+            // Wait until a batch is ready
             while (!sem_ready_.wait()) {}
+
+            // Acquire read semaphore
             while (!sem_read_.wait()) {}
 
+            // Collect the results
             std::vector<Timestep> result;
             result.reserve(batch_size_);
 
             if (ordered_mode_) {
+                // In ordered mode, read in env_id order
                 for (size_t i = 0; i < batch_size_; ++i) {
                     result.push_back(std::move(timesteps_[i]));
                 }
+
+                // Reset count for ordered mode (all items consumed)
                 count_.store(0);
             } else {
-                // Scan slots for ready flags. We're guaranteed at least batch_size_
-                // slots are ready because count_ was incremented after each flag was set.
+                // In unordered mode, scan slots for ready flags.
+                // We're guaranteed at least batch_size_ slots are ready
+                // because count_ was incremented after each flag was set.
                 size_t collected = 0;
                 while (collected < batch_size_) {
                     for (size_t i = 0; i < num_envs_ && collected < batch_size_; ++i) {
@@ -208,10 +221,14 @@ namespace ale::vector {
                         std::this_thread::yield();
                     }
                 }
+
+                // Atomically decrease count by batch_size_
                 count_.fetch_sub(batch_size_);
             }
 
+            // Release read semaphore
             sem_read_.signal(1);
+
             return result;
         }
 
@@ -229,8 +246,10 @@ namespace ale::vector {
         std::vector<Timestep> timesteps_;                 // Buffer for timesteps
         std::vector<std::atomic<bool>> slot_ready_;       // Per-slot readiness (unordered mode)
 
+        // Atomic counters for lock-free operations
         std::atomic<std::size_t> count_;                  // Current count of available timesteps
 
+        // Semaphores for coordination
         moodycamel::LightweightSemaphore sem_ready_;      // Signals when a batch is ready for collection
         moodycamel::LightweightSemaphore sem_read_;       // Controls access to read operations
     };
