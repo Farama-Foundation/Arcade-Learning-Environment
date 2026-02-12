@@ -437,6 +437,92 @@ class TestVectorEnv:
         sync_envs.close()
         async_envs.close()
 
+    def test_batch_size_async_stress(
+        self,
+        env_id,
+        num_envs=8,
+        rollout_length=100,
+        num_trials=5,
+    ):
+        """Stress test for the async batch_size feature to catch race conditions.
+
+        Runs multiple short trials with different batch sizes and fresh environments
+        each time, maximizing the chance of triggering thread scheduling races in
+        the StateBuffer's unordered mode.
+        """
+        for batch_size in [2, 4]:
+            for trial in range(num_trials):
+                reset_seed = 100 + trial
+                action_seed = 200 + trial
+
+                sync_envs = gym.make_vec(env_id, num_envs)
+                async_envs = gym.make_vec(env_id, num_envs, batch_size=batch_size)
+
+                sync_envs.action_space.seed(action_seed)
+                actions = [sync_envs.action_space.sample() for _ in range(rollout_length)]
+                async_env_timestep = np.zeros(num_envs, dtype=np.int32)
+
+                sync_obs, sync_info = sync_envs.reset(seed=reset_seed)
+                sync_env_ids = sync_info.pop("env_id")
+                async_obs, async_info = async_envs.reset(seed=reset_seed)
+                async_env_ids = async_info.pop("env_id")
+
+                sync_observations = [sync_obs]
+                sync_rewards = [np.zeros(num_envs, dtype=np.int32)]
+                sync_terminations = [np.zeros(num_envs, dtype=bool)]
+                sync_truncations = [np.zeros(num_envs, dtype=bool)]
+                sync_infos = [sync_info]
+
+                for async_i, eid in enumerate(async_env_ids):
+                    async_t = async_env_timestep[eid]
+                    assert data_equivalence(
+                        sync_observations[async_t][eid], async_obs[async_i]
+                    ), f"Reset obs mismatch: batch_size={batch_size}, trial={trial}, env_id={eid}"
+                async_env_timestep[async_env_ids] += 1
+
+                for t in range(rollout_length):
+                    obs, rewards, terminations, truncations, info = sync_envs.step(actions[t])
+                    sync_observations.append(obs)
+                    sync_rewards.append(rewards)
+                    sync_terminations.append(terminations)
+                    sync_truncations.append(truncations)
+                    sync_env_ids = info.pop("env_id")
+                    sync_infos.append(info)
+
+                    async_actions = np.array(
+                        [
+                            actions[async_env_timestep[eid] - 1][eid]
+                            for eid in async_env_ids
+                        ]
+                    )
+                    (
+                        async_obs,
+                        async_rewards,
+                        async_terminations,
+                        async_truncations,
+                        async_info,
+                    ) = async_envs.step(async_actions)
+                    async_env_ids = async_info.pop("env_id")
+
+                    for async_i, eid in enumerate(async_env_ids):
+                        async_t = async_env_timestep[eid]
+                        assert data_equivalence(
+                            sync_observations[async_t][eid], async_obs[async_i]
+                        ), f"Obs mismatch: batch_size={batch_size}, trial={trial}, t={t}, env_id={eid}"
+                        assert data_equivalence(
+                            sync_rewards[async_t][eid], async_rewards[async_i]
+                        ), f"Reward mismatch: batch_size={batch_size}, trial={trial}, t={t}, env_id={eid}"
+                        assert data_equivalence(
+                            sync_terminations[async_t][eid], async_terminations[async_i]
+                        ), f"Termination mismatch: batch_size={batch_size}, trial={trial}, t={t}, env_id={eid}"
+                        assert data_equivalence(
+                            sync_truncations[async_t][eid], async_truncations[async_i]
+                        ), f"Truncation mismatch: batch_size={batch_size}, trial={trial}, t={t}, env_id={eid}"
+                    async_env_timestep[async_env_ids] += 1
+
+                sync_envs.close()
+                async_envs.close()
+
     def test_episodic_life_equivalence(self, env_id, num_envs=8):
         gym_envs = gym.vector.SyncVectorEnv(
             [
