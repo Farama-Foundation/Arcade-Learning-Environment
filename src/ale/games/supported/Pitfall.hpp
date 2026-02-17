@@ -69,12 +69,8 @@ class PitfallSettings : public RomSettings {
 
   ActionVect getStartingActions() override;
 
-  // Returns a list of modes that the game can be played in.
-  // Mode 0: Default mode with timer-based termination (terminates when 20-minute timer expires)
-  // Mode 1: Legacy mode without timer-based termination (for backwards compatibility)
   ModeVect getAvailableModes() override;
 
-  // Set the mode of the game.
   void setMode(game_mode_t m, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
@@ -85,7 +81,7 @@ class PitfallSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
   int m_lives;
-  bool m_terminateOnTimeout;  // If true (default), game terminates when 20-minute timer expires
+  bool m_terminateOnTimeout;
 };
 
 }  // namespace ale
