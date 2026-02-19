@@ -466,6 +466,7 @@ bool TIA::load(Deserializer& in)
     myPOSBL = (int16_t) in.getInt();
 
     // Ensure restored positions are in valid range [0, 159]
+    // Only called on state restore, so expensive modulo operations aren't a problem.
     myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
     myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
     myPOSM0 = ((myPOSM0 % 160) + 160) % 160;
@@ -2302,6 +2303,7 @@ void TIA::poke(uint16_t addr, uint8_t value)
       // Find out under what condition the player is being reset
       // Clamp position to valid range to prevent out-of-bounds table access
       // See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
+      // Only files when RESP0/RESP1 is used in already out of bounds - should be rare.
       if(myPOSP0 < 0 || myPOSP0 >= 160)
         myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
       int8_t when = ourPlayerPositionResetWhenTable[myNUSIZ0 & 7][myPOSP0][newx];
@@ -2350,6 +2352,7 @@ void TIA::poke(uint16_t addr, uint8_t value)
       // Find out under what condition the player is being reset
       // Clamp position to valid range to prevent out-of-bounds table access
       // See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
+      // Only files when RESP0/RESP1 is used in already out of bounds - should be rare.
       if(myPOSP1 < 0 || myPOSP1 >= 160)
         myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
       int8_t when = ourPlayerPositionResetWhenTable[myNUSIZ1 & 7][myPOSP1][newx];
@@ -2761,15 +2764,34 @@ void TIA::poke(uint16_t addr, uint8_t value)
       myPOSM1 += ourCompleteMotionTable[x][myHMM1];
       myPOSBL += ourCompleteMotionTable[x][myHMBL];
 
-      // Wrap positions to [0, 159] using modular arithmetic.
-      // The original single-step correction (e.g. if >= 160 then -= 160)
-      // is only safe when the motion delta is in [-15, +8]. Using modulo
-      // handles any value and guards against cumulative drift.
-      myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
-      myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
-      myPOSM0 = ((myPOSM0 % 160) + 160) % 160;
-      myPOSM1 = ((myPOSM1 % 160) + 160) % 160;
-      myPOSBL = ((myPOSBL % 160) + 160) % 160;
+      // Single-step wrapping is safe here: motion table values are in
+      // [-15, +8], so positions starting in [0, 159] land in [-15, 167]
+      // — always within one correction of the valid range. The RESP and
+      // load() clamps elsewhere guarantee we enter this path in-bounds.
+      if(myPOSP0 >= 160)
+        myPOSP0 -= 160;
+      else if(myPOSP0 < 0)
+        myPOSP0 += 160;
+
+      if(myPOSP1 >= 160)
+        myPOSP1 -= 160;
+      else if(myPOSP1 < 0)
+        myPOSP1 += 160;
+
+      if(myPOSM0 >= 160)
+        myPOSM0 -= 160;
+      else if(myPOSM0 < 0)
+        myPOSM0 += 160;
+
+      if(myPOSM1 >= 160)
+        myPOSM1 -= 160;
+      else if(myPOSM1 < 0)
+        myPOSM1 += 160;
+
+      if(myPOSBL >= 160)
+        myPOSBL -= 160;
+      else if(myPOSBL < 0)
+        myPOSBL += 160;
 
       myCurrentBLMask = &ourBallMaskTable[myPOSBL & 0x03]
           [(myCTRLPF & 0x30) >> 4][160 - (myPOSBL & 0xFC)];
