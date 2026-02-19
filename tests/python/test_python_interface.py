@@ -458,51 +458,134 @@ def _read_le_int(data, offset):
 def test_restore_state_with_corrupted_positions(tetris):
     """Restoring a state with out-of-bounds TIA positions must not crash.
 
-    Without the bounds-validation fix in TIA::load, injecting position
-    values outside [0, 159] causes a segfault on the next frame due to
-    an out-of-bounds access in ourPlayerPositionResetWhenTable.
+    The TIA position clamping has three layers:
+    1. TIA::load — clamps positions on state restore via ((x % 160) + 160) % 160
+    2. RESP0/RESP1 — clamps myPOSP0/myPOSP1 before table lookup in TIA::poke
+    3. HMOVE — single-step wrapping after applying bounded motion deltas
+
+    This test exercises layer 1 by injecting out-of-bounds positions into
+    serialized state and verifying they are correctly wrapped on restore.
+    Subsequent gameplay exercises layers 2 and 3 to confirm no crash.
     See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
     """
-    # Play a few frames to get a non-trivial state
     for _ in range(50):
         tetris.act(0)
 
     state = tetris.cloneState()
     raw = bytearray(state.__getstate__())
-
     pos_offset = _find_tia_pos_offsets(raw)
 
-    # Verify we found the right spot: positions should be small non-negative
+    # Verify baseline: positions should be in valid range
     for i in range(5):
         val = _read_le_int(raw, pos_offset + i * 4)
         assert 0 <= val < 160, f"Position register {i} has unexpected value {val}"
 
-    # Inject out-of-bounds values into all 5 position registers
-    bad_values = [-500, 9999, -1, 160, 32000]
-    for i, bad in enumerate(bad_values):
-        _write_le_int(raw, pos_offset + i * 4, bad)
+    # Comprehensive edge cases: (input, expected) where
+    # expected = ((x % 160) + 160) % 160 using C++ truncation semantics
+    test_cases = [
+        (-1, 159),       # just below valid range
+        (160, 0),        # just above valid range
+        (-500, 140),     # large negative
+        (9999, 79),      # large positive
+        (-160, 0),       # exact negative multiple
+        (320, 0),        # exact positive multiple
+        (32000, 0),      # large exact multiple (200 * 160)
+        (-32768, 32),    # int16_t minimum
+        (32767, 127),    # int16_t maximum
+        (0, 0),          # valid boundary (min, unchanged)
+        (159, 159),      # valid boundary (max, unchanged)
+    ]
 
-    # Restore the corrupted state — this exercises TIA::load validation
-    corrupted = ale_py.ALEState.__new__(ale_py.ALEState)
-    corrupted.__setstate__(bytes(raw))
-    tetris.restoreState(corrupted)
+    for bad_val, expected in test_cases:
+        test_raw = bytearray(raw)
+        for i in range(5):
+            _write_le_int(test_raw, pos_offset + i * 4, bad_val)
 
-    # Verify positions were wrapped to expected values: ((x % 160) + 160) % 160
-    restored_raw = tetris.cloneState().__getstate__()
-    restored_offset = _find_tia_pos_offsets(restored_raw)
-    expected_values = [140, 79, 159, 0, 0]  # for [-500, 9999, -1, 160, 32000]
-    for i, expected in enumerate(expected_values):
-        val = _read_le_int(restored_raw, restored_offset + i * 4)
-        assert val == expected, (
-            f"Position register {i}: input {bad_values[i]} should wrap to "
-            f"{expected}, got {val}"
-        )
+        # Restore the corrupted state — exercises TIA::load validation
+        corrupted = ale_py.ALEState.__new__(ale_py.ALEState)
+        corrupted.__setstate__(bytes(test_raw))
+        tetris.restoreState(corrupted)
 
-    # Play 200 frames — without the fix this would segfault
-    for _ in range(200):
-        tetris.act(0)
-        if tetris.game_over():
-            tetris.reset_game()
+        # Verify TIA::load clamped all 5 positions correctly
+        restored_raw = tetris.cloneState().__getstate__()
+        restored_offset = _find_tia_pos_offsets(restored_raw)
+        for i in range(5):
+            val = _read_le_int(restored_raw, restored_offset + i * 4)
+            assert val == expected, (
+                f"Position register {i}: input {bad_val} should wrap to "
+                f"{expected}, got {val}"
+            )
+
+        # Play frames to exercise RESP0/RESP1 and HMOVE paths —
+        # without the clamps this would segfault
+        for _ in range(50):
+            tetris.act(0)
+            if tetris.game_over():
+                tetris.reset_game()
+
+
+def test_hmove_single_step_wrapping_bounds():
+    """Verify the bounds of single-step HMOVE position wrapping.
+
+    The HMOVE path wraps positions with:
+        if (x >= 160) x -= 160;
+        else if (x < 0) x += 160;
+
+    This is correct when positions enter HMOVE in [0, 159] and motion
+    values are in [-15, +8] (the range of ourCompleteMotionTable), giving
+    post-motion values in [-15, 167]. The RESP and load() clamps guarantee
+    the [0, 159] precondition.
+
+    This test verifies correctness across the full expected range and
+    asserts that values outside this range would NOT be corrected —
+    documenting the limits of the current implementation.
+    """
+    def single_step_wrap(x):
+        """Replicate the C++ HMOVE wrapping logic."""
+        if x >= 160:
+            x -= 160
+        elif x < 0:
+            x += 160
+        return x
+
+    def modulo_wrap(x):
+        """Full modular wrapping used by load() and RESP paths.
+
+        Equivalent to C++ ((x % 160) + 160) % 160 since Python's modulo
+        is non-negative for positive divisors.
+        """
+        return x % 160
+
+    # All valid (position, motion) pairs produce correct results.
+    # Positions in [0, 159], motion in [-15, +8] → post-motion in [-15, 167].
+    for pos in range(160):
+        for motion in range(-15, 9):
+            raw = pos + motion
+            result = single_step_wrap(raw)
+            assert 0 <= result < 160, (
+                f"single_step_wrap({raw}) = {result}, expected [0, 159] "
+                f"(pos={pos}, motion={motion})"
+            )
+            assert result == modulo_wrap(raw), (
+                f"single_step_wrap({raw}) = {result} != "
+                f"modulo_wrap({raw}) = {modulo_wrap(raw)}"
+            )
+
+    # Values outside the valid post-motion range that require more than
+    # one correction are NOT handled by single-step wrapping. Assert they
+    # remain out of [0, 159] — documenting the limits of the implementation
+    # and why the RESP/load() clamps are essential.
+    #
+    # These values can never occur in practice because the clamps guarantee
+    # positions enter HMOVE in [0, 159].
+    out = single_step_wrap(-161)  # -161 + 160 = -1
+    assert not (0 <= out < 160), (
+        f"Expected -161 to remain invalid after single-step wrap, got {out}"
+    )
+    out = single_step_wrap(320)   # 320 - 160 = 160
+    assert not (0 <= out < 160), (
+        f"Expected 320 to remain invalid after single-step wrap, got {out}"
+    )
 
 
 def test_set_logger(ale):
