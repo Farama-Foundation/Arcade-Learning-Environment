@@ -2303,7 +2303,7 @@ void TIA::poke(uint16_t addr, uint8_t value)
       // Find out under what condition the player is being reset
       // Clamp position to valid range to prevent out-of-bounds table access
       // See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
-      // Only files when RESP0/RESP1 is used in already out of bounds - should be rare.
+      // Only fires when RESP0/RESP1 is used in already out of bounds - should be rare.
       if(myPOSP0 < 0 || myPOSP0 >= 160)
         myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
       int8_t when = ourPlayerPositionResetWhenTable[myNUSIZ0 & 7][myPOSP0][newx];
