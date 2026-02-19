@@ -459,11 +459,16 @@ class TestVectorEnv:
                 async_envs = gym.make_vec(env_id, num_envs, batch_size=batch_size)
 
                 sync_envs.action_space.seed(action_seed)
-                actions = [sync_envs.action_space.sample() for _ in range(rollout_length)]
+                actions = [
+                    sync_envs.action_space.sample() for _ in range(rollout_length)
+                ]
                 async_env_timestep = np.zeros(num_envs, dtype=np.int32)
 
                 sync_obs, sync_info = sync_envs.reset(seed=reset_seed)
                 sync_env_ids = sync_info.pop("env_id")
+                assert np.array_equal(
+                    sync_env_ids, np.arange(num_envs)
+                ), f"Sync reset env_ids out of order: batch_size={batch_size}, trial={trial}"
                 async_obs, async_info = async_envs.reset(seed=reset_seed)
                 async_env_ids = async_info.pop("env_id")
 
@@ -481,12 +486,17 @@ class TestVectorEnv:
                 async_env_timestep[async_env_ids] += 1
 
                 for t in range(rollout_length):
-                    obs, rewards, terminations, truncations, info = sync_envs.step(actions[t])
+                    obs, rewards, terminations, truncations, info = sync_envs.step(
+                        actions[t]
+                    )
                     sync_observations.append(obs)
                     sync_rewards.append(rewards)
                     sync_terminations.append(terminations)
                     sync_truncations.append(truncations)
                     sync_env_ids = info.pop("env_id")
+                    assert np.array_equal(
+                        sync_env_ids, np.arange(num_envs)
+                    ), f"Sync step env_ids out of order: batch_size={batch_size}, trial={trial}, t={t}"
                     sync_infos.append(info)
 
                     async_actions = np.array(
