@@ -62,7 +62,7 @@ for rom_id in tqdm(ALL_ATARI_GAMES):
 
     if env_data["atariage_url"]:
         env_url = f"""
-For a more detailed documentation, see [the AtariAge page]({env_data['atariage_url']})
+For a more detailed documentation, see [the AtariAge page]({env_data["atariage_url"]})
 """
     else:
         env_url = ""
@@ -89,6 +89,13 @@ As {env_name} uses the full set of actions then specifying `full_action_space=Tr
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`."""
 
+    if env_name == "Breakout":
+        action_description = (
+            action_description
+            + """
+To make the ball appear at start of an episode or after loss of a life, action `FIRE` (Value 1) needs to be applied."""
+        )
+
     # Environment variants
     env_specs = sorted(
         [
@@ -109,8 +116,8 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`."""
         [
             env_spec.id,
             "`rgb`",
-            f'`{env_spec.kwargs["frameskip"]}`',
-            f'`{env_spec.kwargs["repeat_action_probability"]:.2f}`',
+            f"`{env_spec.kwargs['frameskip']}`",
+            f"`{env_spec.kwargs['repeat_action_probability']:.2f}`",
         ]
         for env_spec in env_specs
     ]
