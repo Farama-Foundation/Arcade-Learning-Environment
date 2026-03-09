@@ -28,6 +28,7 @@
 #include "ale/games/supported/Pitfall.hpp"
 
 #include "ale/games/RomUtils.hpp"
+#include "ale/environment/stella_environment_wrapper.hpp"
 
 namespace ale {
 using namespace stella;
@@ -49,9 +50,15 @@ void PitfallSettings::step(const System& system) {
 
   // update terminal status
   int lives_byte = readRam(&system, 0x80) >> 4;
-  // The value at 09xE will be nonzero if we cannot control the player
+  // The value at 0x9E will be nonzero if we cannot control the player
   int logo_timer = readRam(&system, 0x9E);
-  m_terminal = lives_byte == 0 && logo_timer != 0;
+  // The game timer (displayed as MM:SS) is stored in BCD format at 0xD8 (minutes) and 0xD9 (seconds)
+  int timer_minutes = readRam(&system, 0xD8);
+  int timer_seconds = readRam(&system, 0xD9);
+  // Game terminates when: (1) all lives lost and logo is scrolling in bottom left, OR (2) timer runs out (00:00)
+  // In legacy mode (mode 1), timer expiration is not checked for backwards compatibility
+  bool timer_expired = m_terminateOnTimeout && (timer_minutes == 0 && timer_seconds == 0);
+  m_terminal = (lives_byte == 0 && logo_timer != 0) || timer_expired;
 
   m_lives = (lives_byte == 0xA) ? 3 : ((lives_byte == 0x8) ? 2 : 1);
 }
@@ -95,6 +102,7 @@ void PitfallSettings::reset() {
   m_score = 2000;
   m_terminal = false;
   m_lives = 3;
+  m_terminateOnTimeout = true;
 }
 
 /* saves the state of the rom settings */
@@ -103,6 +111,7 @@ void PitfallSettings::saveState(Serializer& ser) {
   ser.putInt(m_score);
   ser.putBool(m_terminal);
   ser.putInt(m_lives);
+  ser.putBool(m_terminateOnTimeout);
 }
 
 // loads the state of the rom settings
@@ -111,10 +120,31 @@ void PitfallSettings::loadState(Deserializer& ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+  m_terminateOnTimeout = ser.getBool();
 }
 
 ActionVect PitfallSettings::getStartingActions() {
   return {PLAYER_A_UP};
+}
+
+// Returns a list of modes that the game can be played in.
+// Mode 0: Default mode with timer-based termination (terminates when 20-minute timer expires, as intended)
+// Mode 1: Legacy mode without timer-based termination (for backwards compatibility, agent will be unable to move after 20 minutes but game will not terminate)
+ModeVect PitfallSettings::getAvailableModes() {
+  return {0, 1};
+}
+
+// Set the mode of the game.
+void PitfallSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  if (m == 0) {
+    m_terminateOnTimeout = true;
+  } else if (m == 1) {
+    m_terminateOnTimeout = false;
+  } else {
+    throw std::runtime_error("This mode is not supported for Pitfall.");
+  }
 }
 
 }  // namespace ale

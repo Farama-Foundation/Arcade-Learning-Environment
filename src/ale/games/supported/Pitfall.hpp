@@ -69,6 +69,11 @@ class PitfallSettings : public RomSettings {
 
   ActionVect getStartingActions() override;
 
+  ModeVect getAvailableModes() override;
+
+  void setMode(game_mode_t m, stella::System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
+
   int lives() override { return isTerminal() ? 0 : m_lives; }
 
  private:
@@ -76,6 +81,7 @@ class PitfallSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
   int m_lives;
+  bool m_terminateOnTimeout;
 };
 
 }  // namespace ale
