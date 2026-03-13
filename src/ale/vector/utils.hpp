@@ -5,6 +5,7 @@
 #include <atomic>
 #include <mutex>
 #include <memory>
+#include <thread>
 
 #ifndef MOODYCAMEL_DELETE_FUNCTION
     #define MOODYCAMEL_DELETE_FUNCTION = delete
@@ -122,11 +123,15 @@ namespace ale::vector {
     };
 
     /**
-     * StateBuffer handles the collection of timesteps from environments
+     * StateBuffer handles the collection of timesteps from environments.
      *
      * Two modes of operation:
      * 1. Ordered mode (batch_size == num_envs): Waits for all env_ids to be filled
-     * 2. Unordered mode (batch_size != num_envs): Uses circular buffer for continuous operation
+     * 2. Unordered mode (batch_size != num_envs): Uses per-slot ready flags
+     *
+     * Each env_id writes to its own fixed slot (timesteps_[env_id]) and sets
+     * a per-slot atomic ready flag. collect() scans for ready flags instead of
+     * reading sequential positions from a circular buffer.
      */
     class StateBuffer {
     public:
@@ -135,23 +140,25 @@ namespace ale::vector {
               num_envs_(num_envs),
               ordered_mode_(batch_size == num_envs),
               timesteps_(num_envs_),
+              slot_ready_(num_envs_),
               count_(0),
-              write_idx_(0),
-              read_idx_(0),
               sem_ready_(0),      // Initially no batches ready
               sem_read_(1) {      // Allow one reader at a time
+            for (size_t i = 0; i < num_envs_; ++i) {
+                slot_ready_[i].store(false, std::memory_order_relaxed);
+            }
         }
 
         /**
          * Write a timestep to the buffer
-         * Multiple threads can write simultaneously
+         * Multiple threads can write simultaneously — each env_id maps to a unique slot.
          */
         void write(const Timestep& timestep) {
-            if (ordered_mode_) {
-                // In ordered mode, place timestep at env_id position
-                const int env_id = timestep.env_id;
-                timesteps_[env_id] = timestep;
+            // Place timestep at env_id position
+            const int env_id = timestep.env_id;
+            timesteps_[env_id] = timestep;
 
+            if (ordered_mode_) {
                 // Atomically increment count and check if batch is ready
                 const auto old_count = count_.fetch_add(1);
                 if (old_count + 1 == batch_size_) {
@@ -159,10 +166,10 @@ namespace ale::vector {
                     sem_ready_.signal(1);
                 }
             } else {
-                // In unordered mode, use circular buffer
-                // Each thread gets a unique index atomically
-                const auto idx = write_idx_.fetch_add(1) % num_envs_;
-                timesteps_[idx] = timestep;
+                // In unordered mode, mark slot ready BEFORE incrementing count.
+                // The release fence ensures the timestep write is visible
+                // before any reader sees this slot as ready.
+                slot_ready_[env_id].store(true, std::memory_order_release);
 
                 // Atomically increment count and check if batch is ready
                 const auto old_count = count_.fetch_add(1);
@@ -198,10 +205,21 @@ namespace ale::vector {
                 // Reset count for ordered mode (all items consumed)
                 count_.store(0);
             } else {
-                // In unordered mode, read from circular buffer
-                for (size_t i = 0; i < batch_size_; ++i) {
-                    const auto idx = read_idx_.fetch_add(1) % num_envs_;
-                    result.push_back(std::move(timesteps_[idx]));
+                // In unordered mode, scan slots for ready flags.
+                // We're guaranteed at least batch_size_ slots are ready
+                // because count_ was incremented after each flag was set.
+                size_t collected = 0;
+                while (collected < batch_size_) {
+                    for (size_t i = 0; i < num_envs_ && collected < batch_size_; ++i) {
+                        if (slot_ready_[i].load(std::memory_order_acquire)) {
+                            slot_ready_[i].store(false, std::memory_order_relaxed);
+                            result.push_back(std::move(timesteps_[i]));
+                            ++collected;
+                        }
+                    }
+                    if (collected < batch_size_) {
+                        std::this_thread::yield();
+                    }
                 }
 
                 // Atomically decrease count by batch_size_
@@ -226,11 +244,10 @@ namespace ale::vector {
         const std::size_t num_envs_;                      // Number of environments
         const bool ordered_mode_;                         // Whether we're in ordered mode
         std::vector<Timestep> timesteps_;                 // Buffer for timesteps
+        std::vector<std::atomic<bool>> slot_ready_;       // Per-slot readiness (unordered mode)
 
         // Atomic counters for lock-free operations
         std::atomic<std::size_t> count_;                  // Current count of available timesteps
-        std::atomic<std::size_t> write_idx_;              // Write position (for unordered mode)
-        std::atomic<std::size_t> read_idx_;               // Read position (for unordered mode)
 
         // Semaphores for coordination
         moodycamel::LightweightSemaphore sem_ready_;      // Signals when a batch is ready for collection
