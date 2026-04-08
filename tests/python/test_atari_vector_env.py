@@ -710,9 +710,9 @@ class TestStepSequences:
         # from a simple sum. We verify gamma=1 gives plain sum by comparing.
         seqs = [np.zeros(10, dtype=np.int64) for _ in range(2)]
 
-        _obs, rewards_g1, _t, _tr, _info = env.step_sequences(seqs, gamma=1.0)
+        _obs, rewards_g1, _terminated, _truncated, _info = env.step_sequences(seqs, gamma=1.0)
         env.reset()
-        _obs, rewards_g99, _t, _tr, _info = env.step_sequences(seqs, gamma=0.99)
+        _obs, rewards_g99, _terminated, _truncated, _info = env.step_sequences(seqs, gamma=0.99)
 
         # If any reward was received, gamma=0.99 should give less than gamma=1.0
         # If no reward, both are 0 and that's fine too.

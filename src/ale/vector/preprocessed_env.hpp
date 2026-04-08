@@ -214,7 +214,7 @@ namespace ale::vector {
         /**
          * Check if a sequence action is pending
          */
-        bool has_sequence() const {
+        const bool has_sequence() const {
             return has_sequence_;
         }
 
