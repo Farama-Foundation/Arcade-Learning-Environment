@@ -181,27 +181,14 @@ class AtariVectorEnv(VectorEnv):
         return self.ale.reset(reset_indices, reset_seeds)
 
     def step(
-        self, actions: np.ndarray, action_mask: np.ndarray | None = None
+        self, actions: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, np.ndarray]]:
         """Steps through the sub-environments for which the actions are taken, return arrays for the next observations, rewards, termination, truncation and info."""
-        self.send(actions, action_mask=action_mask)
+        self.send(actions)
         return self.ale.recv()
 
-    def send(self, actions: np.ndarray, action_mask: np.ndarray | None = None):
-        """Send the actions to the sub-environments.
-
-        Args:
-            actions: Actions array for all environments.
-            action_mask: Optional boolean mask of shape (num_envs,). If provided,
-                only environments where mask is True will be stepped.
-        """
-        mask_list = []
-        if action_mask is not None:
-            assert isinstance(action_mask, np.ndarray)
-            assert action_mask.dtype == np.bool_
-            assert action_mask.shape == (self.batch_size,)
-            mask_list = action_mask.tolist()
-
+    def send(self, actions: np.ndarray):
+        """Send the actions to the sub-environments."""
         if self.continuous:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.float32
@@ -224,7 +211,7 @@ class AtariVectorEnv(VectorEnv):
 
             action_ids = self.map_action_idx[horizontal, vertical, fire]
             paddle_strength = actions[:, 0]
-            self.ale.send(action_ids, paddle_strength, mask_list)
+            self.ale.send(action_ids, paddle_strength)
         else:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.int64 or actions.dtype == np.int32
@@ -233,7 +220,50 @@ class AtariVectorEnv(VectorEnv):
             ), f"{actions.shape=}, {self.batch_size=}"
 
             paddle_strength = np.ones(self.batch_size)
-            self.ale.send(actions, paddle_strength, mask_list)
+            self.ale.send(actions, paddle_strength)
+
+    def step_sequences(
+        self,
+        action_sequences: list[np.ndarray],
+        gamma: float,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
+        """Execute variable-length action sequences per environment.
+
+        Each environment gets its own sequence of actions. The C++ layer executes
+        each sequence with frameskip, accumulates gamma-discounted rewards, and
+        returns the final observation. Stops early on termination/truncation.
+
+        Args:
+            action_sequences: List of num_envs arrays, each containing action IDs.
+                Variable lengths supported. Empty arrays skip that environment.
+            gamma: Discount factor for reward accumulation across steps.
+                Required, no default.
+
+        Returns:
+            (observations, rewards, terminations, truncations, info)
+            where info["steps_taken"] contains actual steps executed per env.
+        """
+        self.send_sequences(action_sequences, gamma=gamma)
+        return self.ale.recv()
+
+    def send_sequences(self, action_sequences: list[np.ndarray], gamma: float):
+        """Send variable-length action sequences to environments.
+
+        Args:
+            action_sequences: List of num_envs arrays, each containing action IDs.
+            gamma: Discount factor for reward accumulation across steps.
+        """
+        assert len(action_sequences) == self.batch_size, (
+            f"Expected {self.batch_size} sequences, got {len(action_sequences)}"
+        )
+
+        action_id_sequences = []
+        paddle_strength_sequences = []
+        for actions in action_sequences:
+            action_id_sequences.append(actions.tolist() if len(actions) > 0 else [])
+            paddle_strength_sequences.append([1.0] * len(actions))
+
+        self.ale.send_sequences(action_id_sequences, paddle_strength_sequences, gamma)
 
     def recv(
         self,

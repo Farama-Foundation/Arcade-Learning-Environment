@@ -204,6 +204,21 @@ namespace ale::vector {
         }
 
         /**
+         * Set a sequence of actions to be executed
+         */
+        void set_sequence_action(const SequenceAction& seq) {
+            current_sequence_ = seq;
+            has_sequence_ = true;
+        }
+
+        /**
+         * Check if a sequence action is pending
+         */
+        bool has_sequence() const {
+            return has_sequence_;
+        }
+
+        /**
          * Steps the environment using the current action
          */
         void step() {
@@ -245,6 +260,68 @@ namespace ale::vector {
         }
 
         /**
+         * Execute a sequence of actions, accumulating gamma-discounted rewards.
+         * Each action in the sequence is executed for frame_skip raw frames.
+         * Stops early on termination/truncation.
+         */
+        void step_sequence() {
+            const auto& seq = current_sequence_;
+            const float gamma = seq.gamma;
+            double accumulated_reward = 0.0;
+            int steps = 0;
+
+            for (size_t s = 0; s < seq.action_ids.size(); ++s) {
+                const int action_id = seq.action_ids[s];
+                if (action_id < 0 || action_id >= static_cast<int>(action_set_.size())) {
+                    throw std::out_of_range(
+                        "step_sequence: action_id " + std::to_string(action_id) +
+                        " out of range [0, " + std::to_string(action_set_.size()) + ")");
+                }
+                const Action action = action_set_[action_id];
+                const float strength = seq.paddle_strengths[s];
+
+                // Frameskip loop (same as step())
+                reward_t step_reward = 0;
+                for (int skip_id = frame_skip_; skip_id > 0; --skip_id) {
+                    step_reward += env_->act(action, strength);
+
+                    game_over_ = env_->game_over();
+                    elapsed_step_++;
+                    was_life_lost_ = env_->lives() < lives_ && env_->lives() > 0;
+
+                    if (game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_)) {
+                        break;
+                    }
+
+                    if (skip_id <= 2) {
+                        if (obs_format_ == ObsFormat::Grayscale) {
+                            get_screen_data_grayscale(raw_frames_[skip_id - 1].data());
+                        } else {
+                            get_screen_data_rgb(raw_frames_[skip_id - 1].data());
+                        }
+                    }
+                }
+
+                process_screen();
+                lives_ = env_->lives();
+
+                // Clip per step, then gamma-discount
+                reward_t clipped = reward_clipping_ ? std::clamp<int>(step_reward, -1, 1) : step_reward;
+                accumulated_reward += std::pow(gamma, steps) * clipped;
+                steps++;
+
+                // Early termination
+                if (game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_)) {
+                    break;
+                }
+            }
+
+            reward_ = accumulated_reward;
+            steps_taken_ = steps;
+            has_sequence_ = false;
+        }
+
+        /**
          * Get the current observation
          */
         Timestep get_timestep() const {
@@ -258,6 +335,7 @@ namespace ale::vector {
             timestep.lives = lives_;
             timestep.frame_number = env_->getFrameNumber();
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
+            timestep.steps_taken = steps_taken_;
 
             // Copy frames from oldest to newest into a single observation
             timestep.observation.resize(obs_size_ * stack_num_);
@@ -431,9 +509,12 @@ namespace ale::vector {
         bool game_over_;                     // Whether the game is over
         int lives_;                          // Current number of lives
         bool was_life_lost_;                 // If a life is loss from a step
-        reward_t reward_;                    // Last reward received
+        double reward_;                       // Last reward received
 
         EnvironmentAction current_action_;   // Current action to take
+        SequenceAction current_sequence_;    // Current sequence action (for step_sequences)
+        bool has_sequence_ = false;          // Whether a sequence action is pending
+        int steps_taken_ = 1;               // Steps taken in last step/step_sequence call
         int current_seed_;                   // Current seed to update
 
         // Frame buffers

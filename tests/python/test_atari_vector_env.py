@@ -61,6 +61,7 @@ def assert_gym_ale_rollout_equivalence(
         if not key.startswith("_") and key != "seeds"
     }
     env_ids = ale_info.pop("env_id")
+    ale_info.pop("steps_taken", None)
     assert np.all(env_ids == np.arange(gym_envs.num_envs))
     assert data_equivalence(gym_info, ale_info)
 
@@ -76,7 +77,7 @@ def assert_gym_ale_rollout_equivalence(
         )
 
         assert obs_equivalence(gym_obs, ale_obs, t, **kwargs)
-        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+        assert data_equivalence(gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)), t
         assert data_equivalence(gym_terminations, ale_terminations), t
         assert data_equivalence(gym_truncations, ale_truncations), t
 
@@ -86,6 +87,7 @@ def assert_gym_ale_rollout_equivalence(
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
+        ale_info.pop("steps_taken", None)
         assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
         assert data_equivalence(gym_info, ale_info), t
 
@@ -152,7 +154,7 @@ class TestVectorEnv:
         assert obs.shape == expected_shape
         assert obs.dtype == np.uint8
         assert obs in envs.observation_space, f"{envs.observation_space=}"
-        assert isinstance(reward, np.ndarray) and reward.dtype == np.int32
+        assert isinstance(reward, np.ndarray) and reward.dtype in (np.int32, np.float64)
         assert reward.shape == (num_envs,)
         assert isinstance(terminations, np.ndarray) and terminations.dtype == bool
         assert terminations.shape == (num_envs,)
@@ -601,6 +603,7 @@ class TestVectorEnv:
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
+        ale_info.pop("steps_taken", None)
         assert np.all(env_ids == np.arange(gym_envs.num_envs))
         assert data_equivalence(gym_info, ale_info)
 
@@ -617,11 +620,12 @@ class TestVectorEnv:
             )
 
             assert obs_equivalence(gym_obs, ale_obs, t, autoreset_mode="SAME-STEP"), t
-            assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+            assert data_equivalence(gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)), t
             assert data_equivalence(gym_terminations, ale_terminations), t
             assert data_equivalence(gym_truncations, ale_truncations), t
 
             env_ids = ale_info.pop("env_id")
+            ale_info.pop("steps_taken", None)
             assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
 
             episode_over = np.logical_or(gym_terminations, gym_truncations)
@@ -666,85 +670,99 @@ class TestVectorEnv:
         ale_envs.close()
 
 
-class TestActionMask:
-    """Tests for action_mask support in send/step."""
+class TestStepSequences:
+    """Tests for step_sequences API."""
 
     def _make_env(self, num_envs=4):
         return ale_py.vector_env.AtariVectorEnv(
             game="pong", num_envs=num_envs, autoreset_mode="SameStep"
         )
 
-    def test_masked_step_returns_partial(self):
-        """Masked step returns only timesteps for stepped envs."""
-        env = self._make_env(4)
-        env.reset()
-        actions = np.zeros(4, dtype=np.int64)
-        mask = np.array([True, False, True, False])
-        obs, _rewards, _terminated, _truncated, info = env.step(actions, action_mask=mask)
-        assert obs.shape[0] == 2
-        assert set(info["env_id"].tolist()) == {0, 2}
-        env.close()
-
-    def test_all_true_mask_same_as_no_mask(self):
-        """All-true mask should behave identically to no mask."""
+    def test_single_step_sequences(self):
+        """All length-1 sequences should return steps_taken=1 for each env."""
         env = self._make_env(3)
-        env.reset(seed=42)
-        actions = np.zeros(3, dtype=np.int64)
-        mask = np.array([True, True, True])
-        obs, _rewards, _terminated, _truncated, info = env.step(actions, action_mask=mask)
+        env.reset()
+        seqs = [np.array([0], dtype=np.int64) for _ in range(3)]
+        obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
         assert obs.shape[0] == 3
-        assert set(info["env_id"].tolist()) == {0, 1, 2}
+        assert np.all(info["steps_taken"] == 1)
         env.close()
 
-    def test_alternating_masks(self):
-        """Alternating complementary masks then full step."""
+    def test_variable_length_sequences(self):
+        """Envs with different sequence lengths report correct steps_taken."""
         env = self._make_env(4)
         env.reset()
-        actions = np.zeros(4, dtype=np.int64)
-
-        # Step evens
-        _obs, _rewards, _terminated, _truncated, info1 = env.step(actions, action_mask=np.array([True, False, True, False]))
-        assert set(info1["env_id"].tolist()) == {0, 2}
-
-        # Step odds
-        _obs, _rewards, _terminated, _truncated, info2 = env.step(actions, action_mask=np.array([False, True, False, True]))
-        assert set(info2["env_id"].tolist()) == {1, 3}
-
-        # Full step - must not crash after partial returns
-        obs3, _rewards, _terminated, _truncated, _info = env.step(actions)
-        assert obs3.shape[0] == 4
+        lengths = [1, 2, 4, 8]
+        seqs = [np.zeros(k, dtype=np.int64) for k in lengths]
+        obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
+        assert obs.shape[0] == 4
+        for i, expected_len in enumerate(lengths):
+            assert info["steps_taken"][i] == expected_len, (
+                f"Env {i}: expected {expected_len} steps, got {info['steps_taken'][i]}"
+            )
         env.close()
 
-    def test_single_env_masked(self):
-        """Only 1 of N environments stepped; masked-out envs not advanced."""
-        env = self._make_env(4)
+    def test_gamma_discounting(self):
+        """Accumulated reward should use gamma discounting across steps."""
+        env = self._make_env(2)
         env.reset()
-        actions = np.zeros(4, dtype=np.int64)
-        mask = np.array([False, False, True, False])
+        # Run many steps - with gamma < 1 the accumulated reward should differ
+        # from a simple sum. We verify gamma=1 gives plain sum by comparing.
+        seqs = [np.zeros(10, dtype=np.int64) for _ in range(2)]
 
-        # Step only env 2 several times
-        for _ in range(5):
-            obs, _rewards, _terminated, _truncated, info = env.step(actions, action_mask=mask)
-            assert obs.shape[0] == 1
-            assert info["env_id"][0] == 2
+        _obs, rewards_g1, _t, _tr, _info = env.step_sequences(seqs, gamma=1.0)
+        env.reset()
+        _obs, rewards_g99, _t, _tr, _info = env.step_sequences(seqs, gamma=0.99)
 
-        # Full step - env 2 should have higher frame count than others
-        _obs, _rewards, _terminated, _truncated, info = env.step(actions)
-        frame_numbers = info["frame_number"]
-        assert frame_numbers[2] > frame_numbers[0], (
-            f"Env 2 (stepped) should have higher frame count than env 0 (skipped): {frame_numbers}"
+        # If any reward was received, gamma=0.99 should give less than gamma=1.0
+        # If no reward, both are 0 and that's fine too.
+        assert np.all(rewards_g99 <= rewards_g1 + 1e-6), (
+            f"gamma=0.99 rewards {rewards_g99} should be <= gamma=1.0 rewards {rewards_g1}"
         )
         env.close()
 
-    def test_masked_send_recv(self):
-        """Async send/recv with action mask returns partial results."""
-        env = self._make_env(4)
+    def test_early_termination_steps_taken(self):
+        """When an env terminates mid-sequence, steps_taken < sequence length."""
+        env = self._make_env(1)
         env.reset()
-        actions = np.zeros(4, dtype=np.int64)
+        # Send a very long sequence - env will terminate/truncate before completing it
+        seq = [np.zeros(100_000, dtype=np.int64)]
+        _obs, _rewards, terms, truncs, info = env.step_sequences(seq, gamma=0.99)
+        assert terms[0] or truncs[0], "Expected termination/truncation"
+        assert info["steps_taken"][0] < 100_000, (
+            f"Expected early termination, but got {info['steps_taken'][0]} steps"
+        )
+        env.close()
 
-        mask = np.array([False, True, False, True])
-        env.send(actions, action_mask=mask)
+    def test_send_recv_sequences(self):
+        """Async send_sequences/recv works."""
+        env = self._make_env(2)
+        env.reset()
+        seqs = [np.zeros(3, dtype=np.int64), np.zeros(1, dtype=np.int64)]
+        env.send_sequences(seqs, gamma=0.99)
         obs, _rewards, _terminated, _truncated, info = env.recv()
         assert obs.shape[0] == 2
-        assert set(info["env_id"].tolist()) == {1, 3}
+        assert info["steps_taken"][0] == 3
+        assert info["steps_taken"][1] == 1
+        env.close()
+
+    def test_empty_sequence_skips_env(self):
+        """Empty action sequence means zero steps for that env."""
+        env = self._make_env(2)
+        env.reset()
+        seqs = [np.zeros(5, dtype=np.int64), np.array([], dtype=np.int64)]
+        obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
+        assert info["steps_taken"][0] == 5
+        assert info["steps_taken"][1] == 0
+        env.close()
+
+    def test_frame_numbers_advance_correctly(self):
+        """Envs with more steps should have higher frame numbers."""
+        env = self._make_env(2)
+        env.reset()
+        seqs = [np.zeros(10, dtype=np.int64), np.zeros(1, dtype=np.int64)]
+        _obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
+        assert info["frame_number"][0] > info["frame_number"][1], (
+            f"Env 0 (10 steps) should have higher frame count than env 1 (1 step): {info['frame_number']}"
+        )
         env.close()

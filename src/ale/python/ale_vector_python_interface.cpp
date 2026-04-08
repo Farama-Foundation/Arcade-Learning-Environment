@@ -112,9 +112,15 @@ void init_vector_module(nb::module_& m) {
 
             return nb::make_tuple(observations, info);
         })
-        .def("send", [](ale::vector::ALEVectorInterface& self, const std::vector<int> action_ids, const std::vector<float> paddle_strengths, const std::vector<bool> action_mask) {
-            self.send(action_ids, paddle_strengths, action_mask);
-        }, nb::arg("action_ids"), nb::arg("paddle_strengths"), nb::arg("action_mask") = std::vector<bool>())
+        .def("send", [](ale::vector::ALEVectorInterface& self, const std::vector<int> action_ids, const std::vector<float> paddle_strengths) {
+            self.send(action_ids, paddle_strengths);
+        }, nb::arg("action_ids"), nb::arg("paddle_strengths"))
+        .def("send_sequences", [](ale::vector::ALEVectorInterface& self,
+                const std::vector<std::vector<int>>& action_id_sequences,
+                const std::vector<std::vector<float>>& paddle_strength_sequences,
+                float gamma) {
+            self.send_sequences(action_id_sequences, paddle_strength_sequences, gamma);
+        }, nb::arg("action_id_sequences"), nb::arg("paddle_strength_sequences"), nb::arg("gamma"))
         .def("recv", [](ale::vector::ALEVectorInterface& self) {
             const auto timesteps = self.recv();
             nb::gil_scoped_acquire acquire;
@@ -131,13 +137,14 @@ void init_vector_module(nb::module_& m) {
             // Allocate memory for arrays
             size_t obs_total_size = batch_size * stack_num * height * width * channels;
             uint8_t* obs_data = new uint8_t[obs_total_size];
-            int* rewards_data = new int[batch_size];
+            double* rewards_data = new double[batch_size];
             bool* terminations_data = new bool[batch_size];
             bool* truncations_data = new bool[batch_size];
             int* env_ids_data = new int[batch_size];
             int* lives_data = new int[batch_size];
             int* frame_numbers_data = new int[batch_size];
             int* episode_frame_numbers_data = new int[batch_size];
+            int* steps_taken_data = new int[batch_size];
 
             // Copy data from timesteps to arrays
             const size_t obs_size = stack_num * height * width * channels;
@@ -159,17 +166,19 @@ void init_vector_module(nb::module_& m) {
                 lives_data[i] = timestep.lives;
                 frame_numbers_data[i] = timestep.frame_number;
                 episode_frame_numbers_data[i] = timestep.episode_frame_number;
+                steps_taken_data[i] = timestep.steps_taken;
             }
 
             // Create capsules for cleanup
             nb::capsule obs_owner(obs_data, [](void *p) noexcept { delete[] (uint8_t *) p; });
-            nb::capsule rewards_owner(rewards_data, [](void *p) noexcept { delete[] (int *) p; });
+            nb::capsule rewards_owner(rewards_data, [](void *p) noexcept { delete[] (double *) p; });
             nb::capsule terminations_owner(terminations_data, [](void *p) noexcept { delete[] (bool *) p; });
             nb::capsule truncations_owner(truncations_data, [](void *p) noexcept { delete[] (bool *) p; });
             nb::capsule env_ids_owner(env_ids_data, [](void *p) noexcept { delete[] (int *) p; });
             nb::capsule lives_owner(lives_data, [](void *p) noexcept { delete[] (int *) p; });
             nb::capsule frame_numbers_owner(frame_numbers_data, [](void *p) noexcept { delete[] (int *) p; });
             nb::capsule episode_frame_numbers_owner(episode_frame_numbers_data, [](void *p) noexcept { delete[] (int *) p; });
+            nb::capsule steps_taken_owner(steps_taken_data, [](void *p) noexcept { delete[] (int *) p; });
 
             // Create numpy arrays with allocated data
             nb::ndarray<nb::numpy, uint8_t> observations;
@@ -182,13 +191,14 @@ void init_vector_module(nb::module_& m) {
             }
 
             size_t info_shape[1] = {(size_t)batch_size};
-            auto rewards = nb::ndarray<nb::numpy, int>(rewards_data, 1, info_shape, rewards_owner);
+            auto rewards = nb::ndarray<nb::numpy, double>(rewards_data, 1, info_shape, rewards_owner);
             auto terminations = nb::ndarray<nb::numpy, bool>(terminations_data, 1, info_shape, terminations_owner);
             auto truncations = nb::ndarray<nb::numpy, bool>(truncations_data, 1, info_shape, truncations_owner);
             auto env_ids = nb::ndarray<nb::numpy, int>(env_ids_data, 1, info_shape, env_ids_owner);
             auto lives = nb::ndarray<nb::numpy, int>(lives_data, 1, info_shape, lives_owner);
             auto frame_numbers = nb::ndarray<nb::numpy, int>(frame_numbers_data, 1, info_shape, frame_numbers_owner);
             auto episode_frame_numbers = nb::ndarray<nb::numpy, int>(episode_frame_numbers_data, 1, info_shape, episode_frame_numbers_owner);
+            auto steps_taken = nb::ndarray<nb::numpy, int>(steps_taken_data, 1, info_shape, steps_taken_owner);
 
             // Create info dict
             nb::dict info;
@@ -196,6 +206,7 @@ void init_vector_module(nb::module_& m) {
             info["lives"] = lives;
             info["frame_number"] = frame_numbers;
             info["episode_frame_number"] = episode_frame_numbers;
+            info["steps_taken"] = steps_taken;
 
             if (autoreset_mode == ale::vector::AutoresetMode::SameStep) {
                 bool any_terminated = std::any_of(terminations_data, terminations_data + batch_size, [](bool b) { return b; });

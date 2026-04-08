@@ -155,41 +155,62 @@ namespace ale::vector {
          *
          * @param action_ids Vector of actions ids to take
          * @param paddle_strengths Vector of paddle strengths to take
-         * @param action_mask Optional mask - if provided, only step envs where mask is true
          */
-        void send(const std::vector<int>& action_ids, const std::vector<float>& paddle_strengths, const std::vector<bool>& action_mask = {}) {
+        void send(const std::vector<int>& action_ids, const std::vector<float>& paddle_strengths) const {
             if (action_ids.size() != paddle_strengths.size()) {
                 throw std::invalid_argument(
                     "The size of the action_ids is different from the paddle_strengths, action_ids length=" + std::to_string(action_ids.size())
                     + ", paddle_strengths length=" + std::to_string(paddle_strengths.size()));
             }
-
             std::vector<EnvironmentAction> environment_actions;
+            environment_actions.resize(action_ids.size());
 
-            if (action_mask.empty()) {
-                // No mask - step all envs as before
-                environment_actions.resize(action_ids.size());
-                for (size_t i = 0; i < action_ids.size(); i++) {
-                    EnvironmentAction env_action;
-                    env_action.env_id = received_env_ids_[i];
-                    env_action.action_id = action_ids[i];
-                    env_action.paddle_strength = paddle_strengths[i];
-                    environment_actions[i] = env_action;
-                }
-            } else {
-                // Mask provided - only step masked-in envs
-                for (size_t i = 0; i < action_ids.size(); i++) {
-                    if (action_mask[i]) {
-                        EnvironmentAction env_action;
-                        env_action.env_id = received_env_ids_[i];
-                        env_action.action_id = action_ids[i];
-                        env_action.paddle_strength = paddle_strengths[i];
-                        environment_actions.push_back(env_action);
-                    }
-                }
+            for (size_t i = 0; i < action_ids.size(); i++) {
+                EnvironmentAction env_action;
+                env_action.env_id = received_env_ids_[i];
+                env_action.action_id = action_ids[i];
+                env_action.paddle_strength = paddle_strengths[i];
+
+                environment_actions[i] = env_action;
             }
 
             vectorizer_->send(environment_actions);
+        }
+
+        /**
+         * Send variable-length action sequences to environments.
+         *
+         * @param action_id_sequences Per-env action sequences
+         * @param paddle_strength_sequences Per-env paddle strengths (matching action lengths)
+         * @param gamma Discount factor for reward accumulation across steps
+         */
+        void send_sequences(
+            const std::vector<std::vector<int>>& action_id_sequences,
+            const std::vector<std::vector<float>>& paddle_strength_sequences,
+            float gamma
+        ) {
+            if (action_id_sequences.size() != paddle_strength_sequences.size()) {
+                throw std::invalid_argument(
+                    "action_id_sequences and paddle_strength_sequences must have the same length");
+            }
+
+            std::vector<SequenceAction> sequences;
+            sequences.reserve(action_id_sequences.size());
+
+            for (size_t i = 0; i < action_id_sequences.size(); i++) {
+                if (action_id_sequences[i].size() != paddle_strength_sequences[i].size()) {
+                    throw std::invalid_argument(
+                        "action_ids and paddle_strengths must match for env " + std::to_string(i));
+                }
+                SequenceAction seq;
+                seq.env_id = received_env_ids_[i];
+                seq.action_ids = action_id_sequences[i];
+                seq.paddle_strengths = paddle_strength_sequences[i];
+                seq.gamma = gamma;
+                sequences.push_back(seq);
+            }
+
+            vectorizer_->send_sequences(sequences);
         }
 
         /**
@@ -197,13 +218,8 @@ namespace ale::vector {
         */
         const std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = vectorizer_->recv();
-            // Only update the full mapping on complete returns.
-            // Partial returns (from masked send) leave the mapping intact
-            // so the next send() can still index all positions correctly.
-            if (timesteps.size() == received_env_ids_.size()) {
-                for (size_t i = 0; i < timesteps.size(); i++) {
-                    received_env_ids_[i] = timesteps[i].env_id;
-                }
+            for (size_t i = 0; i < timesteps.size(); i++) {
+                received_env_ids_[i] = timesteps[i].env_id;
             }
             return timesteps;
         }

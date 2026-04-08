@@ -33,17 +33,28 @@ namespace ale::vector {
     };
 
     /**
+     * SequenceAction represents a variable-length sequence of actions for one environment
+     */
+    struct SequenceAction {
+        int env_id;                          // ID of the environment
+        std::vector<int> action_ids;         // Sequence of action IDs to execute
+        std::vector<float> paddle_strengths; // Paddle strength per action
+        float gamma;                         // Discount factor for reward accumulation across steps
+    };
+
+    /**
      * Timestep represents the output from an environment step
      */
     struct Timestep {
         int env_id;                       // ID of the environment this observation is from
         std::vector<uint8_t> observation; // Screen pixel data
-        reward_t reward;                  // Reward received in this step
+        double reward;                    // Reward received (int for single step, float for sequences)
         bool terminated;                  // Whether the game ended
         bool truncated;                   // Whether the episode was truncated due to a time limit
         int lives;                        // Remaining lives in the game
         int frame_number;                 // Frame number since the beginning of the game
         int episode_frame_number;         // Frame number since the beginning of the episode
+        int steps_taken;                  // Number of steps actually executed (for step_sequences)
 
         std::vector<uint8_t>* final_observation; // Screen pixel data for previous episode last observation with Autoresetmode == SameStep
     };
@@ -132,7 +143,6 @@ namespace ale::vector {
     public:
         StateBuffer(const std::size_t batch_size, const std::size_t num_envs)
             : batch_size_(batch_size),
-              expected_count_(batch_size),
               num_envs_(num_envs),
               ordered_mode_(batch_size == num_envs),
               timesteps_(num_envs_),
@@ -144,19 +154,10 @@ namespace ale::vector {
         }
 
         /**
-         * Set expected count for next collect() call.
-         * Used for action masking where fewer than batch_size envs are stepped.
-         */
-        void set_expected_count(const std::size_t count) {
-            expected_count_ = count;
-        }
-
-        /**
          * Write a timestep to the buffer
          * Multiple threads can write simultaneously
          */
         void write(const Timestep& timestep) {
-            const auto expected = expected_count_.load();
             if (ordered_mode_) {
                 // In ordered mode, place timestep at env_id position
                 const int env_id = timestep.env_id;
@@ -164,8 +165,8 @@ namespace ale::vector {
 
                 // Atomically increment count and check if batch is ready
                 const auto old_count = count_.fetch_add(1);
-                if (old_count + 1 == expected) {
-                    // Exactly one thread will see count == expected in ordered mode
+                if (old_count + 1 == batch_size_) {
+                    // Exactly one thread will see count == batch_size_ in ordered mode
                     sem_ready_.signal(1);
                 }
             } else {
@@ -177,7 +178,7 @@ namespace ale::vector {
                 // Atomically increment count and check if batch is ready
                 const auto old_count = count_.fetch_add(1);
                 // Signal if we just crossed a batch boundary
-                if ((old_count + 1) / expected > old_count / expected) {
+                if ((old_count + 1) / batch_size_ > old_count / batch_size_) {
                     sem_ready_.signal(1);
                 }
             }
@@ -188,54 +189,35 @@ namespace ale::vector {
          *
          * @return Vector of timesteps
          */
-        /**
-         * Collect timesteps when ready and return them.
-         *
-         * @param active_env_ids If non-empty, collect only these env_ids (ordered mode only).
-         *                       If empty, collect all batch_size_ items as before.
-         * @return Vector of timesteps
-         */
-        std::vector<Timestep> collect(const std::vector<int>& active_env_ids = {}) {
+        std::vector<Timestep> collect() {
             // Wait until a batch is ready
             while (!sem_ready_.wait()) {}
 
             // Acquire read semaphore
             while (!sem_read_.wait()) {}
 
-            const auto expected = expected_count_.load();
-
             // Collect the results
             std::vector<Timestep> result;
-            result.reserve(expected);
+            result.reserve(batch_size_);
 
             if (ordered_mode_) {
-                if (!active_env_ids.empty()) {
-                    // Collect only the env_ids that were stepped
-                    for (const int env_id : active_env_ids) {
-                        result.push_back(std::move(timesteps_[env_id]));
-                    }
-                } else {
-                    // Default: read all in env_id order
-                    for (size_t i = 0; i < expected; ++i) {
-                        result.push_back(std::move(timesteps_[i]));
-                    }
+                // In ordered mode, read in env_id order
+                for (size_t i = 0; i < batch_size_; ++i) {
+                    result.push_back(std::move(timesteps_[i]));
                 }
 
                 // Reset count for ordered mode (all items consumed)
                 count_.store(0);
             } else {
                 // In unordered mode, read from circular buffer
-                for (size_t i = 0; i < expected; ++i) {
+                for (size_t i = 0; i < batch_size_; ++i) {
                     const auto idx = read_idx_.fetch_add(1) % num_envs_;
                     result.push_back(std::move(timesteps_[idx]));
                 }
 
-                // Atomically decrease count by expected
-                count_.fetch_sub(expected);
+                // Atomically decrease count by batch_size_
+                count_.fetch_sub(batch_size_);
             }
-
-            // Reset expected count to default batch_size
-            expected_count_.store(batch_size_);
 
             // Release read semaphore
             sem_read_.signal(1);
@@ -251,8 +233,7 @@ namespace ale::vector {
         }
 
     private:
-        const std::size_t batch_size_;                    // Size of each batch (default)
-        std::atomic<std::size_t> expected_count_;         // Expected count for next collect (may differ from batch_size_ with masking)
+        const std::size_t batch_size_;                    // Size of each batch
         const std::size_t num_envs_;                      // Number of environments
         const bool ordered_mode_;                         // Whether we're in ordered mode
         std::vector<Timestep> timesteps_;                 // Buffer for timesteps

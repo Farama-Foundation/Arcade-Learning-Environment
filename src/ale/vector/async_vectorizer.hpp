@@ -121,8 +121,6 @@ namespace ale::vector {
          * @param actions Vector of actions to send to the sub-environments
          */
         void send(const std::vector<EnvironmentAction>& actions) {
-            active_env_ids_.clear();
-
             std::vector<ActionSlice> action_slices;
             action_slices.reserve(actions.size());
 
@@ -135,12 +133,6 @@ namespace ale::vector {
                 action.force_reset = false;
 
                 action_slices.emplace_back(action);
-                active_env_ids_.push_back(env_id);
-            }
-
-            // Set expected count for StateBuffer if fewer than batch_size
-            if (actions.size() != static_cast<size_t>(batch_size_)) {
-                state_buffer_->set_expected_count(actions.size());
             }
 
             action_queue_->enqueue_bulk(action_slices);
@@ -153,9 +145,32 @@ namespace ale::vector {
          * @return Vector of timesteps from the environments
          */
         const std::vector<Timestep> recv() {
-            std::vector<Timestep> timesteps = state_buffer_->collect(active_env_ids_);
-            active_env_ids_.clear();
+            std::vector<Timestep> timesteps = state_buffer_->collect();
             return timesteps;
+        }
+
+        /**
+         * Send action sequences to the sub-environments.
+         * Each environment gets a variable-length sequence of actions.
+         *
+         * @param sequences Vector of SequenceAction, one per environment
+         */
+        void send_sequences(const std::vector<SequenceAction>& sequences) {
+            std::vector<ActionSlice> action_slices;
+            action_slices.reserve(sequences.size());
+
+            for (size_t i = 0; i < sequences.size(); i++) {
+                const int env_id = sequences[i].env_id;
+                envs_[env_id]->set_sequence_action(sequences[i]);
+
+                ActionSlice action;
+                action.env_id = env_id;
+                action.force_reset = false;
+
+                action_slices.emplace_back(action);
+            }
+
+            action_queue_->enqueue_bulk(action_slices);
         }
 
         /**
@@ -199,7 +214,6 @@ namespace ale::vector {
         std::unique_ptr<StateBuffer> state_buffer_;       // Queue for observations
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
-        std::vector<int> active_env_ids_;                              // Env IDs from last send (for masked collect)
         mutable std::vector<std::vector<uint8_t>> final_obs_storage_;  // For same-step autoreset
 
         /**
@@ -214,11 +228,21 @@ namespace ale::vector {
                     }
 
                     const int env_id = action.env_id;
+
+                    // Choose step() or step_sequence() based on pending sequence
+                    auto do_step = [&]() {
+                        if (envs_[env_id]->has_sequence()) {
+                            envs_[env_id]->step_sequence();
+                        } else {
+                            envs_[env_id]->step();
+                        }
+                    };
+
                     if (autoreset_mode_ == AutoresetMode::NextStep) {
                         if (action.force_reset || envs_[env_id]->is_episode_over()) {
                             envs_[env_id]->reset();
                         } else {
-                            envs_[env_id]->step();
+                            do_step();
                         }
 
                         // Get timestep and write to state buffer
@@ -233,7 +257,7 @@ namespace ale::vector {
                             timestep.final_observation = nullptr;
                             state_buffer_->write(timestep);
                         } else {
-                            envs_[env_id]->step();
+                            do_step();
                             Timestep step_timestep = envs_[env_id]->get_timestep();
 
                             // if episode over, autoreset
@@ -247,6 +271,7 @@ namespace ale::vector {
                                 reset_timestep.reward = step_timestep.reward;
                                 reset_timestep.terminated = step_timestep.terminated;
                                 reset_timestep.truncated = step_timestep.truncated;
+                                reset_timestep.steps_taken = step_timestep.steps_taken;
 
                                 // Write the reset timestep with the some of the step timestep data
                                 state_buffer_->write(reset_timestep);
