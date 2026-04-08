@@ -181,14 +181,27 @@ class AtariVectorEnv(VectorEnv):
         return self.ale.reset(reset_indices, reset_seeds)
 
     def step(
-        self, actions: np.ndarray
+        self, actions: np.ndarray, action_mask: np.ndarray | None = None
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, np.ndarray]]:
         """Steps through the sub-environments for which the actions are taken, return arrays for the next observations, rewards, termination, truncation and info."""
-        self.send(actions)
+        self.send(actions, action_mask=action_mask)
         return self.ale.recv()
 
-    def send(self, actions: np.ndarray):
-        """Send the actions to the sub-environments."""
+    def send(self, actions: np.ndarray, action_mask: np.ndarray | None = None):
+        """Send the actions to the sub-environments.
+
+        Args:
+            actions: Actions array for all environments.
+            action_mask: Optional boolean mask of shape (num_envs,). If provided,
+                only environments where mask is True will be stepped.
+        """
+        mask_list = []
+        if action_mask is not None:
+            assert isinstance(action_mask, np.ndarray)
+            assert action_mask.dtype == np.bool_
+            assert action_mask.shape == (self.batch_size,)
+            mask_list = action_mask.tolist()
+
         if self.continuous:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.float32
@@ -211,7 +224,7 @@ class AtariVectorEnv(VectorEnv):
 
             action_ids = self.map_action_idx[horizontal, vertical, fire]
             paddle_strength = actions[:, 0]
-            self.ale.send(action_ids, paddle_strength)
+            self.ale.send(action_ids, paddle_strength, mask_list)
         else:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.int64 or actions.dtype == np.int32
@@ -220,7 +233,7 @@ class AtariVectorEnv(VectorEnv):
             ), f"{actions.shape=}, {self.batch_size=}"
 
             paddle_strength = np.ones(self.batch_size)
-            self.ale.send(actions, paddle_strength)
+            self.ale.send(actions, paddle_strength, mask_list)
 
     def recv(
         self,

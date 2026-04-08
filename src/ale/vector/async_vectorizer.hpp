@@ -121,6 +121,8 @@ namespace ale::vector {
          * @param actions Vector of actions to send to the sub-environments
          */
         void send(const std::vector<EnvironmentAction>& actions) {
+            active_env_ids_.clear();
+
             std::vector<ActionSlice> action_slices;
             action_slices.reserve(actions.size());
 
@@ -133,6 +135,12 @@ namespace ale::vector {
                 action.force_reset = false;
 
                 action_slices.emplace_back(action);
+                active_env_ids_.push_back(env_id);
+            }
+
+            // Set expected count for StateBuffer if fewer than batch_size
+            if (actions.size() != static_cast<size_t>(batch_size_)) {
+                state_buffer_->set_expected_count(actions.size());
             }
 
             action_queue_->enqueue_bulk(action_slices);
@@ -145,7 +153,8 @@ namespace ale::vector {
          * @return Vector of timesteps from the environments
          */
         const std::vector<Timestep> recv() {
-            std::vector<Timestep> timesteps = state_buffer_->collect();
+            std::vector<Timestep> timesteps = state_buffer_->collect(active_env_ids_);
+            active_env_ids_.clear();
             return timesteps;
         }
 
@@ -190,6 +199,7 @@ namespace ale::vector {
         std::unique_ptr<StateBuffer> state_buffer_;       // Queue for observations
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
+        std::vector<int> active_env_ids_;                              // Env IDs from last send (for masked collect)
         mutable std::vector<std::vector<uint8_t>> final_obs_storage_;  // For same-step autoreset
 
         /**

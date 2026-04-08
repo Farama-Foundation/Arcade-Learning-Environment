@@ -664,3 +664,87 @@ class TestVectorEnv:
 
         gym_envs.close()
         ale_envs.close()
+
+
+class TestActionMask:
+    """Tests for action_mask support in send/step."""
+
+    def _make_env(self, num_envs=4):
+        return ale_py.vector_env.AtariVectorEnv(
+            game="pong", num_envs=num_envs, autoreset_mode="SameStep"
+        )
+
+    def test_masked_step_returns_partial(self):
+        """Masked step returns only timesteps for stepped envs."""
+        env = self._make_env(4)
+        env.reset()
+        actions = np.zeros(4, dtype=np.int64)
+        mask = np.array([True, False, True, False])
+        obs, _rewards, _terminated, _truncated, info = env.step(actions, action_mask=mask)
+        assert obs.shape[0] == 2
+        assert set(info["env_id"].tolist()) == {0, 2}
+        env.close()
+
+    def test_all_true_mask_same_as_no_mask(self):
+        """All-true mask should behave identically to no mask."""
+        env = self._make_env(3)
+        env.reset(seed=42)
+        actions = np.zeros(3, dtype=np.int64)
+        mask = np.array([True, True, True])
+        obs, _rewards, _terminated, _truncated, info = env.step(actions, action_mask=mask)
+        assert obs.shape[0] == 3
+        assert set(info["env_id"].tolist()) == {0, 1, 2}
+        env.close()
+
+    def test_alternating_masks(self):
+        """Alternating complementary masks then full step."""
+        env = self._make_env(4)
+        env.reset()
+        actions = np.zeros(4, dtype=np.int64)
+
+        # Step evens
+        _obs, _rewards, _terminated, _truncated, info1 = env.step(actions, action_mask=np.array([True, False, True, False]))
+        assert set(info1["env_id"].tolist()) == {0, 2}
+
+        # Step odds
+        _obs, _rewards, _terminated, _truncated, info2 = env.step(actions, action_mask=np.array([False, True, False, True]))
+        assert set(info2["env_id"].tolist()) == {1, 3}
+
+        # Full step - must not crash after partial returns
+        obs3, _rewards, _terminated, _truncated, _info = env.step(actions)
+        assert obs3.shape[0] == 4
+        env.close()
+
+    def test_single_env_masked(self):
+        """Only 1 of N environments stepped; masked-out envs not advanced."""
+        env = self._make_env(4)
+        env.reset()
+        actions = np.zeros(4, dtype=np.int64)
+        mask = np.array([False, False, True, False])
+
+        # Step only env 2 several times
+        for _ in range(5):
+            obs, _rewards, _terminated, _truncated, info = env.step(actions, action_mask=mask)
+            assert obs.shape[0] == 1
+            assert info["env_id"][0] == 2
+
+        # Full step - env 2 should have higher frame count than others
+        _obs, _rewards, _terminated, _truncated, info = env.step(actions)
+        frame_numbers = info["frame_number"]
+        assert frame_numbers[2] > frame_numbers[0], (
+            f"Env 2 (stepped) should have higher frame count than env 0 (skipped): {frame_numbers}"
+        )
+        env.close()
+
+    def test_masked_send_recv(self):
+        """Async send/recv with action mask returns partial results."""
+        env = self._make_env(4)
+        env.reset()
+        actions = np.zeros(4, dtype=np.int64)
+
+        mask = np.array([False, True, False, True])
+        env.send(actions, action_mask=mask)
+        obs, _rewards, _terminated, _truncated, info = env.recv()
+        assert obs.shape[0] == 2
+        assert set(info["env_id"].tolist()) == {1, 3}
+        env.close()

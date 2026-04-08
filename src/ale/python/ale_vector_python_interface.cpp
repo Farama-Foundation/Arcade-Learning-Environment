@@ -112,9 +112,9 @@ void init_vector_module(nb::module_& m) {
 
             return nb::make_tuple(observations, info);
         })
-        .def("send", [](ale::vector::ALEVectorInterface& self, const std::vector<int> action_ids, const std::vector<float> paddle_strengths) {
-            self.send(action_ids, paddle_strengths);
-        })
+        .def("send", [](ale::vector::ALEVectorInterface& self, const std::vector<int> action_ids, const std::vector<float> paddle_strengths, const std::vector<bool> action_mask) {
+            self.send(action_ids, paddle_strengths, action_mask);
+        }, nb::arg("action_ids"), nb::arg("paddle_strengths"), nb::arg("action_mask") = std::vector<bool>())
         .def("recv", [](ale::vector::ALEVectorInterface& self) {
             const auto timesteps = self.recv();
             nb::gil_scoped_acquire acquire;
