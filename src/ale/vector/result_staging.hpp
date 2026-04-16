@@ -31,7 +31,8 @@ public:
           staged_count_(0),
           next_slot_(0),
           slots_available_(static_cast<int>(batch_size)),
-          batch_ready_(0) {}
+          batch_ready_(0),
+          stop_(false) {}
 
     /// Stage a result from a worker thread.
     /// In ordered mode: writes to slot[env_id]
@@ -47,6 +48,9 @@ public:
         } else {
             // Acquire a slot permit (blocks if batch is full)
             while (!slots_available_.wait()) {}
+            if (stop_.load(std::memory_order_acquire)) {
+                return;
+            }
             slot = next_slot_.fetch_add(1) % batch_size_;
         }
 
@@ -105,6 +109,15 @@ public:
     std::size_t obs_size() const { return obs_size_; }
     bool is_ordered() const { return ordered_mode_; }
 
+    /// Wake any workers blocked on slots_available_ so they can exit cleanly.
+    /// Used during shutdown — stage_result will early-return after the wait.
+    void request_stop() {
+        stop_.store(true, std::memory_order_release);
+        // Signal more permits than there can ever be blocked workers
+        // (bounded by num_envs since each env produces at most one pending result).
+        slots_available_.signal(static_cast<int>(num_envs_ + batch_size_));
+    }
+
 private:
     const std::size_t batch_size_;
     const std::size_t num_envs_;
@@ -119,6 +132,7 @@ private:
 
     moodycamel::LightweightSemaphore slots_available_;  // Permits for staging (unordered only)
     moodycamel::LightweightSemaphore batch_ready_;      // Signaled when batch is full
+    std::atomic<bool> stop_;                            // Shutdown flag for stage_result
 };
 
 }  // namespace ale::vector

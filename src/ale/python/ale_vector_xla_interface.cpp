@@ -308,16 +308,19 @@ ffi::Error XLAStepImpl(
                 handle_buffer.element_count());
 
     try {
-        size_t num_envs = vectorizer->num_envs();
+        // send() and recv() operate on batch_size actions/results, not num_envs.
+        // Python-side xla_step sends action buffers sized to batch_size and
+        // allocates result buffers sized to batch_size, so match here.
+        size_t batch_size = vectorizer->batch_size();
 
-        if (action_id_buffer.element_count() != num_envs) {
+        if (action_id_buffer.element_count() != batch_size) {
             return ffi::Error::Internal("Action id buffer is the wrong size");
-        } else if (paddle_strength_buffer.element_count() != num_envs) {
+        } else if (paddle_strength_buffer.element_count() != batch_size) {
             return ffi::Error::Internal("Paddle strength buffer is the wrong size");
         }
 
-        std::vector<ale::vector::Action> actions(num_envs);
-        for (size_t i = 0; i < num_envs; ++i) {
+        std::vector<ale::vector::Action> actions(batch_size);
+        for (size_t i = 0; i < batch_size; ++i) {
             actions[i].env_id = static_cast<int>(i);
             actions[i].action_id = action_id_buffer.typed_data()[i];
             actions[i].paddle_strength = paddle_strength_buffer.typed_data()[i];
@@ -330,32 +333,32 @@ ffi::Error XLAStepImpl(
         // Receive the results
         auto result = vectorizer->recv();
 
-        size_t batch_size = result.batch_size();
+        size_t result_batch_size = result.batch_size();
         size_t stacked_obs_size = vectorizer->stacked_obs_size();
 
         // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() != batch_size * stacked_obs_size) {
+        if (observations_buffer->element_count() != result_batch_size * stacked_obs_size) {
             return ffi::Error::Internal("Observations buffer is the wrong size");
         }
 
         // Copy data from BatchResult to output buffers
         std::memcpy(observations_buffer->typed_data(), result.obs_data(),
-                    batch_size * stacked_obs_size);
+                    result_batch_size * stacked_obs_size);
         std::memcpy(rewards_buffer->typed_data(), result.rewards_data(),
-                    batch_size * sizeof(int32_t));
+                    result_batch_size * sizeof(int32_t));
         std::memcpy(env_id_buffer->typed_data(), result.env_ids_data(),
-                    batch_size * sizeof(int32_t));
+                    result_batch_size * sizeof(int32_t));
         std::memcpy(lives_buffer->typed_data(), result.lives_data(),
-                    batch_size * sizeof(int32_t));
+                    result_batch_size * sizeof(int32_t));
         std::memcpy(frame_numbers_buffer->typed_data(), result.frame_numbers_data(),
-                    batch_size * sizeof(int32_t));
+                    result_batch_size * sizeof(int32_t));
         std::memcpy(episode_frame_numbers_buffer->typed_data(), result.episode_frame_numbers_data(),
-                    batch_size * sizeof(int32_t));
+                    result_batch_size * sizeof(int32_t));
 
         // Copy bools element-wise (bool* to PRED buffer)
         const bool* term_data = result.terminations_data();
         const bool* trunc_data = result.truncations_data();
-        for (size_t i = 0; i < batch_size; ++i) {
+        for (size_t i = 0; i < result_batch_size; ++i) {
             terminations_buffer->typed_data()[i] = term_data[i];
             truncations_buffer->typed_data()[i] = trunc_data[i];
         }
@@ -447,27 +450,28 @@ ffi::Error XLAStepGPUImpl(
     }
 
     try {
-        size_t num_envs = vectorizer->num_envs();
+        // send() and recv() operate on batch_size actions/results, not num_envs.
+        size_t batch_size = vectorizer->batch_size();
 
-        if (action_id_buffer.element_count() != num_envs) {
+        if (action_id_buffer.element_count() != batch_size) {
             return ffi::Error::Internal("Action id buffer is the wrong size (GPU)");
-        } else if (paddle_strength_buffer.element_count() != num_envs) {
+        } else if (paddle_strength_buffer.element_count() != batch_size) {
             return ffi::Error::Internal("Paddle strength buffer is the wrong size (GPU)");
         }
 
         // Copy action IDs and paddle strength from GPU to CPU
-        std::vector<int32_t> host_action_ids(num_envs);
-        std::vector<float> host_paddle_strength(num_envs);
+        std::vector<int32_t> host_action_ids(batch_size);
+        std::vector<float> host_paddle_strength(batch_size);
 
         err = cudaMemcpyAsync(host_action_ids.data(), action_id_buffer.typed_data(),
-                              num_envs * sizeof(int32_t),
+                              batch_size * sizeof(int32_t),
                               cudaMemcpyDeviceToHost, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (actions D2H): ") + cudaGetErrorString(err));
         }
 
         err = cudaMemcpyAsync(host_paddle_strength.data(), paddle_strength_buffer.typed_data(),
-                              num_envs * sizeof(float),
+                              batch_size * sizeof(float),
                               cudaMemcpyDeviceToHost, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (paddle D2H): ") + cudaGetErrorString(err));
@@ -480,8 +484,8 @@ ffi::Error XLAStepGPUImpl(
         }
 
         // Prepare actions for vectorizer
-        std::vector<ale::vector::Action> actions(num_envs);
-        for (size_t i = 0; i < num_envs; ++i) {
+        std::vector<ale::vector::Action> actions(batch_size);
+        for (size_t i = 0; i < batch_size; ++i) {
             actions[i].env_id = static_cast<int>(i);
             actions[i].action_id = host_action_ids[i];
             actions[i].paddle_strength = host_paddle_strength[i];
@@ -494,76 +498,76 @@ ffi::Error XLAStepGPUImpl(
         // Receive the results
         auto result = vectorizer->recv();
 
-        size_t batch_size = result.batch_size();
+        size_t result_batch_size = result.batch_size();
         size_t stacked_obs_size = vectorizer->stacked_obs_size();
 
         // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() != batch_size * stacked_obs_size) {
+        if (observations_buffer->element_count() != result_batch_size * stacked_obs_size) {
             return ffi::Error::Internal("Observations buffer is the wrong size (GPU)");
         }
 
         // Copy data from BatchResult to GPU buffers via host memory
         err = cudaMemcpyAsync(observations_buffer->typed_data(), result.obs_data(),
-                              batch_size * stacked_obs_size,
+                              result_batch_size * stacked_obs_size,
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (observations H2D): ") + cudaGetErrorString(err));
         }
 
         err = cudaMemcpyAsync(rewards_buffer->typed_data(), result.rewards_data(),
-                              batch_size * sizeof(int32_t),
+                              result_batch_size * sizeof(int32_t),
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (rewards H2D): ") + cudaGetErrorString(err));
         }
 
         err = cudaMemcpyAsync(env_id_buffer->typed_data(), result.env_ids_data(),
-                              batch_size * sizeof(int32_t),
+                              result_batch_size * sizeof(int32_t),
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (env_ids H2D): ") + cudaGetErrorString(err));
         }
 
         err = cudaMemcpyAsync(lives_buffer->typed_data(), result.lives_data(),
-                              batch_size * sizeof(int32_t),
+                              result_batch_size * sizeof(int32_t),
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (lives H2D): ") + cudaGetErrorString(err));
         }
 
         err = cudaMemcpyAsync(frame_numbers_buffer->typed_data(), result.frame_numbers_data(),
-                              batch_size * sizeof(int32_t),
+                              result_batch_size * sizeof(int32_t),
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (frame_numbers H2D): ") + cudaGetErrorString(err));
         }
 
         err = cudaMemcpyAsync(episode_frame_numbers_buffer->typed_data(), result.episode_frame_numbers_data(),
-                              batch_size * sizeof(int32_t),
+                              result_batch_size * sizeof(int32_t),
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (episode_frame_numbers H2D): ") + cudaGetErrorString(err));
         }
 
         // Copy bools element-wise to temporary buffer, then to GPU
-        std::vector<uint8_t> host_terminations(batch_size);
-        std::vector<uint8_t> host_truncations(batch_size);
+        std::vector<uint8_t> host_terminations(result_batch_size);
+        std::vector<uint8_t> host_truncations(result_batch_size);
         const bool* term_data = result.terminations_data();
         const bool* trunc_data = result.truncations_data();
-        for (size_t i = 0; i < batch_size; ++i) {
+        for (size_t i = 0; i < result_batch_size; ++i) {
             host_terminations[i] = term_data[i] ? 1 : 0;
             host_truncations[i] = trunc_data[i] ? 1 : 0;
         }
 
         err = cudaMemcpyAsync(terminations_buffer->typed_data(), host_terminations.data(),
-                              batch_size * sizeof(uint8_t),
+                              result_batch_size * sizeof(uint8_t),
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (terminations H2D): ") + cudaGetErrorString(err));
         }
 
         err = cudaMemcpyAsync(truncations_buffer->typed_data(), host_truncations.data(),
-                              batch_size * sizeof(uint8_t),
+                              result_batch_size * sizeof(uint8_t),
                               cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA memcpy failed (truncations H2D): ") + cudaGetErrorString(err));

@@ -87,7 +87,14 @@ EnvVectorizer::EnvVectorizer(
 EnvVectorizer::~EnvVectorizer() {
     stop_.store(true);
 
-    // Send dummy actions to wake up blocked workers
+    // Wake workers blocked on the result-staging slot semaphore (unordered mode).
+    // Without this, destruction deadlocks if any worker is waiting for a free
+    // slot because release_batch() is only called from recv().
+    if (staging_) {
+        staging_->request_stop();
+    }
+
+    // Send dummy actions to wake up workers blocked in the action queue
     std::vector<Action> wake_actions(workers_.size());
     for (auto& a : wake_actions) {
         a.env_id = 0;
@@ -108,11 +115,6 @@ BatchResult EnvVectorizer::reset(const std::vector<int>& env_ids, const std::vec
         throw std::invalid_argument("env_ids and seeds must have same size");
     }
 
-    // Release slots from previous batch (but not on first batch)
-    if (!first_batch_ && !staging_->is_ordered()) {
-        // For unordered mode, we need to handle this carefully
-        // The staging buffer was already released in recv()
-    }
     first_batch_ = false;
 
     // Set seeds and prepare actions
@@ -138,6 +140,11 @@ BatchResult EnvVectorizer::reset(const std::vector<int>& env_ids, const std::vec
 }
 
 void EnvVectorizer::send(const std::vector<Action>& actions) {
+    if (first_batch_) {
+        throw std::runtime_error(
+            "send() called before reset(); last_recv_env_ids_ is uninitialized"
+        );
+    }
     if (actions.size() != static_cast<std::size_t>(batch_size_)) {
         throw std::invalid_argument(
             "Expected " + std::to_string(batch_size_) + " actions, got " + std::to_string(actions.size())

@@ -116,7 +116,8 @@ private:
     std::exception_ptr error_;
     std::mutex error_mutex_;
 
-    // Track first batch for slot release
+    // True until the first reset() populates last_recv_env_ids_.
+    // send() checks this to reject calls that would misroute actions to env 0.
     bool first_batch_{true};
 
     /// Worker thread main loop

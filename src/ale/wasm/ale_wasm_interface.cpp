@@ -268,9 +268,11 @@ public:
         ALEState state = ale.cloneState();
         std::string serialized = state.serialize();
 
-        // Return as Uint8Array to preserve binary data
+        // Copy into a JS-owned Uint8Array so the view outlives this local buffer.
         std::vector<unsigned char> buffer(serialized.begin(), serialized.end());
-        return val(typed_memory_view(buffer.size(), buffer.data()));
+        return val::global("Uint8Array").new_(
+            typed_memory_view(buffer.size(), buffer.data())
+        );
     }
 
     void loadState(const val& uint8Array) {

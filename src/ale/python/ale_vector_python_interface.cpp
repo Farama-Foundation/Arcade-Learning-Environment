@@ -201,6 +201,7 @@ void init_vector_module(nb::module_& m) {
                 throw std::invalid_argument("action_ids and paddle_strengths must have same size");
             }
 
+            nb::gil_scoped_release release;
             std::vector<Action> actions;
             actions.reserve(action_ids.size());
             for (std::size_t i = 0; i < action_ids.size(); ++i) {
