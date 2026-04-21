@@ -37,6 +37,26 @@ void init_vector_module(nb::module_& m) {
              nb::arg("num_threads") = 0,
              nb::arg("thread_affinity_offset") = -1,
              nb::arg("autoreset_mode") = "NextStep")
+        .def(nb::init<const std::vector<fs::path>&, int, int, int, int, bool, bool, int, bool, bool, bool, bool, int, float, bool, int, int, int, std::string>(),
+             nb::arg("rom_paths"),
+             nb::arg("frame_skip") = 4,
+             nb::arg("stack_num") = 4,
+             nb::arg("img_height") = 84,
+             nb::arg("img_width") = 84,
+             nb::arg("grayscale") = true,
+             nb::arg("maxpool") = true,
+             nb::arg("noop_max") = 30,
+             nb::arg("use_fire_reset") = true,
+             nb::arg("episodic_life") = false,
+             nb::arg("life_loss_info") = false,
+             nb::arg("reward_clipping") = true,
+             nb::arg("max_episode_steps") = 108000,
+             nb::arg("repeat_action_probability") = 0.0f,
+             nb::arg("full_action_space") = false,
+             nb::arg("batch_size") = 0,
+             nb::arg("num_threads") = 0,
+             nb::arg("thread_affinity_offset") = -1,
+             nb::arg("autoreset_mode") = "NextStep")
         .def("reset", [](ale::vector::ALEVectorInterface& self, const std::vector<int> reset_indices, const std::vector<int> reset_seeds) {
             // Call C++ reset method with GIL released
             nb::gil_scoped_release release;
@@ -246,6 +266,7 @@ void init_vector_module(nb::module_& m) {
 
             return nb::make_tuple(observations, rewards, terminations, truncations, info);
         })
+        .def("num_actions", &ale::vector::ALEVectorInterface::num_actions)
         .def("get_action_set", &ale::vector::ALEVectorInterface::get_action_set)
         .def("get_num_envs", &ale::vector::ALEVectorInterface::get_num_envs)
         .def("get_observation_shape", [](ale::vector::ALEVectorInterface& self) {

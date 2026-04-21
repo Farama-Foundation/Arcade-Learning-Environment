@@ -369,6 +369,13 @@ namespace ale::vector {
         }
 
         /**
+         * Get the number of available actions for this ROM
+         */
+        int num_actions() const {
+            return static_cast<int>(action_set_.size());
+        }
+
+        /**
          * Get observation size
          */
         const int get_stacked_obs_size() const {

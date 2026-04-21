@@ -766,3 +766,83 @@ class TestStepSequences:
             f"Env 0 (10 steps) should have higher frame count than env 1 (1 step): {info['frame_number']}"
         )
         env.close()
+
+
+class TestMultiRomEnv:
+    """Tests for multi-ROM vector environment (different games per env)."""
+
+    def test_multi_rom_basic(self):
+        """Multi-ROM env returns correct obs shape and per-env action APIs."""
+        env = ale_py.vector_env.AtariVectorEnv(
+            game=["pong"] * 2 + ["breakout"] * 2, autoreset_mode="SameStep"
+        )
+        obs, _ = env.reset()
+        assert obs.shape == (4, 4, 84, 84), f"Expected (4,4,84,84), got {obs.shape}"
+        actions = np.zeros(4, dtype=np.int64)
+        obs, rewards, terms, truncs, info = env.step(actions)
+        assert obs.shape == (4, 4, 84, 84)
+        assert rewards.shape == (4,)
+        # num_actions
+        assert len(env.num_actions) == 4
+        assert env.num_actions[0] == env.num_actions[1]  # both pong
+        assert env.num_actions[2] == env.num_actions[3]  # both breakout
+        assert env.num_actions[0] != env.num_actions[2]  # pong != breakout
+        # action_set: each set length matches num_actions
+        assert len(env.action_set) == 4
+        for i, (action_set, n) in enumerate(zip(env.action_set, env.num_actions)):
+            assert len(action_set) == n, f"env {i}: action_set len {len(action_set)} != {n}"
+            assert all(isinstance(a, int) for a in action_set)
+        # Heterogeneous action spaces -> single_action_space is None
+        assert env.single_action_space is None
+        # action_space is MultiDiscrete with per-env limits
+        assert list(env.action_space.nvec) == env.num_actions
+        env.close()
+
+    def test_multi_rom_num_envs_inferred(self):
+        """num_envs is inferred from the game list length."""
+        env = ale_py.vector_env.AtariVectorEnv(game=["pong"] * 3)
+        assert env.num_envs == 3
+        env.close()
+
+    def test_multi_rom_num_envs_explicit_matches(self):
+        """Explicit num_envs matching list length is accepted."""
+        env = ale_py.vector_env.AtariVectorEnv(game=["pong"] * 2, num_envs=2)
+        assert env.num_envs == 2
+        env.close()
+
+    def test_multi_rom_num_envs_mismatch_raises(self):
+        """num_envs mismatching list length raises an error."""
+        with pytest.raises(AssertionError):
+            ale_py.vector_env.AtariVectorEnv(game=["pong"] * 2, num_envs=5)
+
+    def test_multi_rom_action_space_sample(self):
+        """action_space.sample() stays within each game's valid action count."""
+        env = ale_py.vector_env.AtariVectorEnv(
+            game=["pong"] * 2 + ["breakout"] * 2, autoreset_mode="SameStep"
+        )
+        env.reset()
+        for _ in range(20):
+            actions = env.action_space.sample()
+            for i, (action, limit) in enumerate(zip(actions, env.num_actions)):
+                assert 0 <= action < limit, f"env {i}: action {action} >= limit {limit}"
+            env.step(actions)
+        env.close()
+
+    def test_multi_rom_action_out_of_bounds(self):
+        """Sending an action index beyond a ROM's minimal action set raises an error."""
+        env = ale_py.vector_env.AtariVectorEnv(game=["pong"])
+        env.reset()
+        # Pong minimal action set = 6 actions (indices 0-5); index 10 is out of range
+        with pytest.raises(Exception):
+            env.step(np.array([10], dtype=np.int64))
+        env.close()
+
+    def test_single_rom_list_equivalent_to_str(self):
+        """game=['pong'] and game='pong', num_envs=1 give identical obs shapes."""
+        env_list = ale_py.vector_env.AtariVectorEnv(game=["pong"])
+        env_str = ale_py.vector_env.AtariVectorEnv(game="pong", num_envs=1)
+        obs_list, _ = env_list.reset(seed=42)
+        obs_str, _ = env_str.reset(seed=42)
+        assert obs_list.shape == obs_str.shape
+        env_list.close()
+        env_str.close()

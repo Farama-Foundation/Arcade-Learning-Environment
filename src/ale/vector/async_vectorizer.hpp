@@ -7,6 +7,7 @@
 #include <atomic>
 #include <functional>
 #include <mutex>
+#include <exception>
 
 #include "ale/external/ThreadPool.h"
 #include "utils.hpp"
@@ -146,6 +147,14 @@ namespace ale::vector {
          */
         const std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = state_buffer_->collect();
+            {
+                std::lock_guard<std::mutex> lock(exception_mutex_);
+                if (worker_exception_) {
+                    auto exc = std::move(worker_exception_);
+                    worker_exception_ = nullptr;
+                    std::rethrow_exception(exc);
+                }
+            }
             return timesteps;
         }
 
@@ -201,6 +210,24 @@ namespace ale::vector {
             return autoreset_mode_;
         }
 
+        std::vector<int> num_actions() const {
+            std::vector<int> counts;
+            counts.reserve(envs_.size());
+            for (const auto& env : envs_) {
+                counts.push_back(env->num_actions());
+            }
+            return counts;
+        }
+
+        std::vector<ActionVect> get_action_set() const {
+            std::vector<ActionVect> sets;
+            sets.reserve(envs_.size());
+            for (const auto& env : envs_) {
+                sets.push_back(env->get_action_set());
+            }
+            return sets;
+        }
+
     private:
         int num_envs_;                                    // Number of parallel environments
         int batch_size_;                                  // Batch size for processing
@@ -215,19 +242,22 @@ namespace ale::vector {
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
         mutable std::vector<std::vector<uint8_t>> final_obs_storage_;  // For same-step autoreset
+        mutable std::mutex exception_mutex_;
+        mutable std::exception_ptr worker_exception_;
 
         /**
          * Worker thread function that processes environment steps
          */
         void worker_function() const {
             while (!stop_) {
-                try {
-                    ActionSlice action = action_queue_->dequeue();
-                    if (stop_) {
-                        break;
-                    }
+                // Dequeue outside try so env_id is in scope for the catch handler
+                ActionSlice action = action_queue_->dequeue();
+                if (stop_) {
+                    break;
+                }
+                const int env_id = action.env_id;
 
-                    const int env_id = action.env_id;
+                try {
 
                     // Choose step() or step_sequence() based on pending sequence
                     auto do_step = [&]() {
@@ -283,9 +313,17 @@ namespace ale::vector {
                     } else {
                         throw std::runtime_error("Invalid autoreset mode");
                     }
-                } catch (const std::exception& e) {
-                    // Log error but continue processing
-                    std::cerr << "Error in worker thread: " << e.what() << std::endl;
+                } catch (...) {
+                    // Store first exception; write a dummy timestep so collect() unblocks
+                    {
+                        std::lock_guard<std::mutex> lock(exception_mutex_);
+                        if (!worker_exception_) {
+                            worker_exception_ = std::current_exception();
+                        }
+                    }
+                    Timestep dummy;
+                    dummy.env_id = env_id;
+                    state_buffer_->write(dummy);
                 }
             }
         }

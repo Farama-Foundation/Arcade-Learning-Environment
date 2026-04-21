@@ -10,7 +10,7 @@ import numpy as np
 from ale_py import roms
 from ale_py.env import AtariEnv
 from gymnasium.core import ObsType
-from gymnasium.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete, MultiDiscrete
 from gymnasium.vector import AutoresetMode, VectorEnv
 
 
@@ -19,8 +19,8 @@ class AtariVectorEnv(VectorEnv):
 
     def __init__(
         self,
-        game: str,
-        num_envs: int,
+        game: str | list[str],
+        num_envs: int | None = None,
         *,
         batch_size: int = 0,
         num_threads: int = 0,
@@ -70,14 +70,8 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
         """
-        rom_path = roms.get_rom_path(game)
-        assert (
-            rom_path is not None
-        ), f'{game} is not a ROM name, it should be snake_case not camel-case, i.e., "ms_pacman" not "MsPacman"'
-
-        self.ale = ale_py.ALEVectorInterface(
-            rom_path=rom_path,
-            num_envs=num_envs,
+        _autoreset_str = autoreset_mode.value if isinstance(autoreset_mode, AutoresetMode) else autoreset_mode
+        _common = dict(
             frame_skip=frameskip,
             stack_num=stack_num,
             img_height=img_height,
@@ -95,12 +89,37 @@ class AtariVectorEnv(VectorEnv):
             batch_size=batch_size,
             num_threads=num_threads,
             thread_affinity_offset=thread_affinity_offset,
-            autoreset_mode=(
-                autoreset_mode.value
-                if isinstance(autoreset_mode, AutoresetMode)
-                else autoreset_mode
-            ),
+            autoreset_mode=_autoreset_str,
         )
+
+        if isinstance(game, list):
+            rom_paths = []
+            for g in game:
+                rp = roms.get_rom_path(g)
+                assert rp is not None, (
+                    f'{g} is not a ROM name, it should be snake_case not camel-case, '
+                    f'i.e., "ms_pacman" not "MsPacman"'
+                )
+                rom_paths.append(rp)
+            if num_envs is not None:
+                assert num_envs == len(game), (
+                    f"num_envs={num_envs} does not match len(game)={len(game)}"
+                )
+            num_envs = len(game)
+            self.ale = ale_py.ALEVectorInterface(rom_paths=rom_paths, **_common)
+        else:
+            assert num_envs is not None, "num_envs is required when game is a str"
+            rom_path = roms.get_rom_path(game)
+            assert rom_path is not None, (
+                f'{game} is not a ROM name, it should be snake_case not camel-case, '
+                f'i.e., "ms_pacman" not "MsPacman"'
+            )
+            self.ale = ale_py.ALEVectorInterface(rom_path=rom_path, num_envs=num_envs, **_common)
+
+        self.num_actions: list[int] = self.ale.num_actions()
+        self.action_set: list[list[int]] = [
+            [a.value for a in s] for s in self.ale.get_action_set()
+        ]
 
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
@@ -128,8 +147,12 @@ class AtariVectorEnv(VectorEnv):
                 dtype=np.float32,
                 shape=(3,),
             )
+        elif len(set(self.num_actions)) == 1:
+            # All envs have identical action counts (single ROM or same-action multi-ROM)
+            self.single_action_space = Discrete(self.num_actions[0])
         else:
-            self.single_action_space = Discrete(len(self.ale.get_action_set()))
+            # Heterogeneous action spaces - no meaningful single-env space
+            self.single_action_space = None
 
         self.batch_size = num_envs if batch_size == 0 else batch_size
         self.num_envs = num_envs
@@ -141,9 +164,14 @@ class AtariVectorEnv(VectorEnv):
         self.observation_space = gymnasium.vector.utils.batch_space(
             self.single_observation_space, self.batch_size
         )
-        self.action_space = gymnasium.vector.utils.batch_space(
-            self.single_action_space, self.batch_size
-        )
+        if self.continuous:
+            self.action_space = gymnasium.vector.utils.batch_space(
+                self.single_action_space, self.batch_size
+            )
+        else:
+            self.action_space = MultiDiscrete(
+                np.array(self.num_actions[:self.batch_size], dtype=np.int64)
+            )
 
         self.is_xla_registered = False
 
