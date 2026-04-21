@@ -14,6 +14,7 @@ from gymnasium.spaces import Box, Discrete, MultiDiscrete
 from gymnasium.vector import AutoresetMode, VectorEnv
 
 
+
 class AtariVectorEnv(VectorEnv):
     """Vector environment implementation for ALE."""
 
@@ -209,15 +210,30 @@ class AtariVectorEnv(VectorEnv):
         return self.ale.reset(reset_indices, reset_seeds)
 
     def step(
-        self, actions: np.ndarray
+        self, actions: np.ndarray | list[np.ndarray], gamma: float = 1.0
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, np.ndarray]]:
-        """Steps through the sub-environments for which the actions are taken, return arrays for the next observations, rewards, termination, truncation and info."""
-        self.send(actions)
+        """Steps through the sub-environments.
+
+        Pass a flat ndarray for a single action per env, or a list of ndarrays
+        for variable-length sequences (gamma-discounted reward accumulation).
+        """
+        self.send(actions, gamma=gamma)
         return self.ale.recv()
 
-    def send(self, actions: np.ndarray):
-        """Send the actions to the sub-environments."""
-        if self.continuous:
+    def send(self, actions: np.ndarray | list[np.ndarray], gamma: float = 1.0):
+        """Send actions to the sub-environments.
+
+        Pass a flat ndarray for a single action per env, or a list of ndarrays
+        for variable-length sequences (gamma-discounted reward accumulation).
+        """
+        if isinstance(actions, list):
+            assert len(actions) == self.batch_size, (
+                f"Expected {self.batch_size} sequences, got {len(actions)}"
+            )
+            action_id_sequences = [a.tolist() if len(a) > 0 else [] for a in actions]
+            paddle_strength_sequences = [[1.0] * len(a) for a in actions]
+            self.ale.send_sequences(action_id_sequences, paddle_strength_sequences, gamma)
+        elif self.continuous:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.float32
             assert actions.shape == (self.batch_size, 3)
@@ -250,55 +266,37 @@ class AtariVectorEnv(VectorEnv):
             paddle_strength = np.ones(self.batch_size)
             self.ale.send(actions, paddle_strength)
 
-    def step_sequences(
-        self,
-        action_sequences: list[np.ndarray],
-        gamma: float,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
-        """Execute variable-length action sequences per environment.
-
-        Each environment gets its own sequence of actions. The C++ layer executes
-        each sequence with frameskip, accumulates gamma-discounted rewards, and
-        returns the final observation. Stops early on termination/truncation.
-
-        Args:
-            action_sequences: List of num_envs arrays, each containing action IDs.
-                Variable lengths supported. Empty arrays skip that environment.
-            gamma: Discount factor for reward accumulation across steps.
-                Required, no default.
-
-        Returns:
-            (observations, rewards, terminations, truncations, info)
-            where info["steps_taken"] contains actual steps executed per env.
-        """
-        self.send_sequences(action_sequences, gamma=gamma)
-        return self.ale.recv()
-
-    def send_sequences(self, action_sequences: list[np.ndarray], gamma: float):
-        """Send variable-length action sequences to environments.
-
-        Args:
-            action_sequences: List of num_envs arrays, each containing action IDs.
-            gamma: Discount factor for reward accumulation across steps.
-        """
-        assert len(action_sequences) == self.batch_size, (
-            f"Expected {self.batch_size} sequences, got {len(action_sequences)}"
-        )
-
-        action_id_sequences = []
-        paddle_strength_sequences = []
-        for actions in action_sequences:
-            action_id_sequences.append(actions.tolist() if len(actions) > 0 else [])
-            paddle_strength_sequences.append([1.0] * len(actions))
-
-        self.ale.send_sequences(action_id_sequences, paddle_strength_sequences, gamma)
-
     def recv(
         self,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
-        """Receive the next observations, rewards, terminations, truncations and info from the sub-environments."""
-        # The data will be of the batch_size, see `info["env_id"]` for the set of environments used.
-        return self.ale.recv()
+        obs_out: np.ndarray | None = None,
+        reward_out: np.ndarray | None = None,
+        term_out: np.ndarray | None = None,
+        trunc_out: np.ndarray | None = None,
+        steps_out: np.ndarray | None = None,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]] | dict[str, Any]:
+        """Receive the next step result.
+
+        When output buffers are provided, fill them in place and return only the info dict.
+        Otherwise return freshly allocated arrays and the info dict.
+        """
+        return self.ale.recv(obs_out, reward_out, term_out, trunc_out, steps_out)
+
+    def torch(self):
+        """Register and return PyTorch custom ops for zero-copy ALE integration.
+
+        Similar to env.xla() for JAX - lazy-imports torch so it is not a hard dep.
+
+        Returns:
+            (handle_id, ale_send, ale_recv, ale_send_sequences, ale_send_sequences_nested,
+             get_last_info, unregister)
+        """
+        try:
+            from ale_py._torch_ops import register_pytorch_ops
+        except ImportError as e:
+            raise gymnasium.error.DependencyNotInstalled(
+                "ALE requires PyTorch for torch() support. Install with: pip install torch"
+            ) from e
+        return register_pytorch_ops(self)
 
     def xla(self):
         """Return XLA-compatible functions for JAX integration."""
@@ -482,3 +480,49 @@ class AtariVectorEnv(VectorEnv):
         # Get the vectorizer handle and make sure it's properly formatted
         ale_handle = jnp.frombuffer(self.ale.handle(), dtype=np.uint8)
         return ale_handle, xla_reset, xla_step
+
+
+def test_recv_with_optional_output_buffers() -> None:
+    class _DummyALE:
+        def __init__(self):
+            self.recv_calls = 0
+
+        def recv(self, obs_out=None, reward_out=None, term_out=None, trunc_out=None, steps_out=None):
+            self.recv_calls += 1
+            if obs_out is None:
+                return (
+                    np.zeros((2, 4, 84, 84), dtype=np.uint8),
+                    np.zeros(2, dtype=np.float64),
+                    np.zeros(2, dtype=bool),
+                    np.zeros(2, dtype=bool),
+                    {"mode": "recv"},
+                )
+            obs_out.fill(1)
+            reward_out.fill(2)
+            term_out.fill(False)
+            trunc_out.fill(False)
+            steps_out.fill(3)
+            return {"mode": "recv_into"}
+
+    env = AtariVectorEnv.__new__(AtariVectorEnv)
+    env.ale = _DummyALE()
+
+    obs, rewards, terms, truncs, info = env.recv()
+    assert obs.shape == (2, 4, 84, 84)
+    assert rewards.shape == (2,)
+    assert not terms.any()
+    assert not truncs.any()
+    assert info == {"mode": "recv"}
+    assert env.ale.recv_calls == 1
+
+    obs_out = np.empty((2, 4, 84, 84), dtype=np.uint8)
+    reward_out = np.empty(2, dtype=np.float64)
+    term_out = np.empty(2, dtype=bool)
+    trunc_out = np.empty(2, dtype=bool)
+    steps_out = np.empty(2, dtype=np.int32)
+    info = env.recv(obs_out, reward_out, term_out, trunc_out, steps_out)
+    assert info == {"mode": "recv_into"}
+    assert env.ale.recv_calls == 2
+    assert (obs_out == 1).all()
+    assert (reward_out == 2).all()
+    assert (steps_out == 3).all()

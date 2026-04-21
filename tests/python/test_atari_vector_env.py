@@ -671,7 +671,7 @@ class TestVectorEnv:
 
 
 class TestStepSequences:
-    """Tests for step_sequences API."""
+    """Tests for variable-length sequence stepping via step/send."""
 
     def _make_env(self, num_envs=4):
         return ale_py.vector_env.AtariVectorEnv(
@@ -683,7 +683,7 @@ class TestStepSequences:
         env = self._make_env(3)
         env.reset()
         seqs = [np.array([0], dtype=np.int64) for _ in range(3)]
-        obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
+        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
         assert obs.shape[0] == 3
         assert np.all(info["steps_taken"] == 1)
         env.close()
@@ -694,7 +694,7 @@ class TestStepSequences:
         env.reset()
         lengths = [1, 2, 4, 8]
         seqs = [np.zeros(k, dtype=np.int64) for k in lengths]
-        obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
+        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
         assert obs.shape[0] == 4
         for i, expected_len in enumerate(lengths):
             assert info["steps_taken"][i] == expected_len, (
@@ -706,16 +706,12 @@ class TestStepSequences:
         """Accumulated reward should use gamma discounting across steps."""
         env = self._make_env(2)
         env.reset()
-        # Run many steps - with gamma < 1 the accumulated reward should differ
-        # from a simple sum. We verify gamma=1 gives plain sum by comparing.
         seqs = [np.zeros(10, dtype=np.int64) for _ in range(2)]
 
-        _obs, rewards_g1, _terminated, _truncated, _info = env.step_sequences(seqs, gamma=1.0)
+        _obs, rewards_g1, _terminated, _truncated, _info = env.step(seqs, gamma=1.0)
         env.reset()
-        _obs, rewards_g99, _terminated, _truncated, _info = env.step_sequences(seqs, gamma=0.99)
+        _obs, rewards_g99, _terminated, _truncated, _info = env.step(seqs, gamma=0.99)
 
-        # If any reward was received, gamma=0.99 should give less than gamma=1.0
-        # If no reward, both are 0 and that's fine too.
         assert np.all(rewards_g99 <= rewards_g1 + 1e-6), (
             f"gamma=0.99 rewards {rewards_g99} should be <= gamma=1.0 rewards {rewards_g1}"
         )
@@ -725,9 +721,8 @@ class TestStepSequences:
         """When an env terminates mid-sequence, steps_taken < sequence length."""
         env = self._make_env(1)
         env.reset()
-        # Send a very long sequence - env will terminate/truncate before completing it
         seq = [np.zeros(100_000, dtype=np.int64)]
-        _obs, _rewards, terms, truncs, info = env.step_sequences(seq, gamma=0.99)
+        _obs, _rewards, terms, truncs, info = env.step(seq, gamma=0.99)
         assert terms[0] or truncs[0], "Expected termination/truncation"
         assert info["steps_taken"][0] < 100_000, (
             f"Expected early termination, but got {info['steps_taken'][0]} steps"
@@ -735,11 +730,11 @@ class TestStepSequences:
         env.close()
 
     def test_send_recv_sequences(self):
-        """Async send_sequences/recv works."""
+        """Async send/recv with sequences works."""
         env = self._make_env(2)
         env.reset()
         seqs = [np.zeros(3, dtype=np.int64), np.zeros(1, dtype=np.int64)]
-        env.send_sequences(seqs, gamma=0.99)
+        env.send(seqs, gamma=0.99)
         obs, _rewards, _terminated, _truncated, info = env.recv()
         assert obs.shape[0] == 2
         assert info["steps_taken"][0] == 3
@@ -751,7 +746,7 @@ class TestStepSequences:
         env = self._make_env(2)
         env.reset()
         seqs = [np.zeros(5, dtype=np.int64), np.array([], dtype=np.int64)]
-        obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
+        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
         assert info["steps_taken"][0] == 5
         assert info["steps_taken"][1] == 0
         env.close()
@@ -761,7 +756,7 @@ class TestStepSequences:
         env = self._make_env(2)
         env.reset()
         seqs = [np.zeros(10, dtype=np.int64), np.zeros(1, dtype=np.int64)]
-        _obs, _rewards, _terminated, _truncated, info = env.step_sequences(seqs, gamma=0.99)
+        _obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
         assert info["frame_number"][0] > info["frame_number"][1], (
             f"Env 0 (10 steps) should have higher frame count than env 1 (1 step): {info['frame_number']}"
         )
