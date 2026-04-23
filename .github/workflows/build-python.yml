@@ -124,7 +124,7 @@ jobs:
       - name: Set up Docker Buildx
         if: runner.os == 'linux'
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           install: true
       - name: Build Docker image with vcpkg
