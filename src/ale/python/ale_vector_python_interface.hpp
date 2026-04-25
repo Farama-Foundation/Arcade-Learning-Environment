@@ -197,16 +197,17 @@ namespace ale::vector {
          *
          * @param action_id_sequences Per-env action sequences
          * @param paddle_strength_sequences Per-env paddle strengths (matching action lengths)
-         * @param gamma Discount factor for reward accumulation across steps
+         * @param gammas Per-env discount factors for reward accumulation
          */
         void send_sequences(
             const std::vector<std::vector<int>>& action_id_sequences,
             const std::vector<std::vector<float>>& paddle_strength_sequences,
-            float gamma
+            const std::vector<float>& gammas
         ) {
-            if (action_id_sequences.size() != paddle_strength_sequences.size()) {
+            if (action_id_sequences.size() != paddle_strength_sequences.size() ||
+                action_id_sequences.size() != gammas.size()) {
                 throw std::invalid_argument(
-                    "action_id_sequences and paddle_strength_sequences must have the same length");
+                    "action_id_sequences, paddle_strength_sequences, and gammas must have the same length");
             }
 
             std::vector<SequenceAction> sequences;
@@ -221,7 +222,7 @@ namespace ale::vector {
                 seq.env_id = received_env_ids_[i];
                 seq.action_ids = action_id_sequences[i];
                 seq.paddle_strengths = paddle_strength_sequences[i];
-                seq.gamma = gamma;
+                seq.gamma = gammas[i];
                 sequences.push_back(seq);
             }
 

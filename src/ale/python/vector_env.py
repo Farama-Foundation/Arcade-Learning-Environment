@@ -210,29 +210,40 @@ class AtariVectorEnv(VectorEnv):
         return self.ale.reset(reset_indices, reset_seeds)
 
     def step(
-        self, actions: np.ndarray | list[np.ndarray], gamma: float = 1.0
+        self,
+        actions: np.ndarray | list[np.ndarray],
+        gamma: float | list[float] = 1.0,
+        paddle_strength: float | list[float] = 1.0,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, np.ndarray]]:
         """Steps through the sub-environments.
 
         Pass a flat ndarray for a single action per env, or a list of ndarrays
         for variable-length sequences (gamma-discounted reward accumulation).
+        gamma and paddle_strength may each be a scalar (all envs) or a list (per env).
+        Scalar gamma raises an error if any sequence is empty.
         """
-        self.send(actions, gamma=gamma)
+        self.send(actions, gamma=gamma, paddle_strength=paddle_strength)
         return self.ale.recv()
 
-    def send(self, actions: np.ndarray | list[np.ndarray], gamma: float = 1.0):
+    def send(
+        self,
+        actions: np.ndarray | list[np.ndarray],
+        gamma: float | list[float] = 1.0,
+        paddle_strength: float | list[float] = 1.0,
+    ):
         """Send actions to the sub-environments.
 
         Pass a flat ndarray for a single action per env, or a list of ndarrays
         for variable-length sequences (gamma-discounted reward accumulation).
+        gamma and paddle_strength may each be a scalar (all envs) or a list (per env).
+        Scalar gamma raises an error if any sequence is empty.
         """
         if isinstance(actions, list):
             assert len(actions) == self.batch_size, (
                 f"Expected {self.batch_size} sequences, got {len(actions)}"
             )
             action_id_sequences = [a.tolist() if len(a) > 0 else [] for a in actions]
-            paddle_strength_sequences = [[1.0] * len(a) for a in actions]
-            self.ale.send_sequences(action_id_sequences, paddle_strength_sequences, gamma)
+            self.ale.send_sequences(action_id_sequences, paddle_strength, gamma)
         elif self.continuous:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.float32
@@ -254,8 +265,7 @@ class AtariVectorEnv(VectorEnv):
             fire = (actions[:, 2] > self.continuous_action_threshold).astype(np.int32)
 
             action_ids = self.map_action_idx[horizontal, vertical, fire]
-            paddle_strength = actions[:, 0]
-            self.ale.send(action_ids, paddle_strength)
+            self.ale.send(action_ids, actions[:, 0])
         else:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.int64 or actions.dtype == np.int32
@@ -263,8 +273,11 @@ class AtariVectorEnv(VectorEnv):
                 self.batch_size,
             ), f"{actions.shape=}, {self.batch_size=}"
 
-            paddle_strength = np.ones(self.batch_size)
-            self.ale.send(actions, paddle_strength)
+            if isinstance(paddle_strength, (int, float)):
+                ps = np.full(self.batch_size, paddle_strength, dtype=np.float32)
+            else:
+                ps = np.asarray(paddle_strength, dtype=np.float32)
+            self.ale.send(actions, ps)
 
     def recv(
         self,

@@ -746,9 +746,43 @@ class TestStepSequences:
         env = self._make_env(2)
         env.reset()
         seqs = [np.zeros(5, dtype=np.int64), np.array([], dtype=np.int64)]
-        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
+        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=[0.99, 1.0])
         assert info["steps_taken"][0] == 5
         assert info["steps_taken"][1] == 0
+        env.close()
+
+    def test_zero_step_returns_last_obs_zero_reward(self):
+        """Zero-step env: obs unchanged, reward=0, not done.
+
+        - scalar gamma=1.0 is valid for empty sequences
+        - scalar gamma != 1.0 raises when any sequence is empty
+        - list of gammas allows per-env values (use 1.0 for empty envs)
+        """
+        env = self._make_env(2)
+        obs_before, _ = env.reset()
+
+        # scalar gamma != 1.0 raises when an empty sequence is present
+        with pytest.raises(ValueError):
+            env.step([np.array([0], dtype=np.int64), np.array([], dtype=np.int64)], gamma=0.99)
+
+        # scalar gamma=1.0 is fine - applies to all envs uniformly
+        obs, rewards, terms, truncs, info = env.step(
+            [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)], gamma=1.0
+        )
+        assert rewards[1] == 0.0
+        assert info["steps_taken"][1] == 0
+        assert not terms[1] and not truncs[1]
+        np.testing.assert_array_equal(obs[1], obs_before[1])
+
+        obs_before2 = obs.copy()
+        # list of gammas: env 0 gets 0.99, env 1 (empty) gets 1.0
+        obs, rewards, terms, truncs, info = env.step(
+            [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)], gamma=[0.99, 1.0]
+        )
+        assert rewards[1] == 0.0
+        assert info["steps_taken"][1] == 0
+        np.testing.assert_array_equal(obs[1], obs_before2[1])
+
         env.close()
 
     def test_frame_numbers_advance_correctly(self):

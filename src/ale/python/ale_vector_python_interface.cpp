@@ -137,9 +137,45 @@ void init_vector_module(nb::module_& m) {
         }, nb::arg("action_ids"), nb::arg("paddle_strengths"))
         .def("send_sequences", [](ale::vector::ALEVectorInterface& self,
                 const std::vector<std::vector<int>>& action_id_sequences,
-                const std::vector<std::vector<float>>& paddle_strength_sequences,
-                float gamma) {
-            self.send_sequences(action_id_sequences, paddle_strength_sequences, gamma);
+                nb::object paddle_arg,
+                nb::object gamma_arg) {
+            const size_t n = action_id_sequences.size();
+
+            // Resolve paddle_strength_sequences: scalar, list of per-env scalars, or list of lists
+            std::vector<std::vector<float>> paddle_strength_sequences(n);
+            if (nb::isinstance<nb::float_>(paddle_arg) || nb::isinstance<nb::int_>(paddle_arg)) {
+                float p = nb::cast<float>(paddle_arg);
+                for (size_t i = 0; i < n; i++)
+                    paddle_strength_sequences[i].assign(action_id_sequences[i].size(), p);
+            } else {
+                auto outer = nb::cast<nb::sequence>(paddle_arg);
+                if (n > 0 && (nb::isinstance<nb::float_>(outer[0]) || nb::isinstance<nb::int_>(outer[0]))) {
+                    auto per_env = nb::cast<std::vector<float>>(paddle_arg);
+                    for (size_t i = 0; i < n; i++)
+                        paddle_strength_sequences[i].assign(action_id_sequences[i].size(), per_env[i]);
+                } else if (n > 0) {
+                    paddle_strength_sequences = nb::cast<std::vector<std::vector<float>>>(paddle_arg);
+                }
+            }
+
+            // Resolve gammas: scalar or list
+            std::vector<float> gammas;
+            if (nb::isinstance<nb::float_>(gamma_arg) || nb::isinstance<nb::int_>(gamma_arg)) {
+                float g = nb::cast<float>(gamma_arg);
+                if (g != 1.0f) {
+                    for (size_t i = 0; i < n; i++) {
+                        if (action_id_sequences[i].empty()) {
+                            throw std::invalid_argument(
+                                "scalar gamma != 1.0 cannot be used when env " + std::to_string(i) +
+                                " has an empty sequence; use gamma=1.0 or pass a list of per-env gammas");
+                        }
+                    }
+                }
+                gammas.assign(n, g);
+            } else {
+                gammas = nb::cast<std::vector<float>>(gamma_arg);
+            }
+            self.send_sequences(action_id_sequences, paddle_strength_sequences, gammas);
         }, nb::arg("action_id_sequences"), nb::arg("paddle_strength_sequences"), nb::arg("gamma"))
         .def("recv", [](ale::vector::ALEVectorInterface& self,
                 nb::object obs_arg, nb::object rewards_arg, nb::object terms_arg,
