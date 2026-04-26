@@ -59,7 +59,7 @@ jobs:
         CIBW_ARCHS: "${{ matrix.arch }}"
 
     - name: Upload wheels
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: wheels-${{ matrix.runs-on }}-${{ matrix.arch }}
         path: ./wheelhouse/*.whl
@@ -80,22 +80,22 @@ jobs:
       - run: pip install setuptools
       - run: python setup.py sdist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-windows-latest-AMD64
           path: dist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-ubuntu-latest-x86_64
           path: dist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-ubuntu-24.04-arm-aarch64
           path: dist
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-macos-latest-arm64
           path: dist
@@ -123,7 +123,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v14
+        uses: mymindstorm/setup-emsdk@v15
         with:
           version: '3.1.68'
           actions-cache-folder: 'emsdk-cache'
@@ -153,7 +153,7 @@ jobs:
           files: dist/*.zip
 
       - name: Upload NPM package artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: npm-package
           path: dist/npm/
@@ -166,7 +166,7 @@ jobs:
 #    if: ${{ secrets.NPM_TOKEN != '' }}
 #
 #    steps:
-#      - uses: actions/download-artifact@v6
+#      - uses: actions/download-artifact@v8
 #        with:
 #          name: npm-package
 #          path: dist/npm/

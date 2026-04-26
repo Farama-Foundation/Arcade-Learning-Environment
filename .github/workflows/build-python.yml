@@ -66,7 +66,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Linux)
       if: runner.os == 'Linux'
-      uses: Jimver/cuda-toolkit@v0.2.29
+      uses: Jimver/cuda-toolkit@v0.2.35
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -74,7 +74,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Windows)
       if: runner.os == 'Windows'
-      uses: Jimver/cuda-toolkit@v0.2.29
+      uses: Jimver/cuda-toolkit@v0.2.35
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -115,7 +115,7 @@ jobs:
         # For Linux, the CUDA Toolkit is installed the dockerfile
       - name: Install CUDA Toolkit (Windows)
         if: runner.os == 'Windows'
-        uses: Jimver/cuda-toolkit@v0.2.29
+        uses: Jimver/cuda-toolkit@v0.2.35
         with:
           cuda: '12.6.2'
           method: 'network'
@@ -147,7 +147,7 @@ jobs:
           CIBW_ARCHS: "${{ matrix.arch }}"
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
           path: ./wheelhouse/*.whl
@@ -241,7 +241,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
 
@@ -284,7 +284,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
 
