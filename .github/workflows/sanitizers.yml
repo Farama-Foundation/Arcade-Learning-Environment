@@ -1,6 +1,7 @@
 # Sanitizers and memory checkers for detecting threading issues and memory leaks
 # TSan and ASan run on every PR and push to master
-# Valgrind runs only on releases, manual dispatch, or when PR has "run-valgrind" label
+# Valgrind Memcheck runs on releases, manual dispatch, or when PR has "run-valgrind" label
+# Valgrind Helgrind runs on releases only (multi-hour runtime; TSan is the routine threading guard)
 
 name: Sanitizers
 
@@ -103,8 +104,8 @@ jobs:
         echo "Running all tests..."
         LD_PRELOAD="$ASAN_LIB" python -m pytest -v
 
-  valgrind:
-    name: "Valgrind (Memcheck + Helgrind)"
+  valgrind-memcheck:
+    name: "Valgrind Memcheck"
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'release' ||
@@ -132,7 +133,7 @@ jobs:
     - name: Build with debug symbols
       run: |
         pip install --verbose -e .[test] \
-          --config-settings=cmake.args="-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+          --config-settings=cmake.build-type=RelWithDebInfo
 
     - name: Run Memcheck (memory leaks)
       run: |
@@ -142,16 +143,46 @@ jobs:
           --show-leak-kinds=definite \
           --errors-for-leak-kinds=definite \
           --track-origins=yes \
-          --suppressions=.valgrind-python.supp \
+          --suppressions=scripts/valgrind-python.supp \
           --error-exitcode=1 \
           python -m pytest tests/python/test_atari_vector_env.py -v
       continue-on-error: true
 
+  valgrind-helgrind:
+    name: "Valgrind Helgrind"
+    runs-on: ubuntu-latest
+    # Helgrind takes ~1 hour on this test set; release-only.
+    if: github.event_name == 'release'
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Valgrind
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Build with debug symbols
+      run: |
+        pip install --verbose -e .[test] \
+          --config-settings=cmake.build-type=RelWithDebInfo
+
     - name: Run Helgrind (thread errors)
+      timeout-minutes: 360
       run: |
         valgrind \
           --tool=helgrind \
-          --suppressions=.valgrind-python.supp \
+          --suppressions=scripts/valgrind-python.supp \
           --error-exitcode=1 \
           python -m pytest tests/python/test_atari_vector_env.py -v
       continue-on-error: true

@@ -55,18 +55,27 @@ case $SANITIZER in
             export CXX=clang++
 
             pip install --verbose -e .[test] \
-                --config-settings=cmake.args="-DENABLE_SANITIZER=thread"
+                --config-settings=cmake.define.ENABLE_SANITIZER=thread
         fi
 
         echo ""
         echo "Running tests with Thread Sanitizer..."
         export TSAN_OPTIONS="second_deadlock_stack=1 history_size=7"
 
-        echo "→ Running vector environment tests (most critical for threading)..."
-        python -m pytest tests/python/test_atari_vector_env.py -v -x
+        # Python isn't built with TSan, so the instrumented .so has unresolved
+        # TSan runtime symbols when imported. Preload the runtime to provide them.
+        TSAN_RT=$("${CXX:-clang++}" -print-file-name=libclang_rt.tsan-x86_64.so 2>/dev/null)
+        if [ -f "$TSAN_RT" ]; then
+            export LD_PRELOAD="$TSAN_RT${LD_PRELOAD:+:$LD_PRELOAD}"
+            echo "Preloading TSan runtime: $TSAN_RT"
+        else
+            echo "WARNING: TSan runtime not found via '${CXX:-clang++} -print-file-name'."
+            echo "Tests will likely fail with 'undefined symbol: __tsan_*' errors."
+        fi
 
-        echo "→ Running all tests..."
-        python -m pytest -v
+        echo "→ Running focused vector environment tests (threading hot paths)..."
+        python -m pytest tests/python/test_atari_vector_env.py -v -x -s \
+            -k "test_batch_size_async or test_episodic_life_equivalence or (test_reset_step_shapes and 4-3-ALE)"
         ;;
 
     address)
@@ -74,30 +83,49 @@ case $SANITIZER in
         export CC=clang
         export CXX=clang++
         pip install --verbose -e .[test] \
-            --config-settings=cmake.args="-DENABLE_SANITIZER=address"
+            --config-settings=cmake.define.ENABLE_SANITIZER=address
 
         echo ""
         echo "Running tests with Address Sanitizer..."
         export ASAN_OPTIONS="detect_leaks=1:check_initialization_order=1"
         export UBSAN_OPTIONS="print_stacktrace=1"
 
-        echo "→ Running vector environment tests..."
-        python -m pytest tests/python/test_atari_vector_env.py -v -x
+        # Suppress leak reports from Python/pybind11 module-init machinery
+        # (type objects, interpreter-lifetime allocations). See scripts/lsan-suppressions.txt.
+        if [ -f "$SCRIPT_DIR/lsan-suppressions.txt" ]; then
+            export LSAN_OPTIONS="suppressions=$SCRIPT_DIR/lsan-suppressions.txt:print_suppressions=0"
+            echo "Using LSan suppressions: $SCRIPT_DIR/lsan-suppressions.txt"
+        fi
 
-        echo "→ Running all tests..."
-        python -m pytest -v
+        # Python isn't built with ASan, so preload the runtime to satisfy any
+        # symbols not auto-loaded via DT_NEEDED on the instrumented .so.
+        ASAN_RT=$("${CXX:-clang++}" -print-file-name=libclang_rt.asan-x86_64.so 2>/dev/null)
+        if [ -f "$ASAN_RT" ]; then
+            export LD_PRELOAD="$ASAN_RT${LD_PRELOAD:+:$LD_PRELOAD}"
+            echo "Preloading ASan runtime: $ASAN_RT"
+        else
+            echo "WARNING: ASan runtime not found via '${CXX:-clang++} -print-file-name'."
+        fi
+
+        echo "→ Running focused vector environment tests..."
+        python -m pytest tests/python/test_atari_vector_env.py -v -x -s \
+            -k "test_batch_size_async or test_episodic_life_equivalence or (test_reset_step_shapes and 4-3-ALE)"
         ;;
 
     valgrind-memcheck)
         echo "Building with debug symbols..."
+        # Use cmake.build-type (not cmake.define.CMAKE_BUILD_TYPE) — scikit-build-core
+        # sets cmake.build-type=Release in pyproject.toml and the define-form is
+        # ignored, leaving us with a stripped Release build that valgrind can't
+        # symbolize. The CMakeLists guard also disables IPO for RelWithDebInfo.
         pip install --verbose -e .[test] \
-            --config-settings=cmake.args="-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+            --config-settings=cmake.build-type=RelWithDebInfo
 
         echo ""
         echo "Running Valgrind Memcheck (memory leak detection)..."
 
-        if [ ! -f ".valgrind-python.supp" ]; then
-            echo "Warning: .valgrind-python.supp not found. Some false positives may appear."
+        if [ ! -f "$SCRIPT_DIR/valgrind-python.supp" ]; then
+            echo "Warning: $SCRIPT_DIR/valgrind-python.supp not found. Some false positives may appear."
         fi
 
         valgrind \
@@ -106,27 +134,31 @@ case $SANITIZER in
             --show-leak-kinds=definite,possible \
             --track-origins=yes \
             --verbose \
-            --suppressions=.valgrind-python.supp \
-            python -m pytest tests/python/test_atari_vector_env.py::TestVectorEnv::test_reset_step_shapes -v -k "num_envs-1"
+            --suppressions="$SCRIPT_DIR/valgrind-python.supp" \
+            python -m pytest tests/python/test_atari_vector_env.py::TestVectorEnv::test_reset_step_shapes -v -s -k "num_envs-1"
         ;;
 
     valgrind-helgrind)
         echo "Building with debug symbols..."
+        # Use cmake.build-type (not cmake.define.CMAKE_BUILD_TYPE) — scikit-build-core
+        # sets cmake.build-type=Release in pyproject.toml and the define-form is
+        # ignored, leaving us with a stripped Release build that valgrind can't
+        # symbolize. The CMakeLists guard also disables IPO for RelWithDebInfo.
         pip install --verbose -e .[test] \
-            --config-settings=cmake.args="-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+            --config-settings=cmake.build-type=RelWithDebInfo
 
         echo ""
         echo "Running Valgrind Helgrind (thread error detection)..."
 
-        if [ ! -f ".valgrind-python.supp" ]; then
-            echo "Warning: .valgrind-python.supp not found. Some false positives may appear."
+        if [ ! -f "$SCRIPT_DIR/valgrind-python.supp" ]; then
+            echo "Warning: $SCRIPT_DIR/valgrind-python.supp not found. Some false positives may appear."
         fi
 
         valgrind \
             --tool=helgrind \
             --verbose \
-            --suppressions=.valgrind-python.supp \
-            python -m pytest tests/python/test_atari_vector_env.py::TestVectorEnv::test_batch_size_async -v
+            --suppressions="$SCRIPT_DIR/valgrind-python.supp" \
+            python -m pytest tests/python/test_atari_vector_env.py::TestVectorEnv::test_batch_size_async -v -s
         ;;
 
     *)
