@@ -196,6 +196,8 @@ info = get_last_info()
 unregister()
 ```
 
+Note: continous actions are not yet supported. 
+
 ## Multi-ROM Support
 
 A single vector environment can run different ROMs in each slot by passing a list of game names. `num_envs` is inferred from the list length.

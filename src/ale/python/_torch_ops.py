@@ -38,15 +38,21 @@ def register_pytorch_ops(env: Any):
         "term": torch.empty(num_envs, dtype=torch.bool, pin_memory=True),
         "trunc": torch.empty(num_envs, dtype=torch.bool, pin_memory=True),
         "steps_taken": torch.empty(num_envs, dtype=torch.int32, pin_memory=True),
+        "actions_d2h_event": torch.cuda.Event() if torch.cuda.is_available() else None,
+        "sequences_d2h_event": torch.cuda.Event() if torch.cuda.is_available() else None,
     }
 
     if not _torch_registered:
         _torch_registered = True
 
         @torch.library.custom_op("ale::send", mutates_args=())
+        @torch.no_grad()
         def ale_send(handle_id: int, actions: torch.Tensor) -> torch.Tensor:
             buf = _torch_buffers[handle_id]
-            buf["actions"].copy_(actions.detach(), non_blocking=True)
+            buf["actions"].copy_(actions, non_blocking=True)
+            if actions.is_cuda:
+                buf["actions_d2h_event"].record()
+                buf["actions_d2h_event"].synchronize()
             _torch_envs[handle_id].send(buf["actions"].numpy())
             return actions.new_empty(())
 
@@ -95,6 +101,34 @@ def register_pytorch_ops(env: Any):
                 torch.empty(buf["trunc"].shape, dtype=buf["trunc"].dtype),
                 torch.empty(buf["steps_taken"].shape, dtype=buf["steps_taken"].dtype),
             )
+
+        @torch.library.custom_op("ale::send_sequences", mutates_args=())
+        @torch.no_grad()
+        def ale_send_sequences(
+            handle_id: int, values: torch.Tensor, offsets: torch.Tensor, gamma: float
+        ) -> torch.Tensor:
+            buf = _torch_buffers[handle_id]
+            offsets_cpu = offsets.to("cpu", non_blocking=True)
+            values_cpu = values.to("cpu", non_blocking=True)
+            if offsets.is_cuda or values.is_cuda:
+                buf["sequences_d2h_event"].record()
+                buf["sequences_d2h_event"].synchronize()
+            offsets_np = offsets_cpu.numpy()
+            values_np = values_cpu.numpy()
+            action_sequences = [
+                values_np[offsets_np[i] : offsets_np[i + 1]]
+                for i in range(len(offsets_np) - 1)
+            ]
+            _torch_envs[handle_id].send(action_sequences, gamma=gamma)
+            return values.new_empty(())
+
+        ale_send_sequences.register_effect(EffectType.ORDERED)
+
+        @ale_send_sequences.register_fake
+        def _(
+            handle_id: int, values: torch.Tensor, offsets: torch.Tensor, gamma: float
+        ) -> torch.Tensor:
+            return values.new_empty(())
 
     def get_last_info() -> dict:
         return _torch_last_info.get(handle_id, {})
