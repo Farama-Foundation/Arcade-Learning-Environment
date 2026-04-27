@@ -54,7 +54,7 @@ namespace ale::vector {
         int lives;                        // Remaining lives in the game
         int frame_number;                 // Frame number since the beginning of the game
         int episode_frame_number;         // Frame number since the beginning of the episode
-        int steps_taken;                  // Number of steps actually executed (for step_sequences)
+        int steps_taken;                  // Number of steps actually executed
 
         std::vector<uint8_t>* final_observation; // Screen pixel data for previous episode last observation with Autoresetmode == SameStep
     };

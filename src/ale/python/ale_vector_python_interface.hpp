@@ -193,40 +193,40 @@ namespace ale::vector {
         }
 
         /**
-         * Send variable-length action sequences to environments.
+         * Send multi-step actions to environments.
          *
-         * @param action_id_sequences Per-env action sequences
-         * @param paddle_strength_sequences Per-env paddle strengths (matching action lengths)
+         * @param action_id_sequences Per-env actions
+         * @param paddle_strength_per_action Per-env paddle strengths
          * @param gammas Per-env discount factors for reward accumulation
          */
-        void send_sequences(
+        void send(
             const std::vector<std::vector<int>>& action_id_sequences,
-            const std::vector<std::vector<float>>& paddle_strength_sequences,
+            const std::vector<std::vector<float>>& paddle_strength_per_action,
             const std::vector<float>& gammas
         ) {
-            if (action_id_sequences.size() != paddle_strength_sequences.size() ||
+            if (action_id_sequences.size() != paddle_strength_per_action.size() ||
                 action_id_sequences.size() != gammas.size()) {
                 throw std::invalid_argument(
-                    "action_id_sequences, paddle_strength_sequences, and gammas must have the same length");
+                    "actions_per_rom, paddle_strength_per_action, and gammas must have the same length");
             }
 
             std::vector<SequenceAction> sequences;
             sequences.reserve(action_id_sequences.size());
 
             for (size_t i = 0; i < action_id_sequences.size(); i++) {
-                if (action_id_sequences[i].size() != paddle_strength_sequences[i].size()) {
+                if (action_id_sequences[i].size() != paddle_strength_per_action[i].size()) {
                     throw std::invalid_argument(
                         "action_ids and paddle_strengths must match for env " + std::to_string(i));
                 }
                 SequenceAction seq;
                 seq.env_id = received_env_ids_[i];
                 seq.action_ids = action_id_sequences[i];
-                seq.paddle_strengths = paddle_strength_sequences[i];
+                seq.paddle_strengths = paddle_strength_per_action[i];
                 seq.gamma = gammas[i];
                 sequences.push_back(seq);
             }
 
-            vectorizer_->send_sequences(sequences);
+            vectorizer_->send(sequences);
         }
 
         /**

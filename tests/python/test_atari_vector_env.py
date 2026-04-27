@@ -77,7 +77,9 @@ def assert_gym_ale_rollout_equivalence(
         )
 
         assert obs_equivalence(gym_obs, ale_obs, t, **kwargs)
-        assert data_equivalence(gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)), t
+        assert data_equivalence(
+            gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)
+        ), t
         assert data_equivalence(gym_terminations, ale_terminations), t
         assert data_equivalence(gym_truncations, ale_truncations), t
 
@@ -100,7 +102,6 @@ def assert_gym_ale_rollout_equivalence(
 #     "env_id", [env_id for env_id in gym.registry if "ALE/" in env_id]
 # )
 class TestVectorEnv:
-
     disable_vector_args = dict(
         noop_max=0,
         use_fire_reset=False,
@@ -219,6 +220,39 @@ class TestVectorEnv:
             frame_skip=frame_skip,
             grayscale=grayscale,
         )
+
+    def test_frameskip1_maxpool(self, env_id, num_envs=4):
+        """Verify maxpool=True with frameskip=1 works as expected."""
+        maxpool_envs = gym.make_vec(
+            env_id, num_envs, frameskip=1, maxpool=True, **self.disable_vector_args
+        )
+        nomaxpool_envs = gym.make_vec(
+            env_id, num_envs, frameskip=1, maxpool=False, **self.disable_vector_args
+        )
+
+        seed = 42
+        maxpool_obs, _ = maxpool_envs.reset(seed=seed)
+        nomaxpool_obs, _ = nomaxpool_envs.reset(seed=seed)
+
+        maxpool_envs.action_space.seed(seed)
+        nomaxpool_envs.action_space.seed(seed)
+
+        # Step until maxpool and no-maxpool diverge (should happen by step 2 for
+        # any frame with non-zero pixels that differ between consecutive steps).
+        diverged = False
+        for _ in range(10):
+            actions = maxpool_envs.action_space.sample()
+            maxpool_obs, _, _, _, _ = maxpool_envs.step(actions)
+            nomaxpool_obs, _, _, _, _ = nomaxpool_envs.step(actions)
+            if not np.array_equal(maxpool_obs, nomaxpool_obs):
+                diverged = True
+                break
+
+        maxpool_envs.close()
+        nomaxpool_envs.close()
+        assert (
+            diverged is False
+        ), "maxpool=True with frameskip=1 should not produce an identical output to maxpool=False"
 
     @pytest.mark.parametrize("continuous_action_threshold", (0.2, 0.5, 0.8))
     def test_continuous_equivalence(
@@ -620,7 +654,9 @@ class TestVectorEnv:
             )
 
             assert obs_equivalence(gym_obs, ale_obs, t, autoreset_mode="SAME-STEP"), t
-            assert data_equivalence(gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)), t
+            assert data_equivalence(
+                gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)
+            ), t
             assert data_equivalence(gym_terminations, ale_terminations), t
             assert data_equivalence(gym_truncations, ale_truncations), t
 
@@ -697,9 +733,9 @@ class TestStepSequences:
         obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
         assert obs.shape[0] == 4
         for i, expected_len in enumerate(lengths):
-            assert info["steps_taken"][i] == expected_len, (
-                f"Env {i}: expected {expected_len} steps, got {info['steps_taken'][i]}"
-            )
+            assert (
+                info["steps_taken"][i] == expected_len
+            ), f"Env {i}: expected {expected_len} steps, got {info['steps_taken'][i]}"
         env.close()
 
     def test_gamma_discounting(self):
@@ -712,9 +748,9 @@ class TestStepSequences:
         env.reset()
         _obs, rewards_g99, _terminated, _truncated, _info = env.step(seqs, gamma=0.99)
 
-        assert np.all(rewards_g99 <= rewards_g1 + 1e-6), (
-            f"gamma=0.99 rewards {rewards_g99} should be <= gamma=1.0 rewards {rewards_g1}"
-        )
+        assert np.all(
+            rewards_g99 <= rewards_g1 + 1e-6
+        ), f"gamma=0.99 rewards {rewards_g99} should be <= gamma=1.0 rewards {rewards_g1}"
         env.close()
 
     def test_early_termination_steps_taken(self):
@@ -724,9 +760,9 @@ class TestStepSequences:
         seq = [np.zeros(100_000, dtype=np.int64)]
         _obs, _rewards, terms, truncs, info = env.step(seq, gamma=0.99)
         assert terms[0] or truncs[0], "Expected termination/truncation"
-        assert info["steps_taken"][0] < 100_000, (
-            f"Expected early termination, but got {info['steps_taken'][0]} steps"
-        )
+        assert (
+            info["steps_taken"][0] < 100_000
+        ), f"Expected early termination, but got {info['steps_taken'][0]} steps"
         env.close()
 
     def test_send_recv_sequences(self):
@@ -763,7 +799,10 @@ class TestStepSequences:
 
         # scalar gamma != 1.0 raises when an empty sequence is present
         with pytest.raises(ValueError):
-            env.step([np.array([0], dtype=np.int64), np.array([], dtype=np.int64)], gamma=0.99)
+            env.step(
+                [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)],
+                gamma=0.99,
+            )
 
         # scalar gamma=1.0 is fine - applies to all envs uniformly
         obs, rewards, terms, truncs, info = env.step(
@@ -777,7 +816,8 @@ class TestStepSequences:
         obs_before2 = obs.copy()
         # list of gammas: env 0 gets 0.99, env 1 (empty) gets 1.0
         obs, rewards, terms, truncs, info = env.step(
-            [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)], gamma=[0.99, 1.0]
+            [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)],
+            gamma=[0.99, 1.0],
         )
         assert rewards[1] == 0.0
         assert info["steps_taken"][1] == 0
@@ -791,9 +831,9 @@ class TestStepSequences:
         env.reset()
         seqs = [np.zeros(10, dtype=np.int64), np.zeros(1, dtype=np.int64)]
         _obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
-        assert info["frame_number"][0] > info["frame_number"][1], (
-            f"Env 0 (10 steps) should have higher frame count than env 1 (1 step): {info['frame_number']}"
-        )
+        assert (
+            info["frame_number"][0] > info["frame_number"][1]
+        ), f"Env 0 (10 steps) should have higher frame count than env 1 (1 step): {info['frame_number']}"
         env.close()
 
 
@@ -819,7 +859,9 @@ class TestMultiRomEnv:
         # action_set: each set length matches num_actions
         assert len(env.action_set) == 4
         for i, (action_set, n) in enumerate(zip(env.action_set, env.num_actions)):
-            assert len(action_set) == n, f"env {i}: action_set len {len(action_set)} != {n}"
+            assert (
+                len(action_set) == n
+            ), f"env {i}: action_set len {len(action_set)} != {n}"
             assert all(isinstance(a, int) for a in action_set)
         # Heterogeneous action spaces -> single_action_space is None
         assert env.single_action_space is None

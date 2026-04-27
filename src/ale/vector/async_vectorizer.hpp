@@ -159,12 +159,11 @@ namespace ale::vector {
         }
 
         /**
-         * Send action sequences to the sub-environments.
-         * Each environment gets a variable-length sequence of actions.
+         * Send multi-step actions to the sub-environments.
          *
          * @param sequences Vector of SequenceAction, one per environment
          */
-        void send_sequences(const std::vector<SequenceAction>& sequences) {
+        void send(const std::vector<SequenceAction>& sequences) {
             std::vector<ActionSlice> action_slices;
             action_slices.reserve(sequences.size());
 

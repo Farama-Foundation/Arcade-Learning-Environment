@@ -46,6 +46,11 @@ vector = [
     "gymnasium>=1.1.0",
     "opencv-python>=3.0"
 ]
+torch = [
+    "gymnasium>=1.1.0",
+    "opencv-python>=3.0",
+    "torch",
+]
 xla = [
     "gymnasium>=1.1.0",
     "opencv-python>=3.0",
@@ -56,6 +61,7 @@ test = [
     "pytest>=7.0",
     "gymnasium>=1.1.0",
     "opencv-python>=3.0",
+    "torch",
     "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'",
     "chex; sys_platform == 'win32' or sys_platform == 'linux'"
 ]

@@ -134,31 +134,29 @@ void init_vector_module(nb::module_& m) {
         })
         .def("send", [](ale::vector::ALEVectorInterface& self, const std::vector<int> action_ids, const std::vector<float> paddle_strengths) {
             self.send(action_ids, paddle_strengths);
-        }, nb::arg("action_ids"), nb::arg("paddle_strengths"))
-        .def("send_sequences", [](ale::vector::ALEVectorInterface& self,
+        }, nb::arg("actions_per_rom"), nb::arg("paddle_strengths"))
+        .def("send", [](ale::vector::ALEVectorInterface& self,
                 const std::vector<std::vector<int>>& action_id_sequences,
                 nb::object paddle_arg,
                 nb::object gamma_arg) {
             const size_t n = action_id_sequences.size();
 
-            // Resolve paddle_strength_sequences: scalar, list of per-env scalars, or list of lists
-            std::vector<std::vector<float>> paddle_strength_sequences(n);
+            std::vector<std::vector<float>> paddle_strength_per_action(n);
             if (nb::isinstance<nb::float_>(paddle_arg) || nb::isinstance<nb::int_>(paddle_arg)) {
                 float p = nb::cast<float>(paddle_arg);
                 for (size_t i = 0; i < n; i++)
-                    paddle_strength_sequences[i].assign(action_id_sequences[i].size(), p);
+                    paddle_strength_per_action[i].assign(action_id_sequences[i].size(), p);
             } else {
                 auto outer = nb::cast<nb::sequence>(paddle_arg);
                 if (n > 0 && (nb::isinstance<nb::float_>(outer[0]) || nb::isinstance<nb::int_>(outer[0]))) {
                     auto per_env = nb::cast<std::vector<float>>(paddle_arg);
                     for (size_t i = 0; i < n; i++)
-                        paddle_strength_sequences[i].assign(action_id_sequences[i].size(), per_env[i]);
+                        paddle_strength_per_action[i].assign(action_id_sequences[i].size(), per_env[i]);
                 } else if (n > 0) {
-                    paddle_strength_sequences = nb::cast<std::vector<std::vector<float>>>(paddle_arg);
+                    paddle_strength_per_action = nb::cast<std::vector<std::vector<float>>>(paddle_arg);
                 }
             }
 
-            // Resolve gammas: scalar or list
             std::vector<float> gammas;
             if (nb::isinstance<nb::float_>(gamma_arg) || nb::isinstance<nb::int_>(gamma_arg)) {
                 float g = nb::cast<float>(gamma_arg);
@@ -175,8 +173,8 @@ void init_vector_module(nb::module_& m) {
             } else {
                 gammas = nb::cast<std::vector<float>>(gamma_arg);
             }
-            self.send_sequences(action_id_sequences, paddle_strength_sequences, gammas);
-        }, nb::arg("action_id_sequences"), nb::arg("paddle_strength_sequences"), nb::arg("gamma"))
+            self.send(action_id_sequences, paddle_strength_per_action, gammas);
+        }, nb::arg("actions_per_rom"), nb::arg("paddle_strength_per_action"), nb::arg("gamma"))
         .def("recv", [](ale::vector::ALEVectorInterface& self,
                 nb::object obs_arg, nb::object rewards_arg, nb::object terms_arg,
                 nb::object truncs_arg, nb::object steps_arg) -> nb::object {
@@ -254,7 +252,9 @@ void init_vector_module(nb::module_& m) {
             info["lives"]                = nb::ndarray<nb::numpy, int>(lives,         1, shape1, lives_cap);
             info["frame_number"]         = nb::ndarray<nb::numpy, int>(frame_nums,    1, shape1, frame_cap);
             info["episode_frame_number"] = nb::ndarray<nb::numpy, int>(ep_frame_nums, 1, shape1, ep_cap);
-            if (!into) {
+            if (into) {
+                info["steps_taken"] = steps_arg;
+            } else {
                 info["steps_taken"] = nb::ndarray<nb::numpy, int>(stp_dst, 1, shape1, stp_cap);
             }
 

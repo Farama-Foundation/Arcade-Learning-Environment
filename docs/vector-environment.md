@@ -129,7 +129,7 @@ Where:
 - `stack_size`: Number of stacked frames (typically 4)
 - `height`, `width`: Image dimensions (typically 84x84)
 
-Additionally, with `grayscale=True` then the shape is `(num_envs, stack_size, height, width, 3)` for RGB frames.
+Additionally, with `grayscale=False` the shape is `(num_envs, stack_size, height, width, 3)` for RGB frames.
 
 ## Performance Considerations
 
@@ -173,3 +173,66 @@ On systems with multiple CPU cores, setting thread affinity can improve performa
 # Set thread affinity starting from core 0
 envs = AtariVectorEnv(game="Breakout", num_envs=8, thread_affinity_offset=0)
 ```
+
+## PyTorch Integration
+
+The vector environment can return PyTorch tensors via zero-copy custom ops using `env.torch()`. This is the PyTorch equivalent of `env.xla()` for JAX: no Python-side allocations occur in the hot path and the ops are compatible with `torch.compile`.
+
+```python
+handle_id, ale_send, ale_step, ale_recv, get_last_info, unregister = envs.torch()
+
+# Single compiled step (send + recv fused)
+obs, reward, term, trunc, steps_taken = ale_step(handle_id, actions)
+
+# Or split for overlapping computation:
+ale_send(handle_id, actions)
+# ... do other work ...
+obs, reward, term, trunc, steps_taken = ale_recv(handle_id)
+
+# Info dict (lives, frame_number, etc.) from the last recv
+info = get_last_info()
+
+# Clean up when done
+unregister()
+```
+
+## Multi-ROM Support
+
+A single vector environment can run different ROMs in each slot by passing a list of game names. `num_envs` is inferred from the list length.
+
+```python
+envs = AtariVectorEnv(game=["breakout", "pong", "space_invaders", "qbert"])
+```
+
+When ROMs have different action set sizes, `single_action_space` is `None` and `action_space` is a `MultiDiscrete` with per-environment limits. Action bounds are enforced per environment; an out-of-range action raises an `IndexError`.
+
+```python
+# Per-environment action counts and sets
+print(envs.num_actions)   # e.g. [4, 6, 6, 6]
+print(envs.action_set)    # list[list[int]], one per env
+
+# sample actions per environment as normal
+actions = envs.action_space.sample()
+```
+
+## Multi-Step Action Sequences
+
+Passing a list of arrays to `step` or `send` sends a sequence of actions to each environment in a single call, reducing Python-C++ round trips when many actions can be outputted at once.
+
+```python
+# Each array is the action sequence for one environment (lengths may differ)
+sequences = [
+    np.array([0, 2, 1, 0]),  # env 0: 4 actions
+    np.array([3, 1]),         # env 1: 2 actions
+]
+obs, reward, term, trunc, info = envs.step(sequences)
+print(info["steps_taken"])  # actions executed before early termination/trunction
+```
+
+`gamma` applies per-rom discount accumulation across the sequence. `paddle_strength` can be a scalar or a per-rom list.
+
+```python
+obs, reward, term, trunc, info = envs.step(sequences, gamma=0.99, paddle_strength=1.0)
+```
+
+An empty array `np.array([])` skips a rom entirely, returning its last observation with zero reward.

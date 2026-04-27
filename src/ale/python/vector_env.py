@@ -14,7 +14,6 @@ from gymnasium.spaces import Box, Discrete, MultiDiscrete
 from gymnasium.vector import AutoresetMode, VectorEnv
 
 
-
 class AtariVectorEnv(VectorEnv):
     """Vector environment implementation for ALE."""
 
@@ -48,8 +47,8 @@ class AtariVectorEnv(VectorEnv):
         """Constructor for vector environment.
 
         Args:
-            game: ROM name
-            num_envs: Number of environments
+            game: ROM name (e.g. ``"breakout"``) or list of ROM names for multi-ROM mode; num_envs is inferred from list length
+            num_envs: Number of environments (required when game is a str)
             batch_size: If to provide a batch of environments (in async mode)
             num_threads: The number of threads to use for parallel environments
             thread_affinity_offset: The CPU core offset for thread affinity (-1 means no affinity, default: -1)
@@ -71,7 +70,11 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
         """
-        _autoreset_str = autoreset_mode.value if isinstance(autoreset_mode, AutoresetMode) else autoreset_mode
+        _autoreset_str = (
+            autoreset_mode.value
+            if isinstance(autoreset_mode, AutoresetMode)
+            else autoreset_mode
+        )
         _common = dict(
             frame_skip=frameskip,
             stack_num=stack_num,
@@ -98,24 +101,26 @@ class AtariVectorEnv(VectorEnv):
             for g in game:
                 rp = roms.get_rom_path(g)
                 assert rp is not None, (
-                    f'{g} is not a ROM name, it should be snake_case not camel-case, '
+                    f"{g} is not a ROM name, it should be snake_case not camel-case, "
                     f'i.e., "ms_pacman" not "MsPacman"'
                 )
                 rom_paths.append(rp)
             if num_envs is not None:
-                assert num_envs == len(game), (
-                    f"num_envs={num_envs} does not match len(game)={len(game)}"
-                )
+                assert num_envs == len(
+                    game
+                ), f"num_envs={num_envs} does not match len(game)={len(game)}"
             num_envs = len(game)
             self.ale = ale_py.ALEVectorInterface(rom_paths=rom_paths, **_common)
         else:
             assert num_envs is not None, "num_envs is required when game is a str"
             rom_path = roms.get_rom_path(game)
             assert rom_path is not None, (
-                f'{game} is not a ROM name, it should be snake_case not camel-case, '
+                f"{game} is not a ROM name, it should be snake_case not camel-case, "
                 f'i.e., "ms_pacman" not "MsPacman"'
             )
-            self.ale = ale_py.ALEVectorInterface(rom_path=rom_path, num_envs=num_envs, **_common)
+            self.ale = ale_py.ALEVectorInterface(
+                rom_path=rom_path, num_envs=num_envs, **_common
+            )
 
         self.num_actions: list[int] = self.ale.num_actions()
         self.action_set: list[list[int]] = [
@@ -171,10 +176,8 @@ class AtariVectorEnv(VectorEnv):
             )
         else:
             self.action_space = MultiDiscrete(
-                np.array(self.num_actions[:self.batch_size], dtype=np.int64)
+                np.array(self.num_actions[: self.batch_size], dtype=np.int64)
             )
-
-        self.is_xla_registered = False
 
     def reset(
         self,
@@ -211,40 +214,32 @@ class AtariVectorEnv(VectorEnv):
 
     def step(
         self,
-        actions: np.ndarray | list[np.ndarray],
+        actions: int | np.integer | np.ndarray | list[Any],
         gamma: float | list[float] = 1.0,
         paddle_strength: float | list[float] = 1.0,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, np.ndarray]]:
-        """Steps through the sub-environments.
+        """Send actions and receive a new observation in an atomic call.
 
-        Pass a flat ndarray for a single action per env, or a list of ndarrays
-        for variable-length sequences (gamma-discounted reward accumulation).
-        gamma and paddle_strength may each be a scalar (all envs) or a list (per env).
-        Scalar gamma raises an error if any sequence is empty.
+        Pass a flat array for single-step mode or a list of arrays for multi-step
+        mode (one array of action sequences per rom). info includes
+        ``steps_taken`` for multi-step mode.
         """
         self.send(actions, gamma=gamma, paddle_strength=paddle_strength)
-        return self.ale.recv()
+        return self.recv()
 
     def send(
         self,
-        actions: np.ndarray | list[np.ndarray],
+        actions: int | np.integer | np.ndarray | list[Any],
         gamma: float | list[float] = 1.0,
         paddle_strength: float | list[float] = 1.0,
     ):
-        """Send actions to the sub-environments.
+        """Dispatch actions to roms without waiting for results.
 
-        Pass a flat ndarray for a single action per env, or a list of ndarrays
-        for variable-length sequences (gamma-discounted reward accumulation).
-        gamma and paddle_strength may each be a scalar (all envs) or a list (per env).
-        Scalar gamma raises an error if any sequence is empty.
+        For multi-step mode, pass a list of arrays where each array is the action
+        sequence for one rom. ``gamma`` and ``paddle_strength`` can be
+        scalars or per-rom lists.
         """
-        if isinstance(actions, list):
-            assert len(actions) == self.batch_size, (
-                f"Expected {self.batch_size} sequences, got {len(actions)}"
-            )
-            action_id_sequences = [a.tolist() if len(a) > 0 else [] for a in actions]
-            self.ale.send_sequences(action_id_sequences, paddle_strength, gamma)
-        elif self.continuous:
+        if self.continuous:
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.float32
             assert actions.shape == (self.batch_size, 3)
@@ -267,6 +262,24 @@ class AtariVectorEnv(VectorEnv):
             action_ids = self.map_action_idx[horizontal, vertical, fire]
             self.ale.send(action_ids, actions[:, 0])
         else:
+            if isinstance(actions, (int, np.integer)):
+                assert self.batch_size == 1, "A scalar action requires batch_size=1"
+                actions = np.array([actions], dtype=np.int64)
+            elif isinstance(actions, np.ndarray) and actions.ndim == 0:
+                assert self.batch_size == 1, "A scalar action requires batch_size=1"
+                actions = actions.reshape(1)
+            elif isinstance(actions, list):
+                assert (
+                    len(actions) == self.batch_size
+                ), f"Expected {self.batch_size} actions, got {len(actions)}"
+                if len(actions) == 0 or not isinstance(actions[0], (int, np.integer)):
+                    self.ale.send(
+                        [np.asarray(a, dtype=np.int64).tolist() for a in actions],
+                        paddle_strength,
+                        gamma,
+                    )
+                    return
+                actions = np.asarray(actions, dtype=np.int64)
             assert isinstance(actions, np.ndarray)
             assert actions.dtype == np.int64 or actions.dtype == np.int32
             assert actions.shape == (
@@ -274,10 +287,12 @@ class AtariVectorEnv(VectorEnv):
             ), f"{actions.shape=}, {self.batch_size=}"
 
             if isinstance(paddle_strength, (int, float)):
-                ps = np.full(self.batch_size, paddle_strength, dtype=np.float32)
+                paddle_strength = np.full(
+                    self.batch_size, paddle_strength, dtype=np.float32
+                )
             else:
-                ps = np.asarray(paddle_strength, dtype=np.float32)
-            self.ale.send(actions, ps)
+                paddle_strength = np.asarray(paddle_strength, dtype=np.float32)
+            self.ale.send(actions, paddle_strength)
 
     def recv(
         self,
@@ -286,22 +301,24 @@ class AtariVectorEnv(VectorEnv):
         term_out: np.ndarray | None = None,
         trunc_out: np.ndarray | None = None,
         steps_out: np.ndarray | None = None,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]] | dict[str, Any]:
-        """Receive the next step result.
+    ) -> (
+        tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]
+        | dict[str, Any]
+    ):
+        """Receive next observations, rewards, terminations, truncations and info.
 
-        When output buffers are provided, fill them in place and return only the info dict.
-        Otherwise return freshly allocated arrays and the info dict.
+        Zero-copy mode: pass pre-allocated arrays for ``obs_out``, ``reward_out``,
+        ``term_out``, ``trunc_out``, and ``steps_out`` to fill them in place.
+        In this mode only the info dict is returned. Without output buffers
+        5 arrays are allocated and returned as a tuple.
         """
         return self.ale.recv(obs_out, reward_out, term_out, trunc_out, steps_out)
 
     def torch(self):
         """Register and return PyTorch custom ops for zero-copy ALE integration.
 
-        Similar to env.xla() for JAX - lazy-imports torch so it is not a hard dep.
-
         Returns:
-            (handle_id, ale_send, ale_recv, ale_send_sequences, ale_send_sequences_nested,
-             get_last_info, unregister)
+            (handle_id, ale_send, ale_step, ale_recv, get_last_info, unregister)
         """
         try:
             from ale_py._torch_ops import register_pytorch_ops
@@ -312,230 +329,15 @@ class AtariVectorEnv(VectorEnv):
         return register_pytorch_ops(self)
 
     def xla(self):
-        """Return XLA-compatible functions for JAX integration."""
+        """Return XLA-compatible functions for JAX integration.
+
+        Returns:
+            (ale_handle, xla_reset, xla_step)
+        """
         try:
-            import chex
-            import jax
-            import jax.numpy as jnp
+            from ale_py._xla_ops import register_xla_ops
         except ImportError as e:
             raise gymnasium.error.DependencyNotInstalled(
                 'ALE is missing jax, necessary for using the vector XLA support, use `pip install "ale_py[xla]"` to import'
             ) from e
-
-        if not self.is_xla_registered:
-            # Register CPU targets
-            jax.ffi.register_ffi_target(
-                "atari_vector_xla_reset",
-                ale_py._ale_py.VectorXLAReset(),
-                platform="cpu",
-            )
-            jax.ffi.register_ffi_target(
-                "atari_vector_xla_step", ale_py._ale_py.VectorXLAStep(), platform="cpu"
-            )
-
-            # Register GPU targets if available
-            if hasattr(ale_py._ale_py, "VectorXLAResetGPU"):
-                jax.ffi.register_ffi_target(
-                    "atari_vector_xla_reset",
-                    ale_py._ale_py.VectorXLAResetGPU(),
-                    platform="CUDA",
-                )
-                jax.ffi.register_ffi_target(
-                    "atari_vector_xla_step",
-                    ale_py._ale_py.VectorXLAStepGPU(),
-                    platform="CUDA",
-                )
-
-            self.is_xla_registered = True
-
-        map_action_idx_jnp = jnp.array(self.map_action_idx)
-
-        def xla_reset(
-            handle: np.ndarray,
-            seed: np.ndarray | None = None,
-            reset_mask: np.ndarray | None = None,
-        ) -> tuple[np.ndarray, tuple[np.ndarray, dict[str, np.ndarray]]]:
-            xla_call = jax.ffi.ffi_call(
-                target_name="atari_vector_xla_reset",
-                result_shape_dtypes=(
-                    jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
-                    jax.ShapeDtypeStruct(
-                        self.observation_space.shape, jnp.uint8
-                    ),  # observations
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # lives
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
-                    jax.ShapeDtypeStruct(
-                        (self.num_envs,), jnp.int32
-                    ),  # episode frame number
-                ),
-                vmap_method="broadcast_all",
-                has_side_effect=True,
-            )
-
-            if reset_mask is not None:
-                reset_mask = jnp.asarray(reset_mask)
-
-                chex.assert_shape(reset_mask, (self.num_envs,))
-                chex.assert_type(reset_mask, jnp.bool_)
-
-                (reset_indices,) = jnp.where(reset_mask)
-                reset_indices = reset_indices.astype(jnp.int32)
-            else:
-                reset_indices = jnp.arange(self.num_envs, dtype=jnp.int32)
-
-            if seed is None:
-                reset_seeds = jnp.full(len(reset_indices), -1, dtype=jnp.int32)
-            elif isinstance(seed, int):
-                reset_seeds = jnp.arange(
-                    seed, seed + len(reset_indices), dtype=jnp.int32
-                )
-            else:
-                reset_seeds = jnp.asarray(seed, dtype=jnp.int32)
-
-            chex.assert_shape(reset_seeds, (self.num_envs,))
-
-            new_handle, obs, env_ids, lives, frame_numbers, episode_frame_numbers = (
-                xla_call(handle, reset_indices, reset_seeds)
-            )
-
-            info = {
-                "env_id": env_ids,
-                "lives": lives,
-                "frame_number": frame_numbers,
-                "episode_frame_number": episode_frame_numbers,
-            }
-            return new_handle, (obs, info)
-
-        def xla_step(handle, actions):
-            # Convert to JAX array if needed (handles both numpy arrays and JAX tracers)
-            actions = jnp.asarray(actions)
-
-            if self.continuous:
-                actions = actions.astype(jnp.float32)
-
-                chex.assert_shape(actions, (self.batch_size, 3))
-                chex.assert_type(actions, jnp.float32)
-
-                x = actions[:, 0] * jnp.cos(actions[:, 1])
-                y = actions[:, 0] * jnp.sin(actions[:, 1])
-
-                horizontal = (
-                    -(x < -self.continuous_action_threshold).astype(jnp.int32)
-                    + (x > self.continuous_action_threshold).astype(jnp.int32)
-                    + 1
-                )
-                vertical = (
-                    -(y < -self.continuous_action_threshold).astype(jnp.int32)
-                    + (y > self.continuous_action_threshold).astype(jnp.int32)
-                    + 1
-                )
-                fire = (actions[:, 2] > self.continuous_action_threshold).astype(
-                    jnp.int32
-                )
-
-                action_ids = map_action_idx_jnp[horizontal, vertical, fire]
-                paddle_strength = actions[:, 0]
-            else:
-                action_ids = actions.astype(jnp.int32)
-                paddle_strength = jnp.ones(self.batch_size, dtype=jnp.float32)
-
-                chex.assert_shape(actions, (self.batch_size,))
-                chex.assert_type(actions, jnp.int32)
-
-            xla_call = jax.ffi.ffi_call(
-                target_name="atari_vector_xla_step",
-                result_shape_dtypes=(
-                    jax.ShapeDtypeStruct((8,), jnp.uint8),  # handle
-                    jax.ShapeDtypeStruct(  # observations
-                        self.observation_space.shape, jnp.uint8
-                    ),
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # rewards
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # terminations
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # truncations
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # lives
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
-                    jax.ShapeDtypeStruct(  # episode frame number
-                        (self.num_envs,), jnp.int32
-                    ),
-                ),
-                vmap_method="broadcast_all",
-                has_side_effect=True,
-            )
-
-            (
-                new_handle,
-                obs,
-                rewards,
-                terminations,
-                truncations,
-                env_ids,
-                lives,
-                frame_numbers,
-                episode_frame_numbers,
-            ) = xla_call(handle, action_ids, paddle_strength)
-
-            info = {
-                "env_id": env_ids,
-                "lives": lives,
-                "frame_number": frame_numbers,
-                "episode_frame_number": episode_frame_numbers,
-            }
-            return new_handle, (
-                obs,
-                rewards,
-                terminations,
-                truncations,
-                info,
-            )
-
-        # Get the vectorizer handle and make sure it's properly formatted
-        ale_handle = jnp.frombuffer(self.ale.handle(), dtype=np.uint8)
-        return ale_handle, xla_reset, xla_step
-
-
-def test_recv_with_optional_output_buffers() -> None:
-    class _DummyALE:
-        def __init__(self):
-            self.recv_calls = 0
-
-        def recv(self, obs_out=None, reward_out=None, term_out=None, trunc_out=None, steps_out=None):
-            self.recv_calls += 1
-            if obs_out is None:
-                return (
-                    np.zeros((2, 4, 84, 84), dtype=np.uint8),
-                    np.zeros(2, dtype=np.float64),
-                    np.zeros(2, dtype=bool),
-                    np.zeros(2, dtype=bool),
-                    {"mode": "recv"},
-                )
-            obs_out.fill(1)
-            reward_out.fill(2)
-            term_out.fill(False)
-            trunc_out.fill(False)
-            steps_out.fill(3)
-            return {"mode": "recv_into"}
-
-    env = AtariVectorEnv.__new__(AtariVectorEnv)
-    env.ale = _DummyALE()
-
-    obs, rewards, terms, truncs, info = env.recv()
-    assert obs.shape == (2, 4, 84, 84)
-    assert rewards.shape == (2,)
-    assert not terms.any()
-    assert not truncs.any()
-    assert info == {"mode": "recv"}
-    assert env.ale.recv_calls == 1
-
-    obs_out = np.empty((2, 4, 84, 84), dtype=np.uint8)
-    reward_out = np.empty(2, dtype=np.float64)
-    term_out = np.empty(2, dtype=bool)
-    trunc_out = np.empty(2, dtype=bool)
-    steps_out = np.empty(2, dtype=np.int32)
-    info = env.recv(obs_out, reward_out, term_out, trunc_out, steps_out)
-    assert info == {"mode": "recv_into"}
-    assert env.ale.recv_calls == 2
-    assert (obs_out == 1).all()
-    assert (reward_out == 2).all()
-    assert (steps_out == 3).all()
+        return register_xla_ops(self)

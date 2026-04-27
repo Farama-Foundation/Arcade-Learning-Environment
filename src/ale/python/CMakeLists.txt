@@ -53,6 +53,7 @@ install(TARGETS _ale_py LIBRARY DESTINATION ale_py)
 install(FILES
     __init__.py
     _torch_ops.py
+    _xla_ops.py
     env.py
     registration.py
     vector_env.py
