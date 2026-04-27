@@ -51,5 +51,12 @@ try:
     from ale_py._ale_py import ALEVectorInterface
 
     __all__ += ["ALEVectorInterface"]
+
+    try:
+        from ale_py._torch_ops import TorchOpsWrapper
+
+        __all__ += ["TorchOpsWrapper"]
+    except ImportError:
+        pass
 except ImportError:
     pass

@@ -251,8 +251,8 @@ class TestVectorEnv:
         maxpool_envs.close()
         nomaxpool_envs.close()
         assert (
-            diverged is False
-        ), "maxpool=True with frameskip=1 should not produce an identical output to maxpool=False"
+            diverged is True
+        ), "maxpool=True with frameskip=1 should produce different observations than maxpool=False"
 
     @pytest.mark.parametrize("continuous_action_threshold", (0.2, 0.5, 0.8))
     def test_continuous_equivalence(
@@ -863,10 +863,12 @@ class TestMultiRomEnv:
                 len(action_set) == n
             ), f"env {i}: action_set len {len(action_set)} != {n}"
             assert all(isinstance(a, int) for a in action_set)
-        # Heterogeneous action spaces -> single_action_space is None
-        assert env.single_action_space is None
-        # action_space is MultiDiscrete with per-env limits
-        assert list(env.action_space.nvec) == env.num_actions
+        # single_action_space is the max across all ROMs
+        assert isinstance(env.single_action_space, gym.spaces.Discrete)
+        assert env.single_action_space.n == max(env.num_actions)
+        # action_space is a Tuple of per-env Discrete spaces for correct sampling bounds
+        assert isinstance(env.action_space, gym.spaces.Tuple)
+        assert [s.n for s in env.action_space.spaces] == env.num_actions[: env.batch_size]
         env.close()
 
     def test_multi_rom_num_envs_inferred(self):

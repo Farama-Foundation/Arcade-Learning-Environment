@@ -10,7 +10,7 @@ import numpy as np
 from ale_py import roms
 from ale_py.env import AtariEnv
 from gymnasium.core import ObsType
-from gymnasium.spaces import Box, Discrete, MultiDiscrete
+from gymnasium.spaces import Box, Discrete, MultiDiscrete, Tuple
 from gymnasium.vector import AutoresetMode, VectorEnv
 
 
@@ -145,21 +145,6 @@ class AtariVectorEnv(VectorEnv):
             shape=obs_shape, low=0, high=255, dtype=np.uint8
         )
 
-        if self.continuous:
-            # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
-            self.single_action_space = Box(
-                low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
-                high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
-                dtype=np.float32,
-                shape=(3,),
-            )
-        elif len(set(self.num_actions)) == 1:
-            # All envs have identical action counts (single ROM or same-action multi-ROM)
-            self.single_action_space = Discrete(self.num_actions[0])
-        else:
-            # Heterogeneous action spaces - no meaningful single-env space
-            self.single_action_space = None
-
         self.batch_size = num_envs if batch_size == 0 else batch_size
         self.num_envs = num_envs
         self.metadata["autoreset_mode"] = (
@@ -170,13 +155,26 @@ class AtariVectorEnv(VectorEnv):
         self.observation_space = gymnasium.vector.utils.batch_space(
             self.single_observation_space, self.batch_size
         )
+
         if self.continuous:
+            self.single_action_space = Box(
+                low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
+                high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
+                dtype=np.float32,
+                shape=(3,),
+            )
             self.action_space = gymnasium.vector.utils.batch_space(
                 self.single_action_space, self.batch_size
             )
-        else:
+        elif len(set(self.num_actions)) == 1:
+            self.single_action_space = Discrete(self.num_actions[0])
             self.action_space = MultiDiscrete(
-                np.array(self.num_actions[: self.batch_size], dtype=np.int64)
+                np.full(self.batch_size, self.num_actions[0], dtype=np.int64)
+            )
+        else:
+            self.single_action_space = Discrete(max(self.num_actions))
+            self.action_space = Tuple(
+                tuple(Discrete(n) for n in self.num_actions[: self.batch_size])
             )
 
     def reset(
@@ -268,7 +266,7 @@ class AtariVectorEnv(VectorEnv):
             elif isinstance(actions, np.ndarray) and actions.ndim == 0:
                 assert self.batch_size == 1, "A scalar action requires batch_size=1"
                 actions = actions.reshape(1)
-            elif isinstance(actions, list):
+            elif isinstance(actions, (list, tuple)):
                 assert (
                     len(actions) == self.batch_size
                 ), f"Expected {self.batch_size} actions, got {len(actions)}"
@@ -301,18 +299,16 @@ class AtariVectorEnv(VectorEnv):
         term_out: np.ndarray | None = None,
         trunc_out: np.ndarray | None = None,
         steps_out: np.ndarray | None = None,
-    ) -> (
-        tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]
-        | dict[str, Any]
-    ):
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
         """Receive next observations, rewards, terminations, truncations and info.
 
-        Zero-copy mode: pass pre-allocated arrays for ``obs_out``, ``reward_out``,
-        ``term_out``, ``trunc_out``, and ``steps_out`` to fill them in place.
-        In this mode only the info dict is returned. Without output buffers
-        5 arrays are allocated and returned as a tuple.
+        When output buffers are provided, fills them in place and returns a tuple
+        containing those same arrays. Without output buffers, new arrays are allocated.
         """
-        return self.ale.recv(obs_out, reward_out, term_out, trunc_out, steps_out)
+        result = self.ale.recv(obs_out, reward_out, term_out, trunc_out, steps_out)
+        if isinstance(result, dict):
+            return obs_out, reward_out, term_out, trunc_out, result
+        return result
 
     def torch(self):
         """Register and return PyTorch custom ops for zero-copy ALE integration.

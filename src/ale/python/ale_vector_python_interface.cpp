@@ -134,7 +134,7 @@ void init_vector_module(nb::module_& m) {
         })
         .def("send", [](ale::vector::ALEVectorInterface& self, const std::vector<int> action_ids, const std::vector<float> paddle_strengths) {
             self.send(action_ids, paddle_strengths);
-        }, nb::arg("actions_per_rom"), nb::arg("paddle_strengths"))
+        }, nb::arg("action_ids"), nb::arg("paddle_strengths"))
         .def("send", [](ale::vector::ALEVectorInterface& self,
                 const std::vector<std::vector<int>>& action_id_sequences,
                 nb::object paddle_arg,

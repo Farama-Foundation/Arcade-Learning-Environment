@@ -11,7 +11,11 @@ from typing import Any
 import torch
 from torch._library.effects import EffectType
 
-# Module-level state shared across all registered envs
+__all__ = ["TorchOpsWrapper", "register_pytorch_ops"]
+
+# Module-level state shared across all registered envs.
+# _torch_registered is never reset: torch.library.custom_op raises if the same name is
+# registered twice, so ops are registered once for the lifetime of the process.
 _torch_registered: bool = False
 _torch_envs: dict[int, Any] = {}
 _torch_buffers: dict[int, dict] = {}
