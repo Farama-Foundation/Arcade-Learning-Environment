@@ -219,7 +219,9 @@ actions = envs.action_space.sample()
 
 ## Multi-Step Action Sequences
 
-Passing a list of arrays to `step` or `send` sends a sequence of actions to each environment in a single call, reducing Python-C++ round trips when many actions can be outputted at once.
+Multi-step sequences support macro actions and open-loop options: the agent dispatches a sequence of primitive actions to be executed in the environment. Supporting lists of actions sent to each rom avoids unnecessary per-step Python to C++ overhead. 
+
+Passing a list of arrays to `step` or `send` sends a sequence of actions to each environment in a single call.
 
 ```python
 # Each array is the action sequence for one environment (lengths may differ)
@@ -237,4 +239,4 @@ print(info["steps_taken"])  # actions executed before early termination/trunctio
 obs, reward, term, trunc, info = envs.step(sequences, gamma=0.99, paddle_strength=1.0)
 ```
 
-An empty array `np.array([])` skips a rom entirely, returning its last observation with zero reward.
+An empty array `np.array([])` skips a rom entirely, returning its last observation with zero reward. In this instance, gamma should be 1 for this step. 
