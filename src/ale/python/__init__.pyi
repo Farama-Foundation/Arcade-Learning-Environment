@@ -178,37 +178,75 @@ class ALEInterface:
     def setString(self, key: str, value: str) -> None: ...
 
 class ALEVectorInterface:
+    @overload
     def __init__(
         self,
         rom_path: os.PathLike,
         num_envs: int,
-        frame_skip: int,
-        stack_num: int,
-        img_height: int,
-        img_width: int,
-        grayscale: bool,
-        maxpool: bool,
-        noop_max: int,
-        use_fire_reset: bool,
-        episodic_life: bool,
-        life_loss_info: bool,
-        reward_clipping: bool,
-        max_episode_steps: int,
-        repeat_action_probability: float,
-        full_action_space: bool,
-        batch_size: int,
-        num_threads: int,
-        thread_affinity_offset: int,
-        autoreset_mode: str | gym.vector.AutoresetMode,
+        frame_skip: int = 4,
+        stack_num: int = 4,
+        img_height: int = 84,
+        img_width: int = 84,
+        grayscale: bool = True,
+        maxpool: bool = True,
+        noop_max: int = 30,
+        use_fire_reset: bool = True,
+        episodic_life: bool = False,
+        life_loss_info: bool = False,
+        reward_clipping: bool = True,
+        max_episode_steps: int = 108000,
+        repeat_action_probability: float = 0.0,
+        full_action_space: bool = False,
+        batch_size: int = 0,
+        num_threads: int = 0,
+        thread_affinity_offset: int = -1,
+        autoreset_mode: str | gym.vector.AutoresetMode = "NextStep",
+    ) -> None: ...
+    @overload
+    def __init__(
+        self,
+        rom_paths: List[os.PathLike],
+        frame_skip: int = 4,
+        stack_num: int = 4,
+        img_height: int = 84,
+        img_width: int = 84,
+        grayscale: bool = True,
+        maxpool: bool = True,
+        noop_max: int = 30,
+        use_fire_reset: bool = True,
+        episodic_life: bool = False,
+        life_loss_info: bool = False,
+        reward_clipping: bool = True,
+        max_episode_steps: int = 108000,
+        repeat_action_probability: float = 0.0,
+        full_action_space: bool = False,
+        batch_size: int = 0,
+        num_threads: int = 0,
+        thread_affinity_offset: int = -1,
+        autoreset_mode: str | gym.vector.AutoresetMode = "NextStep",
     ) -> None: ...
     def reset(
         self, reset_indices: np.ndarray, reset_seeds: np.ndarray
     ) -> Tuple[np.ndarray, Dict[str, Any]]: ...
-    def send(self, action_idx: np.ndarray, paddle_strength: np.ndarray): ...
+    @overload
+    def send(self, action_ids: np.ndarray, paddle_strengths: np.ndarray): ...
+    @overload
+    def send(
+        self,
+        actions_per_rom: List[List[int]],
+        paddle_strength_per_action: float | List[float] | List[List[float]],
+        gamma: float | List[float],
+    ): ...
     def recv(
         self,
+        obs: np.ndarray | None = None,
+        rewards: np.ndarray | None = None,
+        terminations: np.ndarray | None = None,
+        truncations: np.ndarray | None = None,
+        steps_taken: np.ndarray | None = None,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]: ...
-    def get_action_set(self) -> List[Action]: ...
+    def num_actions(self) -> List[int]: ...
+    def get_action_set(self) -> List[List[Action]]: ...
     def get_num_envs(self) -> int: ...
     def get_observation_shape(self) -> Tuple[int, int, int]: ...
     def handle(self) -> np.ndarray: ...
@@ -222,5 +260,14 @@ try:
     AtariVectorEnv: TypeAlias = AtariVectorEnv
 
     __all__ += ["AtariEnv", "AtariEnvStepMetadata", "AtariVectorEnv"]
+except ImportError:
+    pass
+
+try:
+    from ale_py._torch_ops import TorchOpsWrapper
+
+    TorchOpsWrapper: TypeAlias = TorchOpsWrapper
+
+    __all__ += ["TorchOpsWrapper"]
 except ImportError:
     pass

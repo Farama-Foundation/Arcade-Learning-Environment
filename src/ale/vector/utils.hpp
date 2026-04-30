@@ -33,17 +33,28 @@ namespace ale::vector {
     };
 
     /**
+     * SequenceAction represents a variable-length sequence of actions for one environment
+     */
+    struct SequenceAction {
+        int env_id;                          // ID of the environment
+        std::vector<int> action_ids;         // Sequence of action IDs to execute
+        std::vector<float> paddle_strengths; // Paddle strength per action
+        float gamma;                         // Discount factor for reward accumulation across steps
+    };
+
+    /**
      * Timestep represents the output from an environment step
      */
     struct Timestep {
         int env_id;                       // ID of the environment this observation is from
         std::vector<uint8_t> observation; // Screen pixel data
-        reward_t reward;                  // Reward received in this step
+        double reward;                    // Reward received (int for single step, float for sequences)
         bool terminated;                  // Whether the game ended
         bool truncated;                   // Whether the episode was truncated due to a time limit
         int lives;                        // Remaining lives in the game
         int frame_number;                 // Frame number since the beginning of the game
         int episode_frame_number;         // Frame number since the beginning of the episode
+        int steps_taken;                  // Number of steps actually executed
 
         std::vector<uint8_t>* final_observation; // Screen pixel data for previous episode last observation with Autoresetmode == SameStep
     };

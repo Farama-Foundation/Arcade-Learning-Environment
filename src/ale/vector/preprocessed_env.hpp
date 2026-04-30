@@ -132,8 +132,9 @@ namespace ale::vector {
             raw_size_ = raw_frame_height_ * raw_frame_width_ * channels_per_frame_;
             obs_size_ = obs_frame_height_ * obs_frame_width_ * channels_per_frame_;
 
-            // Initialize the buffers
-            for (int i = 0; i < 2; ++i) {
+            // Initialize the buffers. raw_frames_[2] is used only when frameskip=1
+            // to preserve the current raw frame before maxpool mutates raw_frames_[0].
+            for (int i = 0; i < 3; ++i) {
                 raw_frames_.emplace_back(raw_size_);
             }
             frame_stack_ = std::vector<uint8_t>(stack_num_ * obs_size_, 0);
@@ -204,44 +205,71 @@ namespace ale::vector {
         }
 
         /**
+         * Set a sequence of actions to be executed
+         */
+        void set_sequence_action(const SequenceAction& seq) {
+            current_sequence_ = seq;
+            has_sequence_ = true;
+        }
+
+        /**
+         * Check if a sequence action is pending
+         */
+        bool has_sequence() const {
+            return has_sequence_;
+        }
+
+        /**
          * Steps the environment using the current action
          */
         void step() {
-            // Convert the current action to Action and Paddle Strength
             const int action_id = current_action_.action_id;
-            if (action_id < 0 || action_id >= action_set_.size()) {
-                throw std::out_of_range("Stepping sub-environment with action_id: " + std::to_string(action_id) + ", however, this is either less than zero or greater than available actions (" + std::to_string(action_set_.size()) + ")");
+            if (action_id < 0 || action_id >= static_cast<int>(action_set_.size())) {
+                throw std::out_of_range(
+                    "Stepping sub-environment with action_id: " + std::to_string(action_id) +
+                    ", however, this is either less than zero or greater than available actions (" +
+                    std::to_string(action_set_.size()) + ")");
             }
-            const Action action = action_set_[action_id];
-            const float strength = current_action_.paddle_strength;
+            reward_t reward = execute_frameskip(action_set_[action_id], current_action_.paddle_strength);
+            process_screen();
+            lives_ = env_->lives();
+            reward_ = reward_clipping_ ? std::clamp<int>(reward, -1, 1) : reward;
+            steps_taken_ = 1;
+        }
 
-            // Execute action for frame_skip frames
-            reward_t reward = 0;
-            for (int skip_id = frame_skip_; skip_id > 0; --skip_id) {
-                reward += env_->act(action, strength);
+        /**
+         * Execute a multi-step action, accumulating gamma-discounted rewards.
+         * Each action is executed for frame_skip raw frames.
+         * Stops early on termination/truncation.
+         */
+        void step_sequence() {
+            const auto& seq = current_sequence_;
+            double accumulated_reward = 0.0;
+            int steps = 0;
 
-                game_over_ = env_->game_over();
-                elapsed_step_++;
-                was_life_lost_ = env_->lives() < lives_ && env_->lives() > 0;
+            for (size_t s = 0; s < seq.action_ids.size(); ++s) {
+                const int action_id = seq.action_ids[s];
+                if (action_id < 0 || action_id >= static_cast<int>(action_set_.size())) {
+                    throw std::out_of_range(
+                        "multi-step action: action_id " + std::to_string(action_id) +
+                        " out of range [0, " + std::to_string(action_set_.size()) + ")");
+                }
+                reward_t step_reward = execute_frameskip(action_set_[action_id], seq.paddle_strengths[s]);
+                process_screen();
+                lives_ = env_->lives();
+
+                reward_t clipped = reward_clipping_ ? std::clamp<int>(step_reward, -1, 1) : step_reward;
+                accumulated_reward += std::pow(seq.gamma, steps) * clipped;
+                steps++;
 
                 if (game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_)) {
                     break;
                 }
-
-                // Captures last two frames for maxpooling
-                if (skip_id <= 2) {
-                    if (obs_format_ == ObsFormat::Grayscale) {
-                        get_screen_data_grayscale(raw_frames_[skip_id - 1].data());
-                    } else {
-                        get_screen_data_rgb(raw_frames_[skip_id - 1].data());
-                    }
-                }
             }
 
-            // Update state
-            process_screen();
-            lives_ = env_->lives();
-            reward_ = reward_clipping_ ? std::clamp<int>(reward, -1, 1) : reward;
+            reward_ = accumulated_reward;
+            steps_taken_ = steps;
+            has_sequence_ = false;
         }
 
         /**
@@ -258,6 +286,7 @@ namespace ale::vector {
             timestep.lives = lives_;
             timestep.frame_number = env_->getFrameNumber();
             timestep.episode_frame_number = env_->getEpisodeFrameNumber();
+            timestep.steps_taken = steps_taken_;
 
             // Copy frames from oldest to newest into a single observation
             timestep.observation.resize(obs_size_ * stack_num_);
@@ -291,6 +320,13 @@ namespace ale::vector {
         }
 
         /**
+         * Get the number of available actions for this ROM
+         */
+        int num_actions() const {
+            return static_cast<int>(action_set_.size());
+        }
+
+        /**
          * Get observation size
          */
         const int get_stacked_obs_size() const {
@@ -305,6 +341,38 @@ namespace ale::vector {
         }
 
     private:
+        /**
+         * Execute one action for frame_skip raw frames.
+         * Returns accumulated raw reward.
+         */
+        inline reward_t execute_frameskip(const Action action, const float strength) {
+            reward_t reward = 0;
+            for (int skip_id = frame_skip_; skip_id > 0; --skip_id) {
+                reward += env_->act(action, strength);
+                game_over_ = env_->game_over();
+                elapsed_step_++;
+                was_life_lost_ = env_->lives() < lives_ && env_->lives() > 0;
+                if (game_over_ || elapsed_step_ >= max_episode_steps_ || (episodic_life_ && was_life_lost_)) {
+                    break;
+                }
+                if (skip_id <= 2) {
+                    if (obs_format_ == ObsFormat::Grayscale) {
+                        get_screen_data_grayscale(raw_frames_[skip_id - 1].data());
+                    } else {
+                        get_screen_data_rgb(raw_frames_[skip_id - 1].data());
+                    }
+                }
+            }
+            if (frame_skip_ == 1) {
+                if (obs_format_ == ObsFormat::Grayscale) {
+                    get_screen_data_grayscale(raw_frames_[0].data());
+                } else {
+                    get_screen_data_rgb(raw_frames_[0].data());
+                }
+            }
+            return reward;
+        }
+
         /**
          * Get the current screen data from ALE in grayscale format
          */
@@ -333,6 +401,10 @@ namespace ale::vector {
          * Process the screen and update the frame stack
          */
         void process_screen() {
+            if (frame_skip_ == 1) {
+                std::copy(raw_frames_[0].begin(), raw_frames_[0].end(), raw_frames_[2].begin());
+            }
+
             // Maxpool raw frames if required (different for grayscale and RGB)
             if (maxpool_) {
                 maxpool_frames(raw_frames_[0].data(), raw_frames_[1].data(), raw_size_);
@@ -354,6 +426,10 @@ namespace ale::vector {
 
             // Move to next position in circular buffer
             frame_stack_idx_ = (frame_stack_idx_ + 1) % stack_num_;
+
+            if (frame_skip_ == 1) {
+                std::copy(raw_frames_[2].begin(), raw_frames_[2].end(), raw_frames_[1].begin());
+            }
         }
 
         /**
@@ -431,9 +507,12 @@ namespace ale::vector {
         bool game_over_;                     // Whether the game is over
         int lives_;                          // Current number of lives
         bool was_life_lost_;                 // If a life is loss from a step
-        reward_t reward_;                    // Last reward received
+        double reward_;                       // Last reward received
 
         EnvironmentAction current_action_;   // Current action to take
+        SequenceAction current_sequence_;    // Current multi-step action
+        bool has_sequence_ = false;          // Whether a multi-step action is pending
+        int steps_taken_ = 1;                // Steps taken in last step call
         int current_seed_;                   // Current seed to update
 
         // Frame buffers

@@ -7,6 +7,7 @@
 #include <atomic>
 #include <functional>
 #include <mutex>
+#include <exception>
 
 #include "ale/external/ThreadPool.h"
 #include "utils.hpp"
@@ -146,7 +147,38 @@ namespace ale::vector {
          */
         const std::vector<Timestep> recv() {
             std::vector<Timestep> timesteps = state_buffer_->collect();
+            {
+                std::lock_guard<std::mutex> lock(exception_mutex_);
+                if (worker_exception_) {
+                    auto exc = std::move(worker_exception_);
+                    worker_exception_ = nullptr;
+                    std::rethrow_exception(exc);
+                }
+            }
             return timesteps;
+        }
+
+        /**
+         * Send multi-step actions to the sub-environments.
+         *
+         * @param sequences Vector of SequenceAction, one per environment
+         */
+        void send(const std::vector<SequenceAction>& sequences) {
+            std::vector<ActionSlice> action_slices;
+            action_slices.reserve(sequences.size());
+
+            for (size_t i = 0; i < sequences.size(); i++) {
+                const int env_id = sequences[i].env_id;
+                envs_[env_id]->set_sequence_action(sequences[i]);
+
+                ActionSlice action;
+                action.env_id = env_id;
+                action.force_reset = false;
+
+                action_slices.emplace_back(action);
+            }
+
+            action_queue_->enqueue_bulk(action_slices);
         }
 
         /**
@@ -177,6 +209,24 @@ namespace ale::vector {
             return autoreset_mode_;
         }
 
+        std::vector<int> num_actions() const {
+            std::vector<int> counts;
+            counts.reserve(envs_.size());
+            for (const auto& env : envs_) {
+                counts.push_back(env->num_actions());
+            }
+            return counts;
+        }
+
+        std::vector<ActionVect> get_action_set() const {
+            std::vector<ActionVect> sets;
+            sets.reserve(envs_.size());
+            for (const auto& env : envs_) {
+                sets.push_back(env->get_action_set());
+            }
+            return sets;
+        }
+
     private:
         int num_envs_;                                    // Number of parallel environments
         int batch_size_;                                  // Batch size for processing
@@ -191,24 +241,37 @@ namespace ale::vector {
         std::vector<std::unique_ptr<PreprocessedAtariEnv>> envs_; // Environment instances
 
         mutable std::vector<std::vector<uint8_t>> final_obs_storage_;  // For same-step autoreset
+        mutable std::mutex exception_mutex_;
+        mutable std::exception_ptr worker_exception_;
 
         /**
          * Worker thread function that processes environment steps
          */
         void worker_function() const {
             while (!stop_) {
-                try {
-                    ActionSlice action = action_queue_->dequeue();
-                    if (stop_) {
-                        break;
-                    }
+                // Dequeue outside try so env_id is in scope for the catch handler
+                ActionSlice action = action_queue_->dequeue();
+                if (stop_) {
+                    break;
+                }
+                const int env_id = action.env_id;
 
-                    const int env_id = action.env_id;
+                try {
+
+                    // Choose step() or step_sequence() based on pending sequence
+                    auto do_step = [&]() {
+                        if (envs_[env_id]->has_sequence()) {
+                            envs_[env_id]->step_sequence();
+                        } else {
+                            envs_[env_id]->step();
+                        }
+                    };
+
                     if (autoreset_mode_ == AutoresetMode::NextStep) {
                         if (action.force_reset || envs_[env_id]->is_episode_over()) {
                             envs_[env_id]->reset();
                         } else {
-                            envs_[env_id]->step();
+                            do_step();
                         }
 
                         // Get timestep and write to state buffer
@@ -223,7 +286,7 @@ namespace ale::vector {
                             timestep.final_observation = nullptr;
                             state_buffer_->write(timestep);
                         } else {
-                            envs_[env_id]->step();
+                            do_step();
                             Timestep step_timestep = envs_[env_id]->get_timestep();
 
                             // if episode over, autoreset
@@ -237,6 +300,7 @@ namespace ale::vector {
                                 reset_timestep.reward = step_timestep.reward;
                                 reset_timestep.terminated = step_timestep.terminated;
                                 reset_timestep.truncated = step_timestep.truncated;
+                                reset_timestep.steps_taken = step_timestep.steps_taken;
 
                                 // Write the reset timestep with the some of the step timestep data
                                 state_buffer_->write(reset_timestep);
@@ -248,9 +312,17 @@ namespace ale::vector {
                     } else {
                         throw std::runtime_error("Invalid autoreset mode");
                     }
-                } catch (const std::exception& e) {
-                    // Log error but continue processing
-                    std::cerr << "Error in worker thread: " << e.what() << std::endl;
+                } catch (...) {
+                    // Store first exception; write a dummy timestep so collect() unblocks
+                    {
+                        std::lock_guard<std::mutex> lock(exception_mutex_);
+                        if (!worker_exception_) {
+                            worker_exception_ = std::current_exception();
+                        }
+                    }
+                    Timestep dummy;
+                    dummy.env_id = env_id;
+                    state_buffer_->write(dummy);
                 }
             }
         }

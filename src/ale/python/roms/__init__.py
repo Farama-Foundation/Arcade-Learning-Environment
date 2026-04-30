@@ -28,7 +28,6 @@ def get_rom_path(name: str) -> Path | None:
     # grab the roms_dir environment
     if os_environ_path := os.environ.get("ALE_ROMS_DIR"):
         roms_dir = Path(os_environ_path)
-        print(f"Loading roms from {roms_dir.absolute()}...")
     else:
         roms_dir = Path(__file__).parent
 

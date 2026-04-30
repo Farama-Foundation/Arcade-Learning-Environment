@@ -52,8 +52,9 @@ namespace ale::vector {
          * @param num_threads The number of worker threads to use (0 means use hardware concurrency, default: 0)
          * @param thread_affinity_offset The CPU core offset for thread affinity (-1 means no affinity, default: -1)
          */
+        // Single-ROM: delegate to the multi-ROM constructor by repeating the path.
         ALEVectorInterface(
-            const fs::path &rom_path,
+            const fs::path& rom_path,
             const int num_envs,
             const int frame_skip = 4,
             const int stack_num = 4,
@@ -72,15 +73,45 @@ namespace ale::vector {
             const int batch_size = 0,
             const int num_threads = 0,
             const int thread_affinity_offset = -1,
-            const std::string &autoreset_mode = "NextStep"
-        ) : rom_path_(rom_path),
-            num_envs_(num_envs),
+            const std::string& autoreset_mode = "NextStep"
+        ) : ALEVectorInterface(
+            std::vector<fs::path>(num_envs, rom_path),
+            frame_skip, stack_num, img_height, img_width,
+            grayscale, maxpool, noop_max, use_fire_reset,
+            episodic_life, life_loss_info, reward_clipping,
+            max_episode_steps, repeat_action_probability, full_action_space,
+            batch_size, num_threads, thread_affinity_offset, autoreset_mode
+        ) {}
+
+        // Multi-ROM constructor: each environment runs a different ROM.
+        // num_envs is inferred from rom_paths.size().
+        ALEVectorInterface(
+            const std::vector<fs::path>& rom_paths,
+            const int frame_skip = 4,
+            const int stack_num = 4,
+            const int img_height = 84,
+            const int img_width = 84,
+            const bool grayscale = true,
+            const bool maxpool = true,
+            const int noop_max = 30,
+            const bool use_fire_reset = true,
+            const bool episodic_life = false,
+            const bool life_loss_info = false,
+            const bool reward_clipping = true,
+            const int max_episode_steps = 108000,
+            const float repeat_action_probability = 0.0f,
+            const bool full_action_space = false,
+            const int batch_size = 0,
+            const int num_threads = 0,
+            const int thread_affinity_offset = -1,
+            const std::string& autoreset_mode = "NextStep"
+        ) : num_envs_(static_cast<int>(rom_paths.size())),
             frame_skip_(frame_skip),
             stack_num_(stack_num),
             img_height_(img_height),
             img_width_(img_width),
             grayscale_(grayscale),
-            obs_format_(grayscale_ ? ObsFormat::Grayscale : ObsFormat::RGB),
+            obs_format_(grayscale ? ObsFormat::Grayscale : ObsFormat::RGB),
             maxpool_(maxpool),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
@@ -90,30 +121,12 @@ namespace ale::vector {
             max_episode_steps_(max_episode_steps),
             repeat_action_probability_(repeat_action_probability),
             full_action_space_(full_action_space),
-            received_env_ids_(batch_size > 0 ? batch_size : num_envs) {
+            rom_paths_(rom_paths),
+            received_env_ids_(batch_size > 0 ? batch_size : static_cast<int>(rom_paths.size())) {
 
-            // Create environment factory
-            auto env_factory = [this](int env_id) {
-                return std::make_unique<PreprocessedAtariEnv>(
-                    env_id,
-                    rom_path_,
-                    img_height_,
-                    img_width_,
-                    frame_skip_,
-                    maxpool_,
-                    obs_format_,
-                    stack_num_,
-                    noop_max_,
-                    use_fire_reset_,
-                    episodic_life_,
-                    life_loss_info_,
-                    reward_clipping_,
-                    max_episode_steps_,
-                    repeat_action_probability_,
-                    full_action_space_,
-                    -1
-                );
-            };
+            if (rom_paths.empty()) {
+                throw std::invalid_argument("rom_paths must not be empty");
+            }
 
             if (autoreset_mode == "NextStep") {
                 autoreset_mode_ = AutoresetMode::NextStep;
@@ -123,19 +136,21 @@ namespace ale::vector {
                 throw std::invalid_argument("Invalid autoreset_mode: " + autoreset_mode + ", expected values: 'NextStep' or 'SameStep'");
             }
 
-            // Create vectorizer
+            auto env_factory = [this](int env_id) {
+                return std::make_unique<PreprocessedAtariEnv>(
+                    env_id, rom_paths_[env_id],
+                    img_height_, img_width_, frame_skip_, maxpool_, obs_format_,
+                    stack_num_, noop_max_, use_fire_reset_, episodic_life_,
+                    life_loss_info_, reward_clipping_, max_episode_steps_,
+                    repeat_action_probability_, full_action_space_, -1
+                );
+            };
+
             vectorizer_ = std::make_unique<AsyncVectorizer>(
-                num_envs,
-                batch_size,
-                num_threads,
-                thread_affinity_offset,
-                env_factory,
-                autoreset_mode_
+                num_envs_, batch_size, num_threads, thread_affinity_offset,
+                env_factory, autoreset_mode_
             );
 
-            // Initialize the action set (assuming all environments have the same action set)
-            const auto temp_env = env_factory(0);
-            action_set_ = temp_env->get_action_set();
         }
 
         /**
@@ -178,6 +193,43 @@ namespace ale::vector {
         }
 
         /**
+         * Send multi-step actions to environments.
+         *
+         * @param action_id_sequences Per-env actions
+         * @param paddle_strength_per_action Per-env paddle strengths
+         * @param gammas Per-env discount factors for reward accumulation
+         */
+        void send(
+            const std::vector<std::vector<int>>& action_id_sequences,
+            const std::vector<std::vector<float>>& paddle_strength_per_action,
+            const std::vector<float>& gammas
+        ) {
+            if (action_id_sequences.size() != paddle_strength_per_action.size() ||
+                action_id_sequences.size() != gammas.size()) {
+                throw std::invalid_argument(
+                    "actions_per_rom, paddle_strength_per_action, and gammas must have the same length");
+            }
+
+            std::vector<SequenceAction> sequences;
+            sequences.reserve(action_id_sequences.size());
+
+            for (size_t i = 0; i < action_id_sequences.size(); i++) {
+                if (action_id_sequences[i].size() != paddle_strength_per_action[i].size()) {
+                    throw std::invalid_argument(
+                        "action_ids and paddle_strengths must match for env " + std::to_string(i));
+                }
+                SequenceAction seq;
+                seq.env_id = received_env_ids_[i];
+                seq.action_ids = action_id_sequences[i];
+                seq.paddle_strengths = paddle_strength_per_action[i];
+                seq.gamma = gammas[i];
+                sequences.push_back(seq);
+            }
+
+            vectorizer_->send(sequences);
+        }
+
+        /**
         * Returns the environment's data for the environments
         */
         const std::vector<Timestep> recv() {
@@ -186,15 +238,6 @@ namespace ale::vector {
                 received_env_ids_[i] = timesteps[i].env_id;
             }
             return timesteps;
-        }
-
-        /**
-         * Get the available actions for the environments
-         *
-         * @return Vector of available actions
-         */
-        const ActionVect& get_action_set() const {
-            return action_set_;
         }
 
         /**
@@ -246,8 +289,22 @@ namespace ale::vector {
             return vectorizer_.get();
         }
 
+        /**
+         * Get the number of available actions for each environment.
+         * Different ROMs may have different action set sizes.
+         *
+         * @return Vector of action counts, one per environment
+         */
+        std::vector<int> num_actions() const {
+            return vectorizer_->num_actions();
+        }
+
+        std::vector<ActionVect> get_action_set() const {
+            return vectorizer_->get_action_set();
+        }
+
     private:
-        fs::path rom_path_;                       // Path to the ROM file
+        std::vector<fs::path> rom_paths_;         // Per-env ROM paths (length == num_envs_)
         int num_envs_;                            // Number of parallel environments
         int frame_skip_;                          // Number of frames to skip
         int stack_num_;                           // Number of frames to stack
@@ -268,8 +325,7 @@ namespace ale::vector {
 
         std::vector<int> received_env_ids_;        // Vector of environment ids for the most recently received data
 
-        std::unique_ptr<AsyncVectorizer> vectorizer_;  // Vectorizer
-        ActionVect action_set_;                    // Set of available actions
+        std::unique_ptr<AsyncVectorizer> vectorizer_;
     };
 }
 

@@ -61,6 +61,7 @@ def assert_gym_ale_rollout_equivalence(
         if not key.startswith("_") and key != "seeds"
     }
     env_ids = ale_info.pop("env_id")
+    ale_info.pop("steps_taken", None)
     assert np.all(env_ids == np.arange(gym_envs.num_envs))
     assert data_equivalence(gym_info, ale_info)
 
@@ -76,7 +77,9 @@ def assert_gym_ale_rollout_equivalence(
         )
 
         assert obs_equivalence(gym_obs, ale_obs, t, **kwargs)
-        assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+        assert data_equivalence(
+            gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)
+        ), t
         assert data_equivalence(gym_terminations, ale_terminations), t
         assert data_equivalence(gym_truncations, ale_truncations), t
 
@@ -86,6 +89,7 @@ def assert_gym_ale_rollout_equivalence(
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
+        ale_info.pop("steps_taken", None)
         assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
         assert data_equivalence(gym_info, ale_info), t
 
@@ -98,7 +102,6 @@ def assert_gym_ale_rollout_equivalence(
 #     "env_id", [env_id for env_id in gym.registry if "ALE/" in env_id]
 # )
 class TestVectorEnv:
-
     disable_vector_args = dict(
         noop_max=0,
         use_fire_reset=False,
@@ -152,7 +155,7 @@ class TestVectorEnv:
         assert obs.shape == expected_shape
         assert obs.dtype == np.uint8
         assert obs in envs.observation_space, f"{envs.observation_space=}"
-        assert isinstance(reward, np.ndarray) and reward.dtype == np.int32
+        assert isinstance(reward, np.ndarray) and reward.dtype in (np.int32, np.float64)
         assert reward.shape == (num_envs,)
         assert isinstance(terminations, np.ndarray) and terminations.dtype == bool
         assert terminations.shape == (num_envs,)
@@ -217,6 +220,39 @@ class TestVectorEnv:
             frame_skip=frame_skip,
             grayscale=grayscale,
         )
+
+    def test_frameskip1_maxpool(self, env_id, num_envs=4):
+        """Verify maxpool=True with frameskip=1 produces a different result to maxpool=False with frameskip=1."""
+        maxpool_envs = gym.make_vec(
+            env_id, num_envs, frameskip=1, maxpool=True, **self.disable_vector_args
+        )
+        nomaxpool_envs = gym.make_vec(
+            env_id, num_envs, frameskip=1, maxpool=False, **self.disable_vector_args
+        )
+
+        seed = 42
+        maxpool_obs, _ = maxpool_envs.reset(seed=seed)
+        nomaxpool_obs, _ = nomaxpool_envs.reset(seed=seed)
+
+        maxpool_envs.action_space.seed(seed)
+        nomaxpool_envs.action_space.seed(seed)
+
+        # Step until maxpool and no-maxpool diverge (should happen by step 2 for
+        # any frame with non-zero pixels that differ between consecutive steps).
+        diverged = False
+        for _ in range(10):
+            actions = maxpool_envs.action_space.sample()
+            maxpool_obs, _, _, _, _ = maxpool_envs.step(actions)
+            nomaxpool_obs, _, _, _, _ = nomaxpool_envs.step(actions)
+            if not np.array_equal(maxpool_obs, nomaxpool_obs):
+                diverged = True
+                break
+
+        maxpool_envs.close()
+        nomaxpool_envs.close()
+        assert (
+            diverged is True
+        ), "maxpool=True with frameskip=1 should produce different observations than maxpool=False"
 
     @pytest.mark.parametrize("continuous_action_threshold", (0.2, 0.5, 0.8))
     def test_continuous_equivalence(
@@ -601,6 +637,7 @@ class TestVectorEnv:
             if not key.startswith("_") and key != "seeds"
         }
         env_ids = ale_info.pop("env_id")
+        ale_info.pop("steps_taken", None)
         assert np.all(env_ids == np.arange(gym_envs.num_envs))
         assert data_equivalence(gym_info, ale_info)
 
@@ -617,11 +654,14 @@ class TestVectorEnv:
             )
 
             assert obs_equivalence(gym_obs, ale_obs, t, autoreset_mode="SAME-STEP"), t
-            assert data_equivalence(gym_rewards.astype(np.int32), ale_rewards), t
+            assert data_equivalence(
+                gym_rewards.astype(np.float64), ale_rewards.astype(np.float64)
+            ), t
             assert data_equivalence(gym_terminations, ale_terminations), t
             assert data_equivalence(gym_truncations, ale_truncations), t
 
             env_ids = ale_info.pop("env_id")
+            ale_info.pop("steps_taken", None)
             assert np.all(env_ids == np.arange(gym_envs.num_envs)), t
 
             episode_over = np.logical_or(gym_terminations, gym_truncations)
@@ -664,3 +704,218 @@ class TestVectorEnv:
 
         gym_envs.close()
         ale_envs.close()
+
+
+class TestStepSequences:
+    """Tests for variable-length sequence stepping via step/send."""
+
+    def _make_env(self, num_envs=4):
+        return ale_py.vector_env.AtariVectorEnv(
+            game="pong", num_envs=num_envs, autoreset_mode="SameStep"
+        )
+
+    def test_single_step_sequences(self):
+        """All length-1 sequences should return steps_taken=1 for each env."""
+        env = self._make_env(3)
+        env.reset()
+        seqs = [np.array([0], dtype=np.int64) for _ in range(3)]
+        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
+        assert obs.shape[0] == 3
+        assert np.all(info["steps_taken"] == 1)
+        env.close()
+
+    def test_variable_length_sequences(self):
+        """Envs with different sequence lengths report correct steps_taken."""
+        env = self._make_env(4)
+        env.reset()
+        lengths = [1, 2, 4, 8]
+        seqs = [np.zeros(k, dtype=np.int64) for k in lengths]
+        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
+        assert obs.shape[0] == 4
+        for i, expected_len in enumerate(lengths):
+            assert (
+                info["steps_taken"][i] == expected_len
+            ), f"Env {i}: expected {expected_len} steps, got {info['steps_taken'][i]}"
+        env.close()
+
+    def test_gamma_discounting(self):
+        """Accumulated reward should use gamma discounting across steps."""
+        env = self._make_env(2)
+        env.reset()
+        seqs = [np.zeros(10, dtype=np.int64) for _ in range(2)]
+
+        _obs, rewards_g1, _terminated, _truncated, _info = env.step(seqs, gamma=1.0)
+        env.reset()
+        _obs, rewards_g99, _terminated, _truncated, _info = env.step(seqs, gamma=0.99)
+
+        assert np.all(
+            rewards_g99 <= rewards_g1 + 1e-6
+        ), f"gamma=0.99 rewards {rewards_g99} should be <= gamma=1.0 rewards {rewards_g1}"
+        env.close()
+
+    def test_early_termination_steps_taken(self):
+        """When an env terminates mid-sequence, steps_taken < sequence length."""
+        env = self._make_env(1)
+        env.reset()
+        seq = [np.zeros(100_000, dtype=np.int64)]
+        _obs, _rewards, terms, truncs, info = env.step(seq, gamma=0.99)
+        assert terms[0] or truncs[0], "Expected termination/truncation"
+        assert (
+            info["steps_taken"][0] < 100_000
+        ), f"Expected early termination, but got {info['steps_taken'][0]} steps"
+        env.close()
+
+    def test_send_recv_sequences(self):
+        """Async send/recv with sequences works."""
+        env = self._make_env(2)
+        env.reset()
+        seqs = [np.zeros(3, dtype=np.int64), np.zeros(1, dtype=np.int64)]
+        env.send(seqs, gamma=0.99)
+        obs, _rewards, _terminated, _truncated, info = env.recv()
+        assert obs.shape[0] == 2
+        assert info["steps_taken"][0] == 3
+        assert info["steps_taken"][1] == 1
+        env.close()
+
+    def test_empty_sequence_skips_env(self):
+        """Empty action sequence means zero steps for that env."""
+        env = self._make_env(2)
+        env.reset()
+        seqs = [np.zeros(5, dtype=np.int64), np.array([], dtype=np.int64)]
+        obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=[0.99, 1.0])
+        assert info["steps_taken"][0] == 5
+        assert info["steps_taken"][1] == 0
+        env.close()
+
+    def test_zero_step_returns_last_obs_zero_reward(self):
+        """Zero-step env: obs unchanged, reward=0, not done.
+
+        - scalar gamma=1.0 is valid for empty sequences
+        - scalar gamma != 1.0 raises when any sequence is empty
+        - list of gammas allows per-env values (use 1.0 for empty envs)
+        """
+        env = self._make_env(2)
+        obs_before, _ = env.reset()
+
+        # scalar gamma != 1.0 raises when an empty sequence is present
+        with pytest.raises(ValueError):
+            env.step(
+                [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)],
+                gamma=0.99,
+            )
+
+        # scalar gamma=1.0 is fine - applies to all envs uniformly
+        obs, rewards, terms, truncs, info = env.step(
+            [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)], gamma=1.0
+        )
+        assert rewards[1] == 0.0
+        assert info["steps_taken"][1] == 0
+        assert not terms[1] and not truncs[1]
+        np.testing.assert_array_equal(obs[1], obs_before[1])
+
+        obs_before2 = obs.copy()
+        # list of gammas: env 0 gets 0.99, env 1 (empty) gets 1.0
+        obs, rewards, terms, truncs, info = env.step(
+            [np.array([0], dtype=np.int64), np.array([], dtype=np.int64)],
+            gamma=[0.99, 1.0],
+        )
+        assert rewards[1] == 0.0
+        assert info["steps_taken"][1] == 0
+        np.testing.assert_array_equal(obs[1], obs_before2[1])
+
+        env.close()
+
+    def test_frame_numbers_advance_correctly(self):
+        """Envs with more steps should have higher frame numbers."""
+        env = self._make_env(2)
+        env.reset()
+        seqs = [np.zeros(10, dtype=np.int64), np.zeros(1, dtype=np.int64)]
+        _obs, _rewards, _terminated, _truncated, info = env.step(seqs, gamma=0.99)
+        assert (
+            info["frame_number"][0] > info["frame_number"][1]
+        ), f"Env 0 (10 steps) should have higher frame count than env 1 (1 step): {info['frame_number']}"
+        env.close()
+
+
+class TestMultiRomEnv:
+    """Tests for multi-ROM vector environment (different games per env)."""
+
+    def test_multi_rom_basic(self):
+        """Multi-ROM env returns correct obs shape and per-env action APIs."""
+        env = ale_py.vector_env.AtariVectorEnv(
+            game=["pong"] * 2 + ["breakout"] * 2, autoreset_mode="SameStep"
+        )
+        obs, _ = env.reset()
+        assert obs.shape == (4, 4, 84, 84), f"Expected (4,4,84,84), got {obs.shape}"
+        actions = np.zeros(4, dtype=np.int64)
+        obs, rewards, terms, truncs, info = env.step(actions)
+        assert obs.shape == (4, 4, 84, 84)
+        assert rewards.shape == (4,)
+        # num_actions
+        assert len(env.num_actions) == 4
+        assert env.num_actions[0] == env.num_actions[1]  # both pong
+        assert env.num_actions[2] == env.num_actions[3]  # both breakout
+        assert env.num_actions[0] != env.num_actions[2]  # pong != breakout
+        # action_set: each set length matches num_actions
+        assert len(env.action_set) == 4
+        for i, (action_set, n) in enumerate(zip(env.action_set, env.num_actions)):
+            assert (
+                len(action_set) == n
+            ), f"env {i}: action_set len {len(action_set)} != {n}"
+            assert all(isinstance(a, int) for a in action_set)
+        # single_action_space is the max across all ROMs
+        assert isinstance(env.single_action_space, gym.spaces.Discrete)
+        assert env.single_action_space.n == max(env.num_actions)
+        # action_space is a Tuple of per-env Discrete spaces for correct sampling bounds
+        assert isinstance(env.action_space, gym.spaces.Tuple)
+        assert [s.n for s in env.action_space.spaces] == env.num_actions[: env.batch_size]
+        env.close()
+
+    def test_multi_rom_num_envs_inferred(self):
+        """num_envs is inferred from the game list length."""
+        env = ale_py.vector_env.AtariVectorEnv(game=["pong"] * 3)
+        assert env.num_envs == 3
+        env.close()
+
+    def test_multi_rom_num_envs_explicit_matches(self):
+        """Explicit num_envs matching list length is accepted."""
+        env = ale_py.vector_env.AtariVectorEnv(game=["pong"] * 2, num_envs=2)
+        assert env.num_envs == 2
+        env.close()
+
+    def test_multi_rom_num_envs_mismatch_raises(self):
+        """num_envs mismatching list length raises an error."""
+        with pytest.raises(AssertionError):
+            ale_py.vector_env.AtariVectorEnv(game=["pong"] * 2, num_envs=5)
+
+    def test_multi_rom_action_space_sample(self):
+        """action_space.sample() stays within each game's valid action count."""
+        env = ale_py.vector_env.AtariVectorEnv(
+            game=["pong"] * 2 + ["breakout"] * 2, autoreset_mode="SameStep"
+        )
+        env.reset()
+        for _ in range(20):
+            actions = env.action_space.sample()
+            for i, (action, limit) in enumerate(zip(actions, env.num_actions)):
+                assert 0 <= action < limit, f"env {i}: action {action} >= limit {limit}"
+            env.step(actions)
+        env.close()
+
+    def test_multi_rom_action_out_of_bounds(self):
+        """Sending an action index beyond a ROM's minimal action set raises an error."""
+        env = ale_py.vector_env.AtariVectorEnv(game=["pong"])
+        env.reset()
+        # Pong minimal action set = 6 actions (indices 0-5); index 10 is out of range
+        with pytest.raises(Exception):
+            env.step(np.array([10], dtype=np.int64))
+        env.close()
+
+    def test_single_rom_list_equivalent_to_str(self):
+        """game=['pong'] and game='pong', num_envs=1 give identical obs shapes."""
+        env_list = ale_py.vector_env.AtariVectorEnv(game=["pong"])
+        env_str = ale_py.vector_env.AtariVectorEnv(game="pong", num_envs=1)
+        obs_list, _ = env_list.reset(seed=42)
+        obs_str, _ = env_str.reset(seed=42)
+        assert obs_list.shape == obs_str.shape
+        env_list.close()
+        env_str.close()
