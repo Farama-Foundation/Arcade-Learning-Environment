@@ -11,7 +11,7 @@ from typing import Any
 import torch
 from torch._library.effects import EffectType
 
-__all__ = ["TorchOpsWrapper", "register_pytorch_ops"]
+__all__ = ["register_pytorch_ops"]
 
 # Module-level state shared across all registered envs.
 # _torch_registered is never reset: torch.library.custom_op raises if the same name is
@@ -19,14 +19,13 @@ __all__ = ["TorchOpsWrapper", "register_pytorch_ops"]
 _torch_registered: bool = False
 _torch_envs: dict[int, Any] = {}
 _torch_buffers: dict[int, dict] = {}
-_torch_last_info: dict[int, dict] = {}
 
 
 def register_pytorch_ops(env: Any):
     """Allocate pinned buffers for env and register ale::* torch custom ops once.
 
     Returns:
-        (handle_id, ale_send, ale_step, ale_recv, get_last_info, unregister)
+        (handle_id, ale_send, ale_step, ale_recv, unregister)
     """
     global _torch_registered
 
@@ -73,14 +72,13 @@ def register_pytorch_ops(env: Any):
             torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor
         ]:
             buf = _torch_buffers[handle_id]
-            info = _torch_envs[handle_id].recv(
+            _torch_envs[handle_id].recv(
                 buf["obs"].numpy(),
                 buf["reward"].numpy(),
                 buf["term"].numpy(),
                 buf["trunc"].numpy(),
                 buf["steps_taken"].numpy(),
             )
-            _torch_last_info[handle_id] = info
             return (
                 buf["obs"],
                 buf["reward"],
@@ -134,13 +132,9 @@ def register_pytorch_ops(env: Any):
         ) -> torch.Tensor:
             return values.new_empty(())
 
-    def get_last_info() -> dict:
-        return _torch_last_info.get(handle_id, {})
-
     def unregister() -> None:
         _torch_envs.pop(handle_id, None)
         _torch_buffers.pop(handle_id, None)
-        _torch_last_info.pop(handle_id, None)
 
     def ale_step(
         handle_id: int, actions: torch.Tensor
@@ -153,40 +147,5 @@ def register_pytorch_ops(env: Any):
         torch.ops.ale.send,
         ale_step,
         torch.ops.ale.recv,
-        get_last_info,
         unregister,
     )
-
-
-class TorchOpsWrapper:
-    """Wraps an AtariVectorEnv with torch custom ops for compiled training.
-
-    Exposes ale_send, ale_step, and ale_recv as bound methods and tracks handle_id
-    for use as the first argument.
-    """
-
-    def __init__(self, env):
-        """Initialize by calling env.torch() and binding the returned ops."""
-        self._env = env
-        (
-            self.handle_id,
-            self.ale_send,
-            self.ale_step,
-            self.ale_recv,
-            self._get_last_info,
-            self._unregister,
-        ) = env.torch()
-
-    def get_last_info(self) -> dict:
-        """Return info dict from the most recent recv call."""
-        return self._get_last_info()
-
-    def close(self):
-        """Unregister torch buffers and close the underlying env."""
-        self._unregister()
-        if hasattr(self._env, "close"):
-            self._env.close()
-
-    def __getattr__(self, name: str):
-        """Delegate attribute access to the wrapped env."""
-        return getattr(self._env, name)

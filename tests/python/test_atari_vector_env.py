@@ -222,7 +222,7 @@ class TestVectorEnv:
         )
 
     def test_frameskip1_maxpool(self, env_id, num_envs=4):
-        """Verify maxpool=True with frameskip=1 works as expected."""
+        """Verify maxpool=True with frameskip=1 produces a different result to maxpool=False with frameskip=1."""
         maxpool_envs = gym.make_vec(
             env_id, num_envs, frameskip=1, maxpool=True, **self.disable_vector_args
         )

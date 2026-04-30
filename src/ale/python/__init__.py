@@ -53,9 +53,19 @@ try:
     __all__ += ["ALEVectorInterface"]
 
     try:
-        from ale_py._torch_ops import TorchOpsWrapper
+        from ale_py.wrappers import (
+            AtariVectorEnvWrapper,
+            RecordEpisodeStatistics,
+            TransformReward,
+            TorchOpsWrapper,
+        )
 
-        __all__ += ["TorchOpsWrapper"]
+        __all__ += [
+            "AtariVectorEnvWrapper",
+            "RecordEpisodeStatistics",
+            "TransformReward",
+            "TorchOpsWrapper",
+        ]
     except ImportError:
         pass
 except ImportError:

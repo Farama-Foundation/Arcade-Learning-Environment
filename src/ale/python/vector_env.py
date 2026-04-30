@@ -314,7 +314,7 @@ class AtariVectorEnv(VectorEnv):
         """Register and return PyTorch custom ops for zero-copy ALE integration.
 
         Returns:
-            (handle_id, ale_send, ale_step, ale_recv, get_last_info, unregister)
+            (handle_id, ale_send, ale_step, ale_recv, unregister)
         """
         try:
             from ale_py._torch_ops import register_pytorch_ops
