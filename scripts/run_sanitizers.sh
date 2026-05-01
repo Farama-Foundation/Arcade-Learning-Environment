@@ -1,17 +1,27 @@
 #!/bin/bash
-# Helper script for running sanitizers locally
-# Usage: ./scripts/run_sanitizers.sh [thread|address|valgrind-memcheck|valgrind-helgrind]
+# Helper script for running sanitizers locally and in CI
+# Usage: ./scripts/run_sanitizers.sh [thread|address|valgrind-memcheck|valgrind-helgrind] [quick|full]
+#
+# Test scope (default: quick):
+#   quick - Run a small focused set of tests (fast; default for local dev and CI)
+#   full  - Run the full test suite (slow; opt-in)
 
 set -e
 
 SANITIZER=${1:-thread}
+TEST_SCOPE=${2:-quick}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+if [[ "$TEST_SCOPE" != "quick" && "$TEST_SCOPE" != "full" ]]; then
+    echo "Error: Invalid test scope '$TEST_SCOPE'. Must be 'quick' or 'full'."
+    exit 1
+fi
 
 cd "$PROJECT_ROOT"
 
 echo "=========================================="
-echo "Running sanitizer: $SANITIZER"
+echo "Running sanitizer: $SANITIZER (scope: $TEST_SCOPE)"
 echo "=========================================="
 
 # Ensure ROMs are downloaded
@@ -19,6 +29,10 @@ if [ ! -d "src/ale/python/roms" ]; then
     echo "Downloading ROMs..."
     ./scripts/download_unpack_roms.sh
 fi
+
+# Focused test selection used by both TSan and ASan when scope=quick.
+# Targets the threading hot paths in the vectorized env.
+QUICK_KEYS="test_batch_size_async or test_episodic_life_equivalence or (test_reset_step_shapes and 4-3-ALE)"
 
 case $SANITIZER in
     thread)
@@ -51,8 +65,9 @@ case $SANITIZER in
                 exit 1
             fi
         else
-            export CC=clang
-            export CXX=clang++
+            # Honor CC/CXX from the environment so CI (which sets clang-18) is respected.
+            export CC=${CC:-clang}
+            export CXX=${CXX:-clang++}
 
             pip install --verbose -e .[test] \
                 --config-settings=cmake.define.ENABLE_SANITIZER=thread
@@ -60,7 +75,7 @@ case $SANITIZER in
 
         echo ""
         echo "Running tests with Thread Sanitizer..."
-        export TSAN_OPTIONS="second_deadlock_stack=1 history_size=7"
+        export TSAN_OPTIONS="second_deadlock_stack=1 history_size=7 halt_on_error=1"
 
         # Python isn't built with TSan, so the instrumented .so has unresolved
         # TSan runtime symbols when imported. Preload the runtime to provide them.
@@ -73,22 +88,30 @@ case $SANITIZER in
             echo "Tests will likely fail with 'undefined symbol: __tsan_*' errors."
         fi
 
-        echo "→ Running focused vector environment tests (threading hot paths)..."
-        python -m pytest tests/python/test_atari_vector_env.py -v -x -s \
-            -k "test_batch_size_async or test_episodic_life_equivalence or (test_reset_step_shapes and 4-3-ALE)"
+        if [ "$TEST_SCOPE" = "full" ]; then
+            echo "→ Running vector environment tests..."
+            python -m pytest tests/python/test_atari_vector_env.py -v -x
+            echo "→ Running all tests..."
+            python -m pytest -v
+        else
+            echo "→ Running focused vector environment tests (threading hot paths)..."
+            python -m pytest tests/python/test_atari_vector_env.py -v -x -s \
+                -k "$QUICK_KEYS"
+        fi
         ;;
 
     address)
         echo "Building with Address Sanitizer + UBSan..."
-        export CC=clang
-        export CXX=clang++
+        # Honor CC/CXX from the environment so CI (which sets clang-18) is respected.
+        export CC=${CC:-clang}
+        export CXX=${CXX:-clang++}
         pip install --verbose -e .[test] \
             --config-settings=cmake.define.ENABLE_SANITIZER=address
 
         echo ""
         echo "Running tests with Address Sanitizer..."
-        export ASAN_OPTIONS="detect_leaks=1:check_initialization_order=1"
-        export UBSAN_OPTIONS="print_stacktrace=1"
+        export ASAN_OPTIONS="detect_leaks=1:check_initialization_order=1:halt_on_error=1"
+        export UBSAN_OPTIONS="print_stacktrace=1:halt_on_error=1"
 
         # Suppress leak reports from Python/pybind11 module-init machinery
         # (type objects, interpreter-lifetime allocations). See scripts/lsan-suppressions.txt.
@@ -107,9 +130,16 @@ case $SANITIZER in
             echo "WARNING: ASan runtime not found via '${CXX:-clang++} -print-file-name'."
         fi
 
-        echo "→ Running focused vector environment tests..."
-        python -m pytest tests/python/test_atari_vector_env.py -v -x -s \
-            -k "test_batch_size_async or test_episodic_life_equivalence or (test_reset_step_shapes and 4-3-ALE)"
+        if [ "$TEST_SCOPE" = "full" ]; then
+            echo "→ Running vector environment tests..."
+            python -m pytest tests/python/test_atari_vector_env.py -v -x
+            echo "→ Running all tests..."
+            python -m pytest -v
+        else
+            echo "→ Running focused vector environment tests..."
+            python -m pytest tests/python/test_atari_vector_env.py -v -x -s \
+                -k "$QUICK_KEYS"
+        fi
         ;;
 
     valgrind-memcheck)
@@ -128,14 +158,22 @@ case $SANITIZER in
             echo "Warning: $SCRIPT_DIR/valgrind-python.supp not found. Some false positives may appear."
         fi
 
+        if [ "$TEST_SCOPE" = "full" ]; then
+            MEMCHECK_TEST_ARGS=(tests/python/test_atari_vector_env.py -v)
+        else
+            MEMCHECK_TEST_ARGS=(tests/python/test_atari_vector_env.py::TestVectorEnv::test_reset_step_shapes -v -s -k "num_envs-1")
+        fi
+
         valgrind \
             --tool=memcheck \
             --leak-check=full \
             --show-leak-kinds=definite,possible \
+            --errors-for-leak-kinds=definite \
             --track-origins=yes \
+            --error-exitcode=1 \
             --verbose \
             --suppressions="$SCRIPT_DIR/valgrind-python.supp" \
-            python -m pytest tests/python/test_atari_vector_env.py::TestVectorEnv::test_reset_step_shapes -v -s -k "num_envs-1"
+            python -m pytest "${MEMCHECK_TEST_ARGS[@]}"
         ;;
 
     valgrind-helgrind)
@@ -154,28 +192,39 @@ case $SANITIZER in
             echo "Warning: $SCRIPT_DIR/valgrind-python.supp not found. Some false positives may appear."
         fi
 
+        if [ "$TEST_SCOPE" = "full" ]; then
+            HELGRIND_TEST_ARGS=(tests/python/test_atari_vector_env.py -v)
+        else
+            HELGRIND_TEST_ARGS=(tests/python/test_atari_vector_env.py::TestVectorEnv::test_batch_size_async -v -s)
+        fi
+
         valgrind \
             --tool=helgrind \
+            --error-exitcode=1 \
             --verbose \
             --suppressions="$SCRIPT_DIR/valgrind-python.supp" \
-            python -m pytest tests/python/test_atari_vector_env.py::TestVectorEnv::test_batch_size_async -v -s
+            python -m pytest "${HELGRIND_TEST_ARGS[@]}"
         ;;
 
     *)
         echo "Unknown sanitizer: $SANITIZER"
         echo ""
-        echo "Usage: $0 [thread|address|valgrind-memcheck|valgrind-helgrind]"
+        echo "Usage: $0 [thread|address|valgrind-memcheck|valgrind-helgrind] [quick|full]"
         echo ""
-        echo "Options:"
+        echo "Sanitizers:"
         echo "  thread              - Thread Sanitizer (detects data races, deadlocks)"
         echo "  address             - Address Sanitizer + UBSan (detects memory errors, UB)"
         echo "  valgrind-memcheck   - Valgrind Memcheck (detects memory leaks)"
         echo "  valgrind-helgrind   - Valgrind Helgrind (detects thread errors)"
+        echo ""
+        echo "Test scope (default: quick):"
+        echo "  quick - Run a small set of focused tests (fast)"
+        echo "  full  - Run the full test suite (slow; opt-in)"
         exit 1
         ;;
 esac
 
 echo ""
 echo "=========================================="
-echo "Sanitizer run complete: $SANITIZER"
+echo "Sanitizer run complete: $SANITIZER (scope: $TEST_SCOPE)"
 echo "=========================================="
