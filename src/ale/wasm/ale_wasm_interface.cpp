@@ -124,15 +124,19 @@ public:
         screen_buffer.clear();
         ale.getScreenRGB(screen_buffer);
 
-        // Return as JavaScript typed array view
-        return val(typed_memory_view(screen_buffer.size(), screen_buffer.data()));
+        // Copy into a JS-owned Uint8Array so the view isn't invalidated by later calls.
+        return val::global("Uint8Array").new_(
+            typed_memory_view(screen_buffer.size(), screen_buffer.data())
+        );
     }
 
     val getScreenGrayscale() {
         screen_buffer.clear();
         ale.getScreenGrayscale(screen_buffer);
 
-        return val(typed_memory_view(screen_buffer.size(), screen_buffer.data()));
+        return val::global("Uint8Array").new_(
+            typed_memory_view(screen_buffer.size(), screen_buffer.data())
+        );
     }
 
     // Get screen as RGBA ImageData format (ready for Canvas ImageData)
@@ -214,7 +218,10 @@ public:
     // RAM access
     val getRAM() {
         const ALERAM& ram = ale.getRAM();
-        return val(typed_memory_view(ram.size(), ram.array()));
+        // Copy into a JS-owned Uint8Array so the caller doesn't alias live emulator RAM.
+        return val::global("Uint8Array").new_(
+            typed_memory_view(ram.size(), ram.array())
+        );
     }
 
     void setRAM(size_t index, uint8_t value) {
@@ -268,9 +275,11 @@ public:
         ALEState state = ale.cloneState();
         std::string serialized = state.serialize();
 
-        // Return as Uint8Array to preserve binary data
+        // Copy into a JS-owned Uint8Array so the view outlives this local buffer.
         std::vector<unsigned char> buffer(serialized.begin(), serialized.end());
-        return val(typed_memory_view(buffer.size(), buffer.data()));
+        return val::global("Uint8Array").new_(
+            typed_memory_view(buffer.size(), buffer.data())
+        );
     }
 
     void loadState(const val& uint8Array) {
