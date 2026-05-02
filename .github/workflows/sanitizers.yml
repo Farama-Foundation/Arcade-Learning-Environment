@@ -1,0 +1,128 @@
+# Sanitizers and memory checkers for detecting threading issues and memory leaks.
+# TSan and ASan run on every PR and push to master.
+# Valgrind Memcheck runs on releases, manual dispatch, or when a PR has the
+# "run-valgrind" label. Valgrind Helgrind runs on releases only.
+
+name: Sanitizers
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+  release:
+    types: [published]
+
+jobs:
+  thread-sanitizer:
+    name: "Thread Sanitizer"
+    runs-on: ubuntu-latest
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+      CC: clang-18
+      CXX: clang++-18
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Clang
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-18 llvm-18
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Run Thread Sanitizer
+      run: ./scripts/run_sanitizers.sh thread
+
+  address-sanitizer:
+    name: "Address Sanitizer + UBSan"
+    runs-on: ubuntu-latest
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+      CC: clang-18
+      CXX: clang++-18
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Clang
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-18 llvm-18
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Run Address Sanitizer
+      run: ./scripts/run_sanitizers.sh address
+
+  valgrind-memcheck:
+    name: "Valgrind Memcheck"
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'release' ||
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'run-valgrind')
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Valgrind
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Run Valgrind Memcheck
+      run: ./scripts/run_sanitizers.sh valgrind-memcheck
+      continue-on-error: true
+
+  valgrind-helgrind:
+    name: "Valgrind Helgrind"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Valgrind
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind
+
+    - name: Download and unpack ROMs
+      run: ./scripts/download_unpack_roms.sh
+
+    - name: Run Valgrind Helgrind
+      timeout-minutes: 360
+      run: ./scripts/run_sanitizers.sh valgrind-helgrind
+      continue-on-error: true
