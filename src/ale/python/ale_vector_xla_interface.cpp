@@ -65,7 +65,7 @@ ffi::Error XLAResetImpl(
 
         if (timesteps.empty()) {
             return ffi::Error::Internal("No timesteps received after step");
-        } else if (timesteps.size() != vectorizer->get_batch_size()) {
+        } else if (timesteps.size() != static_cast<size_t>(vectorizer->get_batch_size())) {
             return ffi::Error::Internal("Number of timesteps is wrong");
         }
 
@@ -207,7 +207,7 @@ ffi::Error XLAResetGPUImpl(
 
         if (timesteps.empty()) {
             return ffi::Error::Internal("No timesteps received after reset (GPU)");
-        } else if (timesteps.size() != vectorizer->get_batch_size()) {
+        } else if (timesteps.size() != static_cast<size_t>(vectorizer->get_batch_size())) {
             return ffi::Error::Internal("Number of timesteps is wrong (GPU)");
         }
 
@@ -367,7 +367,7 @@ ffi::Error XLAStepImpl(
 
         if (timesteps.empty()) {
             return ffi::Error::Internal("No timesteps received after step");
-        } else if (timesteps.size() != vectorizer->get_batch_size()) {
+        } else if (timesteps.size() != static_cast<size_t>(vectorizer->get_batch_size())) {
             return ffi::Error::Internal("Number of timesteps is wrong");
         }
 

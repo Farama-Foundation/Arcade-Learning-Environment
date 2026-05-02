@@ -71,13 +71,13 @@ namespace ale::vector {
             const int seed = -1
         ) : env_id_(env_id),
             rom_path_(rom_path),
-            obs_frame_height_(obs_height),
-            obs_frame_width_(obs_width),
-            frame_skip_(frame_skip),
-            maxpool_(maxpool),
             obs_format_(obs_format),
             channels_per_frame_(obs_format == ObsFormat::Grayscale ? 1 : 3),
+            obs_frame_height_(obs_height),
+            obs_frame_width_(obs_width),
             stack_num_(stack_num),
+            frame_skip_(frame_skip),
+            maxpool_(maxpool),
             noop_max_(noop_max),
             use_fire_reset_(use_fire_reset),
             episodic_life_(episodic_life),
@@ -209,7 +209,7 @@ namespace ale::vector {
         void step() {
             // Convert the current action to Action and Paddle Strength
             const int action_id = current_action_.action_id;
-            if (action_id < 0 || action_id >= action_set_.size()) {
+            if (action_id < 0 || static_cast<size_t>(action_id) >= action_set_.size()) {
                 throw std::out_of_range("Stepping sub-environment with action_id: " + std::to_string(action_id) + ", however, this is either less than zero or greater than available actions (" + std::to_string(action_set_.size()) + ")");
             }
             const Action action = action_set_[action_id];

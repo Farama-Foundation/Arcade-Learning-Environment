@@ -148,7 +148,7 @@ void KlaxSettings::setMode(
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (m < 3) {
     // Press select until the correct mode is reached.
-    while (readMappedRam(&system, 0xf0ea) != m) {
+    while (readMappedRam(&system, 0xf0ea) != static_cast<int>(m)) {
       environment->pressSelect(2);
     }
 
