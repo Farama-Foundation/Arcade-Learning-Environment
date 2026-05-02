@@ -235,10 +235,11 @@ jobs:
             python: '3.14'
             wheel-name: 'cp314-cp314-win_amd64'
             arch: AMD64
-          - runs-on: windows-latest
-            python: '3.14t'
-            wheel-name: 'cp314-cp314t-win_amd64'
-            arch: AMD64
+            # Jax doesn't support 3.14t on Windows
+#          - runs-on: windows-latest
+#            python: '3.14t'
+#            wheel-name: 'cp314-cp314t-win_amd64'
+#            arch: AMD64
 
           - runs-on: macos-latest
             python: '3.10'

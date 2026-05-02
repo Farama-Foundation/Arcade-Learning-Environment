@@ -42,6 +42,8 @@ pip install ale-py
 ```
 Note: Make sure you're using an up-to-date version of `pip` or the installation may fail.
 
+Note: Free-threaded CPython (the `t` ABI, e.g. `python3.14t`) is supported on Linux and macOS but not on Windows, because `jaxlib` does not publish a Windows free-threading wheel.
+
 You can now import the ALE in your Python projects with providing a direct interface to Stella for interacting with games
 ```python
 from ale_py import ALEInterface, roms
