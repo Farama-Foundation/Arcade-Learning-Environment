@@ -133,7 +133,7 @@ void VideoCheckersSettings::setMode(
       m += 6;
     }
 
-    while (readRam(&system, 0xF6) != m) { environment->pressSelect(1); }
+    while (readRam(&system, 0xF6) != static_cast<int>(m)) { environment->pressSelect(1); }
 
     // reset the environment to apply changes.
     environment->softReset();

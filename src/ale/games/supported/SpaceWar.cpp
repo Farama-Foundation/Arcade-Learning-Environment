@@ -111,7 +111,7 @@ void SpaceWarSettings::setMode(
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (isModeSupported(m)) {
     // Press select until the correct mode is reached.
-    while (getDecimalScore(0xa7, &system) != m) {
+    while (getDecimalScore(0xa7, &system) != static_cast<int>(m)) {
       environment->pressSelect(2);
     }
 
