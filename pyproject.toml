@@ -98,11 +98,8 @@ cmake.args = [
 ]
 
 [tool.cibuildwheel]
-# Skip 32-bit wheels, PyPy & musllinux
-skip = ["*-win32", "*i686", "*-musllinux*"]
-
-# Build free-threaded CPython wheels (3.13t, 3.14t) in addition to standard builds
-enable = ["cpython-freethreading"]
+# Skip 32-bit wheels, PyPy, musllinux & 3.13t (free-threading is only supported on 3.14+)
+skip = ["*-win32", "*i686", "*-musllinux*", "cp313t-*"]
 
 build-frontend = "build"
 manylinux-x86_64-image = "manylinux-x86_64-vcpkg:latest"
