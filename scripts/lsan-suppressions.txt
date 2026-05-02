@@ -21,6 +21,15 @@ leak:PyMem_RawMalloc
 leak:PyObject_Malloc
 leak:_PyObject_Malloc
 leak:PyMem_Malloc
+leak:_PyMem_RawCalloc
+leak:PyMem_RawCalloc
+leak:_PyObject_Calloc
+leak:PyMem_Calloc
+
+# Python unicode writer paths (interned/cached strings produced during
+# module init and type readiness; live for the interpreter's lifetime)
+leak:_PyUnicodeWriter_Finish
+leak:resize_compact
 
 # pybind11 module / class registration
 leak:pybind11
