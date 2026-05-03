@@ -185,10 +185,6 @@ jobs:
             python: '3.14'
             wheel-name: 'cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
-          - runs-on: ubuntu-latest
-            python: '3.14t'
-            wheel-name: 'cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
-            arch: 'x86_64'
 
           - runs-on: ubuntu-24.04-arm
             python: '3.10'
@@ -209,10 +205,6 @@ jobs:
           - runs-on: ubuntu-24.04-arm
             python: '3.14'
             wheel-name: 'cp314-cp314-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
-            arch: 'aarch64'
-          - runs-on: ubuntu-24.04-arm
-            python: '3.14t'
-            wheel-name: 'cp314-cp314t-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
 
           - runs-on: windows-latest
@@ -260,10 +252,6 @@ jobs:
           - runs-on: macos-latest
             python: '3.14'
             wheel-name: 'cp314-cp314-macosx_13_0_arm64'
-            arch: arm64
-          - runs-on: macos-latest
-            python: '3.14t'
-            wheel-name: 'cp314-cp314t-macosx_13_0_arm64'
             arch: arm64
 
     runs-on: ${{ matrix.runs-on }}
