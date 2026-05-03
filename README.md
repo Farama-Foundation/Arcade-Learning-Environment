@@ -42,6 +42,8 @@ pip install ale-py
 ```
 Note: Make sure you're using an up-to-date version of `pip` or the installation may fail.
 
+Note: Free-threaded CPython (the `t` ABI, e.g. `python3.14t`) aren't supported as OpenCV doesn't build compatible wheels on any system which is necessary for preprocessing. We will look to add support when OpenCV does.
+
 You can now import the ALE in your Python projects with providing a direct interface to Stella for interacting with games
 ```python
 from ale_py import ALEInterface, roms

@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "scikit-build-core>=0.10",
-    "nanobind>=2.1.0",
+    "nanobind>=2.5.0",
     "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'"
 ]
 build-backend = "scikit_build_core.build"
@@ -32,6 +32,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
@@ -97,8 +98,9 @@ cmake.args = [
 ]
 
 [tool.cibuildwheel]
-# Skip 32-bit wheels, PyPy & musllinux
-skip = ["*-win32", "*i686", "*-musllinux*"]
+# Skip 32-bit wheels, PyPy, musllinux, cp313t (free-threading was experimental in 3.13),
+# and cp314t-win_amd64 (jaxlib does not publish a Windows free-threading wheel).
+skip = ["*-win32", "*i686", "*-musllinux*", "cp313t-*", "cp314t-*"]
 
 build-frontend = "build"
 manylinux-x86_64-image = "manylinux-x86_64-vcpkg:latest"
