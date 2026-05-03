@@ -103,7 +103,7 @@ jobs:
       - run: ls dist/
 
       - name: Upload wheels to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*.wheel
 
@@ -148,7 +148,7 @@ jobs:
           EMSDK_PATH: ${{ env.EMSDK }}
 
       - name: Upload standalone bundle to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*.zip
 
