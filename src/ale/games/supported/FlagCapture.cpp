@@ -105,7 +105,7 @@ void FlagCaptureSettings::setMode(
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (isModeSupported(m)) {
     // Press select until the correct mode is reached for single player only.
-    while (readRam(&system, 0xd6) != m) {
+    while (readRam(&system, 0xd6) != static_cast<int>(m)) {
       environment->pressSelect(2);
     }
 

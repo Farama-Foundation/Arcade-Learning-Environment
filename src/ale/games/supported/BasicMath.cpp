@@ -103,7 +103,7 @@ void BasicMathSettings::setMode(
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (isModeSupported(m)) {
     // Press select until the correct mode is reached.
-    while (readRam(&system, 0xc5) != m) {
+    while (readRam(&system, 0xc5) != static_cast<int>(m)) {
       environment->pressSelect(2);
     }
 

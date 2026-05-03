@@ -67,7 +67,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Linux)
       if: runner.os == 'Linux'
-      uses: Jimver/cuda-toolkit@v0.2.29
+      uses: Jimver/cuda-toolkit@v0.2.35
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -75,7 +75,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Windows)
       if: runner.os == 'Windows'
-      uses: Jimver/cuda-toolkit@v0.2.29
+      uses: Jimver/cuda-toolkit@v0.2.35
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -116,7 +116,7 @@ jobs:
         # For Linux, the CUDA Toolkit is installed the dockerfile
       - name: Install CUDA Toolkit (Windows)
         if: runner.os == 'Windows'
-        uses: Jimver/cuda-toolkit@v0.2.29
+        uses: Jimver/cuda-toolkit@v0.2.35
         with:
           cuda: '12.6.2'
           method: 'network'
@@ -125,7 +125,7 @@ jobs:
       - name: Set up Docker Buildx
         if: runner.os == 'linux'
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           install: true
       - name: Build Docker image with vcpkg
@@ -143,12 +143,12 @@ jobs:
         run: ./scripts/download_unpack_roms.sh
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.0
+        uses: pypa/cibuildwheel@v3.4
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
           path: ./wheelhouse/*.whl
@@ -170,68 +170,89 @@ jobs:
             python: '3.10'
             wheel-name: 'cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
-          - runs-on: ubuntu-latest
-            python: '3.11'
-            wheel-name: 'cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
-            arch: 'x86_64'
-          - runs-on: ubuntu-latest
-            python: '3.12'
-            wheel-name: 'cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
-            arch: 'x86_64'
+#          - runs-on: ubuntu-latest
+#            python: '3.11'
+#            wheel-name: 'cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
+#            arch: 'x86_64'
+#          - runs-on: ubuntu-latest
+#            python: '3.12'
+#            wheel-name: 'cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
+#            arch: 'x86_64'
           - runs-on: ubuntu-latest
             python: '3.13'
             wheel-name: 'cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
+            arch: 'x86_64'
+          - runs-on: ubuntu-latest
+            python: '3.14'
+            wheel-name: 'cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
 
           - runs-on: ubuntu-24.04-arm
             python: '3.10'
             wheel-name: 'cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
-          - runs-on: ubuntu-24.04-arm
-            python: '3.11'
-            wheel-name: 'cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
-            arch: 'aarch64'
-          - runs-on: ubuntu-24.04-arm
-            python: '3.12'
-            wheel-name: 'cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
-            arch: 'aarch64'
+#          - runs-on: ubuntu-24.04-arm
+#            python: '3.11'
+#            wheel-name: 'cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
+#            arch: 'aarch64'
+#          - runs-on: ubuntu-24.04-arm
+#            python: '3.12'
+#            wheel-name: 'cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
+#            arch: 'aarch64'
           - runs-on: ubuntu-24.04-arm
             python: '3.13'
             wheel-name: 'cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
+            arch: 'aarch64'
+          - runs-on: ubuntu-24.04-arm
+            python: '3.14'
+            wheel-name: 'cp314-cp314-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
 
           - runs-on: windows-latest
             python: '3.10'
             wheel-name: 'cp310-cp310-win_amd64'
             arch: AMD64
-          - runs-on: windows-latest
-            python: '3.11'
-            wheel-name: 'cp311-cp311-win_amd64'
-            arch: AMD64
-          - runs-on: windows-latest
-            python: '3.12'
-            wheel-name: 'cp312-cp312-win_amd64'
-            arch: AMD64
+#          - runs-on: windows-latest
+#            python: '3.11'
+#            wheel-name: 'cp311-cp311-win_amd64'
+#            arch: AMD64
+#          - runs-on: windows-latest
+#            python: '3.12'
+#            wheel-name: 'cp312-cp312-win_amd64'
+#            arch: AMD64
           - runs-on: windows-latest
             python: '3.13'
             wheel-name: 'cp313-cp313-win_amd64'
             arch: AMD64
+          - runs-on: windows-latest
+            python: '3.14'
+            wheel-name: 'cp314-cp314-win_amd64'
+            arch: AMD64
+            # Jax doesn't support 3.14t on Windows
+#          - runs-on: windows-latest
+#            python: '3.14t'
+#            wheel-name: 'cp314-cp314t-win_amd64'
+#            arch: AMD64
 
           - runs-on: macos-latest
             python: '3.10'
             wheel-name: 'cp310-cp310-macosx_13_0_arm64'
             arch: arm64
-          - runs-on: macos-latest
-            python: '3.11'
-            wheel-name: 'cp311-cp311-macosx_13_0_arm64'
-            arch: arm64
-          - runs-on: macos-latest
-            python: '3.12'
-            wheel-name: 'cp312-cp312-macosx_13_0_arm64'
-            arch: arm64
+#          - runs-on: macos-latest
+#            python: '3.11'
+#            wheel-name: 'cp311-cp311-macosx_13_0_arm64'
+#            arch: arm64
+#          - runs-on: macos-latest
+#            python: '3.12'
+#            wheel-name: 'cp312-cp312-macosx_13_0_arm64'
+#            arch: arm64
           - runs-on: macos-latest
             python: '3.13'
             wheel-name: 'cp313-cp313-macosx_13_0_arm64'
+            arch: arm64
+          - runs-on: macos-latest
+            python: '3.14'
+            wheel-name: 'cp314-cp314-macosx_13_0_arm64'
             arch: arm64
 
     runs-on: ${{ matrix.runs-on }}
@@ -242,7 +263,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
 
@@ -285,7 +306,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: wheels-${{ runner.os }}-${{ matrix.arch }}
 

@@ -34,33 +34,33 @@ class OthelloSettings : public RomSettings {
  public:
   OthelloSettings();
 
-  virtual void reset();
+  void reset() override;
 
-  virtual bool isTerminal() const;
+  bool isTerminal() const override;
 
-  virtual reward_t getReward() const;
+  reward_t getReward() const override;
 
-  virtual const char* rom() const { return "othello"; }
+  const char* rom() const override { return "othello"; }
 
   // The md5 checksum of the ROM that this game supports
   const char* md5() const override { return "113cd09c9771ac278544b7e90efe7df2"; }
 
-  virtual RomSettings* clone() const;
+  RomSettings* clone() const override;
 
-  virtual bool isMinimal(const Action& a) const;
+  bool isMinimal(const Action& a) const override;
 
-  virtual void step(const stella::System& system);
+  void step(const stella::System& system) override;
 
-  virtual void saveState(stella::Serializer& ser);
+  void saveState(stella::Serializer& ser) override;
 
-  virtual void loadState(stella::Deserializer& ser);
+  void loadState(stella::Deserializer& ser) override;
 
-  virtual ModeVect getAvailableModes();
+  ModeVect getAvailableModes() override;
 
-  virtual void setMode(game_mode_t m, stella::System& system,
-                       std::unique_ptr<StellaEnvironmentWrapper> environment);
+  void setMode(game_mode_t m, stella::System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
-  virtual DifficultyVect getAvailableDifficulties();
+  DifficultyVect getAvailableDifficulties() override;
 
  private:
   bool m_terminal;

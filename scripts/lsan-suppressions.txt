@@ -1,0 +1,48 @@
+# LeakSanitizer suppressions for ALE Python tests.
+#
+# Python and pybind11 intentionally allocate-and-leak at module init: type
+# objects, interned strings, method tables, etc. live for the lifetime of the
+# interpreter and are never freed. These are reported by LSan but are not real
+# bugs — suppress them so only ALE-attributable leaks remain visible.
+
+# Python type / module / object machinery
+leak:_PyType_FromMetaclass
+leak:PyType_FromSpec
+leak:PyType_GenericAlloc
+leak:_PyType_AllocNoTrack
+leak:PyModule_ExecDef
+leak:_imp_exec_dynamic
+leak:PyInit_
+leak:_PyImport_LoadDynamicModuleWithSpec
+
+# Python allocator wrappers (catches anonymous frames into Python internals)
+leak:_PyMem_RawMalloc
+leak:PyMem_RawMalloc
+leak:PyObject_Malloc
+leak:_PyObject_Malloc
+leak:PyMem_Malloc
+leak:_PyMem_RawCalloc
+leak:PyMem_RawCalloc
+leak:_PyObject_Calloc
+leak:PyMem_Calloc
+
+# Python unicode writer paths (interned/cached strings produced during
+# module init and type readiness; live for the interpreter's lifetime)
+leak:_PyUnicodeWriter_Finish
+leak:resize_compact
+
+# pybind11 module / class registration
+leak:pybind11
+
+# numpy module init: ufunc registration, identity hash, string allocator,
+# Cython-generated submodules (_mt19937, etc.). All interpreter-lifetime.
+leak:PyUFunc_FromFuncAndDataAndSignatureAndIdentity
+leak:PyArrayIdentityHash_SetItem
+leak:NpyString_new_allocator
+leak:_multiarray_umath
+leak:__pyx_pymod_exec_
+
+# Python type readiness paths reached during module init (docstring decode etc.)
+leak:type_ready
+leak:type_ready_fill_dict
+leak:type_dict_set_doc

@@ -49,8 +49,11 @@ if(ENABLE_SANITIZER)
     add_link_options(-fsanitize=thread)
   elseif(ENABLE_SANITIZER STREQUAL "address")
     message(STATUS "Building with Address Sanitizer (ASan) + Undefined Behavior Sanitizer (UBSan)")
-    add_compile_options(-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -g -O1)
-    add_link_options(-fsanitize=address -fsanitize=undefined)
+    # Drop vptr/function UBSan checks: they require libclang_rt.ubsan_standalone_cxx,
+    # which is static-only. When the instrumented .so is loaded by an uninstrumented
+    # Python, __ubsan_vptr_type_cache and friends end up undefined at import time.
+    add_compile_options(-fsanitize=address -fsanitize=undefined -fno-sanitize=vptr,function -fno-omit-frame-pointer -g -O1)
+    add_link_options(-fsanitize=address -fsanitize=undefined -fno-sanitize=vptr,function)
   else()
     message(FATAL_ERROR "Invalid sanitizer '${ENABLE_SANITIZER}'. Choose 'thread' or 'address'.")
   endif()
