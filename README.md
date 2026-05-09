@@ -21,7 +21,7 @@ Features
 - Automatic extraction of game score and end-of-game signal for more than 100  Atari 2600 games.
 - Multi-platform code (compiled and tested under macOS, Windows, and several Linux distributions).
 - Python bindings through [nanobind](https://github.com/wjakob/nanobind).
-- Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
+- Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), the maintained fork of OpenAI Gym.
 - Atari roms are packaged within the pip package.
 - C++ based vectorizer for acting in multiple ROMs at the same time.
 - WebAssembly support for running ALE in the Browser
