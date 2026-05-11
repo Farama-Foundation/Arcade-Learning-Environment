@@ -133,28 +133,6 @@
 # bytes of the observation buffer as racy. Synchronization is sound (seq_cst
 # fetch_add chain on count_ + semaphore signal/wait); verified clean by
 # Thread Sanitizer on the same tests.
-{
-   ale_state_buffer_write
-   Helgrind:Race
-   ...
-   fun:*ale*vector*StateBuffer*write*
-}
-
-{
-   ale_state_buffer_collect
-   Helgrind:Race
-   ...
-   fun:*ale*vector*StateBuffer*collect*
-}
-
-# The recv() lambda memcpys observations out of Timesteps that StateBuffer
-# just handed over the (suppressed) semaphore edge. Same root cause.
-{
-   ale_vector_recv_memcpy
-   Helgrind:Race
-   ...
-   fun:*init_vector_module*
-}
 
 # moodycamel::LightweightSemaphore internals (spin counter + sem_t fallback).
 {
@@ -162,13 +140,4 @@
    Helgrind:Race
    ...
    fun:*moodycamel*LightweightSemaphore*
-}
-
-# ActionQueue is a lock-free queue using std::atomic + LightweightSemaphore
-# for the main -> worker action dispatch. Same false-positive class.
-{
-   ale_action_queue
-   Helgrind:Race
-   ...
-   fun:*ale*vector*ActionQueue*
 }
