@@ -1,6 +1,6 @@
 {
   "name": "@farama/ale-wasm",
-  "version": "0.11.2",
+  "version": "0.12.0",
   "description": "Arcade Learning Environment (ALE) compiled to WebAssembly for browser-based Atari 2600 emulation and reinforcement learning",
   "main": "ale.js",
   "types": "ale.d.ts",
