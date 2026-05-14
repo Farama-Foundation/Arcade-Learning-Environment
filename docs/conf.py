@@ -68,7 +68,7 @@ autodoc_preserve_defaults = True
 # a list of builtin themes.
 #
 html_theme = "furo"
-html_title = "ALE Documentation"
+html_title = "Arcade Learning Environment Documentation"
 html_baseurl = "https://ale.farama.org"
 html_copy_source = False
 html_favicon = "_static/img/favicon.png"
