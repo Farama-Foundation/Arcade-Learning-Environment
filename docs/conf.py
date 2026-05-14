@@ -19,7 +19,7 @@ import os
 
 import ale_py
 
-project = "Arcade-Learning-Environment"
+project = "Arcade Learning Environment"
 copyright = "2023 Farama Foundation"
 author = "Farama Foundation"
 
@@ -76,7 +76,6 @@ html_theme_options = {
     "light_logo": "img/ale.svg",
     "dark_logo": "img/ale.svg",
     # "gtag": "TODO",
-    "description": "The Arcade Learning Environment (ALE) -- a platform for AI research.",
     "image": "img/ale.svg",
     "versioning": True,
     "source_repository": "https://github.com/Farama-Foundation/Arcade-Learning-Environment/",
@@ -85,7 +84,7 @@ html_theme_options = {
 }
 
 html_static_path = ["_static"]
-html_css_files = []
+html_css_files = ["custom.css"]
 
 # -- Generate Changelog -------------------------------------------------
 
