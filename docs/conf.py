@@ -71,12 +71,12 @@ html_theme = "furo"
 html_title = "Arcade Learning Environment Documentation"
 html_baseurl = "https://ale.farama.org"
 html_copy_source = False
-html_favicon = "_static/img/favicon.png"
+html_favicon = "_static/img/favicon.svg"
 html_theme_options = {
     "light_logo": "img/ale.svg",
-    "dark_logo": "img/ale.svg",
+    "dark_logo": "img/ale-white.svg",
     # "gtag": "TODO",
-    "image": "img/ale.svg",
+    "image": "img/ale-github.png",
     "versioning": True,
     "source_repository": "https://github.com/Farama-Foundation/Arcade-Learning-Environment/",
     "source_branch": "main",
