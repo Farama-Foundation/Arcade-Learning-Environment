@@ -57,6 +57,7 @@ install(FILES
     env.py
     registration.py
     vector_env.py
+    wrappers.py
     py.typed
     DESTINATION ale_py)
 
