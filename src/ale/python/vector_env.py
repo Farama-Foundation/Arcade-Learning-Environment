@@ -10,7 +10,7 @@ import numpy as np
 from ale_py import roms
 from ale_py.env import AtariEnv
 from gymnasium.core import ObsType
-from gymnasium.spaces import Box, Discrete, MultiDiscrete, Tuple
+from gymnasium.spaces import Box, Discrete, MultiDiscrete
 from gymnasium.vector import AutoresetMode, VectorEnv
 
 
@@ -19,9 +19,10 @@ class AtariVectorEnv(VectorEnv):
 
     def __init__(
         self,
-        game: str | list[str],
+        game: str | list[str] | None = None,
         num_envs: int | None = None,
         *,
+        games: list[str] | None = None,
         batch_size: int = 0,
         num_threads: int = 0,
         thread_affinity_offset: int = -1,
@@ -47,8 +48,9 @@ class AtariVectorEnv(VectorEnv):
         """Constructor for vector environment.
 
         Args:
-            game: ROM name (e.g. ``"breakout"``) or list of ROM names for multi-ROM mode; num_envs is inferred from list length
-            num_envs: Number of environments (required when game is a str)
+            game: ROM name (e.g. ``"breakout"``) or list of ROM names for multi-ROM mode; mutually exclusive with games
+            num_envs: Number of environments (required when game is a str; repeats each ROM when games is given)
+            games: List of ROM names for multi-ROM mode; mutually exclusive with game. If num_envs is also given, each ROM is run num_envs times (equivalent to np.repeat(games, num_envs))
             batch_size: If to provide a batch of environments (in async mode)
             num_threads: The number of threads to use for parallel environments
             thread_affinity_offset: The CPU core offset for thread affinity (-1 means no affinity, default: -1)
@@ -96,6 +98,17 @@ class AtariVectorEnv(VectorEnv):
             autoreset_mode=_autoreset_str,
         )
 
+        if (game is None) == (games is None):
+            raise ValueError("Provide exactly one of game or games, not both or neither")
+
+        if games is not None:
+            game = (
+                [g for g in games for _ in range(num_envs)]
+                if num_envs is not None
+                else list(games)
+            )
+            num_envs = None
+
         if isinstance(game, list):
             rom_paths = []
             for g in game:
@@ -105,10 +118,6 @@ class AtariVectorEnv(VectorEnv):
                     f'i.e., "ms_pacman" not "MsPacman"'
                 )
                 rom_paths.append(rp)
-            if num_envs is not None:
-                assert num_envs == len(
-                    game
-                ), f"num_envs={num_envs} does not match len(game)={len(game)}"
             num_envs = len(game)
             self.ale = ale_py.ALEVectorInterface(rom_paths=rom_paths, **_common)
         else:
@@ -172,9 +181,9 @@ class AtariVectorEnv(VectorEnv):
                 np.full(self.batch_size, self.num_actions[0], dtype=np.int64)
             )
         else:
-            self.single_action_space = Discrete(max(self.num_actions))
-            self.action_space = Tuple(
-                tuple(Discrete(n) for n in self.num_actions[: self.batch_size])
+            self.single_action_space = None
+            self.action_space = MultiDiscrete(
+                np.array(self.num_actions[: self.batch_size], dtype=np.int64)
             )
 
     def reset(
@@ -309,6 +318,20 @@ class AtariVectorEnv(VectorEnv):
         if isinstance(result, dict):
             return obs_out, reward_out, term_out, trunc_out, result
         return result
+
+    def wrap(self, *wrappers):
+        """Apply wrappers in sequence and return the outermost wrapper.
+
+        Each element is either a wrapper class or a (class, *args) tuple.
+        Gymnasium VectorRewardWrapper and VectorObservationWrapper subclasses are
+        automatically adapted to support recv().
+        """
+        from ale_py.wrappers import _apply_wrapper
+        env = self
+        for w in wrappers:
+            cls, *args = w if isinstance(w, tuple) else (w,)
+            env = _apply_wrapper(env, cls, args)
+        return env
 
     def torch(self):
         """Register and return PyTorch custom ops for zero-copy ALE integration.
