@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.11.2...v0.12.0) - 2026-05-29
+This release modernises ALE's build and binding infrastructure, broadens platform support (including running ALE in the browser via WebAssembly), extends the XLA vectoriser to GPUs, and continues to optimise the C++ `AtariVectorEnv`.
+
+### Bug Fixes and deprecations
+For users using continuous actions, these have been fixed to accurately map both axes correctly, as previously moving down-left would incorrectly take the wrong action (see https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/638 by @markub3327 for more details).  Additionally, python 3.9 and macos x86_64 have been deprecated in favor of python 3.14 and macos arm64.
+
+### Build system, bindings and AtariVectorEnv
+
+* **Migrate to `scikit-build-core`** by @pseudo-rnd-thoughts (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/644). This replaces the large, hard-to-maintain `setup.py` with the modern `scikit-build-core` backend, simplifying configuration and making cross-compilation (and Windows builds) considerably easier.
+* **Switch from pybind11 to nanobind** by @pseudo-rnd-thoughts (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/646). nanobind is a more modern C++↔Python binding library that produces smaller wheels with lower memory footprint and overhead.
+* **Add WebAssembly support** by @pseudo-rnd-thoughts (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/655). ALE can now be compiled to WASM and distributed as an NPM package / standalone bundle, allowing demos to run directly in the browser without a Python install. An example website is included in `docs/wasm/example`.
+* **Add XLA GPU support** by @pseudo-rnd-thoughts (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/648). The XLA `VectorEnv` integration, previously CPU-only, now also runs on GPU for accelerated batched environment execution. Note: GPU XLA requires NumPy 2.X.
+* **Minimise data copies in the vectoriser** by @pseudo-rnd-thoughts (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/652). Reduces observation copies from three down to one (the theoretical minimum) by writing preprocessed observations directly into the output array and, on autoreset, only updating the sub-environments whose episode ended. Memory transfer was the largest bottleneck in the vectoriser. Note: we are still exploring how to optimise the vectoriser's throughput as significant further gains are believed possible.
+
 ## [0.11.2](https://github.com/Farama-Foundation/Arcade-Learning-Environment/compare/v0.11.1...v0.11.2) - 2025-07-12
 
 * Fix audio and rendering for Windows and Linux by @unexploredtest (https://github.com/Farama-Foundation/Arcade-Learning-Environment/pull/628)
