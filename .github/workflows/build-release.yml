@@ -77,8 +77,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - run: pip install setuptools
-      - run: python setup.py sdist
+      - run: pip install build
+      - run: python -m build --sdist
 
       - uses: actions/download-artifact@v8
         with:
@@ -105,7 +105,7 @@ jobs:
       - name: Upload wheels to release
         uses: softprops/action-gh-release@v3
         with:
-          files: dist/*.wheel
+          files: dist/*
 
       - name: Publish to PyPi test
         uses: pypa/gh-action-pypi-publish@release/v1
