@@ -442,11 +442,11 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <section id="option-1-npm-package">
 <h3>Option 1: npm Package<a class="headerlink" href="#option-1-npm-package" title="Link to this heading">¶</a></h3>
 <p>Install ALE via npm:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>@farama/ale
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>@farama/ale-wasm
 </pre></div>
 </div>
 <p>Then import in your JavaScript:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createALEModule</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@farama/ale&#39;</span><span class="p">;</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createALEModule</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@farama/ale-wasm&#39;</span><span class="p">;</span>
 
 <span class="kd">const</span><span class="w"> </span><span class="nx">ALE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">createALEModule</span><span class="p">();</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">ale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">ALEInterface</span><span class="p">();</span>
