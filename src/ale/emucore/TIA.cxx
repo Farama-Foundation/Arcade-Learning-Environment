@@ -465,6 +465,14 @@ bool TIA::load(Deserializer& in)
     myPOSM1 = (int16_t) in.getInt();
     myPOSBL = (int16_t) in.getInt();
 
+    // Ensure restored positions are in valid range [0, 159]
+    // Only called on state restore, so expensive modulo operations aren't a problem.
+    myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
+    myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
+    myPOSM0 = ((myPOSM0 % 160) + 160) % 160;
+    myPOSM1 = ((myPOSM1 % 160) + 160) % 160;
+    myPOSBL = ((myPOSBL % 160) + 160) % 160;
+
     myCurrentGRP0 = (uint8_t) in.getInt();
     myCurrentGRP1 = (uint8_t) in.getInt();
 
@@ -2293,6 +2301,11 @@ void TIA::poke(uint16_t addr, uint8_t value)
       int newx = hpos < HBLANK ? 3 : (((hpos - HBLANK) + 5) % 160);
 
       // Find out under what condition the player is being reset
+      // Clamp position to valid range to prevent out-of-bounds table access
+      // See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
+      // Only fires when RESP0/RESP1 is used in already out of bounds - should be rare.
+      if(myPOSP0 < 0 || myPOSP0 >= 160)
+        myPOSP0 = ((myPOSP0 % 160) + 160) % 160;
       int8_t when = ourPlayerPositionResetWhenTable[myNUSIZ0 & 7][myPOSP0][newx];
 
       // Player is being reset during the display of one of its copies
@@ -2337,6 +2350,11 @@ void TIA::poke(uint16_t addr, uint8_t value)
       int newx = hpos < HBLANK ? 3 : (((hpos - HBLANK) + 5) % 160);
 
       // Find out under what condition the player is being reset
+      // Clamp position to valid range to prevent out-of-bounds table access
+      // See: https://github.com/Farama-Foundation/Arcade-Learning-Environment/issues/11
+      // Only files when RESP0/RESP1 is used in already out of bounds - should be rare.
+      if(myPOSP1 < 0 || myPOSP1 >= 160)
+        myPOSP1 = ((myPOSP1 % 160) + 160) % 160;
       int8_t when = ourPlayerPositionResetWhenTable[myNUSIZ1 & 7][myPOSP1][newx];
 
       // Player is being reset during the display of one of its copies
@@ -2746,6 +2764,10 @@ void TIA::poke(uint16_t addr, uint8_t value)
       myPOSM1 += ourCompleteMotionTable[x][myHMM1];
       myPOSBL += ourCompleteMotionTable[x][myHMBL];
 
+      // Single-step wrapping is safe here: motion table values are in
+      // [-15, +8], so positions starting in [0, 159] land in [-15, 167]
+      // — always within one correction of the valid range. The RESP and
+      // load() clamps elsewhere guarantee we enter this path in-bounds.
       if(myPOSP0 >= 160)
         myPOSP0 -= 160;
       else if(myPOSP0 < 0)
