@@ -14,8 +14,7 @@
 namespace ale::vector {
 
 EnvVectorizer::EnvVectorizer(
-    const fs::path& rom_path,
-    int num_envs,
+    const std::vector<fs::path>& rom_paths,
     int batch_size,
     int num_threads,
     int thread_affinity_offset,
@@ -34,28 +33,30 @@ EnvVectorizer::EnvVectorizer(
     int max_episode_steps,
     float repeat_action_probability,
     bool full_action_space
-) : num_envs_(num_envs),
-    batch_size_(batch_size > 0 ? batch_size : num_envs),
+) : num_envs_(static_cast<int>(rom_paths.size())),
+    batch_size_(batch_size > 0 ? batch_size : num_envs_),
     img_height_(img_height),
     img_width_(img_width),
     stack_num_(stack_num),
     grayscale_(grayscale),
     autoreset_mode_(autoreset_mode),
-    last_recv_env_ids_(batch_size_ > 0 ? batch_size_ : num_envs)
+    last_recv_env_ids_(batch_size_ > 0 ? batch_size_ : num_envs_)
 {
     // Create environments
     envs_.reserve(num_envs_);
+    action_sets_.reserve(num_envs_);
+
     for (int i = 0; i < num_envs_; ++i) {
         envs_.push_back(std::make_unique<PreprocessedEnv>(
-            i, rom_path, img_height, img_width, frame_skip, maxpool,
+            i, rom_paths[i], img_height, img_width, frame_skip, maxpool,
             grayscale, stack_num, noop_max, use_fire_reset, episodic_life,
             life_loss_info, reward_clipping, max_episode_steps,
             repeat_action_probability, full_action_space, -1
         ));
+        action_sets_.push_back(envs_.back()->action_set());
     }
 
     stacked_obs_size_ = envs_[0]->stacked_obs_size();
-    action_set_ = envs_[0]->action_set();
 
     // Create action queue (capacity = 2x num_envs for safety)
     action_queue_ = std::make_unique<ActionQueue>(num_envs_ * 2);

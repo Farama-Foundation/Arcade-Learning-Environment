@@ -333,7 +333,7 @@ class TestVectorEnv:
 
         assert sync_envs.single_action_space == async_envs.single_action_space
         assert sync_envs.single_observation_space == async_envs.single_observation_space
-        assert sync_envs.action_space != async_envs.action_space
+        assert sync_envs.action_space == async_envs.action_space
         assert sync_envs.observation_space != async_envs.observation_space
 
         sync_envs.action_space.seed(action_seed)
