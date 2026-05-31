@@ -10,7 +10,7 @@ import numpy as np
 from ale_py import roms
 from ale_py.env import AtariEnv
 from gymnasium.core import ObsType
-from gymnasium.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete, MultiDiscrete
 from gymnasium.vector import AutoresetMode, VectorEnv
 
 
@@ -19,9 +19,10 @@ class AtariVectorEnv(VectorEnv):
 
     def __init__(
         self,
-        game: str,
-        num_envs: int,
+        games: list[str] | str | None = None,
+        num_envs: int | None = None,
         *,
+        game: str | None = None,
         batch_size: int = 0,
         num_threads: int = 0,
         thread_affinity_offset: int = -1,
@@ -47,8 +48,9 @@ class AtariVectorEnv(VectorEnv):
         """Constructor for vector environment.
 
         Args:
-            game: ROM name
-            num_envs: Number of environments
+            games: List of ROM names
+            game: Single ROM name (used by gymnasium registration)
+            num_envs: Repeat each ROM this many times
             batch_size: If to provide a batch of environments (in async mode)
             num_threads: The number of threads to use for parallel environments
             thread_affinity_offset: The CPU core offset for thread affinity (-1 means no affinity, default: -1)
@@ -70,14 +72,20 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
         """
-        rom_path = roms.get_rom_path(game)
-        assert (
-            rom_path is not None
-        ), f'{game} is not a ROM name, it should be snake_case not camel-case, i.e., "ms_pacman" not "MsPacman"'
+        if game is not None:
+            games = [game]
+        if isinstance(games, str):
+            games = [games]
+        rom_paths = []
+        for game in games:
+            rom_path = roms.get_rom_path(game)
+            assert (
+                rom_path is not None
+            ), f'{game} is not a ROM name, it should be snake_case not camel-case, i.e., "ms_pacman" not "MsPacman"'
+            rom_paths.extend([rom_path] * (num_envs or 1))
 
         self.ale = ale_py.ALEVectorInterface(
-            rom_path=rom_path,
-            num_envs=num_envs,
+            rom_paths=rom_paths,
             frame_skip=frameskip,
             stack_num=stack_num,
             img_height=img_height,
@@ -102,23 +110,34 @@ class AtariVectorEnv(VectorEnv):
             ),
         )
 
-        self.continuous = continuous
-        self.continuous_action_threshold = continuous_action_threshold
-        self.grayscale = grayscale
-        self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
-        for h in (-1, 0, 1):
-            for v in (-1, 0, 1):
-                for f in (0, 1):
-                    action = AtariEnv.map_action_idx(h, v, bool(f)).value
-                    self.map_action_idx[h + 1, v + 1, f] = action
+        self.num_envs = len(rom_paths)
+        self.batch_size = self.num_envs if batch_size == 0 else batch_size
 
         # Set up the observation space based on grayscale or RGB format
+        self.grayscale = grayscale
         obs_shape = (stack_num, img_height, img_width)
         if not grayscale:
             obs_shape += (3,)
         self.single_observation_space = Box(
             shape=obs_shape, low=0, high=255, dtype=np.uint8
         )
+
+        self.autoreset_mode = AutoresetMode(autoreset_mode)
+        self.metadata["autoreset_mode"] = self.autoreset_mode
+
+        self.observation_space = gymnasium.vector.utils.batch_space(
+            self.single_observation_space, self.batch_size
+        )
+
+        # Set up the action space to use continuous or discrete actions
+        self.continuous = continuous
+        self.continuous_action_threshold = continuous_action_threshold
+        self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
+        for h in (-1, 0, 1):
+            for v in (-1, 0, 1):
+                for f in (0, 1):
+                    action = AtariEnv.map_action_idx(h, v, bool(f)).value
+                    self.map_action_idx[h + 1, v + 1, f] = action
 
         if self.continuous:
             # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
@@ -128,20 +147,18 @@ class AtariVectorEnv(VectorEnv):
                 dtype=np.float32,
                 shape=(3,),
             )
+            self.action_space = gymnasium.vector.utils.batch_space(
+                self.single_action_space, self.batch_size
+            )
         else:
-            self.single_action_space = Discrete(len(self.ale.get_action_set()))
-
-        self.batch_size = num_envs if batch_size == 0 else batch_size
-        self.num_envs = num_envs
-        self.autoreset_mode = AutoresetMode(autoreset_mode)
-        self.metadata["autoreset_mode"] = self.autoreset_mode
-
-        self.observation_space = gymnasium.vector.utils.batch_space(
-            self.single_observation_space, self.batch_size
-        )
-        self.action_space = gymnasium.vector.utils.batch_space(
-            self.single_action_space, self.batch_size
-        )
+            self.single_action_space = (
+                None if self.full_action_space is None else Discrete(16)
+            )
+            # Note: we expose the action space for all games instead of filtering up to the batch size,
+            # the user will need the full list to determine the action size for each environment.
+            self.action_space = MultiDiscrete(
+                np.array([len(s) for s in self.ale.get_action_sets()], dtype=np.int64)
+            )
 
         self.is_xla_registered = False
 
