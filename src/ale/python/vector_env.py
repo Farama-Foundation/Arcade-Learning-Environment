@@ -130,6 +130,7 @@ class AtariVectorEnv(VectorEnv):
         )
 
         # Set up the action space to use continuous or discrete actions
+        self.full_action_space = full_action_space
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
         self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
