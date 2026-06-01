@@ -98,7 +98,6 @@ def assert_gym_ale_rollout_equivalence(
 #     "env_id", [env_id for env_id in gym.registry if "ALE/" in env_id]
 # )
 class TestVectorEnv:
-
     disable_vector_args = dict(
         noop_max=0,
         use_fire_reset=False,
@@ -665,3 +664,105 @@ class TestVectorEnv:
 
         gym_envs.close()
         ale_envs.close()
+
+
+class TestMultiRomVectorEnv:
+    """Tests for multi-ROM support in AtariVectorEnv."""
+
+    def test_multi_rom_num_envs(self):
+        from ale_py.vector_env import AtariVectorEnv
+        from gymnasium.spaces import MultiDiscrete
+
+        env = AtariVectorEnv(games=["pong", "breakout"], num_envs=4)
+
+        # 2 ROMs each with 4 duplicates = 8 total environments
+        assert env.num_envs == 8
+        assert env.batch_size == 8
+
+        # Pong has 6 actions, Breakout has 4 actions, the games are expanded in order of the list
+        pong_actions = 6
+        breakout_actions = 4
+        assert np.all(env.action_space.nvec[:4] == pong_actions)
+        assert np.all(env.action_space.nvec[4:] == breakout_actions)
+
+        # Observations
+        assert env.observation_space.shape == (8, 4, 84, 84)
+        assert env.single_observation_space.shape == (4, 84, 84)
+
+        # Action
+        assert isinstance(env.action_space, MultiDiscrete)
+        assert env.action_space.shape == (8,)
+
+    def test_multi_rom_reset_and_step(self):
+        from ale_py.vector_env import AtariVectorEnv
+        from gymnasium.spaces import MultiDiscrete
+
+        env = AtariVectorEnv(games=["pong", "breakout"], num_envs=2)
+        assert isinstance(env.action_space, MultiDiscrete)
+
+        # reset
+        obs, info = env.reset(seed=0)
+        assert obs.shape == (4, 4, 84, 84)
+        assert obs.dtype == np.uint8
+        assert all(len(v) == 4 for v in info.values())
+
+        # sampling actions is now a vector, with different action spaces
+        for _ in range(30):
+            actions = env.action_space.sample()
+            assert np.all((actions >= 0) & (actions < env.action_space.nvec))
+
+        # step multiple roms
+        obs, rewards, terminations, truncations, info = env.step(actions)
+        assert obs.shape == (4, 4, 84, 84)
+        assert rewards.shape == (4,)
+        assert terminations.shape == (4,)
+        assert truncations.shape == (4,)
+        assert all(len(v) == 4 for v in info.values())
+
+        # send and recv
+        actions = env.action_space.sample()
+        env.send(actions)
+        obs, rewards, terminations, truncations, info = env.recv()
+        assert obs.shape == (4, 4, 84, 84)
+        assert rewards.shape == (4,)
+        assert terminations.shape == (4,)
+        assert truncations.shape == (4,)
+        assert all(len(v) == 4 for v in info.values())
+
+    def test_backward_compatibility_single_game(self):
+        from ale_py.vector_env import AtariVectorEnv
+
+        str_game = AtariVectorEnv(game="breakout", num_envs=4)
+        str_games = AtariVectorEnv(games="breakout", num_envs=4)
+        multi_rom = AtariVectorEnv(games=["breakout"], num_envs=4)
+        for env in (str_game, str_games, multi_rom):
+            assert env.num_envs == str_game.num_envs
+            assert env.action_space == str_game.action_space
+            assert env.observation_space == str_game.observation_space
+
+    def test_multi_rom_async_batch_size(self):
+        from ale_py.vector_env import AtariVectorEnv
+
+        env = AtariVectorEnv(games=["pong", "breakout"], num_envs=4, batch_size=4)
+
+        assert env.num_envs == 8
+        assert env.batch_size == 4
+
+        obs, info = env.reset(seed=0)
+        assert obs.shape == (4, 4, 84, 84)
+
+        # action_space covers all 8 envs; mask to the batch that just returned
+        actions = env.action_space.sample()
+        assert len(actions) == 8
+
+        env_ids = info.pop("env_id")
+        masked_actions = actions[env_ids]
+
+        # step: send to first batch, recv second batch
+        _, _, _, _, info = env.step(masked_actions)
+
+        # send and recv separately for the second batch
+        env_ids = info.pop("env_id")
+        masked_actions = actions[env_ids]
+        env.send(masked_actions)
+        obs, rewards, terminations, truncations, info = env.recv()
