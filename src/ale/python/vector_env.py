@@ -113,55 +113,57 @@ class AtariVectorEnv(VectorEnv):
         self.num_envs = len(rom_paths)
         self.batch_size = self.num_envs if batch_size == 0 else batch_size
 
-        # Set up the observation space based on grayscale or RGB format
-        self.grayscale = grayscale
-        obs_shape = (stack_num, img_height, img_width)
-        if not grayscale:
-            obs_shape += (3,)
-        self.single_observation_space = Box(
-            shape=obs_shape, low=0, high=255, dtype=np.uint8
-        )
-
         self.autoreset_mode = AutoresetMode(autoreset_mode)
         self.metadata["autoreset_mode"] = self.autoreset_mode
 
-        self.observation_space = gymnasium.vector.utils.batch_space(
-            self.single_observation_space, self.batch_size
+        # Set up the observation space
+        self.grayscale = grayscale
+        self.single_observation_space, self.observation_space = self._setup_obs(
+            stack_num, img_height, img_width
         )
 
-        # Set up the action space to use continuous or discrete actions
+        # Set up the action space
         self.full_action_space = full_action_space
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
+        self.single_action_space, self.action_space = (
+            self._setup_continuous_action()
+            if self.continuous
+            else self._setup_discrete_action()
+        )
+        self.is_xla_registered = False
+
+    def _setup_obs(self, stack_num: int, img_height: int, img_width: int) -> tuple:
+        obs_shape = (stack_num, img_height, img_width)
+        if not self.grayscale:
+            obs_shape += (3,)
+        single = Box(shape=obs_shape, low=0, high=255, dtype=np.uint8)
+        return single, gymnasium.vector.utils.batch_space(single, self.batch_size)
+
+    def _setup_continuous_action(self) -> tuple:
         self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
         for h in (-1, 0, 1):
             for v in (-1, 0, 1):
                 for f in (0, 1):
                     action = AtariEnv.map_action_idx(h, v, bool(f)).value
                     self.map_action_idx[h + 1, v + 1, f] = action
+        # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
+        single = Box(
+            low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
+            high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
+            dtype=np.float32,
+            shape=(3,),
+        )
+        return single, gymnasium.vector.utils.batch_space(single, self.batch_size)
 
-        if self.continuous:
-            # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
-            self.single_action_space = Box(
-                low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),
-                high=np.array([1.0, np.pi, 1.0]).astype(np.float32),
-                dtype=np.float32,
-                shape=(3,),
-            )
-            self.action_space = gymnasium.vector.utils.batch_space(
-                self.single_action_space, self.batch_size
-            )
-        else:
-            self.single_action_space = (
-                None if self.full_action_space is None else Discrete(16)
-            )
-            # Note: we expose the action space for all games instead of filtering up to the batch size,
-            # the user will need the full list to determine the action size for each environment.
-            self.action_space = MultiDiscrete(
-                np.array([len(s) for s in self.ale.get_action_sets()], dtype=np.int64)
-            )
-
-        self.is_xla_registered = False
+    def _setup_discrete_action(self) -> tuple:
+        single = None if self.full_action_space is None else Discrete(16)
+        # Note: we expose the action space for all games instead of filtering up to the batch size,
+        # the user will need the full list to determine the action size for each environment.
+        action_space = MultiDiscrete(
+            np.array([len(s) for s in self.ale.get_action_sets()], dtype=np.int64)
+        )
+        return single, action_space
 
     def reset(
         self,
