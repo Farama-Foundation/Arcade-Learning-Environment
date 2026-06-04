@@ -16,8 +16,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 add_compile_options(
   "$<$<CONFIG:RELEASE>:-O3>"
   "$<$<CONFIG:DEBUG>:-O0>"
-  "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall>"
-  "$<$<CXX_COMPILER_ID:MSVC>:/W4>")
+  "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:GNU,Clang,AppleClang>>:-Wall>"
+  "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:MSVC>>:/W4>"
+  "$<$<COMPILE_LANGUAGE:CUDA>:-Xcudafe=--display_error_number>"
+  "$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CXX_COMPILER_ID:GNU,Clang,AppleClang>>:-Xcompiler=-Wall,-Wextra>"
+  "$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CXX_COMPILER_ID:MSVC>>:-Xcompiler=/W4>")
 
 # ale object containing source files
 add_library(ale OBJECT)
