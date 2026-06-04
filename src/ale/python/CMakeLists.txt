@@ -40,7 +40,14 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
         message(STATUS "CUDA compiler found: ${CMAKE_CUDA_COMPILER}")
         set_source_files_properties(ale_vector_xla_interface.cpp PROPERTIES LANGUAGE CUDA)
         target_include_directories(_ale_py PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
-        target_link_libraries(_ale_py PRIVATE CUDA::cudart)
+        if (WIN32 AND TARGET CUDA::cudart_static)
+            # Prefer static cudart on Windows to avoid runtime PATH/DLL lookup issues in CI and local imports.
+            target_link_libraries(_ale_py PRIVATE CUDA::cudart_static)
+        elseif (TARGET CUDA::cudart)
+            target_link_libraries(_ale_py PRIVATE CUDA::cudart)
+        else()
+            message(FATAL_ERROR "Neither CUDA::cudart_static nor CUDA::cudart targets are available.")
+        endif()
 
         set_target_properties(_ale_py PROPERTIES
             POSITION_INDEPENDENT_CODE ON
