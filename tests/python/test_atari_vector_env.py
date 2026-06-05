@@ -4,6 +4,7 @@ import ale_py
 import gymnasium as gym
 import numpy as np
 import pytest
+from ale_py.vector_env import AtariVectorEnv
 from gymnasium.utils.env_checker import data_equivalence
 
 gym.register_envs(ale_py)
@@ -665,9 +666,36 @@ class TestVectorEnv:
         gym_envs.close()
         ale_envs.close()
 
+    @pytest.mark.parametrize("game,n_minimal", [("breakout", 4), ("pong", 6)])
+    def test_single_action_space(game, n_minimal):
+        """single_action_space reflects the real action-set size, not a constant."""
+        env = AtariVectorEnv(game=game, num_envs=3)
+        assert env.single_action_space == gym.spaces.Discrete(n_minimal)
+        assert np.all(env.action_space.nvec == n_minimal)
+        # For homogeneous envs the batched action_space is the single one repeated.
+        assert env.action_space == gym.vector.utils.batch_space(
+            env.single_action_space, env.num_envs
+        )
+        env.close()
+
+        # Full action space is the 18 PLAYER_A_* actions (not 16).
+        env = AtariVectorEnv(game=game, num_envs=3, full_action_space=True)
+        assert env.single_action_space == gym.spaces.Discrete(18)
+        assert np.all(env.action_space.nvec == 18)
+        env.close()
+
 
 class TestMultiRomVectorEnv:
     """Tests for multi-ROM support in AtariVectorEnv."""
+
+    def test_single_action_space_none_for_different_roms(self):
+        """Different ROMs (different action-set sizes) have no single space."""
+        # num_envs repeats each ROM, so this is [pong, pong, breakout, breakout].
+        env = AtariVectorEnv(games=["pong", "breakout"], num_envs=2)
+        assert env.single_action_space is None
+        # pong has 6 actions, breakout has 4, in ROM order.
+        assert np.all(env.action_space.nvec == [6, 6, 4, 4])
+        env.close()
 
     def test_multi_rom_num_envs(self):
         from ale_py.vector_env import AtariVectorEnv

@@ -157,12 +157,14 @@ class AtariVectorEnv(VectorEnv):
         return single, gymnasium.vector.utils.batch_space(single, self.batch_size)
 
     def _setup_discrete_action(self) -> tuple:
-        single = None if self.full_action_space is None else Discrete(16)
         # Note: we expose the action space for all games instead of filtering up to the batch size,
         # the user will need the full list to determine the action size for each environment.
-        action_space = MultiDiscrete(
-            np.array([len(s) for s in self.ale.get_action_sets()], dtype=np.int64)
-        )
+        sizes = [len(s) for s in self.ale.get_action_sets()]
+        action_space = MultiDiscrete(np.array(sizes, dtype=np.int64))
+        # When all envs share the same action-set size, single_action_space is that
+        # Discrete space (e.g. Discrete(4) for Breakout, Discrete(18) for the full set).
+        # For different ROMs there is no single canonical space, we use None.
+        single = Discrete(sizes[0]) if len(set(sizes)) == 1 else None
         return single, action_space
 
     def reset(
