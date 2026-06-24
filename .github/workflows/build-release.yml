@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Set up Docker Buildx
       if: runner.os == 'linux'
@@ -73,7 +73,7 @@ jobs:
 
     steps:
       # create the `ale_py-*.*.*.tar.gz` for source building
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v16
