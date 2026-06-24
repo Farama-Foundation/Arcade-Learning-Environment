@@ -64,7 +64,7 @@ test = [
 [project.urls]
 homepage = "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
 documentation = "https://ale.farama.org"
-changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/CHANGELOG.md"
+changelog = "https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/main/CHANGELOG.md"
 
 [tool.pytest.ini_options]
 minversion = "7.0"

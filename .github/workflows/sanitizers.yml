@@ -1,5 +1,5 @@
 # Sanitizers and memory checkers for detecting threading issues and memory leaks.
-# TSan and ASan run on every PR and push to master.
+# TSan and ASan run on every PR and push to main.
 # Valgrind Memcheck runs on releases, manual dispatch, or when a PR has the
 # "run-valgrind" label. Valgrind Helgrind runs on releases only.
 
@@ -10,7 +10,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
   release:
     types: [published]
 
