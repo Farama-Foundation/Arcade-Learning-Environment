@@ -3,7 +3,7 @@
 
 <p align="center">
     <a href="https://ale.farama.org/" target = "_blank">
-    <img src="https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/main/docs/_static/img/ale.svg" width="500px" />
+    <img src="ale-text-v2-centered.png" width="500px" />
 </a>
 
 **The Arcade Learning Environment (ALE) is a simple framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
