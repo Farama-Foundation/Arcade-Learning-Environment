@@ -139,7 +139,7 @@ void ALEInterface::loadROM(fs::path rom_file) {
 
     Logger::Error
       << "For a list of supported ROMs see "
-      << "https://github.com/mgbellemare/Arcade-Learning-Environment"
+      << "https://github.com/Farama-Foundation/Arcade-Learning-Environment"
       << std::endl;
 
     std::exit(1);

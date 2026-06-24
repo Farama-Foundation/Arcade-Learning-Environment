@@ -4,7 +4,7 @@ This section provides additional information regarding the environment implement
 
 ## Available Actions
 
-The following regular actions are defined by the `Action` enum in [`common/Constants.h`](https://github.com/mgbellemare/Arcade-Learning-Environment/blob/master/src/common/Constants.h). These can also be accessed in Python through the enum object `ale_py.Action`. These actions are interpreted by ALE as follows:
+The following regular actions are defined by the `Action` enum in [`common/Constants.h`](https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/src/common/Constants.h). These can also be accessed in Python through the enum object `ale_py.Action`. These actions are interpreted by ALE as follows:
 
 | Index | Action                  | Description                                                                     |
 |-------|-------------------------|---------------------------------------------------------------------------------|
