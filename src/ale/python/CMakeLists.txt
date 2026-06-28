@@ -41,7 +41,14 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
         # the host compiler can build them given the CUDA headers and cudart.
         target_include_directories(_ale_py PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
         target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_XLA_GPU)
-        target_link_libraries(_ale_py PRIVATE CUDA::cudart)
+        if (WIN32)
+            # Static linking bakes cudart into _ale_py.pyd so there is no runtime DLL to find.
+            target_link_libraries(_ale_py PRIVATE CUDA::cudart_static)
+        else()
+            # The loader resolves libcudart via the toolkit's lib path / the manylinux image, and
+            # jax already loads the same runtime in-process, so there is no missing-library issue.
+            target_link_libraries(_ale_py PRIVATE CUDA::cudart)
+        endif()
     else()
         message(STATUS "CUDA Toolkit not found - building CPU-only XLA support")
     endif()
