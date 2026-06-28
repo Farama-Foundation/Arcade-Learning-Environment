@@ -4,7 +4,13 @@ firstpage:
 lastpage:
 ---
 
-# Arcade Learning Environment
+```{project-logo} _static/img/ale-text.png
+:alt: Arcade Learning Environment Logo
+```
+
+```{project-heading}
+A framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games
+```
 
 The Arcade Learning Environment (ALE), commonly referred to as Atari, is a framework that allows researchers and hobbyists to develop AI agents for Atari 2600 roms. Its built on top of the Atari 2600 emulator [Stella](https://github.com/stella-emu/stella) and separates the details of emulation from agent design. Users can interact with the games through the [Gymnasium API](gymnasium-interface), [Python interface](python-interface) and [C++ interface](cpp-interface). For an overview of our goals for the ALE read [The Arcade Learning Environment: An Evaluation Platform for General Agents](https://jair.org/index.php/jair/article/view/10819) and if you use ALE in your research, we ask that you please [cite](./citing.md) the appropriate paper(s) in reference to the environment.
 
