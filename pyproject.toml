@@ -86,6 +86,13 @@ metadata.version.provider = "scikit_build_core.metadata.regex"
 metadata.version.input = "version.txt"
 metadata.version.regex = "(?P<value>.+)"
 
+# On windows, vcpkg's default triplet (x64-windows) links dynamically but SDL2
+# needs to be static, therefore, force the custom triplet. Linux/macOS
+# are unaffected because vcpkg defaults to static linkage there.
+[[tool.scikit-build.overrides]]
+if.platform-system = "^win32"
+cmake.define.VCPKG_TARGET_TRIPLET = "x64-windows-mixed"
+
 [tool.cibuildwheel]
 # Skip 32-bit wheels, PyPy & musllinux
 skip = ["*-win32", "*i686", "*-musllinux*"]

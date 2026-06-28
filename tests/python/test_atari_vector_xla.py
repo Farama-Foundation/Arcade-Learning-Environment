@@ -151,7 +151,9 @@ def test_xla_dispatch_gpu():
     envs = AtariVectorEnv("pong", num_envs=1)
     handle, xla_reset, xla_step = envs.xla()
 
+    print(f"GPU_DEVICES={GPU_DEVICES}, CPU_DEVICES={CPU_DEVICES}")
     if GPU_DEVICES:
+        print("RUNNING ON GPUs")
         handle, (obs, info) = xla_reset(handle)
         assert is_gpu_array(obs)
         assert is_gpu_array(info["frame_number"])
@@ -166,6 +168,7 @@ def test_xla_dispatch_gpu():
         assert is_gpu_array(truncations)
         assert is_gpu_array(info["frame_number"])
     else:
+        print("RUNNING ON CPUs")
         handle, (obs, info) = xla_reset(handle)
         assert is_cpu_array(obs)
         assert is_cpu_array(info["frame_number"])
