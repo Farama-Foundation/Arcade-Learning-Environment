@@ -130,3 +130,52 @@ def test_jit(
 
     envs_1.close()
     envs_2.close()
+
+
+CPU_DEVICES = jax.devices("cpu")
+try:
+    GPU_DEVICES = jax.devices("gpu")
+except RuntimeError:
+    GPU_DEVICES = []
+
+
+def is_gpu_array(arr):
+    return all(arr_device in GPU_DEVICES for arr_device in arr.devices())
+
+
+def is_cpu_array(arr):
+    return all(arr_device in CPU_DEVICES for arr_device in arr.devices())
+
+
+def test_xla_dispatch_gpu():
+    envs = AtariVectorEnv("pong", num_envs=1)
+    handle, xla_reset, xla_step = envs.xla()
+
+    if GPU_DEVICES:
+        handle, (obs, info) = xla_reset(handle)
+        assert is_gpu_array(obs)
+        assert is_gpu_array(info["frame_number"])
+
+        actions = np.zeros(1, dtype=np.int32)
+        handle, (obs, rewards, terminations, truncations, info) = xla_step(
+            handle, actions
+        )
+        assert is_gpu_array(obs)
+        assert is_gpu_array(rewards)
+        assert is_gpu_array(terminations)
+        assert is_gpu_array(truncations)
+        assert is_gpu_array(info["frame_number"])
+    else:
+        handle, (obs, info) = xla_reset(handle)
+        assert is_cpu_array(obs)
+        assert is_cpu_array(info["frame_number"])
+
+        actions = np.zeros(1, dtype=np.int32)
+        handle, (obs, rewards, terminations, truncations, info) = xla_step(
+            handle, actions
+        )
+        assert is_cpu_array(obs)
+        assert is_cpu_array(rewards)
+        assert is_cpu_array(terminations)
+        assert is_cpu_array(truncations)
+        assert is_cpu_array(info["frame_number"])

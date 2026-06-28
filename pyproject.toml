@@ -2,7 +2,7 @@
 requires = [
     "scikit-build-core>=0.10",
     "nanobind>=2.1.0",
-    "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'"
+    "jax >= 0.4.31"
 ]
 build-backend = "scikit_build_core.build"
 
@@ -49,15 +49,15 @@ vector = [
 xla = [
     "gymnasium>=1.1.0",
     "opencv-python>=3.0",
-    "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'",
-    "chex; sys_platform == 'win32' or sys_platform == 'linux'",
+    "jax >= 0.4.31",
+    "chex",
 ]
 test = [
     "pytest>=7.0",
     "gymnasium>=1.1.0",
     "opencv-python>=3.0",
-    "jax >= 0.4.31; sys_platform == 'win32' or sys_platform == 'linux'",
-    "chex; sys_platform == 'win32' or sys_platform == 'linux'"
+    "jax >= 0.4.31",
+    "chex"
 ]
 
 [project.urls]
@@ -72,29 +72,19 @@ testpaths = ["tests"]
 norecursedirs = ["vcpkg", "build"]
 
 [tool.scikit-build]
-cmake.args = [
-    "-DSDL_SUPPORT=ON",
-    "-DSDL_DYNLOAD=ON",
-    "-DBUILD_CPP_LIB=OFF",
-    "-DBUILD_PYTHON_LIB=ON",
-    "-DBUILD_VECTOR_LIB=ON"
-]
-cmake.build-type = "Release"
-metadata.version.provider = "scikit_build_core.metadata.regex"
-metadata.version.input = "version.txt"
-metadata.version.regex = "(?P<value>.+)"
-
-# Enable XLA on Windows and Linux
-[[tool.scikit-build.overrides]]
-if.platform-system = "^(win32|linux)"
+# XLA is enabled by default which requires jax to be installed
 cmake.args = [
     "-DSDL_SUPPORT=ON",
     "-DSDL_DYNLOAD=ON",
     "-DBUILD_CPP_LIB=OFF",
     "-DBUILD_PYTHON_LIB=ON",
     "-DBUILD_VECTOR_LIB=ON",
-    "-DBUILD_VECTOR_XLA_LIB=ON"  # add vector-xla-lib="ON"
+    "-DBUILD_VECTOR_XLA_LIB=ON"
 ]
+cmake.build-type = "Release"
+metadata.version.provider = "scikit_build_core.metadata.regex"
+metadata.version.input = "version.txt"
+metadata.version.regex = "(?P<value>.+)"
 
 [tool.cibuildwheel]
 # Skip 32-bit wheels, PyPy & musllinux
