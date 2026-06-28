@@ -1,3 +1,4 @@
+import pickle
 import warnings
 from unittest.mock import patch
 
@@ -279,6 +280,100 @@ def test_sound_obs():
         check_env(env.unwrapped, skip_render_check=True)
 
     assert caught_warnings == [], [caught.message.args[0] for caught in caught_warnings]
+
+
+@pytest.mark.parametrize(
+    "clone,restore",
+    (
+        ("cloneState", "restoreState"),
+        ("cloneSystemState", "restoreSystemState"),
+    ),
+    ids=("state", "system_state"),
+)
+@pytest.mark.parametrize("num_steps", (0, 50))
+def test_clone_restore(clone, restore, num_steps):
+    env = gymnasium.make(
+        "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
+    )
+    ale = env.unwrapped.ale
+
+    # update the environment
+    reset_obs, _ = env.reset()
+    env.step(1)  # fire
+    for _ in range(30):
+        env.step(env.action_space.sample())
+
+    # clone the state, take a number of steps, use the original state and check if the two environments are the same
+    state = getattr(ale, clone)()
+    ram_before = np.array(ale.getRAM(), dtype=np.uint8)
+    action = env.action_space.sample()
+    obs_before, _, _, _, _ = env.step(action)
+
+    for _ in range(num_steps):
+        obs, _, terminated, _, _ = env.step(env.action_space.sample())
+        if terminated:
+            break
+
+    # check the environments
+    getattr(ale, restore)(state)
+    ram_after = np.array(ale.getRAM(), dtype=np.uint8)
+    obs_after, _, _, _, _ = env.step(action)
+
+    env.close()
+    np.testing.assert_array_equal(ram_before, ram_after)
+    np.testing.assert_array_equal(obs_before, obs_after)
+
+
+@pytest.mark.parametrize(
+    "clone,restore",
+    (
+        ("cloneState", "restoreState"),
+        ("cloneSystemState", "restoreSystemState"),
+    ),
+    ids=("state", "system_state"),
+)
+@pytest.mark.parametrize("use_pickle", (False, True))
+def test_clone_pickle_restore_new_env(clone, restore, use_pickle):
+    env_a = gymnasium.make(
+        "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
+    )
+    env_a.reset()
+    for _ in range(10):
+        env_a.step(env_a.action_space.sample())
+
+    ram_before = np.array(env_a.unwrapped.ale.getRAM(), dtype=np.uint8)
+    if use_pickle:
+        state = pickle.loads(pickle.dumps(getattr(env_a.unwrapped.ale, clone)()))
+    else:
+        state = getattr(env_a.unwrapped.ale, clone)()
+
+    env_b = gymnasium.make(
+        "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
+    )
+    env_b.reset()
+    getattr(env_b.unwrapped.ale, restore)(state)
+    ram_after = np.array(env_b.unwrapped.ale.getRAM(), dtype=np.uint8)
+
+    env_a.close()
+    env_b.close()
+    np.testing.assert_array_equal(ram_before, ram_after)
+
+
+def test_state_serialize_roundtrip():
+    env = gymnasium.make(
+        "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
+    )
+    env.reset()
+    for _ in range(10):
+        env.step(env.action_space.sample())
+
+    state = env.unwrapped.ale.cloneState()
+    serialized = state.serialize()
+    env.close()
+
+    assert isinstance(serialized, bytes)
+    restored_state = type(state)(serialized)
+    assert restored_state == state
 
 
 def test_determinism(

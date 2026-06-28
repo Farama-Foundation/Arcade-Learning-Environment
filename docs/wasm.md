@@ -22,13 +22,13 @@ An [example html file](wasm/example.html) is available for users to develop from
 Install ALE via npm:
 
 ```bash
-npm install @farama/ale
+npm install @farama/ale-wasm
 ```
 
 Then import in your JavaScript:
 
 ```javascript
-import createALEModule from '@farama/ale';
+import createALEModule from '@farama/ale-wasm';
 
 const ALE = await createALEModule();
 const ale = new ALE.ALEInterface();

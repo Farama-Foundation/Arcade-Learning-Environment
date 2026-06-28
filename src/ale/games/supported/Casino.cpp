@@ -132,7 +132,7 @@ void CasinoSettings::setMode(
     int mode = readRam(&system, 0xd4);
 
     // Press select until the correct mode is reached for single player only.
-    while (mode != m) {
+    while (mode != static_cast<int>(m)) {
       environment->pressSelect(2);
       mode = readRam(&system, 0xd4);
     }

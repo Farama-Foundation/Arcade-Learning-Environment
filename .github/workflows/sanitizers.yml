@@ -1,5 +1,5 @@
 # Sanitizers and memory checkers for detecting threading issues and memory leaks.
-# TSan and ASan run on every PR and push to master.
+# TSan and ASan run on every PR and push to main.
 # Valgrind Memcheck runs on releases, manual dispatch, or when a PR has the
 # "run-valgrind" label. Valgrind Helgrind runs on releases only.
 
@@ -10,7 +10,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
   release:
     types: [published]
 
@@ -25,7 +25,7 @@ jobs:
       CXX: clang++-18
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - uses: actions/setup-python@v6
       with:
@@ -52,7 +52,7 @@ jobs:
       CXX: clang++-18
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - uses: actions/setup-python@v6
       with:
@@ -81,7 +81,7 @@ jobs:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - uses: actions/setup-python@v6
       with:
@@ -108,7 +108,7 @@ jobs:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - uses: actions/setup-python@v6
       with:

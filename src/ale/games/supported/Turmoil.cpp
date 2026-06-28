@@ -107,7 +107,7 @@ void TurmoilSettings::setMode(
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (m < 9) {
     // Press select until the correct mode is reached.
-    while (readRam(&system, 0xea) != m) { environment->pressSelect(2); }
+    while (readRam(&system, 0xea) != static_cast<int>(m)) { environment->pressSelect(2); }
 
     // Reset the environment to apply changes.
     environment->softReset();

@@ -19,7 +19,7 @@ import os
 
 import ale_py
 
-project = "Arcade-Learning-Environment"
+project = "Arcade Learning Environment"
 copyright = "2023 Farama Foundation"
 author = "Farama Foundation"
 
@@ -68,16 +68,15 @@ autodoc_preserve_defaults = True
 # a list of builtin themes.
 #
 html_theme = "furo"
-html_title = "ALE Documentation"
+html_title = "Arcade Learning Environment Documentation"
 html_baseurl = "https://ale.farama.org"
 html_copy_source = False
-html_favicon = "_static/img/favicon.png"
+html_favicon = "_static/img/favicon.svg"
 html_theme_options = {
     "light_logo": "img/ale.svg",
-    "dark_logo": "img/ale.svg",
+    "dark_logo": "img/ale-white.svg",
     # "gtag": "TODO",
-    "description": "The Arcade Learning Environment (ALE) -- a platform for AI research.",
-    "image": "img/ale.svg",
+    "image": "img/ale-github.png",
     "versioning": True,
     "source_repository": "https://github.com/Farama-Foundation/Arcade-Learning-Environment/",
     "source_branch": "main",
@@ -85,7 +84,7 @@ html_theme_options = {
 }
 
 html_static_path = ["_static"]
-html_css_files = []
+html_css_files = ["custom.css"]
 
 # -- Generate Changelog -------------------------------------------------
 

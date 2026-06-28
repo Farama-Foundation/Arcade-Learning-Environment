@@ -109,7 +109,7 @@ void MarioBrosSettings::setMode(
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   if (isModeSupported(m)) {
     // Press select until the correct mode is reached.
-    while (readRam(&system, 0x80) != m) {
+    while (readRam(&system, 0x80) != static_cast<int>(m)) {
       environment->pressSelect(5);
     }
 
