@@ -33,7 +33,7 @@ multi-agent-environments/warlords
 multi-agent-environments/wizard_of_wor
 ```
 
-The Atari environments are based off the [Arcade Learning Environment](https://github.com/mgbellemare/Arcade-Learning-Environment). This environment was instrumental in the development of modern reinforcement learning, and so we hope that our [multi-agent version](https://github.com/Farama-Foundation/Multi-Agent-ALE) of it will be useful in the development of multi-agent reinforcement learning.
+The Atari environments are based off the [Arcade Learning Environment](https://github.com/Farama-Foundation/Arcade-Learning-Environment). This environment was instrumental in the development of modern reinforcement learning, and so we hope that our [multi-agent version](https://github.com/Farama-Foundation/Multi-Agent-ALE) of it will be useful in the development of multi-agent reinforcement learning.
 
 ```{raw} html
     :file: multi-agent-environments/list.html

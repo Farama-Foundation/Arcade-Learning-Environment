@@ -6,8 +6,10 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE nanobind_ROOT)
 find_package(nanobind CONFIG REQUIRED)
 
-# Use nanobind_add_module for proper scikit-build-core integration
-nanobind_add_module(_ale_py MODULE ale_python_interface.cpp)
+# Use nanobind_add_module for proper scikit-build-core integration.
+# FREE_THREADED marks the module Py_MOD_GIL_NOT_USED so it loads without
+# re-enabling the GIL on free-threaded CPython builds (3.13t, 3.14t, ...).
+nanobind_add_module(_ale_py MODULE FREE_THREADED ale_python_interface.cpp)
 if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
     # XLA Integration setup
     message(STATUS "Python Executable: '${Python_EXECUTABLE}'")

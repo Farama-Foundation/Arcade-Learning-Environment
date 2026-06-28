@@ -1,11 +1,10 @@
-The Arcade Learning Environment
-<a href="#the-arcade-learning-environment">
-  <img alt="Arcade Learning Environment" align="right" width=75 src="https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/docs/_static/img/ale.svg" />
-</a>
-===============================
-
 [![Python](https://img.shields.io/pypi/pyversions/ale-py.svg)](https://badge.fury.io/py/ale-py)
 [![PyPI Version](https://img.shields.io/pypi/v/ale-py)](https://pypi.org/project/ale-py)
+
+<p align="center">
+    <a href="https://ale.farama.org/" target = "_blank">
+    <img src="ale-text-v2-centered.png" width="500px" />
+</a>
 
 **The Arcade Learning Environment (ALE) is a simple framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
 It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io) and separates the details of emulation from agent design.
@@ -22,7 +21,7 @@ Features
 - Automatic extraction of game score and end-of-game signal for more than 100  Atari 2600 games.
 - Multi-platform code (compiled and tested under macOS, Windows, and several Linux distributions).
 - Python bindings through [nanobind](https://github.com/wjakob/nanobind).
-- Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), a maintained fork of OpenAI Gym.
+- Native support for [Gymnasium](http://github.com/farama-Foundation/gymnasium), the maintained fork of OpenAI Gym.
 - Atari roms are packaged within the pip package.
 - C++ based vectorizer for acting in multiple ROMs at the same time.
 - WebAssembly support for running ALE in the Browser
@@ -41,6 +40,8 @@ You simply need to install the `ale-py` package distributed via PyPI:
 pip install ale-py
 ```
 Note: Make sure you're using an up-to-date version of `pip` or the installation may fail.
+
+Note: Free-threaded CPython (the `t` ABI, e.g. `python3.14t`) aren't supported as OpenCV doesn't build compatible wheels on any system which is necessary for preprocessing. We will look to add support when OpenCV does.
 
 You can now import the ALE in your Python projects with providing a direct interface to Stella for interacting with games
 ```python

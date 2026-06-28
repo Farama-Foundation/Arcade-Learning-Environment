@@ -126,14 +126,21 @@ NB_MODULE(_ale_py, m) {
 
     nb::class_<ale::ALEState>(m, "ALEState")
         .def(nb::init<>())
-        .def(nb::init<const ale::ALEState&, const std::string&>())
-        .def(nb::init<const std::string&>())
+        .def("__init__", [](ale::ALEState* self, const ale::ALEState& other, nb::bytes serialized) {
+            new (self) ale::ALEState(other, std::string(serialized.c_str(), serialized.size()));
+        })
+        .def("__init__", [](ale::ALEState* self, nb::bytes serialized) {
+            new (self) ale::ALEState(std::string(serialized.c_str(), serialized.size()));
+        })
         .def("equals", &ale::ALEState::equals)
         .def("getFrameNumber", &ale::ALEState::getFrameNumber)
         .def("getEpisodeFrameNumber", &ale::ALEState::getEpisodeFrameNumber)
         .def("getDifficulty", &ale::ALEState::getDifficulty)
         .def("getCurrentMode", &ale::ALEState::getCurrentMode)
-        .def("serialize", &ale::ALEState::serialize)
+        .def("serialize", [](ale::ALEState& a) {
+            std::string serialized = a.serialize();
+            return nb::bytes(serialized.data(), serialized.size());
+        })
         .def("__eq__", &ale::ALEState::equals)
         .def("__getstate__", [](ale::ALEState& a) {
             std::string serialized = a.serialize();

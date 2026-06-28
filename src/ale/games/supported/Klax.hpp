@@ -60,7 +60,7 @@ class KlaxSettings : public RomSettings {
   void setMode(game_mode_t m, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
-  ActionVect getStartingActions();
+  ActionVect getStartingActions() override;
 
  private:
   bool m_terminal;

@@ -133,11 +133,9 @@ class AtariVectorEnv(VectorEnv):
 
         self.batch_size = num_envs if batch_size == 0 else batch_size
         self.num_envs = num_envs
-        self.metadata["autoreset_mode"] = (
-            autoreset_mode
-            if isinstance(autoreset_mode, AutoresetMode)
-            else AutoresetMode(autoreset_mode)
-        )
+        self.autoreset_mode = AutoresetMode(autoreset_mode)
+        self.metadata["autoreset_mode"] = self.autoreset_mode
+
         self.observation_space = gymnasium.vector.utils.batch_space(
             self.single_observation_space, self.batch_size
         )
@@ -219,7 +217,7 @@ class AtariVectorEnv(VectorEnv):
                 self.batch_size,
             ), f"{actions.shape=}, {self.batch_size=}"
 
-            paddle_strength = np.ones(self.batch_size)
+            paddle_strength = np.ones(self.batch_size, dtype=np.float32)
             self.ale.send(actions, paddle_strength)
 
     def recv(
@@ -231,6 +229,8 @@ class AtariVectorEnv(VectorEnv):
 
     def xla(self):
         """Return XLA-compatible functions for JAX integration."""
+        assert self.autoreset_mode == AutoresetMode.NEXT_STEP
+
         try:
             import chex
             import jax
@@ -280,11 +280,13 @@ class AtariVectorEnv(VectorEnv):
                     jax.ShapeDtypeStruct(
                         self.observation_space.shape, jnp.uint8
                     ),  # observations
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # lives
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
+                    jax.ShapeDtypeStruct((self.batch_size,), jnp.int32),  # env_ids
+                    jax.ShapeDtypeStruct((self.batch_size,), jnp.int32),  # lives
                     jax.ShapeDtypeStruct(
-                        (self.num_envs,), jnp.int32
+                        (self.batch_size,), jnp.int32
+                    ),  # frame numbers
+                    jax.ShapeDtypeStruct(
+                        (self.batch_size,), jnp.int32
                     ),  # episode frame number
                 ),
                 vmap_method="broadcast_all",
@@ -368,14 +370,16 @@ class AtariVectorEnv(VectorEnv):
                     jax.ShapeDtypeStruct(  # observations
                         self.observation_space.shape, jnp.uint8
                     ),
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # rewards
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # terminations
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.bool_),  # truncations
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # env_ids
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # lives
-                    jax.ShapeDtypeStruct((self.num_envs,), jnp.int32),  # frame numbers
+                    jax.ShapeDtypeStruct((self.batch_size,), jnp.int32),  # rewards
+                    jax.ShapeDtypeStruct((self.batch_size,), jnp.bool_),  # terminations
+                    jax.ShapeDtypeStruct((self.batch_size,), jnp.bool_),  # truncations
+                    jax.ShapeDtypeStruct((self.batch_size,), jnp.int32),  # env_ids
+                    jax.ShapeDtypeStruct((self.batch_size,), jnp.int32),  # lives
+                    jax.ShapeDtypeStruct(
+                        (self.batch_size,), jnp.int32
+                    ),  # frame numbers
                     jax.ShapeDtypeStruct(  # episode frame number
-                        (self.num_envs,), jnp.int32
+                        (self.batch_size,), jnp.int32
                     ),
                 ),
                 vmap_method="broadcast_all",

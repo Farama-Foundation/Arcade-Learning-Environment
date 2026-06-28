@@ -87,7 +87,7 @@ void VideoCubeSettings::step(const System& system) {
   // feel quite right that agents should be punished for exploring.  However
   // we're still capturing this data should it be required during a later
   // rethink of the reward function.
-  int turnsTaken = getDecimalScore(0xdf, 0xe0, 0xe1, &system);
+  // int turnsTaken = getDecimalScore(0xdf, 0xe0, 0xe1, &system);
 
   // We need to go through each face to see if the colour blocks match, and
   // count the total numbers of matched faces.
