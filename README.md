@@ -3,8 +3,9 @@
 
 <p align="center">
     <a href="https://ale.farama.org/" target = "_blank">
-    <img src="ale-text-v2-centered.png" width="500px" />
+    <img src="https://raw.githubusercontent.com/Farama-Foundation/Arcade-Learning-Environment/main/ale-text-v2-centered.png" width="500px" />
 </a>
+</p>
 
 **The Arcade Learning Environment (ALE) is a simple framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
 It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io) and separates the details of emulation from agent design.
