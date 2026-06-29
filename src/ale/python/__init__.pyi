@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, List, Optional, Tuple, TypeAlias, overload
+from typing import Any, Dict, List, Optional, Tuple, Union, overload
 
 import gymnasium as gym
 import numpy as np
@@ -180,7 +180,7 @@ class ALEInterface:
 class ALEVectorInterface:
     def __init__(
         self,
-        rom_path: os.PathLike,
+        rom_paths: List[os.PathLike],
         num_envs: int,
         frame_skip: int,
         stack_num: int,
@@ -204,22 +204,21 @@ class ALEVectorInterface:
     def reset(
         self, reset_indices: np.ndarray, reset_seeds: np.ndarray
     ) -> Tuple[np.ndarray, Dict[str, Any]]: ...
-    def send(self, action_idx: np.ndarray, paddle_strength: np.ndarray): ...
+    def send(self, action_ids: np.ndarray, paddle_strengths: np.ndarray) -> None: ...
     def recv(
         self,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]: ...
-    def get_action_set(self) -> List[Action]: ...
+    def get_action_sets(self) -> List[List[Action]]: ...
     def get_num_envs(self) -> int: ...
-    def get_observation_shape(self) -> Tuple[int, int, int]: ...
+    def get_observation_shape(
+        self,
+    ) -> Union[Tuple[int, int, int], Tuple[int, int, int, int]]: ...
     def handle(self) -> np.ndarray: ...
 
 try:
-    from ale_py.env import AtariEnvStepMetadata
-    from ale_py.vector_env import AtariVectorEnv
-
-    AtariEnv: TypeAlias = AtariEnv
-    AtariEnvStepMetadata: TypeAlias = AtariEnvStepMetadata
-    AtariVectorEnv: TypeAlias = AtariVectorEnv
+    from ale_py.env import AtariEnv as AtariEnv
+    from ale_py.env import AtariEnvStepMetadata as AtariEnvStepMetadata
+    from ale_py.vector_env import AtariVectorEnv as AtariVectorEnv
 
     __all__ += ["AtariEnv", "AtariEnvStepMetadata", "AtariVectorEnv"]
 except ImportError:
