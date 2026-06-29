@@ -3,6 +3,7 @@
 
 Allows testing of the impact of `num_envs`, `batch_size`, `autoreset_mode`, and `num_threads` on steps per second and resource usage.
 """
+
 from __future__ import annotations
 
 import dataclasses

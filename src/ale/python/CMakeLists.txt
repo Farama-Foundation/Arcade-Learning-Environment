@@ -22,24 +22,37 @@ if (BUILD_VECTOR_LIB AND BUILD_VECTOR_XLA_LIB)
     )
     message(STATUS "XLA include directory: '${XLA_DIR}'")
 
-    # Find CUDA toolkit for headers and linking (optional - XLA disabled if not found)
+    # CUDA toolkit is optional: when found we additionally compile/link the GPU
+    # handlers, otherwise XLA is built with CPU-only support (e.g. macOS).
     find_package(CUDAToolkit QUIET)
 
-    if (CUDAToolkit_FOUND)
-        message(STATUS "CUDA Toolkit found: ${CUDAToolkit_VERSION}")
-        target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
-        target_include_directories(_ale_py PUBLIC ${XLA_DIR})
-        target_include_directories(_ale_py PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
-        target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_LIB BUILD_VECTOR_XLA_LIB)
-        target_link_libraries(_ale_py PRIVATE CUDA::cudart)
+    # Always build the CPU XLA handlers. The GPU handlers in
+    # ale_vector_xla_interface.cpp are guarded by BUILD_VECTOR_XLA_GPU, which is
+    # only defined below when the CUDA Toolkit is found, so they are naturally
+    # skipped when CUDA is unavailable (e.g. macOS).
+    target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp ale_vector_xla_interface.cpp)
+    target_include_directories(_ale_py PUBLIC ${XLA_DIR})
+    target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_LIB BUILD_VECTOR_XLA_LIB)
+    set_target_properties(_ale_py PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
+    )
 
-        set_target_properties(_ale_py PROPERTIES
-            POSITION_INDEPENDENT_CODE ON
-        )
+    if (CUDAToolkit_FOUND)
+        message(STATUS "CUDA Toolkit found: ${CUDAToolkit_VERSION} - enabling GPU XLA support")
+        # The GPU handlers only use the CUDA runtime API (no device kernels), so
+        # the host compiler can build them given the CUDA headers and cudart.
+        target_include_directories(_ale_py PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
+        target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_XLA_GPU)
+        if (WIN32)
+            # Static linking bakes cudart into _ale_py.pyd so there is no runtime DLL to find.
+            target_link_libraries(_ale_py PRIVATE CUDA::cudart_static)
+        else()
+            # The loader resolves libcudart via the toolkit's lib path / the manylinux image, and
+            # jax already loads the same runtime in-process, so there is no missing-library issue.
+            target_link_libraries(_ale_py PRIVATE CUDA::cudart)
+        endif()
     else()
-        message(WARNING "CUDA Toolkit not found - disabling XLA support. Install CUDA Toolkit to enable XLA.")
-        target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp)
-        target_compile_definitions(_ale_py PRIVATE BUILD_VECTOR_LIB)
+        message(STATUS "CUDA Toolkit not found - building CPU-only XLA support")
     endif()
 elseif (BUILD_VECTOR_LIB)
     target_sources(_ale_py PRIVATE ale_vector_python_interface.cpp)

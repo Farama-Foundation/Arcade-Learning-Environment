@@ -189,7 +189,7 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
                 low=0, high=255, dtype=np.uint8, shape=(self.ale.getRAMSize(),)
             )
         elif self._obs_type == "rgb" or self._obs_type == "grayscale":
-            (screen_height, screen_width) = self.ale.getScreenDims()
+            screen_height, screen_width = self.ale.getScreenDims()
             image_shape = (
                 screen_height,
                 screen_width,
