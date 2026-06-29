@@ -17,10 +17,8 @@ if platform.system() == "Windows":
         ctypes.CDLL("vcruntime140.dll")
         ctypes.CDLL("msvcp140.dll")
     except OSError:
-        raise OSError(
-            """Microsoft Visual C++ Redistribution Pack is not installed.
-It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe."""
-        )
+        raise OSError("""Microsoft Visual C++ Redistribution Pack is not installed.
+It can be downloaded from https://aka.ms/vs/16/release/vc_redist.x64.exe.""")
 
     # Loading DLLs on Windows is kind of a disaster
     # The best approach seems to be using LoadLibraryEx with user defined search paths.

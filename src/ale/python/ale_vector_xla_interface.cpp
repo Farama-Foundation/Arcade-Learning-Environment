@@ -9,7 +9,7 @@
 #include <cstring>  // For memcpy
 #include <iostream>
 
-#ifdef __CUDACC__
+#ifdef BUILD_VECTOR_XLA_GPU
 #include <cuda_runtime.h>
 #endif
 
@@ -108,7 +108,7 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
         .Ret<ffi::Buffer<ffi::S32>>()  // episode_frame_numbers
 );
 
-#ifdef __CUDACC__
+#ifdef BUILD_VECTOR_XLA_GPU
 // GPU version of XLAReset with CUDA stream support
 ffi::Error XLAResetGPUImpl(
     cudaStream_t stream,
@@ -270,7 +270,7 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
         .Ret<ffi::Buffer<ffi::S32>>()  // frame_numbers
         .Ret<ffi::Buffer<ffi::S32>>()  // episode_frame_numbers
 );
-#endif  // __CUDACC__
+#endif  // BUILD_VECTOR_XLA_GPU
 
 // CPU version of XLAStep
 ffi::Error XLAStepImpl(
@@ -394,7 +394,7 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
         .Ret<ffi::Buffer<ffi::S32>>()   // episode_frame_numbers
 );
 
-#ifdef __CUDACC__
+#ifdef BUILD_VECTOR_XLA_GPU
 // GPU version of XLAStep with CUDA stream support
 ffi::Error XLAStepGPUImpl(
     cudaStream_t stream,
@@ -610,7 +610,7 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
         .Ret<ffi::Buffer<ffi::S32>>()   // frame_numbers
         .Ret<ffi::Buffer<ffi::S32>>()   // episode_frame_numbers
 );
-#endif  // __CUDACC__
+#endif  // BUILD_VECTOR_XLA_GPU
 
 template <typename T>
 nb::capsule EncapsulateFFICall(T *fn) {
@@ -625,7 +625,7 @@ void init_vector_module_xla(nb::module_& m) {
     m.def("VectorXLAReset", [] {return EncapsulateFFICall(AtariVectorEnvXLAReset); });
     m.def("VectorXLAStep", [] {return EncapsulateFFICall(AtariVectorEnvXLAStep); });
 
-#ifdef __CUDACC__
+#ifdef BUILD_VECTOR_XLA_GPU
     // GPU handlers
     m.def("VectorXLAResetGPU", [] {return EncapsulateFFICall(AtariVectorEnvXLAResetGPU); });
     m.def("VectorXLAStepGPU", [] {return EncapsulateFFICall(AtariVectorEnvXLAStepGPU); });
