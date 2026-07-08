@@ -102,13 +102,13 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             raise error.Error(
                 f"Invalid stochastic frameskip length of {len(frameskip)}, expected length 2."
             )
-        elif isinstance(frameskip, tuple) and frameskip[0] > frameskip[1]:
+        elif isinstance(frameskip, tuple) and frameskip[0] >= frameskip[1]:
             raise error.Error(
-                "Invalid stochastic frameskip, lower bound is greater than upper bound."
+                "Invalid stochastic frameskip, lower bound must be strictly less than upper bound."
             )
         elif isinstance(frameskip, tuple) and frameskip[0] <= 0:
             raise error.Error(
-                "Invalid stochastic frameskip lower bound is greater than upper bound."
+                "Invalid stochastic frameskip, lower bound must be positive."
             )
 
         if render_mode is not None and render_mode not in {"rgb_array", "human"}:
