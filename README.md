@@ -178,7 +178,7 @@ In BibTex format:
 
 If you use the CALE (Continuous ALE), we ask you that you also cite the following:
 
-*Jesse Farebrother and Pablo Samuel Castro.  Cale:  Continuous arcade learning environment.Ad-vances in Neural Information Processing Systems, 2024.*
+*Jesse Farebrother and Pablo Samuel Castro.  Cale:  Continuous arcade learning environment. Advances in Neural Information Processing Systems, 2024.*
 
 In BibTex format:
 
