@@ -126,6 +126,12 @@ class AtariVectorEnv(VectorEnv):
         self.full_action_space = full_action_space
         self.continuous = continuous
         self.continuous_action_threshold = continuous_action_threshold
+        self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
+        for h in (-1, 0, 1):
+            for v in (-1, 0, 1):
+                for f in (0, 1):
+                    action = AtariEnv.map_action_idx(h, v, bool(f)).value
+                    self.map_action_idx[h + 1, v + 1, f] = action
         self.single_action_space, self.action_space = (
             self._setup_continuous_action()
             if self.continuous
@@ -141,12 +147,6 @@ class AtariVectorEnv(VectorEnv):
         return single, gymnasium.vector.utils.batch_space(single, self.batch_size)
 
     def _setup_continuous_action(self) -> tuple:
-        self.map_action_idx = np.zeros((3, 3, 2), dtype=np.int32)
-        for h in (-1, 0, 1):
-            for v in (-1, 0, 1):
-                for f in (0, 1):
-                    action = AtariEnv.map_action_idx(h, v, bool(f)).value
-                    self.map_action_idx[h + 1, v + 1, f] = action
         # Actions are radius, theta, and fire, where first two are the parameters of polar coordinates.
         single = Box(
             low=np.array([0.0, -np.pi, 0.0]).astype(np.float32),

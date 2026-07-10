@@ -666,8 +666,12 @@ class TestVectorEnv:
         gym_envs.close()
         ale_envs.close()
 
+
+class TestMultiRomVectorEnv:
+    """Tests for multi-ROM support in AtariVectorEnv."""
+
     @pytest.mark.parametrize("game,n_minimal", [("breakout", 4), ("pong", 6)])
-    def test_single_action_space(game, n_minimal):
+    def test_single_action_space(self, game, n_minimal):
         """single_action_space reflects the real action-set size, not a constant."""
         env = AtariVectorEnv(game=game, num_envs=3)
         assert env.single_action_space == gym.spaces.Discrete(n_minimal)
@@ -683,10 +687,6 @@ class TestVectorEnv:
         assert env.single_action_space == gym.spaces.Discrete(18)
         assert np.all(env.action_space.nvec == 18)
         env.close()
-
-
-class TestMultiRomVectorEnv:
-    """Tests for multi-ROM support in AtariVectorEnv."""
 
     def test_single_action_space_none_for_different_roms(self):
         """Different ROMs (different action-set sizes) have no single space."""
