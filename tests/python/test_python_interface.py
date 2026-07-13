@@ -483,17 +483,17 @@ def test_restore_state_with_corrupted_positions(tetris):
     # Comprehensive edge cases: (input, expected) where
     # expected = ((x % 160) + 160) % 160 using C++ truncation semantics
     test_cases = [
-        (-1, 159),       # just below valid range
-        (160, 0),        # just above valid range
-        (-500, 140),     # large negative
-        (9999, 79),      # large positive
-        (-160, 0),       # exact negative multiple
-        (320, 0),        # exact positive multiple
-        (32000, 0),      # large exact multiple (200 * 160)
-        (-32768, 32),    # int16_t minimum
-        (32767, 127),    # int16_t maximum
-        (0, 0),          # valid boundary (min, unchanged)
-        (159, 159),      # valid boundary (max, unchanged)
+        (-1, 159),  # just below valid range
+        (160, 0),  # just above valid range
+        (-500, 140),  # large negative
+        (9999, 79),  # large positive
+        (-160, 0),  # exact negative multiple
+        (320, 0),  # exact positive multiple
+        (32000, 0),  # large exact multiple (200 * 160)
+        (-32768, 32),  # int16_t minimum
+        (32767, 127),  # int16_t maximum
+        (0, 0),  # valid boundary (min, unchanged)
+        (159, 159),  # valid boundary (max, unchanged)
     ]
 
     for bad_val, expected in test_cases:
@@ -540,6 +540,7 @@ def test_hmove_single_step_wrapping_bounds():
     asserts that values outside this range would NOT be corrected —
     documenting the limits of the current implementation.
     """
+
     def single_step_wrap(x):
         """Replicate the C++ HMOVE wrapping logic."""
         if x >= 160:
@@ -579,13 +580,13 @@ def test_hmove_single_step_wrapping_bounds():
     # These values can never occur in practice because the clamps guarantee
     # positions enter HMOVE in [0, 159].
     out = single_step_wrap(-161)  # -161 + 160 = -1
-    assert not (0 <= out < 160), (
-        f"Expected -161 to remain invalid after single-step wrap, got {out}"
-    )
-    out = single_step_wrap(320)   # 320 - 160 = 160
-    assert not (0 <= out < 160), (
-        f"Expected 320 to remain invalid after single-step wrap, got {out}"
-    )
+    assert not (
+        0 <= out < 160
+    ), f"Expected -161 to remain invalid after single-step wrap, got {out}"
+    out = single_step_wrap(320)  # 320 - 160 = 160
+    assert not (
+        0 <= out < 160
+    ), f"Expected 320 to remain invalid after single-step wrap, got {out}"
 
 
 def test_set_logger(ale):
