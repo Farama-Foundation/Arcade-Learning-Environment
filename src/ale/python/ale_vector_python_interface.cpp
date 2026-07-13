@@ -18,6 +18,24 @@ using ale::vector::Action;
 
 namespace {
 
+// Repeat each ROM num_envs times in order that it was sent.
+// E.g., ["pong", "breakout"], num_envs=2 -> ["pong", "pong", "breakout", "breakout"]
+std::vector<fs::path> expand_rom_paths(const std::vector<fs::path>& rom_paths, int num_envs) {
+    if (num_envs <= 0) return rom_paths;
+    std::vector<fs::path> paths;
+    paths.reserve(rom_paths.size() * num_envs);
+    for (const auto& p : rom_paths)
+        for (int i = 0; i < num_envs; ++i)
+            paths.push_back(p);
+    return paths;
+}
+
+AutoresetMode parse_autoreset_mode(const std::string& s) {
+    if (s == "NextStep") return AutoresetMode::NextStep;
+    if (s == "SameStep") return AutoresetMode::SameStep;
+    throw std::invalid_argument("Invalid autoreset_mode: " + s);
+}
+
 /// Helper to create numpy array from raw pointer with capsule ownership
 template<typename T>
 nb::ndarray<nb::numpy, T> make_numpy_array(T* data, std::vector<std::size_t> shape) {
@@ -126,7 +144,7 @@ nb::tuple wrap_step_result(EnvVectorizer& vec, BatchResult&& result) {
 void init_vector_module(nb::module_& m) {
     nb::class_<EnvVectorizer>(m, "ALEVectorInterface")
         .def("__init__", [](EnvVectorizer* t,
-                const fs::path& rom_path,
+                const std::vector<fs::path>& rom_paths,
                 int num_envs,
                 int frame_skip,
                 int stack_num,
@@ -147,25 +165,17 @@ void init_vector_module(nb::module_& m) {
                 int thread_affinity_offset,
                 const std::string& autoreset_mode_str
             ) {
-                AutoresetMode autoreset_mode;
-                if (autoreset_mode_str == "NextStep") {
-                    autoreset_mode = AutoresetMode::NextStep;
-                } else if (autoreset_mode_str == "SameStep") {
-                    autoreset_mode = AutoresetMode::SameStep;
-                } else {
-                    throw std::invalid_argument("Invalid autoreset_mode: " + autoreset_mode_str);
-                }
-
                 new (t) EnvVectorizer(
-                    rom_path, num_envs, batch_size, num_threads, thread_affinity_offset,
-                    autoreset_mode, img_height, img_width, stack_num, grayscale,
+                    expand_rom_paths(rom_paths, num_envs), batch_size, num_threads, thread_affinity_offset,
+                    parse_autoreset_mode(autoreset_mode_str),
+                    img_height, img_width, stack_num, grayscale,
                     frame_skip, maxpool, noop_max, use_fire_reset, episodic_life,
                     life_loss_info, reward_clipping, max_episode_steps,
                     repeat_action_probability, full_action_space
                 );
             },
-            nb::arg("rom_path"),
-            nb::arg("num_envs"),
+            nb::arg("rom_paths"),
+            nb::arg("num_envs") = 0,
             nb::arg("frame_skip") = 4,
             nb::arg("stack_num") = 4,
             nb::arg("img_height") = 84,
@@ -223,7 +233,7 @@ void init_vector_module(nb::module_& m) {
             return wrap_step_result(self, std::move(result));
         })
 
-        .def("get_action_set", &EnvVectorizer::action_set)
+        .def("get_action_sets", &EnvVectorizer::action_sets)
 
         .def("get_num_envs", &EnvVectorizer::num_envs)
 
