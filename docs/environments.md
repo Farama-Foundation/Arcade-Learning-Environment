@@ -313,7 +313,7 @@ the available modes and difficulty levels for different Atari games:
 | Phoenix          | [0]                                             |              0 | [0]                     |                    0 |
 | Pitfall          | [0]                                             |              0 | [0]                     |                    0 |
 | Pitfall2         | [0]                                             |              0 | [0]                     |                    0 |
-| Pong             | [0, 1]                                          |              0 | [0, 1, 2, 3]            |                    0 |
+| Pong             | [1, 2]                                          |              1 | [0, 1, 2, 3]            |                    0 |
 | Pooyan           | [10, 30, 50, 70]                                |             10 | [0]                     |                    0 |
 | PrivateEye       | [0, 1, 2, 3, 4]                                 |              0 | [0, 1, 2, 3]            |                    0 |
 | Qbert            | [0]                                             |              0 | [0, 1]                  |                    0 |
@@ -328,7 +328,7 @@ the available modes and difficulty levels for different Atari games:
 | SpaceWar         | [6, ..., 17]                                    |              6 | [0]                     |                    0 |
 | StarGunner       | [0, 1, 2, 3]                                    |              0 | [0]                     |                    0 |
 | Superman         | [0]                                             |              0 | [0, 1, 2, 3]            |                    0 |
-| Surround         | [0, 2]                                          |              0 | [0, 1, 2, 3]            |                    0 |
+| Surround         | [2, 4]                                          |              2 | [0, 1, 2, 3]            |                    0 |
 | Tennis           | [0, 2]                                          |              0 | [0, 1, 2, 3]            |                    0 |
 | Tetris           | [0]                                             |              0 | [0]                     |                    0 |
 | TicTacToe3D      | [0, ..., 8]                                     |              0 | [0, 2]                  |                    0 |
