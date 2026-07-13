@@ -239,7 +239,9 @@ def test_gym_reset_with_infos(tetris_env):
     assert "frame_number" in info
 
 
-@pytest.mark.parametrize("frameskip", [0, -1, 4.0, (-1, 5), (0, 5), (5, 2), (1, 2, 3)])
+@pytest.mark.parametrize(
+    "frameskip", [0, -1, 4.0, (-1, 5), (0, 5), (5, 2), (4, 4), (1, 2, 3)]
+)
 def test_frameskip_warnings(tetris_rom_path, frameskip):
     with patch("ale_py.roms.Tetris", create=True, new_callable=lambda: tetris_rom_path):
         with pytest.raises(gymnasium.error.Error):
