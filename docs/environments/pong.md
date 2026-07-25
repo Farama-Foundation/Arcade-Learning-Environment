@@ -79,7 +79,7 @@ along with the default values.
 
 | Available Modes   | Default Mode   | Available Difficulties   | Default Difficulty   |
 |-------------------|----------------|--------------------------|----------------------|
-| `[0, 1]`          | `0`            | `[0, 1, 2, 3]`           | `0`                  |
+| `[1, 2]`          | `1`            | `[0, 1, 2, 3]`           | `0`                  |
 
 ## Version History
 
