@@ -22,8 +22,7 @@ namespace ale::vector {
 class EnvVectorizer {
 public:
     EnvVectorizer(
-        const fs::path& rom_path,
-        int num_envs,
+        const std::vector<fs::path>& rom_paths,
         int batch_size = 0,
         int num_threads = 0,
         int thread_affinity_offset = -1,
@@ -70,7 +69,7 @@ public:
     int num_envs() const { return num_envs_; }
     int batch_size() const { return batch_size_; }
     std::size_t stacked_obs_size() const { return stacked_obs_size_; }
-    const ActionVect& action_set() const { return action_set_; }
+    const std::vector<ActionVect>& action_sets() const { return action_sets_; }
     AutoresetMode autoreset_mode() const { return autoreset_mode_; }
     bool is_grayscale() const { return grayscale_; }
 
@@ -98,7 +97,7 @@ private:
 
     // Environments
     std::vector<std::unique_ptr<PreprocessedEnv>> envs_;
-    ActionVect action_set_;
+    std::vector<ActionVect> action_sets_;
 
     // Worker threads
     std::vector<std::thread> workers_;
