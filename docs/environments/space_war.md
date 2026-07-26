@@ -30,7 +30,7 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 SpaceWar has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
 As SpaceWar uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
-|   Value | Meaning       |
+|   Index | Action        |
 |---------|---------------|
 |       0 | NOOP          |
 |       1 | FIRE          |
@@ -52,6 +52,12 @@ As SpaceWar uses the full set of actions then specifying `full_action_space=True
 |      17 | DOWNLEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
+
+### Starting the game
+
+Space War does not begin until you press `FIRE` (or engage a thruster such as `UP`). Holding `NOOP` leaves the game idle, giving no reward. Play must be restarted this way after each life lost.
+
+See the [general Atari page](https://ale.farama.org/environments/#games-that-require-a-button-press-to-start) for the full list of games that require a starting action.
 
 ## Observations
 

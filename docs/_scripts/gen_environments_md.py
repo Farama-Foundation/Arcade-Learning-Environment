@@ -76,9 +76,21 @@ For a more detailed documentation, see [the AtariAge page]({env_data['atariage_u
     else:
         reward_description = ""
 
+    # See ``scripts/detect_fire_to_start.py`` for how these games were identified.
+    if env_data.get("start_condition"):
+        start_condition = f"""### Starting the game
+
+{env_data["start_condition"]}
+
+See the [general Atari page](https://ale.farama.org/environments/#games-that-require-a-button-press-to-start) for the full list of games that require a starting action.
+
+"""
+    else:
+        start_condition = ""
+
     action_table = tabulate.tabulate(
         zip(range(env.action_space.n), env.get_action_meanings()),
-        headers=["Index", "Action", "Description"],
+        headers=["Index", "Action"],
         tablefmt="github",
     )
     if env.action_space.n == 18:
@@ -169,7 +181,7 @@ For more {env_name} variants with different observation and action spaces, see t
 
 See [environment specification](../env-spec) to see more information on the action meaning.
 
-## Observations
+{start_condition}## Observations
 
 Atari environments have three possible observation types:
 

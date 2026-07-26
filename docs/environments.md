@@ -172,6 +172,41 @@ a tuple of two positive integers. If `frameskip` is an integer, frame skipping i
 repeated `frameskip` many times. Otherwise, if `frameskip` is a tuple, the number of skipped frames is chosen uniformly at
 random between `frameskip[0]` (inclusive) and `frameskip[1]` (exclusive) in each environment step.
 
+## Games that require a button press to start
+
+A small number of games do not begin until the player presses a button. Until that press, the game is
+effectively frozen: the screen does not change, no reward is given, and the episode never terminates.
+
+| Environment       | Action that starts the game        | Also required after each life loss |
+|-------------------|------------------------------------|------------------------------------|
+| `BankHeist`       | any movement direction             | yes                                |
+| `Bowling`         | `FIRE`                             | yes                                |
+| `Breakout`        | `FIRE`                             | yes                                |
+| `DonkeyKong`      | `FIRE`                             | no                                 |
+| `HumanCannonball` | `FIRE`                             | yes                                |
+| `SpaceWar`        | `FIRE` or `UP`                     | yes                                |
+| `Tennis`          | `FIRE`                             | yes                                |
+| `Trondead`        | any action                         | no                                 |
+
+Where a game is listed as starting on `FIRE`, any composite action containing fire (`UPFIRE`, `LEFTFIRE`, and
+so on) works equally well. The simplest way to handle this is to press the starting action right after resetting:
+
+```python
+import gymnasium as gym
+import ale_py
+
+gym.register_envs(ale_py)
+
+env = gym.make("ALE/Breakout-v5")
+obs, info = env.reset()
+
+# FIRE is action 1; serve the ball so the episode can actually progress
+obs, reward, terminated, truncated, info = env.step(1)
+```
+
+For games marked as also requiring the press after a life loss, the same action must be repeated whenever the
+life count in `info["lives"]` decreases, not only at the start of the episode.
+
 ## Common Arguments
 
 When initializing Atari environments via `gymnasium.make`, you may pass some additional arguments. These work for any

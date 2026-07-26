@@ -30,7 +30,7 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 DonkeyKong has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
 As DonkeyKong uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
-|   Value | Meaning       |
+|   Index | Action        |
 |---------|---------------|
 |       0 | NOOP          |
 |       1 | FIRE          |
@@ -52,6 +52,12 @@ As DonkeyKong uses the full set of actions then specifying `full_action_space=Tr
 |      17 | DOWNLEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
+
+### Starting the game
+
+Donkey Kong does not begin until you press `FIRE`. Holding `NOOP` leaves the game idle, giving no reward.
+
+See the [general Atari page](https://ale.farama.org/environments/#games-that-require-a-button-press-to-start) for the full list of games that require a starting action.
 
 ## Observations
 
