@@ -462,8 +462,8 @@ As Tennis uses the full set of actions then specifying <code class="docutils lit
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Value</p></th>
-<th class="head"><p>Meaning</p></th>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Action</p></th>
 </tr>
 </thead>
 <tbody>
@@ -525,6 +525,11 @@ As Tennis uses the full set of actions then specifying <code class="docutils lit
 </table>
 </div>
 <p>See <a class="reference internal" href="../../env-spec/"><span class="doc std std-doc">environment specification</span></a> to see more information on the action meaning.</p>
+<section id="starting-the-game">
+<h3>Starting the game<a class="headerlink" href="#starting-the-game" title="Link to this heading">¶</a></h3>
+<p>Although the players are animated on the court, no point is played and no reward is given until you press <code class="docutils literal notranslate"><span class="pre">FIRE</span></code> to serve. An agent that only holds <code class="docutils literal notranslate"><span class="pre">NOOP</span></code> never scores. <code class="docutils literal notranslate"><span class="pre">FIRE</span></code> must be pressed to serve each new point.</p>
+<p>See the <a class="reference external" href="https://ale.farama.org/environments/#games-that-require-a-button-press-to-start">general Atari page</a> for the full list of games that require a starting action.</p>
+</section>
 </section>
 <section id="observations">
 <h2>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h2>
@@ -690,7 +695,10 @@ along with the default values.</p>
               <ul>
 <li><a class="reference internal" href="#">Tennis</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
-<li><a class="reference internal" href="#actions">Actions</a></li>
+<li><a class="reference internal" href="#actions">Actions</a><ul>
+<li><a class="reference internal" href="#starting-the-game">Starting the game</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#observations">Observations</a><ul>
 <li><a class="reference internal" href="#reward">Reward</a></li>
 </ul>

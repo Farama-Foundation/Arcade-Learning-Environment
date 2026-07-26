@@ -636,6 +636,71 @@ repeated <code class="docutils literal notranslate"><span class="pre">frameskip<
 random between <code class="docutils literal notranslate"><span class="pre">frameskip[0]</span></code> (inclusive) and <code class="docutils literal notranslate"><span class="pre">frameskip[1]</span></code> (exclusive) in each environment step.</p></li>
 </ol>
 </section>
+<section id="games-that-require-a-button-press-to-start">
+<h2>Games that require a button press to start<a class="headerlink" href="#games-that-require-a-button-press-to-start" title="Link to this heading">¶</a></h2>
+<p>A small number of games do not begin until the player presses a button. Until that press, the game is
+effectively frozen: the screen does not change, no reward is given, and the episode never terminates.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Environment</p></th>
+<th class="head"><p>Action that starts the game</p></th>
+<th class="head"><p>Also required after each life loss</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BankHeist</span></code></p></td>
+<td><p>any movement direction</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Bowling</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Breakout</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DonkeyKong</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HumanCannonball</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SpaceWar</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code> or <code class="docutils literal notranslate"><span class="pre">UP</span></code></p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Tennis</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Trondead</span></code></p></td>
+<td><p>any action</p></td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Where a game is listed as starting on <code class="docutils literal notranslate"><span class="pre">FIRE</span></code>, any composite action containing fire (<code class="docutils literal notranslate"><span class="pre">UPFIRE</span></code>, <code class="docutils literal notranslate"><span class="pre">LEFTFIRE</span></code>, and
+so on) works equally well. The simplest way to handle this is to press the starting action right after resetting:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
+
+<span class="n">gym</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;ALE/Breakout-v5&quot;</span><span class="p">)</span>
+<span class="n">obs</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<span class="c1"># FIRE is action 1; serve the ball so the episode can actually progress</span>
+<span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For games marked as also requiring the press after a life loss, the same action must be repeated whenever the
+life count in <code class="docutils literal notranslate"><span class="pre">info[&quot;lives&quot;]</span></code> decreases, not only at the start of the episode.</p>
+</section>
 <section id="common-arguments">
 <h2>Common Arguments<a class="headerlink" href="#common-arguments" title="Link to this heading">¶</a></h2>
 <p>When initializing Atari environments via <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>, you may pass some additional arguments. These work for any
@@ -1514,6 +1579,7 @@ URL: https://arxiv.org/abs/2410.23810</p>
 <li><a class="reference internal" href="#observation-space">Observation Space</a></li>
 <li><a class="reference internal" href="#rewards">Rewards</a></li>
 <li><a class="reference internal" href="#stochasticity">Stochasticity</a></li>
+<li><a class="reference internal" href="#games-that-require-a-button-press-to-start">Games that require a button press to start</a></li>
 <li><a class="reference internal" href="#common-arguments">Common Arguments</a></li>
 <li><a class="reference internal" href="#version-history-and-naming-schemes">Version History and Naming Schemes</a></li>
 <li><a class="reference internal" href="#flavors">Flavors</a></li>

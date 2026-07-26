@@ -462,8 +462,8 @@ As SpaceWar uses the full set of actions then specifying <code class="docutils l
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Value</p></th>
-<th class="head"><p>Meaning</p></th>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Action</p></th>
 </tr>
 </thead>
 <tbody>
@@ -525,6 +525,11 @@ As SpaceWar uses the full set of actions then specifying <code class="docutils l
 </table>
 </div>
 <p>See <a class="reference internal" href="../../env-spec/"><span class="doc std std-doc">environment specification</span></a> to see more information on the action meaning.</p>
+<section id="starting-the-game">
+<h3>Starting the game<a class="headerlink" href="#starting-the-game" title="Link to this heading">¶</a></h3>
+<p>Space War does not begin until you press <code class="docutils literal notranslate"><span class="pre">FIRE</span></code> (or engage a thruster such as <code class="docutils literal notranslate"><span class="pre">UP</span></code>). Holding <code class="docutils literal notranslate"><span class="pre">NOOP</span></code> leaves the game idle, giving no reward. Play must be restarted this way after each life lost.</p>
+<p>See the <a class="reference external" href="https://ale.farama.org/environments/#games-that-require-a-button-press-to-start">general Atari page</a> for the full list of games that require a starting action.</p>
+</section>
 </section>
 <section id="observations">
 <h2>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h2>
@@ -666,7 +671,10 @@ along with the default values.</p>
               <ul>
 <li><a class="reference internal" href="#">SpaceWar</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
-<li><a class="reference internal" href="#actions">Actions</a></li>
+<li><a class="reference internal" href="#actions">Actions</a><ul>
+<li><a class="reference internal" href="#starting-the-game">Starting the game</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#observations">Observations</a></li>
 <li><a class="reference internal" href="#variants">Variants</a></li>
 <li><a class="reference internal" href="#difficulty-and-modes">Difficulty and modes</a></li>
