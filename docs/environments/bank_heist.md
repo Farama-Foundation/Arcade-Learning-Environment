@@ -30,7 +30,7 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 BankHeist has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
 As BankHeist uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
-|   Value | Meaning       |
+|   Index | Action        |
 |---------|---------------|
 |       0 | NOOP          |
 |       1 | FIRE          |
@@ -52,6 +52,12 @@ As BankHeist uses the full set of actions then specifying `full_action_space=Tru
 |      17 | DOWNLEFTFIRE  |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
+
+### Starting the game
+
+BankHeist does not begin until you start driving: press a movement direction such as `LEFT` or `RIGHT` to set the getaway car in motion. Holding `NOOP` leaves the game idle, giving no reward. The car must be steered again to resume after each life lost.
+
+See the [general Atari page](https://ale.farama.org/environments/#games-that-require-a-button-press-to-start) for the full list of games that require a starting action.
 
 ## Observations
 

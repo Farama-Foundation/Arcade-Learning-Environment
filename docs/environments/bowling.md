@@ -31,16 +31,22 @@ Bowling has the action space of `Discrete(6)` with the table below listing the m
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-|   Value | Meaning   |
-|---------|-----------|
-|       0 | NOOP      |
-|       1 | FIRE      |
-|       2 | UP        |
-|       3 | DOWN      |
-|       4 | UPFIRE    |
-|       5 | DOWNFIRE  |
+|   Index | Action   |
+|---------|----------|
+|       0 | NOOP     |
+|       1 | FIRE     |
+|       2 | UP       |
+|       3 | DOWN     |
+|       4 | UPFIRE   |
+|       5 | DOWNFIRE |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
+
+### Starting the game
+
+Bowling does not roll the ball until you press `FIRE`. Holding `NOOP` leaves the game idle, giving no reward. `FIRE` must be pressed again to bowl each new ball.
+
+See the [general Atari page](https://ale.farama.org/environments/#games-that-require-a-button-press-to-start) for the full list of games that require a starting action.
 
 ## Observations
 
