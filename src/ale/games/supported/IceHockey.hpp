@@ -28,12 +28,12 @@
 #ifndef __ICEHOCKEY_HPP__
 #define __ICEHOCKEY_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Ice Hockey */
-class IceHockeySettings : public RomSettings {
+class IceHockeySettings : public RomSettings2P {
  public:
   IceHockeySettings();
 
@@ -45,6 +45,7 @@ class IceHockeySettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "ice_hockey"; }
@@ -75,6 +76,7 @@ class IceHockeySettings : public RomSettings {
   // returns a list of mode that the game can be played in
   // in this game, there are 2 available modes
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function

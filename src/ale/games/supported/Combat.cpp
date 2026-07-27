@@ -10,58 +10,47 @@
  * *****************************************************************************
  */
 
-#include "ale/games/supported/Boxing.hpp"
+#include "ale/games/supported/Combat.hpp"
+
+#include <algorithm>
 
 #include "ale/games/RomUtils.hpp"
 
 namespace ale {
 using namespace stella;
 
-BoxingSettings::BoxingSettings() { reset(); }
+CombatSettings::CombatSettings() { reset(); }
 
 /* create a new instance of the rom */
-RomSettings* BoxingSettings::clone() const {
-  return new BoxingSettings(*this);
+RomSettings* CombatSettings::clone() const {
+  return new CombatSettings(*this);
 }
 
 /* process the latest information from ALE */
-void BoxingSettings::step(const System& system) {
+void CombatSettings::step(const System& system) {
   // update the reward
-  int my_score = getDecimalScore(0x92, &system);
-  int oppt_score = getDecimalScore(0x93, &system);
-
-  // handle KO
-  if (readRam(&system, 0x92) == 0xC0)
-    my_score = 100;
-  if (readRam(&system, 0x93) == 0xC0)
-    oppt_score = 100;
-  reward_t score = my_score - oppt_score;
+  int my_score = std::max(getDecimalScore(0xa1, &system), 0);
+  int oppt_score = std::max(getDecimalScore(0xa2, &system), 0);
+  int score = my_score - oppt_score;
   m_reward = score - m_score;
   m_score = score;
 
-  // update terminal status
-  // if either is KO, the game is over
-  if (my_score == 100 || oppt_score == 100) {
-    m_terminal = true;
-  } else { // otherwise check to see if out of time
-    int minutes = readRam(&system, 0x90) >> 4;
-    int seconds =
-        (readRam(&system, 0x91) & 0xF) + (readRam(&system, 0x91) >> 4) * 10;
-    m_terminal = minutes == 0 && seconds == 0;
-  }
+  int over_flag = readRam(&system, 0x88);
+
+  m_terminal = my_score == 99 || oppt_score == 99 || over_flag == 0;
 }
 
 /* is end of game */
-bool BoxingSettings::isTerminal() const { return m_terminal; };
+bool CombatSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
-reward_t BoxingSettings::getReward() const { return m_reward; }
+reward_t CombatSettings::getReward() const { return m_reward; }
 
-/* boxing is a zero-sum game: player 2's reward is the negative of player 1's */
-reward_t BoxingSettings::getRewardP2() const { return -m_reward; }
+/* combat is a zero-sum game: player 2's reward is the negative of player 1's */
+reward_t CombatSettings::getRewardP2() const { return -m_reward; }
 
 /* is an action part of the minimal set? */
-bool BoxingSettings::isMinimal(const Action& a) const {
+bool CombatSettings::isMinimal(const Action& a) const {
   switch (a) {
     case PLAYER_A_NOOP:
     case PLAYER_A_FIRE:
@@ -88,50 +77,52 @@ bool BoxingSettings::isMinimal(const Action& a) const {
 }
 
 /* reset the state of the game */
-void BoxingSettings::reset() {
+void CombatSettings::reset() {
   m_reward = 0;
   m_score = 0;
   m_terminal = false;
 }
 
 /* saves the state of the rom settings */
-void BoxingSettings::saveState(Serializer& ser) {
+void CombatSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
 }
 
 // loads the state of the rom settings
-void BoxingSettings::loadState(Deserializer& ser) {
+void CombatSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
 }
 
-DifficultyVect BoxingSettings::getAvailableDifficulties() {
+DifficultyVect CombatSettings::getAvailableDifficulties() {
   return {0, 1, 2, 3};
 }
 
-// Mode 0 is the historic ALE default (the boot variant, no manipulation).
-// Mode 2 is the two-player variant, numbered by the game number the ROM
-// displays on the select screen (matching MA-ALE).
-ModeVect BoxingSettings::getAvailableModes() {
-  return {0};
+// Combat has no single-player variants: every game variant needs two players.
+ModeVect CombatSettings::getAvailableModes() {
+  return {};
 }
 
-ModeVect BoxingSettings::get2PlayerModes() {
-  return {2};
+// The 27 game variants from the manual, numbered by the game number the ROM
+// displays (RAM 0x80 holds the variant minus one).
+ModeVect CombatSettings::get2PlayerModes() {
+  ModeVect modes(27);
+  for (unsigned int i = 0; i < 27; i++) {
+    modes[i] = i + 1;
+  }
+  return modes;
 }
 
-void BoxingSettings::setMode(
+void CombatSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  // Mode 0 keeps the legacy behaviour: play the boot variant untouched.
-  if (m == 0) {
-    return;
-  }
-  // press select until the correct mode is reached
-  while (readRam(&system, 0x92) != m) {
+  game_mode_t byte_value = m - 1;
+
+  // Press select until the correct mode is reached.
+  while (readRam(&system, 0x80) != byte_value) {
     environment->pressSelect(1);
   }
   // reset the environment to apply changes.

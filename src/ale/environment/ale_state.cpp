@@ -31,34 +31,61 @@ using namespace stella;   // System, Event, Deserializer, Serializer, Random
 
 /** Default constructor - loads settings from system */
 ALEState::ALEState()
-    : m_left_paddle(PADDLE_DEFAULT_VALUE),
-      m_right_paddle(PADDLE_DEFAULT_VALUE),
-      m_paddle_min(PADDLE_MIN),
+    : m_paddle_min(PADDLE_MIN),
       m_paddle_max(PADDLE_MAX),
       m_frame_number(0),
       m_episode_frame_number(0),
       m_mode(0),
-      m_difficulty(0) {}
+      m_difficulty(0),
+      m_num_players(1) {
+        for (int i = 0; i < 4; i++) {
+          m_paddle[i] = PADDLE_DEFAULT_VALUE;
+        }
+      }
 
 ALEState::ALEState(const ALEState& rhs, const std::string& serialized)
-    : m_left_paddle(rhs.m_left_paddle),
-      m_right_paddle(rhs.m_right_paddle),
-      m_paddle_min(rhs.m_paddle_min),
+    : m_paddle_min(rhs.m_paddle_min),
       m_paddle_max(rhs.m_paddle_max),
       m_frame_number(rhs.m_frame_number),
       m_episode_frame_number(rhs.m_episode_frame_number),
       m_serialized_state(serialized),
       m_mode(rhs.m_mode),
-      m_difficulty(rhs.m_difficulty) {}
+      m_difficulty(rhs.m_difficulty),
+      m_num_players(rhs.m_num_players) {
+        for (int i = 0; i < 4; i++) {
+          m_paddle[i] = rhs.m_paddle[i];
+        }
+      }
+
+// Sentinel marking the multiplayer (v2) serialization format. Negative so it
+// can never collide with the first field of the legacy format, which was a
+// (positive) paddle position.
+static constexpr int kStateFormatV2 = -0x0A1E0002;
 
 ALEState::ALEState(const std::string& serialized) {
   Deserializer des(serialized);
-  this->m_left_paddle = des.getInt();
-  this->m_right_paddle = des.getInt();
-  this->m_frame_number = des.getInt();
-  this->m_episode_frame_number = des.getInt();
-  this->m_mode = des.getInt();
-  this->m_difficulty = des.getInt();
+  int first = des.getInt();
+  if (first == kStateFormatV2) {
+    for (int i = 0; i < 4; i++) {
+      this->m_paddle[i] = des.getInt();
+    }
+    this->m_frame_number = des.getInt();
+    this->m_episode_frame_number = des.getInt();
+    this->m_mode = des.getInt();
+    this->m_difficulty = des.getInt();
+    this->m_num_players = des.getInt();
+  } else {
+    // Legacy (pre-multiplayer) format: two paddle values, no player count.
+    this->m_paddle[0] = first;
+    this->m_paddle[1] = des.getInt();
+    this->m_paddle[2] = PADDLE_DEFAULT_VALUE;
+    this->m_paddle[3] = PADDLE_DEFAULT_VALUE;
+    this->m_frame_number = des.getInt();
+    this->m_episode_frame_number = des.getInt();
+    this->m_mode = des.getInt();
+    this->m_difficulty = des.getInt();
+    this->m_num_players = 1;
+  }
   this->m_serialized_state = des.getString();
   this->m_paddle_min = des.getInt();
   this->m_paddle_max = des.getInt();
@@ -72,22 +99,36 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, Random* rng, std::s
   // Deserialize the stored string into the emulator state
   Deserializer deser(rhs.m_serialized_state);
 
-  osystem->console().system().loadState(md5, deser);
-  settings->loadState(deser);
-  bool rng_included = deser.getBool();
-  if (rng_included) {
-    rng->loadState(deser);
+  try {
+    osystem->console().system().loadState(md5, deser);
+    settings->loadState(deser);
+    bool rng_included = deser.getBool();
+    if (rng_included) {
+      rng->loadState(deser);
+    }
+  } catch (const char* msg) {
+    // The emucore Serializer/Deserializer throw raw C strings; convert them
+    // to a translatable exception. This is typically hit when restoring a
+    // state that was serialized by a different ALE version (games that gained
+    // multiplayer support serialize additional fields).
+    throw std::runtime_error(
+        std::string("Failed to restore ALEState (") + msg +
+        "). The state is likely from an incompatible ALE version: games that "
+        "gained multiplayer support serialize additional fields, so their "
+        "states cannot be exchanged with older releases.");
   }
 
   // Copy over other member variables
-  m_left_paddle = rhs.m_left_paddle;
-  m_right_paddle = rhs.m_right_paddle;
+  for (int i = 0; i < 4; i++) {
+    m_paddle[i] = rhs.m_paddle[i];
+  }
   m_paddle_min = rhs.m_paddle_min;
   m_paddle_max = rhs.m_paddle_max;
   m_frame_number = rhs.m_frame_number;
   m_episode_frame_number = rhs.m_episode_frame_number;
   m_mode = rhs.m_mode;
   m_difficulty = rhs.m_difficulty;
+  m_num_players = rhs.m_num_players;
 }
 
 ALEState ALEState::save(OSystem* osystem, RomSettings* settings, std::optional<Random*> rng,
@@ -116,12 +157,15 @@ void ALEState::resetEpisodeFrameNumber() { m_episode_frame_number = 0; }
 std::string ALEState::serialize() {
   Serializer ser;
 
-  ser.putInt(this->m_left_paddle);
-  ser.putInt(this->m_right_paddle);
+  ser.putInt(kStateFormatV2);
+  for (int i = 0; i < 4; i++) {
+    ser.putInt(this->m_paddle[i]);
+  }
   ser.putInt(this->m_frame_number);
   ser.putInt(this->m_episode_frame_number);
   ser.putInt(this->m_mode);
   ser.putInt(this->m_difficulty);
+  ser.putInt(this->m_num_players);
   ser.putString(this->m_serialized_state);
   ser.putInt(this->m_paddle_min);
   ser.putInt(this->m_paddle_max);
@@ -138,20 +182,29 @@ int ALEState::calcPaddleResistance(int x_val) {
 
 void ALEState::resetPaddles(Event* event) {
   int paddle_default = (m_paddle_min + m_paddle_max) / 2;
-  setPaddles(event, paddle_default, paddle_default);
+  // Only initialize the paddles that are in use: setting the resistance of
+  // paddles 2/3 (the right controller port) changes what paddle games read
+  // from INPT2/INPT3, altering emulation for existing 1/2-player modes.
+  int num_paddles = m_num_players <= 2 ? 2 : 4;
+  for (int i = 0; i < num_paddles; i++) {
+    setPaddle(event, paddle_default, i);
+  }
 }
 
-void ALEState::setPaddles(Event* event, int left, int right) {
-  m_left_paddle = left;
-  m_right_paddle = right;
+void ALEState::setPaddle(Event* event, int paddle_val, int paddle_num) {
+  m_paddle[paddle_num] = paddle_val;
 
   // Compute the "resistance" (this is for vestigal clarity)
-  int left_resistance = calcPaddleResistance(m_left_paddle);
-  int right_resistance = calcPaddleResistance(m_right_paddle);
+  int resitance = calcPaddleResistance(paddle_val);
 
+  Event::Type paddle_resists[] = {
+    Event::PaddleZeroResistance,
+    Event::PaddleOneResistance,
+    Event::PaddleTwoResistance,
+    Event::PaddleThreeResistance
+  };
   // Update the events with the new resistances
-  event->set(Event::PaddleZeroResistance, left_resistance);
-  event->set(Event::PaddleOneResistance, right_resistance);
+  event->set(paddle_resists[paddle_num], resitance);
 }
 
 void ALEState::setPaddleLimits(int paddle_min_val, int paddle_max_val) {
@@ -162,33 +215,103 @@ void ALEState::setPaddleLimits(int paddle_min_val, int paddle_max_val) {
 }
 
 /* *********************************************************************
- *  Updates the positions of the paddles, and sets an event for
- *  updating the corresponding paddle's resistance
+ *  Updates the positions of the paddle indicated by paddle_num,
+ *  and sets an event for updating the corresponding paddle's resistance
  * ********************************************************************/
-void ALEState::updatePaddlePositions(Event* event, int delta_left,
-                                     int delta_right) {
+void ALEState::updatePaddlePosition(Event* event, int delta,
+                                     int paddle_num) {
   // Cap paddle outputs
-
-  m_left_paddle += delta_left;
-  if (m_left_paddle < m_paddle_min) {
-    m_left_paddle = m_paddle_min;
+  m_paddle[paddle_num] += delta;
+  if (m_paddle[paddle_num] < m_paddle_min) {
+    m_paddle[paddle_num] = m_paddle_min;
   }
-  if (m_left_paddle > m_paddle_max) {
-    m_left_paddle = m_paddle_max;
-  }
-
-  m_right_paddle += delta_right;
-  if (m_right_paddle < m_paddle_min) {
-    m_right_paddle = m_paddle_min;
-  }
-  if (m_right_paddle > m_paddle_max) {
-    m_right_paddle = m_paddle_max;
+  if (m_paddle[paddle_num] > m_paddle_max) {
+    m_paddle[paddle_num] = m_paddle_max;
   }
 
   // Now set the paddle to their new value
-  setPaddles(event, m_left_paddle, m_right_paddle);
+  setPaddle(event, m_paddle[paddle_num], paddle_num);
 }
 
+/* *********************************************************************
+ *  Updates positions of paddles 0 and 1 (for two-player paddle strength mode)
+ * ********************************************************************/
+void ALEState::updatePaddlePositions(Event* event, int delta_left, int delta_right) {
+  updatePaddlePosition(event, delta_left, 0);
+  updatePaddlePosition(event, delta_right, 1);
+}
+
+/* *********************************************************************
+ *  Sets both paddles to given positions (for two-player mode)
+ * ********************************************************************/
+void ALEState::setPaddles(Event* event, int left, int right) {
+  setPaddle(event, left, 0);
+  setPaddle(event, right, 1);
+}
+
+// Apply the action for the paddle given by pnum (for multiplayer support)
+void ALEState::applyActionPaddle(Event* event, int action, int pnum,
+                                 float paddle_strength) {
+  // First compute whether we should increase or decrease the paddle position
+  int delta = 0;
+
+  switch (action) {
+    case PLAYER_A_RIGHT:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_UPRIGHT:
+    case PLAYER_A_DOWNRIGHT:
+    case PLAYER_A_UPRIGHTFIRE:
+    case PLAYER_A_DOWNRIGHTFIRE:
+      delta = static_cast<int>(-PADDLE_DELTA * fabs(paddle_strength));
+      break;
+
+    case PLAYER_A_LEFT:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_UPLEFT:
+    case PLAYER_A_DOWNLEFT:
+    case PLAYER_A_UPLEFTFIRE:
+    case PLAYER_A_DOWNLEFTFIRE:
+      delta = static_cast<int>(PADDLE_DELTA * fabs(paddle_strength));
+      break;
+
+    default:
+      delta = 0;
+      break;
+  }
+
+  // Now update the paddle position
+  updatePaddlePosition(event, delta, pnum);
+
+  // Handle reset
+  if (action == RESET)
+    event->set(Event::ConsoleReset, 1);
+
+  Event::Type paddle_fires[] = {
+    Event::PaddleZeroFire,
+    Event::PaddleOneFire,
+    Event::PaddleTwoFire,
+    Event::PaddleThreeFire
+  };
+  // Now add the fire event
+  switch (action) {
+    case PLAYER_A_FIRE:
+    case PLAYER_A_UPFIRE:
+    case PLAYER_A_RIGHTFIRE:
+    case PLAYER_A_LEFTFIRE:
+    case PLAYER_A_DOWNFIRE:
+    case PLAYER_A_UPRIGHTFIRE:
+    case PLAYER_A_UPLEFTFIRE:
+    case PLAYER_A_DOWNRIGHTFIRE:
+    case PLAYER_A_DOWNLEFTFIRE:
+      event->set(paddle_fires[pnum], 1);
+      break;
+    default:
+      // Nothing
+      break;
+  }
+}
+
+// Apply actions for both paddles with continuous paddle strength (for single/two player)
 void ALEState::applyActionPaddles(Event* event,
                                   int player_a_action, float paddle_a_strength,
                                   int player_b_action, float paddle_b_strength) {
@@ -246,11 +369,11 @@ void ALEState::applyActionPaddles(Event* event,
   // Now update the paddle positions
   updatePaddlePositions(event, delta_a, delta_b);
 
-  // Handle reset
-  if (player_a_action == RESET || player_b_action == RESET)
+  // Handle reset for player A
+  if (player_a_action == RESET)
     event->set(Event::ConsoleReset, 1);
 
-  // Now add the fire event
+  // Handle fire events for player A
   switch (player_a_action) {
     case PLAYER_A_FIRE:
     case PLAYER_A_UPFIRE:
@@ -264,10 +387,10 @@ void ALEState::applyActionPaddles(Event* event,
       event->set(Event::PaddleZeroFire, 1);
       break;
     default:
-      // Nothing
       break;
   }
 
+  // Handle fire events for player B
   switch (player_b_action) {
     case PLAYER_B_FIRE:
     case PLAYER_B_UPFIRE:
@@ -281,7 +404,6 @@ void ALEState::applyActionPaddles(Event* event,
       event->set(Event::PaddleOneFire, 1);
       break;
     default:
-      // Nothing
       break;
   }
 }
@@ -483,6 +605,8 @@ void ALEState::resetKeys(Event* event) {
   // also reset paddle fire
   event->set(Event::PaddleZeroFire, 0);
   event->set(Event::PaddleOneFire, 0);
+  event->set(Event::PaddleTwoFire, 0);
+  event->set(Event::PaddleThreeFire, 0);
 
   // Set the difficulty switches accordingly for this time step.
   setDifficultySwitches(event, m_difficulty);
@@ -490,11 +614,12 @@ void ALEState::resetKeys(Event* event) {
 
 bool ALEState::equals(ALEState& rhs) {
   return (rhs.m_serialized_state == this->m_serialized_state &&
-          rhs.m_left_paddle == this->m_left_paddle &&
-          rhs.m_right_paddle == this->m_right_paddle &&
+          std::equal(rhs.m_paddle,rhs.m_paddle+4,this->m_paddle) &&
           rhs.m_frame_number == this->m_frame_number &&
           rhs.m_episode_frame_number == this->m_episode_frame_number &&
-          rhs.m_mode == this->m_mode && rhs.m_difficulty == this->m_difficulty);
+          rhs.m_mode == this->m_mode &&
+          rhs.m_difficulty == this->m_difficulty &&
+          rhs.m_num_players == this->m_num_players);
 }
 
 }  // namespace ale

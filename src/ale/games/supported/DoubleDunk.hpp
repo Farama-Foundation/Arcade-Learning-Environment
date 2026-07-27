@@ -28,12 +28,12 @@
 #ifndef __DOUBLEDUNK_HPP__
 #define __DOUBLEDUNK_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Double Dunk settings */
-class DoubleDunkSettings : public RomSettings {
+class DoubleDunkSettings : public RomSettings2P {
  public:
   DoubleDunkSettings();
 
@@ -45,6 +45,7 @@ class DoubleDunkSettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "double_dunk"; }
@@ -77,6 +78,10 @@ class DoubleDunkSettings : public RomSettings {
   // returns a list of mode that the game can be played in
   // in this game, there are 16 available modes
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  // reads the anti-stalling timeout from the environment settings
+  void modifyEnvironmentSettings(stella::Settings& settings) override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
@@ -87,6 +92,11 @@ class DoubleDunkSettings : public RomSettings {
   bool m_terminal;
   reward_t m_reward;
   reward_t m_score;
+  reward_t m_reward_p2;
+  bool is_two_player;
+  // Play-choice anti-stalling state (two-player mode only)
+  int no_choice_counter;
+  int max_turn_time;
 
   // this game has a menu that allows to define various yes/no options
   // this function goes to the next option in the menu
