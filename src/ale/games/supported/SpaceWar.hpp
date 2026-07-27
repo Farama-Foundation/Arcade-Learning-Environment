@@ -26,11 +26,11 @@
 #ifndef __SPACE_WAR_HPP__
 #define __SPACE_WAR_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
-class SpaceWarSettings : public RomSettings {
+class SpaceWarSettings : public RomSettings2P {
  public:
   SpaceWarSettings();
 
@@ -39,6 +39,7 @@ class SpaceWarSettings : public RomSettings {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const override { return "space_war"; }
 
@@ -56,6 +57,7 @@ class SpaceWarSettings : public RomSettings {
   void loadState(stella::Deserializer& ser) override;
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   void setMode(game_mode_t m, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
@@ -64,6 +66,8 @@ class SpaceWarSettings : public RomSettings {
   bool m_terminal;
   reward_t m_reward;
   int m_score;
+  int m_score_p2;
+  bool is_two_player;
 };
 
 }  // namespace ale

@@ -120,6 +120,9 @@ bool BackgammonSettings::isTerminal() const { return m_terminal; }
 
 reward_t BackgammonSettings::getReward() const { return m_reward; }
 
+// backgammon is zero-sum: player 2's reward is the negative of player 1's
+reward_t BackgammonSettings::getRewardP2() const { return -m_reward; }
+
 bool BackgammonSettings::isMinimal(const Action& a) const {
   switch (a) {
     case PLAYER_A_FIRE:
@@ -161,11 +164,21 @@ ModeVect BackgammonSettings::getAvailableModes() {
   return {0};
 }
 
+ModeVect BackgammonSettings::get2PlayerModes() {
+  // https://atariage.com/manual_html_page.php?SoftwareID=842
+  // We only support mode 4 which is two player, no acey deucey and no
+  // doubling cube. Numbered by the value the ROM stores in RAM 0xDC.
+  return {4};
+}
+
 void BackgammonSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0) {
-    while (readRam(&system, 0xDC) != 3) { environment->pressSelect(1); }
+  if (m == 0 || m == 4) {
+    // Mode 0 is the historic single-player mode (game variant 3); mode 4 is
+    // the two-player variant, numbered by the ROM's variant value.
+    game_mode_t target = (m == 0) ? 3 : m;
+    while (readRam(&system, 0xDC) != target) { environment->pressSelect(1); }
     // reset the environment to apply changes.
     environment->softReset();
   } else {

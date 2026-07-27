@@ -50,17 +50,29 @@ void WizardOfWorSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
 
+  reward_t scoreP2 = getDecimalScore(0x85, 0x87, &system);
+  if (scoreP2 >= 8000)
+    scoreP2 -= 8000; // MGB score does not go beyond 999
+  scoreP2 *= 100;
+  m_reward_p2 = scoreP2 - m_score_p2;
+  m_score_p2 = scoreP2;
+
   // update terminal status
   int newLives = readRam(&system, 0x8D) & 15;
+  int newLivesP2 = readRam(&system, 0x8C) & 15;
   int byte1 = readRam(&system, 0xF4);
 
   bool isWaiting = (readRam(&system, 0xD7) & 0x1) == 0;
+  bool isWaitingP2 = (readRam(&system, 0xD6) & 0x1) == 0;
 
-  m_terminal = newLives == 0 && byte1 == 0xF8;
+  // in two-player mode the game continues until both players are out of lives
+  m_terminal = newLives == 0 && byte1 == 0xF8 &&
+               (newLivesP2 == 0 || !is_two_player);
 
   // Wizard of Wor decreases the life total when we move into the play field; we only
   // change the life total when we actually are waiting
   m_lives = isWaiting ? newLives : m_lives;
+  m_lives_p2 = isWaitingP2 ? newLivesP2 : m_lives_p2;
 }
 
 /* is end of game */
@@ -68,6 +80,8 @@ bool WizardOfWorSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t WizardOfWorSettings::getReward() const { return m_reward; }
+
+reward_t WizardOfWorSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool WizardOfWorSettings::isMinimal(const Action& a) const {
@@ -94,6 +108,9 @@ void WizardOfWorSettings::reset() {
   m_score = 0;
   m_terminal = false;
   m_lives = 3;
+  m_reward_p2 = 0;
+  m_score_p2 = 0;
+  m_lives_p2 = 3;
 }
 
 /* saves the state of the rom settings */
@@ -102,6 +119,11 @@ void WizardOfWorSettings::saveState(Serializer& ser) {
   ser.putInt(m_score);
   ser.putBool(m_terminal);
   ser.putInt(m_lives);
+
+  ser.putInt(m_reward_p2);
+  ser.putInt(m_score_p2);
+  ser.putInt(m_lives_p2);
+  ser.putBool(is_two_player);
 }
 
 // loads the state of the rom settings
@@ -110,10 +132,42 @@ void WizardOfWorSettings::loadState(Deserializer& ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+
+  m_reward_p2 = ser.getInt();
+  m_score_p2 = ser.getInt();
+  m_lives_p2 = ser.getInt();
+  is_two_player = ser.getBool();
 }
 
 DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
   return {0, 1};
+}
+
+// Mode 0 is the historic ALE default (the boot variant, no manipulation).
+// Mode 1 is the two-player variant, numbered by the game number the ROM
+// displays (decimal value of RAM 0x81).
+ModeVect WizardOfWorSettings::getAvailableModes() {
+  return {0};
+}
+
+ModeVect WizardOfWorSettings::get2PlayerModes() {
+  return {1};
+}
+
+void WizardOfWorSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  // Mode 0 keeps the legacy behaviour: play the boot variant untouched.
+  if (m == 0) {
+    is_two_player = false;
+    return;
+  }
+  is_two_player = true;
+  while (getDecimalScore(0x81, &system) != static_cast<int>(m)) {
+    environment->pressSelect(1);
+  }
+  // reset the environment to apply changes.
+  environment->softReset();
 }
 
 }  // namespace ale

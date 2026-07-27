@@ -28,12 +28,12 @@
 #ifndef __FISHINGDERBY_HPP__
 #define __FISHINGDERBY_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Fishing Derby settings */
-class FishingDerbySettings : public RomSettings {
+class FishingDerbySettings : public RomSettings2P {
  public:
   FishingDerbySettings();
 
@@ -45,6 +45,15 @@ class FishingDerbySettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
+
+  // returns a list of mode that the game can be played in
+  ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  // set the mode of the game
+  void setMode(game_mode_t m, stella::System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
   // the rom-name
   const char* rom() const override { return "fishing_derby"; }

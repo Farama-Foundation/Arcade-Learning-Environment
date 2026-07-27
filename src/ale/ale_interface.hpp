@@ -88,6 +88,14 @@ class ALEInterface {
   // game over screen.
   reward_t act(Action action, float paddle_strength = 1.0);
 
+  // Multiplayer version of the act function.
+  // Takes in one action per player and returns one reward per player.
+  std::vector<reward_t> act(std::vector<Action> actions);
+
+  // Multiplayer act with a paddle strength per player (continuous actions).
+  std::vector<reward_t> act(std::vector<Action> actions,
+                            std::vector<float> paddle_strengths);
+
   // Indicates if the game has ended.
   bool game_over(bool with_truncation = true) const;
 
@@ -101,6 +109,9 @@ class ALEInterface {
   // This should be called only after the rom is loaded.
   ModeVect getAvailableModes() const;
 
+  // Returns the vector of modes available for a given number of players.
+  ModeVect getAvailableModes(int num_players) const;
+
   // Sets the mode of the game.
   // The mode must be an available mode (otherwise it throws an exception).
   // This should be called only after the rom is loaded.
@@ -110,6 +121,10 @@ class ALEInterface {
   // This may not be the exact game mode that the ROM is currently running as
   // game mode changes only take effect when the environment is reset.
   game_mode_t getMode() const { return environment->getMode(); }
+
+  // Number of players active in the current game mode
+  // also the, number of actions expected by act
+  int numPlayersActive();
 
   //Returns the vector of difficulties available for the current game.
   //This should be called only after the rom is loaded. Notice
@@ -143,8 +158,14 @@ class ALEInterface {
   // Returns the frame number since the loading of the ROM
   int getFrameNumber() const;
 
-  // The remaining number of lives.
+  // The remaining number of lives for player 1.
   int lives();
+
+  // The remaining lives for each active player. Note the conventions differ
+  // (matching MA-ALE): player 1 reports the game's real life counter (0 for
+  // games without lives), while players 2-4 default to 1 while the game is
+  // running and 0 once it has terminated, unless the game overrides them.
+  std::vector<int> allLives();
 
   // Returns the frame number since the start of the current episode
   int getEpisodeFrameNumber() const;
