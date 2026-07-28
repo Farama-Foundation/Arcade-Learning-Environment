@@ -31,14 +31,20 @@ Breakout has the action space of `Discrete(4)` with the table below listing the 
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
-|   Value | Meaning   |
-|---------|-----------|
-|       0 | NOOP      |
-|       1 | FIRE      |
-|       2 | RIGHT     |
-|       3 | LEFT      |
+|   Index | Action   |
+|---------|----------|
+|       0 | NOOP     |
+|       1 | FIRE     |
+|       2 | RIGHT    |
+|       3 | LEFT     |
 
 See [environment specification](../env-spec) to see more information on the action meaning.
+
+### Starting the game
+
+Breakout does not serve the ball until you press `FIRE`. Holding `NOOP` leaves the game idle, giving no reward and never ending. The ball must be served again with `FIRE` after each life lost, which is why many reference agents wrap Breakout in a "fire reset" wrapper.
+
+See the [general Atari page](https://ale.farama.org/environments/#games-that-require-a-button-press-to-start) for the full list of games that require a starting action.
 
 ## Observations
 

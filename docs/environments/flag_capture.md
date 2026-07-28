@@ -30,7 +30,7 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 FlagCapture has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
 As FlagCapture uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
-|   Value | Meaning       |
+|   Index | Action        |
 |---------|---------------|
 |       0 | NOOP          |
 |       1 | FIRE          |
