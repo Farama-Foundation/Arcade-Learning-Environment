@@ -14,6 +14,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
 jobs:
   thread-sanitizer:
     name: "Thread Sanitizer"
