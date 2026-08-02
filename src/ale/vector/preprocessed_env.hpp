@@ -82,7 +82,9 @@ public:
     const ActionVect& action_set() const { return action_set_; }
 
     /// Get stacked observation size in bytes
-    std::size_t stacked_obs_size() const { return obs_size_ * stack_num_; }
+    std::size_t stacked_obs_size() const {
+        return static_cast<std::size_t>(obs_size_) * static_cast<std::size_t>(stack_num_);
+    }
 
     /// Get channels per frame (1 for grayscale, 3 for RGB)
     int channels_per_frame() const { return channels_per_frame_; }
