@@ -148,7 +148,9 @@ public:
         const int height = ale.getScreen().height();
 
         // Convert RGB to RGBA format
-        std::vector<unsigned char> rgba_buffer(width * height * 4);
+        std::vector<unsigned char> rgba_buffer(
+            static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4u
+        );
         for (int i = 0; i < width * height; i++) {
             rgba_buffer[i * 4] = screen_buffer[i * 3];       // R
             rgba_buffer[i * 4 + 1] = screen_buffer[i * 3 + 1]; // G
