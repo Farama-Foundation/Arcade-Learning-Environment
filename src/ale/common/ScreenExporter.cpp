@@ -132,7 +132,8 @@ static void writePNGData(std::ofstream& out, const ALEScreen& screen,
   std::vector<uint8_t> compmem(compmemsize, 0);
 
   if ((compress(&compmem[0], &compmemsize, &buffer[0],
-                height * (width * 3 + 1)) != Z_OK)) {
+                static_cast<uLongf>(height) *
+                    (static_cast<uLongf>(width) * 3 + 1)) != Z_OK)) {
     // @todo -- throw a proper exception
     Logger::Error << "Error: Couldn't compress PNG\n";
     return;
