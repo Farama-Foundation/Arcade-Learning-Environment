@@ -118,6 +118,8 @@ jobs:
   build-wasm:
     name: Build WASM
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v7
