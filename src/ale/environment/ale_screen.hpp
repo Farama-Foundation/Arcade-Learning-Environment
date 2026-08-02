@@ -66,7 +66,8 @@ class ALEScreen {
 inline ALEScreen::ALEScreen(int h, int w)
     : m_rows(h), m_columns(w),
       // Create a pixel array of the requisite size
-      m_pixels(m_rows * m_columns) {}
+      m_pixels(static_cast<std::size_t>(m_rows) *
+               static_cast<std::size_t>(m_columns)) {}
 
 inline ALEScreen::ALEScreen(const ALEScreen& rhs)
     : m_rows(rhs.m_rows), m_columns(rhs.m_columns), m_pixels(rhs.m_pixels) {}
