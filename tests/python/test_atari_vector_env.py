@@ -440,6 +440,94 @@ class TestVectorEnv:
         sync_envs.close()
         async_envs.close()
 
+    @pytest.mark.parametrize(
+        "mask",
+        [
+            [True, False, False, False],
+            [False, True, False, True],
+            [False, False, False, False],
+            [True, True, True, True],
+        ],
+        ids=["single", "multiple", "none", "all"],
+    )
+    def test_reset_mask_options(self, env_id, mask, num_envs=4, reset_seed=123):
+        """Sub-environments selected by `reset_mask` are reset, the rest are left untouched.
+
+        Regression test for a deadlock when fewer than `batch_size` envs were reset
+        (Farama-Foundation/Arcade-Learning-Environment#673 and #676).
+        """
+        mask = np.array(mask)
+        envs = gym.make_vec(env_id, num_envs, **self.disable_vector_args)
+
+        initial_obs, _ = envs.reset(seed=reset_seed)
+        for _ in range(20):
+            obs, _, _, _, info = envs.step(np.ones(num_envs, dtype=np.int32))
+
+        pre_obs = obs.copy()
+        pre_frame_number = info["episode_frame_number"].copy()
+
+        # reset with mask
+        reset_mask_obs, info = envs.reset(seed=reset_seed, options={"reset_mask": mask})
+
+        assert reset_mask_obs.shape == (num_envs, 4, 84, 84)
+        assert np.all(info["env_id"] == np.arange(num_envs))
+
+        # Reset envs return the same observation as a full reset with the same seed
+        assert data_equivalence(reset_mask_obs[mask], initial_obs[mask])
+        # Unmasked envs are untouched, both observation and info
+        assert data_equivalence(reset_mask_obs[~mask], pre_obs[~mask])
+        assert data_equivalence(
+            info["episode_frame_number"][mask],
+            np.zeros((num_envs,), dtype=np.int32)[mask],
+        )
+        assert data_equivalence(
+            info["episode_frame_number"][~mask], pre_frame_number[~mask]
+        )
+
+        # Actions still route to the environment they were reported for
+        _, _, _, _, info = envs.step(np.ones(num_envs, dtype=np.int32))
+        assert np.all(info["env_id"] == np.arange(num_envs))
+        assert data_equivalence(
+            info["episode_frame_number"][~mask], pre_frame_number[~mask] + 4
+        )
+        assert data_equivalence(
+            info["episode_frame_number"][mask],
+            np.full((num_envs,), 4, dtype=np.int32)[mask],
+        )
+
+        envs.close()
+
+    def test_invalid_reset_masks(self, env_id, num_envs=4):
+        """Invalid `reset_mask` usage raises rather than hanging or silently misbehaving."""
+        partial_mask = np.array([True] + [False] * (num_envs - 1))
+
+        # Partial resets need a full batch to fall back on for the untouched envs
+        async_envs = gym.make_vec(env_id, num_envs, batch_size=num_envs // 2)
+        async_envs.reset()
+        with pytest.raises(ValueError, match="batch_size < num_envs"):
+            async_envs.reset(options={"reset_mask": partial_mask})
+        async_envs.close()
+
+        # Envs that have never been reset have no observation to report
+        envs = gym.make_vec(env_id, num_envs, **self.disable_vector_args)
+        with pytest.raises(RuntimeError, match="first reset\\(\\) must reset every"):
+            envs.reset(options={"reset_mask": partial_mask})
+
+        envs.reset()
+        with pytest.raises(TypeError, match="must be a boolean numpy array"):
+            envs.reset(options={"reset_mask": np.array([1, 0, 0, 0])})
+        with pytest.raises(ValueError, match="must have shape"):
+            envs.reset(options={"reset_mask": np.array([True, False])})
+        with pytest.raises(ValueError, match="one entry per sub-environment"):
+            envs.reset(seed=np.array([1, 2]), options={"reset_mask": partial_mask})
+
+        with pytest.raises(ValueError, match="duplicate env_id"):
+            envs.ale.reset([0, 0], [-1, -1])
+        with pytest.raises(IndexError, match="out of range"):
+            envs.ale.reset([num_envs], [-1])
+
+        envs.close()
+
     def test_episodic_life_equivalence(self, env_id, num_envs=8):
         gym_envs = gym.vector.SyncVectorEnv(
             [

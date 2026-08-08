@@ -154,8 +154,13 @@ class AtariVectorEnv(VectorEnv):
         """Resets the sub-environments.
 
         Args:
-            seed: Current unimplemented
-            options: Supports `reset_mask` that indicates what sub-environments should be reset
+            seed: The seed for the sub-environments being reset. An integer seeds them with
+                consecutive values starting at `seed`; an array provides one seed per
+                sub-environment being reset.
+            options: Supports `reset_mask`, a boolean array of shape `(num_envs,)` selecting
+                which sub-environments to reset. Sub-environments that are masked out are
+                left untouched and report their current observation and info. Partial resets
+                require `batch_size == num_envs` and a preceding full reset.
 
         Returns:
             Tuple of observations for the sub-environments and info on them.
@@ -164,7 +169,15 @@ class AtariVectorEnv(VectorEnv):
             reset_indices = np.arange(self.num_envs)
         else:
             reset_mask = options["reset_mask"]
-            assert isinstance(reset_mask, np.ndarray) and reset_mask.dtype == np.bool_
+            if not isinstance(reset_mask, np.ndarray) or reset_mask.dtype != np.bool_:
+                raise TypeError(
+                    f"`reset_mask` must be a boolean numpy array, got {type(reset_mask)} "
+                    f"with dtype {getattr(reset_mask, 'dtype', None)}"
+                )
+            if reset_mask.shape != (self.num_envs,):
+                raise ValueError(
+                    f"`reset_mask` must have shape {(self.num_envs,)}, got {reset_mask.shape}"
+                )
             (reset_indices,) = np.where(reset_mask)
 
         if seed is None:
@@ -172,6 +185,11 @@ class AtariVectorEnv(VectorEnv):
         elif isinstance(seed, int):
             reset_seeds = np.arange(seed, seed + len(reset_indices))
         elif isinstance(seed, np.ndarray):
+            if seed.shape != (len(reset_indices),):
+                raise ValueError(
+                    f"`seed` must have one entry per sub-environment being reset, expected "
+                    f"shape {(len(reset_indices),)}, got {seed.shape}"
+                )
             reset_seeds = seed
         else:
             raise TypeError("Unsupported seed type")
@@ -312,8 +330,8 @@ class AtariVectorEnv(VectorEnv):
                 )
             else:
                 reset_seeds = jnp.asarray(seed, dtype=jnp.int32)
-
-            chex.assert_shape(reset_seeds, (self.num_envs,))
+            # One seed per sub-environment being reset
+            chex.assert_shape(reset_seeds, (len(reset_indices),))
 
             new_handle, obs, env_ids, lives, frame_numbers, episode_frame_numbers = (
                 xla_call(handle, reset_indices, reset_seeds)
