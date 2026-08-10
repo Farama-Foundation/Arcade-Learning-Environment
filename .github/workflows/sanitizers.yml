@@ -1,7 +1,15 @@
 # Sanitizers and memory checkers for detecting threading issues and memory leaks.
-# TSan and ASan run on every PR and push to main.
-# Valgrind Memcheck runs on releases, manual dispatch, or when a PR has the
-# "run-valgrind" label. Valgrind Helgrind runs on releases only.
+# TSan and ASan run on every PR and push to main. ASan covers memory-safety and
+# UB in ALE's own C++; leak detection is left to Valgrind Memcheck, which gets
+# usable stacks through the (non-instrumented) CPython interpreter and can tell
+# a definite leak apart from interpreter-lifetime allocations.
+# Valgrind Memcheck runs weekly, on releases, on manual dispatch, or when a PR
+# has the "run-valgrind" label. Valgrind Helgrind runs on releases only.
+#
+# The weekly schedule is the only trigger gated on the repository name: it is
+# meant to watch upstream, and a fork that enables Actions should not inherit a
+# recurring job nobody there asked for. PR/push runs are deliberately ungated so
+# they still work on forks.
 
 name: Sanitizers
 
@@ -13,6 +21,11 @@ on:
       - main
   release:
     types: [published]
+  schedule:
+    # Weekly, Mondays at 03:17 UTC — the leak gate (Valgrind Memcheck).
+    # Off the hour on purpose: runs scheduled at :00 queue behind the spike of
+    # everyone else's hourly crons and can be delayed by a long way.
+    - cron: '17 3 * * 1'
 
 permissions:
   contents: read
@@ -21,6 +34,8 @@ jobs:
   thread-sanitizer:
     name: "Thread Sanitizer"
     runs-on: ubuntu-latest
+    # The weekly schedule exists for the leak gate only.
+    if: github.event_name != 'schedule'
 
     env:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
@@ -48,6 +63,8 @@ jobs:
   address-sanitizer:
     name: "Address Sanitizer + UBSan"
     runs-on: ubuntu-latest
+    # The weekly schedule exists for the leak gate only.
+    if: github.event_name != 'schedule'
 
     env:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
@@ -76,6 +93,8 @@ jobs:
     name: "Valgrind Memcheck"
     runs-on: ubuntu-latest
     if: >
+      (github.event_name == 'schedule' &&
+       github.repository == 'Farama-Foundation/Arcade-Learning-Environment') ||
       github.event_name == 'release' ||
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.pull_request.labels.*.name, 'run-valgrind')
@@ -98,9 +117,11 @@ jobs:
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
+    # This is the leak gate — a definite leak fails the job (see
+    # --errors-for-leak-kinds=definite in scripts/run_sanitizers.sh).
     - name: Run Valgrind Memcheck
+      timeout-minutes: 360
       run: ./scripts/run_sanitizers.sh valgrind-memcheck
-      continue-on-error: true
 
   valgrind-helgrind:
     name: "Valgrind Helgrind"
