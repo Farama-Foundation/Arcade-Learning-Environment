@@ -32,6 +32,15 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
+      # For Linux, the CUDA Toolkit is installed in the dockerfile
+    - name: Install CUDA Toolkit (Windows)
+      if: runner.os == 'Windows'
+      uses: Jimver/cuda-toolkit@v0.2.35
+      with:
+        cuda: '12.6.2'
+        method: 'network'
+        sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
+
     - name: Set up Docker Buildx
       if: runner.os == 'linux'
       id: buildx
@@ -70,6 +79,7 @@ jobs:
     needs: build-wheels
     permissions:
       id-token: write
+      contents: write
 
     steps:
       # create the `ale_py-*.*.*.tar.gz` for source building
@@ -78,6 +88,10 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install build
+
+      - name: Download and unpack ROMs
+        run: ./scripts/download_unpack_roms.sh
+
       - run: python -m build --sdist
 
       - uses: actions/download-artifact@v8

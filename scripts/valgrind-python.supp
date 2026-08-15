@@ -76,15 +76,6 @@
    obj:*/numpy/*.so
 }
 
-# pybind11/nanobind related
-{
-   pybind11_internals
-   Memcheck:Leak
-   match-leak-kinds: possible,reachable
-   ...
-   fun:*pybind11*
-}
-
 # SDL library (if enabled)
 {
    sdl_init
