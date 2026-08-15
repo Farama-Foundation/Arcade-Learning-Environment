@@ -24,8 +24,8 @@ echo "=========================================="
 echo "Running sanitizer: $SANITIZER (scope: $TEST_SCOPE)"
 echo "=========================================="
 
-# Ensure ROMs are downloaded
-if [ ! -d "src/ale/python/roms" ]; then
+# Ensure ROMs are downloaded.
+if [ ! -f "src/ale/python/roms/breakout.bin" ]; then
     echo "Downloading ROMs..."
     ./scripts/download_unpack_roms.sh
 fi

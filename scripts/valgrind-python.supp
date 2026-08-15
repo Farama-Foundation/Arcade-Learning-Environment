@@ -76,15 +76,6 @@
    obj:*/numpy/*.so
 }
 
-# pybind11/nanobind related
-{
-   pybind11_internals
-   Memcheck:Leak
-   match-leak-kinds: possible,reachable
-   ...
-   fun:*pybind11*
-}
-
 # SDL library (if enabled)
 {
    sdl_init
@@ -140,4 +131,39 @@
    Helgrind:Race
    ...
    fun:*moodycamel*LightweightSemaphore*
+}
+
+# --- Definite leaks in third-party init paths -------------------------------
+# The entries above only match possible/reachable kinds. Memcheck is run with
+# --errors-for-leak-kinds=definite, so these two are the only entries in this
+# file that can affect pass/fail. Together they account for all 23 definite
+# records seen on the quick test set (22 readline + 1 loader), and neither can
+# mask a leak in src/ale: the suppressed blocks are allocated inside readline
+# and inside glibc's loader, never by ALE code.
+
+# CPython's readline extension (libreadline/libedit) allocates its completer,
+# history state and terminal name strings at module init and never frees them;
+# the module lives for the interpreter's lifetime. 22 definite records.
+{
+   python_readline_module_init
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible
+   ...
+   fun:PyInit_readline
+   ...
+}
+
+# glibc's dlopen keeps the dependency-map scratch allocation for the lifetime
+# of the loaded object; reported as definite once per interpreter. Observed
+# under CPython's extension-module import, but the trailing '...' also matches
+# ALE's own dlopen (common/DynamicLoad.cpp, used when SDL_DYNLOAD=ON). That is
+# still safe to suppress: the block is malloc'd inside _dl_map_object_deps, so
+# it belongs to the loader regardless of which caller triggered the dlopen.
+{
+   glibc_dlopen_map_object_deps
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect
+   ...
+   fun:_dl_map_object_deps
+   ...
 }
