@@ -69,7 +69,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Linux)
       if: runner.os == 'Linux'
-      uses: Jimver/cuda-toolkit@v0.2.35
+      uses: Jimver/cuda-toolkit@v0.2.36
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -77,7 +77,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Windows)
       if: runner.os == 'Windows'
-      uses: Jimver/cuda-toolkit@v0.2.35
+      uses: Jimver/cuda-toolkit@v0.2.36
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -118,7 +118,7 @@ jobs:
         # For Linux, the CUDA Toolkit is installed the dockerfile
       - name: Install CUDA Toolkit (Windows)
         if: runner.os == 'Windows'
-        uses: Jimver/cuda-toolkit@v0.2.35
+        uses: Jimver/cuda-toolkit@v0.2.36
         with:
           cuda: '12.6.2'
           method: 'network'
