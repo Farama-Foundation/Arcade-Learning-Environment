@@ -2,7 +2,9 @@
 # ASan covers memory-safety and UB in ALE's own C++; leak detection is left to
 # Valgrind Memcheck, which gets usable stacks through the (non-instrumented)
 # CPython interpreter and can tell a definite leak apart from interpreter-lifetime
-# allocations. Valgrind Helgrind runs on releases only.
+# allocations. Valgrind Helgrind runs on releases and manual dispatch, and is
+# advisory (continue-on-error) — it currently reports errors from ~85 contexts,
+# largely uninvestigated, so it is not yet a gate.
 
 name: Sanitizers
 
@@ -104,7 +106,7 @@ jobs:
   valgrind-helgrind:
     name: "Valgrind Helgrind"
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
 
     env:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed

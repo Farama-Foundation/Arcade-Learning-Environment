@@ -162,10 +162,7 @@ case $SANITIZER in
         if [ "$TEST_SCOPE" = "full" ]; then
             MEMCHECK_TEST_ARGS=(tests/python/test_atari_vector_env.py -v)
         else
-            # Same focused set as TSan/ASan. Do not use a -k filter naming the
-            # parameter (e.g. "num_envs-1"): pytest ids embed the value only
-            # ("[True-84-84-4-1-ALE/Breakout-v5]"), so such a filter silently
-            # deselects everything and the job passes without running a test.
+            # Same focused set as TSan/ASan.
             MEMCHECK_TEST_ARGS=(tests/python/test_atari_vector_env.py -v -s -k "$QUICK_KEYS")
         fi
 
