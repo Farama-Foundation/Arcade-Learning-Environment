@@ -135,15 +135,13 @@
 
 # --- Definite leaks in third-party init paths -------------------------------
 # The entries above only match possible/reachable kinds. Memcheck is run with
-# --errors-for-leak-kinds=definite, so these two are the only entries in this
-# file that can affect pass/fail. Together they account for all 23 definite
-# records seen on the quick test set (22 readline + 1 loader), and neither can
-# mask a leak in src/ale: the suppressed blocks are allocated inside readline
-# and inside glibc's loader, never by ALE code.
+# --errors-for-leak-kinds=definite, so these two cover the definite leaks that
+# are provably not ALE's: neither call path can contain ALE code, so they
+# cannot mask a leak in src/ale.
 
 # CPython's readline extension (libreadline/libedit) allocates its completer,
 # history state and terminal name strings at module init and never frees them;
-# the module lives for the interpreter's lifetime. 22 definite records.
+# the module lives for the interpreter's lifetime. 23 definite records.
 {
    python_readline_module_init
    Memcheck:Leak
@@ -154,11 +152,7 @@
 }
 
 # glibc's dlopen keeps the dependency-map scratch allocation for the lifetime
-# of the loaded object; reported as definite once per interpreter. Observed
-# under CPython's extension-module import, but the trailing '...' also matches
-# ALE's own dlopen (common/DynamicLoad.cpp, used when SDL_DYNLOAD=ON). That is
-# still safe to suppress: the block is malloc'd inside _dl_map_object_deps, so
-# it belongs to the loader regardless of which caller triggered the dlopen.
+# of the loaded object; reported as definite once per interpreter.
 {
    glibc_dlopen_map_object_deps
    Memcheck:Leak

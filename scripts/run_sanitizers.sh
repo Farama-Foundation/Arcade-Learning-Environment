@@ -110,15 +110,16 @@ case $SANITIZER in
 
         echo ""
         echo "Running tests with Address Sanitizer..."
-        export ASAN_OPTIONS="detect_leaks=1:check_initialization_order=1:halt_on_error=1"
+        # detect_leaks=0 on purpose. Only ALE's .so is instrumented, and CPython
+        # is built without frame pointers, so ASan's malloc-time unwinder
+        # (fast_unwind_on_malloc=1) truncates leak stacks after one frame inside
+        # the interpreter. That leaves no context to attribute a leak to ALE
+        # rather than to Python/numpy, and LSan has no "still reachable" category
+        # to fold away interpreter-lifetime allocations. Leak detection is the
+        # valgrind-memcheck job's responsibility; ASan here covers memory-safety
+        # (UAF, heap/stack/global overflow) and, with UBSan, undefined behaviour.
+        export ASAN_OPTIONS="detect_leaks=0:check_initialization_order=1:halt_on_error=1"
         export UBSAN_OPTIONS="print_stacktrace=1:halt_on_error=1"
-
-        # Suppress leak reports from Python/pybind11 module-init machinery
-        # (type objects, interpreter-lifetime allocations). See scripts/lsan-suppressions.txt.
-        if [ -f "$SCRIPT_DIR/lsan-suppressions.txt" ]; then
-            export LSAN_OPTIONS="suppressions=$SCRIPT_DIR/lsan-suppressions.txt:print_suppressions=0"
-            echo "Using LSan suppressions: $SCRIPT_DIR/lsan-suppressions.txt"
-        fi
 
         # Python isn't built with ASan, so preload the runtime to satisfy any
         # symbols not auto-loaded via DT_NEEDED on the instrumented .so.
@@ -161,7 +162,8 @@ case $SANITIZER in
         if [ "$TEST_SCOPE" = "full" ]; then
             MEMCHECK_TEST_ARGS=(tests/python/test_atari_vector_env.py -v)
         else
-            MEMCHECK_TEST_ARGS=(tests/python/test_atari_vector_env.py::TestVectorEnv::test_reset_step_shapes -v -s -k "num_envs-1")
+            # Same focused set as TSan/ASan.
+            MEMCHECK_TEST_ARGS=(tests/python/test_atari_vector_env.py -v -s -k "$QUICK_KEYS")
         fi
 
         valgrind \

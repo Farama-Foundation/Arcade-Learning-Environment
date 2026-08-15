@@ -1,7 +1,10 @@
 # Sanitizers and memory checkers for detecting threading issues and memory leaks.
-# TSan and ASan run on every PR and push to main.
-# Valgrind Memcheck runs on releases, manual dispatch, or when a PR has the
-# "run-valgrind" label. Valgrind Helgrind runs on releases only.
+# ASan covers memory-safety and UB in ALE's own C++; leak detection is left to
+# Valgrind Memcheck, which gets usable stacks through the (non-instrumented)
+# CPython interpreter and can tell a definite leak apart from interpreter-lifetime
+# allocations. Valgrind Helgrind runs on releases and manual dispatch, and is
+# advisory (continue-on-error) — it currently reports errors from ~85 contexts,
+# largely uninvestigated, so it is not yet a gate.
 
 name: Sanitizers
 
@@ -75,10 +78,6 @@ jobs:
   valgrind-memcheck:
     name: "Valgrind Memcheck"
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'release' ||
-      github.event_name == 'workflow_dispatch' ||
-      contains(github.event.pull_request.labels.*.name, 'run-valgrind')
 
     env:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
@@ -98,14 +97,16 @@ jobs:
     - name: Download and unpack ROMs
       run: ./scripts/download_unpack_roms.sh
 
+    # This is the leak gate — a definite leak fails the job (see
+    # --errors-for-leak-kinds=definite in scripts/run_sanitizers.sh).
     - name: Run Valgrind Memcheck
+      timeout-minutes: 360
       run: ./scripts/run_sanitizers.sh valgrind-memcheck
-      continue-on-error: true
 
   valgrind-helgrind:
     name: "Valgrind Helgrind"
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
 
     env:
       VCPKG_DEFAULT_TRIPLET: x64-linux-mixed
