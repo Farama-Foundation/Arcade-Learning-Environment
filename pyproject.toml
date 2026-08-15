@@ -83,6 +83,10 @@ cmake.args = [
     "-DBUILD_VECTOR_XLA_LIB=ON"
 ]
 cmake.build-type = "Release"
+# The ROMs are gitignored (`*.bin`) so they are skipped by the sdist walk by
+# default; force them in so a source build has the ROMs the wheels bundle.
+# They must be downloaded (scripts/download_unpack_roms.sh) before `build --sdist`.
+sdist.include = ["src/ale/python/roms/*.bin"]
 metadata.version.provider = "scikit_build_core.metadata.regex"
 metadata.version.input = "version.txt"
 metadata.version.regex = "(?P<value>.+)"

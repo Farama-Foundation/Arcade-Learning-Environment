@@ -273,7 +273,7 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install "ale_py-0.12.0-${{ matrix.wheel-name }}.whl[test]"
+        run: python -m pip install "ale_py-0.12.1-${{ matrix.wheel-name }}.whl[test]"
 
       - name: Test
         run: python -m pytest
@@ -316,7 +316,7 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install "ale_py-0.12.0-${{ matrix.wheel-name }}.whl[test]"
+        run: python -m pip install "ale_py-0.12.1-${{ matrix.wheel-name }}.whl[test]"
 
       - name: Install NumPy 1.X
         run: python -m pip install "numpy<2.0"
