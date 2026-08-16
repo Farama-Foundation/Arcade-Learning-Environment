@@ -497,6 +497,12 @@ class TestVectorEnv:
 
         envs.close()
 
+    @pytest.mark.parametrize("frameskip", [0, -1, 4.0])
+    def test_invalid_frameskip(self, env_id, frameskip):
+        """Invalid frameskip values are rejected at construction, matching AtariEnv."""
+        with pytest.raises(gym.error.Error, match="frameskip"):
+            gym.make_vec(env_id, num_envs=1, frameskip=frameskip)
+
     def test_invalid_reset_masks(self, env_id, num_envs=4):
         """Invalid `reset_mask` usage raises rather than hanging or silently misbehaving."""
         partial_mask = np.array([True] + [False] * (num_envs - 1))
