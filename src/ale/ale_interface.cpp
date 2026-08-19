@@ -246,41 +246,100 @@ bool ALEInterface::game_over(bool with_truncation) const {
 // Indicateds if the episode has been truncated.
 bool ALEInterface::game_truncated() const { return environment->isGameTruncated(); }
 
-// The remaining number of lives.
-int ALEInterface::lives() {
+// The remaining number of lives. Can only be called in one player modes
+int ALEInterface::lives(){
   if (romSettings == nullptr) {
     throw std::runtime_error("ROM not set");
-  } else {
-    return romSettings->lives();
   }
+  else {
+    if (numPlayersActive() == 1) {
+      return romSettings->lives();
+    }
+    else {
+      throw std::runtime_error("called `lives` in a multiplayer mode. Call allLives() instead.");
+    }
+  }
+}
+
+// The remaining number of lives, one entry per active player.
+std::vector<int> ALEInterface::allLives() {
+  if (romSettings == nullptr) {
+    throw std::runtime_error("ROM not set");
+  }
+  int num_players = this->numPlayersActive();
+  std::vector<int> lives;
+  lives.reserve(num_players);
+  for (int p = 0; p < num_players; p++) {
+    lives.push_back(romSettings->lives(p));
+  }
+  return lives;
 }
 
 // Applies an action to the game and returns the reward. It is the
 // user's responsibility to check if the game has ended and reset
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
-// Intentionally set player B actions to 0 since we are in single player mode
+// Intentionally set player B actions to NOOP since we are in single player mode
 reward_t ALEInterface::act(Action action, float paddle_strength) {
   return environment->act(action, PLAYER_B_NOOP, paddle_strength, 0.0);
 }
 
-// Returns the vector of modes available for the current game.
+// Takes a vector of actions, one for each player in the game mode
+// Does not allow user input from the screen
+std::vector<reward_t> ALEInterface::act(std::vector<Action> actions) {
+  return act(actions, std::vector<float>(actions.size(), 1.0f));
+}
+
+// Multiplayer act with per-player paddle strengths (continuous actions).
+std::vector<reward_t> ALEInterface::act(std::vector<Action> actions,
+                                        std::vector<float> paddle_strengths) {
+  if (romSettings == nullptr) {
+    throw std::runtime_error("ROM not set");
+  }
+  if (static_cast<int>(actions.size()) != numPlayersActive()) {
+    throw std::runtime_error("number of players active in the mode is not equal to the action size given to act");
+  }
+  if (paddle_strengths.size() != actions.size()) {
+    throw std::runtime_error("paddle_strengths must have one entry per action");
+  }
+
+  return environment->act(actions, paddle_strengths);
+}
+
+// Returns the vector of modes available for the current game (single player).
 // This should be called only after the rom is loaded.
 ModeVect ALEInterface::getAvailableModes() const {
   return romSettings->getAvailableModes();
+}
+
+// Returns the vector of modes available for a given number of players.
+// This should be called only after the rom is loaded.
+ModeVect ALEInterface::getAvailableModes(int num_players) const {
+  if (num_players < 1 || num_players > 4) {
+    throw std::runtime_error(std::to_string(num_players) + " is not a valid number of players, only 1-4 players allowed.");
+  }
+  return romSettings->getModes(num_players);
 }
 
 // Sets the mode of the game.
 // The mode must be an available mode.
 // This should be called only after the rom is loaded.
 void ALEInterface::setMode(game_mode_t m) {
-  //We first need to make sure m is an available mode
-  ModeVect available = romSettings->getAvailableModes();
-  if (find(available.begin(), available.end(), m) != available.end()) {
-    environment->setMode(m);
-  } else {
-    throw std::runtime_error("Invalid game mode requested");
+  // We first need to make sure m is an available mode for any player count
+  for (int num_players = 1; num_players <= 4; num_players++) {
+    ModeVect available = romSettings->getModes(num_players);
+    if (std::find(available.begin(), available.end(), m) != available.end()) {
+      environment->setMode(m);
+      return;
+    }
   }
+  throw std::runtime_error("Invalid game mode requested");
+}
+
+// Number of players active in the current game mode
+// also the, number of actions expected by act
+int ALEInterface::numPlayersActive() {
+  return environment->getState().getNumActivePlayers();
 }
 
 //Returns the vector of difficulties available for the current game.

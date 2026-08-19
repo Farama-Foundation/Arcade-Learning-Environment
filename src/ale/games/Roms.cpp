@@ -39,6 +39,7 @@
 #include "ale/games/supported/Casino.hpp"
 #include "ale/games/supported/Centipede.hpp"
 #include "ale/games/supported/ChopperCommand.hpp"
+#include "ale/games/supported/Combat.hpp"
 #include "ale/games/supported/CrazyClimber.hpp"
 #include "ale/games/supported/Crossbow.hpp"
 #include "ale/games/supported/DarkChambers.hpp"
@@ -66,6 +67,7 @@
 #include "ale/games/supported/IceHockey.hpp"
 #include "ale/games/supported/JamesBond.hpp"
 #include "ale/games/supported/JourneyEscape.hpp"
+#include "ale/games/supported/Joust.hpp"
 #include "ale/games/supported/Kaboom.hpp"
 #include "ale/games/supported/Kangaroo.hpp"
 #include "ale/games/supported/KeystoneKapers.hpp"
@@ -77,6 +79,7 @@
 #include "ale/games/supported/LaserGates.hpp"
 #include "ale/games/supported/LostLuggage.hpp"
 #include "ale/games/supported/MarioBros.hpp"
+#include "ale/games/supported/MazeCraze.hpp"
 #include "ale/games/supported/MiniatureGolf.hpp"
 #include "ale/games/supported/MontezumaRevenge.hpp"
 #include "ale/games/supported/MrDo.hpp"
@@ -116,6 +119,7 @@
 #include "ale/games/supported/VideoChess.hpp"
 #include "ale/games/supported/VideoCube.hpp"
 #include "ale/games/supported/VideoPinball.hpp"
+#include "ale/games/supported/Warlords.hpp"
 #include "ale/games/supported/WizardOfWor.hpp"
 #include "ale/games/supported/WordZapper.hpp"
 #include "ale/games/supported/YarsRevenge.hpp"
@@ -150,6 +154,7 @@ static const RomSettings* roms[] = {
     new CasinoSettings(),
     new CentipedeSettings(),
     new ChopperCommandSettings(),
+    new CombatSettings(),
     new CrazyClimberSettings(),
     new CrossbowSettings(),
     new DarkChambersSettings(),
@@ -177,6 +182,7 @@ static const RomSettings* roms[] = {
     new IceHockeySettings(),
     new JamesBondSettings(),
     new JourneyEscapeSettings(),
+    new JoustSettings(),
     new KaboomSettings(),
     new KangarooSettings(),
     new KoolaidSettings(),
@@ -188,6 +194,7 @@ static const RomSettings* roms[] = {
     new LaserGatesSettings(),
     new LostLuggageSettings(),
     new MarioBrosSettings(),
+    new MazeCrazeSettings(),
     new MiniatureGolfSettings(),
     new MontezumaRevengeSettings(),
     new MrDoSettings(),
@@ -227,6 +234,7 @@ static const RomSettings* roms[] = {
     new VideoChessSettings(),
     new VideoCubeSettings(),
     new VideoPinballSettings(),
+    new WarlordsSettings(),
     new WizardOfWorSettings(),
     new WordZapperSettings(),
     new YarsRevengeSettings(),

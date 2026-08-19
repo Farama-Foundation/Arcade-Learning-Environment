@@ -26,11 +26,11 @@
 #ifndef __ENTOMBED_HPP__
 #define __ENTOMBED_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
-class EntombedSettings : public RomSettings {
+class EntombedSettings : public RomSettings2P {
  public:
   EntombedSettings();
 
@@ -39,6 +39,23 @@ class EntombedSettings : public RomSettings {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
+
+  // Keep the historic single-player convention (1 while running) in
+  // single-player mode; report the actual life counters in two-player
+  // modes.
+  int lives() override {
+    return is_two_player ? lives_p1 : RomSettings::lives();
+  }
+  int livesP2() override { return lives_p2; }
+
+  // returns a list of mode that the game can be played in
+  ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  // set the mode of the game
+  void setMode(game_mode_t m, stella::System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
   const char* rom() const override { return "entombed"; }
 
@@ -63,6 +80,11 @@ class EntombedSettings : public RomSettings {
   bool m_terminal;
   reward_t m_reward;
   int m_score;
+  int lives_p1;
+  int lives_p2;
+  int cur_depth;
+  bool is_two_player;
+  bool is_cooperative;
 };
 
 }  // namespace ale

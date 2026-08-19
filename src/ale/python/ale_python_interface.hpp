@@ -61,6 +61,30 @@ class ALEPythonInterface : public ALEInterface {
             return ALEInterface::act(static_cast<Action>(action), paddle_strength);
         }
 
+        // Multi-player act: takes a list of actions (one per player) and
+        // optionally a paddle strength per player.
+        inline std::vector<reward_t> actMultiplayer(
+            const std::vector<unsigned int>& actions,
+            std::optional<std::vector<float>> paddle_strengths = std::nullopt) {
+            std::vector<Action> action_vec;
+            action_vec.reserve(actions.size());
+            for (auto a : actions) {
+                action_vec.push_back(static_cast<Action>(a));
+            }
+            return ALEInterface::act(
+                action_vec,
+                paddle_strengths.value_or(std::vector<float>(actions.size(), 1.0f)));
+        }
+
+        // Overload for Action enum list
+        inline std::vector<reward_t> actMultiplayer(
+            const std::vector<Action>& actions,
+            std::optional<std::vector<float>> paddle_strengths = std::nullopt) {
+            return ALEInterface::act(
+                actions,
+                paddle_strengths.value_or(std::vector<float>(actions.size(), 1.0f)));
+        }
+
         inline nb::tuple getScreenDims() const {
             const ALEScreen& screen = ALEInterface::getScreen();
             return nb::make_tuple(screen.height(), screen.width());
@@ -178,12 +202,25 @@ NB_MODULE(_ale_py, m) {
         .def("act", [](ale::ALEPythonInterface& self, ale::Action action, float paddle_strength) {
             return self.ALEInterface::act(action, paddle_strength);
         }, nb::arg("action"), nb::arg("paddle_strength") = 1.0)
+        // Multi-player act overloads
+        .def("act", [](ale::ALEPythonInterface& self, const std::vector<unsigned int>& actions,
+                       std::optional<std::vector<float>> paddle_strengths) {
+            return self.actMultiplayer(actions, paddle_strengths);
+        }, nb::arg("actions"), nb::arg("paddle_strengths") = nb::none())
+        .def("act", [](ale::ALEPythonInterface& self, const std::vector<ale::Action>& actions,
+                       std::optional<std::vector<float>> paddle_strengths) {
+            return self.actMultiplayer(actions, paddle_strengths);
+        }, nb::arg("actions"), nb::arg("paddle_strengths") = nb::none())
         .def("game_over", &ale::ALEPythonInterface::game_over,
             nb::arg("with_truncation") = true)
         .def("game_truncated", &ale::ALEPythonInterface::game_truncated)
         .def("reset_game", &ale::ALEPythonInterface::reset_game)
-        .def("getAvailableModes", &ale::ALEPythonInterface::getAvailableModes)
+        .def("getAvailableModes", static_cast<ale::ModeVect (ale::ALEInterface::*)() const>(&ale::ALEPythonInterface::getAvailableModes))
+        .def("getAvailableModes", static_cast<ale::ModeVect (ale::ALEInterface::*)(int) const>(&ale::ALEPythonInterface::getAvailableModes),
+            nb::arg("num_players"))
         .def("setMode", &ale::ALEPythonInterface::setMode)
+        .def("numPlayersActive", &ale::ALEPythonInterface::numPlayersActive)
+        .def("allLives", &ale::ALEPythonInterface::allLives)
         .def("getAvailableDifficulties", &ale::ALEPythonInterface::getAvailableDifficulties)
         .def("setDifficulty", &ale::ALEPythonInterface::setDifficulty)
         .def("getLegalActionSet", &ale::ALEPythonInterface::getLegalActionSet)

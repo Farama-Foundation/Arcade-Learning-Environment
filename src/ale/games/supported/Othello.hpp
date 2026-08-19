@@ -26,11 +26,11 @@
 #ifndef __OTHELLO_HPP__
 #define __OTHELLO_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
-class OthelloSettings : public RomSettings {
+class OthelloSettings : public RomSettings2P {
  public:
   OthelloSettings();
 
@@ -39,6 +39,7 @@ class OthelloSettings : public RomSettings {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const override { return "othello"; }
 
@@ -56,6 +57,10 @@ class OthelloSettings : public RomSettings {
   void loadState(stella::Deserializer& ser) override;
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  // reads the anti-stalling timeout from the environment settings
+  void modifyEnvironmentSettings(stella::Settings& settings) override;
 
   void setMode(game_mode_t m, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
@@ -67,6 +72,11 @@ class OthelloSettings : public RomSettings {
   reward_t m_reward;
   int m_score;
   int m_no_input;
+  reward_t m_reward_p2;
+  bool two_player_mode;
+  // Move anti-stalling state (two-player mode only)
+  int turn_same_count;
+  int max_turn_time;
 };
 
 }  // namespace ale

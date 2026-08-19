@@ -23,61 +23,72 @@
  * *****************************************************************************
  */
 
-#ifndef __MARIO_BROS_HPP__
-#define __MARIO_BROS_HPP__
+#ifndef __MAZECRAZE_HPP__
+#define __MAZECRAZE_HPP__
 
 #include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
-class MarioBrosSettings : public RomSettings2P {
+/* RL wrapper for Maze Craze settings. Maze Craze is a two-player only game. */
+class MazeCrazeSettings : public RomSettings2P {
  public:
-  MarioBrosSettings();
+  MazeCrazeSettings();
 
+  // reset
   void reset() override;
 
+  // is end of game
   bool isTerminal() const override;
 
+  // get the most recently observed reward
   reward_t getReward() const override;
   reward_t getRewardP2() const override;
 
-  const char* rom() const override { return "mario_bros"; }
+  int lives() override;
+  int livesP2() override;
+
+  // the rom-name
+  const char* rom() const override { return "maze_craze"; }
 
   // The md5 checksum of the ROM that this game supports
-  const char* md5() const override { return "e908611d99890733be31733a979c62d8"; }
+  const char* md5() const override { return "ed2218b3075d15eaa34e3356025ccca3"; }
 
+  // create a new instance of the rom
   RomSettings* clone() const override;
 
+  // is an action part of the minimal set?
   bool isMinimal(const Action& a) const override;
 
-  int lives() override { return isTerminal() ? 0 : m_lives; }
-  int livesP2() override { return isTerminal() ? 0 : m_lives_p2; }
-
+  // process the latest information from ALE
   void step(const stella::System& system) override;
 
+  // saves the state of the rom settings
   void saveState(stella::Serializer& ser) override;
 
+  // loads the state of the rom settings
   void loadState(stella::Deserializer& ser) override;
 
+  // returns a list of mode that the game can be played in
   ModeVect getAvailableModes() override;
   ModeVect get2PlayerModes() override;
 
+  // set the mode of the game
   void setMode(game_mode_t m, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
-  ActionVect getStartingActions() override;
+  // returns a list of difficulties that the game can be played in
+  DifficultyVect getAvailableDifficulties() override;
 
  private:
   bool m_terminal;
-  reward_t m_reward;
-  int m_score;
-  int m_lives;
+  bool p1_isalive;
+  bool p2_isalive;
+  reward_t m_reward_p1;
   reward_t m_reward_p2;
-  int m_score_p2;
-  int m_lives_p2;
-  bool is_two_player;
+  int m_score;
 };
 
 }  // namespace ale
 
-#endif  // __MARIO_BROS_HPP__
+#endif  // __MAZECRAZE_HPP__

@@ -57,11 +57,34 @@ void OthelloSettings::step(const System& system) {
   // their final colour for scoring. We detect this when the turn indicator
   // is 0, signalling no more player input.
   m_terminal = m_no_input > 50;
+
+  // othello is zero-sum between the players
+  m_reward_p2 = -m_reward;
+
+  if (two_player_mode) {
+    if (m_reward != 0) {
+      // the reward is non-zero every time there is a turn change
+      turn_same_count = 0;
+    }
+    turn_same_count += 1;
+    // time out the current player's move to disallow stalling
+    if (max_turn_time > 0 && turn_same_count >= max_turn_time) {
+      unsigned char active_player = readRam(&system, 0xc0);
+      if (active_player == 0xff) {
+        m_reward = -1;
+      } else {
+        m_reward_p2 = -1;
+      }
+      turn_same_count = 0;
+    }
+  }
 }
 
 bool OthelloSettings::isTerminal() const { return m_terminal; }
 
 reward_t OthelloSettings::getReward() const { return m_reward; }
+
+reward_t OthelloSettings::getRewardP2() const { return m_reward_p2; }
 
 bool OthelloSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -86,9 +109,11 @@ bool OthelloSettings::isMinimal(const Action& a) const {
 
 void OthelloSettings::reset() {
   m_reward = 0;
+  m_reward_p2 = 0;
   m_score = 0;
   m_terminal = false;
   m_no_input = 0;
+  turn_same_count = 0;
 }
 
 void OthelloSettings::saveState(Serializer& ser) {
@@ -96,6 +121,10 @@ void OthelloSettings::saveState(Serializer& ser) {
   ser.putInt(m_score);
   ser.putBool(m_terminal);
   ser.putInt(m_no_input);
+
+  ser.putInt(m_reward_p2);
+  ser.putInt(turn_same_count);
+  ser.putBool(two_player_mode);
 }
 
 void OthelloSettings::loadState(Deserializer& ser) {
@@ -103,6 +132,10 @@ void OthelloSettings::loadState(Deserializer& ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_no_input = ser.getInt();
+
+  m_reward_p2 = ser.getInt();
+  turn_same_count = ser.getInt();
+  two_player_mode = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=931
@@ -120,10 +153,16 @@ ModeVect OthelloSettings::getAvailableModes() {
   return {0, 1, 2};
 }
 
+// Mode 3 is the two-player game (variant 4 in RAM 0xde, i.e. mode + 1).
+ModeVect OthelloSettings::get2PlayerModes() {
+  return {3};
+}
+
 void OthelloSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < 3) {
+  if (m < 4) {
+    two_player_mode = (m == 3);
     // Read the mode we are currently in.
     unsigned char mode = readRam(&system, 0xde) - 1;
 
@@ -137,6 +176,15 @@ void OthelloSettings::setMode(
     environment->softReset();
   } else {
     throw std::runtime_error("This game mode is not supported.");
+  }
+}
+
+void OthelloSettings::modifyEnvironmentSettings(Settings& settings) {
+  max_turn_time = settings.getInt("max_turn_time");
+  if (max_turn_time == -1) {
+    // times out a stalled move after 10 seconds by default
+    const int DEFAULT_STALL_LIMIT = 60 * 10;
+    max_turn_time = DEFAULT_STALL_LIMIT;
   }
 }
 

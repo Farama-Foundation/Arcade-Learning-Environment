@@ -1,4 +1,6 @@
 /* *****************************************************************************
+ * The line 78 is based on Xitari's code, from Google Inc.
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
  * as published by the Free Software Foundation.
@@ -21,63 +23,41 @@
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
+ *
+ * RomSettings4P.hpp
+ *
+ * The interface to describe games as RL environments. It provides terminal and
+ *  reward information.
+ * *****************************************************************************
  */
 
-#ifndef __MARIO_BROS_HPP__
-#define __MARIO_BROS_HPP__
+#ifndef __ROMSETTINGS4P_HPP__
+#define __ROMSETTINGS4P_HPP__
 
-#include "ale/games/RomSettings2P.hpp"
+#include "RomSettings2P.hpp"
+
 
 namespace ale {
 
-class MarioBrosSettings : public RomSettings2P {
+// rom support interface
+class RomSettings4P : public RomSettings2P {
  public:
-  MarioBrosSettings();
+  RomSettings4P() {}
 
-  void reset() override;
+  virtual ~RomSettings4P() {}
 
-  bool isTerminal() const override;
-
-  reward_t getReward() const override;
-  reward_t getRewardP2() const override;
-
-  const char* rom() const override { return "mario_bros"; }
-
-  // The md5 checksum of the ROM that this game supports
-  const char* md5() const override { return "e908611d99890733be31733a979c62d8"; }
-
-  RomSettings* clone() const override;
-
-  bool isMinimal(const Action& a) const override;
-
-  int lives() override { return isTerminal() ? 0 : m_lives; }
-  int livesP2() override { return isTerminal() ? 0 : m_lives_p2; }
-
-  void step(const stella::System& system) override;
-
-  void saveState(stella::Serializer& ser) override;
-
-  void loadState(stella::Deserializer& ser) override;
-
-  ModeVect getAvailableModes() override;
-  ModeVect get2PlayerModes() override;
-
-  void setMode(game_mode_t m, stella::System& system,
-               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
-
-  ActionVect getStartingActions() override;
-
- private:
-  bool m_terminal;
-  reward_t m_reward;
-  int m_score;
-  int m_lives;
-  reward_t m_reward_p2;
-  int m_score_p2;
-  int m_lives_p2;
-  bool is_two_player;
+  // gets reward for players 3 and 4
+  virtual reward_t getRewardP3() const = 0;
+  virtual reward_t getRewardP4() const = 0;
+  // gets lives left for players 3 and 4
+  virtual int livesP3() { return isTerminal() ? 0 : 1; }
+  virtual int livesP4() { return isTerminal() ? 0 : 1; }
+  // gets list of avaliable modes for player 4
+  virtual ModeVect get4PlayerModes() = 0;
+  // enforces that 4 player games must override the setMode function
+  virtual void setMode(game_mode_t m, stella::System&, std::unique_ptr<StellaEnvironmentWrapper>) = 0;
 };
 
 }  // namespace ale
 
-#endif  // __MARIO_BROS_HPP__
+#endif  // __ROMSETTINGS4P_HPP__

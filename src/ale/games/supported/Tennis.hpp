@@ -28,12 +28,12 @@
 #ifndef __TENNIS_HPP__
 #define __TENNIS_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Tennis */
-class TennisSettings : public RomSettings {
+class TennisSettings : public RomSettings2P {
  public:
   TennisSettings();
 
@@ -45,6 +45,7 @@ class TennisSettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "tennis"; }
@@ -75,6 +76,10 @@ class TennisSettings : public RomSettings {
   // returns a list of mode that the game can be played in
   // in this game, there are 2 available modes
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  // reads the anti-stalling timeout from the environment settings
+  void modifyEnvironmentSettings(stella::Settings& settings) override;
 
   // set the mode of the game
   // the given mode must be one returned by the previous function
@@ -88,8 +93,15 @@ class TennisSettings : public RomSettings {
  private:
   bool m_terminal;
   reward_t m_reward;
+  reward_t m_reward_p2;
   int m_prev_delta_points;
   int m_prev_delta_score;
+  bool two_player_mode;
+  // Serve anti-stalling state (two-player modes only): serving players
+  // could otherwise stall the game forever by never serving.
+  int turn_counter;
+  int no_serve_counter;
+  int max_turn_time;
 };
 
 }  // namespace ale
