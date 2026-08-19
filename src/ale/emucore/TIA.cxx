@@ -387,6 +387,11 @@ bool TIA::save(Serializer& out)
     out.putBool(myDumpEnabled);
     out.putInt(myDumpDisabledCycle);
 
+    // ALE: update() calls startFrame() only when this is clear, and startFrame() is what
+    // rebases the cycle counters, so a restore into an emulator whose flag disagrees runs
+    // a different number of cycles in its next frame.
+    out.putBool(myPartialFrameFlag);
+
     // Save the sound sample stuff ...
     mySound->save(out);
   }
@@ -483,6 +488,8 @@ bool TIA::load(Deserializer& in)
 
     myDumpEnabled = in.getBool();
     myDumpDisabledCycle = (int) in.getInt();
+
+    myPartialFrameFlag = in.getBool();
 
     // Load the sound sample stuff ...
     mySound->load(in);

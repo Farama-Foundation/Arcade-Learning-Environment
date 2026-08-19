@@ -473,7 +473,8 @@ bool CartridgeDPC::save(Serializer& out)
     out.putInt(myRandomNumber);
 
     out.putInt(mySystemCycles);
-    out.putInt((uint32_t)(myFractionalClocks * 100000000.0));
+    // ALE: The fractional clocks only survive save/load roundtrip as a fixed-point integer
+    out.putInt((uint32_t)(myFractionalClocks * 100000000.0 + 0.5));
   }
   catch(const char* msg)
   {

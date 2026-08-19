@@ -2,6 +2,7 @@ import pickle
 import warnings
 from unittest.mock import patch
 
+import ale_py
 import gymnasium
 import numpy as np
 import pytest
@@ -15,41 +16,39 @@ _VALID_WARNINGS = [
     "is out of date. You should consider upgrading to version",
 ]
 
+REGISTERED_ENVS = [
+    env_id
+    for env_id, spec in gymnasium.registry.items()
+    if spec.entry_point == "ale_py.env:AtariEnv"
+]
+UNIQUE_GAMES = [
+    env_id
+    for env_id, spec in gymnasium.registry.items()
+    if spec.entry_point == "ale_py.env:AtariEnv" and spec.version == 5
+]
+
 
 def test_roms_register():
-    registered_roms = [
-        env_id
-        for env_id, spec in gymnasium.registry.items()
-        if spec.entry_point == "ale_py.env:AtariEnv"
-    ]
-
-    registered_v0_roms = list(filter(lambda env_id: "v0" in env_id, registered_roms))
+    registered_v0_roms = list(filter(lambda env_id: "v0" in env_id, REGISTERED_ENVS))
     assert len(registered_v0_roms) == 124
     registered_no_frameskip_v0_roms = list(
-        filter(lambda env_id: "NoFrameskip-v0" in env_id, registered_roms)
+        filter(lambda env_id: "NoFrameskip-v0" in env_id, REGISTERED_ENVS)
     )
     assert len(registered_no_frameskip_v0_roms) == 62
-    registered_v4_roms = list(filter(lambda env_id: "v4" in env_id, registered_roms))
+    registered_v4_roms = list(filter(lambda env_id: "v4" in env_id, REGISTERED_ENVS))
     assert len(registered_v4_roms) == 124
     registered_no_frameskip_v4_roms = list(
-        filter(lambda env_id: "NoFrameskip-v4" in env_id, registered_roms)
+        filter(lambda env_id: "NoFrameskip-v4" in env_id, REGISTERED_ENVS)
     )
     assert len(registered_no_frameskip_v4_roms) == 62
-    registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, registered_roms))
+    registered_v5_roms = list(filter(lambda env_id: "v5" in env_id, REGISTERED_ENVS))
     assert len(registered_v5_roms) == 104
-    assert len(registered_roms) == len(registered_v0_roms) + len(
+    assert len(REGISTERED_ENVS) == len(registered_v0_roms) + len(
         registered_v4_roms
     ) + len(registered_v5_roms)
 
 
-@pytest.mark.parametrize(
-    "env_id",
-    [
-        env_id
-        for env_id, spec in gymnasium.registry.items()
-        if spec.entry_point == "ale_py.env:AtariEnv"
-    ],
-)
+@pytest.mark.parametrize("env_id", UNIQUE_GAMES)
 @pytest.mark.parametrize("continuous", [True, False])
 def test_check_env(env_id, continuous):
     with warnings.catch_warnings(record=True) as caught_warnings:
@@ -192,20 +191,6 @@ def test_gym_action_meaning(tetris_env):
     assert tetris_env.unwrapped.get_action_meanings() == action_meanings
 
 
-def test_gym_clone_state(tetris_env):
-    tetris_env = tetris_env.unwrapped
-
-    tetris_env.reset(seed=0)
-    # Smoke test for clone_state
-    tetris_env.step(0)
-    state = tetris_env.clone_state()
-    for _ in range(100):
-        tetris_env.step(tetris_env.action_space.sample())
-
-    tetris_env.restore_state(state)
-    assert tetris_env.clone_state() == state
-
-
 @pytest.mark.parametrize("tetris_env", [{"full_action_space": True}], indirect=True)
 def test_gym_action_space(tetris_env):
     assert tetris_env.action_space.n == 18
@@ -284,58 +269,36 @@ def test_sound_obs():
     assert caught_warnings == [], [caught.message.args[0] for caught in caught_warnings]
 
 
-@pytest.mark.parametrize(
-    "clone,restore",
-    (
-        ("cloneState", "restoreState"),
-        ("cloneSystemState", "restoreSystemState"),
-    ),
-    ids=("state", "system_state"),
-)
-@pytest.mark.parametrize("num_steps", (0, 50))
-def test_clone_restore(clone, restore, num_steps):
+@pytest.mark.parametrize("env_id", UNIQUE_GAMES)
+def test_clone_restore(env_id, seed=0):
+    """Serializing a state, restoring it and serializing again must not change the bytes."""
     env = gymnasium.make(
         "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
     )
-    ale = env.unwrapped.ale
+    env.reset(seed=seed)
+    env.action_space.seed(seed)
 
-    # update the environment
-    reset_obs, _ = env.reset()
-    env.step(1)  # fire
-    for _ in range(30):
-        env.step(env.action_space.sample())
+    for point in range(20):
+        before = env.unwrapped.clone_state(include_rng=True).serialize()
+        env.unwrapped.restore_state(ale_py.ALEState(before))
+        after = env.unwrapped.clone_state(include_rng=True).serialize()
 
-    # clone the state, take a number of steps, use the original state and check if the two environments are the same
-    state = getattr(ale, clone)()
-    ram_before = np.array(ale.getRAM(), dtype=np.uint8)
-    action = env.action_space.sample()
-    obs_before, _, _, _, _ = env.step(action)
+        assert before == after, (
+            f"{env_id}: restoring a state and re-cloning it produced a different "
+            f"serialization at snapshot point {point}"
+        )
 
-    for _ in range(num_steps):
-        obs, _, terminated, _, _ = env.step(env.action_space.sample())
-        if terminated:
-            break
-
-    # check the environments
-    getattr(ale, restore)(state)
-    ram_after = np.array(ale.getRAM(), dtype=np.uint8)
-    obs_after, _, _, _, _ = env.step(action)
+        for _ in range(5):
+            _, _, terminated, truncated, _ = env.step(env.action_space.sample())
+            if terminated or truncated:
+                env.reset()
+                break
 
     env.close()
-    np.testing.assert_array_equal(ram_before, ram_after)
-    np.testing.assert_array_equal(obs_before, obs_after)
 
 
-@pytest.mark.parametrize(
-    "clone,restore",
-    (
-        ("cloneState", "restoreState"),
-        ("cloneSystemState", "restoreSystemState"),
-    ),
-    ids=("state", "system_state"),
-)
 @pytest.mark.parametrize("use_pickle", (False, True))
-def test_clone_pickle_restore_new_env(clone, restore, use_pickle):
+def test_clone_pickle_restore_new_env(use_pickle):
     env_a = gymnasium.make(
         "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
     )
@@ -345,15 +308,15 @@ def test_clone_pickle_restore_new_env(clone, restore, use_pickle):
 
     ram_before = np.array(env_a.unwrapped.ale.getRAM(), dtype=np.uint8)
     if use_pickle:
-        state = pickle.loads(pickle.dumps(getattr(env_a.unwrapped.ale, clone)()))
+        state = pickle.loads(pickle.dumps(env_a.unwrapped.ale.cloneState()))
     else:
-        state = getattr(env_a.unwrapped.ale, clone)()
+        state = env_a.unwrapped.ale.cloneState()
 
     env_b = gymnasium.make(
         "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
     )
     env_b.reset()
-    getattr(env_b.unwrapped.ale, restore)(state)
+    env_b.unwrapped.ale.restoreState(state)
     ram_after = np.array(env_b.unwrapped.ale.getRAM(), dtype=np.uint8)
 
     env_a.close()
@@ -361,26 +324,59 @@ def test_clone_pickle_restore_new_env(clone, restore, use_pickle):
     np.testing.assert_array_equal(ram_before, ram_after)
 
 
-def test_state_serialize_roundtrip():
-    env = gymnasium.make(
-        "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
-    )
-    env.reset()
-    for _ in range(10):
+@pytest.mark.parametrize("env_id", UNIQUE_GAMES)
+def test_restore_reproduces_the_trajectory(env_id):
+    """A restored state must replay a fixed action stream exactly as the live state did."""
+    env = gymnasium.make(env_id, frameskip=1, repeat_action_probability=0.0)
+
+    seed = np.random.randint(1e6)
+    env.reset(seed=seed)
+    env.action_space.seed(seed)
+
+    num_initial_steps = np.random.randint(20)
+    for _ in range(num_initial_steps):
         env.step(env.action_space.sample())
 
-    state = env.unwrapped.ale.cloneState()
-    serialized = state.serialize()
+    snapshot = env.unwrapped.clone_state(include_rng=True)
+    actions = [env.action_space.sample() for _ in range(200)]
+
+    def roll():
+        trace = []
+        for action in actions:
+            obs, reward, terminated, truncated, info = env.step(action)
+            trace.append((obs, reward, terminated, truncated, info))
+            if terminated or truncated:
+                break
+        return trace
+
+    reference = roll()
+    env.unwrapped.restore_state(snapshot)
+    replay = roll()
     env.close()
 
-    assert isinstance(serialized, bytes)
-    restored_state = type(state)(serialized)
-    assert restored_state == state
+    assert len(reference) == len(replay), (
+        f"{env_id}: the restored state ended the episode after {len(replay)} steps, the "
+        f"live state after {len(reference)}"
+    )
+
+    for step, (ref, alt) in enumerate(zip(reference, replay)):
+        assert data_equivalence(ref[1:], alt[1:]), (
+            f"{env_id}: (reward, terminated, truncated, info) diverged {step + 1} steps "
+            f"after the restore: {ref[1:]} vs {alt[1:]}"
+        )
+        # First frame after a restore any pixel the emulated frame does not redraw still holds
+        # what the pre-restore trajectory left there.
+        if step > 0:
+            assert data_equivalence(ref[0], alt[0]), (
+                f"{env_id}: the observation diverged {step + 1} steps after the restore "
+                f"({int((ref[0] != alt[0]).sum())} values differ)"
+            )
 
 
 def test_determinism(
     env_id="ALE/Pong-v5", reset_seed=123, action_seed=123, rollout_length=100
 ):
+    """Check rollout determinism."""
     env_1 = gymnasium.make(env_id)
     env_2 = gymnasium.make(env_id)
 
