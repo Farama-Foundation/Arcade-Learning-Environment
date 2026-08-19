@@ -473,10 +473,7 @@ bool CartridgeDPC::save(Serializer& out)
     out.putInt(myRandomNumber);
 
     out.putInt(mySystemCycles);
-    // The fractional clocks only survive as a fixed-point integer, so round to the
-    // nearest representable value rather than truncating: a truncated value is not a
-    // fixed point of save/load, since dividing it back by 100000000.0 can land just
-    // below the integer it came from and lose a unit on every further save.
+    // ALE: The fractional clocks only survive save/load roundtrip as a fixed-point integer
     out.putInt((uint32_t)(myFractionalClocks * 100000000.0 + 0.5));
   }
   catch(const char* msg)

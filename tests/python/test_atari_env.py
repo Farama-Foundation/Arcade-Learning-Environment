@@ -269,14 +269,9 @@ def test_sound_obs():
     assert caught_warnings == [], [caught.message.args[0] for caught in caught_warnings]
 
 
+@pytest.mark.parametrize("env_id", UNIQUE_GAMES)
 def test_clone_restore(env_id, seed=0):
-    """Serializing a state, restoring it and serializing again must not change the bytes.
-
-    This needs no knowledge of what any individual game stores. If `saveState` and
-    `loadState` disagree about the type, order or number of the fields they carry, the
-    values that come back out are not the values that went in, and the second blob
-    differs from the first. It also catches lossy encodings in the emulator devices.
-    """
+    """Serializing a state, restoring it and serializing again must not change the bytes."""
     env = gymnasium.make(
         "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
     )
@@ -303,7 +298,7 @@ def test_clone_restore(env_id, seed=0):
 
 
 @pytest.mark.parametrize("use_pickle", (False, True))
-def test_clone_pickle_restore_new_env(clone, restore, use_pickle):
+def test_clone_pickle_restore_new_env(use_pickle):
     env_a = gymnasium.make(
         "ALE/MontezumaRevenge-v5", frameskip=1, repeat_action_probability=0.0
     )
@@ -331,11 +326,7 @@ def test_clone_pickle_restore_new_env(clone, restore, use_pickle):
 
 @pytest.mark.parametrize("env_id", UNIQUE_GAMES)
 def test_restore_reproduces_the_trajectory(env_id):
-    """A restored state must replay a fixed action stream exactly as the live state did.
-
-    Both arms run on the same environment and see the same actions, so any difference is
-    attributable to the restore rather than to the reset path.
-    """
+    """A restored state must replay a fixed action stream exactly as the live state did."""
     env = gymnasium.make(env_id, frameskip=1, repeat_action_probability=0.0)
 
     seed = np.random.randint(1e6)
@@ -385,6 +376,7 @@ def test_restore_reproduces_the_trajectory(env_id):
 def test_determinism(
     env_id="ALE/Pong-v5", reset_seed=123, action_seed=123, rollout_length=100
 ):
+    """Check rollout determinism."""
     env_1 = gymnasium.make(env_id)
     env_2 = gymnasium.make(env_id)
 
