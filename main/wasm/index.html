@@ -446,7 +446,7 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 </pre></div>
 </div>
 <p>Then import in your JavaScript:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createALEModule</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@farama/ale-wasm&#39;</span><span class="p">;</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createALEModule</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@farama/ale-wasm'</span><span class="p">;</span>
 
 <span class="kd">const</span><span class="w"> </span><span class="nx">ALE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">createALEModule</span><span class="p">();</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">ale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">ALEInterface</span><span class="p">();</span>
@@ -462,7 +462,7 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <li><p>Serve the files from your web server</p></li>
 <li><p>Load in your HTML:</p></li>
 </ol>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;ale.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"ale.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="w">  </span><span class="c1">// createALEModule is available as a global after loading ale.js</span>
 <span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">init</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -479,13 +479,13 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <section id="initializing-the-module">
 <h3>Initializing the Module<a class="headerlink" href="#initializing-the-module" title="Link to this heading">¶</a></h3>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createALEModule</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;./ale.js&#39;</span><span class="p">;</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createALEModule</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./ale.js'</span><span class="p">;</span>
 
 <span class="c1">// Initialize ALE</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">ALE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">createALEModule</span><span class="p">();</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">ale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">ALEInterface</span><span class="p">();</span>
 
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;ALE Version:&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">ALEInterface</span><span class="p">.</span><span class="nx">getVersion</span><span class="p">());</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'ALE Version:'</span><span class="p">,</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">ALEInterface</span><span class="p">.</span><span class="nx">getVersion</span><span class="p">());</span>
 </pre></div>
 </div>
 </section>
@@ -499,21 +499,21 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <span class="kd">const</span><span class="w"> </span><span class="nx">ale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">ALEInterface</span><span class="p">();</span>
 
 <span class="c1">// List available ROMs</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">readdir</span><span class="p">(</span><span class="s1">&#39;/roms&#39;</span><span class="p">);</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">roms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">files</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;.&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;..&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s1">&#39;.bin&#39;</span><span class="p">));</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ALE</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">readdir</span><span class="p">(</span><span class="s1">'/roms'</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">roms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">files</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'.'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'..'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s1">'.bin'</span><span class="p">));</span>
 
 <span class="c1">// Load a ROM</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">romPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;/roms/&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">roms</span><span class="p">[</span><span class="mf">0</span><span class="p">];</span><span class="w">  </span><span class="c1">// or choose any ROM from the list</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">romPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'/roms/'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">roms</span><span class="p">[</span><span class="mf">0</span><span class="p">];</span><span class="w">  </span><span class="c1">// or choose any ROM from the list</span>
 <span class="nx">ale</span><span class="p">.</span><span class="nx">loadROM</span><span class="p">(</span><span class="nx">romPath</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="file-upload-user-selection">
 <h4>2. File Upload (User Selection)<a class="headerlink" href="#file-upload-user-selection" title="Link to this heading">¶</a></h4>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;file&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;romFile&quot;</span> <span class="na">accept</span><span class="o">=</span><span class="s">&quot;.bin&quot;</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"file"</span> <span class="na">id</span><span class="o">=</span><span class="s">"romFile"</span> <span class="na">accept</span><span class="o">=</span><span class="s">".bin"</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;romFile&#39;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'romFile'</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'change'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">files</span><span class="p">[</span><span class="mf">0</span><span class="p">];</span>
 <span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nx">ale</span><span class="p">.</span><span class="nx">loadROMFromFile</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
 <span class="p">});</span>
@@ -522,8 +522,8 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 </section>
 <section id="url-fetch-remote-loading">
 <h4>3. URL Fetch (Remote Loading)<a class="headerlink" href="#url-fetch-remote-loading" title="Link to this heading">¶</a></h4>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">ale</span><span class="p">.</span><span class="nx">loadROMFromURL</span><span class="p">(</span><span class="s1">&#39;https://example.com/roms/breakout.bin&#39;</span><span class="p">);</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;ROM loaded from URL&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">ale</span><span class="p">.</span><span class="nx">loadROMFromURL</span><span class="p">(</span><span class="s1">'https://example.com/roms/breakout.bin'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'ROM loaded from URL'</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -531,11 +531,11 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <section id="basic-game-loop">
 <h3>Basic Game Loop<a class="headerlink" href="#basic-game-loop" title="Link to this heading">¶</a></h3>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Configure ALE</span>
-<span class="nx">ale</span><span class="p">.</span><span class="nx">setBool</span><span class="p">(</span><span class="s1">&#39;display_screen&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
-<span class="nx">ale</span><span class="p">.</span><span class="nx">setInt</span><span class="p">(</span><span class="s1">&#39;random_seed&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">42</span><span class="p">);</span>
+<span class="nx">ale</span><span class="p">.</span><span class="nx">setBool</span><span class="p">(</span><span class="s1">'display_screen'</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="nx">ale</span><span class="p">.</span><span class="nx">setInt</span><span class="p">(</span><span class="s1">'random_seed'</span><span class="p">,</span><span class="w"> </span><span class="mf">42</span><span class="p">);</span>
 
 <span class="c1">// Load ROM</span>
-<span class="nx">ale</span><span class="p">.</span><span class="nx">loadROM</span><span class="p">(</span><span class="s1">&#39;/roms/breakout.bin&#39;</span><span class="p">);</span>
+<span class="nx">ale</span><span class="p">.</span><span class="nx">loadROM</span><span class="p">(</span><span class="s1">'/roms/breakout.bin'</span><span class="p">);</span>
 
 <span class="c1">// Get action space</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ale</span><span class="p">.</span><span class="nx">getMinimalActionSet</span><span class="p">();</span>
@@ -566,14 +566,14 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <p>The WASM module provides helper methods for easy canvas rendering:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">renderFrame</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// renderToCanvas takes a canvas element ID (string)</span>
-<span class="w">    </span><span class="nx">ale</span><span class="p">.</span><span class="nx">renderToCanvas</span><span class="p">(</span><span class="s1">&#39;gameCanvas&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">ale</span><span class="p">.</span><span class="nx">renderToCanvas</span><span class="p">(</span><span class="s1">'gameCanvas'</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Or manually using ImageData:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">renderFrame</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">canvas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;gameCanvas&#39;</span><span class="p">);</span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">canvas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'gameCanvas'</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">'2d'</span><span class="p">);</span>
 <span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">imageData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ale</span><span class="p">.</span><span class="nx">getScreenImageData</span><span class="p">();</span>
 
 <span class="w">    </span><span class="c1">// Render directly to canvas</span>
@@ -737,7 +737,7 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <section id="machine-learning-integration">
 <h3>Machine Learning Integration<a class="headerlink" href="#machine-learning-integration" title="Link to this heading">¶</a></h3>
 <p>ALE works seamlessly with TensorFlow.js and other ML libraries. Example preprocessing for neural network policies:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">tf</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@tensorflow/tfjs&#39;</span><span class="p">;</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">tf</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@tensorflow/tfjs'</span><span class="p">;</span>
 
 <span class="kd">function</span><span class="w"> </span><span class="nx">preprocessScreen</span><span class="p">(</span><span class="nx">ale</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">screen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ale</span><span class="p">.</span><span class="nx">getScreenGrayscale</span><span class="p">();</span>
@@ -760,7 +760,7 @@ Below we describe how to install and use the WASM module for your web apps.</p>
 <p>Save and restore complete emulator states:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Save current state (returns Uint8Array)</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">savedStateView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ale</span><span class="p">.</span><span class="nx">saveState</span><span class="p">();</span>
-<span class="c1">// Copy the state to preserve it (important since it&#39;s a view into WASM memory)</span>
+<span class="c1">// Copy the state to preserve it (important since it's a view into WASM memory)</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">savedState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Uint8Array</span><span class="p">(</span><span class="nx">savedStateView</span><span class="p">);</span>
 
 <span class="c1">// Perform some actions</span>

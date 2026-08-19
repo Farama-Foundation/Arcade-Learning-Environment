@@ -431,7 +431,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">rom_file</span><span class="p">):</span>
     <span class="n">ale</span> <span class="o">=</span> <span class="n">ALEInterface</span><span class="p">()</span>
-    <span class="n">ale</span><span class="o">.</span><span class="n">setInt</span><span class="p">(</span><span class="s1">&#39;random_seed&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">)</span>
+    <span class="n">ale</span><span class="o">.</span><span class="n">setInt</span><span class="p">(</span><span class="s1">'random_seed'</span><span class="p">,</span> <span class="mi">123</span><span class="p">)</span>
     <span class="n">ale</span><span class="o">.</span><span class="n">loadROM</span><span class="p">(</span><span class="n">rom_file</span><span class="p">)</span>
 
     <span class="c1"># Get the list of legal actions</span>
@@ -444,11 +444,11 @@
       <span class="n">reward</span> <span class="o">=</span> <span class="n">ale</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
       <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Episode ended with score: </span><span class="si">{</span><span class="n">total_reward</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Episode ended with score: </span><span class="si">{</span><span class="n">total_reward</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usage: </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rom_file&quot;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Usage: </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rom_file"</span><span class="p">)</span>
       <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
     <span class="n">rom_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>

@@ -437,7 +437,7 @@ A framework that allows researchers and hobbyists to develop AI agents for Atari
 <span class="n">gym</span><span class="o">.</span><span class="n">register_envs</span><span class="p">(</span><span class="n">ale_py</span><span class="p">)</span>
 
 <span class="c1"># Initialise the environment</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;ALE/Breakout-v5&quot;</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">"ALE/Breakout-v5"</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s2">"human"</span><span class="p">)</span>
 
 <span class="c1"># Reset the environment to generate the first observation</span>
 <span class="n">observation</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
