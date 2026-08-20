@@ -39,6 +39,77 @@ static std::once_flag tia_init_once;
 namespace ale {
 namespace stella {
 
+// ALE: the frame buffers are large (160 x 300 each) but almost entirely flat, so a
+// (value, run-length) encoding takes the pair from 96000 bytes down to a few KB. That is
+// what makes it affordable to put the screen into the saved state at all - see the
+// matching comment in TIA::save().
+namespace {
+
+const uint32_t FRAME_BUFFER_SIZE = 160 * 300;
+
+std::string rleEncode(const uint8_t* buffer, uint32_t length)
+{
+  std::string out;
+  out.reserve(4096);
+
+  uint32_t i = 0;
+  while(i < length)
+  {
+    const uint8_t value = buffer[i];
+    const uint32_t limit = ((length - i) < 255) ? (length - i) : 255;
+
+    // Most of a frame buffer is long flat runs, so compare eight bytes at a time against
+    // the repeated value before finishing byte-wise. Encoding is on the cloneState() path,
+    // which some callers run in a hot loop.
+    uint64_t repeated;
+    std::memset(&repeated, value, sizeof(repeated));
+
+    uint32_t run = 1;
+    while((run + 8) <= limit && std::memcmp(buffer + i + run, &repeated, 8) == 0)
+      run += 8;
+    while(run < limit && buffer[i + run] == value)
+      ++run;
+
+    out.push_back((char) value);
+    out.push_back((char) run);
+    i += run;
+  }
+
+  return out;
+}
+
+// Returns false on a malformed or truncated encoding rather than writing past the buffer:
+// a state blob can come from anywhere (ALEState::deserialize).
+bool rleDecode(const std::string& in, uint8_t* buffer, uint32_t length)
+{
+  uint32_t written = 0;
+
+  for(std::string::size_type i = 0; (i + 1) < in.size(); i += 2)
+  {
+    uint32_t run = (uint8_t) in[i + 1];
+    if(run == 0 || (written + run) > length)
+      return false;
+
+    std::memset(buffer + written, (uint8_t) in[i], run);
+    written += run;
+  }
+
+  return written == length;
+}
+
+// ALE: restore a table pointer that was saved as an element offset, refusing an
+// out-of-range offset rather than handing back a wild pointer.
+template <typename T>
+const T* offsetInto(const T* base, int offset, int count)
+{
+  if(offset < 0 || offset >= count)
+    return base;
+  return base + offset;
+}
+
+}  // namespace
+
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TIA::TIA(const Console& console, Settings& settings)
     : myConsole(console),
@@ -371,13 +442,18 @@ bool TIA::save(Serializer& out)
     out.putInt(myCurrentGRP0);
     out.putInt(myCurrentGRP1);
 
-// pointers
-//  myCurrentBLMask = ourBallMaskTable[0][0];
-//  myCurrentM0Mask = ourMissleMaskTable[0][0][0];
-//  myCurrentM1Mask = ourMissleMaskTable[0][0][0];
-//  myCurrentP0Mask = ourPlayerMaskTable[0][0][0];
-//  myCurrentP1Mask = ourPlayerMaskTable[0][0][0];
-//  myCurrentPFMask = ourPlayfieldTable[0];
+    // ALE: these six point into the static mask tables and were previously left out of
+    // the state (the commented-out lines above). They are only recomputed when the
+    // register that derives them is next poked, so between pokes they are live state: a
+    // restore left them pointing wherever the receiving instance happened to be, which
+    // renders the first frame wrong (yars_revenge). Saved as element offsets, since the
+    // tables are static and the pointers themselves are not portable.
+    out.putInt((int)(myCurrentBLMask - &ourBallMaskTable[0][0][0]));
+    out.putInt((int)(myCurrentM0Mask - &ourMissleMaskTable[0][0][0][0]));
+    out.putInt((int)(myCurrentM1Mask - &ourMissleMaskTable[0][0][0][0]));
+    out.putInt((int)(myCurrentP0Mask - &ourPlayerMaskTable[0][0][0][0]));
+    out.putInt((int)(myCurrentP1Mask - &ourPlayerMaskTable[0][0][0][0]));
+    out.putInt((int)(myCurrentPFMask - &ourPlayfieldTable[0][0]));
 
     out.putInt(myLastHMOVEClock);
     out.putBool(myHMOVEBlankEnabled);
@@ -391,6 +467,27 @@ bool TIA::save(Serializer& out)
     // rebases the cycle counters, so a restore into an emulator whose flag disagrees runs
     // a different number of cycles in its next frame.
     out.putBool(myPartialFrameFlag);
+
+    // ALE: myFramePointer is the write cursor into myCurrentFrameBuffer, and it is only
+    // rebased by startFrame(), which update() skips while myPartialFrameFlag is set. A
+    // mid-frame state restored into an emulator whose cursor sits elsewhere therefore
+    // renders the rest of the frame at the wrong offset, and once the restored clock
+    // counters imply more scanline than the cursor has buffer left, updateFrameScanline()
+    // writes past the end of it. Stored as an offset because the two frame buffers are
+    // per-instance heap allocations and startFrame() swaps them every frame.
+    out.putInt((int)(myFramePointer - myCurrentFrameBuffer));
+
+    // ALE: set by update() when it greys out an unfinished frame, cleared by startFrame();
+    // without it a restored partial frame can be greyed twice or not at all.
+    out.putBool(myFrameGreyed);
+
+    // ALE: the frame buffers themselves. startFrame() swaps them, so a game that repaints
+    // only part of the screen inherits pixels from two frames back; a restore that does not
+    // carry them renders visibly wrong frames until every scanline has been repainted
+    // (measured across the 104 loadable ROMs: 4 games affected, up to 94% of the first
+    // frame's pixels, clearing within two frames). RLE keeps the cost to a few KB.
+    out.putString(rleEncode(myCurrentFrameBuffer, FRAME_BUFFER_SIZE));
+    out.putString(rleEncode(myPreviousFrameBuffer, FRAME_BUFFER_SIZE));
 
     // Save the sound sample stuff ...
     mySound->save(out);
@@ -473,13 +570,19 @@ bool TIA::load(Deserializer& in)
     myCurrentGRP0 = (uint8_t) in.getInt();
     myCurrentGRP1 = (uint8_t) in.getInt();
 
-// pointers
-//  myCurrentBLMask = ourBallMaskTable[0][0];
-//  myCurrentM0Mask = ourMissleMaskTable[0][0][0];
-//  myCurrentM1Mask = ourMissleMaskTable[0][0][0];
-//  myCurrentP0Mask = ourPlayerMaskTable[0][0][0];
-//  myCurrentP1Mask = ourPlayerMaskTable[0][0][0];
-//  myCurrentPFMask = ourPlayfieldTable[0];
+    // ALE: see the matching comment in save().
+    myCurrentBLMask = offsetInto(&ourBallMaskTable[0][0][0], (int) in.getInt(),
+                                 4 * 4 * 320);
+    myCurrentM0Mask = offsetInto(&ourMissleMaskTable[0][0][0][0], (int) in.getInt(),
+                                 4 * 8 * 4 * 320);
+    myCurrentM1Mask = offsetInto(&ourMissleMaskTable[0][0][0][0], (int) in.getInt(),
+                                 4 * 8 * 4 * 320);
+    myCurrentP0Mask = offsetInto(&ourPlayerMaskTable[0][0][0][0], (int) in.getInt(),
+                                 4 * 2 * 8 * 320);
+    myCurrentP1Mask = offsetInto(&ourPlayerMaskTable[0][0][0][0], (int) in.getInt(),
+                                 4 * 2 * 8 * 320);
+    myCurrentPFMask = offsetInto(&ourPlayfieldTable[0][0], (int) in.getInt(),
+                                 2 * 160);
 
     myLastHMOVEClock = (int) in.getInt();
     myHMOVEBlankEnabled = in.getBool();
@@ -490,6 +593,23 @@ bool TIA::load(Deserializer& in)
     myDumpDisabledCycle = (int) in.getInt();
 
     myPartialFrameFlag = in.getBool();
+
+    // ALE: see the matching comment in save(). Clamped because an out-of-range offset here
+    // is a wild pointer, and a state blob can come from anywhere (ALEState::deserialize).
+    int framePointerOffset = (int) in.getInt();
+    if(framePointerOffset < 0)
+      framePointerOffset = 0;
+    else if(framePointerOffset > (int)(160 * 300))
+      framePointerOffset = 160 * 300;
+    myFramePointer = myCurrentFrameBuffer + framePointerOffset;
+
+    myFrameGreyed = in.getBool();
+
+    // ALE: see the matching comment in save(). Restored by role, not by address - the two
+    // buffers are per-instance allocations that startFrame() swaps.
+    if(!rleDecode(in.getString(), myCurrentFrameBuffer, FRAME_BUFFER_SIZE) ||
+       !rleDecode(in.getString(), myPreviousFrameBuffer, FRAME_BUFFER_SIZE))
+      return false;
 
     // Load the sound sample stuff ...
     mySound->load(in);

@@ -391,6 +391,65 @@ def test_clone_restore_system_state(ale, tetris_rom_path):
         assert first == second
 
 
+def test_restore_reproduces_screen(ale, tetris_rom_path):
+    """A restored state must reproduce the screen, not just RAM.
+
+    The state cloned immediately after `reset_game()` is the one a snapshot-based reset
+    reuses, and it is the one that used to break: TIA state that reaches nothing but the
+    frame buffer (the frame cursor, the object mask pointers, the buffers themselves) was
+    left out of the serialized state, so the first frames after a restore rendered wrong.
+    """
+    ale.setInt("random_seed", 0)
+    ale.setFloat("repeat_action_probability", 0.0)
+    ale.loadROM(tetris_rom_path)
+    ale.reset_game()
+
+    actions = ale.getMinimalActionSet()
+    stream = [actions[i % len(actions)] for i in range(12)]
+    state = ale.cloneState()
+
+    reference = []
+    for action in stream:
+        ale.act(action)
+        reference.append((ale.getScreen().copy(), ale.getRAM().copy()))
+
+    ale.restoreState(state)
+    for action, (screen, ram) in zip(stream, reference):
+        ale.act(action)
+        np.testing.assert_array_equal(ale.getScreen(), screen)
+        np.testing.assert_array_equal(ale.getRAM(), ram)
+
+
+def test_repeated_restore_of_one_state(ale, tetris_rom_path):
+    """Restoring the *same* state many times must stay exact, and must not corrupt memory.
+
+    This is the vectorised-autoreset access pattern. A single restore can leave per-frame
+    TIA state inconsistent with the restored clock counters without visible damage; it took
+    repeated restores for the frame cursor to walk off the end of the frame buffer, so a
+    one-shot round-trip check passed while the same state corrupted the heap in a loop.
+    """
+    ale.setInt("random_seed", 0)
+    ale.setFloat("repeat_action_probability", 0.0)
+    ale.loadROM(tetris_rom_path)
+    ale.reset_game()
+
+    actions = ale.getMinimalActionSet()
+    stream = [actions[i % len(actions)] for i in range(4)]
+    state = ale.cloneState()
+
+    reference = []
+    for action in stream:
+        ale.act(action)
+        reference.append((ale.getScreen().copy(), ale.getRAM().copy()))
+
+    for _ in range(500):
+        ale.restoreState(state)
+        for action, (screen, ram) in zip(stream, reference):
+            ale.act(action)
+            np.testing.assert_array_equal(ale.getScreen(), screen)
+            np.testing.assert_array_equal(ale.getRAM(), ram)
+
+
 def test_state_pickle(tetris):
     for _ in range(10):
         tetris.act(0)
