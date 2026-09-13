@@ -153,11 +153,14 @@ ffi::Error XLAResetGPUImpl(
     if (new_handle_buffer->element_count() != handle_buffer.element_count()) {
         return ffi::Error::Internal("Incorrect new handle buffer size in reset (GPU)");
     }
-    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), host_handle.data(),
+    // Device-to-device: the handle is already on the device, and copying it
+    // straight across avoids issuing a transfer out of host_handle, which dies
+    // with this call.
+    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), handle_buffer.typed_data(),
                           handle_buffer.element_count(),
-                          cudaMemcpyHostToDevice, stream);
+                          cudaMemcpyDeviceToDevice, stream);
     if (err != cudaSuccess) {
-        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle H2D): ") + cudaGetErrorString(err));
+        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle D2D): ") + cudaGetErrorString(err));
     }
 
     try {
@@ -240,6 +243,14 @@ ffi::Error XLAResetGPUImpl(
         err = cudaGetLastError();
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA error after operations: ") + cudaGetErrorString(err));
+        }
+
+        // The copies above read out of the BatchResult, which is destroyed when
+        // this scope ends, so they must complete before we return. Resets are
+        // rare enough that the wait does not matter.
+        err = cudaStreamSynchronize(stream);
+        if (err != cudaSuccess) {
+            return ffi::Error::Internal(std::string("CUDA stream sync failed (reset results): ") + cudaGetErrorString(err));
         }
 
         return ffi::Error::Success();
@@ -442,11 +453,14 @@ ffi::Error XLAStepGPUImpl(
     if (new_handle_buffer->element_count() != handle_buffer.element_count()) {
         return ffi::Error::Internal("New handle buffer is the wrong size (GPU)");
     }
-    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), host_handle.data(),
+    // Device-to-device: the handle is already on the device, and copying it
+    // straight across avoids issuing a transfer out of host_handle, which dies
+    // with this call.
+    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), handle_buffer.typed_data(),
                           handle_buffer.element_count(),
-                          cudaMemcpyHostToDevice, stream);
+                          cudaMemcpyDeviceToDevice, stream);
     if (err != cudaSuccess) {
-        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle H2D): ") + cudaGetErrorString(err));
+        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle D2D): ") + cudaGetErrorString(err));
     }
 
     try {
@@ -577,6 +591,16 @@ ffi::Error XLAStepGPUImpl(
         err = cudaGetLastError();
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA error after operations: ") + cudaGetErrorString(err));
+        }
+
+        // Every copy above reads from memory that dies with this call - the
+        // BatchResult and the two host_* vectors - so the transfers have to
+        // finish before we return. cudaMemcpyAsync out of pageable memory
+        // happens to stage synchronously today, which is the only reason this
+        // was ever safe without the wait.
+        err = cudaStreamSynchronize(stream);
+        if (err != cudaSuccess) {
+            return ffi::Error::Internal(std::string("CUDA stream sync failed (step results): ") + cudaGetErrorString(err));
         }
 
         return ffi::Error::Success();
