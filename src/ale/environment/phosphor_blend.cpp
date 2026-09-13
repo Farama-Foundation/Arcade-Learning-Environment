@@ -16,16 +16,86 @@
 
 #include "ale/environment/phosphor_blend.hpp"
 
+#include <map>
+#include <mutex>
+#include <utility>
+
 #include "ale/emucore/Console.hxx"
 
 namespace ale {
 using namespace stella;   // OSystem
 
+namespace {
+
+/** One registry slot. Built at most once, immutable afterwards. */
+struct TableEntry {
+  std::once_flag built;
+  std::shared_ptr<const PhosphorTables> tables;
+};
+
+std::mutex& registryMutex() {
+  static std::mutex mutex;
+  return mutex;
+}
+
+/** Shared tables, keyed by palette contents + blend ratio. Entries live for the
+ *  process lifetime: 512 KiB per distinct palette, instead of per environment. */
+std::map<uint64_t, std::shared_ptr<TableEntry>>& registry() {
+  static std::map<uint64_t, std::shared_ptr<TableEntry>> entries;
+  return entries;
+}
+
+/** FNV-1a over the 256 palette entries and the blend ratio. Keying on the palette
+ *  contents rather than the display format keeps the memo correct for NTSC/PAL/
+ *  SECAM and for user-supplied palettes alike. */
+uint64_t paletteKey(const ColourPalette& palette, uint8_t blend_ratio) {
+  uint64_t hash = 14695981039346656037ull;
+  auto mix = [&hash](uint32_t value) {
+    for (int byte = 0; byte < 4; ++byte) {
+      hash ^= (value >> (byte * 8)) & 0xFF;
+      hash *= 1099511628211ull;
+    }
+  };
+
+  for (int i = 0; i < 256; ++i) {
+    mix(palette.getRGB(i));
+  }
+  mix(blend_ratio);
+  return hash;
+}
+
+}  // namespace
+
 PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
   // Taken from default Stella settings
   m_phosphor_blend_ratio = 77;
 
-  makeAveragePalette();
+  m_tables = acquireTables(m_osystem->colourPalette(), m_phosphor_blend_ratio);
+}
+
+std::shared_ptr<const PhosphorTables> PhosphorBlend::acquireTables(
+    const ColourPalette& palette, uint8_t blend_ratio) {
+  const uint64_t key = paletteKey(palette, blend_ratio);
+
+  std::shared_ptr<TableEntry> entry;
+  {
+    std::lock_guard<std::mutex> lock(registryMutex());
+    auto& slot = registry()[key];
+    if (!slot) {
+      slot = std::make_shared<TableEntry>();
+    }
+    entry = slot;
+  }
+
+  // Build outside the registry lock. The build is ~63 ms; holding the lock across
+  // it would serialise environment construction, which is the cost this removes.
+  std::call_once(entry->built, [&] {
+    auto tables = std::make_shared<PhosphorTables>();
+    buildTables(*tables, palette, blend_ratio);
+    entry->tables = std::move(tables);
+  });
+
+  return entry->tables;
 }
 
 void PhosphorBlend::process(ALEScreen& screen) {
@@ -41,15 +111,15 @@ void PhosphorBlend::process(ALEScreen& screen) {
     int pv = previous_buffer[i];
 
     // Find out the corresponding rgb color
-    uint32_t rgb = m_avg_palette[cv][pv];
+    uint32_t rgb = m_tables->avg_palette[cv][pv];
 
     // Set the corresponding pixel in the array
     screen.getArray()[i] = rgbToNTSC(rgb);
   }
 }
-void PhosphorBlend::makeAveragePalette() {
-  ColourPalette& palette = m_osystem->colourPalette();
-
+void PhosphorBlend::buildTables(PhosphorTables& tables,
+                                const ColourPalette& palette,
+                                uint8_t blend_ratio) {
   // Precompute the average RGB values for phosphor-averaged colors c1 and c2.
   for (int c1 = 0; c1 < 256; c1 += 2) {
     for (int c2 = 0; c2 < 256; c2 += 2) {
@@ -58,10 +128,10 @@ void PhosphorBlend::makeAveragePalette() {
       palette.getRGB(c1, r1, g1, b1);
       palette.getRGB(c2, r2, g2, b2);
 
-      uint8_t r = getPhosphor(r1, r2);
-      uint8_t g = getPhosphor(g1, g2);
-      uint8_t b = getPhosphor(b1, b2);
-      m_avg_palette[c1][c2] = makeRGB(r, g, b);
+      uint8_t r = getPhosphor(r1, r2, blend_ratio);
+      uint8_t g = getPhosphor(g1, g2, blend_ratio);
+      uint8_t b = getPhosphor(b1, b2, blend_ratio);
+      tables.avg_palette[c1][c2] = makeRGB(r, g, b);
     }
   }
 
@@ -88,20 +158,20 @@ void PhosphorBlend::makeAveragePalette() {
           }
         }
 
-        m_rgb_ntsc[r >> 2][g >> 2][b >> 2] = minIndex;
+        tables.rgb_ntsc[r >> 2][g >> 2][b >> 2] = minIndex;
       }
     }
   }
 }
 
-uint8_t PhosphorBlend::getPhosphor(uint8_t v1, uint8_t v2) {
+uint8_t PhosphorBlend::getPhosphor(uint8_t v1, uint8_t v2, uint8_t blend_ratio) {
   if (v1 < v2) {
     int tmp = v1;
     v1 = v2;
     v2 = tmp;
   }
 
-  uint32_t blendedValue = ((v1 - v2) * m_phosphor_blend_ratio) / 100 + v2;
+  uint32_t blendedValue = ((v1 - v2) * blend_ratio) / 100 + v2;
   if (blendedValue > 255)
     return 255;
   else
@@ -118,7 +188,7 @@ uint8_t PhosphorBlend::rgbToNTSC(uint32_t rgb) {
   int g = (rgb >> 8) & 0xFF;
   int b = rgb & 0xFF;
 
-  return m_rgb_ntsc[r >> 2][g >> 2][b >> 2];
+  return m_tables->rgb_ntsc[r >> 2][g >> 2][b >> 2];
 }
 
 }  // namespace ale
