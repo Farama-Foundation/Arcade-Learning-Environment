@@ -49,9 +49,14 @@ void PitfallSettings::step(const System& system) {
 
   // update terminal status
   int lives_byte = readRam(&system, 0x80) >> 4;
-  // The value at 09xE will be nonzero if we cannot control the player
+  // The value at 0x9E will be nonzero if we cannot control the player
   int logo_timer = readRam(&system, 0x9E);
-  m_terminal = lives_byte == 0 && logo_timer != 0;
+  // The game timer (displayed as MM:SS) is stored in BCD format at 0xD8 (minutes) and 0xD9 (seconds)
+  int timer_minutes = readRam(&system, 0xD8);
+  int timer_seconds = readRam(&system, 0xD9);
+  // Game terminates when: (1) all lives lost and logo screen shown, OR (2) timer runs out (00:00)
+  bool timer_expired = (timer_minutes == 0 && timer_seconds == 0);
+  m_terminal = (lives_byte == 0 && logo_timer != 0) || timer_expired;
 
   m_lives = (lives_byte == 0xA) ? 3 : ((lives_byte == 0x8) ? 2 : 1);
 }
