@@ -40,16 +40,26 @@ void SpaceWarSettings::step(const System& system) {
   int score = getDecimalScore(0xa7, &system);
   m_reward = score - m_score;
   m_score = score;
-  // Game terminates either when the player gets 10 points or the 10 minute
+  if (is_two_player) {
+    // In two-player modes the reward is the score difference, making the
+    // game zero-sum between the players.
+    int score_p2 = getDecimalScore(0xa8, &system);
+    m_reward -= (score_p2 - m_score_p2);
+    m_score_p2 = score_p2;
+  }
+  // Game terminates either when a player gets 10 points or the 10 minute
   // timer expires. The timer counts up every 256 vsyncs, incrementing from 0x74
   // until it wraps around to 0x00. 35840 vsyncs ~= 600 seconds = 10 minutes.
   int timer = readRam(&system, 0x80);
-  m_terminal = score == 10 || timer == 0;
+  m_terminal = m_score == 10 || m_score_p2 == 10 || timer == 0;
 }
 
 bool SpaceWarSettings::isTerminal() const { return m_terminal; }
 
 reward_t SpaceWarSettings::getReward() const { return m_reward; }
+
+// space war is zero-sum: player 2's reward is the negative of player 1's
+reward_t SpaceWarSettings::getRewardP2() const { return -m_reward; }
 
 bool SpaceWarSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -80,6 +90,7 @@ bool SpaceWarSettings::isMinimal(const Action& a) const {
 void SpaceWarSettings::reset() {
   m_reward = 0;
   m_score = 0;
+  m_score_p2 = 0;
   m_terminal = false;
 }
 
@@ -87,12 +98,18 @@ void SpaceWarSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
+
+  ser.putInt(m_score_p2);
+  ser.putBool(is_two_player);
 }
 
 void SpaceWarSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
+
+  m_score_p2 = ser.getInt();
+  is_two_player = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=470
@@ -102,6 +119,12 @@ void SpaceWarSettings::loadState(Deserializer& ser) {
 // the second player, as player one will run out of missiles that will not be
 // replenished. We therefore remove the first five modes but the rest [6-17] are
 // valid, with the second (inert) player acting as a distractor when present.
+// Two-player modes 1-5 are the Space War shooting games that require a
+// second player (see the single-player comment above).
+ModeVect SpaceWarSettings::get2PlayerModes() {
+  return {1, 2, 3, 4, 5};
+}
+
 ModeVect SpaceWarSettings::getAvailableModes() {
   return {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
 }
@@ -109,7 +132,8 @@ ModeVect SpaceWarSettings::getAvailableModes() {
 void SpaceWarSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (isModeSupported(m)) {
+  if (isModeSupported(m) || (m >= 1 && m <= 5)) {
+    is_two_player = (m >= 1 && m <= 5);
     // Press select until the correct mode is reached.
     while (getDecimalScore(0xa7, &system) != static_cast<int>(m)) {
       environment->pressSelect(2);

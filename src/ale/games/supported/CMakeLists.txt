@@ -23,6 +23,7 @@ target_sources(ale
     Casino.cpp
     Centipede.cpp
     ChopperCommand.cpp
+    Combat.cpp
     CrazyClimber.cpp
     Crossbow.cpp
     DarkChambers.cpp
@@ -50,6 +51,7 @@ target_sources(ale
     IceHockey.cpp
     JamesBond.cpp
     JourneyEscape.cpp
+    Joust.cpp
     Kaboom.cpp
     Kangaroo.cpp
     KeystoneKapers.cpp
@@ -61,6 +63,7 @@ target_sources(ale
     LaserGates.cpp
     LostLuggage.cpp
     MarioBros.cpp
+    MazeCraze.cpp
     MiniatureGolf.cpp
     MontezumaRevenge.cpp
     MrDo.cpp
@@ -100,6 +103,7 @@ target_sources(ale
     VideoChess.cpp
     VideoCube.cpp
     VideoPinball.cpp
+    Warlords.cpp
     WizardOfWor.cpp
     WordZapper.cpp
     YarsRevenge.cpp

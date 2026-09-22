@@ -33,9 +33,35 @@ void DoubleDunkSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
 
+  // double dunk is zero-sum between the players
+  m_reward_p2 = -m_reward;
+
   // update terminal status
   int some_value = readRam(&system, 0xFE);
   m_terminal = (my_score >= 24 || oppt_score >= 24) && some_value == 0xE7;
+
+  if (is_two_player) {
+    // Between points the game waits for both players to pick a play; time
+    // this choice out so a player cannot stall the game forever.
+    int choice_value = readRam(&system, 0x89);
+    if (!(choice_value == 0 || choice_value & 0x80 || choice_value & 0x40)) {
+      no_choice_counter = 0;
+    }
+    no_choice_counter++;
+    if (max_turn_time > 0 && no_choice_counter > max_turn_time) {
+      if (choice_value == 0) {
+        m_reward = -1;
+        m_reward_p2 = -1;
+      } else if (choice_value & 0x40) {
+        m_reward = 0;
+        m_reward_p2 = -1;
+      } else if (choice_value & 0x80) {
+        m_reward = -1;
+        m_reward_p2 = 0;
+      }
+      no_choice_counter = 0;
+    }
+  }
 }
 
 /* is end of game */
@@ -43,6 +69,8 @@ bool DoubleDunkSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t DoubleDunkSettings::getReward() const { return m_reward; }
+
+reward_t DoubleDunkSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool DoubleDunkSettings::isMinimal(const Action& a) const {
@@ -74,8 +102,10 @@ bool DoubleDunkSettings::isMinimal(const Action& a) const {
 /* reset the state of the game */
 void DoubleDunkSettings::reset() {
   m_reward = 0;
+  m_reward_p2 = 0;
   m_score = 0;
   m_terminal = false;
+  no_choice_counter = 0;
 }
 
 /* saves the state of the rom settings */
@@ -83,6 +113,10 @@ void DoubleDunkSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
+
+  ser.putInt(m_reward_p2);
+  ser.putInt(no_choice_counter);
+  ser.putBool(is_two_player);
 }
 
 // loads the state of the rom settings
@@ -90,6 +124,10 @@ void DoubleDunkSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
+
+  m_reward_p2 = ser.getInt();
+  no_choice_counter = ser.getInt();
+  is_two_player = ser.getBool();
 }
 
 ActionVect DoubleDunkSettings::getStartingActions() {
@@ -104,6 +142,16 @@ ModeVect DoubleDunkSettings::getAvailableModes() {
   ModeVect modes(getNumModes());
   for (unsigned int i = 0; i < modes.size(); i++) {
     modes[i] = i;
+  }
+  return modes;
+}
+
+// Modes 16-31 are the two-player versions of modes 0-15: bit 4 selects
+// the 'two player' option in the game's menu.
+ModeVect DoubleDunkSettings::get2PlayerModes() {
+  ModeVect modes(16);
+  for (unsigned int i = 0; i < 16; i++) {
+    modes[i] = 16 + i;
   }
   return modes;
 }
@@ -146,8 +194,17 @@ void DoubleDunkSettings::deactivateOption(
 void DoubleDunkSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < getNumModes()) {
+  if (m < 32) {
     environment->pressSelect();
+
+    //deal with the number of players option (the first menu entry)
+    if (m & 16) {
+      is_two_player = true;
+      activateOption(system, 0x40, environment);
+    } else {
+      is_two_player = false;
+      deactivateOption(system, 0x40, environment);
+    }
 
     //discard the first two entries (irrelevant)
     goDown(system, environment);
@@ -192,6 +249,15 @@ void DoubleDunkSettings::setMode(
 
   } else {
     throw std::runtime_error("This mode doesn't currently exist for this game");
+  }
+}
+
+void DoubleDunkSettings::modifyEnvironmentSettings(Settings& settings) {
+  max_turn_time = settings.getInt("max_turn_time");
+  if (max_turn_time == -1) {
+    // times out a stalled play choice after 2 seconds by default
+    const int DEFAULT_STALL_LIMIT = 60 * 2;
+    max_turn_time = DEFAULT_STALL_LIMIT;
   }
 }
 

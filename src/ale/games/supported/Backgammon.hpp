@@ -28,11 +28,11 @@
 #ifndef __BACKGAMMON_HPP__
 #define __BACKGAMMON_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
-class BackgammonSettings : public RomSettings {
+class BackgammonSettings : public RomSettings2P {
  public:
   BackgammonSettings();
 
@@ -43,6 +43,7 @@ class BackgammonSettings : public RomSettings {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const override { return "backgammon"; }
 
@@ -62,6 +63,7 @@ class BackgammonSettings : public RomSettings {
   int lives() override { return isTerminal() ? 0 : 1; }
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   void setMode(game_mode_t, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;

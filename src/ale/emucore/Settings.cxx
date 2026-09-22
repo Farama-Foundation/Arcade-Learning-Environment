@@ -422,6 +422,10 @@ void Settings::setDefaultSettings() {
     intSettings.insert(std::pair<std::string, int>("reward_min", std::numeric_limits<int>::min()));
     intSettings.insert(std::pair<std::string, int>("reward_max", std::numeric_limits<int>::max()));
 
+    // Multiplayer anti-stalling timeout in frames; -1 selects each game's
+    // default. Used by turn-based two-player games (e.g. tennis serves).
+    intSettings.insert(std::pair<std::string, int>("max_turn_time", -1));
+
     // Record settings
     intSettings.insert(std::pair<std::string, int>("fragsize", 64)); // fragsize to 64 ensures proper sound sync
     stringSettings.insert(std::pair<std::string, std::string>("record_screen_dir", ""));

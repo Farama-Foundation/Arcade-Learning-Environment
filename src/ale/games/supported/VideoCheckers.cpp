@@ -70,11 +70,37 @@ void VideoCheckersSettings::step(const System& system) {
     process_board_state(state, num_black_pieces, num_white_pieces);
   }
 
+  m_reward_p2 = -m_reward;
+
+  if (two_player_mode) {
+    bool is_white_turn = (readRam(&system, 0xc0) >> 4);
+    if (is_white_turn != m_is_white_turn) {
+      turn_same_count = 0;
+    }
+    turn_same_count += 1;
+    m_is_white_turn = is_white_turn;
+
+    m_reward = 0;
+    m_reward_p2 = 0;
+    // time out the current player's move to disallow stalling
+    if (max_turn_time > 0 && turn_same_count > max_turn_time) {
+      // white is player 2
+      if (is_white_turn) {
+        m_reward_p2 = -1;
+      } else {
+        m_reward = -1;
+      }
+      turn_same_count = 0;
+    }
+  }
+
   if (num_black_pieces == 0) {
     m_reward = m_reverse_checkers ? +1 : -1;
+    m_reward_p2 = -m_reward;
     m_terminal = true;
   } else if (num_white_pieces == 0) {
     m_reward = m_reverse_checkers ? -1 : +1;
+    m_reward_p2 = -m_reward;
     m_terminal = true;
   }
 }
@@ -82,6 +108,8 @@ void VideoCheckersSettings::step(const System& system) {
 bool VideoCheckersSettings::isTerminal() const { return m_terminal; }
 
 reward_t VideoCheckersSettings::getReward() const { return m_reward; }
+
+reward_t VideoCheckersSettings::getRewardP2() const { return m_reward_p2; }
 
 bool VideoCheckersSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -98,17 +126,30 @@ bool VideoCheckersSettings::isMinimal(const Action& a) const {
 
 void VideoCheckersSettings::reset() {
   m_reward = 0;
+  m_reward_p2 = 0;
   m_terminal = false;
+  m_is_white_turn = false;
+  turn_same_count = 0;
 }
 
 void VideoCheckersSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putBool(m_terminal);
+
+  ser.putInt(m_reward_p2);
+  ser.putInt(turn_same_count);
+  ser.putBool(m_is_white_turn);
+  ser.putBool(two_player_mode);
 }
 
 void VideoCheckersSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_terminal = ser.getBool();
+
+  m_reward_p2 = ser.getInt();
+  turn_same_count = ser.getInt();
+  m_is_white_turn = ser.getBool();
+  two_player_mode = ser.getBool();
 }
 
 ModeVect VideoCheckersSettings::getAvailableModes() {
@@ -120,25 +161,38 @@ ModeVect VideoCheckersSettings::getAvailableModes() {
   return {1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 }
 
+// Game 10 is the two-player game of regular checkers.
+ModeVect VideoCheckersSettings::get2PlayerModes() {
+  return {10};
+}
+
 // Set the game mode.
 // The given mode must be one returned by the previous function.
 void VideoCheckersSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
   auto availableModes = getAvailableModes();
-  if (isModeSupported(m)) {
+  if (isModeSupported(m) || m == 10) {
+    two_player_mode = (m == 10);
     m_reverse_checkers = m >= 11;
-    // apply offset to match corresponding value in memory
-    if (m_reverse_checkers) {
-      m += 6;
-    }
+    // The displayed game number is stored as BCD in RAM 0xF6.
+    int target = (m / 10) * 16 + (m % 10);
 
-    while (readRam(&system, 0xF6) != static_cast<int>(m)) { environment->pressSelect(1); }
+    while (readRam(&system, 0xF6) != target) { environment->pressSelect(1); }
 
     // reset the environment to apply changes.
     environment->softReset();
   } else {
     throw std::runtime_error("This game mode is not supported.");
+  }
+}
+
+void VideoCheckersSettings::modifyEnvironmentSettings(Settings& settings) {
+  max_turn_time = settings.getInt("max_turn_time");
+  if (max_turn_time == -1) {
+    // times out a stalled move after 10 seconds by default
+    const int DEFAULT_STALL_LIMIT = 60 * 10;
+    max_turn_time = DEFAULT_STALL_LIMIT;
   }
 }
 

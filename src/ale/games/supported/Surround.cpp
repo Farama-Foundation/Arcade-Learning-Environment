@@ -60,6 +60,9 @@ bool SurroundSettings::isTerminal() const { return m_terminal; }
 /* get the most recently observed reward */
 reward_t SurroundSettings::getReward() const { return m_reward; }
 
+// surround is zero-sum: player 2's reward is the negative of player 1's
+reward_t SurroundSettings::getRewardP2() const { return -m_reward; }
+
 /* is an action part of the minimal set? */
 bool SurroundSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -109,13 +112,21 @@ ModeVect SurroundSettings::getAvailableModes() {
   return {0, 2};
 }
 
+// Two-player modes keep MA-ALE's numbering: the ROM variant is mode - 1
+// (single-player modes use variant = mode + 1, matching historic ALE).
+ModeVect SurroundSettings::get2PlayerModes() {
+  return {1, 5, 6, 7, 8, 9, 10, 11, 12};
+}
+
 void SurroundSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0 || m == 2) {
+  if (m == 0 || m == 2 || m == 1 || (m >= 5 && m <= 12)) {
     // Read the game mode from RAM address 0xf9.
     unsigned char mode = readRam(&system, 0xf9);
-    int desired_mode = m + 1;
+    // Single-player modes use variant = m + 1; two-player modes use m - 1.
+    bool single_player = (m == 0 || m == 2);
+    int desired_mode = single_player ? m + 1 : m - 1;
 
     // Press select until the correct mode is reached for single player only.
     while (mode != desired_mode) {

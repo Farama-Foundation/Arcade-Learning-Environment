@@ -41,13 +41,25 @@ void MarioBrosSettings::step(const System& system) {
   m_reward = score - m_score;
   m_score = score;
   m_lives = readRam(&system, 0x87);
-  // Game terminates when the player runs out of lives.
-  m_terminal = m_lives == 0;
+
+  int score_p2 = getDecimalScore(0x8C, 0x8B, &system) * 100;
+  m_reward_p2 = score_p2 - m_score_p2;
+  m_score_p2 = score_p2;
+  m_lives_p2 = readRam(&system, 0x88);
+
+  // Game terminates when the player(s) run out of lives.
+  if (is_two_player) {
+    m_terminal = m_lives == 0 && m_lives_p2 == 0;
+  } else {
+    m_terminal = m_lives == 0;
+  }
 }
 
 bool MarioBrosSettings::isTerminal() const { return m_terminal; }
 
 reward_t MarioBrosSettings::getReward() const { return m_reward; }
+
+reward_t MarioBrosSettings::getRewardP2() const { return m_reward_p2; }
 
 bool MarioBrosSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -79,6 +91,9 @@ void MarioBrosSettings::reset() {
   m_reward = 0;
   m_score = 0;
   m_lives = 0;
+  m_reward_p2 = 0;
+  m_score_p2 = 0;
+  m_lives_p2 = 0;
   m_terminal = false;
 }
 
@@ -87,6 +102,11 @@ void MarioBrosSettings::saveState(Serializer& ser) {
   ser.putInt(m_score);
   ser.putInt(m_lives);
   ser.putBool(m_terminal);
+
+  ser.putInt(m_reward_p2);
+  ser.putInt(m_score_p2);
+  ser.putInt(m_lives_p2);
+  ser.putBool(is_two_player);
 }
 
 void MarioBrosSettings::loadState(Deserializer& ser) {
@@ -94,6 +114,11 @@ void MarioBrosSettings::loadState(Deserializer& ser) {
   m_score = ser.getInt();
   m_lives = ser.getInt();
   m_terminal = ser.getBool();
+
+  m_reward_p2 = ser.getInt();
+  m_score_p2 = ser.getInt();
+  m_lives_p2 = ser.getInt();
+  is_two_player = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareLabelID=286
@@ -104,10 +129,17 @@ ModeVect MarioBrosSettings::getAvailableModes() {
   return {0, 2, 4, 6};
 }
 
+// The odd game variants are the two-player versions of the even ones
+// (RAM 0x80 holds the variant directly).
+ModeVect MarioBrosSettings::get2PlayerModes() {
+  return {1, 3, 5, 7};
+}
+
 void MarioBrosSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (isModeSupported(m)) {
+  if (m < 8) {
+    is_two_player = (m % 2 == 1);
     // Press select until the correct mode is reached.
     while (readRam(&system, 0x80) != static_cast<int>(m)) {
       environment->pressSelect(5);

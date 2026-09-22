@@ -49,6 +49,9 @@ bool IceHockeySettings::isTerminal() const { return m_terminal; };
 /* get the most recently observed reward */
 reward_t IceHockeySettings::getReward() const { return m_reward; }
 
+// ice hockey is zero-sum: player 2's reward is the negative of player 1's
+reward_t IceHockeySettings::getRewardP2() const { return -m_reward; }
+
 /* is an action part of the minimal set? */
 bool IceHockeySettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -102,12 +105,18 @@ ModeVect IceHockeySettings::getAvailableModes() {
   return {0, 2};
 }
 
+// Modes 1 and 3 are the two-player variants of modes 0 and 2 (RAM 0x80
+// holds the variant directly).
+ModeVect IceHockeySettings::get2PlayerModes() {
+  return {1, 3};
+}
+
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void IceHockeySettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m == 0 || m == 2) {
+  if (m < 4) {
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x80);
     // press select until the correct mode is reached
