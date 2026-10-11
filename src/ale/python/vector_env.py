@@ -9,6 +9,7 @@ import gymnasium.vector.utils
 import numpy as np
 from ale_py import roms
 from ale_py.env import AtariEnv
+from gymnasium import error
 from gymnasium.core import ObsType
 from gymnasium.spaces import Box, Discrete
 from gymnasium.vector import AutoresetMode, VectorEnv
@@ -70,6 +71,13 @@ class AtariVectorEnv(VectorEnv):
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
         """
+        if type(frameskip) is not int:
+            raise error.Error(f"Invalid frameskip type: {type(frameskip)}.")
+        if isinstance(frameskip, int) and frameskip <= 0:
+            raise error.Error(
+                f"Invalid frameskip of {frameskip}, frameskip must be positive."
+            )
+
         rom_path = roms.get_rom_path(game)
         assert (
             rom_path is not None

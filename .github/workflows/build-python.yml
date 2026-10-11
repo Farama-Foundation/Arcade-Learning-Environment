@@ -69,7 +69,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Linux)
       if: runner.os == 'Linux'
-      uses: Jimver/cuda-toolkit@v0.2.35
+      uses: Jimver/cuda-toolkit@v0.2.36
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -77,7 +77,7 @@ jobs:
 
     - name: Install CUDA Toolkit (Windows)
       if: runner.os == 'Windows'
-      uses: Jimver/cuda-toolkit@v0.2.35
+      uses: Jimver/cuda-toolkit@v0.2.36
       with:
         cuda: '12.6.2'
         method: 'network'
@@ -118,7 +118,7 @@ jobs:
         # For Linux, the CUDA Toolkit is installed the dockerfile
       - name: Install CUDA Toolkit (Windows)
         if: runner.os == 'Windows'
-        uses: Jimver/cuda-toolkit@v0.2.35
+        uses: Jimver/cuda-toolkit@v0.2.36
         with:
           cuda: '12.6.2'
           method: 'network'
@@ -164,18 +164,14 @@ jobs:
       matrix:
         include:
           # example wheel names (if the wheel names change, look at the `ls wheels/` for the new names)
-          # ale_py-0.x.x-cp310-cp310-macosx_11_0_arm64.whl
-          # ale_py-0.x.x-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
-          # ale_py-0.x.x-cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl
-          # ale_py-0.x.x-cp310-cp310-win_amd64.whl
+          # ale_py-0.x.x-cp311-cp311-macosx_13_0_arm64.whl
+          # ale_py-0.x.x-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+          # ale_py-0.x.x-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl
+          # ale_py-0.x.x-cp311-cp311-win_amd64.whl
           - runs-on: ubuntu-latest
-            python: '3.10'
-            wheel-name: 'cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
+            python: '3.11'
+            wheel-name: 'cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
-#          - runs-on: ubuntu-latest
-#            python: '3.11'
-#            wheel-name: 'cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
-#            arch: 'x86_64'
 #          - runs-on: ubuntu-latest
 #            python: '3.12'
 #            wheel-name: 'cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
@@ -188,15 +184,15 @@ jobs:
             python: '3.14'
             wheel-name: 'cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
             arch: 'x86_64'
+          - runs-on: ubuntu-latest
+            python: '3.15'
+            wheel-name: 'cp315-cp315-manylinux_2_27_x86_64.manylinux_2_28_x86_64'
+            arch: 'x86_64'
 
           - runs-on: ubuntu-24.04-arm
-            python: '3.10'
-            wheel-name: 'cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
+            python: '3.11'
+            wheel-name: 'cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
-#          - runs-on: ubuntu-24.04-arm
-#            python: '3.11'
-#            wheel-name: 'cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
-#            arch: 'aarch64'
 #          - runs-on: ubuntu-24.04-arm
 #            python: '3.12'
 #            wheel-name: 'cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
@@ -209,15 +205,15 @@ jobs:
             python: '3.14'
             wheel-name: 'cp314-cp314-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
             arch: 'aarch64'
+          - runs-on: ubuntu-24.04-arm
+            python: '3.15'
+            wheel-name: 'cp315-cp315-manylinux_2_27_aarch64.manylinux_2_28_aarch64'
+            arch: 'aarch64'
 
           - runs-on: windows-latest
-            python: '3.10'
-            wheel-name: 'cp310-cp310-win_amd64'
+            python: '3.11'
+            wheel-name: 'cp311-cp311-win_amd64'
             arch: AMD64
-#          - runs-on: windows-latest
-#            python: '3.11'
-#            wheel-name: 'cp311-cp311-win_amd64'
-#            arch: AMD64
 #          - runs-on: windows-latest
 #            python: '3.12'
 #            wheel-name: 'cp312-cp312-win_amd64'
@@ -230,20 +226,15 @@ jobs:
             python: '3.14'
             wheel-name: 'cp314-cp314-win_amd64'
             arch: AMD64
-            # Jax doesn't support 3.14t on Windows
-#          - runs-on: windows-latest
-#            python: '3.14t'
-#            wheel-name: 'cp314-cp314t-win_amd64'
-#            arch: AMD64
+          - runs-on: windows-latest
+            python: '3.15'
+            wheel-name: 'cp315-cp315-win_amd64'
+            arch: AMD64
 
           - runs-on: macos-latest
-            python: '3.10'
-            wheel-name: 'cp310-cp310-macosx_13_0_arm64'
+            python: '3.11'
+            wheel-name: 'cp311-cp311-macosx_13_0_arm64'
             arch: arm64
-#          - runs-on: macos-latest
-#            python: '3.11'
-#            wheel-name: 'cp311-cp311-macosx_13_0_arm64'
-#            arch: arm64
 #          - runs-on: macos-latest
 #            python: '3.12'
 #            wheel-name: 'cp312-cp312-macosx_13_0_arm64'
@@ -256,6 +247,10 @@ jobs:
             python: '3.14'
             wheel-name: 'cp314-cp314-macosx_13_0_arm64'
             arch: arm64
+          - runs-on: macos-latest
+            python: '3.15'
+            wheel-name: 'cp315-cp315-macosx_13_0_arm64'
+            arch: arm64
 
     runs-on: ${{ matrix.runs-on }}
 
@@ -264,6 +259,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
+          allow-prereleases: true
 
       - uses: actions/download-artifact@v8
         with:
@@ -273,7 +269,7 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install "ale_py-0.12.0-${{ matrix.wheel-name }}.whl[test]"
+        run: python -m pip install "ale_py-0.12.1-${{ matrix.wheel-name }}.whl[test]"
 
       - name: Test
         run: python -m pytest
@@ -316,7 +312,7 @@ jobs:
 
       - name: Install ALE wheel
         # wildcarding doesn't work for some reason, therefore, update the project version here
-        run: python -m pip install "ale_py-0.12.0-${{ matrix.wheel-name }}.whl[test]"
+        run: python -m pip install "ale_py-0.12.1-${{ matrix.wheel-name }}.whl[test]"
 
       - name: Install NumPy 1.X
         run: python -m pip install "numpy<2.0"

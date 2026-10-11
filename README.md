@@ -34,7 +34,7 @@ The ALE currently supports three different interfaces: C++, Python, Gymnasium an
 Python
 ------
 
-You simply need to install the `ale-py` package distributed via PyPI:
+The Python interface supports CPython 3.11–3.15. Install the `ale-py` package distributed via PyPI:
 
 ```shell
 pip install ale-py
@@ -101,7 +101,7 @@ cmake --build . --target install
 ```
 
 There are optional flags `-DSDL_SUPPORT=ON/OFF` to toggle SDL support (i.e., `display_screen` and `sound` support; `OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
-the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the pybind11 wrapper (`ON` by default).
+the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the nanobind wrapper (`ON` by default).
 
 Finally, you can link against the ALE in your own CMake project as follows
 
