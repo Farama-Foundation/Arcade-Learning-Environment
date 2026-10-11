@@ -10,7 +10,7 @@ build-backend = "scikit_build_core.build"
 name = "ale-py"
 description = "The Arcade Learning Environment (ALE) - a platform for AI research."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "GPL-2.0-only"
 license-files = ["LICENSE.md"]
 keywords = ["reinforcement-learning", "arcade-learning-environment", "atari"]
@@ -28,17 +28,16 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
     "numpy>1.20",
-    "typing-extensions; python_version < '3.11'"
 ]
 dynamic = ["version"]
 
@@ -96,9 +95,9 @@ if.platform-system = "^win32"
 cmake.define.VCPKG_TARGET_TRIPLET = "x64-windows-mixed"
 
 [tool.cibuildwheel]
-# Skip 32-bit wheels, PyPy, musllinux, cp313t (free-threading was experimental in 3.13),
-# and cp314t-win_amd64 (jaxlib does not publish a Windows free-threading wheel).
-skip = ["*-win32", "*i686", "*-musllinux*", "cp313t-*", "cp314t-*"]
+# Skip 32-bit wheels, musllinux, and free-threaded Python (OpenCV has no wheels
+# for the free-threaded ABI).
+skip = ["*-win32", "*i686", "*-musllinux*", "cp3*t-*"]
 
 build-frontend = "build"
 manylinux-x86_64-image = "manylinux-x86_64-vcpkg:latest"

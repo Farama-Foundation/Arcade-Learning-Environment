@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import sys
 from functools import lru_cache
-from typing import Any, Literal
+from typing import Any, Literal, NotRequired, TypedDict
 
 import ale_py
 import gymnasium
@@ -12,11 +11,6 @@ import numpy as np
 from ale_py import roms
 from gymnasium import error, spaces, utils
 from gymnasium.utils import seeding
-
-if sys.version_info < (3, 11):
-    from typing_extensions import NotRequired, TypedDict
-else:
-    from typing import NotRequired, TypedDict
 
 
 class AtariEnvStepMetadata(TypedDict):

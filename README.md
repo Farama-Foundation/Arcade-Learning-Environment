@@ -34,7 +34,7 @@ The ALE currently supports three different interfaces: C++, Python, Gymnasium an
 Python
 ------
 
-You simply need to install the `ale-py` package distributed via PyPI:
+The Python interface supports CPython 3.11–3.15. Install the `ale-py` package distributed via PyPI:
 
 ```shell
 pip install ale-py
