@@ -61,13 +61,12 @@ class StellaEnvironment {
   reward_t act(Action player_a_action, Action player_b_action,
                float paddle_a_strength = 1.0, float paddle_b_strength = 1.0);
 
-  /** Applies the given continuous actions (e.g. updating paddle positions when
-   * the paddle is used) and performs one simulation step in Stella. Returns the
-   * resultant reward. When frame skip is set to > 1, up the corresponding
-   * number of simulation steps are performed.  Note that the post-act() frame
-   * number might not correspond to the pre-act() frame number plus the frame
-   * skip.
-   */
+  /** Multi-player version - takes one action per player, returns one reward per player. */
+  std::vector<reward_t> act(std::vector<Action> actions);
+
+  /** Multi-player version with a paddle strength per player. */
+  std::vector<reward_t> act(std::vector<Action> actions,
+                            std::vector<float> paddle_strengths);
 
   /** This functions emulates a push on the reset button of the console */
   void softReset();
@@ -134,14 +133,19 @@ class StellaEnvironment {
   reward_t oneStepAct(Action player_a_action, Action player_b_action,
                       float paddle_a_strength, float paddle_b_strength);
 
+  /** Multi-player version - applies actions for all players in one time step. */
+  void oneStepAct(std::vector<Action> actions, std::vector<reward_t>& rewards);
+
   /** Actually emulates the emulator for a given number of steps. */
   void emulate(Action player_a_action, Action player_b_action,
                float paddle_a_strength, float paddle_b_strength,
                size_t num_steps = 1);
 
+ void emulate(std::vector<Action> actions, size_t num_steps = 1);
+
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
    *   from the minimal set of actions. */
-  void noopIllegalActions(Action& player_a_action, Action& player_b_action);
+  void noopIllegalAction(Action& action);
 
   /** Processes the current emulator screen and saves it in m_screen */
   void processScreen();
@@ -176,12 +180,10 @@ class StellaEnvironment {
   int m_reward_min;                // Minimum reward value
   int m_reward_max;                // Maximum reward value
 
-  // The last actions taken by our players
-  Action m_player_a_action, m_player_b_action;
-  float m_paddle_a_strength, m_paddle_b_strength;
-  float m_player_a_r, m_player_b_r;
-  float m_player_a_theta, m_player_b_theta;
-  float m_player_a_fire, m_player_b_fire;
+  // The last actions taken by players (up to 4 players)
+  // All actions stored in PLAYER_A range (0-17) for consistency
+  std::vector<Action> m_actions;
+  std::vector<float> m_paddle_strength;
 };
 
 }  // namespace ale

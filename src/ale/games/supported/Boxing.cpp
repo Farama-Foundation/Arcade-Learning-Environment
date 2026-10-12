@@ -57,6 +57,9 @@ bool BoxingSettings::isTerminal() const { return m_terminal; };
 /* get the most recently observed reward */
 reward_t BoxingSettings::getReward() const { return m_reward; }
 
+/* boxing is a zero-sum game: player 2's reward is the negative of player 1's */
+reward_t BoxingSettings::getRewardP2() const { return -m_reward; }
+
 /* is an action part of the minimal set? */
 bool BoxingSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -107,6 +110,32 @@ void BoxingSettings::loadState(Deserializer& ser) {
 
 DifficultyVect BoxingSettings::getAvailableDifficulties() {
   return {0, 1, 2, 3};
+}
+
+// Mode 0 is the historic ALE default (the boot variant, no manipulation).
+// Mode 2 is the two-player variant, numbered by the game number the ROM
+// displays on the select screen (matching MA-ALE).
+ModeVect BoxingSettings::getAvailableModes() {
+  return {0};
+}
+
+ModeVect BoxingSettings::get2PlayerModes() {
+  return {2};
+}
+
+void BoxingSettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  // Mode 0 keeps the legacy behaviour: play the boot variant untouched.
+  if (m == 0) {
+    return;
+  }
+  // press select until the correct mode is reached
+  while (readRam(&system, 0x92) != m) {
+    environment->pressSelect(1);
+  }
+  // reset the environment to apply changes.
+  environment->softReset();
 }
 
 }  // namespace ale

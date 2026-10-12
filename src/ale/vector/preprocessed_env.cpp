@@ -97,6 +97,13 @@ PreprocessedEnv::PreprocessedEnv(
     ale_->setInt("random_seed", seed);
     ale_->loadROM(rom_path_);
 
+    // The vector environment steps with the single-player API (act, lives),
+    // which is invalid in multiplayer game modes.
+    if (ale_->numPlayersActive() != 1) {
+        throw std::invalid_argument(
+            "The vector environment only supports single-player game modes");
+    }
+
     // Get action set
     if (full_action_space) {
         action_set_ = ale_->getLegalActionSet();

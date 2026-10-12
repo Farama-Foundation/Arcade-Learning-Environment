@@ -54,6 +54,15 @@ void SpaceInvadersSettings::step(const System& system) {
     m_reward = (maximumScore - m_score) + score;
   }
   m_score = score;
+
+  int score_p2 = getDecimalScore(0xE9, 0xE7, &system);
+  m_reward_p2 = score_p2 - m_score_p2;
+  if (m_reward_p2 < 0) {
+    const int maximumScore = 10000;
+    m_reward_p2 = (maximumScore - m_score_p2) + score_p2;
+  }
+  m_score_p2 = score_p2;
+
   m_lives = readRam(&system, 0xC9);
 
   // update terminal status
@@ -67,6 +76,8 @@ bool SpaceInvadersSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t SpaceInvadersSettings::getReward() const { return m_reward; }
+
+reward_t SpaceInvadersSettings::getRewardP2() const { return m_reward_p2; }
 
 /* is an action part of the minimal set? */
 bool SpaceInvadersSettings::isMinimal(const Action& a) const {
@@ -87,6 +98,8 @@ bool SpaceInvadersSettings::isMinimal(const Action& a) const {
 void SpaceInvadersSettings::reset() {
   m_reward = 0;
   m_score = 0;
+  m_reward_p2 = 0;
+  m_score_p2 = 0;
   m_terminal = false;
   m_lives = 3;
 }
@@ -97,6 +110,9 @@ void SpaceInvadersSettings::saveState(Serializer& ser) {
   ser.putInt(m_score);
   ser.putBool(m_terminal);
   ser.putInt(m_lives);
+
+  ser.putInt(m_reward_p2);
+  ser.putInt(m_score_p2);
 }
 
 // loads the state of the rom settings
@@ -105,6 +121,9 @@ void SpaceInvadersSettings::loadState(Deserializer& ser) {
   m_score = ser.getInt();
   m_terminal = ser.getBool();
   m_lives = ser.getInt();
+
+  m_reward_p2 = ser.getInt();
+  m_score_p2 = ser.getInt();
 }
 
 // returns a list of mode that the game can be played in
@@ -116,12 +135,22 @@ ModeVect SpaceInvadersSettings::getAvailableModes() {
   return modes;
 }
 
+// Game variants 33-64 in the manual are the two-player versions of the
+// 32 base variants; ALE numbers all variants 0-indexed (RAM 0xDC).
+ModeVect SpaceInvadersSettings::get2PlayerModes() {
+  ModeVect modes(32);
+  for (unsigned int i = 0; i < 32; i++) {
+    modes[i] = 32 + i;
+  }
+  return modes;
+}
+
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void SpaceInvadersSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < getNumModes()) {
+  if (m < getNumModes() || (m >= 32 && m < 64)) {
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0xDC);
     // press select until the correct mode is reached

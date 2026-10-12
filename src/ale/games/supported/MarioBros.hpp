@@ -26,11 +26,11 @@
 #ifndef __MARIO_BROS_HPP__
 #define __MARIO_BROS_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
-class MarioBrosSettings : public RomSettings {
+class MarioBrosSettings : public RomSettings2P {
  public:
   MarioBrosSettings();
 
@@ -39,6 +39,7 @@ class MarioBrosSettings : public RomSettings {
   bool isTerminal() const override;
 
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   const char* rom() const override { return "mario_bros"; }
 
@@ -50,6 +51,7 @@ class MarioBrosSettings : public RomSettings {
   bool isMinimal(const Action& a) const override;
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
+  int livesP2() override { return isTerminal() ? 0 : m_lives_p2; }
 
   void step(const stella::System& system) override;
 
@@ -58,6 +60,7 @@ class MarioBrosSettings : public RomSettings {
   void loadState(stella::Deserializer& ser) override;
 
   ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
 
   void setMode(game_mode_t m, stella::System& system,
                std::unique_ptr<StellaEnvironmentWrapper> environment) override;
@@ -69,6 +72,10 @@ class MarioBrosSettings : public RomSettings {
   reward_t m_reward;
   int m_score;
   int m_lives;
+  reward_t m_reward_p2;
+  int m_score_p2;
+  int m_lives_p2;
+  bool is_two_player;
 };
 
 }  // namespace ale
