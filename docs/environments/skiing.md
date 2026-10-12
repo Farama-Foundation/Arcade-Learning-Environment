@@ -28,8 +28,9 @@ For a more detailed documentation, see [the AtariAge page](https://atariage.com/
 ## Actions
 
 Skiing has the action space of `Discrete(3)` with the table below listing the meaning of each action's meanings.
-To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
+To enable all legal actions, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
+This yields `Discrete(9)` with meanings NOOP, UP, RIGHT, LEFT, DOWN, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT. FIRE is not a legal action for Skiing.
 
 |   Index | Action   |
 |---------|----------|
