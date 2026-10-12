@@ -47,6 +47,7 @@ env.close()
 getting-started
 env-spec
 environments
+environment-sets
 vector-environment
 multi-agent-environments
 wasm
