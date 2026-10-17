@@ -109,16 +109,16 @@ void PhosphorBlend::process(ALEScreen& screen) {
 void PhosphorBlend::buildTables(PhosphorTables& tables,
                                 const ColourPalette& palette) {
   // Precompute the average RGB values for phosphor-averaged colors c1 and c2.
-  for (int c1 = 0; c1 < 256; c1 += 2) {
-    for (int c2 = 0; c2 < 256; c2 += 2) {
-      int r1, g1, b1;
-      int r2, g2, b2;
-      palette.getRGB(c1, r1, g1, b1);
-      palette.getRGB(c2, r2, g2, b2);
+  // Every pair, odd indices included: the TIA greys out an unfinished frame
+  // with odd (greyscale) indices, and those are averaged like any other.
+  for (int c1 = 0; c1 < 256; c1++) {
+    for (int c2 = 0; c2 < 256; c2++) {
+      uint32_t rgb1 = palette.getRGB(c1);
+      uint32_t rgb2 = palette.getRGB(c2);
 
-      uint8_t r = getPhosphor(r1, r2);
-      uint8_t g = getPhosphor(g1, g2);
-      uint8_t b = getPhosphor(b1, b2);
+      uint8_t r = getPhosphor((rgb1 >> 16) & 0xFF, (rgb2 >> 16) & 0xFF);
+      uint8_t g = getPhosphor((rgb1 >> 8) & 0xFF, (rgb2 >> 8) & 0xFF);
+      uint8_t b = getPhosphor(rgb1 & 0xFF, rgb2 & 0xFF);
       tables.avg_palette[c1][c2] = makeRGB(r, g, b);
     }
   }

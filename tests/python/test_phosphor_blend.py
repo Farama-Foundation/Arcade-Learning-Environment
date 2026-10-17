@@ -26,6 +26,11 @@ GOLDEN = {
     "laser_gates": "3d2bba9e69cca7ec1b359c5426af739bba030ba1bc85acb1a18fca4081003dc2",
 }
 
+# air_raid ends frames without VSYNC, so the TIA greys them out with odd (greyscale)
+# palette indices. main never filled those table entries and averaged them out of
+# uninitialised memory, so this digest has no main counterpart.
+AIR_RAID_GOLDEN = "76c52bd99f4f878a0be61b10f50e8e60cf904b74f40409ee1c6a34afb3f7cd89"
+
 SCRIPT = textwrap.dedent("""
     import hashlib
     import sys
@@ -92,6 +97,16 @@ def test_color_averaging_matches_main(games):
     assert digests_in_fresh_process("sequential", *games) == {
         game: GOLDEN[game] for game in games
     }
+
+
+def test_color_averaging_of_greyed_out_frames():
+    """Greyed-out frames average through filled table entries, after other games too."""
+    assert digests_in_fresh_process("sequential", "air_raid") == {
+        "air_raid": AIR_RAID_GOLDEN
+    }
+    assert digests_in_fresh_process("sequential", *GAMES, "air_raid")["air_raid"] == (
+        AIR_RAID_GOLDEN
+    )
 
 
 def test_color_averaging_changes_the_screen():
