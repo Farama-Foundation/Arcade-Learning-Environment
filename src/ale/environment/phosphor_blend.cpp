@@ -16,19 +16,77 @@
 
 #include "ale/environment/phosphor_blend.hpp"
 
+#include <array>
+#include <cassert>
+#include <map>
+#include <mutex>
+
 #include "ale/emucore/Console.hxx"
 
 namespace ale {
 using namespace stella;   // OSystem
 
-PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
-  // Taken from default Stella settings
-  m_phosphor_blend_ratio = 77;
+namespace {
 
-  makeAveragePalette();
+/** The full palette contents. Keying on these rather than on the display format
+ *  keeps sharing exact for NTSC/PAL/SECAM and for user-supplied palettes alike. */
+using PaletteKey = std::array<uint32_t, 256>;
+
+/** One registry slot. Built at most once, immutable afterwards. */
+struct TableEntry {
+  // User-provided so that try_emplace() does not zero 512 KiB under the lock.
+  TableEntry() {}
+
+  std::once_flag built;
+  PhosphorTables tables;
+};
+
+/** Shared tables, one entry per distinct palette (512 KiB each), instead of one
+ *  per environment. std::map nodes never move, so a pointer into an entry stays
+ *  valid while other entries are inserted. The mutex and map are deliberately
+ *  leaked: environments may outlive static destruction, and nothing needs to run
+ *  at exit. */
+std::mutex& registryMutex() {
+  static std::mutex* mutex = new std::mutex;
+  return *mutex;
+}
+
+std::map<PaletteKey, TableEntry>& registry() {
+  static auto* entries = new std::map<PaletteKey, TableEntry>;
+  return *entries;
+}
+
+}  // namespace
+
+PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
+  // The tables are only needed for colour averaging, which is off by default, so
+  // most environments never pay for them.
+  if (m_osystem->settings().getBool("color_averaging")) {
+    m_tables = acquireTables(m_osystem->colourPalette());
+  }
+}
+
+const PhosphorTables* PhosphorBlend::acquireTables(const ColourPalette& palette) {
+  PaletteKey key;
+  for (int i = 0; i < 256; ++i) {
+    key[i] = palette.getRGB(i);
+  }
+
+  TableEntry* entry;
+  {
+    std::lock_guard<std::mutex> lock(registryMutex());
+    entry = &registry().try_emplace(key).first->second;
+  }
+
+  // Build outside the registry lock: holding it across the build would serialise
+  // construction of environments with different palettes.
+  std::call_once(entry->built, [&] { buildTables(entry->tables, palette); });
+
+  return &entry->tables;
 }
 
 void PhosphorBlend::process(ALEScreen& screen) {
+  assert(m_tables != nullptr && "process() called with colour averaging off");
   Console& console = m_osystem->console();
 
   // Fetch current and previous frame buffers from the emulator
@@ -41,15 +99,15 @@ void PhosphorBlend::process(ALEScreen& screen) {
     int pv = previous_buffer[i];
 
     // Find out the corresponding rgb color
-    uint32_t rgb = m_avg_palette[cv][pv];
+    uint32_t rgb = m_tables->avg_palette[cv][pv];
 
     // Set the corresponding pixel in the array
     screen.getArray()[i] = rgbToNTSC(rgb);
   }
 }
-void PhosphorBlend::makeAveragePalette() {
-  ColourPalette& palette = m_osystem->colourPalette();
 
+void PhosphorBlend::buildTables(PhosphorTables& tables,
+                                const ColourPalette& palette) {
   // Precompute the average RGB values for phosphor-averaged colors c1 and c2.
   for (int c1 = 0; c1 < 256; c1 += 2) {
     for (int c2 = 0; c2 < 256; c2 += 2) {
@@ -61,7 +119,7 @@ void PhosphorBlend::makeAveragePalette() {
       uint8_t r = getPhosphor(r1, r2);
       uint8_t g = getPhosphor(g1, g2);
       uint8_t b = getPhosphor(b1, b2);
-      m_avg_palette[c1][c2] = makeRGB(r, g, b);
+      tables.avg_palette[c1][c2] = makeRGB(r, g, b);
     }
   }
 
@@ -88,7 +146,7 @@ void PhosphorBlend::makeAveragePalette() {
           }
         }
 
-        m_rgb_ntsc[r >> 2][g >> 2][b >> 2] = minIndex;
+        tables.rgb_ntsc[r >> 2][g >> 2][b >> 2] = minIndex;
       }
     }
   }
@@ -101,7 +159,7 @@ uint8_t PhosphorBlend::getPhosphor(uint8_t v1, uint8_t v2) {
     v2 = tmp;
   }
 
-  uint32_t blendedValue = ((v1 - v2) * m_phosphor_blend_ratio) / 100 + v2;
+  uint32_t blendedValue = ((v1 - v2) * kPhosphorBlendRatio) / 100 + v2;
   if (blendedValue > 255)
     return 255;
   else
@@ -118,7 +176,7 @@ uint8_t PhosphorBlend::rgbToNTSC(uint32_t rgb) {
   int g = (rgb >> 8) & 0xFF;
   int b = rgb & 0xFF;
 
-  return m_rgb_ntsc[r >> 2][g >> 2][b >> 2];
+  return m_tables->rgb_ntsc[r >> 2][g >> 2][b >> 2];
 }
 
 }  // namespace ale

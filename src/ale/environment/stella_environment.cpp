@@ -70,7 +70,9 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings)
       m_osystem->settings().getInt("max_num_frames_per_episode");
   m_max_lives = m_settings->lives();
   m_truncate_on_loss_of_life = m_osystem->settings().getBool("truncate_on_loss_of_life");
-  m_colour_averaging = m_osystem->settings().getBool("color_averaging");
+  // The blender reads `color_averaging` itself and only has tables when it is on,
+  // so take the flag from it rather than re-reading the setting.
+  m_colour_averaging = m_phosphor_blend.enabled();
 
   m_reward_min = m_osystem->settings().getInt("reward_min");
   m_reward_max = m_osystem->settings().getInt("reward_max");
