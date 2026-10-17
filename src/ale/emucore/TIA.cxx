@@ -39,13 +39,15 @@ static std::once_flag tia_init_once;
 namespace ale {
 namespace stella {
 
-// ALE: the frame buffers are large (160 x 300 each) but almost entirely flat, so a
-// (value, run-length) encoding takes the pair from 96000 bytes down to a few KB. That is
-// what makes it affordable to put the screen into the saved state at all - see the
-// matching comment in TIA::save().
+// ALE: helpers for saving the frame buffers and the mask table pointers in TIA::save().
+// The frame buffers are almost entirely flat, so (value, run-length) pairs take them from
+// 48000 bytes each down to a few KB.
 namespace {
 
 const uint32_t FRAME_BUFFER_SIZE = 160 * 300;
+
+// Pixels written per scanline; also the furthest a mask pointer is indexed by hpos.
+const uint32_t SCANLINE_WIDTH = 160;
 
 std::string rleEncode(const uint8_t* buffer, uint32_t length)
 {
@@ -82,6 +84,9 @@ std::string rleEncode(const uint8_t* buffer, uint32_t length)
 // a state blob can come from anywhere (ALEState::deserialize).
 bool rleDecode(const std::string& in, uint8_t* buffer, uint32_t length)
 {
+  if(in.size() % 2 != 0)
+    return false;
+
   uint32_t written = 0;
 
   for(std::string::size_type i = 0; (i + 1) < in.size(); i += 2)
@@ -97,14 +102,34 @@ bool rleDecode(const std::string& in, uint8_t* buffer, uint32_t length)
   return written == length;
 }
 
-// ALE: restore a table pointer that was saved as an element offset, refusing an
-// out-of-range offset rather than handing back a wild pointer.
+// ALE: a mask pointer is saved as an element offset into its static table, or as -1 when
+// it points at the optional `disabled` table (the Cosmic Ark path in updateFrame() points
+// myCurrentM0Mask at ourDisabledMaskTable).
+const int DISABLED_MASK_OFFSET = -1;
+
 template <typename T>
-const T* offsetInto(const T* base, int offset, int count)
+int maskToOffset(const T* mask, const T* table, const T* disabled)
 {
-  if(offset < 0 || offset >= count)
-    return base;
-  return base + offset;
+  if(disabled != nullptr && mask == disabled)
+    return DISABLED_MASK_OFFSET;
+  return (int)(mask - table);
+}
+
+// Returns false unless the offset leaves a full scanline of the table after it, since the
+// mask is indexed by horizontal position.
+template <typename T>
+bool offsetToMask(int offset, const T* table, size_t count, const T* disabled,
+                  const T*& mask)
+{
+  if(disabled != nullptr && offset == DISABLED_MASK_OFFSET)
+  {
+    mask = disabled;
+    return true;
+  }
+  if(offset < 0 || (size_t)offset + SCANLINE_WIDTH > count)
+    return false;
+  mask = table + offset;
+  return true;
 }
 
 }  // namespace
@@ -125,8 +150,8 @@ TIA::TIA(const Console& console, Settings& settings)
   uint32_t i;
 
   // Allocate buffers for two frame buffers
-  myCurrentFrameBuffer = new uint8_t[160 * 300];
-  myPreviousFrameBuffer = new uint8_t[160 * 300];
+  myCurrentFrameBuffer = new uint8_t[FRAME_BUFFER_SIZE];
+  myPreviousFrameBuffer = new uint8_t[FRAME_BUFFER_SIZE];
 
   myFrameGreyed = false;
   myPartialFrameFlag = false; //ALE : This was left uninitialized :(
@@ -442,18 +467,17 @@ bool TIA::save(Serializer& out)
     out.putInt(myCurrentGRP0);
     out.putInt(myCurrentGRP1);
 
-    // ALE: these six point into the static mask tables and were previously left out of
-    // the state (the commented-out lines above). They are only recomputed when the
-    // register that derives them is next poked, so between pokes they are live state: a
-    // restore left them pointing wherever the receiving instance happened to be, which
-    // renders the first frame wrong (yars_revenge). Saved as element offsets, since the
-    // tables are static and the pointers themselves are not portable.
-    out.putInt((int)(myCurrentBLMask - &ourBallMaskTable[0][0][0]));
-    out.putInt((int)(myCurrentM0Mask - &ourMissleMaskTable[0][0][0][0]));
-    out.putInt((int)(myCurrentM1Mask - &ourMissleMaskTable[0][0][0][0]));
-    out.putInt((int)(myCurrentP0Mask - &ourPlayerMaskTable[0][0][0][0]));
-    out.putInt((int)(myCurrentP1Mask - &ourPlayerMaskTable[0][0][0][0]));
-    out.putInt((int)(myCurrentPFMask - &ourPlayfieldTable[0][0]));
+    // ALE: the mask pointers are only recomputed when their register is next poked, so
+    // until then they are live state the next frame is drawn with.
+    const uint8_t* noDisabled = nullptr;
+    out.putInt(maskToOffset(myCurrentBLMask, &ourBallMaskTable[0][0][0], noDisabled));
+    out.putInt(maskToOffset(myCurrentM0Mask, &ourMissleMaskTable[0][0][0][0],
+                            &ourDisabledMaskTable[0]));
+    out.putInt(maskToOffset(myCurrentM1Mask, &ourMissleMaskTable[0][0][0][0], noDisabled));
+    out.putInt(maskToOffset(myCurrentP0Mask, &ourPlayerMaskTable[0][0][0][0], noDisabled));
+    out.putInt(maskToOffset(myCurrentP1Mask, &ourPlayerMaskTable[0][0][0][0], noDisabled));
+    out.putInt(maskToOffset(myCurrentPFMask, &ourPlayfieldTable[0][0],
+                            (const uint32_t*) nullptr));
 
     out.putInt(myLastHMOVEClock);
     out.putBool(myHMOVEBlankEnabled);
@@ -468,24 +492,15 @@ bool TIA::save(Serializer& out)
     // a different number of cycles in its next frame.
     out.putBool(myPartialFrameFlag);
 
-    // ALE: myFramePointer is the write cursor into myCurrentFrameBuffer, and it is only
-    // rebased by startFrame(), which update() skips while myPartialFrameFlag is set. A
-    // mid-frame state restored into an emulator whose cursor sits elsewhere therefore
-    // renders the rest of the frame at the wrong offset, and once the restored clock
-    // counters imply more scanline than the cursor has buffer left, updateFrameScanline()
-    // writes past the end of it. Stored as an offset because the two frame buffers are
-    // per-instance heap allocations and startFrame() swaps them every frame.
+    // ALE: the write cursor is only rebased by startFrame(), so a mid-frame restore needs
+    // it to keep drawing at the right place. Saved as an offset: the buffers are per-instance.
     out.putInt((int)(myFramePointer - myCurrentFrameBuffer));
 
-    // ALE: set by update() when it greys out an unfinished frame, cleared by startFrame();
-    // without it a restored partial frame can be greyed twice or not at all.
+    // ALE: without it a restored partial frame can be greyed out twice or not at all.
     out.putBool(myFrameGreyed);
 
-    // ALE: the frame buffers themselves. startFrame() swaps them, so a game that repaints
-    // only part of the screen inherits pixels from two frames back; a restore that does not
-    // carry them renders visibly wrong frames until every scanline has been repainted
-    // (measured across the 104 loadable ROMs: 4 games affected, up to 94% of the first
-    // frame's pixels, clearing within two frames). RLE keeps the cost to a few KB.
+    // ALE: games that repaint only part of the screen show pixels from earlier frames, and
+    // the previous buffer feeds color averaging, so both buffers are part of the state.
     out.putString(rleEncode(myCurrentFrameBuffer, FRAME_BUFFER_SIZE));
     out.putString(rleEncode(myPreviousFrameBuffer, FRAME_BUFFER_SIZE));
 
@@ -570,19 +585,26 @@ bool TIA::load(Deserializer& in)
     myCurrentGRP0 = (uint8_t) in.getInt();
     myCurrentGRP1 = (uint8_t) in.getInt();
 
-    // ALE: see the matching comment in save().
-    myCurrentBLMask = offsetInto(&ourBallMaskTable[0][0][0], (int) in.getInt(),
-                                 4 * 4 * 320);
-    myCurrentM0Mask = offsetInto(&ourMissleMaskTable[0][0][0][0], (int) in.getInt(),
-                                 4 * 8 * 4 * 320);
-    myCurrentM1Mask = offsetInto(&ourMissleMaskTable[0][0][0][0], (int) in.getInt(),
-                                 4 * 8 * 4 * 320);
-    myCurrentP0Mask = offsetInto(&ourPlayerMaskTable[0][0][0][0], (int) in.getInt(),
-                                 4 * 2 * 8 * 320);
-    myCurrentP1Mask = offsetInto(&ourPlayerMaskTable[0][0][0][0], (int) in.getInt(),
-                                 4 * 2 * 8 * 320);
-    myCurrentPFMask = offsetInto(&ourPlayfieldTable[0][0], (int) in.getInt(),
-                                 2 * 160);
+    // ALE: see the matching comment in save(). A state blob can come from anywhere
+    // (ALEState::deserialize), so an offset that would index outside its table fails the load.
+    const size_t ballMaskCount = sizeof(ourBallMaskTable) / sizeof(uint8_t);
+    const size_t missleMaskCount = sizeof(ourMissleMaskTable) / sizeof(uint8_t);
+    const size_t playerMaskCount = sizeof(ourPlayerMaskTable) / sizeof(uint8_t);
+    const size_t playfieldCount = sizeof(ourPlayfieldTable) / sizeof(uint32_t);
+    const uint8_t* noDisabled = nullptr;
+    if(!offsetToMask((int) in.getInt(), &ourBallMaskTable[0][0][0], ballMaskCount,
+                     noDisabled, myCurrentBLMask) ||
+       !offsetToMask((int) in.getInt(), &ourMissleMaskTable[0][0][0][0], missleMaskCount,
+                     &ourDisabledMaskTable[0], myCurrentM0Mask) ||
+       !offsetToMask((int) in.getInt(), &ourMissleMaskTable[0][0][0][0], missleMaskCount,
+                     noDisabled, myCurrentM1Mask) ||
+       !offsetToMask((int) in.getInt(), &ourPlayerMaskTable[0][0][0][0], playerMaskCount,
+                     noDisabled, myCurrentP0Mask) ||
+       !offsetToMask((int) in.getInt(), &ourPlayerMaskTable[0][0][0][0], playerMaskCount,
+                     noDisabled, myCurrentP1Mask) ||
+       !offsetToMask((int) in.getInt(), &ourPlayfieldTable[0][0], playfieldCount,
+                     (const uint32_t*) nullptr, myCurrentPFMask))
+      return false;
 
     myLastHMOVEClock = (int) in.getInt();
     myHMOVEBlankEnabled = in.getBool();
@@ -594,13 +616,13 @@ bool TIA::load(Deserializer& in)
 
     myPartialFrameFlag = in.getBool();
 
-    // ALE: see the matching comment in save(). Clamped because an out-of-range offset here
-    // is a wild pointer, and a state blob can come from anywhere (ALEState::deserialize).
+    // ALE: see the matching comment in save(). updateFrameScanline() writes up to a
+    // scanline from the cursor, so it must leave that much buffer (display heights in the
+    // properties top out at 280 of the 300 lines).
     int framePointerOffset = (int) in.getInt();
-    if(framePointerOffset < 0)
-      framePointerOffset = 0;
-    else if(framePointerOffset > (int)(160 * 300))
-      framePointerOffset = 160 * 300;
+    if(framePointerOffset < 0 ||
+       framePointerOffset > (int)(FRAME_BUFFER_SIZE - SCANLINE_WIDTH))
+      return false;
     myFramePointer = myCurrentFrameBuffer + framePointerOffset;
 
     myFrameGreyed = in.getBool();
