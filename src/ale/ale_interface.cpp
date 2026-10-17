@@ -281,6 +281,12 @@ std::vector<int> ALEInterface::allLives() {
 // game over screen.
 // Intentionally set player B actions to NOOP since we are in single player mode
 reward_t ALEInterface::act(Action action, float paddle_strength) {
+  if (romSettings == nullptr) {
+    throw std::runtime_error("ROM not set");
+  }
+  if (numPlayersActive() != 1) {
+    throw std::runtime_error("called `act` with a single action in a multiplayer mode. Pass one action per player instead.");
+  }
   return environment->act(action, PLAYER_B_NOOP, paddle_strength, 0.0);
 }
 
@@ -302,7 +308,19 @@ std::vector<reward_t> ALEInterface::act(std::vector<Action> actions,
   if (paddle_strengths.size() != actions.size()) {
     throw std::runtime_error("paddle_strengths must have one entry per action");
   }
+  for (Action a : actions) {
+    if (a >= PLAYER_B_NOOP && a < RESET) {
+      throw std::runtime_error(
+          "Multiplayer actions cannot use the PLAYER_B action range; the "
+          "player is indicated by the position in the action vector");
+    }
+  }
 
+  // In single player modes use the single player path so that act({a}) is
+  // identical to act(a), including the sticky-action RNG stream.
+  if (actions.size() == 1) {
+    return {environment->act(actions[0], PLAYER_B_NOOP, paddle_strengths[0], 0.0)};
+  }
   return environment->act(actions, paddle_strengths);
 }
 

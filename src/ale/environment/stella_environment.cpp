@@ -229,8 +229,8 @@ std::vector<reward_t> StellaEnvironment::act(std::vector<Action> actions,
     // Stochastically drop actions, according to m_repeat_action_probability.
     // Note: this draws one RNG sample per *active* player, matching MA-ALE,
     // whereas the single/two-player act() above always draws two samples per
-    // frame, matching historic ALE. The two paths therefore produce different
-    // sticky-action streams by design; do not unify them.
+    // frame, matching historic ALE. ALEInterface routes single player calls
+    // through the act() above so that historic streams are preserved.
     for (size_t i = 0; i < 4; i++) {
       if (i < actions.size()) {
         if (rng.nextDouble() >= m_repeat_action_probability) {
@@ -242,7 +242,13 @@ std::vector<reward_t> StellaEnvironment::act(std::vector<Action> actions,
         m_paddle_strength[i] = 1.0f;
       }
     }
+    // Render screen if we're displaying it
+    m_osystem->screen().render();
+
     oneStepAct(m_actions, sum_rewards);
+
+    // Process audio for user queries (accounts for frame_skip)
+    processAudio(j);
   }
 
   // Clamp rewards

@@ -216,6 +216,19 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
 
         if self._game_mode is not None:
             self.ale.setMode(self._game_mode)
+        # AtariEnv is single-agent; multiplayer modes must use ALEInterface directly
+        if self.ale.numPlayersActive() != 1:
+            single_player_modes = list(self.ale.getAvailableModes())
+            if self._game_mode is None:
+                raise RuntimeError(
+                    f"{self._game} has no single-player modes; use ALEInterface "
+                    "directly for multiplayer modes."
+                )
+            raise RuntimeError(
+                f"Mode {self._game_mode} of {self._game} is a multiplayer mode, "
+                f"AtariEnv only supports the single-player modes {single_player_modes}; "
+                "use ALEInterface directly for multiplayer modes."
+            )
         if self._game_difficulty is not None:
             self.ale.setDifficulty(self._game_difficulty)
 
