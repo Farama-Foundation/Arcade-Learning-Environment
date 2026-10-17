@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.14)
 # Build the C++ shared library
 option(BUILD_CPP_LIB "Build C++ Interface" ON)
 
-# Build the native Python bindings using pybind11
+# Build the native Python bindings using nanobind
 option(BUILD_PYTHON_LIB "Build Python Interface" ON)
 
 # Enable SDL for screen and audio support

@@ -638,7 +638,13 @@
             const timestamp = new Date().toLocaleTimeString();
             const entry = document.createElement('div');
             entry.className = `log-entry ${type}`;
-            entry.innerHTML = `<span class="timestamp">${timestamp}</span><span>${message}</span>`;
+            const timestampSpan = document.createElement('span');
+            timestampSpan.className = 'timestamp';
+            timestampSpan.textContent = timestamp;
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            entry.appendChild(timestampSpan);
+            entry.appendChild(messageSpan);
             gameLog.appendChild(entry);
             gameLog.scrollTop = gameLog.scrollHeight;
         }
