@@ -109,6 +109,14 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
 );
 
 #ifdef BUILD_VECTOR_XLA_GPU
+// Waits for the stream on scope exit, so host buffers that queued
+// cudaMemcpyAsync calls read from outlive those copies on every return path,
+// including early error returns and exceptions. Declare it after the buffers.
+struct StreamSyncOnExit {
+    cudaStream_t stream;
+    ~StreamSyncOnExit() { cudaStreamSynchronize(stream); }
+};
+
 // GPU version of XLAReset with CUDA stream support
 ffi::Error XLAResetGPUImpl(
     cudaStream_t stream,
@@ -153,11 +161,12 @@ ffi::Error XLAResetGPUImpl(
     if (new_handle_buffer->element_count() != handle_buffer.element_count()) {
         return ffi::Error::Internal("Incorrect new handle buffer size in reset (GPU)");
     }
-    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), host_handle.data(),
+    // The handle is already on the device, so copy it across directly.
+    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), handle_buffer.typed_data(),
                           handle_buffer.element_count(),
-                          cudaMemcpyHostToDevice, stream);
+                          cudaMemcpyDeviceToDevice, stream);
     if (err != cudaSuccess) {
-        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle H2D): ") + cudaGetErrorString(err));
+        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle D2D): ") + cudaGetErrorString(err));
     }
 
     try {
@@ -191,6 +200,7 @@ ffi::Error XLAResetGPUImpl(
 
         // Reset the environments (returns BatchResult directly)
         auto result = vectorizer->reset(reset_indices, reset_seeds);
+        StreamSyncOnExit sync_on_exit{stream};
 
         size_t batch_size = result.batch_size();
         size_t stacked_obs_size = vectorizer->stacked_obs_size();
@@ -240,6 +250,14 @@ ffi::Error XLAResetGPUImpl(
         err = cudaGetLastError();
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA error after operations: ") + cudaGetErrorString(err));
+        }
+
+        // The copies above read out of the BatchResult, which is destroyed when
+        // this scope ends, so they must complete before we return. Sync here as
+        // well as in sync_on_exit so that a failure is reported.
+        err = cudaStreamSynchronize(stream);
+        if (err != cudaSuccess) {
+            return ffi::Error::Internal(std::string("CUDA stream sync failed (reset results): ") + cudaGetErrorString(err));
         }
 
         return ffi::Error::Success();
@@ -442,11 +460,12 @@ ffi::Error XLAStepGPUImpl(
     if (new_handle_buffer->element_count() != handle_buffer.element_count()) {
         return ffi::Error::Internal("New handle buffer is the wrong size (GPU)");
     }
-    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), host_handle.data(),
+    // The handle is already on the device, so copy it across directly.
+    err = cudaMemcpyAsync(new_handle_buffer->typed_data(), handle_buffer.typed_data(),
                           handle_buffer.element_count(),
-                          cudaMemcpyHostToDevice, stream);
+                          cudaMemcpyDeviceToDevice, stream);
     if (err != cudaSuccess) {
-        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle H2D): ") + cudaGetErrorString(err));
+        return ffi::Error::Internal(std::string("CUDA memcpy failed (new handle D2D): ") + cudaGetErrorString(err));
     }
 
     try {
@@ -506,6 +525,18 @@ ffi::Error XLAStepGPUImpl(
             return ffi::Error::Internal("Observations buffer is the wrong size (GPU)");
         }
 
+        // Copy bools element-wise to temporary buffers, sent to the GPU below
+        std::vector<uint8_t> host_terminations(result_batch_size);
+        std::vector<uint8_t> host_truncations(result_batch_size);
+        const bool* term_data = result.terminations_data();
+        const bool* trunc_data = result.truncations_data();
+        for (size_t i = 0; i < result_batch_size; ++i) {
+            host_terminations[i] = term_data[i] ? 1 : 0;
+            host_truncations[i] = trunc_data[i] ? 1 : 0;
+        }
+
+        StreamSyncOnExit sync_on_exit{stream};
+
         // Copy data from BatchResult to GPU buffers via host memory
         err = cudaMemcpyAsync(observations_buffer->typed_data(), result.obs_data(),
                               result_batch_size * stacked_obs_size,
@@ -549,16 +580,6 @@ ffi::Error XLAStepGPUImpl(
             return ffi::Error::Internal(std::string("CUDA memcpy failed (episode_frame_numbers H2D): ") + cudaGetErrorString(err));
         }
 
-        // Copy bools element-wise to temporary buffer, then to GPU
-        std::vector<uint8_t> host_terminations(result_batch_size);
-        std::vector<uint8_t> host_truncations(result_batch_size);
-        const bool* term_data = result.terminations_data();
-        const bool* trunc_data = result.truncations_data();
-        for (size_t i = 0; i < result_batch_size; ++i) {
-            host_terminations[i] = term_data[i] ? 1 : 0;
-            host_truncations[i] = trunc_data[i] ? 1 : 0;
-        }
-
         err = cudaMemcpyAsync(terminations_buffer->typed_data(), host_terminations.data(),
                               result_batch_size * sizeof(uint8_t),
                               cudaMemcpyHostToDevice, stream);
@@ -577,6 +598,15 @@ ffi::Error XLAStepGPUImpl(
         err = cudaGetLastError();
         if (err != cudaSuccess) {
             return ffi::Error::Internal(std::string("CUDA error after operations: ") + cudaGetErrorString(err));
+        }
+
+        // Every copy above reads from memory that dies with this call - the
+        // BatchResult and the two host_* vectors - so the transfers have to
+        // finish before we return. Sync here as well as in sync_on_exit so that
+        // a failure is reported.
+        err = cudaStreamSynchronize(stream);
+        if (err != cudaSuccess) {
+            return ffi::Error::Internal(std::string("CUDA stream sync failed (step results): ") + cudaGetErrorString(err));
         }
 
         return ffi::Error::Success();
