@@ -1,5 +1,6 @@
 import os
 import pickle
+import struct
 import tempfile
 
 import ale_py
@@ -389,6 +390,123 @@ def test_clone_restore_system_state(ale, tetris_rom_path):
 
     for first, second in zip(states, new_states):
         assert first == second
+
+
+def _reset_tetris(ale, rom_path, color_averaging=False):
+    """Loads tetris deterministically and returns a short action stream to replay."""
+    ale.setInt("random_seed", 0)
+    ale.setFloat("repeat_action_probability", 0.0)
+    ale.setBool("color_averaging", color_averaging)
+    ale.loadROM(rom_path)
+    ale.reset_game()
+    actions = ale.getMinimalActionSet()
+    return [actions[i % len(actions)] for i in range(12)]
+
+
+def _play(ale, stream):
+    """Acts through `stream`, returning a copy of the screen and RAM after every step."""
+    frames = []
+    for action in stream:
+        ale.act(action)
+        frames.append((ale.getScreen().copy(), ale.getRAM().copy()))
+    return frames
+
+
+def _assert_frames_equal(actual, expected):
+    for (screen, ram), (expected_screen, expected_ram) in zip(actual, expected):
+        np.testing.assert_array_equal(screen, expected_screen)
+        np.testing.assert_array_equal(ram, expected_ram)
+
+
+_ROUND_TRIPS = {
+    "state": (lambda ale: ale.cloneState(), lambda ale, s: ale.restoreState(s)),
+    "system_state": (
+        lambda ale: ale.cloneSystemState(),
+        lambda ale, s: ale.restoreSystemState(s),
+    ),
+    "pickle": (
+        lambda ale: pickle.dumps(ale.cloneState()),
+        lambda ale, s: ale.restoreState(pickle.loads(s)),
+    ),
+    "serialize": (
+        lambda ale: ale.cloneState().serialize(),
+        lambda ale, s: ale.restoreState(ale_py.ALEState(s)),
+    ),
+}
+
+
+@pytest.mark.parametrize("color_averaging", [False, True])
+@pytest.mark.parametrize("round_trip", list(_ROUND_TRIPS))
+def test_restore_reproduces_screen(ale, tetris_rom_path, round_trip, color_averaging):
+    """A restored state must reproduce the screen, not just RAM.
+
+    The state cloned immediately after `reset_game()` is the one a snapshot-based reset
+    reuses, and it is the one that used to break: TIA state that reaches nothing but the
+    frame buffer (the frame cursor, the object mask pointers, the buffers themselves) was
+    left out of the serialized state, so the first frames after a restore rendered wrong.
+    With color averaging the previous frame buffer is blended into the screen as well.
+    """
+    clone, restore = _ROUND_TRIPS[round_trip]
+    stream = _reset_tetris(ale, tetris_rom_path, color_averaging)
+    state = clone(ale)
+    reference = _play(ale, stream)
+
+    restore(ale, state)
+    _assert_frames_equal(_play(ale, stream), reference)
+
+
+def test_repeated_restore_of_one_state(ale, tetris_rom_path):
+    """Restoring the *same* state many times must reproduce the same frames every time.
+
+    This is the access pattern of a snapshot-based autoreset. The TIA's frame cursor used
+    to carry over from whatever the receiving emulator had last drawn, so how wrong a
+    restore was depended on the history before it, not only on the state restored.
+    """
+    stream = _reset_tetris(ale, tetris_rom_path)[:4]
+    state = ale.cloneState()
+    reference = _play(ale, stream)
+
+    for _ in range(500):
+        ale.restoreState(state)
+        _assert_frames_equal(_play(ale, stream), reference)
+
+
+def _corrupt_inner_state(state, transform):
+    """Rebuilds `state` with `transform` applied to the emulator part of its serialization.
+
+    `ALEState.serialize()` is six int32 fields, a length-prefixed emulator state, then two
+    more int32 fields; `ALEState(other, emulator_state)` takes the emulator part as is.
+    """
+    serialized = state.serialize()
+    (length,) = struct.unpack_from("<i", serialized, 24)
+    inner = serialized[28 : 28 + length]
+    return ale_py.ALEState(state, transform(inner))
+
+
+@pytest.mark.parametrize(
+    "transform",
+    [
+        lambda inner: inner[: len(inner) // 2],
+        lambda inner: inner[:-4],
+        lambda inner: inner[:-1],
+    ],
+    ids=["half", "last-field", "last-byte"],
+)
+def test_restore_corrupted_state_raises(tetris, transform):
+    """A truncated state must fail loudly instead of leaving a half-restored emulator."""
+    for _ in range(10):
+        tetris.act(0)
+    state = tetris.cloneState()
+    corrupted = _corrupt_inner_state(state, transform)
+
+    with pytest.raises(RuntimeError, match="Failed to restore emulator state"):
+        tetris.restoreState(corrupted)
+
+
+def test_deserialize_truncated_state_raises(tetris):
+    serialized = tetris.cloneState().serialize()
+    with pytest.raises(RuntimeError, match="truncated or corrupt"):
+        ale_py.ALEState(serialized[: len(serialized) // 2])
 
 
 def test_state_pickle(tetris):
