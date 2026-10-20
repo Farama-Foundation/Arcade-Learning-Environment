@@ -48,6 +48,9 @@ int Deserializer::getInt(void)
   int val = 0;
   unsigned char buf[4];
   myStream.read((char*)buf, 4);
+  // ALE: a short read near the end leaves buf uninitialised without setting eof first
+  if(myStream.gcount() != 4)
+    throw "Deserializer: end of file";
   for(int i = 0; i < 4; ++i)
     val += (int)(buf[i]) << (i<<3);
 
@@ -58,6 +61,9 @@ int Deserializer::getInt(void)
 std::string Deserializer::getString(void)
 {
   int len = getInt();
+  // ALE: refuse a corrupt length rather than allocating it or reading a short string
+  if(len < 0 || (std::streamsize)len > myStream.rdbuf()->in_avail())
+    throw "Deserializer: data corruption";
   std::string str;
   str.resize((std::string::size_type)len);
   myStream.read(&str[0], (std::streamsize)len);
