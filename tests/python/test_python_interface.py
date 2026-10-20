@@ -410,6 +410,85 @@ def test_state_pickle(tetris):
     os.remove(file)
 
 
+RESOURCES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "resources")
+
+
+def _to_libstdcxx_rng_text(serialized):
+    """Rewrites the RNG states in a libc++-written legacy state as libstdc++ writes them.
+
+    libc++ writes std::mt19937 as 624 numbers; libstdc++ writes its 624-word block followed
+    by its index. A libc++ text is the block a libstdc++ engine holds at index 624.
+    """
+
+    def get_int(buf, pos):
+        return int.from_bytes(buf[pos : pos + 4], "little"), pos + 4
+
+    def get_string(buf, pos):
+        length, pos = get_int(buf, pos)
+        return buf[pos : pos + length], pos + length
+
+    def put_string(value):
+        return len(value).to_bytes(4, "little") + value
+
+    # ALEState::serialize: six ints, the emulator state string, two ints.
+    inner, inner_end = get_string(serialized, 24)
+    # Emulator state: md5 string, "System" string, cycles int, System RNG string, ...
+    _, pos = get_string(inner, 0)
+    _, pos = get_string(inner, pos)
+    system_start = pos + 4
+    system_rng, system_end = get_string(inner, system_start)
+    # ..., putBool(true), environment RNG string.
+    env_start = inner.rindex((0xFAB1FAB2).to_bytes(4, "little")) + 4
+    env_rng, env_end = get_string(inner, env_start)
+    assert env_end == len(inner)
+    assert len(system_rng.split()) == len(env_rng.split()) == 624
+
+    inner = (
+        inner[:system_start]
+        + put_string(system_rng + b" 624")
+        + inner[system_end:env_start]
+        + put_string(env_rng + b" 624")
+    )
+    return serialized[:24] + put_string(inner) + serialized[inner_end:]
+
+
+@pytest.mark.parametrize("stdlib", ["libc++", "libstdc++"])
+def test_restore_legacy_text_rng_state(ale, tetris_rom_path, stdlib):
+    """States saved before the binary RNG format restore with the same RNG streams.
+
+    The fixtures were written by ale-py 0.12.1 on macOS (libc++): a tetris state cloned
+    with include_rng=True, and the RAM after each of the following steps.
+    """
+    with open(os.path.join(RESOURCES, "tetris-legacy-rng-state.bin"), "rb") as fp:
+        serialized = fp.read()
+    if stdlib == "libstdc++":
+        serialized = _to_libstdcxx_rng_text(serialized)
+    expected_ram = np.fromfile(
+        os.path.join(RESOURCES, "tetris-legacy-rng-ram.bin"), dtype=np.uint8
+    ).reshape(60, 128)
+
+    ale.setInt("random_seed", 1)
+    ale.setFloat("repeat_action_probability", 0.25)
+    ale.loadROM(tetris_rom_path)
+    ale.restoreState(ale_py.ALEState(serialized))
+
+    # Sticky actions draw from the environment RNG; reset_game draws from the System RNG.
+    action_set = ale.getLegalActionSet()
+    for i in range(60):
+        if i == 30:
+            ale.reset_game()
+        ale.act(action_set[i % len(action_set)])
+        np.testing.assert_array_equal(
+            ale.getRAM(), expected_ram[i], err_msg=f"step {i}"
+        )
+
+    # Re-cloning writes the binary format, which restores to the same state.
+    state = ale.cloneState(include_rng=True)
+    ale.reset_game()
+    ale.restoreState(ale_py.ALEState(state.serialize()))
+    assert ale.cloneState(include_rng=True) == state
+
+
 @pytest.mark.skipif(ale_py.SDL_SUPPORT is False, reason="SDL is disabled")
 def test_display_screen(ale, tetris_rom_path):
     os.environ["SDL_VIDEODRIVER"] = "dummy"
