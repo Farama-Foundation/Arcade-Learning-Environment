@@ -445,13 +445,17 @@ def test_restore_reproduces_screen(ale, tetris_rom_path, round_trip, color_avera
     frame buffer (the frame cursor, the object mask pointers, the buffers themselves) was
     left out of the serialized state, so the first frames after a restore rendered wrong.
     With color averaging the previous frame buffer is blended into the screen as well.
+    `getScreen()` straight after the restore, before any frame is emulated, must already
+    show the restored state rather than the last frame the emulator drew.
     """
     clone, restore = _ROUND_TRIPS[round_trip]
     stream = _reset_tetris(ale, tetris_rom_path, color_averaging)
     state = clone(ale)
+    screen_at_clone = ale.getScreen().copy()
     reference = _play(ale, stream)
 
     restore(ale, state)
+    np.testing.assert_array_equal(ale.getScreen(), screen_at_clone)
     _assert_frames_equal(_play(ale, stream), reference)
 
 
