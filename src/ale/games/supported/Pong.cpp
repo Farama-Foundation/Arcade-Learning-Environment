@@ -43,6 +43,11 @@ bool PongSettings::isTerminal() const { return m_terminal; };
 
 /* get the most recently observed reward */
 reward_t PongSettings::getReward() const { return m_reward; }
+reward_t PongSettings::getRewardP2() const { return -m_reward; }
+//P3 is on same team as P1, P2-P4
+reward_t PongSettings::getRewardP3() const { return m_reward; };
+reward_t PongSettings::getRewardP4() const { return -m_reward; };
+
 
 /* is an action part of the minimal set? */
 bool PongSettings::isMinimal(const Action& a) const {
@@ -81,12 +86,32 @@ void PongSettings::loadState(Deserializer& ser) {
 }
 
 // returns a list of mode that the game can be played in
+// Mode numbers are 0-indexed game variants (RAM 0x96), matching the numbering
+// ALE has always used for the single-player modes {0, 1}. Note this is offset
+// by -1 from MA-ALE, which numbered modes by the 1-indexed manual variants.
 ModeVect PongSettings::getAvailableModes() {
-  ModeVect modes(getNumModes());
-  for (unsigned int i = 0; i < modes.size(); i++) {
-    modes[i] = i;
-  }
-  return modes;
+  return {0, 1};
+}
+ModeVect PongSettings::get2PlayerModes() {
+  return {2, 3,
+          8, 9,
+          12, 13,
+          18, 19,
+          22, 23, 24, 25, 26, 27,
+          34, 35,
+          38, 39,
+          42, 43, 44, 45};
+}
+ModeVect PongSettings::get4PlayerModes() {
+  return {4, 5, 6, 7,
+          10, 11,
+          14, 15, 16, 17,
+          20, 21,
+          28, 29, 30, 31,
+          32, 33,
+          36, 37,
+          40, 41,
+          46, 47, 48, 49};
 }
 
 // set the mode of the game
@@ -94,19 +119,12 @@ ModeVect PongSettings::getAvailableModes() {
 void PongSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (m < getNumModes()) {
-    // read the mode we are currently in
-    unsigned char mode = readRam(&system, 0x96);
-    // press select until the correct mode is reached
-    while (mode != m) {
-      environment->pressSelect(2);
-      mode = readRam(&system, 0x96);
-    }
-    //reset the environment to apply changes.
-    environment->softReset();
-  } else {
-    throw std::runtime_error("This mode doesn't currently exist for this game");
+  // press select until the correct mode is reached
+  while (readRam(&system, 0x96) != m) {
+    environment->pressSelect(2);
   }
+  //reset the environment to apply changes.
+  environment->softReset();
 }
 
 // The left difficulty switch sets the width of the CPU opponent's bat.

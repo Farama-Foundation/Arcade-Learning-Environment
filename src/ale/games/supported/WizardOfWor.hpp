@@ -28,12 +28,12 @@
 #ifndef __WIZARDOFWOR_HPP__
 #define __WIZARDOFWOR_HPP__
 
-#include "ale/games/RomSettings.hpp"
+#include "ale/games/RomSettings2P.hpp"
 
 namespace ale {
 
 /* RL wrapper for Wizard of Wor */
-class WizardOfWorSettings : public RomSettings {
+class WizardOfWorSettings : public RomSettings2P {
  public:
   WizardOfWorSettings();
 
@@ -45,6 +45,7 @@ class WizardOfWorSettings : public RomSettings {
 
   // get the most recently observed reward
   reward_t getReward() const override;
+  reward_t getRewardP2() const override;
 
   // the rom-name
   const char* rom() const override { return "wizard_of_wor"; }
@@ -68,6 +69,15 @@ class WizardOfWorSettings : public RomSettings {
   void loadState(stella::Deserializer& ser) override;
 
   int lives() override { return isTerminal() ? 0 : m_lives; }
+  int livesP2() override { return isTerminal() ? 0 : m_lives_p2; }
+
+  // returns a list of mode that the game can be played in
+  ModeVect getAvailableModes() override;
+  ModeVect get2PlayerModes() override;
+
+  // set the mode of the game
+  void setMode(game_mode_t m, stella::System& system,
+               std::unique_ptr<StellaEnvironmentWrapper> environment) override;
 
   // returns a list of difficulties that the game can be played in
   // in this game, there are 2 available difficulties
@@ -78,6 +88,10 @@ class WizardOfWorSettings : public RomSettings {
   reward_t m_reward;
   reward_t m_score;
   int m_lives;
+  reward_t m_reward_p2;
+  reward_t m_score_p2;
+  int m_lives_p2;
+  bool is_two_player;
 };
 
 }  // namespace ale

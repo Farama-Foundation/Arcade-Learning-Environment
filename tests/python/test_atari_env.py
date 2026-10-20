@@ -95,6 +95,17 @@ def test_gym_mode_difficulty_kwarg(tetris_env):
     pass
 
 
+def test_gym_rejects_multiplayer_modes():
+    """AtariEnv is single-agent, so multiplayer modes must error on construction."""
+    with pytest.raises(RuntimeError, match="multiplayer mode"):
+        AtariEnv(game="pong", mode=2)
+    with pytest.raises(RuntimeError, match="no single-player modes"):
+        AtariEnv(game="combat")
+    with pytest.raises(RuntimeError, match="Invalid game mode"):
+        AtariEnv(game="pong", mode=99)
+    AtariEnv(game="pong", mode=1).close()
+
+
 @pytest.mark.parametrize("tetris_env", [{"obs_type": "ram"}], indirect=True)
 def test_gym_ram_obs(tetris_env):
     tetris_env.reset()

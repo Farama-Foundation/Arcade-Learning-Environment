@@ -48,6 +48,9 @@ bool FishingDerbySettings::isTerminal() const { return m_terminal; };
 /* get the most recently observed reward */
 reward_t FishingDerbySettings::getReward() const { return m_reward; }
 
+// fishing derby is zero-sum: player 2's reward is the negative of player 1's
+reward_t FishingDerbySettings::getRewardP2() const { return -m_reward; }
+
 /* is an action part of the minimal set? */
 bool FishingDerbySettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -98,6 +101,30 @@ void FishingDerbySettings::loadState(Deserializer& ser) {
 
 DifficultyVect FishingDerbySettings::getAvailableDifficulties() {
   return {0, 1, 2, 3};
+}
+
+// Mode 0 is the historic ALE default (the boot variant, no manipulation).
+// Mode 2 is the two-player variant, numbered by the game number the ROM
+// displays (RAM 0x80 holds the 0-indexed variant).
+ModeVect FishingDerbySettings::getAvailableModes() {
+  return {0};
+}
+
+ModeVect FishingDerbySettings::get2PlayerModes() {
+  return {2};
+}
+
+void FishingDerbySettings::setMode(
+    game_mode_t m, System& system,
+    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+  // Mode 0 keeps the legacy behaviour: play the boot variant untouched.
+  if (m == 0) {
+    return;
+  }
+  game_mode_t byte_value = m - 1;
+  while (readRam(&system, 0x80) != byte_value) { environment->pressSelect(1); }
+  // reset the environment to apply changes.
+  environment->softReset();
 }
 
 }  // namespace ale

@@ -37,16 +37,31 @@ RomSettings* FlagCaptureSettings::clone() const {
 }
 
 void FlagCaptureSettings::step(const System& system) {
-  int score = getDecimalScore(0xea, &system);
-  m_reward = score - m_score;
-  m_score = score;
-  // Game terminates when timer stored at RAM 0xeb expires after 75 seconds.
-  m_terminal = getDecimalScore(0xeb, &system) == 0;
+  if (is_two_player) {
+    // In two-player modes RAM 0xAB/0xEB hold the players' scores and the
+    // game is a race to 99 captured flags.
+    int score_p1 = getDecimalScore(0xab, &system);
+    int score_p2 = getDecimalScore(0xeb, &system);
+    m_reward = score_p1 - m_score;
+    m_reward_p2 = score_p2 - m_score_p2;
+    m_score = score_p1;
+    m_score_p2 = score_p2;
+    // game terminates when a score maxes out
+    m_terminal = m_score == 99 || m_score_p2 == 99;
+  } else {
+    int score = getDecimalScore(0xea, &system);
+    m_reward = score - m_score;
+    m_score = score;
+    // Game terminates when timer stored at RAM 0xeb expires after 75 seconds.
+    m_terminal = getDecimalScore(0xeb, &system) == 0;
+  }
 }
 
 bool FlagCaptureSettings::isTerminal() const { return m_terminal; }
 
 reward_t FlagCaptureSettings::getReward() const { return m_reward; }
+
+reward_t FlagCaptureSettings::getRewardP2() const { return m_reward_p2; }
 
 bool FlagCaptureSettings::isMinimal(const Action& a) const {
   switch (a) {
@@ -77,6 +92,8 @@ bool FlagCaptureSettings::isMinimal(const Action& a) const {
 void FlagCaptureSettings::reset() {
   m_reward = 0;
   m_score = 0;
+  m_reward_p2 = 0;
+  m_score_p2 = 0;
   m_terminal = false;
 }
 
@@ -84,12 +101,20 @@ void FlagCaptureSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putInt(m_score);
   ser.putBool(m_terminal);
+
+  ser.putInt(m_reward_p2);
+  ser.putInt(m_score_p2);
+  ser.putBool(is_two_player);
 }
 
 void FlagCaptureSettings::loadState(Deserializer& ser) {
   m_reward = ser.getInt();
   m_score = ser.getInt();
   m_terminal = ser.getBool();
+
+  m_reward_p2 = ser.getInt();
+  m_score_p2 = ser.getInt();
+  is_two_player = ser.getBool();
 }
 
 // According to https://atariage.com/manual_html_page.php?SoftwareID=1022
@@ -100,11 +125,18 @@ ModeVect FlagCaptureSettings::getAvailableModes() {
   return {8, 9, 10};
 }
 
+// Game variants 1-4 are the two-player games (RAM 0xD6 holds the
+// variant directly).
+ModeVect FlagCaptureSettings::get2PlayerModes() {
+  return {1, 2, 3, 4};
+}
+
 void FlagCaptureSettings::setMode(
     game_mode_t m, System& system,
     std::unique_ptr<StellaEnvironmentWrapper> environment) {
-  if (isModeSupported(m)) {
-    // Press select until the correct mode is reached for single player only.
+  if (isModeSupported(m) || (m >= 1 && m <= 4)) {
+    is_two_player = (m >= 1 && m <= 4);
+    // Press select until the correct mode is reached.
     while (readRam(&system, 0xd6) != static_cast<int>(m)) {
       environment->pressSelect(2);
     }
@@ -114,6 +146,14 @@ void FlagCaptureSettings::setMode(
   } else {
     throw std::runtime_error("This game mode is not supported.");
   }
+}
+
+ActionVect FlagCaptureSettings::getStartingActions() {
+  if (!is_two_player) {
+    return {};
+  }
+  // Hold fire for several frames to start a two-player game.
+  return ActionVect(10, PLAYER_A_FIRE);
 }
 
 }  // namespace ale

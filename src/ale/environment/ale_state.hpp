@@ -66,6 +66,11 @@ class ALEState {
                           int player_a_action, float paddle_a_strength,
                           int player_b_action, float paddle_b_strength);
 
+  /** Applies paddle action for a single paddle (for multiplayer support).
+   * This actually modifies the game state by updating the paddle resistances. */
+  void applyActionPaddle(stella::Event* event, int action, int pnum,
+                         float paddle_strength = 1.0f);
+
   /** Sets the joystick events. No effect until the emulator is run forward. */
   void applyActionJoysticks(stella::Event* event,
                             int player_a_action, int player_b_action);
@@ -95,7 +100,16 @@ class ALEState {
   //Get the current mode we are in.
   game_mode_t getCurrentMode() const { return m_mode; }
 
+  //Save the number of players in the current mode.
+  void setNumActivePlayers(int value) { m_num_players = value; }
+
+  //Get the number of players in the current mode.
+  int getNumActivePlayers() const { return m_num_players; }
+
   std::string serialize();
+
+  /** Reset key presses */
+  void resetKeys(stella::Event* event);
 
  protected:
   // Let StellaEnvironment access these methods: they are needed for emulation purposes
@@ -110,16 +124,19 @@ class ALEState {
    *  the emulator. The RNG can optionally be included in the state. */
   ALEState save(stella::OSystem* osystem, RomSettings* settings, std::optional<stella::Random*> rng, std::string md5);
 
-  /** Reset key presses */
-  void resetKeys(stella::Event* event);
+  /** Sets a single paddle to a given position (for multiplayer support) */
+  void setPaddle(stella::Event* event, int paddle_val, int paddle_num);
 
-  /** Sets the paddle to a given position */
+  /** Sets both paddles to given positions */
   void setPaddles(stella::Event* event, int left, int right);
 
   /** Set the paddle min/max values */
   void setPaddleLimits(int paddle_min_val, int paddle_max_val);
 
-  /** Updates the paddle position by a delta amount. */
+  /** Updates a single paddle position by a delta amount (for multiplayer support). */
+  void updatePaddlePosition(stella::Event* event, int delta, int paddle_num);
+
+  /** Updates both paddle positions by delta amounts. */
   void updatePaddlePositions(stella::Event* event, int delta_x, int delta_y);
 
   /** Calculates the Paddle resistance, based on the given x val */
@@ -129,8 +146,7 @@ class ALEState {
   void setDifficultySwitches(stella::Event* event, unsigned int value);
 
  private:
-  int m_left_paddle;               // Current value for the left-paddle
-  int m_right_paddle;              // Current value for the right-paddle
+  int m_paddle[4];                 // Current value for the paddles
 
   int m_paddle_min;                // Minimum value for paddle
   int m_paddle_max;                // Maximum value for paddle
@@ -142,6 +158,7 @@ class ALEState {
 
   game_mode_t m_mode;              // The current mode we are in
   difficulty_t m_difficulty;       // The current difficulty we are in
+  int m_num_players;                 // The number of players in the current mode
 };
 
 }  // namespace ale
