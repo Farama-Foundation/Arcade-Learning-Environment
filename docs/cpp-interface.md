@@ -55,7 +55,7 @@ Finally, one can check whether the episode has terminated using the function `al
 
 ```cpp
 #include <iostream>
-#include <ale/ale_interface.hpp>
+#include <ale_interface.hpp>
 
 int main(int argc, char** argv) {
     if (argc < 2) {
@@ -83,18 +83,24 @@ int main(int argc, char** argv) {
 }
 ```
 
-Compiling with the shared library can be done by appending `-lale` or by using `find_package(ale)` and linking to the CMake target `ale::ale-lib`.
+To compile the example, save it as `random_agent.cpp` next to the following `CMakeLists.txt`, which uses `find_package(ale)` to link against the installed CMake target `ale::ale-lib` (see [installation](getting-started.md#c-interface)):
 
 ```cmake
 cmake_minimum_required(VERSION 3.14)
 
-project(example-cpp-lib)
+project(random-agent)
+
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(ale REQUIRED)
 
-add_executable(sharedLibraryInterfaceExample sharedLibraryInterfaceExample.cpp)
-target_link_libraries(sharedLibraryInterfaceExample ale::ale-lib)
+add_executable(random_agent random_agent.cpp)
+target_link_libraries(random_agent ale::ale-lib)
+```
 
-add_executable(sharedLibraryInterfaceWithModesExample sharedLibraryInterfaceWithModesExample.cpp)
-target_link_libraries(sharedLibraryInterfaceWithModesExample ale::ale-lib)
+Then build and run it with a ROM:
+
+```bash
+cmake -B build && cmake --build build
+./build/random_agent path/to/breakout.bin
 ```

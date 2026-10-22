@@ -1,13 +1,5 @@
 # FAQ
 
-## What's the difference between the Atari environments in [OpenAI Gym](https://github.com/openai/gym) / [Gymnasium](https://github.com/farama-Foundation/gymnasium) and ALE?
-
-The Atari environments provided in Gym and Gymnasium are built on the ALE; they just provide a different API to it. Since ALE 0.7, Gym uses `ale-py`, and since ALE 0.9 the Gymnasium environments are registered by `ale-py` itself, so there is no difference between using `ale-py` and Gymnasium.
-
-## What is [Xitari](https://github.com/deepmind/xitari)? Should I use it?
-
-Xitari is a fork of the ALE around version 0.4. It added support for more games and some other minor changes. This work has now been upstreamed to the ALE and it's recommended you use the ALE directly.
-
 ## I want to be able to extract from the game the number of lives my agent still has. How can I do it?
 
 Since version 0.5.0, the ALE supports this through the `lives()` function. We strongly encourage RL researchers not to use the loss-of-life signal for episode termination and, if they do, to clearly report the setting used.
