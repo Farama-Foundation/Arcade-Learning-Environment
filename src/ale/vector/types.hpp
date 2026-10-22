@@ -43,9 +43,46 @@ struct OutputSlot {
 };
 
 /// Batch of results with ownership semantics
-/// Owns all buffers. Supports releasing ownership for Python handoff.
+/// Owns all buffers by default. Supports releasing ownership for Python handoff.
+///
+/// A batch may instead be constructed as a *non-owning view* over buffers the
+/// caller already has (see ExternalBuffers), which lets workers write their
+/// results straight into a consumer's memory - the XLA CPU handler's FFI output
+/// buffers - instead of filling an owned batch that is then copied out. A
+/// non-owning batch frees nothing and must not have release_*() called on it;
+/// only the XLA step_into path constructs one, and it never reaches the numpy
+/// handoff in ale_vector_python_interface.cpp.
 class BatchResult {
 public:
+    /// Buffers supplied by a consumer for workers to write into directly.
+    /// Every pointer must have room for batch_size elements (batch_size *
+    /// obs_size bytes for obs) and must outlive the batch.
+    struct ExternalBuffers {
+        uint8_t* observations;
+        int* env_ids;
+        int* rewards;
+        bool* terminations;
+        bool* truncations;
+        int* lives;
+        int* frame_numbers;
+        int* episode_frame_numbers;
+        uint8_t* final_observations;  // nullptr unless SameStep
+    };
+
+    BatchResult(std::size_t batch_size, std::size_t obs_size, const ExternalBuffers& b)
+        : batch_size_(batch_size),
+          obs_size_(obs_size),
+          observations_(b.observations),
+          env_ids_(b.env_ids),
+          rewards_(b.rewards),
+          terminations_(b.terminations),
+          truncations_(b.truncations),
+          lives_(b.lives),
+          frame_numbers_(b.frame_numbers),
+          episode_frame_numbers_(b.episode_frame_numbers),
+          final_observations_(b.final_observations),
+          owns_(false) {}
+
     BatchResult(std::size_t batch_size, std::size_t obs_size, bool include_final_obs)
         : batch_size_(batch_size),
           obs_size_(obs_size),
@@ -57,18 +94,11 @@ public:
           lives_(new int[batch_size]),
           frame_numbers_(new int[batch_size]),
           episode_frame_numbers_(new int[batch_size]),
-          final_observations_(include_final_obs ? new uint8_t[batch_size * obs_size] : nullptr) {}
+          final_observations_(include_final_obs ? new uint8_t[batch_size * obs_size] : nullptr),
+          owns_(true) {}
 
     ~BatchResult() {
-        delete[] observations_;
-        delete[] env_ids_;
-        delete[] rewards_;
-        delete[] terminations_;
-        delete[] truncations_;
-        delete[] lives_;
-        delete[] frame_numbers_;
-        delete[] episode_frame_numbers_;
-        delete[] final_observations_;
+        free_buffers();
     }
 
     // Move only
@@ -83,7 +113,8 @@ public:
           lives_(other.lives_),
           frame_numbers_(other.frame_numbers_),
           episode_frame_numbers_(other.episode_frame_numbers_),
-          final_observations_(other.final_observations_) {
+          final_observations_(other.final_observations_),
+          owns_(other.owns_) {
         other.observations_ = nullptr;
         other.env_ids_ = nullptr;
         other.rewards_ = nullptr;
@@ -97,16 +128,9 @@ public:
 
     BatchResult& operator=(BatchResult&& other) noexcept {
         if (this != &other) {
-            delete[] observations_;
-            delete[] env_ids_;
-            delete[] rewards_;
-            delete[] terminations_;
-            delete[] truncations_;
-            delete[] lives_;
-            delete[] frame_numbers_;
-            delete[] episode_frame_numbers_;
-            delete[] final_observations_;
+            free_buffers();
 
+            owns_ = other.owns_;
             batch_size_ = other.batch_size_;
             obs_size_ = other.obs_size_;
             observations_ = other.observations_;
@@ -161,8 +185,27 @@ public:
     std::size_t batch_size() const { return batch_size_; }
     std::size_t obs_size() const { return obs_size_; }
     bool has_final_obs() const { return final_observations_ != nullptr; }
+    /// False for a view over a consumer's buffers - release_*() is invalid then.
+    bool owns() const { return owns_; }
 
 private:
+    /// Deletes the buffers only when this batch allocated them. A non-owning
+    /// view leaves the consumer's memory alone.
+    void free_buffers() {
+        if (!owns_) {
+            return;
+        }
+        delete[] observations_;
+        delete[] env_ids_;
+        delete[] rewards_;
+        delete[] terminations_;
+        delete[] truncations_;
+        delete[] lives_;
+        delete[] frame_numbers_;
+        delete[] episode_frame_numbers_;
+        delete[] final_observations_;
+    }
+
     std::size_t batch_size_;
     std::size_t obs_size_;
     uint8_t* observations_;
@@ -174,6 +217,7 @@ private:
     int* frame_numbers_;
     int* episode_frame_numbers_;
     uint8_t* final_observations_;
+    bool owns_;
 };
 
 }  // namespace ale::vector

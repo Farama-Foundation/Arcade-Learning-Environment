@@ -182,3 +182,48 @@ def test_xla_dispatch_gpu():
         assert is_cpu_array(terminations)
         assert is_cpu_array(truncations)
         assert is_cpu_array(info["frame_number"])
+
+
+@pytest.mark.parametrize(
+    "device",
+    [pytest.param(d, id=d.platform) for d in (CPU_DEVICES[:1] + GPU_DEVICES[:1])],
+)
+def test_long_rollout_with_resets(device, num_envs=16, rollout_length=320):
+    """The XLA step must match the numpy step across many autoresets.
+
+    In ordered mode the step handler has the workers write straight into its
+    output buffers rather than copying a staged batch, so this checks a longer,
+    wider rollout than ``test_seeding``, with an episode cap short enough that
+    every env resets several times inside the rollout.
+    """
+    kwargs = dict(num_envs=num_envs, max_num_frames_per_episode=400)
+    envs_1 = AtariVectorEnv("breakout", **kwargs)
+    envs_2 = AtariVectorEnv("breakout", **kwargs)
+    seeds = np.arange(num_envs)
+
+    with jax.default_device(device):
+        handle, reset, step = envs_2.xla()
+        obs_1, info_1 = envs_1.reset(seed=seeds)
+        handle, (obs_2, info_2) = reset(handle, seed=seeds)
+        assert data_equivalence(obs_1, np.asarray(obs_2))
+        assert data_equivalence(info_1, {k: np.asarray(v) for k, v in info_2.items()})
+
+        envs_1.action_space.seed(0)
+        num_resets = 0
+        for _ in range(rollout_length):
+            actions = envs_1.action_space.sample()
+            obs_1, rew_1, term_1, trunc_1, info_1 = envs_1.step(actions)
+            handle, (obs_2, rew_2, term_2, trunc_2, info_2) = step(handle, actions)
+
+            assert data_equivalence(obs_1, np.asarray(obs_2))
+            assert data_equivalence(rew_1, np.asarray(rew_2))
+            assert data_equivalence(term_1, np.asarray(term_2))
+            assert data_equivalence(trunc_1, np.asarray(trunc_2))
+            assert data_equivalence(
+                info_1, {k: np.asarray(v) for k, v in info_2.items()}
+            )
+            num_resets += int(np.sum(term_1 | trunc_1))
+
+    assert num_resets >= num_envs
+    envs_1.close()
+    envs_2.close()

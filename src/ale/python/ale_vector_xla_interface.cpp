@@ -13,6 +13,12 @@
 #include <cuda_runtime.h>
 #endif
 
+// ExternalBuffers types the integer outputs as `int` (what BatchResult and
+// OutputSlot use) while the FFI types them as int32_t; the step_into wiring
+// hands one straight to the other.
+static_assert(sizeof(int) == sizeof(int32_t),
+              "ALE vector XLA step_into requires int to be 32-bit");
+
 namespace ffi = xla::ffi;
 namespace nb = nanobind;
 
@@ -345,19 +351,48 @@ ffi::Error XLAStepImpl(
             actions[i].force_reset = false;
         }
 
+        size_t stacked_obs_size = vectorizer->stacked_obs_size();
+
+        // Check if the observations buffer is large enough
+        if (observations_buffer->element_count() != batch_size * stacked_obs_size) {
+            return ffi::Error::Internal("Observations buffer is the wrong size");
+        }
+
+        // Ask the workers to write this round straight into XLA's output
+        // buffers. Without this the batch is written once into a BatchResult
+        // and then copied out again in full - measured at 8.4-8.7% of this
+        // handler at 256-512 envs, since the observations alone are 14.5 MB per
+        // step at n=512. XLA owns these buffers and they outlive the call, and
+        // recv() below returns a non-owning view over them.
+        //
+        // Declined in async mode (batch_size < num_envs), where envs still in
+        // flight from the previous round would stage into these buffers after
+        // the handler has returned; the copy-out below is the fallback.
+        ale::vector::BatchResult::ExternalBuffers out;
+        out.observations = observations_buffer->typed_data();
+        out.env_ids = env_id_buffer->typed_data();
+        out.rewards = rewards_buffer->typed_data();
+        out.terminations = terminations_buffer->typed_data();
+        out.truncations = truncations_buffer->typed_data();
+        out.lives = lives_buffer->typed_data();
+        out.frame_numbers = frame_numbers_buffer->typed_data();
+        out.episode_frame_numbers = episode_frame_numbers_buffer->typed_data();
+        out.final_observations = nullptr;  // the XLA path is NextStep-only
+
+        const bool wrote_in_place = vectorizer->step_into(out);
+
         // Step the environments
         vectorizer->send(actions);
 
         // Receive the results
         auto result = vectorizer->recv();
 
-        size_t result_batch_size = result.batch_size();
-        size_t stacked_obs_size = vectorizer->stacked_obs_size();
-
-        // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() != result_batch_size * stacked_obs_size) {
-            return ffi::Error::Internal("Observations buffer is the wrong size");
+        if (wrote_in_place) {
+            // Workers already filled every output buffer; nothing to copy.
+            return ffi::Error::Success();
         }
+
+        size_t result_batch_size = result.batch_size();
 
         // Copy data from BatchResult to output buffers
         std::memcpy(observations_buffer->typed_data(), result.obs_data(),
