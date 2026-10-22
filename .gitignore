@@ -170,3 +170,6 @@ cython_debug/
 cmake-build-*
 .idea
 /build-wasm/
+
+# Benchmark script output
+benchmark-results/
