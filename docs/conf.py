@@ -57,6 +57,9 @@ napoleon_use_admonition_for_references = True
 # See https://github.com/sphinx-doc/sphinx/issues/9119
 napoleon_custom_sections = [("Returns", "params_style")]
 
+# MyST: generate anchors for headings so `page.md#heading` links resolve
+myst_heading_anchors = 3
+
 # Autodoc
 autoclass_content = "both"
 autodoc_preserve_defaults = True

@@ -23,11 +23,11 @@ For more Seaquest variants with different observation and action spaces, see the
 
 You control a sub able to move in all directions and fire torpedoes. The goal is to retrieve as many divers as you can, while dodging and blasting enemy subs and killer sharks; points will be awarded accordingly. The game begins with one sub and three waiting on the horizon. Each time you increase your score by 10,000 points, an extra sub will be delivered to yourbase.  You can only have six reserve subs on the screen at one time. Your sub will explode if it collides with anything except your own divers. The sub has a limited amount of oxygen that decreases at a constant rate during the game. When the oxygen tank is almost empty, you need to surface and if you don't do it in time, your sub will blow up and you'll lose one diver.  Each time you're forced to surface, with less than six divers, you lose one diver as well.
 
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=424)
+For more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=424)
 
 ## Actions
 
-Seaquest has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
+Seaquest has the action space `Discrete(18)` with the table below listing the meaning of each action.
 As Seaquest uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
 |   Index | Action        |
@@ -51,7 +51,7 @@ As Seaquest uses the full set of actions then specifying `full_action_space=True
 |      16 | DOWNRIGHTFIRE |
 |      17 | DOWNLEFTFIRE  |
 
-See [environment specification](../env-spec) to see more information on the action meaning.
+See [environment specification](../env-spec) for more information on the action meanings.
 
 ## Observations
 
@@ -59,7 +59,7 @@ Atari environments have three possible observation types:
 
 - `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
 - `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the `"rgb"` type
 
 See variants section for the type of observation used by each environment id by default.
 
@@ -80,7 +80,7 @@ the number of frame-skips and the repeat action probability.
 | SeaquestNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
 | ALE/Seaquest-v5        | `rgb`       | `4`          | `0.25`                       |
 
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `SeaquestNoFrameskip-v4`.
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to use previously implemented environments, e.g., `SeaquestNoFrameskip-v4`.
 
 ## Difficulty and modes
 
@@ -97,5 +97,5 @@ along with the default values.
 A thorough discussion of the intricate differences between the versions and configurations can be found in the general article on Atari environments.
 
 * v5: Stickiness was added back and stochastic frame-skipping was removed. The environments are now in the "ALE" namespace.
-* v4: Stickiness of actions was removed
-* v0: Initial versions release
+* v4: Stickiness of actions was removed.
+* v0: Initial version release

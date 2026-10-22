@@ -2,21 +2,23 @@
 
 The shared library interface is the simplest way to implement a C++ agent for the Arcade Learning Environment (ALE).
 This interface allows agents to directly access ALE via a class called
-`ALEInterface`, defined in `ale_interface.hpp`. Example code detailing a simple random agent is provided under `examples/cpp-agent`.
+`ALEInterface`, defined in `ale_interface.hpp`. Example code for a simple random agent is provided below.
 
-To instantiate the Arcade Learning Environment it is enough to write:
+To instantiate the Arcade Learning Environment, it is enough to write:
 ```cpp
 ale::ALEInterface ale;
 ```
 
-Once the environment is initialized, it is now possible to set its arguments. This is done with the
+Once the environment is initialized, it is possible to set its arguments. This is done with the
 functions `setBool()`, `setInt()`, `setFloat()`. For example, to set the environment's seed we write:
 
 ```cpp
 ale.setInt("random_seed", 123);
 ```
 
-Finally, after setting the desired environment parameters we now load the game ROM by providing its filename to the `loadROM` method:
+The full list of settings is given in the [environment specification](env-spec.md#settings).
+
+After setting the desired environment parameters, load the game ROM by providing its filename to the `loadROM` method:
 
 ```cpp
 ale.loadROM("asterix.bin");
@@ -40,20 +42,20 @@ float reward = ale.act(a);
 An optional sound observation is provided. To enable, set the associated environment parameter:
 
 ```cpp
-ale.setBool("sound_obs", True);
+ale.setBool("sound_obs", true);
 ```
 
 Once enabled, the sound observation may be obtained by calling:
 
 ```cpp
-ale.getAudio()
+ale.getAudio();
 ```
 
 Finally, one can check whether the episode has terminated using the function `ale.game_over()`. With these functions one can already implement a very simple agent that plays randomly for one episode:
 
 ```cpp
 #include <iostream>
-#include <ale_interface.hpp>
+#include <ale/ale_interface.hpp>
 
 int main(int argc, char** argv) {
     if (argc < 2) {
@@ -69,21 +71,21 @@ int main(int argc, char** argv) {
 
     float totalReward = 0.0;
     while (!ale.game_over()) {
-        Action a = legal_actions[std::rand() % legal_actions.size()];
+        ale::Action a = legal_actions[std::rand() % legal_actions.size()];
         float reward = ale.act(a);
         totalReward += reward;
-
-        std::cout << "The episode ended with score: " << totalReward
-            << std::endl;
     }
+
+    std::cout << "The episode ended with score: " << totalReward
+        << std::endl;
 
     return 0;
 }
 ```
 
-Compiling with the shared library can be done by appending `-lale` or by using `find_package(ale)` and linking to the cmake target `ale::ale-lib`.
+Compiling with the shared library can be done by appending `-lale` or by using `find_package(ale)` and linking to the CMake target `ale::ale-lib`.
 
-```
+```cmake
 cmake_minimum_required(VERSION 3.14)
 
 project(example-cpp-lib)
