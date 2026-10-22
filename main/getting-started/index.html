@@ -437,7 +437,7 @@
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-center"><p>Linux</p></td>
-<td class="text-center"><p>x64</p></td>
+<td class="text-center"><p>x64, aarch64</p></td>
 <td class="text-center"><p>3.11–3.15</p></td>
 </tr>
 <tr class="row-odd"><td class="text-center"><p>macOS</p></td>
@@ -451,11 +451,11 @@
 </tbody>
 </table>
 </div>
-<p>To install the Python interface from PyPi simply run:</p>
+<p>To install the Python interface from PyPI, simply run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ale-py
 </pre></div>
 </div>
-<p>Once installed you can import the native ALE interface as <code class="docutils literal notranslate"><span class="pre">ale_py</span></code></p>
+<p>Once installed, you can import the native ALE interface from <code class="docutils literal notranslate"><span class="pre">ale_py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ale_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALEInterface</span>
 <span class="n">ale</span> <span class="o">=</span> <span class="n">ALEInterface</span><span class="p">()</span>
 </pre></div>
@@ -463,7 +463,7 @@
 </section>
 <section id="gymnasium-api">
 <h2>Gymnasium API<a class="headerlink" href="#gymnasium-api" title="Link to this heading">¶</a></h2>
-<p>ALE supports the <a class="reference external" href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a> API such that all the setup required for interacting with the emulator is complete. See the environment page for all the available ROMs and the gymnasium <a class="reference external" href="https://gymnasium.farama.org/content/basic_usage/">getting started</a> page for how to interact.</p>
+<p>ALE supports the <a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium</a> API, which handles all the setup required to interact with the emulator. See the <a class="reference internal" href="../environments/"><span class="std std-doc">environments</span></a> page for all the available ROMs and the Gymnasium <a class="reference external" href="https://gymnasium.farama.org/introduction/basic_usage/">basic usage</a> page for how to interact with an environment.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
@@ -485,7 +485,7 @@
 <li><p>zlib</p></li>
 <li><p>(Optional) SDL 2 for display/audio support</p></li>
 </ul>
-<p>SDL support allows for displaying the console’s screen and enabling audio output. For example, <em>without</em> SDL support you’ll still be able to train your agents, but you won’t be able to visualize the resulting policy. It might be preferable to disable SDL support when compiled on a cluster but enable SDL locally. Note: SDL support defaults to <strong>OFF</strong>.</p>
+<p>SDL support allows for displaying the console’s screen and enabling audio output. For example, <em>without</em> SDL support you’ll still be able to train your agents, but you won’t be able to visualize the resulting policy. It might be preferable to disable SDL support when compiling on a cluster but enable it locally. Note: SDL support defaults to <strong>OFF</strong>; enable it with <code class="docutils literal notranslate"><span class="pre">-DSDL_SUPPORT=ON</span></code>.</p>
 <p>You can use any package manager to install these dependencies but we recommend using <a class="reference external" href="https://github.com/microsoft/vcpkg"><code class="docutils literal notranslate"><span class="pre">vcpkg</span></code></a>. Here’s a minimal example of installing these dependencies and building/installing the C++ library.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>vcpkg<span class="w"> </span>install<span class="w"> </span>zlib<span class="w"> </span>sdl2
 
@@ -494,8 +494,8 @@ cmake<span class="w"> </span>../<span class="w"> </span>-DCMAKE_BUILD_TYPE<span 
 cmake<span class="w"> </span>--build<span class="w"> </span>.<span class="w"> </span>--target<span class="w"> </span>install
 </pre></div>
 </div>
-<p>These steps will work on any platform, just make sure to specify the environment variable <code class="docutils literal notranslate"><span class="pre">VCPKG_INSTALLATION_ROOT</span></code> to point to your vcpkg installation so we can find the required dependencies. If you install any vcpkg dependencies using non-standard triplets you can specify the environment variable <code class="docutils literal notranslate"><span class="pre">VCPKG_TARGET_TRIPLET</span></code>. For more info check out the <a class="reference external" href="https://vcpkg.readthedocs.io/en/latest/users/config-environment/">vcpkg docs</a> on how to configure your environment.</p>
-<p>Once the ALE is installed you can link against the library in your C++ project as follows</p>
+<p>These steps will work on any platform, just make sure to set the environment variable <code class="docutils literal notranslate"><span class="pre">VCPKG_ROOT</span></code> to point to your vcpkg installation so we can find the required dependencies. If you install any vcpkg dependencies using non-standard triplets you can specify the environment variable <code class="docutils literal notranslate"><span class="pre">VCPKG_DEFAULT_TRIPLET</span></code>. For more info check out the <a class="reference external" href="https://learn.microsoft.com/en-us/vcpkg/users/config-environment">vcpkg docs</a> on how to configure your environment.</p>
+<p>Once the ALE is installed, you can link against the library in your C++ project as follows:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">ale</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
 <span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">YourTarget</span><span class="w"> </span><span class="s">ale::ale-lib</span><span class="p">)</span>
 </pre></div>

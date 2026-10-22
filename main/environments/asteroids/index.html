@@ -453,11 +453,11 @@
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
 <p>You control a spaceship in an asteroid field and must break up asteroids by shooting them. Once all asteroids are destroyed, you enter a new level and new asteroids will appear. You will occasionally be attacked by a flying saucer.</p>
-<p>For a more detailed documentation, see <a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareID=828">the AtariAge page</a></p>
+<p>For more detailed documentation, see <a class="reference external" href="https://atariage.com/manual_html_page.php?SoftwareID=828">the AtariAge page</a></p>
 </section>
 <section id="actions">
 <h2>Actions<a class="headerlink" href="#actions" title="Link to this heading">¶</a></h2>
-<p>Asteroids has the action space of <code class="docutils literal notranslate"><span class="pre">Discrete(14)</span></code> with the table below listing the meaning of each action’s meanings.
+<p>Asteroids has the action space <code class="docutils literal notranslate"><span class="pre">Discrete(14)</span></code> with the table below listing the meaning of each action.
 To enable all 18 possible actions that can be performed on an Atari 2600, specify <code class="docutils literal notranslate"><span class="pre">full_action_space=True</span></code> during
 initialization or by passing <code class="docutils literal notranslate"><span class="pre">full_action_space=True</span></code> to <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>.</p>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -513,7 +513,7 @@ initialization or by passing <code class="docutils literal notranslate"><span cl
 </tbody>
 </table>
 </div>
-<p>See <a class="reference internal" href="../../env-spec/"><span class="doc std std-doc">environment specification</span></a> to see more information on the action meaning.</p>
+<p>See <a class="reference internal" href="../../env-spec/"><span class="doc std std-doc">environment specification</span></a> for more information on the action meanings.</p>
 </section>
 <section id="observations">
 <h2>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h2>
@@ -521,7 +521,7 @@ initialization or by passing <code class="docutils literal notranslate"><span cl
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;ram&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">observation_space=Box(0,</span> <span class="pre">255,</span> <span class="pre">(128,),</span> <span class="pre">np.uint8)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the q”rgb” type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code>, a grayscale version of the <code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code> type</p></li>
 </ul>
 <p>See variants section for the type of observation used by each environment id by default.</p>
 <section id="reward">
@@ -571,7 +571,7 @@ the number of frame-skips and the repeat action probability.</p>
 </tbody>
 </table>
 </div>
-<p>See the <a class="reference external" href="https://ale.farama.org/environments/#version-history-and-naming-schemes">version history page</a> to implement previously implemented environments, e.g., <code class="docutils literal notranslate"><span class="pre">AsteroidsNoFrameskip-v4</span></code>.</p>
+<p>See the <a class="reference external" href="https://ale.farama.org/environments/#version-history-and-naming-schemes">version history page</a> to use previously implemented environments, e.g., <code class="docutils literal notranslate"><span class="pre">AsteroidsNoFrameskip-v4</span></code>.</p>
 </section>
 <section id="difficulty-and-modes">
 <h2>Difficulty and modes<a class="headerlink" href="#difficulty-and-modes" title="Link to this heading">¶</a></h2>
@@ -602,8 +602,8 @@ along with the default values.</p>
 <p>A thorough discussion of the intricate differences between the versions and configurations can be found in the general article on Atari environments.</p>
 <ul class="simple">
 <li><p>v5: Stickiness was added back and stochastic frame-skipping was removed. The environments are now in the “ALE” namespace.</p></li>
-<li><p>v4: Stickiness of actions was removed</p></li>
-<li><p>v0: Initial versions release</p></li>
+<li><p>v4: Stickiness of actions was removed.</p></li>
+<li><p>v0: Initial version release</p></li>
 </ul>
 </section>
 </section>

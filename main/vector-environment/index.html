@@ -427,8 +427,8 @@
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>The Arcade Learning Environment (ALE) Vector Environment provides a high-performance implementation for running multiple Atari environments in parallel. This implementation utilizes native C++ code with multi-threading to achieve significant performance improvements, especially when running many environments simultaneously.</p>
-<p>The vector environment is equivalent to FrameStackObservation + AtariPreprocessing from Gymnasium as</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gym_envs</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">SyncVectorEnv</span><span class="p">(</span>
+<p>The vector environment is equivalent to Gymnasium’s <code class="docutils literal notranslate"><span class="pre">FrameStackObservation</span></code> + <code class="docutils literal notranslate"><span class="pre">AtariPreprocessing</span></code> wrappers, i.e., the following two are equivalent:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gym_envs</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">SyncVectorEnv</span><span class="p">(</span>
   <span class="p">[</span>
       <span class="k">lambda</span><span class="p">:</span> <span class="n">gym</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">FrameStackObservation</span><span class="p">(</span>
           <span class="n">gym</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">AtariPreprocessing</span><span class="p">(</span>
@@ -475,13 +475,14 @@
 </ul>
 </li>
 <li><p><strong>Asynchronous Operation</strong>: Split step operation into <code class="docutils literal notranslate"><span class="pre">send</span></code> and <code class="docutils literal notranslate"><span class="pre">recv</span></code> for more flexible control flow</p></li>
+<li><p><strong>JAX / XLA Support</strong>: Call <code class="docutils literal notranslate"><span class="pre">reset</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> from jitted JAX code (see the JAX / XLA section below)</p></li>
 <li><p><strong>Gymnasium Compatible</strong>: Implements the Gymnasium <code class="docutils literal notranslate"><span class="pre">VectorEnv</span></code> <a class="reference external" href="https://gymnasium.farama.org/api/vector/">interface</a></p></li>
 </ul>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
-<p>The vector implementation is packaged with ale-py that can be installed through PyPI, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ale-py</span></code>.</p>
-<p>Optionally, users can build the project locally, requiring VCPKG, that will install OpenCV to support observation preprocessing.</p>
+<p>The vector implementation is packaged with <code class="docutils literal notranslate"><span class="pre">ale-py</span></code>, which can be installed through PyPI with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ale-py</span></code>.</p>
+<p>Optionally, users can build the project locally, which requires vcpkg to install OpenCV for observation preprocessing.</p>
 </section>
 <section id="basic-usage">
 <h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
@@ -491,7 +492,7 @@
 
 <span class="c1"># Create a vector environment with 4 parallel instances of Breakout</span>
 <span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span>
-    <span class="n">game</span><span class="o">=</span><span class="s2">"breakout"</span><span class="p">,</span>  <span class="c1"># The ROM id not name, i.e., camel case compared to `gymnasium.make` name versions</span>
+    <span class="n">game</span><span class="o">=</span><span class="s2">"breakout"</span><span class="p">,</span>  <span class="c1"># The ROM id (snake_case), not the `gymnasium.make` name (e.g., "space_invaders" not "SpaceInvaders")</span>
     <span class="n">num_envs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -513,8 +514,8 @@
 <p>The vector environment provides numerous configuration options:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span>
     <span class="c1"># Required parameters</span>
-    <span class="n">game</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"breakout"</span><span class="p">,</span>          <span class="c1"># The ROM id not name, i.e., camel case compared to Gymnasium.make name versions</span>
-    <span class="n">num_envs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>               <span class="c1"># Number of parallel environments</span>
+    <span class="n">game</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"breakout"</span><span class="p">,</span>          <span class="c1"># The ROM id (snake_case), not the `gymnasium.make` name</span>
+    <span class="n">num_envs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>               <span class="c1"># Number of parallel environments (required)</span>
     <span class="o">*</span><span class="p">,</span>
 
     <span class="c1"># Preprocessing parameters</span>
@@ -523,23 +524,23 @@
     <span class="n">stack_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>             <span class="c1"># Number of frames to stack</span>
     <span class="n">img_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">84</span><span class="p">,</span>           <span class="c1"># Height to resize frames to</span>
     <span class="n">img_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">84</span><span class="p">,</span>            <span class="c1"># Width to resize frames to</span>
-    <span class="n">maxpool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>           <span class="c1"># If to maxpool sequential frames</span>
-    <span class="n">reward_clipping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># If to clip environment step rewards between -1 and 1</span>
+    <span class="n">maxpool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>           <span class="c1"># Whether to max-pool sequential frames</span>
+    <span class="n">reward_clipping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># Whether to clip environment step rewards between -1 and 1</span>
 
     <span class="c1"># Environment behavior</span>
     <span class="n">noop_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>             <span class="c1"># Maximum number of no-ops at reset</span>
     <span class="n">use_fire_reset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>    <span class="c1"># Press FIRE on reset for games that require it</span>
     <span class="n">episodic_life</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>    <span class="c1"># End episodes on life loss</span>
-    <span class="n">life_loss_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>   <span class="c1"># Return termination signal on life loss but don't reset the environment until all lives are alot. If used, this MUST be indicated as has a significant impact on training performance.</span>
+    <span class="n">life_loss_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>   <span class="c1"># Return termination signal on life loss but don't reset the environment until all lives are lost. If used, this MUST be reported as it has a significant impact on training performance.</span>
     <span class="n">max_num_frames_per_episode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">108000</span><span class="p">,</span> <span class="c1"># Max frames per episode (27000 steps * 4 frame skip)</span>
     <span class="n">repeat_action_probability</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>   <span class="c1"># Sticky actions probability</span>
     <span class="n">full_action_space</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>          <span class="c1"># Use full action space (not minimal)</span>
-    <span class="n">continuous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                 <span class="c1"># If to use continuous actions</span>
-    <span class="n">continuous_action_threshold</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># The threshold at which to use continuous actions</span>
+    <span class="n">continuous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                 <span class="c1"># Whether to use continuous actions</span>
+    <span class="n">continuous_action_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># The threshold above which a continuous action triggers a discrete event</span>
 
     <span class="c1"># Performance options</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>             <span class="c1"># Number of environments to process at once (default=0 is the `num_envs`)</span>
-    <span class="n">autoreset_mode</span><span class="o">=</span><span class="n">gym</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">AutoresetMode</span><span class="o">.</span><span class="n">NEXT_STEP</span><span class="p">,</span>  <span class="c1"># How reset sub-environments when they terminated (https://farama.org/Vector-Autoreset-Mode)</span>
+    <span class="n">autoreset_mode</span><span class="o">=</span><span class="n">gym</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">AutoresetMode</span><span class="o">.</span><span class="n">NEXT_STEP</span><span class="p">,</span>  <span class="c1"># How to reset sub-environments when they terminate (https://farama.org/Vector-Autoreset-Mode)</span>
     <span class="n">num_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>            <span class="c1"># Number of worker threads (0=auto)</span>
     <span class="n">thread_affinity_offset</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="c1"># CPU core offset for thread affinity (-1=no affinity)</span>
 <span class="p">)</span>
@@ -558,7 +559,60 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">stack_size</span></code>: Number of stacked frames (typically 4)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>: Image dimensions (typically 84x84)</p></li>
 </ul>
-<p>Additionally, with <code class="docutils literal notranslate"><span class="pre">grayscale=True</span></code> then the shape is <code class="docutils literal notranslate"><span class="pre">(num_envs,</span> <span class="pre">stack_size,</span> <span class="pre">height,</span> <span class="pre">width,</span> <span class="pre">3)</span></code> for RGB frames.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">grayscale=False</span></code>, the shape is <code class="docutils literal notranslate"><span class="pre">(num_envs,</span> <span class="pre">stack_size,</span> <span class="pre">height,</span> <span class="pre">width,</span> <span class="pre">3)</span></code> for RGB frames.</p>
+</section>
+<section id="seeding-and-partial-resets">
+<h2>Seeding and Partial Resets<a class="headerlink" href="#seeding-and-partial-resets" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">reset</span></code> accepts either an integer seed, which seeds the sub-environments with consecutive values starting at <code class="docutils literal notranslate"><span class="pre">seed</span></code>, or a NumPy array with one seed per sub-environment being reset.</p>
+<p>Individual sub-environments can be reset with the <code class="docutils literal notranslate"><span class="pre">reset_mask</span></code> option, a boolean array of shape <code class="docutils literal notranslate"><span class="pre">(num_envs,)</span></code>. Sub-environments that are masked out are left untouched and report their current observation and info. Partial resets require <code class="docutils literal notranslate"><span class="pre">batch_size</span> <span class="pre">==</span> <span class="pre">num_envs</span></code> and a preceding full reset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">observations</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">]))</span>
+
+<span class="c1"># Reset only the first and third sub-environments, seeding them with 1 and 2</span>
+<span class="n">reset_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+<span class="n">observations</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">"reset_mask"</span><span class="p">:</span> <span class="n">reset_mask</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="jax-xla-integration">
+<h2>JAX / XLA Integration<a class="headerlink" href="#jax-xla-integration" title="Link to this heading">¶</a></h2>
+<p>The vector environment can be called directly from <a class="reference external" href="https://github.com/jax-ml/jax">JAX</a>, including inside <code class="docutils literal notranslate"><span class="pre">jax.jit</span></code> and <code class="docutils literal notranslate"><span class="pre">jax.lax.scan</span></code>, through XLA foreign function calls. This avoids leaving the JAX program to step the environments. The XLA support requires <code class="docutils literal notranslate"><span class="pre">jax</span></code> and <code class="docutils literal notranslate"><span class="pre">chex</span></code>, which can be installed with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"ale-py[xla]"</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">envs.xla()</span></code> returns a handle to the environments along with pure <code class="docutils literal notranslate"><span class="pre">reset</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> functions. Each function takes the current handle and returns a new handle that must be passed to the next call, which keeps the order of environment calls explicit to XLA.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ale_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtariVectorEnv</span>
+
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="s2">"pong"</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">handle</span><span class="p">,</span> <span class="n">xla_reset</span><span class="p">,</span> <span class="n">xla_step</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">xla</span><span class="p">()</span>
+
+<span class="n">handle</span><span class="p">,</span> <span class="p">(</span><span class="n">observations</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="o">=</span> <span class="n">xla_reset</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">xla_step</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
+
+<span class="c1"># Roll out 100 steps with random actions inside a single jitted scan</span>
+<span class="n">actions</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+    <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">envs</span><span class="o">.</span><span class="n">single_action_space</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">int32</span>
+<span class="p">)</span>
+<span class="n">handle</span><span class="p">,</span> <span class="p">(</span><span class="n">observations</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">terminations</span><span class="p">,</span> <span class="n">truncations</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+    <span class="n">step</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">xs</span><span class="o">=</span><span class="n">actions</span>
+<span class="p">)</span>
+<span class="n">envs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">xla_reset(handle,</span> <span class="pre">seed=None,</span> <span class="pre">reset_mask=None)</span></code> supports the same seeding and partial resets as <code class="docutils literal notranslate"><span class="pre">reset</span></code>, and <code class="docutils literal notranslate"><span class="pre">xla_step(handle,</span> <span class="pre">actions)</span></code> expects <code class="docutils literal notranslate"><span class="pre">int32</span></code> actions of shape <code class="docutils literal notranslate"><span class="pre">(batch_size,)</span></code> (or <code class="docutils literal notranslate"><span class="pre">float32</span></code> actions of shape <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">3)</span></code> with <code class="docutils literal notranslate"><span class="pre">continuous=True</span></code>).</p>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>Only <code class="docutils literal notranslate"><span class="pre">autoreset_mode=AutoresetMode.NEXT_STEP</span></code> (the default) is supported.</p></li>
+<li><p>CPU handlers are available on all platforms. GPU (CUDA) handlers are included in the Linux and Windows wheels so the functions can be used within GPU programs; the environments themselves still run on the CPU.</p></li>
+<li><p>The handle refers to the Python <code class="docutils literal notranslate"><span class="pre">AtariVectorEnv</span></code> object, so the object must be kept alive (and not closed) while the XLA functions are used.</p></li>
+</ul>
 </section>
 <section id="performance-considerations">
 <h2>Performance Considerations<a class="headerlink" href="#performance-considerations" title="Link to this heading">¶</a></h2>
@@ -584,18 +638,18 @@ For optimal performance, set <code class="docutils literal notranslate"><span cl
 <h3>Batch Size<a class="headerlink" href="#batch-size" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> parameter controls how many environments are processed simultaneously by the worker threads:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process environments in batches of 4</span>
-<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">"Breakout"</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">"breakout"</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A smaller batch size can improve latency while a larger batch size can improve throughput.
-When passing a batch size, the information will include the environment id of each observation
-which is critical as the first (batch size) observations are returned for <code class="docutils literal notranslate"><span class="pre">reset</span></code> and <code class="docutils literal notranslate"><span class="pre">recv</span></code>.</p>
+When <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> is smaller than <code class="docutils literal notranslate"><span class="pre">num_envs</span></code>, <code class="docutils literal notranslate"><span class="pre">reset</span></code> and <code class="docutils literal notranslate"><span class="pre">recv</span></code> return the first <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> environments to finish,
+so the info includes <code class="docutils literal notranslate"><span class="pre">env_id</span></code>, identifying which environment each observation belongs to.</p>
 </section>
 <section id="thread-affinity">
 <h3>Thread Affinity<a class="headerlink" href="#thread-affinity" title="Link to this heading">¶</a></h3>
 <p>On systems with multiple CPU cores, setting thread affinity can improve performance:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set thread affinity starting from core 0</span>
-<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">"Breakout"</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">thread_affinity_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">"breakout"</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">thread_affinity_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -681,6 +735,8 @@ which is critical as the first (batch size) observations are returned for <code 
 </li>
 <li><a class="reference internal" href="#advanced-configuration">Advanced Configuration</a></li>
 <li><a class="reference internal" href="#observation-format">Observation Format</a></li>
+<li><a class="reference internal" href="#seeding-and-partial-resets">Seeding and Partial Resets</a></li>
+<li><a class="reference internal" href="#jax-xla-integration">JAX / XLA Integration</a></li>
 <li><a class="reference internal" href="#performance-considerations">Performance Considerations</a><ul>
 <li><a class="reference internal" href="#number-of-environments">Number of Environments</a></li>
 <li><a class="reference internal" href="#send-recv-vs-step">Send/Recv vs Step</a></li>

@@ -426,17 +426,18 @@
 <h1>C++ Interface<a class="headerlink" href="#c-interface" title="Link to this heading">¶</a></h1>
 <p>The shared library interface is the simplest way to implement a C++ agent for the Arcade Learning Environment (ALE).
 This interface allows agents to directly access ALE via a class called
-<code class="docutils literal notranslate"><span class="pre">ALEInterface</span></code>, defined in <code class="docutils literal notranslate"><span class="pre">ale_interface.hpp</span></code>. Example code detailing a simple random agent is provided under <code class="docutils literal notranslate"><span class="pre">examples/cpp-agent</span></code>.</p>
-<p>To instantiate the Arcade Learning Environment it is enough to write:</p>
+<code class="docutils literal notranslate"><span class="pre">ALEInterface</span></code>, defined in <code class="docutils literal notranslate"><span class="pre">ale_interface.hpp</span></code>. Example code for a simple random agent is provided below.</p>
+<p>To instantiate the Arcade Learning Environment, it is enough to write:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="o">::</span><span class="n">ALEInterface</span><span class="w"> </span><span class="n">ale</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Once the environment is initialized, it is now possible to set its arguments. This is done with the
+<p>Once the environment is initialized, it is possible to set its arguments. This is done with the
 functions <code class="docutils literal notranslate"><span class="pre">setBool()</span></code>, <code class="docutils literal notranslate"><span class="pre">setInt()</span></code>, <code class="docutils literal notranslate"><span class="pre">setFloat()</span></code>. For example, to set the environment’s seed we write:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">setInt</span><span class="p">(</span><span class="s">"random_seed"</span><span class="p">,</span><span class="w"> </span><span class="mi">123</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Finally, after setting the desired environment parameters we now load the game ROM by providing its filename to the <code class="docutils literal notranslate"><span class="pre">loadROM</span></code> method:</p>
+<p>The full list of settings is given in the <a class="reference internal" href="../env-spec/#settings"><span class="std std-ref">environment specification</span></a>.</p>
+<p>After setting the desired environment parameters, load the game ROM by providing its filename to the <code class="docutils literal notranslate"><span class="pre">loadROM</span></code> method:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">loadROM</span><span class="p">(</span><span class="s">"asterix.bin"</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -452,11 +453,11 @@ the actions that have some effect on that game. The <code class="docutils litera
 </pre></div>
 </div>
 <p>An optional sound observation is provided. To enable, set the associated environment parameter:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">setBool</span><span class="p">(</span><span class="s">"sound_obs"</span><span class="p">,</span><span class="w"> </span><span class="n">True</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">setBool</span><span class="p">(</span><span class="s">"sound_obs"</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Once enabled, the sound observation may be obtained by calling:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">getAudio</span><span class="p">()</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ale</span><span class="p">.</span><span class="n">getAudio</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>Finally, one can check whether the episode has terminated using the function <code class="docutils literal notranslate"><span class="pre">ale.game_over()</span></code>. With these functions one can already implement a very simple agent that plays randomly for one episode:</p>
@@ -477,30 +478,34 @@ the actions that have some effect on that game. The <code class="docutils litera
 
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">totalReward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">ale</span><span class="p">.</span><span class="n">game_over</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">Action</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">legal_actions</span><span class="p">[</span><span class="n">std</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">legal_actions</span><span class="p">.</span><span class="n">size</span><span class="p">()];</span>
+<span class="w">        </span><span class="n">ale</span><span class="o">::</span><span class="n">Action</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">legal_actions</span><span class="p">[</span><span class="n">std</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">legal_actions</span><span class="p">.</span><span class="n">size</span><span class="p">()];</span>
 <span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">reward</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ale</span><span class="p">.</span><span class="n">act</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
 <span class="w">        </span><span class="n">totalReward</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">reward</span><span class="p">;</span>
-
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"The episode ended with score: "</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">totalReward</span>
-<span class="w">            </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"The episode ended with score: "</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">totalReward</span>
+<span class="w">        </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Compiling with the shared library can be done by appending <code class="docutils literal notranslate"><span class="pre">-lale</span></code> or by using <code class="docutils literal notranslate"><span class="pre">find_package(ale)</span></code> and linking to the cmake target <code class="docutils literal notranslate"><span class="pre">ale::ale-lib</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cmake_minimum_required</span><span class="p">(</span><span class="n">VERSION</span> <span class="mf">3.14</span><span class="p">)</span>
+<p>To compile the example, save it as <code class="docutils literal notranslate"><span class="pre">random_agent.cpp</span></code> next to the following <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>, which uses <code class="docutils literal notranslate"><span class="pre">find_package(ale)</span></code> to link against the installed CMake target <code class="docutils literal notranslate"><span class="pre">ale::ale-lib</span></code> (see <a class="reference internal" href="../getting-started/#c-interface"><span class="std std-ref">installation</span></a>):</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.14</span><span class="p">)</span>
 
-<span class="n">project</span><span class="p">(</span><span class="n">example</span><span class="o">-</span><span class="n">cpp</span><span class="o">-</span><span class="n">lib</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">random-agent</span><span class="p">)</span>
 
-<span class="n">find_package</span><span class="p">(</span><span class="n">ale</span> <span class="n">REQUIRED</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_STANDARD</span><span class="w"> </span><span class="s">17</span><span class="p">)</span>
 
-<span class="n">add_executable</span><span class="p">(</span><span class="n">sharedLibraryInterfaceExample</span> <span class="n">sharedLibraryInterfaceExample</span><span class="o">.</span><span class="n">cpp</span><span class="p">)</span>
-<span class="n">target_link_libraries</span><span class="p">(</span><span class="n">sharedLibraryInterfaceExample</span> <span class="n">ale</span><span class="p">::</span><span class="n">ale</span><span class="o">-</span><span class="n">lib</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">ale</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
 
-<span class="n">add_executable</span><span class="p">(</span><span class="n">sharedLibraryInterfaceWithModesExample</span> <span class="n">sharedLibraryInterfaceWithModesExample</span><span class="o">.</span><span class="n">cpp</span><span class="p">)</span>
-<span class="n">target_link_libraries</span><span class="p">(</span><span class="n">sharedLibraryInterfaceWithModesExample</span> <span class="n">ale</span><span class="p">::</span><span class="n">ale</span><span class="o">-</span><span class="n">lib</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">random_agent</span><span class="w"> </span><span class="s">random_agent.cpp</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">random_agent</span><span class="w"> </span><span class="s">ale::ale-lib</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then build and run it with a ROM:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cmake<span class="w"> </span>--build<span class="w"> </span>build
+./build/random_agent<span class="w"> </span>path/to/breakout.bin
 </pre></div>
 </div>
 </section>

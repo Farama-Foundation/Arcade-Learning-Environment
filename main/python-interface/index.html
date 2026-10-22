@@ -192,7 +192,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -413,7 +413,7 @@
                 </svg>
               </button>
             </div>
-            <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-content-icon" for="__toc">
               <div class="visually-hidden">Toggle table of contents sidebar</div>
               <i class="icon"><svg>
                   <use href="#svg-toc"></use>
@@ -424,7 +424,7 @@
             
             <section class="tex2jax_ignore mathjax_ignore" id="python-interface">
 <h1>Python Interface<a class="headerlink" href="#python-interface" title="Link to this heading">¶</a></h1>
-<p>Aside from a few minor differences, the Python interface mirrors the C++ interface. For example, the following implements a random agent:</p>
+<p>Aside from a few minor differences, the Python interface mirrors the <a class="reference internal" href="../cpp-interface/"><span class="std std-doc">C++ interface</span></a>. For example, the following implements a random agent:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randrange</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ale_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALEInterface</span>
@@ -455,6 +455,397 @@
     <span class="n">main</span><span class="p">(</span><span class="n">rom_file</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The available setting keys for <code class="docutils literal notranslate"><span class="pre">setBool</span></code>, <code class="docutils literal notranslate"><span class="pre">setInt</span></code>, <code class="docutils literal notranslate"><span class="pre">setFloat</span></code> and <code class="docutils literal notranslate"><span class="pre">setString</span></code> are listed in the <a class="reference internal" href="../env-spec/#settings"><span class="std std-ref">environment specification</span></a>.</p>
+<section id="roms">
+<h2>ROMs<a class="headerlink" href="#roms" title="Link to this heading">¶</a></h2>
+<p>The supported ROMs are bundled with <code class="docutils literal notranslate"><span class="pre">ale-py</span></code>. Their paths can be found with <code class="docutils literal notranslate"><span class="pre">ale_py.roms</span></code>, using the snake_case ROM id:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ale_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALEInterface</span><span class="p">,</span> <span class="n">roms</span>
+
+<span class="n">ale</span> <span class="o">=</span> <span class="n">ALEInterface</span><span class="p">()</span>
+<span class="n">ale</span><span class="o">.</span><span class="n">loadROM</span><span class="p">(</span><span class="n">roms</span><span class="o">.</span><span class="n">get_rom_path</span><span class="p">(</span><span class="s2">"breakout"</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">roms</span><span class="o">.</span><span class="n">get_all_rom_ids</span><span class="p">())</span>  <span class="c1"># ['adventure', 'air_raid', 'alien', ...]</span>
+</pre></div>
+</div>
+<p>To load ROMs from another directory, set the <code class="docutils literal notranslate"><span class="pre">ALE_ROMS_DIR</span></code> environment variable.</p>
+</section>
+<section id="observations">
+<h2>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h2>
+<p>The screen can be read as an RGB array of shape <code class="docutils literal notranslate"><span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3)</span></code> with <code class="docutils literal notranslate"><span class="pre">getScreenRGB</span></code>, as a grayscale array of shape <code class="docutils literal notranslate"><span class="pre">(210,</span> <span class="pre">160)</span></code> with <code class="docutils literal notranslate"><span class="pre">getScreenGrayscale</span></code>, or as the raw palette indices with <code class="docutils literal notranslate"><span class="pre">getScreen</span></code>. The console’s 128 bytes of RAM are available with <code class="docutils literal notranslate"><span class="pre">getRAM</span></code>. Each of these methods optionally takes a preallocated NumPy array to write into, avoiding an allocation on every step.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">rgb</span> <span class="o">=</span> <span class="n">ale</span><span class="o">.</span><span class="n">getScreenRGB</span><span class="p">()</span>
+<span class="n">ram</span> <span class="o">=</span> <span class="n">ale</span><span class="o">.</span><span class="n">getRAM</span><span class="p">()</span>
+
+<span class="c1"># Reuse the same buffer every step</span>
+<span class="n">buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">210</span><span class="p">,</span> <span class="mi">160</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">ale</span><span class="o">.</span><span class="n">getScreenGrayscale</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="saving-and-restoring-states">
+<h2>Saving and Restoring States<a class="headerlink" href="#saving-and-restoring-states" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cloneState</span></code> returns an <code class="docutils literal notranslate"><span class="pre">ALEState</span></code> snapshot of the emulator, which can later be passed to <code class="docutils literal notranslate"><span class="pre">restoreState</span></code>. By default, the snapshot does not include the environment’s random number generator (used for sticky actions), making it suitable for planning; pass <code class="docutils literal notranslate"><span class="pre">include_rng=True</span></code> to also capture it so that restoring reproduces the exact same future.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">state</span> <span class="o">=</span> <span class="n">ale</span><span class="o">.</span><span class="n">cloneState</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">ale</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">ale</span><span class="o">.</span><span class="n">getLegalActionSet</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ale</span><span class="o">.</span><span class="n">restoreState</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>  <span class="c1"># back to where we started</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ALEState</span></code> objects can be pickled or converted to bytes with <code class="docutils literal notranslate"><span class="pre">serialize()</span></code>, and recreated with <code class="docutils literal notranslate"><span class="pre">ALEState(serialized)</span></code>. Serialized states are not guaranteed to be compatible across ALE versions.</p>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ale_py.ALEInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ale_py.</span></span><span class="sig-name descname"><span class="pre">ALEInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ale_py.ALEInterface" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.act">
+<span class="sig-name descname"><span class="pre">act</span></span><a class="headerlink" href="#ale_py.ALEInterface.act" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.cloneState">
+<span class="sig-name descname"><span class="pre">cloneState</span></span><a class="headerlink" href="#ale_py.ALEInterface.cloneState" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.cloneSystemState">
+<span class="sig-name descname"><span class="pre">cloneSystemState</span></span><a class="headerlink" href="#ale_py.ALEInterface.cloneSystemState" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.game_over">
+<span class="sig-name descname"><span class="pre">game_over</span></span><a class="headerlink" href="#ale_py.ALEInterface.game_over" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.game_truncated">
+<span class="sig-name descname"><span class="pre">game_truncated</span></span><a class="headerlink" href="#ale_py.ALEInterface.game_truncated" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getAudio">
+<span class="sig-name descname"><span class="pre">getAudio</span></span><a class="headerlink" href="#ale_py.ALEInterface.getAudio" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getAudioSize">
+<span class="sig-name descname"><span class="pre">getAudioSize</span></span><a class="headerlink" href="#ale_py.ALEInterface.getAudioSize" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getAvailableDifficulties">
+<span class="sig-name descname"><span class="pre">getAvailableDifficulties</span></span><a class="headerlink" href="#ale_py.ALEInterface.getAvailableDifficulties" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getAvailableModes">
+<span class="sig-name descname"><span class="pre">getAvailableModes</span></span><a class="headerlink" href="#ale_py.ALEInterface.getAvailableModes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getBool">
+<span class="sig-name descname"><span class="pre">getBool</span></span><a class="headerlink" href="#ale_py.ALEInterface.getBool" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getEpisodeFrameNumber">
+<span class="sig-name descname"><span class="pre">getEpisodeFrameNumber</span></span><a class="headerlink" href="#ale_py.ALEInterface.getEpisodeFrameNumber" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getFloat">
+<span class="sig-name descname"><span class="pre">getFloat</span></span><a class="headerlink" href="#ale_py.ALEInterface.getFloat" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getFrameNumber">
+<span class="sig-name descname"><span class="pre">getFrameNumber</span></span><a class="headerlink" href="#ale_py.ALEInterface.getFrameNumber" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getInt">
+<span class="sig-name descname"><span class="pre">getInt</span></span><a class="headerlink" href="#ale_py.ALEInterface.getInt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getLegalActionSet">
+<span class="sig-name descname"><span class="pre">getLegalActionSet</span></span><a class="headerlink" href="#ale_py.ALEInterface.getLegalActionSet" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getMinimalActionSet">
+<span class="sig-name descname"><span class="pre">getMinimalActionSet</span></span><a class="headerlink" href="#ale_py.ALEInterface.getMinimalActionSet" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getRAM">
+<span class="sig-name descname"><span class="pre">getRAM</span></span><a class="headerlink" href="#ale_py.ALEInterface.getRAM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getRAMSize">
+<span class="sig-name descname"><span class="pre">getRAMSize</span></span><a class="headerlink" href="#ale_py.ALEInterface.getRAMSize" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getScreen">
+<span class="sig-name descname"><span class="pre">getScreen</span></span><a class="headerlink" href="#ale_py.ALEInterface.getScreen" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getScreenDims">
+<span class="sig-name descname"><span class="pre">getScreenDims</span></span><a class="headerlink" href="#ale_py.ALEInterface.getScreenDims" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getScreenGrayscale">
+<span class="sig-name descname"><span class="pre">getScreenGrayscale</span></span><a class="headerlink" href="#ale_py.ALEInterface.getScreenGrayscale" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getScreenRGB">
+<span class="sig-name descname"><span class="pre">getScreenRGB</span></span><a class="headerlink" href="#ale_py.ALEInterface.getScreenRGB" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.getString">
+<span class="sig-name descname"><span class="pre">getString</span></span><a class="headerlink" href="#ale_py.ALEInterface.getString" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.isSupportedROM">
+<span class="sig-name descname"><span class="pre">isSupportedROM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;nanobind.nb_func</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ale_py.ALEInterface.isSupportedROM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.lives">
+<span class="sig-name descname"><span class="pre">lives</span></span><a class="headerlink" href="#ale_py.ALEInterface.lives" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.loadROM">
+<span class="sig-name descname"><span class="pre">loadROM</span></span><a class="headerlink" href="#ale_py.ALEInterface.loadROM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.reset_game">
+<span class="sig-name descname"><span class="pre">reset_game</span></span><a class="headerlink" href="#ale_py.ALEInterface.reset_game" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.restoreState">
+<span class="sig-name descname"><span class="pre">restoreState</span></span><a class="headerlink" href="#ale_py.ALEInterface.restoreState" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.restoreSystemState">
+<span class="sig-name descname"><span class="pre">restoreSystemState</span></span><a class="headerlink" href="#ale_py.ALEInterface.restoreSystemState" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.saveScreenPNG">
+<span class="sig-name descname"><span class="pre">saveScreenPNG</span></span><a class="headerlink" href="#ale_py.ALEInterface.saveScreenPNG" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setBool">
+<span class="sig-name descname"><span class="pre">setBool</span></span><a class="headerlink" href="#ale_py.ALEInterface.setBool" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setDifficulty">
+<span class="sig-name descname"><span class="pre">setDifficulty</span></span><a class="headerlink" href="#ale_py.ALEInterface.setDifficulty" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setFloat">
+<span class="sig-name descname"><span class="pre">setFloat</span></span><a class="headerlink" href="#ale_py.ALEInterface.setFloat" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setInt">
+<span class="sig-name descname"><span class="pre">setInt</span></span><a class="headerlink" href="#ale_py.ALEInterface.setInt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setLoggerMode">
+<span class="sig-name descname"><span class="pre">setLoggerMode</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;nanobind.nb_func</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ale_py.ALEInterface.setLoggerMode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setMode">
+<span class="sig-name descname"><span class="pre">setMode</span></span><a class="headerlink" href="#ale_py.ALEInterface.setMode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setRAM">
+<span class="sig-name descname"><span class="pre">setRAM</span></span><a class="headerlink" href="#ale_py.ALEInterface.setRAM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEInterface.setString">
+<span class="sig-name descname"><span class="pre">setString</span></span><a class="headerlink" href="#ale_py.ALEInterface.setString" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ale_py.ALEState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ale_py.</span></span><span class="sig-name descname"><span class="pre">ALEState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ale_py.ALEState" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ale_py.</span></span><span class="sig-name descname"><span class="pre">ALEState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ale_py.ALEState" title="ale_py._ale_py.ALEState"><span class="pre">ale_py._ale_py.ALEState</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ale_py.</span></span><span class="sig-name descname"><span class="pre">ALEState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEState.equals">
+<span class="sig-name descname"><span class="pre">equals</span></span><a class="headerlink" href="#ale_py.ALEState.equals" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEState.getCurrentMode">
+<span class="sig-name descname"><span class="pre">getCurrentMode</span></span><a class="headerlink" href="#ale_py.ALEState.getCurrentMode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEState.getDifficulty">
+<span class="sig-name descname"><span class="pre">getDifficulty</span></span><a class="headerlink" href="#ale_py.ALEState.getDifficulty" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEState.getEpisodeFrameNumber">
+<span class="sig-name descname"><span class="pre">getEpisodeFrameNumber</span></span><a class="headerlink" href="#ale_py.ALEState.getEpisodeFrameNumber" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEState.getFrameNumber">
+<span class="sig-name descname"><span class="pre">getFrameNumber</span></span><a class="headerlink" href="#ale_py.ALEState.getFrameNumber" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.ALEState.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><a class="headerlink" href="#ale_py.ALEState.serialize" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ale_py.Action">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ale_py.</span></span><span class="sig-name descname"><span class="pre">Action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">_not_given</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ale_py.Action" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.DOWN">
+<span class="sig-name descname"><span class="pre">DOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#ale_py.Action.DOWN" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.DOWNFIRE">
+<span class="sig-name descname"><span class="pre">DOWNFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#ale_py.Action.DOWNFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.DOWNLEFT">
+<span class="sig-name descname"><span class="pre">DOWNLEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#ale_py.Action.DOWNLEFT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.DOWNLEFTFIRE">
+<span class="sig-name descname"><span class="pre">DOWNLEFTFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">17</span></em><a class="headerlink" href="#ale_py.Action.DOWNLEFTFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.DOWNRIGHT">
+<span class="sig-name descname"><span class="pre">DOWNRIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#ale_py.Action.DOWNRIGHT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.DOWNRIGHTFIRE">
+<span class="sig-name descname"><span class="pre">DOWNRIGHTFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#ale_py.Action.DOWNRIGHTFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.FIRE">
+<span class="sig-name descname"><span class="pre">FIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#ale_py.Action.FIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.LEFT">
+<span class="sig-name descname"><span class="pre">LEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#ale_py.Action.LEFT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.LEFTFIRE">
+<span class="sig-name descname"><span class="pre">LEFTFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#ale_py.Action.LEFTFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.NOOP">
+<span class="sig-name descname"><span class="pre">NOOP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#ale_py.Action.NOOP" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.RIGHT">
+<span class="sig-name descname"><span class="pre">RIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#ale_py.Action.RIGHT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.RIGHTFIRE">
+<span class="sig-name descname"><span class="pre">RIGHTFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#ale_py.Action.RIGHTFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.UP">
+<span class="sig-name descname"><span class="pre">UP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#ale_py.Action.UP" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.UPFIRE">
+<span class="sig-name descname"><span class="pre">UPFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#ale_py.Action.UPFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.UPLEFT">
+<span class="sig-name descname"><span class="pre">UPLEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#ale_py.Action.UPLEFT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.UPLEFTFIRE">
+<span class="sig-name descname"><span class="pre">UPLEFTFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#ale_py.Action.UPLEFTFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.UPRIGHT">
+<span class="sig-name descname"><span class="pre">UPRIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#ale_py.Action.UPRIGHT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.Action.UPRIGHTFIRE">
+<span class="sig-name descname"><span class="pre">UPRIGHTFIRE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#ale_py.Action.UPRIGHTFIRE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ale_py.LoggerMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ale_py.</span></span><span class="sig-name descname"><span class="pre">LoggerMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">_not_given</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ale_py.LoggerMode" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.LoggerMode.Error">
+<span class="sig-name descname"><span class="pre">Error</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#ale_py.LoggerMode.Error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.LoggerMode.Info">
+<span class="sig-name descname"><span class="pre">Info</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#ale_py.LoggerMode.Info" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ale_py.LoggerMode.Warning">
+<span class="sig-name descname"><span class="pre">Warning</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#ale_py.LoggerMode.Warning" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
           </article>
@@ -514,8 +905,109 @@
           
         </footer>
       </div>
-      <aside class="toc-drawer no-toc">
+      <aside class="toc-drawer">
         
+        
+        <div class="toc-sticky toc-scroll">
+          <div class="toc-title-container">
+            <span class="toc-title">
+              On this page
+            </span>
+          </div>
+          <div class="toc-tree-container">
+            <div class="toc-tree">
+              <ul>
+<li><a class="reference internal" href="#">Python Interface</a><ul>
+<li><a class="reference internal" href="#roms">ROMs</a></li>
+<li><a class="reference internal" href="#observations">Observations</a></li>
+<li><a class="reference internal" href="#saving-and-restoring-states">Saving and Restoring States</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li><a class="reference internal" href="#ale_py.ALEInterface"><code class="docutils literal notranslate"><span class="pre">ALEInterface</span></code></a><ul>
+<li><a class="reference internal" href="#ale_py.ALEInterface.act"><code class="docutils literal notranslate"><span class="pre">ALEInterface.act</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.cloneState"><code class="docutils literal notranslate"><span class="pre">ALEInterface.cloneState</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.cloneSystemState"><code class="docutils literal notranslate"><span class="pre">ALEInterface.cloneSystemState</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.game_over"><code class="docutils literal notranslate"><span class="pre">ALEInterface.game_over</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.game_truncated"><code class="docutils literal notranslate"><span class="pre">ALEInterface.game_truncated</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getAudio"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getAudio</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getAudioSize"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getAudioSize</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getAvailableDifficulties"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getAvailableDifficulties</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getAvailableModes"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getAvailableModes</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getBool"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getBool</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getEpisodeFrameNumber"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getEpisodeFrameNumber</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getFloat"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getFloat</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getFrameNumber"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getFrameNumber</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getInt"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getInt</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getLegalActionSet"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getLegalActionSet</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getMinimalActionSet"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getMinimalActionSet</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getRAM"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getRAM</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getRAMSize"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getRAMSize</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getScreen"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getScreen</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getScreenDims"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getScreenDims</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getScreenGrayscale"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getScreenGrayscale</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getScreenRGB"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getScreenRGB</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.getString"><code class="docutils literal notranslate"><span class="pre">ALEInterface.getString</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.isSupportedROM"><code class="docutils literal notranslate"><span class="pre">ALEInterface.isSupportedROM</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.lives"><code class="docutils literal notranslate"><span class="pre">ALEInterface.lives</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.loadROM"><code class="docutils literal notranslate"><span class="pre">ALEInterface.loadROM</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.reset_game"><code class="docutils literal notranslate"><span class="pre">ALEInterface.reset_game</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.restoreState"><code class="docutils literal notranslate"><span class="pre">ALEInterface.restoreState</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.restoreSystemState"><code class="docutils literal notranslate"><span class="pre">ALEInterface.restoreSystemState</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.saveScreenPNG"><code class="docutils literal notranslate"><span class="pre">ALEInterface.saveScreenPNG</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setBool"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setBool</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setDifficulty"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setDifficulty</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setFloat"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setFloat</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setInt"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setInt</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setLoggerMode"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setLoggerMode</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setMode"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setMode</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setRAM"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setRAM</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEInterface.setString"><code class="docutils literal notranslate"><span class="pre">ALEInterface.setString</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ale_py.ALEState"><code class="docutils literal notranslate"><span class="pre">ALEState</span></code></a><ul>
+<li><a class="reference internal" href="#ale_py.ALEState.equals"><code class="docutils literal notranslate"><span class="pre">ALEState.equals</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEState.getCurrentMode"><code class="docutils literal notranslate"><span class="pre">ALEState.getCurrentMode</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEState.getDifficulty"><code class="docutils literal notranslate"><span class="pre">ALEState.getDifficulty</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEState.getEpisodeFrameNumber"><code class="docutils literal notranslate"><span class="pre">ALEState.getEpisodeFrameNumber</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEState.getFrameNumber"><code class="docutils literal notranslate"><span class="pre">ALEState.getFrameNumber</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.ALEState.serialize"><code class="docutils literal notranslate"><span class="pre">ALEState.serialize</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ale_py.Action"><code class="docutils literal notranslate"><span class="pre">Action</span></code></a><ul>
+<li><a class="reference internal" href="#ale_py.Action.DOWN"><code class="docutils literal notranslate"><span class="pre">Action.DOWN</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.DOWNFIRE"><code class="docutils literal notranslate"><span class="pre">Action.DOWNFIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.DOWNLEFT"><code class="docutils literal notranslate"><span class="pre">Action.DOWNLEFT</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.DOWNLEFTFIRE"><code class="docutils literal notranslate"><span class="pre">Action.DOWNLEFTFIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.DOWNRIGHT"><code class="docutils literal notranslate"><span class="pre">Action.DOWNRIGHT</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.DOWNRIGHTFIRE"><code class="docutils literal notranslate"><span class="pre">Action.DOWNRIGHTFIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.FIRE"><code class="docutils literal notranslate"><span class="pre">Action.FIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.LEFT"><code class="docutils literal notranslate"><span class="pre">Action.LEFT</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.LEFTFIRE"><code class="docutils literal notranslate"><span class="pre">Action.LEFTFIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.NOOP"><code class="docutils literal notranslate"><span class="pre">Action.NOOP</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.RIGHT"><code class="docutils literal notranslate"><span class="pre">Action.RIGHT</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.RIGHTFIRE"><code class="docutils literal notranslate"><span class="pre">Action.RIGHTFIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.UP"><code class="docutils literal notranslate"><span class="pre">Action.UP</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.UPFIRE"><code class="docutils literal notranslate"><span class="pre">Action.UPFIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.UPLEFT"><code class="docutils literal notranslate"><span class="pre">Action.UPLEFT</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.UPLEFTFIRE"><code class="docutils literal notranslate"><span class="pre">Action.UPLEFTFIRE</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.UPRIGHT"><code class="docutils literal notranslate"><span class="pre">Action.UPRIGHT</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.Action.UPRIGHTFIRE"><code class="docutils literal notranslate"><span class="pre">Action.UPRIGHTFIRE</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ale_py.LoggerMode"><code class="docutils literal notranslate"><span class="pre">LoggerMode</span></code></a><ul>
+<li><a class="reference internal" href="#ale_py.LoggerMode.Error"><code class="docutils literal notranslate"><span class="pre">LoggerMode.Error</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.LoggerMode.Info"><code class="docutils literal notranslate"><span class="pre">LoggerMode.Info</span></code></a></li>
+<li><a class="reference internal" href="#ale_py.LoggerMode.Warning"><code class="docutils literal notranslate"><span class="pre">LoggerMode.Warning</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
         
         
       </aside>

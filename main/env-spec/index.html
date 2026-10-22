@@ -424,10 +424,10 @@
             
             <section class="tex2jax_ignore mathjax_ignore" id="environment-specifications">
 <h1>Environment Specifications<a class="headerlink" href="#environment-specifications" title="Link to this heading">¶</a></h1>
-<p>This section provides additional information regarding the environment implemented in ALE.</p>
+<p>This section provides additional information regarding the environments implemented in the ALE.</p>
 <section id="available-actions">
 <h2>Available Actions<a class="headerlink" href="#available-actions" title="Link to this heading">¶</a></h2>
-<p>The following regular actions are defined by the <code class="docutils literal notranslate"><span class="pre">Action</span></code> enum in <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/master/src/common/Constants.h"><code class="docutils literal notranslate"><span class="pre">common/Constants.h</span></code></a>. These can also be accessed in Python through the enum object <code class="docutils literal notranslate"><span class="pre">ale_py.Action</span></code>. These actions are interpreted by ALE as follows:</p>
+<p>The following regular actions are defined by the <code class="docutils literal notranslate"><span class="pre">Action</span></code> enum in <a class="reference external" href="https://github.com/Farama-Foundation/Arcade-Learning-Environment/blob/main/src/ale/common/Constants.h"><code class="docutils literal notranslate"><span class="pre">common/Constants.h</span></code></a>. These can also be accessed in Python through the enum object <code class="docutils literal notranslate"><span class="pre">ale_py.Action</span></code>. These actions are interpreted by ALE as follows:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -443,7 +443,7 @@
 </tr>
 <tr class="row-odd"><td><p>1</p></td>
 <td><p><strong><code class="docutils literal notranslate"><span class="pre">FIRE</span></code></strong></p></td>
-<td><p>Press the fire button without updating the joystick position</p></td>
+<td><p>Press the fire button without updating the joystick position.</p></td>
 </tr>
 <tr class="row-even"><td><p>2</p></td>
 <td><p><strong><code class="docutils literal notranslate"><span class="pre">UP</span></code></strong></p></td>
@@ -516,13 +516,13 @@
 </tbody>
 </table>
 </div>
-<p><small>1</small>: Note that the <strong><code class="docutils literal notranslate"><span class="pre">RESET</span></code></strong> action toggles the Atari 2600 reset switch, rather than reset the
+<p><small>1</small>: Note that the <strong><code class="docutils literal notranslate"><span class="pre">RESET</span></code></strong> action toggles the Atari 2600 reset switch, rather than resetting the
 environment, and as such is ignored by most interfaces.</p>
-<p>Note: There are two main types of controllers on the Atari 2600 console. The <a class="reference external" href="https://en.wikipedia.org/wiki/Atari_CX40_joystick">joystick controller</a> and the <a class="reference external" href="https://en.wikipedia.org/wiki/Paddle_(game_controller)">paddle controller</a>. For paddle controllers all <strong><code class="docutils literal notranslate"><span class="pre">*RIGHT*</span></code></strong> actions correspond to a Δ-movment to the right on the wheel, and all <strong><code class="docutils literal notranslate"><span class="pre">*LEFT*</span></code></strong> actions correspond to a Δ-movement to the left.</p>
+<p>Note: There are two main types of controllers on the Atari 2600 console: the <a class="reference external" href="https://en.wikipedia.org/wiki/Atari_CX40_joystick">joystick controller</a> and the <a class="reference external" href="https://en.wikipedia.org/wiki/Paddle_(game_controller)">paddle controller</a>. For paddle controllers all <strong><code class="docutils literal notranslate"><span class="pre">*RIGHT*</span></code></strong> actions correspond to a Δ-movement to the right on the wheel, and all <strong><code class="docutils literal notranslate"><span class="pre">*LEFT*</span></code></strong> actions correspond to a Δ-movement to the left.</p>
 </section>
 <section id="terminal-states">
 <h2>Terminal States<a class="headerlink" href="#terminal-states" title="Link to this heading">¶</a></h2>
-<p>Once the end of episode is reached (a terminal state in RL terminology), no further emulation
+<p>Once the end of an episode is reached (a terminal state in RL terminology), no further emulation
 takes place until the appropriate reset command is sent. This command is distinct from the Atari
 2600 reset. This “system reset” avoids odd situations where the player can reset the game
 through button presses, or where the game normally resets itself after a number of frames. This
@@ -540,9 +540,9 @@ This behaviour can be turned on using <code class="docutils literal notranslate"
 <p>Beginning with ALE 0.5.0, there is now an option (enabled by default) to add
 <em>action repeat stochasticity</em> to the environment. With probability 𝗉 (default: 𝗉 = 0.25),
 the previously executed action is executed again during the next frame, ignoring the agent’s
-actual choice. This value can be modified using the option <code class="docutils literal notranslate"><span class="pre">action_repeat_probability</span></code>.
+actual choice. This value can be modified using the option <code class="docutils literal notranslate"><span class="pre">repeat_action_probability</span></code>.
 The default value was chosen as the highest value for which human play-testers
-were unable to detect any delay or control lag. (<a class="reference internal" href="#1"><span class="xref myst">Machado et al. 2018</span></a>).</p>
+were unable to detect any delay or control lag. (<a class="reference internal" href="#ref-1">Machado et al. 2018</a>).</p>
 <p>The motivation for introducing action repeat stochasticity was to help separate <em>trajectory optimization</em> research from <em>robust controller optimization</em>, the latter often being the
 desired outcome in reinforcement learning (RL). We strongly encourage RL researchers to use
 the default stochasticity level in their agents, and clearly report the setting used.</p>
@@ -550,18 +550,105 @@ the default stochasticity level in their agents, and clearly report the setting 
 <section id="minimal-action-set">
 <h2>Minimal Action Set<a class="headerlink" href="#minimal-action-set" title="Link to this heading">¶</a></h2>
 <p>It may sometimes be convenient to restrict the agent to a smaller action set. This can be
-accomplished by querying the <code class="docutils literal notranslate"><span class="pre">RomSettings</span></code> class using the method
-<code class="docutils literal notranslate"><span class="pre">getMinimalActionSet</span></code>. This then returns a set of actions judged “minimal” to play a given
+accomplished with the <code class="docutils literal notranslate"><span class="pre">ALEInterface</span></code> method
+<code class="docutils literal notranslate"><span class="pre">getMinimalActionSet</span></code>, which returns a set of actions judged “minimal” to play a given
 game. Due to the potentially high impact of this setting on performance, we encourage researchers
 to clearly report the method used in their experiments.</p>
 </section>
 <section id="modes-and-difficulties">
 <h2>Modes and Difficulties<a class="headerlink" href="#modes-and-difficulties" title="Link to this heading">¶</a></h2>
-<p>ALE 0.6.0 introduces modes and difficulties, which can be set using the relevant methods <code class="docutils literal notranslate"><span class="pre">setMode</span></code>, <code class="docutils literal notranslate"><span class="pre">setDifficulty</span></code>. These introduce a whole range of new environments. For more details, see <a class="reference internal" href="#1"><span class="xref myst">Machado et al. 2018</span></a>.</p>
+<p>ALE 0.6.0 introduced modes and difficulties, which can be set using the methods <code class="docutils literal notranslate"><span class="pre">setMode</span></code> and <code class="docutils literal notranslate"><span class="pre">setDifficulty</span></code>. These introduce a whole range of new environments. For more details, see <a class="reference internal" href="#ref-1">Machado et al. 2018</a>.</p>
+</section>
+<section id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Link to this heading">¶</a></h2>
+<p>The C++ and Python interfaces are configured with <code class="docutils literal notranslate"><span class="pre">setBool</span></code>, <code class="docutils literal notranslate"><span class="pre">setInt</span></code>, <code class="docutils literal notranslate"><span class="pre">setFloat</span></code> and <code class="docutils literal notranslate"><span class="pre">setString</span></code> (with matching getters). Most settings are read when a ROM is loaded, so set them <strong>before</strong> calling <code class="docutils literal notranslate"><span class="pre">loadROM</span></code>.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">random_seed</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
+<td><p>Seed for the environment’s random number generator (sticky actions, etc.). <code class="docutils literal notranslate"><span class="pre">-1</span></code> seeds from the current time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">repeat_action_probability</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p>Probability of repeating the previous action instead of the chosen one (sticky actions), see above.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">frame_skip</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>Number of frames each call to <code class="docutils literal notranslate"><span class="pre">act</span></code> emulates with the same action; the rewards are summed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_num_frames_per_episode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>Truncate the episode after this many frames; <code class="docutils literal notranslate"><span class="pre">0</span></code> disables the limit.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">truncate_on_loss_of_life</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Truncate the episode when a life is lost.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reward_min</span></code>, <code class="docutils literal notranslate"><span class="pre">reward_max</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>int min / max</p></td>
+<td><p>Clip the reward returned by <code class="docutils literal notranslate"><span class="pre">act</span></code> to this range.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">color_averaging</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Average the colours of the current and previous frames to reduce flickering, see above.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">paddle_min</span></code>, <code class="docutils literal notranslate"><span class="pre">paddle_max</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>per game</p></td>
+<td><p>Override the range of paddle resistance values used by paddle games.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sound_obs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Record the audio of each frame so that it can be read with <code class="docutils literal notranslate"><span class="pre">getAudio</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">display_screen</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Display the screen in a window (requires SDL support).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sound</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Play the game audio (requires SDL support).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">record_screen_dir</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Directory to save every frame to as a PNG, see <a class="reference internal" href="../visualization/"><span class="std std-doc">visualization</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">record_sound_filename</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>File to save the audio to as a WAV (requires <code class="docutils literal notranslate"><span class="pre">sound</span></code>), see <a class="reference internal" href="../visualization/"><span class="std std-doc">visualization</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">system_random_seed</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4753849</span></code></p></td>
+<td><p>Seed for the emulator’s internal randomness; fixed by default for full determinism.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<p id="id1"><a id="1">[1]</a>
+<p id="ref-1"><a id="1">[1]</a>
 Machado et al.
 “Revisiting the Arcade Learning Environment: Evaluation Protocols
 and Open Problems for General Agents”
@@ -646,6 +733,7 @@ URL: https://jair.org/index.php/jair/article/view/11182</p>
 <li><a class="reference internal" href="#action-repeat-stochasticity">Action Repeat Stochasticity</a></li>
 <li><a class="reference internal" href="#minimal-action-set">Minimal Action Set</a></li>
 <li><a class="reference internal" href="#modes-and-difficulties">Modes and Difficulties</a></li>
+<li><a class="reference internal" href="#settings">Settings</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>

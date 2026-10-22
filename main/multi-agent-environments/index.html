@@ -743,7 +743,7 @@
     <span class="k">if</span> <span class="n">termination</span> <span class="ow">or</span> <span class="n">truncation</span><span class="p">:</span>
         <span class="n">action</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>  <span class="c1"># this is where you would insert your policy</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>  <span class="c1"># this is where you would insert your policy</span>
     <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
 <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
@@ -757,23 +757,23 @@
 <h2>Environment Details<a class="headerlink" href="#environment-details" title="Link to this heading">¶</a></h2>
 <p>The ALE has been studied extensively and a few notable problems have been identified:</p>
 <ul class="simple">
-<li><p><strong>Determinism</strong>: The Atari console is deterministic, and so agents can theoretically memorize precise sequences of actions that will maximize the end score. This is not ideal, so we encourage the use of <a class="reference external" href="https://github.com/Farama-Foundation/SuperSuit">SuperSuit’s</a> <code class="docutils literal notranslate"><span class="pre">sticky_actions</span></code> wrapper (example below). This is the recommended approach of  <em>“Machado et al. (2018), “Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents”</em></p></li>
-<li><p><strong>Frame flickering</strong>: Atari games often do not render every sprite every frame due to hardware restrictions. Instead, sprites (such as the knights in Joust) are sometimes rendered every other frame or even (in Wizard of Wor) every 3 frames. The standard way of handling this computing the pixel-wise maximum of the previous 2 observations (see example below for implementation).</p></li>
+<li><p><strong>Determinism</strong>: The Atari console is deterministic, and so agents can theoretically memorize precise sequences of actions that will maximize the end score. This is not ideal, so we encourage the use of <a class="reference external" href="https://github.com/Farama-Foundation/SuperSuit">SuperSuit’s</a> <code class="docutils literal notranslate"><span class="pre">sticky_actions</span></code> wrapper (example below). This is the recommended approach of <em>“Machado et al. (2018), “Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents”</em></p></li>
+<li><p><strong>Frame flickering</strong>: Atari games often do not render every sprite every frame due to hardware restrictions. Instead, sprites (such as the knights in Joust) are sometimes rendered every other frame or even (in Wizard of Wor) every 3 frames. The standard way of handling this is computing the pixel-wise maximum of the previous 2 observations (see example below for implementation).</p></li>
 </ul>
 </section>
 <section id="preprocessing">
 <h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">¶</a></h2>
-<p>We encourage the use of the <a class="reference external" href="https://github.com/Farama-Foundation/SuperSuit">supersuit</a> library for preprocessing. The unique dependencies for this set of environments can be installed via:</p>
+<p>We encourage the use of the <a class="reference external" href="https://github.com/Farama-Foundation/SuperSuit">SuperSuit</a> library for preprocessing, which can be installed via:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>supersuit
 </pre></div>
 </div>
 <p>Here is some example usage for the Atari preprocessing:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">supersuit</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pettingzoo.atari</span><span class="w"> </span><span class="kn">import</span> <span class="n">space_invaders_v1</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pettingzoo.atari</span><span class="w"> </span><span class="kn">import</span> <span class="n">space_invaders_v2</span>
 
-<span class="n">env</span> <span class="o">=</span> <span class="n">space_invaders_v1</span><span class="o">.</span><span class="n">env</span><span class="p">()</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">space_invaders_v2</span><span class="o">.</span><span class="n">env</span><span class="p">()</span>
 
-<span class="c1"># as per openai baseline's MaxAndSKip wrapper, maxes over the last 2 frames</span>
+<span class="c1"># as per OpenAI Baselines' MaxAndSkip wrapper, maxes over the last 2 frames</span>
 <span class="c1"># to deal with frame flickering</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">supersuit</span><span class="o">.</span><span class="n">max_observation_v0</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -802,17 +802,17 @@
 <ul class="simple">
 <li><p>‘rgb_image’ (default) - produces an RGB image like you would see as a human player.</p></li>
 <li><p>‘grayscale_image’ - produces a grayscale image.</p></li>
-<li><p>‘ram’ - produces an observation of the 1024 bits that comprise the RAM of the Atari console.</p></li>
+<li><p>‘ram’ - produces an observation of the 128 bytes (1024 bits) that comprise the RAM of the Atari console.</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">full_action_space</span></code>: Setting this option to True sets the action space to the full space of 18 action. Setting this to <code class="docutils literal notranslate"><span class="pre">False</span></code> (default) removes duplicate actions and leaves only unique actions.</p>
-<p><code class="docutils literal notranslate"><span class="pre">max_cycles</span></code>:  the number of frames (the number of steps that each agent can take) until game terminates.</p>
+<p><code class="docutils literal notranslate"><span class="pre">full_action_space</span></code>: Setting this option to True sets the action space to the full space of 18 actions. Setting this to <code class="docutils literal notranslate"><span class="pre">False</span></code> (default) removes duplicate actions and leaves only unique actions.</p>
+<p><code class="docutils literal notranslate"><span class="pre">max_cycles</span></code>:  the number of frames (the number of steps that each agent can take) until the game terminates.</p>
 <p><code class="docutils literal notranslate"><span class="pre">auto_rom_install_path</span></code>: The path to your AutoROM installation, installed
 with the <a class="reference external" href="https://github.com/Farama-Foundation/AutoROM">Farama-Foundation/AutoROM</a> tool.
 This is the path you specified when installing AutoROM. For example, if
 you’re using the boxing Atari environment, then the library will look for
-the rom at
+the ROM at
 <code class="docutils literal notranslate"><span class="pre">/auto_rom_install_path/ROM/boxing/boxing.bin</span></code>.
-If this is not specified (has value <code class="docutils literal notranslate"><span class="pre">None</span></code>), then the library looks for roms
+If this is not specified (has value <code class="docutils literal notranslate"><span class="pre">None</span></code>), then the library looks for ROMs
 installed at the default AutoROM path.</p>
 </section>
 <section id="citation">

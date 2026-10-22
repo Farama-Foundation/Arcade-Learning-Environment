@@ -605,11 +605,11 @@ If users are interested in using all possible actions, pass the keyword argument
 </ol>
 <p>Continuous action spaces still trigger the same events as the default discrete action space, but it is done via the parameter
 <code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code> (i.e. if the “fire” dimension is above <code class="docutils literal notranslate"><span class="pre">continuous_action_threshold</span></code>, a “fire” event is triggered).
-See <a class="reference internal" href="#3"><span class="xref myst">[3]</span></a> for more details.</p>
+See <a class="reference internal" href="#ref-3">[3]</a> for more details.</p>
 </section>
 <section id="observation-space">
 <h2>Observation Space<a class="headerlink" href="#observation-space" title="Link to this heading">¶</a></h2>
-<p>The Atari environments observation can be</p>
+<p>The Atari environments’ observation can be:</p>
 <ol class="arabic simple">
 <li><p>The RGB image that is displayed to a human player using <code class="docutils literal notranslate"><span class="pre">obs_type=&quot;rgb&quot;</span></code> with observation space <code class="docutils literal notranslate"><span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160,</span> <span class="pre">3),</span> <span class="pre">np.uint8)</span></code></p></li>
 <li><p>The grayscale version of the RGB image using <code class="docutils literal notranslate"><span class="pre">obs_type=&quot;grayscale&quot;</span></code> with observation space <code class="docutils literal notranslate"><span class="pre">Box(0,</span> <span class="pre">255,</span> <span class="pre">(210,</span> <span class="pre">160),</span> <span class="pre">np.uint8)</span></code></p></li>
@@ -623,7 +623,7 @@ See <a class="reference internal" href="#3"><span class="xref myst">[3]</span></
 <section id="stochasticity">
 <h2>Stochasticity<a class="headerlink" href="#stochasticity" title="Link to this heading">¶</a></h2>
 <p>As the Atari games are entirely deterministic, agents can achieve state-of-the-art performance by simply memorizing an optimal sequence of actions while completely ignoring observations from the environment.</p>
-<p>To avoid this, there are several methods to avoid this.</p>
+<p>There are several methods to avoid this.</p>
 <ol class="arabic simple">
 <li><p>Sticky actions: Instead of always simulating the action passed to the environment, there is a small
 probability that the previously executed action is used instead. In the v0 and v5 environments, the probability of
@@ -706,8 +706,8 @@ life count in <code class="docutils literal notranslate"><span class="pre">info[
 <p>When initializing Atari environments via <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code>, you may pass some additional arguments. These work for any
 Atari environment.</p>
 <ul class="simple">
-<li><p><strong>mode</strong>: <code class="docutils literal notranslate"><span class="pre">int</span></code>. Game mode, see <a class="reference internal" href="#2"><span class="xref myst">[2]</span></a>. Legal values depend on the environment and are listed in the table above.</p></li>
-<li><p><strong>difficulty</strong>: <code class="docutils literal notranslate"><span class="pre">int</span></code>. The difficulty of the game, see <a class="reference internal" href="#2"><span class="xref myst">[2]</span></a>. Legal values depend on the environment and are listed in
+<li><p><strong>mode</strong>: <code class="docutils literal notranslate"><span class="pre">int</span></code>. Game mode, see <a class="reference internal" href="#ref-2">[2]</a>. Legal values depend on the environment and are listed in the table above.</p></li>
+<li><p><strong>difficulty</strong>: <code class="docutils literal notranslate"><span class="pre">int</span></code>. The difficulty of the game, see <a class="reference internal" href="#ref-2">[2]</a>. Legal values depend on the environment and are listed in
 the table above. Together with <code class="docutils literal notranslate"><span class="pre">mode</span></code>, this determines the “flavor” of the game.</p></li>
 <li><p><strong>obs_type</strong>: <code class="docutils literal notranslate"><span class="pre">str</span></code>. This argument determines what observations are returned by the environment. Its values are:</p>
 <ul>
@@ -725,15 +725,17 @@ Actions passed into the environment are then thresholded to discrete using the <
 <li><p><strong>continuous_action_threshold</strong>: <code class="docutils literal notranslate"><span class="pre">float</span></code>. This determines the threshold for actions to be thresholded into discrete actions.</p></li>
 <li><p><strong>render_mode</strong>: <code class="docutils literal notranslate"><span class="pre">str</span></code>. Specifies the rendering mode. Its values are:</p>
 <ul>
-<li><p>human: Display the screen and enable game sounds. This will lock emulation to the ROMs specified FPS</p></li>
-<li><p>rgb_array: Returns the current environment RGB frame of the environment.</p></li>
+<li><p>human: Display the screen and enable game sounds. This will lock emulation to the ROM’s specified FPS</p></li>
+<li><p>rgb_array: Returns the current RGB frame of the environment.</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <section id="version-history-and-naming-schemes">
 <h2>Version History and Naming Schemes<a class="headerlink" href="#version-history-and-naming-schemes" title="Link to this heading">¶</a></h2>
-<p>In v0.11, the number of registered Atari environments was significantly reduced from 960 to 210 to only register <code class="docutils literal notranslate"><span class="pre">{rom_name}NoFrameskip-v4</span></code> the most popular environment and <code class="docutils literal notranslate"><span class="pre">ALE/{rom_name}-v5</span></code> following the best practices outlined in <a class="reference internal" href="#2"><span class="xref myst">[2]</span></a>.</p>
+<p>For each of the 62 games available in the original Gym release, ALE registers the legacy <code class="docutils literal notranslate"><span class="pre">v0</span></code> and <code class="docutils literal notranslate"><span class="pre">v4</span></code> environments,
+with and without frame skipping, alongside <code class="docutils literal notranslate"><span class="pre">ALE/{rom_name}-v5</span></code>. Games added since then are only available as <code class="docutils literal notranslate"><span class="pre">v5</span></code>,
+which follows the best practices outlined in <a class="reference internal" href="#ref-2">[2]</a> and is the recommended version.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -741,17 +743,35 @@ Actions passed into the environment are then thresholded to discrete using the <
 <th class="head"><p><code class="docutils literal notranslate"><span class="pre">obs_type=</span></code></p></th>
 <th class="head"><p><code class="docutils literal notranslate"><span class="pre">frameskip=</span></code></p></th>
 <th class="head"><p><code class="docutils literal notranslate"><span class="pre">repeat_action_probability=</span></code></p></th>
-<th class="head"><p><code class="docutils literal notranslate"><span class="pre">full_ation_space=</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">full_action_space=</span></code></p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>AdventureNoFrameskip-v4</p></td>
+<tr class="row-even"><td><p>Adventure-v0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>AdventureNoFrameskip-v0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Adventure-v4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.00</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>AdventureNoFrameskip-v4</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.00</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>ALE/Adventure-v5</p></td>
+<tr class="row-even"><td><p>ALE/Adventure-v5</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;rgb&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code></p></td>
@@ -760,7 +780,10 @@ Actions passed into the environment are then thresholded to discrete using the <
 </tbody>
 </table>
 </div>
-<p>Importantly, <code class="docutils literal notranslate"><span class="pre">repeat_action_probability=0.25</span></code> can negatively impact the performance of agents so when comparing training graphs, be aware of the parameters used for fair comparisons.</p>
+<p>All of these environments truncate episodes after 108,000 frames. Older variants that selected the observation type
+through the environment ID (e.g., <code class="docutils literal notranslate"><span class="pre">Adventure-ram-v4</span></code>) or used a fixed <code class="docutils literal notranslate"><span class="pre">Deterministic</span></code> frame skip are no longer
+registered; pass <code class="docutils literal notranslate"><span class="pre">obs_type</span></code> and <code class="docutils literal notranslate"><span class="pre">frameskip</span></code> to <code class="docutils literal notranslate"><span class="pre">gymnasium.make</span></code> instead.</p>
+<p>Importantly, <code class="docutils literal notranslate"><span class="pre">repeat_action_probability=0.25</span></code> can negatively impact the performance of agents, so when comparing training graphs, check the parameters used to ensure a fair comparison.</p>
 <p>To create previously implemented environment use the following parameters, <code class="docutils literal notranslate"><span class="pre">gymnasium.make(env_id,</span> <span class="pre">obs_type=...,</span> <span class="pre">frameskip=...,</span> <span class="pre">repeat_action_probability=...,</span> <span class="pre">full_action_space=...)</span></code>.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -864,7 +887,7 @@ Actions passed into the environment are then thresholded to discrete using the <
 <section id="flavors">
 <h2>Flavors<a class="headerlink" href="#flavors" title="Link to this heading">¶</a></h2>
 <p>Some games allow the user to set a difficulty level and a game mode. Different modes/difficulties may have different
-game dynamics and (if a reduced action space is used) different action spaces. We follow the convention of <a class="reference internal" href="#2"><span class="xref myst">[2]</span></a> and
+game dynamics and (if a reduced action space is used) different action spaces. We follow the convention of <a class="reference internal" href="#ref-2">[2]</a> and
 refer to the combination of difficulty level and game mode as a flavor of a game. The following table shows
 the available modes and difficulty levels for different Atari games:</p>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -1508,17 +1531,17 @@ the available modes and difficulty levels for different Atari games:</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<p id="id1"><a id="1">[1]</a>
+<p id="ref-1"><a id="1">[1]</a>
 MG Bellemare, Y Naddaf, J Veness, and M Bowling.
 “The arcade learning environment: An evaluation platform for general agents.”
-Journal of Artificial Intelligence Research (2012).</p>
-<p id="id2"><a id="2">[2]</a>
+Journal of Artificial Intelligence Research (2013).</p>
+<p id="ref-2"><a id="2">[2]</a>
 Machado et al.
 “Revisiting the Arcade Learning Environment: Evaluation Protocols
 and Open Problems for General Agents”
 Journal of Artificial Intelligence Research (2018)
 URL: https://jair.org/index.php/jair/article/view/11182</p>
-<p id="id3"><a id="3">[3]</a>
+<p id="ref-3"><a id="3">[3]</a>
 Jesse Farebrother and Pablo Samuel Castro
 “CALE: Continuous Arcade Learning Environment”
 Advances in Neural Information Processing Systems (NeurIPS 2024)

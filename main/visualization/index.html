@@ -427,10 +427,10 @@
 <p>ALE offers screen display and audio capabilities via the Simple DirectMedia Layer (SDL). Screen display can be enabled using the boolean option <code class="docutils literal notranslate"><span class="pre">display_screen</span></code> (default: <code class="docutils literal notranslate"><span class="pre">false</span></code>), and sound playback using the boolean option <code class="docutils literal notranslate"><span class="pre">sound</span></code> (default: <code class="docutils literal notranslate"><span class="pre">false</span></code>).</p>
 <section id="gymnasium-api">
 <h2>Gymnasium API<a class="headerlink" href="#gymnasium-api" title="Link to this heading">¶</a></h2>
-<p><a class="reference external" href="https://github.com/farama-Foundation/gymnasium">Gymnasium</a> provides two methods for visualizing an environment, human rendering and video recording.</p>
+<p><a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium</a> provides two methods for visualizing an environment: human rendering and video recording.</p>
 <section id="human-visualization">
 <h3>Human visualization<a class="headerlink" href="#human-visualization" title="Link to this heading">¶</a></h3>
-<p>Through specifying the environment <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;human&quot;</span></code> then ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after it has been used such that the rendering information is correctly shut down.</p>
+<p>By specifying <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;human&quot;</span></code>, the ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after use so that the rendering window is correctly shut down.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
@@ -452,8 +452,8 @@
 </section>
 <section id="recording-videos">
 <h3>Recording videos<a class="headerlink" href="#recording-videos" title="Link to this heading">¶</a></h3>
-<p>Specifying the <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;rgb_array&quot;</span></code> will return the rgb array from <code class="docutils literal notranslate"><span class="pre">env.render()</span></code>, this can be combined with the <code class="docutils literal notranslate"><span class="pre">gymnasium.wrappers.RecordVideo</span></code> where the environment renders are stored and saved as mp4 videos for episodes.</p>
-<p>The example below will record episodes on every other episode (<code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">%</span> <span class="pre">2</span> <span class="pre">==</span> <span class="pre">0</span></code>) using the <code class="docutils literal notranslate"><span class="pre">episode_trigger</span></code> and save the folders in <code class="docutils literal notranslate"><span class="pre">saved-video-folder</span></code> with filename starting <code class="docutils literal notranslate"><span class="pre">video-</span></code> followed by the video number.</p>
+<p>Specifying <code class="docutils literal notranslate"><span class="pre">render_mode=&quot;rgb_array&quot;</span></code> will return an RGB array from <code class="docutils literal notranslate"><span class="pre">env.render()</span></code>. This can be combined with <code class="docutils literal notranslate"><span class="pre">gymnasium.wrappers.RecordVideo</span></code>, which stores the environment renders and saves them as MP4 videos.</p>
+<p>The example below records every other episode (<code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">%</span> <span class="pre">2</span> <span class="pre">==</span> <span class="pre">0</span></code>) using the <code class="docutils literal notranslate"><span class="pre">episode_trigger</span></code> and saves the videos in <code class="docutils literal notranslate"><span class="pre">saved-video-folder</span></code> with filenames starting with <code class="docutils literal notranslate"><span class="pre">video-</span></code> followed by the episode number.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ale_py</span>
 
@@ -483,7 +483,7 @@
 </section>
 <section id="python-interface">
 <h2>Python Interface<a class="headerlink" href="#python-interface" title="Link to this heading">¶</a></h2>
-<p>ALE now provides support for recording frames; if sound is enabled, it is also possible to record audio output. An example Python program is provided which will record both visual and audio output for a single episode of play.</p>
+<p>The ALE supports recording frames and, if sound is enabled, audio output. The example program below records both visual and audio output for a single episode of play.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randrange</span>
@@ -521,7 +521,7 @@
 
     <span class="n">rom_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">record_dir</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">main</span><span class="p">(</span><span class="n">rom_file</span><span class="p">,</span> <span class="s2">"videos/"</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">rom_file</span><span class="p">,</span> <span class="n">record_dir</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Once frames and/or sound have been recorded, they may be joined into a video using an external program like <a class="reference external" href="https://www.ffmpeg.org">ffmpeg</a>. For example, you can run:</p>
@@ -532,8 +532,8 @@
 <span class="c1"># -c:v video_codec</span>
 
 ffmpeg<span class="w"> </span>-r<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="se">\</span>
-<span class="w">       </span>-i<span class="w"> </span>record/%06d.png<span class="w"> </span><span class="se">\</span>
-<span class="w">       </span>-i<span class="w"> </span>record/sound.wav<span class="w"> </span><span class="se">\</span>
+<span class="w">       </span>-i<span class="w"> </span>record_dir/%06d.png<span class="w"> </span><span class="se">\</span>
+<span class="w">       </span>-i<span class="w"> </span>record_dir/sound.wav<span class="w"> </span><span class="se">\</span>
 <span class="w">       </span>-f<span class="w"> </span>mov<span class="w"> </span><span class="se">\</span>
 <span class="w">       </span>-c:a<span class="w"> </span>mp3<span class="w"> </span><span class="se">\</span>
 <span class="w">       </span>-c:v<span class="w"> </span>libx264<span class="w"> </span><span class="se">\</span>
