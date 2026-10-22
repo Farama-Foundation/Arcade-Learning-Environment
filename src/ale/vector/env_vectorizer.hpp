@@ -71,6 +71,18 @@ public:
     /// In unordered mode: returns results from first batch_size envs to complete
     BatchResult recv();
 
+    /// Have the workers write the next round's results straight into buffers the
+    /// caller already owns, so the caller needs no copy-out. Call it *before*
+    /// the send() whose results it should capture; the following recv() returns
+    /// a non-owning view over those same buffers (do not release_*() it).
+    ///
+    /// One-shot, and only honoured in ordered/sync mode
+    /// (batch_size == num_envs) - see ResultStaging::stage_into. Returns false
+    /// if the request was declined, in which case the caller must copy as usual.
+    bool step_into(const BatchResult::ExternalBuffers& buffers) {
+        return staging_->stage_into(buffers);
+    }
+
     // Accessors
     int num_envs() const { return num_envs_; }
     int batch_size() const { return batch_size_; }
@@ -88,6 +100,13 @@ public:
 
     /// Get raw pointer for JAX FFI handle
     const void* handle() const { return this; }
+
+    /// Slot for a backend-specific staging cache belonging to whichever
+    /// consumer drives this vectorizer - currently the XLA GPU handler's
+    /// page-locked host buffers. Held here so it is destroyed with the
+    /// vectorizer, which is what lets that handler leave H2D copies in flight
+    /// after it returns; the vector library never looks inside it.
+    std::shared_ptr<void>& backend_staging() { return backend_staging_; }
 
 private:
     // Configuration
@@ -120,6 +139,9 @@ private:
     std::atomic<bool> has_error_{false};
     std::exception_ptr error_;
     std::mutex error_mutex_;
+
+    // Opaque, consumer-owned staging cache (see backend_staging()).
+    std::shared_ptr<void> backend_staging_;
 
     // True until the first reset() populates last_recv_env_ids_.
     // send() checks this to reject calls that would misroute actions to env 0.

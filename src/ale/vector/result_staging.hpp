@@ -78,6 +78,35 @@ public:
         }
     }
 
+    /// Point the *next* batch at buffers a consumer already owns, so workers
+    /// write their results straight into them and the consumer needs no
+    /// copy-out. Returns false (and changes nothing) if the request cannot be
+    /// honoured, in which case the caller must fall back to copying.
+    ///
+    /// **Ordered (sync) mode only**, and it must be called between recv() and
+    /// the send() that produces the batch. In unordered mode the envs still in
+    /// flight from the previous round are unblocked by release_batch() and
+    /// start staging into the next batch before the consumer has even been
+    /// handed its output buffers, so there is no window where this is safe.
+    ///
+    /// One-shot: the matching release_batch() restores internal allocation.
+    bool stage_into(const BatchResult::ExternalBuffers& buffers) {
+        if (!ordered_mode_ || staged_count_.load() != 0) {
+            return false;
+        }
+        // SameStep writes a final observation per slot; without somewhere to put
+        // it stage_result would offset off a null pointer.
+        if (same_step_mode_ && buffers.final_observations == nullptr) {
+            return false;
+        }
+        // Park the owned batch rather than freeing it - the next non-step_into
+        // round takes it back, so a steady stream of step_into calls allocates
+        // only the view object and never the buffers behind it.
+        spare_batch_ = std::move(current_batch_);
+        current_batch_ = std::make_unique<BatchResult>(batch_size_, obs_size_, buffers);
+        return true;
+    }
+
     /// Wait for batch_size results to be staged. Called by recv().
     void wait_for_batch() {
         while (!batch_ready_.wait()) {}
@@ -90,8 +119,14 @@ public:
         // Take ownership of completed batch
         auto result = std::move(*current_batch_);
 
-        // Allocate fresh batch for next round
-        current_batch_ = std::make_unique<BatchResult>(batch_size_, obs_size_, same_step_mode_);
+        // Fresh batch for the next round. After a stage_into() round the batch
+        // is a view over the consumer's buffers and there is nothing to free -
+        // take back the owned batch stage_into() parked instead of allocating.
+        if (spare_batch_) {
+            current_batch_ = std::move(spare_batch_);
+        } else {
+            current_batch_ = std::make_unique<BatchResult>(batch_size_, obs_size_, same_step_mode_);
+        }
 
         // Reset counters
         staged_count_.store(0);
@@ -126,6 +161,7 @@ private:
     const bool same_step_mode_;
 
     std::unique_ptr<BatchResult> current_batch_;
+    std::unique_ptr<BatchResult> spare_batch_;  // owned buffers parked by stage_into()
 
     std::atomic<std::size_t> staged_count_;
     std::atomic<std::size_t> next_slot_;
