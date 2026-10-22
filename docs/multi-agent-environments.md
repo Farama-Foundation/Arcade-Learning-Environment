@@ -60,7 +60,7 @@ for agent in env.agent_iter():
     if termination or truncation:
         action = None
     else:
-        env.action_space(agent).sample()  # this is where you would insert your policy
+        action = env.action_space(agent).sample()  # this is where you would insert your policy
     env.step(action)
 env.close()
 ```
@@ -73,12 +73,12 @@ Most games have two players, except for Warlords and a couple of Pong variations
 
 The ALE has been studied extensively and a few notable problems have been identified:
 
-* **Determinism**: The Atari console is deterministic, and so agents can theoretically memorize precise sequences of actions that will maximize the end score. This is not ideal, so we encourage the use of [SuperSuit's](https://github.com/Farama-Foundation/SuperSuit) `sticky_actions` wrapper (example below). This is the recommended approach of  *"Machado et al. (2018), "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents"*
-* **Frame flickering**: Atari games often do not render every sprite every frame due to hardware restrictions. Instead, sprites (such as the knights in Joust) are sometimes rendered every other frame or even (in Wizard of Wor) every 3 frames. The standard way of handling this computing the pixel-wise maximum of the previous 2 observations (see example below for implementation).
+* **Determinism**: The Atari console is deterministic, and so agents can theoretically memorize precise sequences of actions that will maximize the end score. This is not ideal, so we encourage the use of [SuperSuit's](https://github.com/Farama-Foundation/SuperSuit) `sticky_actions` wrapper (example below). This is the recommended approach of *"Machado et al. (2018), "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents"*
+* **Frame flickering**: Atari games often do not render every sprite every frame due to hardware restrictions. Instead, sprites (such as the knights in Joust) are sometimes rendered every other frame or even (in Wizard of Wor) every 3 frames. The standard way of handling this is computing the pixel-wise maximum of the previous 2 observations (see example below for implementation).
 
 ## Preprocessing
 
-We encourage the use of the [supersuit](https://github.com/Farama-Foundation/SuperSuit) library for preprocessing. The unique dependencies for this set of environments can be installed via:
+We encourage the use of the [SuperSuit](https://github.com/Farama-Foundation/SuperSuit) library for preprocessing, which can be installed via:
 
  ````bash
 pip install supersuit
@@ -88,11 +88,11 @@ Here is some example usage for the Atari preprocessing:
 
 ``` python
 import supersuit
-from pettingzoo.atari import space_invaders_v1
+from pettingzoo.atari import space_invaders_v2
 
-env = space_invaders_v1.env()
+env = space_invaders_v2.env()
 
-# as per openai baseline's MaxAndSKip wrapper, maxes over the last 2 frames
+# as per OpenAI Baselines' MaxAndSkip wrapper, maxes over the last 2 frames
 # to deal with frame flickering
 env = supersuit.max_observation_v0(env, 2)
 
@@ -122,19 +122,19 @@ All the Atari environments have the following environment parameters:
 
 * 'rgb_image' (default) - produces an RGB image like you would see as a human player.
 * 'grayscale_image' - produces a grayscale image.
-* 'ram' - produces an observation of the 1024 bits that comprise the RAM of the Atari console.
+* 'ram' - produces an observation of the 128 bytes (1024 bits) that comprise the RAM of the Atari console.
 
-`full_action_space`: Setting this option to True sets the action space to the full space of 18 action. Setting this to `False` (default) removes duplicate actions and leaves only unique actions.
+`full_action_space`: Setting this option to True sets the action space to the full space of 18 actions. Setting this to `False` (default) removes duplicate actions and leaves only unique actions.
 
-`max_cycles`:  the number of frames (the number of steps that each agent can take) until game terminates.
+`max_cycles`:  the number of frames (the number of steps that each agent can take) until the game terminates.
 
 `auto_rom_install_path`: The path to your AutoROM installation, installed
 with the [Farama-Foundation/AutoROM](https://github.com/Farama-Foundation/AutoROM) tool.
 This is the path you specified when installing AutoROM. For example, if
 you're using the boxing Atari environment, then the library will look for
-the rom at
+the ROM at
 `/auto_rom_install_path/ROM/boxing/boxing.bin`.
-If this is not specified (has value `None`), then the library looks for roms
+If this is not specified (has value `None`), then the library looks for ROMs
 installed at the default AutoROM path.
 
 

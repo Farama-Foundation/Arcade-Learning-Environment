@@ -23,11 +23,11 @@ For more VideoPinball variants with different observation and action spaces, see
 
 Your goal is to keep the ball in play as long as possible and to score as many points as possible.
 
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=588)
+For more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=588)
 
 ## Actions
 
-VideoPinball has the action space of `Discrete(9)` with the table below listing the meaning of each action's meanings.
+VideoPinball has the action space `Discrete(9)` with the table below listing the meaning of each action.
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`.
 
@@ -43,7 +43,7 @@ initialization or by passing `full_action_space=True` to `gymnasium.make`.
 |       7 | RIGHTFIRE |
 |       8 | LEFTFIRE  |
 
-See [environment specification](../env-spec) to see more information on the action meaning.
+See [environment specification](../env-spec) for more information on the action meanings.
 
 ## Observations
 
@@ -51,7 +51,7 @@ Atari environments have three possible observation types:
 
 - `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
 - `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the `"rgb"` type
 
 See variants section for the type of observation used by each environment id by default.
 
@@ -68,7 +68,7 @@ the number of frame-skips and the repeat action probability.
 | VideoPinballNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
 | ALE/VideoPinball-v5        | `rgb`       | `4`          | `0.25`                       |
 
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `VideoPinballNoFrameskip-v4`.
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to use previously implemented environments, e.g., `VideoPinballNoFrameskip-v4`.
 
 ## Difficulty and modes
 
@@ -85,5 +85,5 @@ along with the default values.
 A thorough discussion of the intricate differences between the versions and configurations can be found in the general article on Atari environments.
 
 * v5: Stickiness was added back and stochastic frame-skipping was removed. The environments are now in the "ALE" namespace.
-* v4: Stickiness of actions was removed
-* v0: Initial versions release
+* v4: Stickiness of actions was removed.
+* v0: Initial version release
