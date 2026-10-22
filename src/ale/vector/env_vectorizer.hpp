@@ -71,6 +71,18 @@ public:
     /// In unordered mode: returns results from first batch_size envs to complete
     BatchResult recv();
 
+    /// Have the workers write the next round's results straight into buffers the
+    /// caller already owns, so the caller needs no copy-out. Call it *before*
+    /// the send() whose results it should capture; the following recv() returns
+    /// a non-owning view over those same buffers (do not release_*() it).
+    ///
+    /// One-shot, and only honoured in ordered/sync mode
+    /// (batch_size == num_envs) - see ResultStaging::stage_into. Returns false
+    /// if the request was declined, in which case the caller must copy as usual.
+    bool step_into(const BatchResult::ExternalBuffers& buffers) {
+        return staging_->stage_into(buffers);
+    }
+
     // Accessors
     int num_envs() const { return num_envs_; }
     int batch_size() const { return batch_size_; }
