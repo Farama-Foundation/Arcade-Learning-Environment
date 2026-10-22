@@ -44,6 +44,8 @@ class AtariVectorEnv(VectorEnv):
         life_loss_info: bool = False,
         reward_clipping: bool = True,
         use_fire_reset: bool = True,
+        reset_pool_size: int = 8,
+        reset_pool_prefill: bool = False,
     ):
         """Constructor for vector environment.
 
@@ -70,7 +72,23 @@ class AtariVectorEnv(VectorEnv):
             life_loss_info: If to provide a termination signal on life loss
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
+            reset_pool_size: Number of start states captured from real
+                ``reset_game()`` calls and drawn from on later episodes. Replaying
+                a captured state costs ~10-20 us against ~4.5 ms to emulate the
+                console bring-up. More than one is needed because ``reset_game()``
+                is not a pure function of the ROM: the RIOT timer is redrawn each
+                reset, some cartridges re-randomise their onboard RAM, and console
+                RAM is never cleared between episodes. ``0`` disables the pool
+                and emulates every reset.
+            reset_pool_prefill: If to fill the pool on the first ``reset()``
+                instead of over the first ``reset_pool_size`` episodes. Same total
+                work, front-loaded: every episode boundary then costs the same,
+                which callers who want consistent step latency usually prefer.
         """
+        if reset_pool_size < 0:
+            raise error.Error(
+                f"reset_pool_size must be non-negative, got {reset_pool_size}."
+            )
         if type(frameskip) is not int:
             raise error.Error(f"Invalid frameskip type: {type(frameskip)}.")
         if isinstance(frameskip, int) and frameskip <= 0:
@@ -94,6 +112,8 @@ class AtariVectorEnv(VectorEnv):
             maxpool=maxpool,
             noop_max=noop_max,
             use_fire_reset=use_fire_reset,
+            reset_pool_size=reset_pool_size,
+            reset_pool_prefill=reset_pool_prefill,
             episodic_life=episodic_life,
             life_loss_info=life_loss_info,
             reward_clipping=reward_clipping,

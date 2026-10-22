@@ -59,7 +59,9 @@ PreprocessedEnv::PreprocessedEnv(
     int max_episode_steps,
     float repeat_action_probability,
     bool full_action_space,
-    int seed
+    int seed,
+    int reset_pool_size,
+    bool reset_pool_prefill
 ) : env_id_(env_id),
     rom_path_(rom_path),
     obs_format_(grayscale ? ObsFormat::Grayscale : ObsFormat::RGB),
@@ -86,6 +88,11 @@ PreprocessedEnv::PreprocessedEnv(
     current_action_id_(PLAYER_A_NOOP),
     current_paddle_strength_(1.0f),
     pending_seed_(-1),
+    reset_pool_(reset_pool_size),
+    reset_pool_prefill_(reset_pool_prefill),
+    pool_rng_(seed == -1 ? std::random_device{}()
+                         : static_cast<unsigned>(seed) ^ 0x9e3779b9u),
+    snapshot_frame_offset_(0),
     frame_stack_idx_(0)
 {
     // Turn off verbosity
@@ -139,14 +146,61 @@ void PreprocessedEnv::set_action(int action_id, float paddle_strength) {
     current_paddle_strength_ = paddle_strength;
 }
 
+void PreprocessedEnv::reset_console() {
+    if (!reset_pool_.filling()) {
+        // Replay a start state instead of re-emulating the ~68 bring-up frames:
+        // restoreState is ~200-500x cheaper than reset_game.
+        const ResetSnapshotPool::Entry& entry = reset_pool_.sample(pool_rng_);
+        const long frame_number_before = ale_->getFrameNumber();
+        ale_->restoreState(entry.state);
+        // Count the frames the real reset_game() would have, on top of undoing
+        // the rewind to the snapshot's frame number.
+        snapshot_frame_offset_ +=
+            frame_number_before + entry.reset_frames - ale_->getFrameNumber();
+        return;
+    }
+
+    capture_reset_state();
+}
+
+void PreprocessedEnv::capture_reset_state() {
+    const long frame_number_before = ale_->getFrameNumber();
+    ale_->reset_game();
+    if (!reset_pool_.enabled()) {
+        return;
+    }
+
+    // Keep this start state so later episodes can be drawn from it.
+    // include_rng = false - the sticky-action stream must keep advancing across
+    // episodes rather than replaying from the snapshot.
+    reset_pool_.add(ale_->cloneState(false),
+                    static_cast<int>(ale_->getFrameNumber() - frame_number_before));
+}
+
 void PreprocessedEnv::reset() {
     if (pending_seed_ >= 0) {
+        // Only on an explicitly seeded reset, not on autoreset: reloads the ROM.
         ale_->setInt("random_seed", pending_seed_);
         rng_.seed(pending_seed_);
+        pool_rng_.seed(static_cast<unsigned>(pending_seed_) ^ 0x9e3779b9u);
         ale_->loadROM(rom_path_);
         pending_seed_ = -1;
+        // The reloaded console is a different emulator instance with a different
+        // RNG stream; nothing captured before it is still valid.
+        reset_pool_.clear();
+        snapshot_frame_offset_ = 0;
     }
-    ale_->reset_game();
+
+    if (reset_pool_prefill_ && reset_pool_.enabled() && reset_pool_.filling()) {
+        // Pay for the whole pool on the first reset rather than spreading it over
+        // the first episodes, so every episode boundary from here on costs the
+        // same. Same total work, just front-loaded.
+        while (reset_pool_.filling()) {
+            capture_reset_state();
+        }
+    }
+
+    reset_console();
 
     // Press FIRE if required by the environment
     if (use_fire_reset_ && has_fire_action_) {
@@ -231,7 +285,7 @@ void PreprocessedEnv::write_to(const OutputSlot& slot) const {
     *slot.terminated = game_over_ || ((life_loss_info_ || episodic_life_) && was_life_lost_);
     *slot.truncated = elapsed_steps_ >= max_episode_steps_ && !(*slot.terminated);
     *slot.lives = lives_;
-    *slot.frame_number = ale_->getFrameNumber();
+    *slot.frame_number = static_cast<int>(ale_->getFrameNumber() + snapshot_frame_offset_);
     *slot.episode_frame_number = ale_->getEpisodeFrameNumber();
 
     // Linearize circular frame_stack to destination
