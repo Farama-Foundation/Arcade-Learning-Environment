@@ -13,6 +13,25 @@
 
 namespace ale::vector {
 
+namespace {
+
+/// Build one PreprocessedEnv. Free function so the serial and parallel
+/// construction paths below cannot drift apart.
+std::unique_ptr<PreprocessedEnv> make_env(
+    int env_id, const fs::path& rom_path, int img_height, int img_width, int frame_skip,
+    bool maxpool, bool grayscale, int stack_num, int noop_max, bool use_fire_reset,
+    bool episodic_life, bool life_loss_info, bool reward_clipping, int max_episode_steps,
+    float repeat_action_probability, bool full_action_space
+) {
+    return std::make_unique<PreprocessedEnv>(
+        env_id, rom_path, img_height, img_width, frame_skip, maxpool, grayscale, stack_num,
+        noop_max, use_fire_reset, episodic_life, life_loss_info, reward_clipping,
+        max_episode_steps, repeat_action_probability, full_action_space, -1
+    );
+}
+
+}  // namespace
+
 EnvVectorizer::EnvVectorizer(
     const fs::path& rom_path,
     int num_envs,
@@ -43,15 +62,78 @@ EnvVectorizer::EnvVectorizer(
     autoreset_mode_(autoreset_mode),
     last_recv_env_ids_(batch_size_ > 0 ? batch_size_ : num_envs)
 {
-    // Create environments
-    envs_.reserve(num_envs_);
-    for (int i = 0; i < num_envs_; ++i) {
-        envs_.push_back(std::make_unique<PreprocessedEnv>(
-            i, rom_path, img_height, img_width, frame_skip, maxpool,
-            grayscale, stack_num, noop_max, use_fire_reset, episodic_life,
-            life_loss_info, reward_clipping, max_episode_steps,
-            repeat_action_probability, full_action_space, -1
-        ));
+    // Turn off verbosity. Hoisted out of PreprocessedEnv's constructor: it writes
+    // a shared static, which would race with the parallel construction below.
+    Logger::setMode(Logger::Error);
+
+    int hw_threads = static_cast<int>(std::thread::hardware_concurrency());
+    if (hw_threads <= 0) {
+        hw_threads = 1;
+    }
+
+    // Create environments. Each PreprocessedEnv builds its own ALEInterface and
+    // loads the ROM (~76 ms), which dominates construction; the envs share no
+    // state, so the loop fans out across threads. Slots are pre-sized so each
+    // thread writes a distinct element.
+    envs_.resize(num_envs_);
+    int ctor_threads = num_threads > 0 ? std::min(num_threads, hw_threads)
+                                       : std::min(num_envs_, hw_threads);
+    ctor_threads = std::max(1, std::min(ctor_threads, num_envs_));
+    // Give every builder at least two envs. With one env per builder the blocking
+    // below has nothing to block: every env is first-touched by a different thread,
+    // in a different heap arena, and the steady-state cost of that shows up at the
+    // small env counts where it can happen at all (num_envs <= 2 * builders).
+    // Construction is already sub-200 ms at those sizes, so the lost parallelism
+    // is not worth measuring against it.
+    ctor_threads = std::min(ctor_threads, std::max(1, num_envs_ / 2));
+
+    if (ctor_threads == 1) {
+        for (int i = 0; i < num_envs_; ++i) {
+            envs_[i] = make_env(i, rom_path, img_height, img_width, frame_skip, maxpool,
+                                grayscale, stack_num, noop_max, use_fire_reset, episodic_life,
+                                life_loss_info, reward_clipping, max_episode_steps,
+                                repeat_action_probability, full_action_space);
+        }
+    } else {
+        // Each builder takes a contiguous block of env ids rather than stealing
+        // one id at a time. Interleaved claiming scatters consecutive envs across
+        // per-thread heap regions, which costs steady-state throughput; blocking
+        // keeps neighbouring envs' allocations neighbouring in the heap.
+        std::atomic<bool> failed{false};
+        std::vector<std::exception_ptr> errors(ctor_threads);
+        std::vector<std::thread> builders;
+        builders.reserve(ctor_threads);
+        const int block = (num_envs_ + ctor_threads - 1) / ctor_threads;
+        for (int t = 0; t < ctor_threads; ++t) {
+            builders.emplace_back([&, t] {
+                const int begin = t * block;
+                const int end = std::min(begin + block, num_envs_);
+                try {
+                    for (int i = begin; i < end; ++i) {
+                        if (failed.load(std::memory_order_relaxed)) {
+                            break;
+                        }
+                        envs_[i] = make_env(i, rom_path, img_height, img_width, frame_skip,
+                                            maxpool, grayscale, stack_num, noop_max,
+                                            use_fire_reset, episodic_life, life_loss_info,
+                                            reward_clipping, max_episode_steps,
+                                            repeat_action_probability, full_action_space);
+                    }
+                } catch (...) {
+                    errors[t] = std::current_exception();
+                    // Stop the other builders from starting more work.
+                    failed.store(true, std::memory_order_relaxed);
+                }
+            });
+        }
+        for (auto& b : builders) {
+            b.join();
+        }
+        for (const auto& e : errors) {
+            if (e) {
+                std::rethrow_exception(e);
+            }
+        }
     }
 
     stacked_obs_size_ = envs_[0]->stacked_obs_size();
@@ -65,7 +147,6 @@ EnvVectorizer::EnvVectorizer(
     staging_ = std::make_unique<ResultStaging>(batch_size_, num_envs_, stacked_obs_size_, same_step);
 
     // Determine thread count
-    int hw_threads = static_cast<int>(std::thread::hardware_concurrency());
     if (num_threads <= 0) {
         num_threads_ = std::min(batch_size_, hw_threads);
     } else {

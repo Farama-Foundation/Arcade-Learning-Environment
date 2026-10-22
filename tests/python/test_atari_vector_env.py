@@ -759,3 +759,27 @@ class TestVectorEnv:
 
         gym_envs.close()
         ale_envs.close()
+
+
+@pytest.mark.parametrize("num_envs", [3, 16])
+def test_parallel_construction_matches_serial(num_envs, rollout_length=200):
+    """Envs built by several threads must behave exactly like envs built by one.
+
+    ``num_threads=1`` constructs the envs serially; more threads construct them in
+    contiguous blocks in parallel. A short episode cap forces every env through
+    several resets so the comparison also covers reset state.
+    """
+    kwargs = dict(num_envs=num_envs, max_num_frames_per_episode=400)
+    serial = ale_py.AtariVectorEnv("breakout", num_threads=1, **kwargs)
+    parallel = ale_py.AtariVectorEnv("breakout", num_threads=8, **kwargs)
+
+    seeds = np.arange(num_envs)
+    assert data_equivalence(serial.reset(seed=seeds), parallel.reset(seed=seeds))
+
+    serial.action_space.seed(0)
+    for _ in range(rollout_length):
+        actions = serial.action_space.sample()
+        assert data_equivalence(serial.step(actions), parallel.step(actions))
+
+    serial.close()
+    parallel.close()
