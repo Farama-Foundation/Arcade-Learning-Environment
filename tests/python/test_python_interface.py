@@ -426,3 +426,30 @@ def test_set_logger(ale):
     ale.setLoggerMode(ale_py.LoggerMode.Info)
     ale.setLoggerMode(ale_py.LoggerMode.Warning)
     ale.setLoggerMode(ale_py.LoggerMode.Error)
+
+
+def test_fast_tia_update_emulates_identically(tetris_rom_path):
+    """``fast_tia_update`` skips drawing but must not change the emulation."""
+
+    def rollout(fast):
+        ale = ale_py.ALEInterface()
+        ale.setInt("random_seed", 0)
+        ale.setBool("fast_tia_update", fast)
+        ale.loadROM(tetris_rom_path)
+        actions = ale.getMinimalActionSet()
+        rng = np.random.default_rng(0)
+        trace = []
+        for _ in range(2000):
+            reward = ale.act(actions[rng.integers(len(actions))])
+            trace.append((ale.getRAM().copy(), reward, ale.lives(), ale.game_over()))
+            if ale.game_over():
+                ale.reset_game()
+        return trace, ale.getScreen()
+
+    drawn, drawn_screen = rollout(fast=False)
+    skipped, skipped_screen = rollout(fast=True)
+    for (ram_1, *rest_1), (ram_2, *rest_2) in zip(drawn, skipped):
+        np.testing.assert_array_equal(ram_1, ram_2)
+        assert rest_1 == rest_2
+    # Nothing is drawn, so the screen is left as it was allocated.
+    assert not np.array_equal(drawn_screen, skipped_screen)
