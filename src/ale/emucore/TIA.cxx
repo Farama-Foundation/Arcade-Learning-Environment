@@ -1122,6 +1122,14 @@ void TIA::computePlayfieldMaskTable()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ALE: Render selects whether this scanline's pixels are written to the frame
+// buffer. Every frame buffer store below is guarded by it, and the eight cases
+// whose body does nothing but store skip their body outright so the mask walk
+// goes too. Nothing else changes: the collision registers, myFramePointer and
+// every other piece of TIA state are updated identically either way.
+// Render = false replaces the hand-maintained updateFrameScanlineFast copy and
+// is used when "fast_tia_update" is set.
+template <bool Render>
 inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
 {
   // Calculate the ending frame pointer value
@@ -1130,6 +1138,7 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
   // See if we're in the vertical blank region
   if(myVBLANK & 0x02)
   {
+    if constexpr (Render)
     std::memset(myFramePointer, 0, clocksToUpdate);
   }
   // Handle all other possible combinations
@@ -1143,6 +1152,7 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case 0x00 | PriorityBit:
       case 0x00 | PriorityBit | ScoreBit:
       {
+        if constexpr (!Render) break;
         std::memset(myFramePointer, myCOLUBK, clocksToUpdate);
         break;
       }
@@ -1151,6 +1161,7 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case myPFBit:
       case myPFBit | PriorityBit:
       {
+        if constexpr (!Render) break;
         const uint32_t* mask = &myCurrentPFMask[hpos];
 
         // Update a uint8_t at a time until reaching a uint32_t boundary
@@ -1172,6 +1183,7 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case myPFBit | ScoreBit:
       case myPFBit | ScoreBit | PriorityBit:
       {
+        if constexpr (!Render) break;
         const uint32_t* mask = &myCurrentPFMask[hpos];
 
         // Update a uint8_t at a time until reaching a uint32_t boundary
@@ -1198,12 +1210,14 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case myP0Bit | PriorityBit:
       case myP0Bit | ScoreBit | PriorityBit:
       {
+        if constexpr (!Render) break;
         const uint8_t* mP0 = &myCurrentP0Mask[hpos];
 
         while(myFramePointer < ending)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mP0 += 4; myFramePointer += 4;
           }
@@ -1222,12 +1236,14 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case myP1Bit | PriorityBit:
       case myP1Bit | ScoreBit | PriorityBit:
       {
+        if constexpr (!Render) break;
         const uint8_t* mP1 = &myCurrentP1Mask[hpos];
 
         while(myFramePointer < ending)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mP1 += 4; myFramePointer += 4;
           }
@@ -1254,11 +1270,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0 &&
               !*(uint32_t*)mP1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mP0 += 4; mP1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (myCurrentGRP0 & *mP0) ?
                 myCOLUP0 : ((myCurrentGRP1 & *mP1) ? myCOLUP1 : myCOLUBK);
 
@@ -1277,12 +1295,14 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case myM0Bit | PriorityBit:
       case myM0Bit | ScoreBit | PriorityBit:
       {
+        if constexpr (!Render) break;
         const uint8_t* mM0 = &myCurrentM0Mask[hpos];
 
         while(myFramePointer < ending)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mM0)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mM0 += 4; myFramePointer += 4;
           }
@@ -1301,12 +1321,14 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case myM1Bit | PriorityBit:
       case myM1Bit | ScoreBit | PriorityBit:
       {
+        if constexpr (!Render) break;
         const uint8_t* mM1 = &myCurrentM1Mask[hpos];
 
         while(myFramePointer < ending)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mM1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mM1 += 4; myFramePointer += 4;
           }
@@ -1325,12 +1347,14 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
       case myBLBit | PriorityBit:
       case myBLBit | ScoreBit | PriorityBit:
       {
+        if constexpr (!Render) break;
         const uint8_t* mBL = &myCurrentBLMask[hpos];
 
         while(myFramePointer < ending)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mBL += 4; myFramePointer += 4;
           }
@@ -1356,11 +1380,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mM0 && !*(uint32_t*)mM1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mM0 += 4; mM1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = *mM0 ? myCOLUP0 : (*mM1 ? myCOLUP1 : myCOLUBK);
 
             if(*mM0 && *mM1)
@@ -1383,11 +1409,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL && !*(uint32_t*)mM0)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mBL += 4; mM0 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (*mM0 ? myCOLUP0 : (*mBL ? myCOLUPF : myCOLUBK));
 
             if(*mBL && *mM0)
@@ -1410,11 +1438,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL && !*(uint32_t*)mM0)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mBL += 4; mM0 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (*mBL ? myCOLUPF : (*mM0 ? myCOLUP0 : myCOLUBK));
 
             if(*mBL && *mM0)
@@ -1438,11 +1468,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL &&
               !*(uint32_t*)mM1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mBL += 4; mM1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (*mM1 ? myCOLUP1 : (*mBL ? myCOLUPF : myCOLUBK));
 
             if(*mBL && *mM1)
@@ -1466,11 +1498,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL &&
               !*(uint32_t*)mM1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mBL += 4; mM1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (*mBL ? myCOLUPF : (*mM1 ? myCOLUP1 : myCOLUBK));
 
             if(*mBL && *mM1)
@@ -1493,11 +1527,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1 && !*(uint32_t*)mBL)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mBL += 4; mP1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (myCurrentGRP1 & *mP1) ? myCOLUP1 :
                 (*mBL ? myCOLUPF : myCOLUBK);
 
@@ -1521,11 +1557,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1 && !*(uint32_t*)mBL)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = myCOLUBK;
             mBL += 4; mP1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = *mBL ? myCOLUPF :
                 ((myCurrentGRP1 & *mP1) ? myCOLUP1 : myCOLUBK);
 
@@ -1548,11 +1586,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
             mPF += 4; mP0 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (myCurrentGRP0 & *mP0) ?
                   myCOLUP0 : ((myPF & *mPF) ? myCOLUPF : myCOLUBK);
 
@@ -1576,11 +1616,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
             mPF += 4; mP0 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (myPF & *mPF) ? myCOLUPF :
                 ((myCurrentGRP0 & *mP0) ? myCOLUP0 : myCOLUBK);
 
@@ -1604,11 +1646,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
             mPF += 4; mP1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (myCurrentGRP1 & *mP1) ?
                   myCOLUP1 : ((myPF & *mPF) ? myCOLUPF : myCOLUBK);
 
@@ -1632,11 +1676,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
             mPF += 4; mP1 += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = (myPF & *mPF) ? myCOLUPF :
                 ((myCurrentGRP1 & *mP1) ? myCOLUP1 : myCOLUBK);
 
@@ -1661,11 +1707,13 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
         {
           if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL)
           {
+            if constexpr (Render)
             *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
             mPF += 4; mBL += 4; myFramePointer += 4;
           }
           else
           {
+            if constexpr (Render)
             *myFramePointer = ((myPF & *mPF) || *mBL) ? myCOLUPF : myCOLUBK;
 
             if((myPF & *mPF) && *mBL)
@@ -1700,6 +1748,7 @@ inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
             enabled |= myM0Bit;
 
           myCollision |= ourCollisionTable[enabled];
+          if constexpr (Render)
           *myFramePointer = myColor[myPriorityEncoder[hpos < 80 ? 0 : 1]
               [enabled | myPlayfieldPriorityAndScore]];
         }
@@ -1776,10 +1825,10 @@ inline void TIA::updateFrame(int clock)
     if(clocksToUpdate != 0)
     {
       if (fastUpdate)
-        updateFrameScanlineFast(clocksToUpdate,
+        updateFrameScanline<false>(clocksToUpdate,
           clocksFromStartOfScanLine - HBLANK);
       else
-        updateFrameScanline(clocksToUpdate, clocksFromStartOfScanLine - HBLANK);
+        updateFrameScanline<true>(clocksToUpdate, clocksFromStartOfScanLine - HBLANK);
     }
 
     // Handle HMOVE blanks if they are enabled
@@ -2968,603 +3017,6 @@ TIA& TIA::operator = (const TIA&)
   assert(false);
 
   return *this;
-}
-
-// MGB
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-inline void TIA::updateFrameScanlineFast(uint32_t clocksToUpdate, uint32_t hpos)
-{
-  // Calculate the ending frame pointer value
-  uint8_t* ending = myFramePointer + clocksToUpdate;
-
-  // See if we're in the vertical blank region
-  if(myVBLANK & 0x02)
-  {
-    // @strip memset(myFramePointer, 0, clocksToUpdate);
-  }
-  // Handle all other possible combinations
-  else
-  {
-    switch(myEnabledObjects | myPlayfieldPriorityAndScore)
-    {
-      // Background
-      case 0x00:
-      case 0x00 | ScoreBit:
-      case 0x00 | PriorityBit:
-      case 0x00 | PriorityBit | ScoreBit:
-      /* @strip {
-        memset(myFramePointer, myCOLUBK, clocksToUpdate);
-        break;
-      } */
-      break;
-
-      // Playfield is enabled and the score bit is not set
-      case myPFBit:
-      case myPFBit | PriorityBit:
-      /* @strip
-      {
-        const uint32_t* mask = &myCurrentPFMask[hpos];
-
-        // Update a uint8_t at a time until reaching a uint32_t boundary
-        for(; ((uintptr_t)myFramePointer & 0x03) && (myFramePointer < ending);
-            ++myFramePointer, ++mask)
-        {
-          *myFramePointer = (myPF & *mask) ? myCOLUPF : myCOLUBK;
-        }
-
-        // Now, update a uint32_t at a time
-        for(; myFramePointer < ending; myFramePointer += 4, mask += 4)
-        {
-          *((uint32_t*)myFramePointer) = (myPF & *mask) ? myCOLUPF : myCOLUBK;
-        }
-        break;
-      } */ break;
-
-      // Playfield is enabled and the score bit is set
-      case myPFBit | ScoreBit:
-      case myPFBit | ScoreBit | PriorityBit:
-      /* @strip {
-        const uint32_t* mask = &myCurrentPFMask[hpos];
-
-        // Update a uint8_t at a time until reaching a uint32_t boundary
-        for(; ((uintptr_t)myFramePointer & 0x03) && (myFramePointer < ending);
-            ++myFramePointer, ++mask, ++hpos)
-        {
-          *myFramePointer = (myPF & *mask) ?
-              (hpos < 80 ? myCOLUP0 : myCOLUP1) : myCOLUBK;
-        }
-
-        // Now, update a uint32_t at a time
-        for(; myFramePointer < ending;
-            myFramePointer += 4, mask += 4, hpos += 4)
-        {
-          *((uint32_t*)myFramePointer) = (myPF & *mask) ?
-              (hpos < 80 ? myCOLUP0 : myCOLUP1) : myCOLUBK;
-        }
-        break;
-      } */
-      break;
-
-      // Player 0 is enabled
-      case myP0Bit:
-      case myP0Bit | ScoreBit:
-      case myP0Bit | PriorityBit:
-      case myP0Bit | ScoreBit | PriorityBit:
-      /* @strip {
-        const uint8_t* mP0 = &myCurrentP0Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0)
-          {
-            *(uint32_t*)myFramePointer = myCOLUBK;
-            mP0 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            *myFramePointer = (myCurrentGRP0 & *mP0) ? myCOLUP0 : myCOLUBK;
-            ++mP0; ++myFramePointer;
-          }
-        }
-        break;
-      } */
-
-      // Player 1 is enabled
-      case myP1Bit:
-      case myP1Bit | ScoreBit:
-      case myP1Bit | PriorityBit:
-      case myP1Bit | ScoreBit | PriorityBit:
-      /* @strip {
-        const uint8_t* mP1 = &myCurrentP1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1)
-          {
-            *(uint32_t*)myFramePointer = myCOLUBK;
-            mP1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            *myFramePointer = (myCurrentGRP1 & *mP1) ? myCOLUP1 : myCOLUBK;
-            ++mP1; ++myFramePointer;
-          }
-        }
-        break;
-      } */
-
-      // Player 0 and 1 are enabled
-      case myP0Bit | myP1Bit:
-      case myP0Bit | myP1Bit | ScoreBit:
-      case myP0Bit | myP1Bit | PriorityBit:
-      case myP0Bit | myP1Bit | ScoreBit | PriorityBit:
-      {
-        const uint8_t* mP0 = &myCurrentP0Mask[hpos];
-        const uint8_t* mP1 = &myCurrentP1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0 &&
-              !*(uint32_t*)mP1)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mP0 += 4; mP1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            /* @strip *myFramePointer = (myCurrentGRP0 & *mP0) ?
-                myCOLUP0 : ((myCurrentGRP1 & *mP1) ? myCOLUP1 : myCOLUBK);
-            */
-
-            if((myCurrentGRP0 & *mP0) && (myCurrentGRP1 & *mP1))
-              myCollision |= ourCollisionTable[myP0Bit | myP1Bit];
-
-            ++mP0; ++mP1; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Missle 0 is enabled
-      case myM0Bit:
-      case myM0Bit | ScoreBit:
-      case myM0Bit | PriorityBit:
-      case myM0Bit | ScoreBit | PriorityBit:
-      /* @strip {
-        const uint8_t* mM0 = &myCurrentM0Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mM0)
-          {
-            *(uint32_t*)myFramePointer = myCOLUBK;
-            mM0 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            *myFramePointer = *mM0 ? myCOLUP0 : myCOLUBK;
-            ++mM0; ++myFramePointer;
-          }
-        }
-        break;
-      } */
-      break;
-
-      // Missle 1 is enabled
-      case myM1Bit:
-      case myM1Bit | ScoreBit:
-      case myM1Bit | PriorityBit:
-      case myM1Bit | ScoreBit | PriorityBit:
-      /* @strip {
-        const uint8_t* mM1 = &myCurrentM1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mM1)
-          {
-            *(uint32_t*)myFramePointer = myCOLUBK;
-            mM1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            *myFramePointer = *mM1 ? myCOLUP1 : myCOLUBK;
-            ++mM1; ++myFramePointer;
-          }
-        }
-        break;
-      } */
-      break;
-
-      // Ball is enabled
-      case myBLBit:
-      case myBLBit | ScoreBit:
-      case myBLBit | PriorityBit:
-      case myBLBit | ScoreBit | PriorityBit:
-      /* @strip {
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL)
-          {
-            *(uint32_t*)myFramePointer = myCOLUBK;
-            mBL += 4; myFramePointer += 4;
-          }
-          else
-          {
-            *myFramePointer = *mBL ? myCOLUPF : myCOLUBK;
-            ++mBL; ++myFramePointer;
-          }
-        }
-        break;
-      } */
-      break;
-
-      // Missle 0 and 1 are enabled
-      case myM0Bit | myM1Bit:
-      case myM0Bit | myM1Bit | ScoreBit:
-      case myM0Bit | myM1Bit | PriorityBit:
-      case myM0Bit | myM1Bit | ScoreBit | PriorityBit:
-      {
-        const uint8_t* mM0 = &myCurrentM0Mask[hpos];
-        const uint8_t* mM1 = &myCurrentM1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mM0 && !*(uint32_t*)mM1)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mM0 += 4; mM1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            // @strip *myFramePointer = *mM0 ? myCOLUP0 : (*mM1 ? myCOLUP1 : myCOLUBK);
-
-            if(*mM0 && *mM1)
-              myCollision |= ourCollisionTable[myM0Bit | myM1Bit];
-
-            ++mM0; ++mM1; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Ball and Missle 0 are enabled and playfield priority is not set
-      case myBLBit | myM0Bit:
-      case myBLBit | myM0Bit | ScoreBit:
-      {
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-        const uint8_t* mM0 = &myCurrentM0Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL && !*(uint32_t*)mM0)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mBL += 4; mM0 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            // @strip *myFramePointer = (*mM0 ? myCOLUP0 : (*mBL ? myCOLUPF : myCOLUBK));
-
-            if(*mBL && *mM0)
-              myCollision |= ourCollisionTable[myBLBit | myM0Bit];
-
-            ++mBL; ++mM0; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Ball and Missle 0 are enabled and playfield priority is set
-      case myBLBit | myM0Bit | PriorityBit:
-      case myBLBit | myM0Bit | ScoreBit | PriorityBit:
-      {
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-        const uint8_t* mM0 = &myCurrentM0Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL && !*(uint32_t*)mM0)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mBL += 4; mM0 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            // @strip *myFramePointer = (*mBL ? myCOLUPF : (*mM0 ? myCOLUP0 : myCOLUBK));
-
-            if(*mBL && *mM0)
-              myCollision |= ourCollisionTable[myBLBit | myM0Bit];
-
-            ++mBL; ++mM0; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Ball and Missle 1 are enabled and playfield priority is not set
-      case myBLBit | myM1Bit:
-      case myBLBit | myM1Bit | ScoreBit:
-      {
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-        const uint8_t* mM1 = &myCurrentM1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL &&
-              !*(uint32_t*)mM1)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mBL += 4; mM1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            // @strip *myFramePointer = (*mM1 ? myCOLUP1 : (*mBL ? myCOLUPF : myCOLUBK));
-
-            if(*mBL && *mM1)
-              myCollision |= ourCollisionTable[myBLBit | myM1Bit];
-
-            ++mBL; ++mM1; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Ball and Missle 1 are enabled and playfield priority is set
-      case myBLBit | myM1Bit | PriorityBit:
-      case myBLBit | myM1Bit | ScoreBit | PriorityBit:
-      {
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-        const uint8_t* mM1 = &myCurrentM1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL &&
-              !*(uint32_t*)mM1)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mBL += 4; mM1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            // @strip *myFramePointer = (*mBL ? myCOLUPF : (*mM1 ? myCOLUP1 : myCOLUBK));
-
-            if(*mBL && *mM1)
-              myCollision |= ourCollisionTable[myBLBit | myM1Bit];
-
-            ++mBL; ++mM1; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Ball and Player 1 are enabled and playfield priority is not set
-      case myBLBit | myP1Bit:
-      case myBLBit | myP1Bit | ScoreBit:
-      {
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-        const uint8_t* mP1 = &myCurrentP1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1 && !*(uint32_t*)mBL)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mBL += 4; mP1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            /* @strip *myFramePointer = (myCurrentGRP1 & *mP1) ? myCOLUP1 :
-                (*mBL ? myCOLUPF : myCOLUBK); */
-
-            if(*mBL && (myCurrentGRP1 & *mP1))
-              myCollision |= ourCollisionTable[myBLBit | myP1Bit];
-
-            ++mBL; ++mP1; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Ball and Player 1 are enabled and playfield priority is set
-      case myBLBit | myP1Bit | PriorityBit:
-      case myBLBit | myP1Bit | PriorityBit | ScoreBit:
-      {
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-        const uint8_t* mP1 = &myCurrentP1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1 && !*(uint32_t*)mBL)
-          {
-            // @strip *(uint32_t*)myFramePointer = myCOLUBK;
-            mBL += 4; mP1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            /* @strip *myFramePointer = *mBL ? myCOLUPF :
-                ((myCurrentGRP1 & *mP1) ? myCOLUP1 : myCOLUBK); */
-
-            if(*mBL && (myCurrentGRP1 & *mP1))
-              myCollision |= ourCollisionTable[myBLBit | myP1Bit];
-
-            ++mBL; ++mP1; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Playfield and Player 0 are enabled and playfield priority is not set
-      case myPFBit | myP0Bit:
-      {
-        const uint32_t* mPF = &myCurrentPFMask[hpos];
-        const uint8_t* mP0 = &myCurrentP0Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0)
-          {
-            // @strip *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
-            mPF += 4; mP0 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            /* @strip *myFramePointer = (myCurrentGRP0 & *mP0) ?
-                  myCOLUP0 : ((myPF & *mPF) ? myCOLUPF : myCOLUBK); */
-
-            if((myPF & *mPF) && (myCurrentGRP0 & *mP0))
-              myCollision |= ourCollisionTable[myPFBit | myP0Bit];
-
-            ++mPF; ++mP0; ++myFramePointer;
-          }
-        }
-
-        break;
-      }
-
-      // Playfield and Player 0 are enabled and playfield priority is set
-      case myPFBit | myP0Bit | PriorityBit:
-      {
-        const uint32_t* mPF = &myCurrentPFMask[hpos];
-        const uint8_t* mP0 = &myCurrentP0Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP0)
-          {
-            // @strip *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
-            mPF += 4; mP0 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            /* @strip *myFramePointer = (myPF & *mPF) ? myCOLUPF :
-                ((myCurrentGRP0 & *mP0) ? myCOLUP0 : myCOLUBK); */
-
-            if((myPF & *mPF) && (myCurrentGRP0 & *mP0))
-              myCollision |= ourCollisionTable[myPFBit | myP0Bit];
-
-            ++mPF; ++mP0; ++myFramePointer;
-          }
-        }
-
-        break;
-      }
-
-      // Playfield and Player 1 are enabled and playfield priority is not set
-      case myPFBit | myP1Bit:
-      {
-        const uint32_t* mPF = &myCurrentPFMask[hpos];
-        const uint8_t* mP1 = &myCurrentP1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1)
-          {
-            // @strip *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
-            mPF += 4; mP1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            /* @strip *myFramePointer = (myCurrentGRP1 & *mP1) ?
-                  myCOLUP1 : ((myPF & *mPF) ? myCOLUPF : myCOLUBK); */
-
-            if((myPF & *mPF) && (myCurrentGRP1 & *mP1))
-              myCollision |= ourCollisionTable[myPFBit | myP1Bit];
-
-            ++mPF; ++mP1; ++myFramePointer;
-          }
-        }
-
-        break;
-      }
-
-      // Playfield and Player 1 are enabled and playfield priority is set
-      case myPFBit | myP1Bit | PriorityBit:
-      {
-        const uint32_t* mPF = &myCurrentPFMask[hpos];
-        const uint8_t* mP1 = &myCurrentP1Mask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mP1)
-          {
-            // @strip *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
-            mPF += 4; mP1 += 4; myFramePointer += 4;
-          }
-          else
-          {
-            /* @strip *myFramePointer = (myPF & *mPF) ? myCOLUPF :
-                ((myCurrentGRP1 & *mP1) ? myCOLUP1 : myCOLUBK); */
-
-            if((myPF & *mPF) && (myCurrentGRP1 & *mP1))
-              myCollision |= ourCollisionTable[myPFBit | myP1Bit];
-
-            ++mPF; ++mP1; ++myFramePointer;
-          }
-        }
-
-        break;
-      }
-
-      // Playfield and Ball are enabled
-      case myPFBit | myBLBit:
-      case myPFBit | myBLBit | PriorityBit:
-      {
-        const uint32_t* mPF = &myCurrentPFMask[hpos];
-        const uint8_t* mBL = &myCurrentBLMask[hpos];
-
-        while(myFramePointer < ending)
-        {
-          if(!((uintptr_t)myFramePointer & 0x03) && !*(uint32_t*)mBL)
-          {
-            // @strip *(uint32_t*)myFramePointer = (myPF & *mPF) ? myCOLUPF : myCOLUBK;
-            mPF += 4; mBL += 4; myFramePointer += 4;
-          }
-          else
-          {
-            // @strip *myFramePointer = ((myPF & *mPF) || *mBL) ? myCOLUPF : myCOLUBK;
-
-            if((myPF & *mPF) && *mBL)
-              myCollision |= ourCollisionTable[myPFBit | myBLBit];
-
-            ++mPF; ++mBL; ++myFramePointer;
-          }
-        }
-        break;
-      }
-
-      // Handle all of the other cases
-      default:
-      {
-        for(; myFramePointer < ending; ++myFramePointer, ++hpos)
-        {
-          uint8_t enabled = (myPF & myCurrentPFMask[hpos]) ? myPFBit : 0;
-
-          if((myEnabledObjects & myBLBit) && myCurrentBLMask[hpos])
-            enabled |= myBLBit;
-
-          if(myCurrentGRP1 & myCurrentP1Mask[hpos])
-            enabled |= myP1Bit;
-
-          if((myEnabledObjects & myM1Bit) && myCurrentM1Mask[hpos])
-            enabled |= myM1Bit;
-
-          if(myCurrentGRP0 & myCurrentP0Mask[hpos])
-            enabled |= myP0Bit;
-
-          if((myEnabledObjects & myM0Bit) && myCurrentM0Mask[hpos])
-            enabled |= myM0Bit;
-
-          myCollision |= ourCollisionTable[enabled];
-          /* @strip *myFramePointer = myColor[myPriorityEncoder[hpos < 80 ? 0 : 1]
-              [enabled | myPlayfieldPriorityAndScore]]; */
-        }
-        break;
-      }
-    }
-  }
-  myFramePointer = ending;
 }
 
 }  // namespace stella
