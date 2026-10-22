@@ -107,6 +107,8 @@ envs = AtariVectorEnv(
     full_action_space: bool = False,          # Use full action space (not minimal)
     continuous: bool = False,                 # If to use continuous actions
     continuous_action_threshold: bool = 0.5,  # The threshold at which to use continuous actions
+    reset_pool_size: int = 8,                 # Start states captured from real resets and replayed on later resets (0 = emulate every reset)
+    reset_pool_prefill: bool = False,         # Capture all reset_pool_size start states on the first reset instead of over the first episodes
 
     # Performance options
     batch_size=0,             # Number of environments to process at once (default=0 is the `num_envs`)
@@ -173,3 +175,26 @@ On systems with multiple CPU cores, setting thread affinity can improve performa
 # Set thread affinity starting from core 0
 envs = AtariVectorEnv(game="Breakout", num_envs=8, thread_affinity_offset=0)
 ```
+
+### Reset Pool
+
+Resetting an Atari console emulates around 68 frames of bring-up, which costs 10–16× a step.
+Each sub-environment therefore emulates its first `reset_pool_size` resets for real, keeps a snapshot of each start state,
+and on later resets restores a snapshot picked uniformly at random instead.
+
+A pool rather than a single snapshot is needed because a reset is not a pure function of the ROM:
+the console's timer is redrawn on every reset, some cartridges re-randomise their RAM, and console RAM carries over between episodes.
+Every start state reachable through the pool is one a real reset produced.
+A seeded `reset(seed=...)` reloads the ROM and empties the pool.
+
+```python
+# Capture all 8 start states on the first reset, so every later episode boundary costs the same
+envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_prefill=True)
+
+# Emulate every reset, as versions before the pool did
+envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_size=0)
+```
+
+`reset_pool_prefill` is off by default because it captures its start states from consecutive resets with no gameplay between them.
+On ROMs whose start state depends on the console RAM left over by the previous episode, it sees fewer distinct start states
+(for example, `yars_revenge` reaches 8 distinct start states with the default and 1 with prefill).

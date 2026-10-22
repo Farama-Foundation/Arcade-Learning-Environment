@@ -41,7 +41,9 @@ public:
         bool reward_clipping = true,
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
-        bool full_action_space = false
+        bool full_action_space = false,
+        int reset_pool_size = PreprocessedEnv::kDefaultResetPoolDraws,
+        bool reset_pool_prefill = false
     );
 
     ~EnvVectorizer();

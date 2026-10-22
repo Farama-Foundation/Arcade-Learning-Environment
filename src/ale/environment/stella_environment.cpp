@@ -136,9 +136,11 @@ ALEState StellaEnvironment::cloneState(bool include_rng) {
 
 void StellaEnvironment::restoreState(const ALEState& target_state) {
   m_state.load(m_osystem, m_settings, &m_random, m_cartridge_md5, target_state);
-  // m_ram is a cached copy refreshed inside act() via processRAM(); without
-  // this call getRAM() would return stale bytes from before the restore.
+  // m_ram and m_screen are cached copies refreshed inside act(); without these
+  // calls getRAM() and getScreen() would return what the emulator showed before
+  // the restore, until the next frame is emulated.
   processRAM();
+  processScreen();
 }
 
 void StellaEnvironment::noopIllegalActions(Action& player_a_action,
