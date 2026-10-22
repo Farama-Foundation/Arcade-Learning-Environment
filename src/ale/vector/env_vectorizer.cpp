@@ -1,5 +1,7 @@
 #include "env_vectorizer.hpp"
 
+#include <algorithm>
+
 #if defined(__linux__)
     #include <pthread.h>
 #elif defined(_WIN32)
@@ -211,6 +213,23 @@ void EnvVectorizer::send(const std::vector<Action>& actions) {
         envs_[actual_env_id]->set_action(mapped.action_id, mapped.paddle_strength);
 
         mapped_actions.push_back(mapped);
+    }
+
+    // Longest-processing-time-first dispatch. A reset costs 10-16x a step and
+    // runs inline in the same task, so an env that resets late in the queue
+    // extends the batch's makespan by however long the batch had left to run.
+    // In NextStep mode is_episode_over() is settled before send() enqueues -
+    // the env staged its result last recv() and nothing touches it until now -
+    // so the resetting envs can be hoisted to the front of the queue and
+    // started first. Not valid in SameStep mode, where the reset happens
+    // inside the step task and is unpredictable at enqueue time.
+    if (autoreset_mode_ == AutoresetMode::NextStep) {
+        std::stable_partition(
+            mapped_actions.begin(), mapped_actions.end(),
+            [this](const Action& a) {
+                return a.force_reset || envs_[a.env_id]->is_episode_over();
+            }
+        );
     }
 
     // Enqueue actions
