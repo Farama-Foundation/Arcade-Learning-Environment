@@ -296,6 +296,116 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
 );
 #endif  // BUILD_VECTOR_XLA_GPU
 
+
+#ifdef BUILD_VECTOR_XLA_GPU
+namespace {
+
+/// Page-locked host buffers the ALE workers write their results straight into,
+/// plus the event that guards them.
+///
+/// Two things this buys over the copy-out path it replaces. H2D from
+/// page-locked memory runs at roughly twice the bandwidth of pageable memory,
+/// because the driver no longer has to stage the transfer through its own
+/// bounce buffer. And because the buffers are owned by the vectorizer rather
+/// than being stack temporaries, the copies issued from them stay valid after
+/// the handler returns - so the handler does not have to synchronize the
+/// stream, and the transfer overlaps the next round's emulation.
+///
+/// What makes that safe is h2d_done: the workers may not overwrite the buffers
+/// until the previous round's transfer has drained them, so the next call waits
+/// on the event before handing them to step_into().
+struct PinnedStaging {
+    std::size_t batch_size = 0;
+    std::size_t obs_size = 0;
+    uint8_t* obs = nullptr;
+    int* env_ids = nullptr;
+    int* rewards = nullptr;
+    bool* terminations = nullptr;
+    bool* truncations = nullptr;
+    int* lives = nullptr;
+    int* frame_numbers = nullptr;
+    int* episode_frame_numbers = nullptr;
+    cudaEvent_t h2d_done = nullptr;
+    bool h2d_pending = false;
+
+    PinnedStaging() = default;
+    PinnedStaging(const PinnedStaging&) = delete;
+    PinnedStaging& operator=(const PinnedStaging&) = delete;
+
+    ~PinnedStaging() {
+        // Never free page-locked memory with a transfer still reading it.
+        if (h2d_done) {
+            if (h2d_pending) {
+                cudaEventSynchronize(h2d_done);
+            }
+            cudaEventDestroy(h2d_done);
+        }
+        cudaFreeHost(obs);
+        cudaFreeHost(env_ids);
+        cudaFreeHost(rewards);
+        cudaFreeHost(terminations);
+        cudaFreeHost(truncations);
+        cudaFreeHost(lives);
+        cudaFreeHost(frame_numbers);
+        cudaFreeHost(episode_frame_numbers);
+    }
+
+    template <typename T>
+    bool alloc(T** dst, std::size_t count) {
+        void* p = nullptr;
+        if (cudaHostAlloc(&p, count * sizeof(T), cudaHostAllocDefault) != cudaSuccess) {
+            return false;
+        }
+        *dst = static_cast<T*>(p);
+        return true;
+    }
+
+    bool allocate(std::size_t bs, std::size_t os) {
+        batch_size = bs;
+        obs_size = os;
+        return alloc(&obs, bs * os) && alloc(&env_ids, bs) && alloc(&rewards, bs) &&
+               alloc(&terminations, bs) && alloc(&truncations, bs) && alloc(&lives, bs) &&
+               alloc(&frame_numbers, bs) && alloc(&episode_frame_numbers, bs) &&
+               cudaEventCreateWithFlags(&h2d_done, cudaEventDisableTiming) == cudaSuccess;
+    }
+
+    ale::vector::BatchResult::ExternalBuffers as_external() const {
+        ale::vector::BatchResult::ExternalBuffers b;
+        b.observations = obs;
+        b.env_ids = env_ids;
+        b.rewards = rewards;
+        b.terminations = terminations;
+        b.truncations = truncations;
+        b.lives = lives;
+        b.frame_numbers = frame_numbers;
+        b.episode_frame_numbers = episode_frame_numbers;
+        b.final_observations = nullptr;  // the XLA path is NextStep-only
+        return b;
+    }
+};
+
+/// Fetch (or lazily build) the pinned staging owned by this vectorizer.
+/// Returns nullptr if page-locked memory is unavailable, in which case the
+/// caller falls back to copying out of the BatchResult.
+PinnedStaging* pinned_staging_for(
+    ale::vector::EnvVectorizer* vectorizer, std::size_t batch_size, std::size_t obs_size
+) {
+    auto& slot = vectorizer->backend_staging();
+    auto* existing = static_cast<PinnedStaging*>(slot.get());
+    if (existing && existing->batch_size == batch_size && existing->obs_size == obs_size) {
+        return existing;
+    }
+    auto fresh = std::make_shared<PinnedStaging>();
+    if (!fresh->allocate(batch_size, obs_size)) {
+        return nullptr;
+    }
+    slot = fresh;  // shared_ptr<void> keeps PinnedStaging's deleter
+    return fresh.get();
+}
+
+}  // namespace
+#endif  // BUILD_VECTOR_XLA_GPU
+
 // CPU version of XLAStep
 ffi::Error XLAStepImpl(
     ffi::Buffer<ffi::U8> handle_buffer,
@@ -546,6 +656,37 @@ ffi::Error XLAStepGPUImpl(
             actions[i].force_reset = false;
         }
 
+        const size_t stacked_obs_size = vectorizer->stacked_obs_size();
+        if (observations_buffer->element_count() != batch_size * stacked_obs_size) {
+            return ffi::Error::Internal("Observations buffer is the wrong size (GPU)");
+        }
+
+        // Have the workers write this round straight into page-locked host
+        // memory, so the batch is written once and the H2D that follows runs at
+        // pinned bandwidth. Declined in async mode (see stage_into) and when
+        // page-locked memory is unavailable; the copy-out below is the fallback.
+        // stage_into is ordered-mode only, so in async mode there is no point
+        // page-locking buffers it will refuse - that would be 14.5 MB per
+        // vectorizer of pinned memory doing nothing.
+        const bool ordered = vectorizer->batch_size() == vectorizer->num_envs();
+        PinnedStaging* pinned = ordered
+            ? pinned_staging_for(vectorizer, batch_size, stacked_obs_size)
+            : nullptr;
+        bool wrote_pinned = false;
+        if (pinned != nullptr) {
+            // The previous round's transfer still reads these buffers - it must
+            // drain before the workers overwrite them.
+            if (pinned->h2d_pending) {
+                err = cudaEventSynchronize(pinned->h2d_done);
+                if (err != cudaSuccess) {
+                    return ffi::Error::Internal(std::string("CUDA event sync failed: ") + cudaGetErrorString(err));
+                }
+                pinned->h2d_pending = false;
+            }
+            const auto external = pinned->as_external();
+            wrote_pinned = vectorizer->step_into(external);
+        }
+
         // Step the environments (CPU operation)
         vectorizer->send(actions);
 
@@ -553,11 +694,35 @@ ffi::Error XLAStepGPUImpl(
         auto result = vectorizer->recv();
 
         size_t result_batch_size = result.batch_size();
-        size_t stacked_obs_size = vectorizer->stacked_obs_size();
 
-        // Check if the observations buffer is large enough
-        if (observations_buffer->element_count() != result_batch_size * stacked_obs_size) {
-            return ffi::Error::Internal("Observations buffer is the wrong size (GPU)");
+        if (wrote_pinned) {
+            const struct { void* dst; const void* src; size_t bytes; const char* what; } copies[] = {
+                {observations_buffer->typed_data(), pinned->obs, result_batch_size * stacked_obs_size, "observations"},
+                {rewards_buffer->typed_data(), pinned->rewards, result_batch_size * sizeof(int32_t), "rewards"},
+                {env_id_buffer->typed_data(), pinned->env_ids, result_batch_size * sizeof(int32_t), "env_ids"},
+                {lives_buffer->typed_data(), pinned->lives, result_batch_size * sizeof(int32_t), "lives"},
+                {frame_numbers_buffer->typed_data(), pinned->frame_numbers, result_batch_size * sizeof(int32_t), "frame_numbers"},
+                {episode_frame_numbers_buffer->typed_data(), pinned->episode_frame_numbers, result_batch_size * sizeof(int32_t), "episode_frame_numbers"},
+                {terminations_buffer->typed_data(), pinned->terminations, result_batch_size * sizeof(bool), "terminations"},
+                {truncations_buffer->typed_data(), pinned->truncations, result_batch_size * sizeof(bool), "truncations"},
+            };
+            for (const auto& c : copies) {
+                err = cudaMemcpyAsync(c.dst, c.src, c.bytes, cudaMemcpyHostToDevice, stream);
+                if (err != cudaSuccess) {
+                    return ffi::Error::Internal(std::string("CUDA memcpy failed (") + c.what +
+                                                " pinned H2D): " + cudaGetErrorString(err));
+                }
+            }
+            // No stream synchronize: the source buffers belong to the vectorizer
+            // and outlive this call, so the transfer may overlap the next
+            // round's emulation. The event is what stops the workers from
+            // overwriting the buffers before it has finished.
+            err = cudaEventRecord(pinned->h2d_done, stream);
+            if (err != cudaSuccess) {
+                return ffi::Error::Internal(std::string("CUDA event record failed: ") + cudaGetErrorString(err));
+            }
+            pinned->h2d_pending = true;
+            return ffi::Error::Success();
         }
 
         // Copy bools element-wise to temporary buffers, sent to the GPU below

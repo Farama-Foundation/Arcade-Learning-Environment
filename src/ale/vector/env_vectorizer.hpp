@@ -101,6 +101,13 @@ public:
     /// Get raw pointer for JAX FFI handle
     const void* handle() const { return this; }
 
+    /// Slot for a backend-specific staging cache belonging to whichever
+    /// consumer drives this vectorizer - currently the XLA GPU handler's
+    /// page-locked host buffers. Held here so it is destroyed with the
+    /// vectorizer, which is what lets that handler leave H2D copies in flight
+    /// after it returns; the vector library never looks inside it.
+    std::shared_ptr<void>& backend_staging() { return backend_staging_; }
+
 private:
     // Configuration
     int num_envs_;
@@ -132,6 +139,9 @@ private:
     std::atomic<bool> has_error_{false};
     std::exception_ptr error_;
     std::mutex error_mutex_;
+
+    // Opaque, consumer-owned staging cache (see backend_staging()).
+    std::shared_ptr<void> backend_staging_;
 
     // True until the first reset() populates last_recv_env_ids_.
     // send() checks this to reject calls that would misroute actions to env 0.
