@@ -18,6 +18,9 @@ on:
     branches:
       - "*"
 
+permissions:
+  contents: read
+
 jobs:
   build-wasm:
     name: Build WASM

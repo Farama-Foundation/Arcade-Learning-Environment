@@ -115,6 +115,40 @@ BatchResult EnvVectorizer::reset(const std::vector<int>& env_ids, const std::vec
         throw std::invalid_argument("env_ids and seeds must have same size");
     }
 
+    // Mark which environments are being reset, rejecting out-of-range and duplicate ids.
+    std::vector<bool> is_reset(num_envs_, false);
+    for (const int env_id : env_ids) {
+        if (env_id < 0 || env_id >= num_envs_) {
+            throw std::out_of_range(
+                "reset env_id " + std::to_string(env_id) + " is out of range [0, " + std::to_string(num_envs_) + ")"
+            );
+        }
+        if (is_reset[env_id]) {
+            throw std::invalid_argument("reset has a duplicate env_id=" + std::to_string(env_id));
+        }
+        is_reset[env_id] = true;
+    }
+
+    const bool partial = env_ids.size() != static_cast<std::size_t>(num_envs_);
+    if (partial) {
+        // Environments that have never been reset have no observation to report.
+        if (first_batch_) {
+            throw std::runtime_error(
+                "The first reset() must reset every environment (got " +
+                std::to_string(env_ids.size()) + " of " + std::to_string(num_envs_) + ")"
+            );
+        }
+
+        // For partial resets, this only works for sync mode (not async mode)
+        if (batch_size_ != num_envs_) {
+            throw std::invalid_argument(
+                "Partial reset is not supported for async mode where batch_size < num_envs (got batch_size=" +
+                std::to_string(batch_size_) + ", num_envs=" + std::to_string(num_envs_) + ")"
+            );
+        }
+
+    }
+
     first_batch_ = false;
 
     // Set seeds and prepare actions
@@ -134,6 +168,18 @@ BatchResult EnvVectorizer::reset(const std::vector<int>& env_ids, const std::vec
 
     // Enqueue reset actions
     action_queue_->enqueue_bulk(actions);
+
+    // For partial resets, the environments not reset, we can stage their observations using the previous values
+    if (partial) {
+        for (int env_id = 0; env_id < num_envs_; ++env_id) {
+            if (!is_reset[env_id]) {
+                const auto& env = *envs_[env_id];
+                staging_->stage_result(env_id, [&env](OutputSlot& slot) {
+                    env.write_to(slot);
+                });
+            }
+        }
+    }
 
     // Wait for results
     return recv();

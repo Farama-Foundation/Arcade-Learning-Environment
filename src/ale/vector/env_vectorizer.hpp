@@ -51,7 +51,12 @@ public:
     EnvVectorizer& operator=(const EnvVectorizer&) = delete;
 
     /// Reset specified environments with given seeds.
-    /// @param env_ids Environment indices to reset
+    ///
+    /// A partial reset (env_ids smaller than num_envs) requires batch_size == num_envs and
+    /// a preceding full reset. Environments left out of env_ids are not stepped; the batch
+    /// simply reports their current state alongside the freshly reset ones.
+    ///
+    /// @param env_ids Environment indices to reset, unique and within [0, num_envs)
     /// @param seeds Seeds for each environment (-1 to keep current seed)
     /// @return Batch of results from batch_size environments
     BatchResult reset(const std::vector<int>& env_ids, const std::vector<int>& seeds);

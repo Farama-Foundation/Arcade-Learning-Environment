@@ -3,8 +3,9 @@
 
 <p align="center">
     <a href="https://ale.farama.org/" target = "_blank">
-    <img src="ale-text-v2-centered.png" width="500px" />
+    <img src="https://raw.githubusercontent.com/Farama-Foundation/Arcade-Learning-Environment/main/docs/_static/img/ale-text.png" width="500px" />
 </a>
+</p>
 
 **The Arcade Learning Environment (ALE) is a simple framework that allows researchers and hobbyists to develop AI agents for Atari 2600 games.**
 It is built on top of the Atari 2600 emulator [Stella](https://stella-emu.github.io) and separates the details of emulation from agent design.
@@ -34,7 +35,7 @@ The ALE currently supports three different interfaces: C++, Python, Gymnasium an
 Python
 ------
 
-You simply need to install the `ale-py` package distributed via PyPI:
+The Python interface supports CPython 3.11–3.15. Install the `ale-py` package distributed via PyPI:
 
 ```shell
 pip install ale-py
@@ -101,7 +102,7 @@ cmake --build . --target install
 ```
 
 There are optional flags `-DSDL_SUPPORT=ON/OFF` to toggle SDL support (i.e., `display_screen` and `sound` support; `OFF` by default), `-DBUILD_CPP_LIB=ON/OFF` to build
-the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the pybind11 wrapper (`ON` by default).
+the `ale-lib` C++ target (`ON` by default), and `-DBUILD_PYTHON_LIB=ON/OFF` to build the nanobind wrapper (`ON` by default).
 
 Finally, you can link against the ALE in your own CMake project as follows
 

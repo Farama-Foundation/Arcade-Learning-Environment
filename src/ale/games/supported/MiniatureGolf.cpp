@@ -132,11 +132,11 @@ void MiniatureGolfSettings::reset() {
 void MiniatureGolfSettings::saveState(Serializer& ser) {
   ser.putInt(m_reward);
   ser.putBool(m_terminal);
-  ser.putBool(m_levelNumber);
-  ser.putBool(m_levelPar);
-  ser.putBool(m_hits);
-  ser.putBool(m_leftStatus);
-  ser.putBool(m_hitsAtStartOfLevel);
+  ser.putInt(m_levelNumber);
+  ser.putInt(m_levelPar);
+  ser.putInt(m_hits);
+  ser.putInt(m_leftStatus);
+  ser.putInt(m_hitsAtStartOfLevel);
 }
 
 void MiniatureGolfSettings::loadState(Deserializer& ser) {

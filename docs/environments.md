@@ -143,11 +143,11 @@ The ALE supports continuous actions, parameterized as a 3-dimensional vector. Th
 
 Continuous action spaces still trigger the same events as the default discrete action space, but it is done via the parameter
 `continuous_action_threshold` (i.e. if the "fire" dimension is above `continuous_action_threshold`, a "fire" event is triggered).
-See [[3]](#3) for more details.
+See [[3]](#ref-3) for more details.
 
 ## Observation Space
 
-The Atari environments observation can be
+The Atari environments' observation can be:
 1. The RGB image that is displayed to a human player using `obs_type="rgb"` with observation space `Box(0, 255, (210, 160, 3), np.uint8)`
 2. The grayscale version of the RGB image using `obs_type="grayscale"` with observation space `Box(0, 255, (210, 160), np.uint8)`
 3. The RAM state (128 bytes) from the console using `obs_type="ram"` with observation space `Box(0, 255, (128), np.uint8)`
@@ -160,7 +160,7 @@ The exact reward dynamics depend on the environment and are usually documented i
 
 As the Atari games are entirely deterministic, agents can achieve state-of-the-art performance by simply memorizing an optimal sequence of actions while completely ignoring observations from the environment.
 
-To avoid this, there are several methods to avoid this.
+There are several methods to avoid this.
 
 1. Sticky actions: Instead of always simulating the action passed to the environment, there is a small
 probability that the previously executed action is used instead. In the v0 and v5 environments, the probability of
@@ -212,9 +212,9 @@ life count in `info["lives"]` decreases, not only at the start of the episode.
 When initializing Atari environments via `gymnasium.make`, you may pass some additional arguments. These work for any
 Atari environment.
 
-- **mode**: `int`. Game mode, see [[2]](#2). Legal values depend on the environment and are listed in the table above.
+- **mode**: `int`. Game mode, see [[2]](#ref-2). Legal values depend on the environment and are listed in the table above.
 
-- **difficulty**: `int`. The difficulty of the game, see [[2]](#2). Legal values depend on the environment and are listed in
+- **difficulty**: `int`. The difficulty of the game, see [[2]](#ref-2). Legal values depend on the environment and are listed in
 the table above. Together with `mode`, this determines the "flavor" of the game.
 
 - **obs_type**: `str`. This argument determines what observations are returned by the environment. Its values are:
@@ -235,19 +235,28 @@ Actions passed into the environment are then thresholded to discrete using the `
 - **continuous_action_threshold**: `float`. This determines the threshold for actions to be thresholded into discrete actions.
 
 - **render_mode**: `str`. Specifies the rendering mode. Its values are:
-	- human: Display the screen and enable game sounds. This will lock emulation to the ROMs specified FPS
-	- rgb_array: Returns the current environment RGB frame of the environment.
+	- human: Display the screen and enable game sounds. This will lock emulation to the ROM's specified FPS
+	- rgb_array: Returns the current RGB frame of the environment.
 
 ## Version History and Naming Schemes
 
-In v0.11, the number of registered Atari environments was significantly reduced from 960 to 210 to only register `{rom_name}NoFrameskip-v4` the most popular environment and `ALE/{rom_name}-v5` following the best practices outlined in [[2]](#2).
+For each of the 62 games available in the original Gym release, ALE registers the legacy `v0` and `v4` environments,
+with and without frame skipping, alongside `ALE/{rom_name}-v5`. Games added since then are only available as `v5`,
+which follows the best practices outlined in [[2]](#ref-2) and is the recommended version.
 
-| Name                    | `obs_type=` | `frameskip=` | `repeat_action_probability=` | `full_ation_space=` |
-|-------------------------|-------------|--------------|------------------------------|---------------------|
-| AdventureNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       | `False`             |
-| ALE/Adventure-v5        | `"rgb"`     | `4`          | `0.25`                       | `False`             |
+| Name                    | `obs_type=` | `frameskip=` | `repeat_action_probability=` | `full_action_space=` |
+|-------------------------|-------------|--------------|------------------------------|----------------------|
+| Adventure-v0            | `"rgb"`     | `(2, 5)`     | `0.25`                       | `False`              |
+| AdventureNoFrameskip-v0 | `"rgb"`     | `1`          | `0.25`                       | `False`              |
+| Adventure-v4            | `"rgb"`     | `(2, 5)`     | `0.00`                       | `False`              |
+| AdventureNoFrameskip-v4 | `"rgb"`     | `1`          | `0.00`                       | `False`              |
+| ALE/Adventure-v5        | `"rgb"`     | `4`          | `0.25`                       | `False`              |
 
-Importantly, `repeat_action_probability=0.25` can negatively impact the performance of agents so when comparing training graphs, be aware of the parameters used for fair comparisons.
+All of these environments truncate episodes after 108,000 frames. Older variants that selected the observation type
+through the environment ID (e.g., `Adventure-ram-v4`) or used a fixed `Deterministic` frame skip are no longer
+registered; pass `obs_type` and `frameskip` to `gymnasium.make` instead.
+
+Importantly, `repeat_action_probability=0.25` can negatively impact the performance of agents, so when comparing training graphs, check the parameters used to ensure a fair comparison.
 
 To create previously implemented environment use the following parameters, `gymnasium.make(env_id, obs_type=..., frameskip=..., repeat_action_probability=..., full_action_space=...)`.
 
@@ -271,7 +280,7 @@ To create previously implemented environment use the following parameters, `gymn
 ## Flavors
 
 Some games allow the user to set a difficulty level and a game mode. Different modes/difficulties may have different
-game dynamics and (if a reduced action space is used) different action spaces. We follow the convention of [[2]](#2) and
+game dynamics and (if a reduced action space is used) different action spaces. We follow the convention of [[2]](#ref-2) and
 refer to the combination of difficulty level and game mode as a flavor of a game. The following table shows
 the available modes and difficulty levels for different Atari games:
 
@@ -384,13 +393,13 @@ the available modes and difficulty levels for different Atari games:
 
 ## References
 
-(#1)=
+(ref-1)=
 <a id="1">[1]</a>
 MG Bellemare, Y Naddaf, J Veness, and M Bowling.
 "The arcade learning environment: An evaluation platform for general agents."
-Journal of Artificial Intelligence Research (2012).
+Journal of Artificial Intelligence Research (2013).
 
-(#2)=
+(ref-2)=
 <a id="2">[2]</a>
 Machado et al.
 "Revisiting the Arcade Learning Environment: Evaluation Protocols
@@ -398,7 +407,7 @@ and Open Problems for General Agents"
 Journal of Artificial Intelligence Research (2018)
 URL: https://jair.org/index.php/jair/article/view/11182
 
-(#3)=
+(ref-3)=
 <a id="3">[3]</a>
 Jesse Farebrother and Pablo Samuel Castro
 "CALE: Continuous Arcade Learning Environment"

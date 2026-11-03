@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import sys
 from functools import lru_cache
-from typing import Any, Literal
+from typing import Any, Literal, NotRequired, TypedDict
 
 import ale_py
 import gymnasium
@@ -12,11 +11,6 @@ import numpy as np
 from ale_py import roms
 from gymnasium import error, spaces, utils
 from gymnasium.utils import seeding
-
-if sys.version_info < (3, 11):
-    from typing_extensions import NotRequired, TypedDict
-else:
-    from typing import NotRequired, TypedDict
 
 
 class AtariEnvStepMetadata(TypedDict):
@@ -102,13 +96,13 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
             raise error.Error(
                 f"Invalid stochastic frameskip length of {len(frameskip)}, expected length 2."
             )
-        elif isinstance(frameskip, tuple) and frameskip[0] > frameskip[1]:
+        elif isinstance(frameskip, tuple) and frameskip[0] >= frameskip[1]:
             raise error.Error(
-                "Invalid stochastic frameskip, lower bound is greater than upper bound."
+                "Invalid stochastic frameskip, lower bound must be strictly less than upper bound."
             )
         elif isinstance(frameskip, tuple) and frameskip[0] <= 0:
             raise error.Error(
-                "Invalid stochastic frameskip lower bound is greater than upper bound."
+                "Invalid stochastic frameskip, lower bound must be positive."
             )
 
         if render_mode is not None and render_mode not in {"rgb_array", "human"}:
