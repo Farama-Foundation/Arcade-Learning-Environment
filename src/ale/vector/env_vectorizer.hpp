@@ -4,6 +4,7 @@
 #include <vector>
 #include <thread>
 #include <memory>
+#include <optional>
 #include <atomic>
 #include <mutex>
 #include <exception>
@@ -41,7 +42,8 @@ public:
         bool reward_clipping = true,
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
-        bool full_action_space = false
+        bool full_action_space = false,
+        std::optional<game_mode_t> mode = std::nullopt
     );
 
     ~EnvVectorizer();

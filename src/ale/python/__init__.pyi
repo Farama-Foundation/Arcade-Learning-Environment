@@ -200,6 +200,7 @@ class ALEVectorInterface:
         num_threads: int,
         thread_affinity_offset: int,
         autoreset_mode: str | gym.vector.AutoresetMode,
+        mode: int | None = None,
     ) -> None: ...
     def reset(
         self, reset_indices: np.ndarray, reset_seeds: np.ndarray

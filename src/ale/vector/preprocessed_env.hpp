@@ -2,6 +2,7 @@
 #define ALE_VECTOR_PREPROCESSED_ENV_HPP_
 
 #include <memory>
+#include <optional>
 #include <vector>
 #include <random>
 #include <algorithm>
@@ -54,7 +55,8 @@ public:
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
-        int seed = -1
+        int seed = -1,
+        std::optional<game_mode_t> mode = std::nullopt
     );
 
     /// Set seed for next reset
@@ -88,12 +90,14 @@ public:
     int channels_per_frame() const { return channels_per_frame_; }
 
 private:
+    void load_rom();
     void get_screen_grayscale(uint8_t* buffer) const;
     void get_screen_rgb(uint8_t* buffer) const;
     void process_screen();
 
     int env_id_;
     fs::path rom_path_;
+    std::optional<game_mode_t> mode_;
     std::unique_ptr<ALEInterface> ale_;
 
     ActionVect action_set_;
