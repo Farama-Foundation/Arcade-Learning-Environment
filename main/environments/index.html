@@ -322,8 +322,14 @@
 <li class="toctree-l2"><a class="reference internal" href="zaxxon/">Zaxxon</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../environment-sets/">Environment Sets</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Environment Sets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="complete_list/">Complete List - Atari</a></li>
+<li class="toctree-l2"><a class="reference internal" href="atari_57/">Atari 57</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gym/">Previously in OpenAI Gym</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../vector-environment/">ALE Vector Environment Guide</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../multi-agent-environments/">Multi-agent environments</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Multi-agent environments</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../multi-agent-environments/">Multi-agent environments</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Multi-agent environments</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../multi-agent-environments/basketball_pong/">Basketball Pong</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../multi-agent-environments/boxing/">Boxing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../multi-agent-environments/combat_plane/">Combat: Plane</a></li>
@@ -531,6 +537,16 @@
         See More Environments
     </button>
 </a>
+<section id="environment-sets">
+<h2>Environment sets<a class="headerlink" href="#environment-sets" title="Link to this heading">¶</a></h2>
+<p>Research papers rarely benchmark on all of the games the ALE supports, several well-known subsets are used instead.
+The pages below list the games belonging to each notable set:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="complete_list/"><span class="doc std std-doc">Complete list</span></a> — all 104 games supported by the ALE.</p></li>
+<li><p><a class="reference internal" href="atari_57/"><span class="doc std std-doc">Atari 57</span></a> — the 57 games used by DeepMind to benchmark agents, from DQN through Agent57.</p></li>
+<li><p><a class="reference internal" href="gym/"><span class="doc std std-doc">Previously in OpenAI Gym</span></a> — the 62 games that were registered in OpenAI Gym.</p></li>
+</ul>
+</section>
 <section id="action-space">
 <h2>Action Space<a class="headerlink" href="#action-space" title="Link to this heading">¶</a></h2>
 <p>Each environment will use a sub-set of the full action space listed below:</p>
@@ -1597,6 +1613,7 @@ URL: https://arxiv.org/abs/2410.23810</p>
             <div class="toc-tree">
               <ul>
 <li><a class="reference internal" href="#">Environments</a><ul>
+<li><a class="reference internal" href="#environment-sets">Environment sets</a></li>
 <li><a class="reference internal" href="#action-space">Action Space</a></li>
 <li><a class="reference internal" href="#continuous-action-space">Continuous action space</a></li>
 <li><a class="reference internal" href="#observation-space">Observation Space</a></li>
