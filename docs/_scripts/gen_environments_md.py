@@ -62,7 +62,7 @@ for rom_id in tqdm(ALL_ATARI_GAMES):
 
     if env_data["atariage_url"]:
         env_url = f"""
-For a more detailed documentation, see [the AtariAge page]({env_data['atariage_url']})
+For more detailed documentation, see [the AtariAge page]({env_data['atariage_url']})
 """
     else:
         env_url = ""
@@ -94,10 +94,10 @@ See the [general Atari page](https://ale.farama.org/environments/#games-that-req
         tablefmt="github",
     )
     if env.action_space.n == 18:
-        action_description = f"""{env_name} has the action space `{env.action_space}` with the table below listing the meaning of each action's meanings.
+        action_description = f"""{env_name} has the action space `{env.action_space}` with the table below listing the meaning of each action.
 As {env_name} uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`."""
     else:
-        action_description = f"""{env_name} has the action space of `{env.action_space}` with the table below listing the meaning of each action's meanings.
+        action_description = f"""{env_name} has the action space `{env.action_space}` with the table below listing the meaning of each action.
 To enable all 18 possible actions that can be performed on an Atari 2600, specify `full_action_space=True` during
 initialization or by passing `full_action_space=True` to `gymnasium.make`."""
 
@@ -179,7 +179,7 @@ For more {env_name} variants with different observation and action spaces, see t
 
 {action_table}
 
-See [environment specification](../env-spec) to see more information on the action meaning.
+See [environment specification](../env-spec) for more information on the action meanings.
 
 {start_condition}## Observations
 
@@ -187,7 +187,7 @@ Atari environments have three possible observation types:
 
 - `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
 - `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the `"rgb"` type
 
 See variants section for the type of observation used by each environment id by default.
 {reward_description}
@@ -198,7 +198,7 @@ the number of frame-skips and the repeat action probability.
 
 {env_variant_table}
 
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `{env_name}NoFrameskip-v4`.
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to use previously implemented environments, e.g., `{env_name}NoFrameskip-v4`.
 
 ## Difficulty and modes
 
@@ -213,8 +213,8 @@ along with the default values.
 A thorough discussion of the intricate differences between the versions and configurations can be found in the general article on Atari environments.
 
 * v5: Stickiness was added back and stochastic frame-skipping was removed. The environments are now in the "ALE" namespace.
-* v4: Stickiness of actions was removed
-* v0: Initial versions release
+* v4: Stickiness of actions was removed.
+* v0: Initial version release
 """
     with open(f"../environments/{rom_id}.md", "w") as file:
         file.write(TEMPLATE)

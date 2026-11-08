@@ -69,7 +69,7 @@ class ALEInterface {
   // this function must be used with care.
   const std::string& getStringInplace(const std::string& key) const;
 
-  // Set the value of a setting. loadRom() must be called before the
+  // Set the value of a setting. loadROM() must be called before the
   // setting will take effect.
   void setString(const std::string& key, const std::string& value);
   void setInt(const std::string& key, const int value);
@@ -111,8 +111,8 @@ class ALEInterface {
   // game mode changes only take effect when the environment is reset.
   game_mode_t getMode() const { return environment->getMode(); }
 
-  //Returns the vector of difficulties available for the current game.
-  //This should be called only after the rom is loaded. Notice
+  // Returns the vector of difficulties available for the current game.
+  // This should be called only after the rom is loaded. Notice
   // that there are 2 levers, the right and left switches. They
   // are not tied to any specific player. In Venture, for example,
   // we have the following interpretation for the difficulties:
@@ -125,7 +125,7 @@ class ALEInterface {
   DifficultyVect getAvailableDifficulties() const;
 
   // Sets the difficulty of the game.
-  // The difficulty must be an available mode (otherwise it throws an exception).
+  // The difficulty must be an available difficulty (otherwise it throws an exception).
   // This should be called only after the rom is loaded.
   void setDifficulty(difficulty_t m);
 
@@ -152,13 +152,12 @@ class ALEInterface {
   // Returns the current game screen
   const ALEScreen& getScreen() const;
 
-  //This method should receive an empty vector to fill it with
-  //the grayscale colours
+  // This method should receive an empty vector to fill it with
+  // the grayscale colours
   void getScreenGrayscale(std::vector<unsigned char>& grayscale_output_buffer) const;
 
-  //This method should receive a vector to fill it with
-  //the RGB colours. The first positions contain the red colours,
-  //followed by the green colours and then the blue colours
+  // This method should receive a vector to fill it with
+  // the RGB colours, interleaved per pixel: [R, G, B, R, G, B, ...]
   void getScreenRGB(std::vector<unsigned char>& output_rgb_buffer) const;
 
   // Returns the current audio data
@@ -171,8 +170,8 @@ class ALEInterface {
   // for example if you were trying to learn a causal model of RAM locations.
   void setRAM(size_t memory_index, byte_t value);
 
-  // This makes a copy of the environment state. By defualt this copy does *not* include pseudorandomness
-  // making it suitable for planning purposes. If `include_prng` is set to true, then the
+  // This makes a copy of the environment state. By default this copy does *not* include pseudorandomness
+  // making it suitable for planning purposes. If `include_rng` is set to true, then the
   // pseudorandom number generator is also serialized.
   ALEState cloneState(bool include_rng = false);
 
@@ -187,7 +186,7 @@ class ALEInterface {
   ALEState cloneSystemState();
 
   // Reverse operation of cloneSystemState.
-  // This is maintained for backwards compatability and is equivalent to calling restoreState(state).
+  // This is maintained for backwards compatibility and is equivalent to calling restoreState(state).
   void restoreSystemState(const ALEState& state);
 
   // Save the current screen as a png file

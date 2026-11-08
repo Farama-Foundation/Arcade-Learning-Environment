@@ -23,11 +23,11 @@ For more Venture variants with different observation and action spaces, see the 
 
 Your goal is to capture the treasure in every chamber of the dungeon while eliminating the monsters.
 
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=576)
+For more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=576)
 
 ## Actions
 
-Venture has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
+Venture has the action space `Discrete(18)` with the table below listing the meaning of each action.
 As Venture uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
 |   Index | Action        |
@@ -51,7 +51,7 @@ As Venture uses the full set of actions then specifying `full_action_space=True`
 |      16 | DOWNRIGHTFIRE |
 |      17 | DOWNLEFTFIRE  |
 
-See [environment specification](../env-spec) to see more information on the action meaning.
+See [environment specification](../env-spec) for more information on the action meanings.
 
 ## Observations
 
@@ -59,7 +59,7 @@ Atari environments have three possible observation types:
 
 - `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
 - `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the `"rgb"` type
 
 See variants section for the type of observation used by each environment id by default.
 
@@ -76,7 +76,7 @@ the number of frame-skips and the repeat action probability.
 | VentureNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
 | ALE/Venture-v5        | `rgb`       | `4`          | `0.25`                       |
 
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `VentureNoFrameskip-v4`.
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to use previously implemented environments, e.g., `VentureNoFrameskip-v4`.
 
 ## Difficulty and modes
 
@@ -93,5 +93,5 @@ along with the default values.
 A thorough discussion of the intricate differences between the versions and configurations can be found in the general article on Atari environments.
 
 * v5: Stickiness was added back and stochastic frame-skipping was removed. The environments are now in the "ALE" namespace.
-* v4: Stickiness of actions was removed
-* v0: Initial versions release
+* v4: Stickiness of actions was removed.
+* v0: Initial version release

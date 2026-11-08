@@ -4,11 +4,11 @@ ALE offers screen display and audio capabilities via the Simple DirectMedia Laye
 
 ## Gymnasium API
 
-[Gymnasium](https://github.com/farama-Foundation/gymnasium) provides two methods for visualizing an environment, human rendering and video recording.
+[Gymnasium](https://github.com/Farama-Foundation/Gymnasium) provides two methods for visualizing an environment: human rendering and video recording.
 
 ### Human visualization
 
-Through specifying the environment `render_mode="human"` then ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after it has been used such that the rendering information is correctly shut down.
+By specifying `render_mode="human"`, the ALE will automatically create a window running at 60 frames per second showing the environment behaviour. It is highly recommended to close the environment after use so that the rendering window is correctly shut down.
 
 ```python
 import gymnasium
@@ -31,9 +31,9 @@ env.close()
 
 ### Recording videos
 
-Specifying the `render_mode="rgb_array"` will return the rgb array from `env.render()`, this can be combined with the `gymnasium.wrappers.RecordVideo` where the environment renders are stored and saved as mp4 videos for episodes.
+Specifying `render_mode="rgb_array"` will return an RGB array from `env.render()`. This can be combined with `gymnasium.wrappers.RecordVideo`, which stores the environment renders and saves them as MP4 videos.
 
-The example below will record episodes on every other episode (`num % 2 == 0`) using the `episode_trigger` and save the folders in `saved-video-folder` with filename starting `video-` followed by the video number.
+The example below records every other episode (`num % 2 == 0`) using the `episode_trigger` and saves the videos in `saved-video-folder` with filenames starting with `video-` followed by the episode number.
 
 ```python
 import gymnasium
@@ -63,7 +63,7 @@ env.close()
 
 ## Python Interface
 
-ALE now provides support for recording frames; if sound is enabled, it is also possible to record audio output. An example Python program is provided which will record both visual and audio output for a single episode of play.
+The ALE supports recording frames and, if sound is enabled, audio output. The example program below records both visual and audio output for a single episode of play.
 
 ```python
 import os
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     rom_file = sys.argv[1]
     record_dir = sys.argv[2]
-    main(rom_file, "videos/")
+    main(rom_file, record_dir)
 ```
 
 Once frames and/or sound have been recorded, they may be joined into a video using an external program like [ffmpeg](https://www.ffmpeg.org). For example, you can run:
@@ -116,8 +116,8 @@ Once frames and/or sound have been recorded, they may be joined into a video usi
 # -c:v video_codec
 
 ffmpeg -r 60 \
-       -i record/%06d.png \
-       -i record/sound.wav \
+       -i record_dir/%06d.png \
+       -i record_dir/sound.wav \
        -f mov \
        -c:a mp3 \
        -c:v libx264 \

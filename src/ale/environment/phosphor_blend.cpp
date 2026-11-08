@@ -16,6 +16,8 @@
 
 #include "ale/environment/phosphor_blend.hpp"
 
+#include <cassert>
+
 #include "ale/emucore/Console.hxx"
 
 namespace ale {
@@ -25,10 +27,17 @@ PhosphorBlend::PhosphorBlend(OSystem* osystem) : m_osystem(osystem) {
   // Taken from default Stella settings
   m_phosphor_blend_ratio = 77;
 
-  makeAveragePalette();
+  // The tables are only read for colour averaging, which is off by default, so
+  // skip building them otherwise.
+  if (m_osystem->settings().getBool("color_averaging")) {
+    m_rgb_ntsc = std::make_unique<uint8_t[][64][64]>(64);
+    m_avg_palette = std::make_unique<uint32_t[][256]>(256);
+    makeAveragePalette();
+  }
 }
 
 void PhosphorBlend::process(ALEScreen& screen) {
+  assert(m_avg_palette && "process() called with colour averaging off");
   Console& console = m_osystem->console();
 
   // Fetch current and previous frame buffers from the emulator
