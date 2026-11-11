@@ -122,3 +122,17 @@ def test_reseeding_clears_the_pool():
 def test_negative_pool_size_is_rejected():
     with pytest.raises(Error, match="reset_pool_size"):
         AtariVectorEnv("breakout", num_envs=1, reset_pool_size=-1)
+
+
+@pytest.mark.parametrize("game", ["breakout", "pong"])
+def test_restored_resets_match_emulated_resets_with_sticky_actions(game):
+    """A restored reset forgets the previous episode's action, as an emulated one does.
+
+    With sticky actions, the action applied before a reset is repeated into the
+    next episode unless the reset clears it. ``reset_game()`` clears it; restoring
+    a snapshot has to as well, or pooled episodes drift from emulated ones.
+    """
+    kwargs = DETERMINISTIC | dict(repeat_action_probability=0.25)
+    pooled, _ = rollout(game, POOL_SIZE + 24, **kwargs)
+    emulated, _ = rollout(game, POOL_SIZE + 24, reset_pool_size=0, **kwargs)
+    assert pooled == emulated

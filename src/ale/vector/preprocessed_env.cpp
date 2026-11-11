@@ -153,6 +153,10 @@ void PreprocessedEnv::reset_console() {
         const ResetSnapshotPool::Entry& entry = reset_pool_.sample(pool_rng_);
         const long frame_number_before = ale_->getFrameNumber();
         ale_->restoreState(entry.state);
+        // The action applied before the reset is not part of the snapshot.
+        // reset_game() clears it; without the same here, sticky actions would
+        // repeat the previous episode's last action into this one.
+        ale_->environment->clearPreviousActions();
         // Count the frames the real reset_game() would have, on top of undoing
         // the rewind to the snapshot's frame number.
         snapshot_frame_offset_ +=

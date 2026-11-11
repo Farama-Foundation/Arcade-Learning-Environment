@@ -72,6 +72,14 @@ class StellaEnvironment {
   /** This functions emulates a push on the reset button of the console */
   void softReset();
 
+  /** Forgets the previously applied actions, as a reset does. Sticky actions repeat
+   *  the previous action, which is not part of an ALEState, so a caller that uses
+   *  restoreState() to start a new episode must call this as well. */
+  void clearPreviousActions() {
+    m_player_a_action = PLAYER_A_NOOP;
+    m_player_b_action = PLAYER_B_NOOP;
+  }
+
   /** Keep pressing the console select button for a given amount of time*/
   void pressSelect(size_t num_steps = 1);
 
