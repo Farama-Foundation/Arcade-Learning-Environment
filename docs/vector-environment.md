@@ -21,11 +21,14 @@ gym_envs = gym.vector.SyncVectorEnv(
 ale_envs = gym.make_vec(
   env_id,
   num_envs,
+  noop_max=30,
   use_fire_reset=False,
   reward_clipping=False,
   repeat_action_probability=0.0,
 )
 ```
+
+`gym.make_vec("ALE/<Game>-v5", ...)` follows the v5 specification: sticky actions (`repeat_action_probability=0.25`) and no no-op starts (`noop_max=0`), as recommended by [Machado et al. (2018)](https://arxiv.org/abs/1709.06009). Constructing `AtariVectorEnv` directly keeps the defaults listed below (`noop_max=30`, `repeat_action_probability=0.0`).
 
 ## Key Features
 

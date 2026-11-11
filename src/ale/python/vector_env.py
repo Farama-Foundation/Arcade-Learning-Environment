@@ -461,3 +461,16 @@ class AtariVectorEnv(VectorEnv):
         # Get the vectorizer handle and make sure it's properly formatted
         ale_handle = jnp.frombuffer(self.ale.handle(), dtype=np.uint8)
         return ale_handle, xla_reset, xla_step
+
+
+def make_v5_vector_env(num_envs: int, **kwargs: Any) -> AtariVectorEnv:
+    """Vector entry point for the ``ALE/*-v5`` environments.
+
+    v5 follows Machado et al. (2018), "Revisiting the Arcade Learning Environment",
+    which injects stochasticity with sticky actions (``repeat_action_probability=0.25``,
+    set in the v5 registration) in place of random no-op starts. ``noop_max`` therefore
+    defaults to 0 here, not to ``AtariVectorEnv``'s 30; pass ``noop_max`` to
+    ``gymnasium.make_vec`` to override it.
+    """
+    kwargs.setdefault("noop_max", 0)
+    return AtariVectorEnv(num_envs=num_envs, **kwargs)

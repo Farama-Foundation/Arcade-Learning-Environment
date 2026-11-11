@@ -113,7 +113,7 @@ def register_v5_envs():
         gymnasium.register(
             id=f"ALE/{name}-v5",
             entry_point="ale_py.env:AtariEnv",
-            vector_entry_point="ale_py.vector_env:AtariVectorEnv",
+            vector_entry_point="ale_py.vector_env:make_v5_vector_env",
             kwargs=dict(
                 game=rom,
                 repeat_action_probability=0.25,

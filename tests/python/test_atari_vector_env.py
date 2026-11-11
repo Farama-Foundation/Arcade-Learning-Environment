@@ -759,3 +759,23 @@ class TestVectorEnv:
 
         gym_envs.close()
         ale_envs.close()
+
+
+def test_v5_make_vec_uses_sticky_actions_not_noop_starts():
+    """``ALE/*-v5`` vector envs follow Machado et al. (2018): sticky actions, no no-op starts."""
+    num_envs = 16
+    seeds = np.arange(num_envs)
+
+    # Without the FIRE on reset, the only frames a reset can emulate after the
+    # console reset are the no-op starts, which `episode_frame_number` counts.
+    envs = gym.make_vec("ALE/Pong-v5", num_envs, use_fire_reset=False)
+    assert envs.spec.kwargs["repeat_action_probability"] == 0.25
+    _, info = envs.reset(seed=seeds)
+    envs.close()
+    assert np.all(info["episode_frame_number"] == 0)
+
+    # The no-op starts are still available on request.
+    envs = gym.make_vec("ALE/Pong-v5", num_envs, noop_max=30, use_fire_reset=False)
+    _, info = envs.reset(seed=seeds)
+    envs.close()
+    assert np.any(info["episode_frame_number"] > 0)
