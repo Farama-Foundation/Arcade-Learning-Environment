@@ -53,15 +53,20 @@ ALEState::ALEState(const ALEState& rhs, const std::string& serialized)
 
 ALEState::ALEState(const std::string& serialized) {
   Deserializer des(serialized);
-  this->m_left_paddle = des.getInt();
-  this->m_right_paddle = des.getInt();
-  this->m_frame_number = des.getInt();
-  this->m_episode_frame_number = des.getInt();
-  this->m_mode = des.getInt();
-  this->m_difficulty = des.getInt();
-  this->m_serialized_state = des.getString();
-  this->m_paddle_min = des.getInt();
-  this->m_paddle_max = des.getInt();
+  try {
+    this->m_left_paddle = des.getInt();
+    this->m_right_paddle = des.getInt();
+    this->m_frame_number = des.getInt();
+    this->m_episode_frame_number = des.getInt();
+    this->m_mode = des.getInt();
+    this->m_difficulty = des.getInt();
+    this->m_serialized_state = des.getString();
+    this->m_paddle_min = des.getInt();
+    this->m_paddle_max = des.getInt();
+  } catch (const char*) {
+    // The Deserializer reports truncated or corrupt data by throwing a C string.
+    throw std::runtime_error("Failed to deserialize ALEState; the data is truncated or corrupt");
+  }
 }
 
 /** Restores ALE to the given previously saved state. */
@@ -72,11 +77,22 @@ void ALEState::load(OSystem* osystem, RomSettings* settings, Random* rng, std::s
   // Deserialize the stored string into the emulator state
   Deserializer deser(rhs.m_serialized_state);
 
-  osystem->console().system().loadState(md5, deser);
-  settings->loadState(deser);
-  bool rng_included = deser.getBool();
-  if (rng_included) {
-    rng->loadState(deser);
+  // A failed load leaves the emulator partially restored, so it must not pass silently.
+  const char* incompatible =
+      "Failed to restore emulator state; it may be corrupted, or have been saved by an "
+      "incompatible ALE version or for a different ROM";
+  if (!osystem->console().system().loadState(md5, deser)) {
+    throw std::runtime_error(incompatible);
+  }
+  try {
+    settings->loadState(deser);
+    bool rng_included = deser.getBool();
+    if (rng_included) {
+      rng->loadState(deser);
+    }
+  } catch (const char*) {
+    // The Deserializer reports truncated or corrupt data by throwing a C string.
+    throw std::runtime_error(incompatible);
   }
 
   // Copy over other member variables

@@ -17,6 +17,8 @@
 #ifndef __PHOSPHOR_BLEND_HPP__
 #define __PHOSPHOR_BLEND_HPP__
 
+#include <memory>
+
 #include "ale/emucore/OSystem.hxx"
 #include "ale/environment/ale_screen.hpp"
 
@@ -38,9 +40,11 @@ class PhosphorBlend {
  private:
   stella::OSystem* m_osystem;
 
-  uint8_t m_rgb_ntsc[64][64][64];
+  // 512 KiB together, so only allocated when the `color_averaging` setting is
+  // on (it is off by default); null otherwise.
+  std::unique_ptr<uint8_t[][64][64]> m_rgb_ntsc;
 
-  uint32_t m_avg_palette[256][256];
+  std::unique_ptr<uint32_t[][256]> m_avg_palette;
   uint8_t m_phosphor_blend_ratio;
 };
 
