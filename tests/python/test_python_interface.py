@@ -1,11 +1,13 @@
 import os
 import pickle
+import random
 import struct
 import tempfile
 
 import ale_py
 import numpy as np
 import pytest
+from ale_py import roms
 from utils import ale, random_rom_path, tetris, tetris_rom_path  # noqa: F401
 
 
@@ -530,6 +532,173 @@ def test_state_pickle(tetris):
     tetris.restoreState(pickeled)
     assert tetris.cloneState() == state
     os.remove(file)
+
+
+RESOURCES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "resources")
+
+
+def _to_libstdcxx_rng_text(serialized):
+    """Rewrites the RNG states in a libc++-written legacy state as libstdc++ writes them.
+
+    libc++ writes std::mt19937 as 624 numbers; libstdc++ writes its 624-word block followed
+    by its index. A libc++ text is the block a libstdc++ engine holds at index 624.
+    """
+
+    def get_int(buf, pos):
+        return int.from_bytes(buf[pos : pos + 4], "little"), pos + 4
+
+    def get_string(buf, pos):
+        length, pos = get_int(buf, pos)
+        return buf[pos : pos + length], pos + length
+
+    def put_string(value):
+        return len(value).to_bytes(4, "little") + value
+
+    # ALEState::serialize: six ints, the emulator state string, two ints.
+    inner, inner_end = get_string(serialized, 24)
+    # Emulator state: md5 string, "System" string, cycles int, System RNG string, ...
+    _, pos = get_string(inner, 0)
+    _, pos = get_string(inner, pos)
+    system_start = pos + 4
+    system_rng, system_end = get_string(inner, system_start)
+    # ..., putBool(true), environment RNG string.
+    env_start = inner.rindex((0xFAB1FAB2).to_bytes(4, "little")) + 4
+    env_rng, env_end = get_string(inner, env_start)
+    assert env_end == len(inner)
+    assert len(system_rng.split()) == len(env_rng.split()) == 624
+
+    inner = (
+        inner[:system_start]
+        + put_string(system_rng + b" 624")
+        + inner[system_end:env_start]
+        + put_string(env_rng + b" 624")
+    )
+    return serialized[:24] + put_string(inner) + serialized[inner_end:]
+
+
+@pytest.mark.parametrize("stdlib", ["libc++", "libstdc++"])
+def test_restore_legacy_text_rng_state(ale, tetris_rom_path, stdlib):
+    """States saved before the binary RNG format restore with the same RNG streams.
+
+    The fixtures were written on macOS (libc++) by commit 291a5c2e, the last build to save
+    std::mt19937's text: a tetris state cloned with include_rng=True, and the RAM after each
+    of the following steps. As the RAM depends on every sticky-action draw, this also checks
+    that our engine's output matches std::mt19937's.
+    """
+    with open(os.path.join(RESOURCES, "tetris-legacy-rng-state.bin"), "rb") as fp:
+        serialized = fp.read()
+    if stdlib == "libstdc++":
+        serialized = _to_libstdcxx_rng_text(serialized)
+    expected_ram = np.fromfile(
+        os.path.join(RESOURCES, "tetris-legacy-rng-ram.bin"), dtype=np.uint8
+    ).reshape(60, 128)
+
+    ale.setInt("random_seed", 1)
+    ale.setFloat("repeat_action_probability", 0.25)
+    ale.loadROM(tetris_rom_path)
+    ale.restoreState(ale_py.ALEState(serialized))
+
+    # Sticky actions draw from the environment RNG; reset_game draws from the System RNG.
+    action_set = ale.getLegalActionSet()
+    for i in range(60):
+        if i == 30:
+            ale.reset_game()
+        ale.act(action_set[i % len(action_set)])
+        np.testing.assert_array_equal(
+            ale.getRAM(), expected_ram[i], err_msg=f"step {i}"
+        )
+
+    # Re-cloning writes the binary format, which restores to the same state.
+    state = ale.cloneState(include_rng=True)
+    ale.reset_game()
+    ale.restoreState(ale_py.ALEState(state.serialize()))
+    assert ale.cloneState(include_rng=True) == state
+
+
+def _binary_rng_states(serialized):
+    """Returns the (624 words, index) of each binary "MTb1" RNG state in a serialized state."""
+    states, pos = [], 0
+    while (pos := serialized.find(b"MTb1", pos)) != -1:
+        values = struct.unpack_from("<625I", serialized, pos + 4)
+        states.append((values[:624], values[624]))
+        pos += 4
+    return states
+
+
+def test_rng_is_mt19937(ale, tetris_rom_path):
+    """The System and environment RNGs step exactly as MT19937 does.
+
+    CPython's random module is MT19937 with the same state layout (624 words and an index),
+    so each saved RNG state must be reachable from the previous one by drawing from it.
+    """
+    ale.setInt("random_seed", 123)
+    ale.setFloat("repeat_action_probability", 0.25)
+    ale.loadROM(tetris_rom_path)
+
+    # Seeding matches MT19937's init_genrand, which numpy's legacy RandomState uses.
+    _, words, index, *_ = np.random.RandomState(123).get_state()
+    serialized = ale.cloneState(include_rng=True).serialize()
+    prev = _binary_rng_states(serialized)
+    assert len(prev) == 2  # The System RNG, then the environment RNG.
+    env_words, env_index = prev[1]
+    assert env_words == tuple(int(w) for w in words)
+    assert env_index == index
+
+    action_set = ale.getLegalActionSet()
+    transitions = twists = 0
+    for step in range(800):
+        if step % 200 == 199:
+            ale.reset_game()
+        ale.act(action_set[step % len(action_set)])
+        cur = _binary_rng_states(ale.cloneState(include_rng=True).serialize())
+        for (words0, index0), (words1, index1) in zip(prev, cur):
+            if (words0, index0) == (words1, index1):
+                continue
+            rng = random.Random()
+            rng.setstate((3, words0 + (index0,), None))
+            for _ in range(1000):
+                rng.getrandbits(32)
+                if rng.getstate()[1] == words1 + (index1,):
+                    break
+            else:
+                pytest.fail(f"step {step}: RNG state is not reachable by MT19937")
+            transitions += 1
+            twists += index1 < index0
+        prev = cur
+
+    assert transitions > 0
+    assert twists > 0
+
+
+@pytest.mark.parametrize("seed, system_seed", [(0, 4753849), (7, 1), (123, 98765)])
+@pytest.mark.parametrize(
+    "game", ["adventure", "berzerk", "freeway", "seaquest", "tennis"]
+)
+def test_rng_output_matches_std_mt19937(game, seed, system_seed):
+    """The RNGs' outputs match std::mt19937's, not just their states.
+
+    test_rng_is_mt19937 cannot see the output tempering, and sticky actions only compare an
+    output's top bits against the repeat probability. These games expose whole outputs: the
+    System RNG fills the RIOT RAM and timer, which shows in the RAM after loading, and
+    Adventure's setMode presses select for an environment-RNG-chosen number of frames.
+    The fixture was written on macOS by commit 291a5c2e, which used std::mt19937.
+    """
+    expected = np.load(os.path.join(RESOURCES, "mt19937-reference-ram.npz"))
+    ale = ale_py.ALEInterface()
+    ale.setInt("random_seed", seed)
+    ale.setInt("system_random_seed", system_seed)
+    ale.setFloat("repeat_action_probability", 0.0)
+    ale.loadROM(roms.get_rom_path(game))
+    rams = [ale.getRAM().copy()]
+    if game == "adventure":
+        for mode in (1, 2):
+            ale.setMode(mode)
+            ale.reset_game()
+            rams.append(ale.getRAM().copy())
+
+    np.testing.assert_array_equal(
+        np.stack(rams), expected[f"{game}-{seed}-{system_seed}"]
+    )
 
 
 @pytest.mark.skipif(ale_py.SDL_SUPPORT is False, reason="SDL is disabled")
