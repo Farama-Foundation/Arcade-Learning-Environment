@@ -100,6 +100,7 @@ envs = AtariVectorEnv(
     reward_clipping: bool = True,   # Whether to clip environment step rewards between -1 and 1
 
     # Environment behavior
+    mode: int | None = None,       # Atari game mode for all sub-environments
     noop_max: int = 30,             # Maximum number of no-ops at reset
     use_fire_reset: bool = True,    # Press FIRE on reset for games that require it
     episodic_life: bool = False,    # End episodes on life loss
@@ -134,6 +135,10 @@ Where:
 With `grayscale=False`, the shape is `(num_envs, stack_size, height, width, 3)` for RGB frames.
 
 ## Seeding and Partial Resets
+
+Pass `mode` at construction to select the same Atari game mode for every
+sub-environment. The available values depend on the ROM; `None` keeps its
+default mode. The selected mode is preserved when a seeded reset reloads the ROM.
 
 `reset` accepts either an integer seed, which seeds the sub-environments with consecutive values starting at `seed`, or a NumPy array with one seed per sub-environment being reset.
 

@@ -59,9 +59,11 @@ PreprocessedEnv::PreprocessedEnv(
     int max_episode_steps,
     float repeat_action_probability,
     bool full_action_space,
-    int seed
+    int seed,
+    std::optional<game_mode_t> mode
 ) : env_id_(env_id),
     rom_path_(rom_path),
+    mode_(mode),
     obs_format_(grayscale ? ObsFormat::Grayscale : ObsFormat::RGB),
     channels_per_frame_(grayscale ? 1 : 3),
     obs_frame_height_(img_height),
@@ -95,7 +97,7 @@ PreprocessedEnv::PreprocessedEnv(
     ale_ = std::make_unique<ALEInterface>();
     ale_->setFloat("repeat_action_probability", repeat_action_probability);
     ale_->setInt("random_seed", seed);
-    ale_->loadROM(rom_path_);
+    load_rom();
 
     // Get action set
     if (full_action_space) {
@@ -130,6 +132,13 @@ PreprocessedEnv::PreprocessedEnv(
     frame_stack_idx_ = 0;
 }
 
+void PreprocessedEnv::load_rom() {
+    ale_->loadROM(rom_path_);
+    if (mode_.has_value()) {
+        ale_->setMode(*mode_);
+    }
+}
+
 void PreprocessedEnv::set_seed(int seed) {
     pending_seed_ = seed;
 }
@@ -143,7 +152,7 @@ void PreprocessedEnv::reset() {
     if (pending_seed_ >= 0) {
         ale_->setInt("random_seed", pending_seed_);
         rng_.seed(pending_seed_);
-        ale_->loadROM(rom_path_);
+        load_rom();
         pending_seed_ = -1;
     }
     ale_->reset_game();

@@ -4,6 +4,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/vector.h>
 #include <nanobind/stl/filesystem.h>
+#include <nanobind/stl/optional.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/tuple.h>
 #include <nanobind/ndarray.h>
@@ -145,7 +146,8 @@ void init_vector_module(nb::module_& m) {
                 int batch_size,
                 int num_threads,
                 int thread_affinity_offset,
-                const std::string& autoreset_mode_str
+                const std::string& autoreset_mode_str,
+                std::optional<ale::game_mode_t> mode
             ) {
                 AutoresetMode autoreset_mode;
                 if (autoreset_mode_str == "NextStep") {
@@ -161,7 +163,7 @@ void init_vector_module(nb::module_& m) {
                     autoreset_mode, img_height, img_width, stack_num, grayscale,
                     frame_skip, maxpool, noop_max, use_fire_reset, episodic_life,
                     life_loss_info, reward_clipping, max_episode_steps,
-                    repeat_action_probability, full_action_space
+                    repeat_action_probability, full_action_space, mode
                 );
             },
             nb::arg("rom_path"),
@@ -183,7 +185,8 @@ void init_vector_module(nb::module_& m) {
             nb::arg("batch_size") = 0,
             nb::arg("num_threads") = 0,
             nb::arg("thread_affinity_offset") = -1,
-            nb::arg("autoreset_mode") = "NextStep")
+            nb::arg("autoreset_mode") = "NextStep",
+            nb::arg("mode") = nb::none())
 
         .def("reset", [](EnvVectorizer& self,
                          const std::vector<int>& reset_indices,

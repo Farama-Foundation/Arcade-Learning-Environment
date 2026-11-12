@@ -23,6 +23,7 @@ class AtariVectorEnv(VectorEnv):
         game: str,
         num_envs: int,
         *,
+        mode: int | None = None,
         batch_size: int = 0,
         num_threads: int = 0,
         thread_affinity_offset: int = -1,
@@ -50,6 +51,7 @@ class AtariVectorEnv(VectorEnv):
         Args:
             game: ROM name
             num_envs: Number of environments
+            mode: Atari game mode for all sub-environments, or None for the ROM default
             batch_size: If to provide a batch of environments (in async mode)
             num_threads: The number of threads to use for parallel environments
             thread_affinity_offset: The CPU core offset for thread affinity (-1 means no affinity, default: -1)
@@ -103,6 +105,7 @@ class AtariVectorEnv(VectorEnv):
             batch_size=batch_size,
             num_threads=num_threads,
             thread_affinity_offset=thread_affinity_offset,
+            mode=mode,
             autoreset_mode=(
                 autoreset_mode.value
                 if isinstance(autoreset_mode, AutoresetMode)

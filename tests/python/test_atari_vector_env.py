@@ -93,6 +93,45 @@ def assert_gym_ale_rollout_equivalence(
     ale_envs.close()
 
 
+def test_game_mode_preserved_on_seeded_reset():
+    """Match the chosen single-env mode before and after reseeding."""
+    # Mode 12 changes the initial Breakout screen, so compare against both
+    # the same mode on the single-env path and the default as a control.
+    single = ale_py.AtariEnv("breakout", mode=12)
+    default = ale_py.AtariEnv("breakout")
+    vector = ale_py.AtariVectorEnv(
+        "breakout",
+        num_envs=2,
+        mode=12,
+        grayscale=False,
+        stack_num=1,
+        img_height=210,
+        img_width=160,
+        noop_max=0,
+        use_fire_reset=False,
+    )
+    try:
+        expected, _ = single.reset(seed=123)
+        default_obs, _ = default.reset(seed=123)
+        assert not np.array_equal(expected, default_obs)
+
+        expected_batch = np.repeat(expected[None, None, ...], 2, axis=0)
+        initial, _ = vector.reset()
+        np.testing.assert_array_equal(initial, expected_batch)
+        reseeded, _ = vector.reset(seed=123)
+        np.testing.assert_array_equal(reseeded, expected_batch)
+    finally:
+        vector.close()
+        single.close()
+        default.close()
+
+
+def test_invalid_game_mode():
+    """Reject a mode unsupported by the ROM during construction."""
+    with pytest.raises(RuntimeError, match="Invalid game mode requested"):
+        ale_py.AtariVectorEnv("breakout", num_envs=2, mode=999)
+
+
 @pytest.mark.parametrize("env_id", ["ALE/Breakout-v5"])
 # @pytest.mark.parametrize(
 #     "env_id", [env_id for env_id in gym.registry if "ALE/" in env_id]

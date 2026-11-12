@@ -35,7 +35,8 @@ EnvVectorizer::EnvVectorizer(
     bool reward_clipping,
     int max_episode_steps,
     float repeat_action_probability,
-    bool full_action_space
+    bool full_action_space,
+    std::optional<game_mode_t> mode
 ) : num_envs_(num_envs),
     batch_size_(batch_size > 0 ? batch_size : num_envs),
     img_height_(img_height),
@@ -52,7 +53,7 @@ EnvVectorizer::EnvVectorizer(
             i, rom_path, img_height, img_width, frame_skip, maxpool,
             grayscale, stack_num, noop_max, use_fire_reset, episodic_life,
             life_loss_info, reward_clipping, max_episode_steps,
-            repeat_action_probability, full_action_space, -1
+            repeat_action_probability, full_action_space, -1, mode
         ));
     }
 
