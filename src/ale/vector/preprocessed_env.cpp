@@ -95,8 +95,9 @@ PreprocessedEnv::PreprocessedEnv(
     snapshot_frame_offset_(0),
     frame_stack_idx_(0)
 {
-    // Turn off verbosity
-    Logger::setMode(Logger::Error);
+    // NOTE: logger verbosity is set once by EnvVectorizer before it constructs
+    // the envs. Setting it here would be a write to a shared static from every
+    // env, which races once construction is parallelised.
 
     // Initialize ALE
     ale_ = std::make_unique<ALEInterface>();
