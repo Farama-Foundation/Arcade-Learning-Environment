@@ -23,11 +23,11 @@ For more IceHockey variants with different observation and action spaces, see th
 
 Your goal is to score as many points as possible in a standard game of Ice Hockey over a 3-minute time period. The ball is usually called "the puck". There are 32 shot angles ranging from the extreme left to the extreme right. The angles can only aim towards the opponent's goal.Just as in real hockey, you can pass the puck by shooting it off the sides of the rink. This can be really key when you're in position to score a goal.
 
-For a more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=241)
+For more detailed documentation, see [the AtariAge page](https://atariage.com/manual_html_page.php?SoftwareLabelID=241)
 
 ## Actions
 
-IceHockey has the action space `Discrete(18)` with the table below listing the meaning of each action's meanings.
+IceHockey has the action space `Discrete(18)` with the table below listing the meaning of each action.
 As IceHockey uses the full set of actions then specifying `full_action_space=True` will not modify the action space of the environment if passed to `gymnasium.make`.
 
 |   Index | Action        |
@@ -51,7 +51,7 @@ As IceHockey uses the full set of actions then specifying `full_action_space=Tru
 |      16 | DOWNRIGHTFIRE |
 |      17 | DOWNLEFTFIRE  |
 
-See [environment specification](../env-spec) to see more information on the action meaning.
+See [environment specification](../env-spec) for more information on the action meanings.
 
 ## Observations
 
@@ -59,7 +59,7 @@ Atari environments have three possible observation types:
 
 - `obs_type="rgb"` -> `observation_space=Box(0, 255, (210, 160, 3), np.uint8)`
 - `obs_type="ram"` -> `observation_space=Box(0, 255, (128,), np.uint8)`
-- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the q"rgb" type
+- `obs_type="grayscale"` -> `Box(0, 255, (210, 160), np.uint8)`, a grayscale version of the `"rgb"` type
 
 See variants section for the type of observation used by each environment id by default.
 
@@ -80,7 +80,7 @@ the number of frame-skips and the repeat action probability.
 | IceHockeyNoFrameskip-v4 | `rgb`       | `1`          | `0.00`                       |
 | ALE/IceHockey-v5        | `rgb`       | `4`          | `0.25`                       |
 
-See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to implement previously implemented environments, e.g., `IceHockeyNoFrameskip-v4`.
+See the [version history page](https://ale.farama.org/environments/#version-history-and-naming-schemes) to use previously implemented environments, e.g., `IceHockeyNoFrameskip-v4`.
 
 ## Difficulty and modes
 
@@ -97,5 +97,5 @@ along with the default values.
 A thorough discussion of the intricate differences between the versions and configurations can be found in the general article on Atari environments.
 
 * v5: Stickiness was added back and stochastic frame-skipping was removed. The environments are now in the "ALE" namespace.
-* v4: Stickiness of actions was removed
-* v0: Initial versions release
+* v4: Stickiness of actions was removed.
+* v0: Initial version release

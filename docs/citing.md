@@ -17,8 +17,8 @@ If you use the ALE in your research, we ask that you please cite the following.
 ```
 
 If you use the ALE with sticky actions (flag `repeat_action_probability`), or if
-you use the different game flavours (mode and difficulty switches), we ask you
-that you also cite the following:
+you use different game flavours (mode and difficulty switches), we ask that
+you also cite the following:
 
 *M. C. Machado, M. G. Bellemare, E. Talvitie, J. Veness, M. J. Hausknecht, M. Bowling. Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents,  Journal of Artificial Intelligence Research, Volume 61, pages 523-562, 2018.*
 
