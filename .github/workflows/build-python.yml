@@ -44,7 +44,7 @@ jobs:
       matrix:
         include:
           # To minimise the computational resources, we only use a single python version and the final test-wheels for all python versions
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04  # NVIDIA has no CUDA 12.6 packages for ubuntu-26.04 (ubuntu-latest)
             python: '3.12'
             triplet: x64-linux-mixed
 
@@ -145,7 +145,7 @@ jobs:
         run: ./scripts/download_unpack_roms.sh
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v4.2
+        uses: pypa/cibuildwheel@v4.3
         env:
           CIBW_ARCHS: "${{ matrix.arch }}"
 
