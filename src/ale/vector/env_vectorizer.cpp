@@ -1,5 +1,7 @@
 #include "env_vectorizer.hpp"
 
+#include <algorithm>
+
 #if defined(__linux__)
     #include <pthread.h>
 #elif defined(_WIN32)
@@ -211,6 +213,17 @@ void EnvVectorizer::send(const std::vector<Action>& actions) {
         envs_[actual_env_id]->set_action(mapped.action_id, mapped.paddle_strength);
 
         mapped_actions.push_back(mapped);
+    }
+
+    if (autoreset_mode_ == AutoresetMode::NextStep) {
+        // Sort the actions to process those that reset first before environments that
+        // are just stepping as reset takes significantly longer than a step call.
+        std::stable_partition(
+            mapped_actions.begin(), mapped_actions.end(),
+            [this](const Action& a) {
+                return a.force_reset || envs_[a.env_id]->is_episode_over();
+            }
+        );
     }
 
     // Enqueue actions
