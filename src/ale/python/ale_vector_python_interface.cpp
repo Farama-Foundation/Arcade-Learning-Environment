@@ -12,6 +12,7 @@ namespace nb = nanobind;
 namespace fs = std::filesystem;
 
 using ale::vector::EnvVectorizer;
+using ale::vector::PreprocessedEnv;
 using ale::vector::BatchResult;
 using ale::vector::AutoresetMode;
 using ale::vector::Action;
@@ -145,7 +146,9 @@ void init_vector_module(nb::module_& m) {
                 int batch_size,
                 int num_threads,
                 int thread_affinity_offset,
-                const std::string& autoreset_mode_str
+                const std::string& autoreset_mode_str,
+                int reset_pool_size,
+                bool reset_pool_prefill
             ) {
                 AutoresetMode autoreset_mode;
                 if (autoreset_mode_str == "NextStep") {
@@ -161,7 +164,8 @@ void init_vector_module(nb::module_& m) {
                     autoreset_mode, img_height, img_width, stack_num, grayscale,
                     frame_skip, maxpool, noop_max, use_fire_reset, episodic_life,
                     life_loss_info, reward_clipping, max_episode_steps,
-                    repeat_action_probability, full_action_space
+                    repeat_action_probability, full_action_space,
+                    reset_pool_size, reset_pool_prefill
                 );
             },
             nb::arg("rom_path"),
@@ -183,7 +187,9 @@ void init_vector_module(nb::module_& m) {
             nb::arg("batch_size") = 0,
             nb::arg("num_threads") = 0,
             nb::arg("thread_affinity_offset") = -1,
-            nb::arg("autoreset_mode") = "NextStep")
+            nb::arg("autoreset_mode") = "NextStep",
+            nb::arg("reset_pool_size") = PreprocessedEnv::kDefaultResetPoolDraws,
+            nb::arg("reset_pool_prefill") = false)
 
         .def("reset", [](EnvVectorizer& self,
                          const std::vector<int>& reset_indices,

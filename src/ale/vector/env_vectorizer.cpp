@@ -23,12 +23,14 @@ std::unique_ptr<PreprocessedEnv> make_env(
     int env_id, const fs::path& rom_path, int img_height, int img_width, int frame_skip,
     bool maxpool, bool grayscale, int stack_num, int noop_max, bool use_fire_reset,
     bool episodic_life, bool life_loss_info, bool reward_clipping, int max_episode_steps,
-    float repeat_action_probability, bool full_action_space
+    float repeat_action_probability, bool full_action_space, int reset_pool_size,
+    bool reset_pool_prefill
 ) {
     return std::make_unique<PreprocessedEnv>(
         env_id, rom_path, img_height, img_width, frame_skip, maxpool, grayscale, stack_num,
         noop_max, use_fire_reset, episodic_life, life_loss_info, reward_clipping,
-        max_episode_steps, repeat_action_probability, full_action_space, -1
+        max_episode_steps, repeat_action_probability, full_action_space, reset_pool_size,
+        reset_pool_prefill, -1
     );
 }
 
@@ -54,7 +56,9 @@ EnvVectorizer::EnvVectorizer(
     bool reward_clipping,
     int max_episode_steps,
     float repeat_action_probability,
-    bool full_action_space
+    bool full_action_space,
+    int reset_pool_size,
+    bool reset_pool_prefill
 ) : num_envs_(num_envs),
     batch_size_(batch_size > 0 ? batch_size : num_envs),
     img_height_(img_height),
@@ -94,7 +98,8 @@ EnvVectorizer::EnvVectorizer(
             envs_[i] = make_env(i, rom_path, img_height, img_width, frame_skip, maxpool,
                                 grayscale, stack_num, noop_max, use_fire_reset, episodic_life,
                                 life_loss_info, reward_clipping, max_episode_steps,
-                                repeat_action_probability, full_action_space);
+                                repeat_action_probability, full_action_space,
+                                reset_pool_size, reset_pool_prefill);
         }
     } else {
         // Each builder takes a contiguous block of env ids rather than stealing
@@ -119,7 +124,8 @@ EnvVectorizer::EnvVectorizer(
                                             maxpool, grayscale, stack_num, noop_max,
                                             use_fire_reset, episodic_life, life_loss_info,
                                             reward_clipping, max_episode_steps,
-                                            repeat_action_probability, full_action_space);
+                                            repeat_action_probability, full_action_space,
+                                            reset_pool_size, reset_pool_prefill);
                     }
                 } catch (...) {
                     errors[t] = std::current_exception();

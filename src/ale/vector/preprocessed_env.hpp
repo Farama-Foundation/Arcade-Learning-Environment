@@ -20,6 +20,7 @@
 
 #include "ale/common/Constants.h"
 #include "ale/ale_interface.hpp"
+#include "reset_pool.hpp"
 #include "types.hpp"
 
 namespace fs = std::filesystem;
@@ -37,6 +38,10 @@ namespace ale::vector {
 /// - Reward clipping
 class PreprocessedEnv {
 public:
+    /// Start states captured before the pool starts being drawn from; 0 disables
+    /// the pool. See reset_pool.hpp for why more than one is needed.
+    static constexpr int kDefaultResetPoolDraws = 8;
+
     PreprocessedEnv(
         int env_id,
         const fs::path& rom_path,
@@ -54,7 +59,9 @@ public:
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
-        int seed = -1
+        int seed = -1,
+        int reset_pool_size = kDefaultResetPoolDraws,
+        bool reset_pool_prefill = false
     );
 
     /// Set seed for next reset
@@ -88,6 +95,13 @@ public:
     int channels_per_frame() const { return channels_per_frame_; }
 
 private:
+    /// Bring the console up to a start state, either by emulating reset_game() or
+    /// by restoring a snapshot of an earlier one.
+    void reset_console();
+
+    /// Emulate one real reset_game() and keep the resulting start state.
+    void capture_reset_state();
+
     void get_screen_grayscale(uint8_t* buffer) const;
     void get_screen_rgb(uint8_t* buffer) const;
     void process_screen();
@@ -134,6 +148,26 @@ private:
     int current_action_id_;
     float current_paddle_strength_;
     int pending_seed_;
+
+    // Snapshot-restore reset. reset_game() emulates ~68 frames
+    // of console bring-up; restoring a snapshot of one costs ~10-20 us instead. The
+    // first reset_pool_size resets are emulated for real and kept, and later ones
+    // draw from the pool - see reset_pool.hpp for why a single snapshot is not
+    // enough. Invalidated by a seeded reset, which reloads the ROM.
+    ResetSnapshotPool reset_pool_;
+    // When set, the pool is filled in one go on the first seeded reset instead of
+    // over the first episodes. Costs reset_pool_size real resets up front and
+    // makes every later episode boundary cheap, which callers who care about
+    // consistent step latency - benchmarks, evaluation - usually prefer.
+    bool reset_pool_prefill_;
+    // Kept separate from rng_ so that pool draws cannot shift the noop-start
+    // sequence, which must stay exactly as it was.
+    std::mt19937 pool_rng_;
+    // ALEState::load copies m_frame_number from the snapshot, rewinding the
+    // ROM-lifetime frame counter. Report it with the elided frames added back -
+    // including those the replaced reset_game() would have counted - so
+    // info["frame_number"] matches what real resets report.
+    long snapshot_frame_offset_;
 
     // Frame buffers
     std::vector<std::vector<uint8_t>> raw_frames_;
