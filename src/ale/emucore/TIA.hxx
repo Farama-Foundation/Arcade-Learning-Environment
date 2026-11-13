@@ -244,7 +244,9 @@ class TIA : public Device , public MediaSource
     static void computePlayfieldMaskTable();
 
   private:
-    // Update the current frame buffer up to one scanline
+    // Update the current frame buffer up to one scanline. ALE: with Render
+    // false the pixels are not stored; everything else is identical.
+    template <bool Render>
     void updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos);
 
     // Update the current frame buffer to the specified color clock
@@ -541,10 +543,8 @@ class TIA : public Device , public MediaSource
 
   /** ALE-specific */
   private:
+    // "fast_tia_update": emulate without writing the frame buffer
     bool fastUpdate;
-
-    // Updates the frame's scanline but not the frame buffer
-    void updateFrameScanlineFast(uint32_t clocksToUpdate, uint32_t hpos);
 
 };
 

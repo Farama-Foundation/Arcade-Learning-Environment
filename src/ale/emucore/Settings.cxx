@@ -422,6 +422,12 @@ void Settings::setDefaultSettings() {
     intSettings.insert(std::pair<std::string, int>("reward_min", std::numeric_limits<int>::min()));
     intSettings.insert(std::pair<std::string, int>("reward_max", std::numeric_limits<int>::max()));
 
+    // Emulate without writing the TIA frame buffer. Registers, collisions and
+    // RAM are updated exactly as normal, but nothing is drawn, so the screen
+    // and every observation derived from it are meaningless. Read when the TIA
+    // is constructed, so it must be set before loadROM().
+    boolSettings.insert(std::pair<std::string, bool>("fast_tia_update", false));
+
     // Record settings
     intSettings.insert(std::pair<std::string, int>("fragsize", 64)); // fragsize to 64 ensures proper sound sync
     stringSettings.insert(std::pair<std::string, std::string>("record_screen_dir", ""));
