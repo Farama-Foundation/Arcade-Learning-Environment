@@ -270,7 +270,7 @@ On ROMs whose start state depends on the console RAM left over by the previous e
 ### Skipping Discarded Frames
 
 With the default `frameskip=4`, each step emulates four frames but only reads the screen of the last two (for max-pooling),
-and a reset's no-op frames are all thrown away except the last.
+or of the last one with `maxpool=False`, and a reset's no-op frames are all thrown away except the last.
 `skip_discarded_frames=True` tells the emulator not to draw those frames.
 The emulation is otherwise unchanged (RAM, rewards, lives, terminations and frame counters are identical), and drawing is a large share of a frame's cost,
 so this raises throughput, by roughly 5–6% with the default settings.
@@ -278,8 +278,10 @@ so this raises throughput, by roughly 5–6% with the default settings.
 It is off by default because it does not reproduce the default observations on every ROM.
 Some frames end before the TIA has drawn the whole screen; the rows they do not reach keep whatever the frame two before drew,
 because the TIA alternates between two frame buffers. Skipping changes which frame that was.
-Of the 104 supported ROMs, observations are bit-identical on 102 and differ on `video_checkers` and `tic_tac_toe_3d`
-(in the bottom rows of a small fraction of steps). This cannot be detected ahead of time: whether a frame is short is only known once it has been emulated.
+Of the 104 supported ROMs, observations are bit-identical on 102 and differ on `video_checkers` and `tic_tac_toe_3d`,
+on a small fraction of steps (about 1 in 700 on `video_checkers` and 1 in 150–400 on `tic_tac_toe_3d` under random play).
+When they differ, the difference can be large: on `video_checkers` a short frame that would show an almost empty board
+instead shows the board left over from an earlier frame. This cannot be detected ahead of time: whether a frame is short is only known once it has been emulated.
 
 ```python
 # Faster, but observations on video_checkers and tic_tac_toe_3d differ from the default

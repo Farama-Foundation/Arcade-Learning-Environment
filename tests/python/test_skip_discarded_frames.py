@@ -89,11 +89,12 @@ def test_game_logic_is_unchanged(game):
     "kwargs",
     [
         {},
+        dict(maxpool=False),
         dict(grayscale=False, stack_num=1, maxpool=False),
         dict(episodic_life=True),
         dict(reset_pool_size=0),
     ],
-    ids=["default", "rgb-no-maxpool", "episodic-life", "no-pool"],
+    ids=["default", "no-maxpool", "rgb-no-maxpool", "episodic-life", "no-pool"],
 )
 def test_observations_are_unchanged_on_exact_rom(kwargs):
     """On breakout, skipping the discarded frames leaves every observation as it was."""
@@ -103,8 +104,9 @@ def test_observations_are_unchanged_on_exact_rom(kwargs):
     np.testing.assert_array_equal(drawn_obs, skipped_obs)
 
 
+@pytest.mark.parametrize("maxpool", [True, False], ids=["maxpool", "no-maxpool"])
 @pytest.mark.parametrize("game", ["video_checkers", "tic_tac_toe_3d"])
-def test_observations_differ_on_inexact_roms(game):
+def test_observations_differ_on_inexact_roms(game, maxpool):
     """The documented exception, and evidence that the flag takes effect at all.
 
     Frames on these ROMs can end before the beam has covered the whole frame
@@ -113,6 +115,6 @@ def test_observations_differ_on_inexact_roms(game):
     was. Without this check the tests above would also pass if the flag did
     nothing.
     """
-    drawn_obs, _ = rollout(game, skip=False)
-    skipped_obs, _ = rollout(game, skip=True)
+    drawn_obs, _ = rollout(game, skip=False, maxpool=maxpool)
+    skipped_obs, _ = rollout(game, skip=True, maxpool=maxpool)
     assert not np.array_equal(drawn_obs, skipped_obs)
