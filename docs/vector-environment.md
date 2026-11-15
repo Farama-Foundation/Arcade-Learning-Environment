@@ -111,6 +111,7 @@ envs = AtariVectorEnv(
     continuous_action_threshold: float = 0.5, # The threshold above which a continuous action triggers a discrete event
     reset_pool_size: int = 256,               # Start states captured from real resets and replayed on later resets, split between the sub-environments (0 = emulate every reset)
     reset_pool_prefill: bool = False,         # Capture each sub-environment's share of the pool on the first reset instead of over its first episodes
+    skip_discarded_frames: bool = False,      # Don't draw the frames that are thrown away; not observation-exact on every ROM, see "Skipping Discarded Frames"
 
     # Performance options
     batch_size=0,             # Number of environments to process at once (default=0 is the `num_envs`)
@@ -265,3 +266,22 @@ envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_size=0)
 `reset_pool_prefill` is off by default because it captures its start states from consecutive resets with no gameplay between them.
 On ROMs whose start state depends on the console RAM left over by the previous episode, it sees fewer distinct start states
 (for example, with 8 start states per sub-environment, `yars_revenge` reaches 8 distinct start states without prefill and 1 with it).
+
+### Skipping Discarded Frames
+
+With the default `frameskip=4`, each step emulates four frames but only reads the screen of the last two (for max-pooling),
+and a reset's no-op frames are all thrown away except the last.
+`skip_discarded_frames=True` tells the emulator not to draw those frames.
+The emulation is otherwise unchanged (RAM, rewards, lives, terminations and frame counters are identical), and drawing is a large share of a frame's cost,
+so this raises throughput, by roughly 5–6% with the default settings.
+
+It is off by default because it does not reproduce the default observations on every ROM.
+Some frames end before the TIA has drawn the whole screen; the rows they do not reach keep whatever the frame two before drew,
+because the TIA alternates between two frame buffers. Skipping changes which frame that was.
+Of the 104 supported ROMs, observations are bit-identical on 102 and differ on `video_checkers` and `tic_tac_toe_3d`
+(in the bottom rows of a small fraction of steps). This cannot be detected ahead of time: whether a frame is short is only known once it has been emulated.
+
+```python
+# Faster, but observations on video_checkers and tic_tac_toe_3d differ from the default
+envs = AtariVectorEnv(game="breakout", num_envs=8, skip_discarded_frames=True)
+```

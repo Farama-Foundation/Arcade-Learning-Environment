@@ -57,7 +57,8 @@ public:
         bool full_action_space = false,
         int seed = -1,
         int reset_pool_size = 0,
-        bool reset_pool_prefill = false
+        bool reset_pool_prefill = false,
+        bool skip_discarded_frames = false
     );
 
     /// Set seed for next reset
@@ -150,6 +151,14 @@ private:
     ResetSnapshotPool reset_pool_;
     // Fill the whole pool on the first reset instead of over the first episodes.
     bool reset_pool_prefill_;
+    // When set, frames this env is going to throw away - the leading frames of
+    // each frame-skip batch, and every noop-reset frame bar the last - are
+    // emulated but not drawn. NOT observation-preserving on every ROM: where a
+    // frame is shorter than the frame buffer, the rows it does not reach keep
+    // what the frame two before it left, and skipping changes which frame that
+    // was. Bit-identical on 102 of the 104 supported ROMs; video_checkers and
+    // tic_tac_toe_3d differ, so it is off unless the caller asks.
+    bool skip_discarded_frames_;
     // Separate from rng_ so pool draws leave the noop-start sequence unchanged.
     std::mt19937 pool_rng_;
     // Frames a restore skipped or rewound, added back so info["frame_number"]
