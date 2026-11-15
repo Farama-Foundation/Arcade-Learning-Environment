@@ -49,8 +49,15 @@ class StellaEnvironment {
    * `include_rng` to true. For planning you probably want to disable
    * sticky actions. The emulator is fully deterministic. */
   ALEState cloneState(bool include_rng = false);
-  /** Restores a previously saved copy of the state. */
+  /** Restores a previously saved copy of the state. The last applied actions, which
+   *  sticky actions repeat, are not part of it and keep their current values. */
   void restoreState(const ALEState&);
+
+  /** Sets the last applied actions, which sticky actions repeat, to NOOP as reset() does. */
+  void clearStickyActions() {
+    m_player_a_action = PLAYER_A_NOOP;
+    m_player_b_action = PLAYER_B_NOOP;
+  }
 
   /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
    *  and performs one simulation step in Stella. Returns the resultant reward. When

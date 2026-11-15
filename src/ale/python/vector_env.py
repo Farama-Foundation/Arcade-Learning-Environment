@@ -44,7 +44,7 @@ class AtariVectorEnv(VectorEnv):
         life_loss_info: bool = False,
         reward_clipping: bool = True,
         use_fire_reset: bool = True,
-        reset_pool_size: int = 8,
+        reset_pool_size: int = 256,
         reset_pool_prefill: bool = False,
     ):
         """Constructor for vector environment.
@@ -72,18 +72,11 @@ class AtariVectorEnv(VectorEnv):
             life_loss_info: If to provide a termination signal on life loss
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
-            reset_pool_size: Number of start states captured from real
-                ``reset_game()`` calls and drawn from on later episodes. Replaying
-                a captured state costs ~10-20 us against ~4.5 ms to emulate the
-                console bring-up. More than one is needed because ``reset_game()``
-                is not a pure function of the ROM: the RIOT timer is redrawn each
-                reset, some cartridges re-randomise their onboard RAM, and console
-                RAM is never cleared between episodes. ``0`` disables the pool
-                and emulates every reset.
-            reset_pool_prefill: If to fill the pool on the first ``reset()``
-                instead of over the first ``reset_pool_size`` episodes. Same total
-                work, front-loaded: every episode boundary then costs the same,
-                which callers who want consistent step latency usually prefer.
+            reset_pool_size: Total number of start states captured from real
+                ``reset_game()`` calls and drawn from on later episodes, split evenly
+                between the sub-environments (at least one each).
+            reset_pool_prefill: If to fill each sub-environment's share of the pool
+                on the first ``reset()`` instead of over its first episodes.
         """
         if reset_pool_size < 0:
             raise error.Error(
@@ -189,6 +182,11 @@ class AtariVectorEnv(VectorEnv):
                 which sub-environments to reset. Sub-environments that are masked out are
                 left untouched and report their current observation and info. Partial resets
                 require `batch_size == num_envs` and a preceding full reset.
+
+        Note:
+            A seeded reset reloads the ROM, which empties the reset pool of every
+            sub-environment it seeds (see ``reset_pool_size``). Those sub-environments
+            emulate their next resets for real until their pool has filled again.
 
         Returns:
             Tuple of observations for the sub-environments and info on them.

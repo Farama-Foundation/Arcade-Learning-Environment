@@ -14,10 +14,10 @@ POOL_SIZE = 8
 EPISODE_FRAMES = 400
 
 
-def rollout(game, episodes, **kwargs):
-    """Drive one env through ``episodes`` truncated episodes.
+def rollout_envs(game, episodes, **kwargs):
+    """Drive every env through ``episodes`` truncated episodes.
 
-    Returns one hash per episode, of every observation in it, and the
+    Returns, per env, one hash per episode of every observation in it, and the
     ``frame_number`` of every step. Actions cycle through the action set and
     restart with each episode, so an episode is a pure function of its start
     state. Hashing the whole episode matters: the start state is often invisible
@@ -33,26 +33,37 @@ def rollout(game, episodes, **kwargs):
         | kwargs
     )
     env = AtariVectorEnv(game, **kwargs)
+    num_envs = env.num_envs
     obs, info = env.reset(seed=0)
     num_actions = int(env.single_action_space.n)
 
-    signatures, frame_numbers = [], [int(info["frame_number"][0])]
-    episode, t = [obs[0].tobytes()], 0
-    while len(signatures) < episodes:
-        action = np.array([t % num_actions], dtype=np.int32)
+    signatures = [[] for _ in range(num_envs)]
+    frame_numbers = [[int(n)] for n in info["frame_number"]]
+    episodes_obs = [[o.tobytes()] for o in obs]
+    t = np.zeros(num_envs, dtype=np.int32)
+    while min(len(s) for s in signatures) < episodes:
+        obs, _, term, trunc, info = env.step(t % num_actions)
         t += 1
-        obs, _, term, trunc, info = env.step(action)
-        frame_numbers.append(int(info["frame_number"][0]))
-        if term[0] or trunc[0]:
-            signatures.append(hashlib.blake2b(b"".join(episode)).digest())
-            # NextStep autoreset: the next step returns the new episode's first
-            # observation.
-            obs, _, _, _, info = env.step(action)
-            frame_numbers.append(int(info["frame_number"][0]))
-            episode, t = [], 0
-        episode.append(obs[0].tobytes())
+        for i in range(num_envs):
+            frame_numbers[i].append(int(info["frame_number"][i]))
+            if term[i] or trunc[i]:
+                signatures[i].append(
+                    hashlib.blake2b(b"".join(episodes_obs[i])).digest()
+                )
+                # NextStep autoreset: the next step only resets (its action is
+                # ignored) and returns the new episode's first observation, so
+                # the action cycle restarts on the step after it.
+                episodes_obs[i], t[i] = [], -1
+            else:
+                episodes_obs[i].append(obs[i].tobytes())
     env.close()
-    return signatures, frame_numbers
+    return [s[:episodes] for s in signatures], frame_numbers
+
+
+def rollout(game, episodes, **kwargs):
+    """``rollout_envs`` for a single env."""
+    signatures, frame_numbers = rollout_envs(game, episodes, num_envs=1, **kwargs)
+    return signatures[0], frame_numbers[0]
 
 
 # noop_max=1 with no fire reset emulates no frames after the console reset, so
@@ -88,6 +99,51 @@ def test_frame_number_matches_emulated_resets(game):
     _, without_pool = rollout(game, POOL_SIZE + 4, reset_pool_size=0)
     assert with_pool == without_pool
     assert all(b >= a for a, b in zip(with_pool, with_pool[1:]))
+
+
+def test_sticky_actions_match_emulated_resets():
+    """A restored start state repeats NOOP, as ``reset_game()`` leaves it.
+
+    Otherwise the first frames of a restored episode could repeat the previous
+    episode's final action.
+    """
+    # High enough that a carried-over action outlasts the frames the ROM ignores input.
+    kwargs = dict(DETERMINISTIC, repeat_action_probability=0.9)
+    with_pool = rollout("breakout", POOL_SIZE + 6, **kwargs)
+    without_pool = rollout("breakout", POOL_SIZE + 6, reset_pool_size=0, **kwargs)
+    assert with_pool == without_pool
+
+
+def test_pool_replays_its_states():
+    """Once full, a one-state pool replays that state on every reset.
+
+    space_war produces a different start state on most real resets, so this
+    fails if the pool is never drawn from.
+    """
+    pooled, _ = rollout("space_war", 8, reset_pool_size=1, **DETERMINISTIC)
+    emulated, _ = rollout("space_war", 8, reset_pool_size=0, **DETERMINISTIC)
+    assert len(set(pooled)) == 1
+    assert len(set(emulated)) > 1
+
+
+def test_pool_size_is_split_between_envs():
+    """``reset_pool_size`` is a total: two envs sharing two states keep one each."""
+    signatures, _ = rollout_envs(
+        "space_war", 8, num_envs=2, reset_pool_size=2, **DETERMINISTIC
+    )
+    for env_signatures in signatures:
+        assert len(set(env_signatures)) == 1
+
+
+def test_pool_smaller_than_num_envs():
+    """A total below ``num_envs`` still gives every env one state."""
+    env = AtariVectorEnv(
+        "breakout", num_envs=4, reset_pool_size=2, reset_pool_prefill=True
+    )
+    env.reset(seed=0)
+    for _ in range(50):
+        env.step(np.zeros(4, dtype=np.int32))
+    env.close()
 
 
 @pytest.mark.parametrize("prefill", [False, True])

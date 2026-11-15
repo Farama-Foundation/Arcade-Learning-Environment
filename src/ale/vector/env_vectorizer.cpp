@@ -29,9 +29,20 @@ std::unique_ptr<PreprocessedEnv> make_env(
     return std::make_unique<PreprocessedEnv>(
         env_id, rom_path, img_height, img_width, frame_skip, maxpool, grayscale, stack_num,
         noop_max, use_fire_reset, episodic_life, life_loss_info, reward_clipping,
-        max_episode_steps, repeat_action_probability, full_action_space, reset_pool_size,
-        reset_pool_prefill, -1
+        max_episode_steps, repeat_action_probability, full_action_space, /*seed=*/-1,
+        reset_pool_size, reset_pool_prefill
     );
+}
+
+/// Env `env_id`'s share of the `total` start states, split as evenly as the
+/// division allows. Every env gets at least one, so a total smaller than
+/// `num_envs` still pools every env; 0 disables the pool everywhere.
+int reset_pool_share(int total, int num_envs, int env_id) {
+    if (total <= 0) {
+        return 0;
+    }
+    const int share = total / num_envs + (env_id < total % num_envs ? 1 : 0);
+    return std::max(1, share);
 }
 
 }  // namespace
@@ -99,7 +110,8 @@ EnvVectorizer::EnvVectorizer(
                                 grayscale, stack_num, noop_max, use_fire_reset, episodic_life,
                                 life_loss_info, reward_clipping, max_episode_steps,
                                 repeat_action_probability, full_action_space,
-                                reset_pool_size, reset_pool_prefill);
+                                reset_pool_share(reset_pool_size, num_envs_, i),
+                                reset_pool_prefill);
         }
     } else {
         // Each builder takes a contiguous block of env ids rather than stealing
@@ -125,7 +137,8 @@ EnvVectorizer::EnvVectorizer(
                                             use_fire_reset, episodic_life, life_loss_info,
                                             reward_clipping, max_episode_steps,
                                             repeat_action_probability, full_action_space,
-                                            reset_pool_size, reset_pool_prefill);
+                                            reset_pool_share(reset_pool_size, num_envs_, i),
+                                            reset_pool_prefill);
                     }
                 } catch (...) {
                     errors[t] = std::current_exception();

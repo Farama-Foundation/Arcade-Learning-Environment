@@ -188,7 +188,7 @@ void init_vector_module(nb::module_& m) {
             nb::arg("num_threads") = 0,
             nb::arg("thread_affinity_offset") = -1,
             nb::arg("autoreset_mode") = "NextStep",
-            nb::arg("reset_pool_size") = PreprocessedEnv::kDefaultResetPoolDraws,
+            nb::arg("reset_pool_size") = EnvVectorizer::kDefaultResetPoolSize,
             nb::arg("reset_pool_prefill") = false)
 
         .def("reset", [](EnvVectorizer& self,

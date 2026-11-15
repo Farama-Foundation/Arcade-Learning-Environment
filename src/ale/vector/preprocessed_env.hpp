@@ -38,10 +38,6 @@ namespace ale::vector {
 /// - Reward clipping
 class PreprocessedEnv {
 public:
-    /// Start states captured before the pool starts being drawn from; 0 disables
-    /// the pool. See reset_pool.hpp for why more than one is needed.
-    static constexpr int kDefaultResetPoolDraws = 8;
-
     PreprocessedEnv(
         int env_id,
         const fs::path& rom_path,
@@ -60,7 +56,7 @@ public:
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
         int seed = -1,
-        int reset_pool_size = kDefaultResetPoolDraws,
+        int reset_pool_size = 0,
         bool reset_pool_prefill = false
     );
 
@@ -149,24 +145,15 @@ private:
     float current_paddle_strength_;
     int pending_seed_;
 
-    // Snapshot-restore reset. reset_game() emulates ~68 frames
-    // of console bring-up; restoring a snapshot of one costs ~10-20 us instead. The
-    // first reset_pool_size resets are emulated for real and kept, and later ones
-    // draw from the pool - see reset_pool.hpp for why a single snapshot is not
-    // enough. Invalidated by a seeded reset, which reloads the ROM.
+    // Start states from this env's first resets, replayed on later ones (see
+    // reset_pool.hpp). Emptied by a seeded reset.
     ResetSnapshotPool reset_pool_;
-    // When set, the pool is filled in one go on the first seeded reset instead of
-    // over the first episodes. Costs reset_pool_size real resets up front and
-    // makes every later episode boundary cheap, which callers who care about
-    // consistent step latency - benchmarks, evaluation - usually prefer.
+    // Fill the whole pool on the first reset instead of over the first episodes.
     bool reset_pool_prefill_;
-    // Kept separate from rng_ so that pool draws cannot shift the noop-start
-    // sequence, which must stay exactly as it was.
+    // Separate from rng_ so pool draws leave the noop-start sequence unchanged.
     std::mt19937 pool_rng_;
-    // ALEState::load copies m_frame_number from the snapshot, rewinding the
-    // ROM-lifetime frame counter. Report it with the elided frames added back -
-    // including those the replaced reset_game() would have counted - so
-    // info["frame_number"] matches what real resets report.
+    // Frames a restore skipped or rewound, added back so info["frame_number"]
+    // matches real resets.
     long snapshot_frame_offset_;
 
     // Frame buffers

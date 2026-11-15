@@ -21,6 +21,10 @@ namespace ale::vector {
 
 class EnvVectorizer {
 public:
+    /// Start states captured across all envs before the pool is drawn from,
+    /// split evenly between them; 0 disables the pool. See reset_pool.hpp.
+    static constexpr int kDefaultResetPoolSize = 256;
+
     EnvVectorizer(
         const fs::path& rom_path,
         int num_envs,
@@ -42,7 +46,7 @@ public:
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
-        int reset_pool_size = PreprocessedEnv::kDefaultResetPoolDraws,
+        int reset_pool_size = kDefaultResetPoolSize,
         bool reset_pool_prefill = false
     );
 

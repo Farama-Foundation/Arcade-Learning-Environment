@@ -178,6 +178,10 @@ class ALEInterface {
   // Reverse operation of cloneState(). This will restore the ALEState, if it was
   // cloned including the RNG then the RNG will be restored. Otherwise the current
   // state of the RNG will be kept as is.
+  // Known limitation: the last applied action, which sticky actions repeat, is not
+  // part of the state, so a restore keeps the one applied before it. With
+  // repeat_action_probability > 0, an episode continued from a mid-episode state
+  // can therefore differ from the original.
   void restoreState(const ALEState& state);
 
   // This makes a copy of the system & environment state, suitable for serialization. This includes

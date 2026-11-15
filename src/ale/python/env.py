@@ -466,5 +466,11 @@ class AtariEnv(gymnasium.Env, utils.EzPickle):
         return self.ale.cloneState(include_rng=include_rng)
 
     def restore_state(self, state: ale_py.ALEState) -> None:
-        """Restore emulator state w/o system state."""
+        """Restore emulator state w/o system state.
+
+        The last applied action, which sticky actions repeat, is not part of the
+        state, so a restore keeps the one applied before it. With
+        ``repeat_action_probability > 0``, an episode continued from a mid-episode
+        state can therefore differ from the original.
+        """
         self.ale.restoreState(state)

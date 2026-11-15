@@ -23,7 +23,8 @@ namespace ale::vector {
 /// where start diversity across the batch is the whole point - is a real
 /// behavioural regression.
 ///
-/// So the first `max_draws` resets of an env are emulated for real and kept, and
+/// So the first `max_draws` resets of an env are emulated for real and kept (the
+/// vectorizer splits its `reset_pool_size` total between envs to get `max_draws`), and
 /// later resets draw uniformly from them. Every start state an agent can reach is
 /// one `reset_game()` actually produced, and the sampled distribution is an
 /// unbiased bootstrap of `reset_game()`'s own. Filling costs nothing: those resets

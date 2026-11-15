@@ -90,6 +90,7 @@ PreprocessedEnv::PreprocessedEnv(
     pending_seed_(-1),
     reset_pool_(reset_pool_size),
     reset_pool_prefill_(reset_pool_prefill),
+    // 0x9e3779b9 (2^32 / golden ratio) spreads the seed's bits so pool_rng_'s stream is unrelated to rng_'s.
     pool_rng_(seed == -1 ? std::random_device{}()
                          : static_cast<unsigned>(seed) ^ 0x9e3779b9u),
     snapshot_frame_offset_(0),
@@ -154,6 +155,10 @@ void PreprocessedEnv::reset_console() {
         const ResetSnapshotPool::Entry& entry = reset_pool_.sample(pool_rng_);
         const long frame_number_before = ale_->getFrameNumber();
         ale_->restoreState(entry.state);
+        // The last applied action is not part of the snapshot. Clear it as
+        // reset_game() does, or the new episode could open by repeating the
+        // previous episode's final action under sticky actions.
+        ale_->environment->clearStickyActions();
         // Count the frames the real reset_game() would have, on top of undoing
         // the rewind to the snapshot's frame number.
         snapshot_frame_offset_ +=
@@ -171,9 +176,8 @@ void PreprocessedEnv::capture_reset_state() {
         return;
     }
 
-    // Keep this start state so later episodes can be drawn from it.
-    // include_rng = false - the sticky-action stream must keep advancing across
-    // episodes rather than replaying from the snapshot.
+    // Keep this start state so later episodes can be drawn from it. Leave the RNG
+    // out so the sticky-action stream keeps advancing instead of replaying.
     reset_pool_.add(ale_->cloneState(false),
                     static_cast<int>(ale_->getFrameNumber() - frame_number_before));
 }
