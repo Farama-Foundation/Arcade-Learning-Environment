@@ -61,7 +61,8 @@ PreprocessedEnv::PreprocessedEnv(
     bool full_action_space,
     int seed,
     int reset_pool_size,
-    bool reset_pool_prefill
+    bool reset_pool_prefill,
+    bool skip_discarded_frames
 ) : env_id_(env_id),
     rom_path_(rom_path),
     obs_format_(grayscale ? ObsFormat::Grayscale : ObsFormat::RGB),
@@ -90,6 +91,7 @@ PreprocessedEnv::PreprocessedEnv(
     pending_seed_(-1),
     reset_pool_(reset_pool_size),
     reset_pool_prefill_(reset_pool_prefill),
+    skip_discarded_frames_(skip_discarded_frames),
     // 0x9e3779b9 (2^32 / golden ratio) spreads the seed's bits so pool_rng_'s stream is unrelated to rng_'s.
     pool_rng_(seed == -1 ? std::random_device{}()
                          : static_cast<unsigned>(seed) ^ 0x9e3779b9u),
@@ -215,7 +217,12 @@ void PreprocessedEnv::reset() {
     // Perform no-op steps
     int noop_steps = noop_dist_(rng_) - static_cast<int>(use_fire_reset_ && has_fire_action_);
     while (noop_steps > 0) {
-        ale_->act(PLAYER_A_NOOP);
+        // Only the last of these frames is ever looked at, so with
+        // skip_discarded_frames the emulator need not draw the rest. A
+        // reset_game() below draws all of its own frames, so an episode that
+        // ends inside the loop still leaves a real screen behind.
+        ale_->act(PLAYER_A_NOOP, 1.0f,
+                  !skip_discarded_frames_ || noop_steps == 1);
         if (ale_->game_over()) {
             ale_->reset_game();
         }
@@ -257,8 +264,16 @@ void PreprocessedEnv::step() {
 
     // Execute action for frame_skip frames
     reward_t reward = 0;
+    // The observation is built from the last two frames of the batch when
+    // maxpooling, and from the last one only when not.
+    const int frames_read = maxpool_ ? 2 : 1;
     for (int skip_id = frame_skip_; skip_id > 0; --skip_id) {
-        reward += ale_->act(action, strength);
+        // Only the last frames_read frames of the batch are read below, so with
+        // skip_discarded_frames the emulator need not draw the leading ones.
+        // The early-break paths never read the screen of the frame they break
+        // on, so they are unaffected by which frames were drawn.
+        reward += ale_->act(action, strength,
+                            !skip_discarded_frames_ || skip_id <= frames_read);
 
         game_over_ = ale_->game_over();
         elapsed_steps_++;
@@ -268,8 +283,9 @@ void PreprocessedEnv::step() {
             break;
         }
 
-        // Captures last two frames for maxpooling
-        if (skip_id <= 2) {
+        // Captures the frames the observation is built from: the last two
+        // for maxpooling, otherwise only the last.
+        if (skip_id <= frames_read) {
             if (obs_format_ == ObsFormat::Grayscale) {
                 get_screen_grayscale(raw_frames_[skip_id - 1].data());
             } else {

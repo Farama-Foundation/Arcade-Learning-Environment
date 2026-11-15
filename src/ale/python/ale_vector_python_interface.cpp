@@ -148,7 +148,8 @@ void init_vector_module(nb::module_& m) {
                 int thread_affinity_offset,
                 const std::string& autoreset_mode_str,
                 int reset_pool_size,
-                bool reset_pool_prefill
+                bool reset_pool_prefill,
+                bool skip_discarded_frames
             ) {
                 AutoresetMode autoreset_mode;
                 if (autoreset_mode_str == "NextStep") {
@@ -165,7 +166,7 @@ void init_vector_module(nb::module_& m) {
                     frame_skip, maxpool, noop_max, use_fire_reset, episodic_life,
                     life_loss_info, reward_clipping, max_episode_steps,
                     repeat_action_probability, full_action_space,
-                    reset_pool_size, reset_pool_prefill
+                    reset_pool_size, reset_pool_prefill, skip_discarded_frames
                 );
             },
             nb::arg("rom_path"),
@@ -189,7 +190,8 @@ void init_vector_module(nb::module_& m) {
             nb::arg("thread_affinity_offset") = -1,
             nb::arg("autoreset_mode") = "NextStep",
             nb::arg("reset_pool_size") = EnvVectorizer::kDefaultResetPoolSize,
-            nb::arg("reset_pool_prefill") = false)
+            nb::arg("reset_pool_prefill") = false,
+            nb::arg("skip_discarded_frames") = false)
 
         .def("reset", [](EnvVectorizer& self,
                          const std::vector<int>& reset_indices,

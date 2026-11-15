@@ -64,9 +64,18 @@ class StellaEnvironment {
    *  frame skip is set to > 1, up the corresponding number of simulation steps are performed.
    *  Note that the post-act() frame number might not correspond to the pre-act() frame
    *  number plus the frame skip.
+   *
+   *  render_frame = false tells the emulator that the caller will not look at the
+   *  screen this act() produces, which lets the TIA skip its frame buffer stores
+   *  (and the HMOVE blank). Reward, RAM, lives and terminal are unaffected, but
+   *  getScreen() then returns whatever the last rendered frame left behind, so only
+   *  pass false for a frame you are genuinely discarding. Ignored, and rendering
+   *  forced on, when colour averaging is enabled: phosphor blending reads the
+   *  previous frame, so it needs every frame drawn.
    */
   reward_t act(Action player_a_action, Action player_b_action,
-               float paddle_a_strength = 1.0, float paddle_b_strength = 1.0);
+               float paddle_a_strength = 1.0, float paddle_b_strength = 1.0,
+               bool render_frame = true);
 
   /** Applies the given continuous actions (e.g. updating paddle positions when
    * the paddle is used) and performs one simulation step in Stella. Returns the
@@ -139,12 +148,17 @@ class StellaEnvironment {
  private:
   /** This applies an action exactly one time step. Helper function to act(). */
   reward_t oneStepAct(Action player_a_action, Action player_b_action,
-                      float paddle_a_strength, float paddle_b_strength);
+                      float paddle_a_strength, float paddle_b_strength,
+                      bool render_frame = true);
 
   /** Actually emulates the emulator for a given number of steps. */
   void emulate(Action player_a_action, Action player_b_action,
                float paddle_a_strength, float paddle_b_strength,
-               size_t num_steps = 1);
+               size_t num_steps = 1, bool render_frame = true);
+
+  /** Turns the TIA's frame buffer stores on or off; see act(). Colour averaging
+   *  needs every frame drawn, so it pins rendering on. */
+  void setRenderFrame(bool render_frame);
 
   /** Drops illegal actions, such as the fire button in skiing. Note that this is different
    *   from the minimal set of actions. */

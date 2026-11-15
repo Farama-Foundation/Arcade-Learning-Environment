@@ -212,7 +212,10 @@ TIA::TIA(const Console& console, Settings& settings)
 
   myAUDV0 = myAUDV1 = myAUDF0 = myAUDF1 = myAUDC0 = myAUDC1 = 0;
 
-  fastUpdate = settings.getBool("fast_tia_update", false);
+  // ALE: "fast_tia_update" pins rendering off for every frame. Otherwise
+  // setRenderFrame() decides per frame, rendering by default.
+  myNeverRender = settings.getBool("fast_tia_update", false);
+  myRenderFrame = !myNeverRender;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1269,8 +1272,8 @@ void TIA::computePlayfieldMaskTable()
 // whose body does nothing but store skip their body outright so the mask walk
 // goes too. Nothing else changes: the collision registers, myFramePointer and
 // every other piece of TIA state are updated identically either way.
-// Render = false replaces the hand-maintained updateFrameScanlineFast copy and
-// is used when "fast_tia_update" is set.
+// Render = false is used for frames the caller discards (setRenderFrame) and
+// for every frame when "fast_tia_update" is set.
 template <bool Render>
 inline void TIA::updateFrameScanline(uint32_t clocksToUpdate, uint32_t hpos)
 {
@@ -1966,11 +1969,13 @@ inline void TIA::updateFrame(int clock)
     // Update as much of the scanline as we can
     if(clocksToUpdate != 0)
     {
-      if (fastUpdate)
-        updateFrameScanline<false>(clocksToUpdate,
+      // ALE: dispatch on the render flag once per call, never per pixel
+      if (myRenderFrame)
+        updateFrameScanline<true>(clocksToUpdate,
           clocksFromStartOfScanLine - HBLANK);
       else
-        updateFrameScanline<true>(clocksToUpdate, clocksFromStartOfScanLine - HBLANK);
+        updateFrameScanline<false>(clocksToUpdate,
+          clocksFromStartOfScanLine - HBLANK);
     }
 
     // Handle HMOVE blanks if they are enabled
@@ -1978,7 +1983,8 @@ inline void TIA::updateFrame(int clock)
         (clocksFromStartOfScanLine < (HBLANK + 8)))
     {
       int blanks = (HBLANK + 8) - clocksFromStartOfScanLine;
-      std::memset(oldFramePointer, 0, blanks);
+      if (myRenderFrame)  // ALE: the only frame buffer store outside updateFrameScanline
+        std::memset(oldFramePointer, 0, blanks);
 
       if((clocksToUpdate + clocksFromStartOfScanLine) >= (HBLANK + 8))
       {
