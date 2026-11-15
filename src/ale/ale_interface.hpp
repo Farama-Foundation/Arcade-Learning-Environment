@@ -86,7 +86,15 @@ class ALEInterface {
   // user's responsibility to check if the game has ended and reset
   // when necessary - this method will keep pressing buttons on the
   // game over screen.
-  reward_t act(Action action, float paddle_strength = 1.0);
+  //
+  // Pass render_frame = false for a frame whose screen you will not look at:
+  // the emulator then skips drawing it, which is a large share of a frame's
+  // cost. Reward, RAM, lives and terminal are identical either way; getScreen()
+  // and everything derived from it are not - they keep returning the last
+  // rendered frame - so this is only safe for frames you are discarding, such
+  // as the leading frames of a frame-skip batch.
+  reward_t act(Action action, float paddle_strength = 1.0,
+               bool render_frame = true);
 
   // Indicates if the game has ended.
   bool game_over(bool with_truncation = true) const;

@@ -542,9 +542,32 @@ class TIA : public Device , public MediaSource
     TIA& operator = (const TIA&);
 
   /** ALE-specific */
+  public:
+    /**
+      Enable or disable frame buffer stores for the frames that follow.
+
+      The emulation itself is unaffected: every register, every collision and
+      every other piece of TIA state is updated exactly as when rendering is
+      on. Only the pixel stores are skipped, so while rendering is off the
+      frame buffer keeps whatever it happened to hold, and its contents are
+      meaningless until the next rendered frame. Intended for frames the caller
+      knows it will discard -- see ALEInterface::act's render_frame parameter.
+      Ignored while "fast_tia_update" is set.
+
+      @param render  Whether to write the frame buffer
+    */
+    void setRenderFrame(bool render) override {
+      myRenderFrame = render && !myNeverRender;
+    }
+
   private:
-    // "fast_tia_update": emulate without writing the frame buffer
-    bool fastUpdate;
+    // Whether the frame currently being emulated is written to the frame
+    // buffer. See setRenderFrame().
+    bool myRenderFrame;
+
+    // "fast_tia_update": emulate without ever writing the frame buffer. Pins
+    // myRenderFrame off for every frame; the screen is meaningless in this mode.
+    bool myNeverRender;
 
 };
 

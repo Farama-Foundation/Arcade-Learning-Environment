@@ -105,6 +105,16 @@ class MediaSource
     */
     virtual void setSound(Sound& sound) = 0;
 
+    /**
+      ALE: enable or disable frame buffer stores for the frames that follow.
+      Emulation is unchanged either way; only the pixel writes are skipped, so
+      the frame buffer's contents are meaningless while rendering is off. For
+      callers that know a frame will be discarded. Rendering by default.
+
+      @param render  Whether to write the frame buffer
+    */
+    virtual void setRenderFrame(bool render) { }
+
   private:
     // Copy constructor isn't supported by this class so make it private
     MediaSource(const MediaSource&);

@@ -260,8 +260,10 @@ int ALEInterface::lives() {
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
 // Intentionally set player B actions to 0 since we are in single player mode
-reward_t ALEInterface::act(Action action, float paddle_strength) {
-  return environment->act(action, PLAYER_B_NOOP, paddle_strength, 0.0);
+reward_t ALEInterface::act(Action action, float paddle_strength,
+                           bool render_frame) {
+  return environment->act(action, PLAYER_B_NOOP, paddle_strength, 0.0,
+                          render_frame);
 }
 
 // Returns the vector of modes available for the current game.
