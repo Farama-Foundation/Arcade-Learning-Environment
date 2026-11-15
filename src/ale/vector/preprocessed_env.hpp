@@ -7,19 +7,11 @@
 #include <algorithm>
 #include <filesystem>
 
-// SIMD intrinsics for maxpooling optimization
-#if defined(__AVX2__)
-    #include <immintrin.h>
-#elif defined(__SSE2__)
-    #include <emmintrin.h>
-#elif defined(__ARM_NEON)
-    #include <arm_neon.h>
-#endif
-
 #include <opencv2/opencv.hpp>
 
 #include "ale/common/Constants.h"
 #include "ale/ale_interface.hpp"
+#include "area_resize.hpp"
 #include "reset_pool.hpp"
 #include "types.hpp"
 
@@ -160,6 +152,11 @@ private:
     std::vector<std::vector<uint8_t>> raw_frames_;
     std::vector<uint8_t> frame_stack_;
     int frame_stack_idx_;
+
+    // Fused maxpool + INTER_AREA downscale, shared per geometry. Null whenever
+    // fusion does not apply, in which case process_screen() uses cv::resize.
+    std::shared_ptr<const AreaResizePlan> area_plan_;
+    AreaResizePlan::Scratch area_scratch_;
 };
 
 }  // namespace ale::vector

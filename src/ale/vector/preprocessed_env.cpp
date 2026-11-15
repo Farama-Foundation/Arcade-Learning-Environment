@@ -2,46 +2,6 @@
 
 namespace ale::vector {
 
-/**
- * Maxpool two uint8_t frames using SIMD when available
- * @param dst Destination buffer (will be modified in-place with max values)
- * @param src Source buffer to compare against
- * @param size Number of bytes to process
- */
-inline void maxpool_frames(uint8_t* dst, const uint8_t* src, int size) {
-    int i = 0;
-
-#if defined(__AVX2__)
-    // Process 32 bytes at a time with AVX2
-    for (; i + 32 <= size; i += 32) {
-        __m256i a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(dst + i));
-        __m256i b = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(src + i));
-        __m256i max_val = _mm256_max_epu8(a, b);
-        _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), max_val);
-    }
-#elif defined(__SSE2__)
-    // Process 16 bytes at a time with SSE2
-    for (; i + 16 <= size; i += 16) {
-        __m128i a = _mm_loadu_si128(reinterpret_cast<const __m128i*>(dst + i));
-        __m128i b = _mm_loadu_si128(reinterpret_cast<const __m128i*>(src + i));
-        __m128i max_val = _mm_max_epu8(a, b);
-        _mm_storeu_si128(reinterpret_cast<__m128i*>(dst + i), max_val);
-    }
-#elif defined(__ARM_NEON)
-    // Process 16 bytes at a time with NEON
-    for (; i + 16 <= size; i += 16) {
-        uint8x16_t a = vld1q_u8(dst + i);
-        uint8x16_t b = vld1q_u8(src + i);
-        uint8x16_t max_val = vmaxq_u8(a, b);
-        vst1q_u8(dst + i, max_val);
-    }
-#endif
-    // Handle remainder with scalar code
-    for (; i < size; ++i) {
-        dst[i] = std::max(dst[i], src[i]);
-    }
-}
-
 PreprocessedEnv::PreprocessedEnv(
     int env_id,
     const fs::path& rom_path,
@@ -134,6 +94,19 @@ PreprocessedEnv::PreprocessedEnv(
     // Initialize the buffers
     for (int i = 0; i < 2; ++i) {
         raw_frames_.emplace_back(raw_size_);
+    }
+
+    // Fuse the maxpool and the downscale into one traversal where that is
+    // bit-exact (see area_resize.hpp). Grayscale only; area_plan_ stays null
+    // for RGB, for no resize and for any geometry the kernel does not reproduce
+    // exactly, and process_screen() then runs maxpool_frames + cv::resize.
+    if (obs_format_ == ObsFormat::Grayscale &&
+        (obs_frame_height_ != raw_frame_height_ || obs_frame_width_ != raw_frame_width_)) {
+        area_plan_ = AreaResizePlan::get(raw_frame_width_, raw_frame_height_,
+                                         obs_frame_width_, obs_frame_height_);
+        if (area_plan_) {
+            area_plan_->init_scratch(area_scratch_);
+        }
     }
     frame_stack_ = std::vector<uint8_t>(stack_num_ * obs_size_, 0);
     frame_stack_idx_ = 0;
@@ -338,13 +311,21 @@ void PreprocessedEnv::get_screen_rgb(uint8_t* buffer) const {
 }
 
 void PreprocessedEnv::process_screen() {
+    // Get pointer to current position in circular buffer
+    uint8_t* dest_ptr = frame_stack_.data() + (frame_stack_idx_ * obs_size_);
+
+    if (area_plan_ != nullptr) {
+        // Maxpool and downscale in one pass, byte-identical to the path below.
+        area_plan_->run(raw_frames_[0].data(), maxpool_ ? raw_frames_[1].data() : nullptr,
+                        dest_ptr, area_scratch_);
+        frame_stack_idx_ = (frame_stack_idx_ + 1) % stack_num_;
+        return;
+    }
+
     // Maxpool raw frames if required
     if (maxpool_) {
         maxpool_frames(raw_frames_[0].data(), raw_frames_[1].data(), raw_size_);
     }
-
-    // Get pointer to current position in circular buffer
-    uint8_t* dest_ptr = frame_stack_.data() + (frame_stack_idx_ * obs_size_);
 
     // Resize directly into the circular buffer or copy if no resize needed
     if (obs_frame_height_ != raw_frame_height_ || obs_frame_width_ != raw_frame_width_) {

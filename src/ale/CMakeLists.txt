@@ -71,6 +71,19 @@ if (BUILD_CPP_LIB OR BUILD_PYTHON_LIB)
 
     add_subdirectory(vector)
 
+    # The fused maxpool + INTER_AREA kernel (vector/area_resize.hpp, used only
+    # from preprocessed_env.cpp) matches cv::resize bit for bit only if its
+    # float multiply-adds are not contracted into FMAs. GCC defaults to
+    # -ffp-contract=fast and Clang to =on, so a build with FMA available
+    # (-march=native, -mfma, aarch64) would contract them; the kernel's
+    # construction-time self-check would then reject it and the speedup would
+    # silently disappear. Set here, not in vector/, because source properties
+    # are only visible to targets in the directory that sets them.
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+      set_source_files_properties(vector/preprocessed_env.cpp
+        PROPERTIES COMPILE_OPTIONS "-ffp-contract=off")
+    endif()
+
     target_link_libraries(ale PRIVATE ${OpenCV_LIBS})
   endif()
 endif()
