@@ -543,6 +543,8 @@
     <span class="n">full_action_space</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>          <span class="c1"># Use full action space (not minimal)</span>
     <span class="n">continuous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                 <span class="c1"># Whether to use continuous actions</span>
     <span class="n">continuous_action_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># The threshold above which a continuous action triggers a discrete event</span>
+    <span class="n">reset_pool_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>               <span class="c1"># Start states captured from real resets and replayed on later resets, split between the sub-environments (0 = emulate every reset)</span>
+    <span class="n">reset_pool_prefill</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>         <span class="c1"># Capture each sub-environment's share of the pool on the first reset instead of over its first episodes</span>
 
     <span class="c1"># Performance options</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>             <span class="c1"># Number of environments to process at once (default=0 is the `num_envs`)</span>
@@ -659,6 +661,32 @@ so the info includes <code class="docutils literal notranslate"><span class="pre
 </pre></div>
 </div>
 </section>
+<section id="reset-pool">
+<h3>Reset Pool<a class="headerlink" href="#reset-pool" title="Link to this heading">¶</a></h3>
+<p>Resetting an Atari console emulates around 68 frames of bring-up, which costs 10–16× a step.
+<code class="docutils literal notranslate"><span class="pre">reset_pool_size</span></code> start states are therefore split evenly between the sub-environments (at least one each).
+Each sub-environment emulates its share of resets for real, keeps a snapshot of each start state,
+and on later resets restores one of its own snapshots, picked uniformly at random, instead.
+Snapshots are not shared between sub-environments, so the total number of distinct start states is the same whatever <code class="docutils literal notranslate"><span class="pre">num_envs</span></code> is.</p>
+<p>The pool size does not change the steady-state steps per second, because a draw costs the same however many snapshots there are.
+A larger pool gives more distinct start states, but each sub-environment emulates more resets before it reaches the steady state,
+and fewer sub-environments means a larger share each (with the default of 256, a single environment emulates its first 256 resets).
+Each snapshot takes about 6 KB.</p>
+<p>A pool rather than a single snapshot is needed because a reset is not a pure function of the ROM:
+the console’s timer is redrawn on every reset, some cartridges re-randomise their RAM, and console RAM carries over between episodes.
+Every start state reachable through the pool is one a real reset produced.
+A seeded <code class="docutils literal notranslate"><span class="pre">reset(seed=...)</span></code> reloads the ROM and empties the pool.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Capture all 256 start states (32 per sub-environment) on the first reset, so every later episode boundary costs the same</span>
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">"breakout"</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">reset_pool_prefill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Emulate every reset, as versions before the pool did</span>
+<span class="n">envs</span> <span class="o">=</span> <span class="n">AtariVectorEnv</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="s2">"breakout"</span><span class="p">,</span> <span class="n">num_envs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">reset_pool_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">reset_pool_prefill</span></code> is off by default because it captures its start states from consecutive resets with no gameplay between them.
+On ROMs whose start state depends on the console RAM left over by the previous episode, it sees fewer distinct start states
+(for example, with 8 start states per sub-environment, <code class="docutils literal notranslate"><span class="pre">yars_revenge</span></code> reaches 8 distinct start states without prefill and 1 with it).</p>
+</section>
 </section>
 </section>
 
@@ -748,6 +776,7 @@ so the info includes <code class="docutils literal notranslate"><span class="pre
 <li><a class="reference internal" href="#send-recv-vs-step">Send/Recv vs Step</a></li>
 <li><a class="reference internal" href="#batch-size">Batch Size</a></li>
 <li><a class="reference internal" href="#thread-affinity">Thread Affinity</a></li>
+<li><a class="reference internal" href="#reset-pool">Reset Pool</a></li>
 </ul>
 </li>
 </ul>
