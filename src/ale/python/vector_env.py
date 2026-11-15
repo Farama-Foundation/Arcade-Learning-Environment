@@ -44,6 +44,8 @@ class AtariVectorEnv(VectorEnv):
         life_loss_info: bool = False,
         reward_clipping: bool = True,
         use_fire_reset: bool = True,
+        reset_pool_size: int = 256,
+        reset_pool_prefill: bool = False,
     ):
         """Constructor for vector environment.
 
@@ -70,7 +72,16 @@ class AtariVectorEnv(VectorEnv):
             life_loss_info: If to provide a termination signal on life loss
             reward_clipping: If to clip rewards between -1 and 1
             use_fire_reset: If to take fire action on reset if available
+            reset_pool_size: Total number of start states captured from real
+                ``reset_game()`` calls and drawn from on later episodes, split evenly
+                between the sub-environments (at least one each).
+            reset_pool_prefill: If to fill each sub-environment's share of the pool
+                on the first ``reset()`` instead of over its first episodes.
         """
+        if reset_pool_size < 0:
+            raise error.Error(
+                f"reset_pool_size must be non-negative, got {reset_pool_size}."
+            )
         if type(frameskip) is not int:
             raise error.Error(f"Invalid frameskip type: {type(frameskip)}.")
         if isinstance(frameskip, int) and frameskip <= 0:
@@ -94,6 +105,8 @@ class AtariVectorEnv(VectorEnv):
             maxpool=maxpool,
             noop_max=noop_max,
             use_fire_reset=use_fire_reset,
+            reset_pool_size=reset_pool_size,
+            reset_pool_prefill=reset_pool_prefill,
             episodic_life=episodic_life,
             life_loss_info=life_loss_info,
             reward_clipping=reward_clipping,
@@ -169,6 +182,11 @@ class AtariVectorEnv(VectorEnv):
                 which sub-environments to reset. Sub-environments that are masked out are
                 left untouched and report their current observation and info. Partial resets
                 require `batch_size == num_envs` and a preceding full reset.
+
+        Note:
+            A seeded reset reloads the ROM, which empties the reset pool of every
+            sub-environment it seeds (see ``reset_pool_size``). Those sub-environments
+            emulate their next resets for real until their pool has filled again.
 
         Returns:
             Tuple of observations for the sub-environments and info on them.

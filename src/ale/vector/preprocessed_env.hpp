@@ -20,6 +20,7 @@
 
 #include "ale/common/Constants.h"
 #include "ale/ale_interface.hpp"
+#include "reset_pool.hpp"
 #include "types.hpp"
 
 namespace fs = std::filesystem;
@@ -54,7 +55,9 @@ public:
         int max_episode_steps = 108000,
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
-        int seed = -1
+        int seed = -1,
+        int reset_pool_size = 0,
+        bool reset_pool_prefill = false
     );
 
     /// Set seed for next reset
@@ -88,6 +91,13 @@ public:
     int channels_per_frame() const { return channels_per_frame_; }
 
 private:
+    /// Bring the console up to a start state, either by emulating reset_game() or
+    /// by restoring a snapshot of an earlier one.
+    void reset_console();
+
+    /// Emulate one real reset_game() and keep the resulting start state.
+    void capture_reset_state();
+
     void get_screen_grayscale(uint8_t* buffer) const;
     void get_screen_rgb(uint8_t* buffer) const;
     void process_screen();
@@ -134,6 +144,17 @@ private:
     int current_action_id_;
     float current_paddle_strength_;
     int pending_seed_;
+
+    // Start states from this env's first resets, replayed on later ones (see
+    // reset_pool.hpp). Emptied by a seeded reset.
+    ResetSnapshotPool reset_pool_;
+    // Fill the whole pool on the first reset instead of over the first episodes.
+    bool reset_pool_prefill_;
+    // Separate from rng_ so pool draws leave the noop-start sequence unchanged.
+    std::mt19937 pool_rng_;
+    // Frames a restore skipped or rewound, added back so info["frame_number"]
+    // matches real resets.
+    long snapshot_frame_offset_;
 
     // Frame buffers
     std::vector<std::vector<uint8_t>> raw_frames_;

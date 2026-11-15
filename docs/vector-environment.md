@@ -109,6 +109,8 @@ envs = AtariVectorEnv(
     full_action_space: bool = False,          # Use full action space (not minimal)
     continuous: bool = False,                 # Whether to use continuous actions
     continuous_action_threshold: float = 0.5, # The threshold above which a continuous action triggers a discrete event
+    reset_pool_size: int = 256,               # Start states captured from real resets and replayed on later resets, split between the sub-environments (0 = emulate every reset)
+    reset_pool_prefill: bool = False,         # Capture each sub-environment's share of the pool on the first reset instead of over its first episodes
 
     # Performance options
     batch_size=0,             # Number of environments to process at once (default=0 is the `num_envs`)
@@ -233,3 +235,33 @@ On systems with multiple CPU cores, setting thread affinity can improve performa
 # Set thread affinity starting from core 0
 envs = AtariVectorEnv(game="breakout", num_envs=8, thread_affinity_offset=0)
 ```
+
+### Reset Pool
+
+Resetting an Atari console emulates around 68 frames of bring-up, which costs 10–16× a step.
+`reset_pool_size` start states are therefore split evenly between the sub-environments (at least one each).
+Each sub-environment emulates its share of resets for real, keeps a snapshot of each start state,
+and on later resets restores one of its own snapshots, picked uniformly at random, instead.
+Snapshots are not shared between sub-environments, so the total number of distinct start states is the same whatever `num_envs` is.
+
+The pool size does not change the steady-state steps per second, because a draw costs the same however many snapshots there are.
+A larger pool gives more distinct start states, but each sub-environment emulates more resets before it reaches the steady state,
+and fewer sub-environments means a larger share each (with the default of 256, a single environment emulates its first 256 resets).
+Each snapshot takes about 6 KB.
+
+A pool rather than a single snapshot is needed because a reset is not a pure function of the ROM:
+the console's timer is redrawn on every reset, some cartridges re-randomise their RAM, and console RAM carries over between episodes.
+Every start state reachable through the pool is one a real reset produced.
+A seeded `reset(seed=...)` reloads the ROM and empties the pool.
+
+```python
+# Capture all 256 start states (32 per sub-environment) on the first reset, so every later episode boundary costs the same
+envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_prefill=True)
+
+# Emulate every reset, as versions before the pool did
+envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_size=0)
+```
+
+`reset_pool_prefill` is off by default because it captures its start states from consecutive resets with no gameplay between them.
+On ROMs whose start state depends on the console RAM left over by the previous episode, it sees fewer distinct start states
+(for example, with 8 start states per sub-environment, `yars_revenge` reaches 8 distinct start states without prefill and 1 with it).
