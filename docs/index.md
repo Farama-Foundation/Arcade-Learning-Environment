@@ -6,6 +6,7 @@ lastpage:
 
 ```{project-logo} _static/img/ale-text.png
 :alt: Arcade Learning Environment Logo
+:class: farama-black-logo-invert
 ```
 
 ```{project-heading}
