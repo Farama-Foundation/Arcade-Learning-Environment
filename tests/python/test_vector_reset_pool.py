@@ -78,7 +78,7 @@ def test_restored_resets_match_emulated_resets(game):
     assert len(set(signatures)) == 1
 
 
-@pytest.mark.parametrize("game", ["tennis", "space_war"])
+@pytest.mark.parametrize("game", ["solaris", "space_war"])
 def test_drawn_start_states_were_produced_by_real_resets(game):
     """Episodes after the fill phase start from states the fill phase captured."""
     signatures, _ = rollout(game, POOL_SIZE + 16, **DETERMINISTIC)
@@ -173,6 +173,28 @@ def test_reseeding_clears_the_pool():
 
     env.close()
     reference.close()
+
+
+@pytest.mark.parametrize("reset_pool_size", [0, POOL_SIZE])
+def test_sub_envs_start_from_different_states(reset_pool_size):
+    """Differently seeded sub-environments do not replay one start-state sequence.
+
+    The emulator RNG behind start-state variation (the RIOT timer, power-on RAM)
+    is seeded from ``system_random_seed``, not ``random_seed``. If the vector env
+    left it at ALE's constant default, every sub-environment would produce the
+    same start state at each reset, and with one pool entry per env (``POOL_SIZE``
+    envs, ``POOL_SIZE`` total) the whole batch would replay a single state.
+    """
+    signatures, _ = rollout_envs(
+        "solaris",
+        2,
+        num_envs=POOL_SIZE,
+        reset_pool_size=reset_pool_size,
+        **DETERMINISTIC,
+    )
+    for episode in range(2):
+        distinct = len({s[episode] for s in signatures})
+        assert distinct >= POOL_SIZE // 2, f"{episode=}: {distinct=} of {POOL_SIZE}"
 
 
 def test_negative_pool_size_is_rejected():

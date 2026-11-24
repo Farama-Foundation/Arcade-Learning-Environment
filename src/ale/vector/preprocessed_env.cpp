@@ -2,6 +2,27 @@
 
 namespace ale::vector {
 
+namespace {
+
+/// Seed for the emulator's own RNG, derived from the env's seed.
+///
+/// That RNG redraws the RIOT timer on every `reset_game()`, randomises console RAM
+/// at power-on, and randomises some cartridge types' RAM. ALE seeds it from
+/// `system_random_seed`, a constant, not from `random_seed`, so without this every
+/// sub-environment would produce the same sequence of start states whatever its
+/// seed. Since each sub-environment's reset pool is filled from its first resets,
+/// the pools would then hold the same few states.
+int derive_system_random_seed(unsigned seed) {
+    // murmur3's 32-bit finalizer: consecutive env seeds map to unrelated values.
+    uint32_t z = seed + 0x9e3779b9u;
+    z = (z ^ (z >> 16)) * 0x85ebca6bu;
+    z = (z ^ (z >> 13)) * 0xc2b2ae35u;
+    z ^= z >> 16;
+    return static_cast<int>(z & 0x7fffffffu);
+}
+
+}  // namespace
+
 /**
  * Maxpool two uint8_t frames using SIMD when available
  * @param dst Destination buffer (will be modified in-place with max values)
@@ -104,6 +125,8 @@ PreprocessedEnv::PreprocessedEnv(
     ale_ = std::make_unique<ALEInterface>();
     ale_->setFloat("repeat_action_probability", repeat_action_probability);
     ale_->setInt("random_seed", seed);
+    ale_->setInt("system_random_seed", derive_system_random_seed(
+        seed == -1 ? std::random_device{}() : static_cast<unsigned>(seed)));
     ale_->loadROM(rom_path_);
 
     // Get action set
@@ -186,6 +209,8 @@ void PreprocessedEnv::reset() {
     if (pending_seed_ >= 0) {
         // Only on an explicitly seeded reset, not on autoreset: reloads the ROM.
         ale_->setInt("random_seed", pending_seed_);
+        ale_->setInt("system_random_seed",
+                     derive_system_random_seed(static_cast<unsigned>(pending_seed_)));
         rng_.seed(pending_seed_);
         pool_rng_.seed(static_cast<unsigned>(pending_seed_) ^ 0x9e3779b9u);
         ale_->loadROM(rom_path_);
