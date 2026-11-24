@@ -161,7 +161,8 @@ void StellaEnvironment::noopIllegalActions(Action& player_a_action,
 }
 
 reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
-                                float paddle_a_strength, float paddle_b_strength) {
+                                float paddle_a_strength, float paddle_b_strength,
+                                bool render_frame) {
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
@@ -192,9 +193,13 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
     if (m_screen_exporter.get() != NULL)
       m_screen_exporter->saveNext(m_screen);
 
-    // Use the stored actions, which may or may not have changed this frame
+    // Use the stored actions, which may or may not have changed this frame.
+    // render_frame applies to every frame of the batch: the intermediate ones
+    // are still handed to the screen exporter and to screen().render() above,
+    // so they cannot be skipped on the caller's behalf.
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action,
-                              m_paddle_a_strength, m_paddle_b_strength);
+                              m_paddle_a_strength, m_paddle_b_strength,
+                              render_frame);
 
     // Process audio for user queries (accounts for frame_skip)
     processAudio(i);
@@ -215,7 +220,8 @@ void StellaEnvironment::softReset() {
 /** Applies the given actions (e.g. updating paddle positions when the paddle is used)
  *  and performs one simulation step in Stella. */
 reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_action,
-                                       float paddle_a_strength, float paddle_b_strength) {
+                                       float paddle_a_strength, float paddle_b_strength,
+                                       bool render_frame) {
   // Once in a terminal state, refuse to go any further (special actions must be handled
   //  outside of this environment; in particular reset() should be called rather than passing
   //  RESET or SYSTEM_RESET.
@@ -227,7 +233,7 @@ reward_t StellaEnvironment::oneStepAct(Action player_a_action, Action player_b_a
 
   // Emulate in the emulator
   emulate(player_a_action, player_b_action,
-          paddle_a_strength, paddle_b_strength);
+          paddle_a_strength, paddle_b_strength, 1, render_frame);
   // Increment the number of frames seen so far
   m_state.incrementFrame();
 
@@ -278,9 +284,14 @@ void StellaEnvironment::setMode(game_mode_t value) {
 void StellaEnvironment::emulate(
   Action player_a_action, Action player_b_action,
   float paddle_a_strength, float paddle_b_strength,
-  size_t num_steps
+  size_t num_steps, bool render_frame
 ) {
   Event* event = m_osystem->event();
+
+  // Phosphor blending averages the current frame with the previous one, so it
+  // needs every frame drawn; it pins rendering on.
+  const bool render = render_frame || m_colour_averaging;
+  setRenderFrame(render);
 
   // Handle paddles separately: we have to manually update the paddle positions at each step
   if (m_use_paddles) {
@@ -306,9 +317,22 @@ void StellaEnvironment::emulate(
     }
   }
 
-  // Parse screen and RAM into their respective data structures
-  processScreen();
+  // Parse screen and RAM into their respective data structures. An unrendered
+  // frame leaves the emulator's frame buffer holding stale pixels, so copying
+  // it would only overwrite the last real screen with garbage; leave m_screen
+  // alone instead. Nothing may read it until the next rendered frame either way.
+  if (render) {
+    processScreen();
+  }
   processRAM();
+
+  // Emulation elsewhere (pressSelect, the debugger) drives the media source
+  // directly and expects to get a picture, so leave rendering on behind us.
+  setRenderFrame(true);
+}
+
+void StellaEnvironment::setRenderFrame(bool render_frame) {
+  m_osystem->console().mediaSource().setRenderFrame(render_frame);
 }
 
 /** Accessor methods for the environment state. */

@@ -47,7 +47,8 @@ public:
         float repeat_action_probability = 0.0f,
         bool full_action_space = false,
         int reset_pool_size = kDefaultResetPoolSize,
-        bool reset_pool_prefill = false
+        bool reset_pool_prefill = false,
+        bool skip_discarded_frames = false
     );
 
     ~EnvVectorizer();

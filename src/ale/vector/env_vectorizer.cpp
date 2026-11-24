@@ -24,13 +24,13 @@ std::unique_ptr<PreprocessedEnv> make_env(
     bool maxpool, bool grayscale, int stack_num, int noop_max, bool use_fire_reset,
     bool episodic_life, bool life_loss_info, bool reward_clipping, int max_episode_steps,
     float repeat_action_probability, bool full_action_space, int reset_pool_size,
-    bool reset_pool_prefill
+    bool reset_pool_prefill, bool skip_discarded_frames
 ) {
     return std::make_unique<PreprocessedEnv>(
         env_id, rom_path, img_height, img_width, frame_skip, maxpool, grayscale, stack_num,
         noop_max, use_fire_reset, episodic_life, life_loss_info, reward_clipping,
         max_episode_steps, repeat_action_probability, full_action_space, /*seed=*/-1,
-        reset_pool_size, reset_pool_prefill
+        reset_pool_size, reset_pool_prefill, skip_discarded_frames
     );
 }
 
@@ -69,7 +69,8 @@ EnvVectorizer::EnvVectorizer(
     float repeat_action_probability,
     bool full_action_space,
     int reset_pool_size,
-    bool reset_pool_prefill
+    bool reset_pool_prefill,
+    bool skip_discarded_frames
 ) : num_envs_(num_envs),
     batch_size_(batch_size > 0 ? batch_size : num_envs),
     img_height_(img_height),
@@ -111,7 +112,7 @@ EnvVectorizer::EnvVectorizer(
                                 life_loss_info, reward_clipping, max_episode_steps,
                                 repeat_action_probability, full_action_space,
                                 reset_pool_share(reset_pool_size, num_envs_, i),
-                                reset_pool_prefill);
+                                reset_pool_prefill, skip_discarded_frames);
         }
     } else {
         // Each builder takes a contiguous block of env ids rather than stealing
@@ -138,7 +139,7 @@ EnvVectorizer::EnvVectorizer(
                                             reward_clipping, max_episode_steps,
                                             repeat_action_probability, full_action_space,
                                             reset_pool_share(reset_pool_size, num_envs_, i),
-                                            reset_pool_prefill);
+                                            reset_pool_prefill, skip_discarded_frames);
                     }
                 } catch (...) {
                     errors[t] = std::current_exception();

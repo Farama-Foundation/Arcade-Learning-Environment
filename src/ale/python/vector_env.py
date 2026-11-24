@@ -46,6 +46,7 @@ class AtariVectorEnv(VectorEnv):
         use_fire_reset: bool = True,
         reset_pool_size: int = 256,
         reset_pool_prefill: bool = False,
+        skip_discarded_frames: bool = False,
     ):
         """Constructor for vector environment.
 
@@ -77,6 +78,15 @@ class AtariVectorEnv(VectorEnv):
                 between the sub-environments (at least one each).
             reset_pool_prefill: If to fill each sub-environment's share of the pool
                 on the first ``reset()`` instead of over its first episodes.
+            skip_discarded_frames: If the emulator should skip drawing the frames
+                this env throws away - the leading frames of each frameskip batch
+                and every noop-reset frame but the last. Game logic (RAM, rewards,
+                lives, termination) is unaffected, but it is **not**
+                observation-preserving on every ROM: where a frame is shorter than
+                the frame buffer, the rows it does not reach keep what the frame two
+                before it left behind, and skipping changes which frame that was.
+                Bit-identical on 102 of the 104 supported ROMs; ``video_checkers``
+                and ``tic_tac_toe_3d`` differ. Off by default for that reason.
         """
         if reset_pool_size < 0:
             raise error.Error(
@@ -107,6 +117,7 @@ class AtariVectorEnv(VectorEnv):
             use_fire_reset=use_fire_reset,
             reset_pool_size=reset_pool_size,
             reset_pool_prefill=reset_pool_prefill,
+            skip_discarded_frames=skip_discarded_frames,
             episodic_life=episodic_life,
             life_loss_info=life_loss_info,
             reward_clipping=reward_clipping,
