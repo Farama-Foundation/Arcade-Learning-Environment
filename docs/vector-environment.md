@@ -139,6 +139,12 @@ With `grayscale=False`, the shape is `(num_envs, stack_size, height, width, 3)` 
 
 `reset` accepts either an integer seed, which seeds the sub-environments with consecutive values starting at `seed`, or a NumPy array with one seed per sub-environment being reset.
 
+A sub-environment's seed sets both ALE's `random_seed` (sticky actions) and its `system_random_seed`, which drives the emulator's own randomness:
+the console timer redrawn on every reset, power-on RAM, and the RAM of some cartridge types.
+ALE leaves `system_random_seed` at a constant by default, so every `AtariEnv` draws the same sequence of timers and power-on RAM whatever its seed;
+the vector environment derives it from each sub-environment's seed instead, so differently seeded sub-environments start from different states.
+Unseeded sub-environments draw both at random.
+
 Individual sub-environments can be reset with the `reset_mask` option, a boolean array of shape `(num_envs,)`. Sub-environments that are masked out are left untouched and report their current observation and info. Partial resets require `batch_size == num_envs` and a preceding full reset.
 
 ```python
@@ -242,7 +248,9 @@ Resetting an Atari console emulates around 68 frames of bring-up, which costs 10
 `reset_pool_size` start states are therefore split evenly between the sub-environments (at least one each).
 Each sub-environment emulates its share of resets for real, keeps a snapshot of each start state,
 and on later resets restores one of its own snapshots, picked uniformly at random, instead.
-Snapshots are not shared between sub-environments, so the total number of distinct start states is the same whatever `num_envs` is.
+Snapshots are not shared between sub-environments.
+Each sub-environment's emulator randomness is seeded from its own seed (see [Seeding and Partial Resets](#seeding-and-partial-resets)),
+so different sub-environments capture different start states and the total number of distinct start states is the same whatever `num_envs` is.
 
 The pool size does not change the steady-state steps per second, because a draw costs the same however many snapshots there are.
 A larger pool gives more distinct start states, but each sub-environment emulates more resets before it reaches the steady state,
