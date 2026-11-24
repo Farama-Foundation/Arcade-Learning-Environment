@@ -3,6 +3,7 @@ target_sources(ale
         types.hpp
         action_queue.hpp
         result_staging.hpp
+        area_resize.hpp
         preprocessed_env.hpp
         preprocessed_env.cpp
         env_vectorizer.hpp
