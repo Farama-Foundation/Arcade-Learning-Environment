@@ -14,6 +14,69 @@ from gymnasium.core import ObsType
 from gymnasium.spaces import Box, Discrete
 from gymnasium.vector import AutoresetMode, VectorEnv
 
+# Default ``reset_pool_size`` per ROM, sized from the start states each ROM's
+# ``reset_game()`` produces (docs/vector-environment.md, "Reset Distribution";
+# measured with scripts/count-reset-states.py over 10,000 resets per ROM):
+#
+# * one start state: one snapshot per sub-environment reproduces it exactly, and
+#   the pool takes over after each sub-environment's first reset;
+# * 2-4 start states: 64 draws hold at least 99.7% of the distribution;
+# * 20-64 start states: 256 draws hold at least 97%;
+# * yars_revenge (214 start states): 1,024 draws hold 98%;
+# * elevator_action (thousands, not saturated): no practical pool reproduces it,
+#   so every reset is emulated.
+#
+# ROMs not listed fall back to DEFAULT_RESET_POOL_SIZE.
+DEFAULT_RESET_POOL_SIZE = 256
+_SINGLE_START_STATE_ROMS = frozenset("""
+    adventure air_raid alien amidar asterix asteroids atlantis atlantis2
+    backgammon bank_heist basic_math battle_zone berzerk blackjack bowling
+    breakout carnival casino centipede crazy_climber crossbow darkchambers
+    defender donkey_kong double_dunk earthworld enduro entombed et flag_capture
+    frogger galaxian gopher gravitar human_cannonball jamesbond journey_escape
+    kangaroo keystone_kapers king_kong klax koolaid krull kung_fu_master
+    laser_gates lost_luggage mario_bros miniature_golf montezuma_revenge mr_do
+    ms_pacman name_this_game othello pacman phoenix pitfall pong pooyan qbert
+    riverraid road_runner robotank skiing space_invaders star_gunner superman
+    tetris tic_tac_toe_3d trondead turmoil tutankham up_n_down venture
+    video_checkers video_chess video_cube video_pinball wizard_of_wor
+    word_zapper zaxxon
+    """.split())
+_RESET_POOL_SIZES = {
+    **dict.fromkeys(
+        """
+        beam_rider boxing chopper_command demon_attack fishing_derby freeway
+        frostbite hangman hero kaboom pitfall2 private_eye seaquest space_war tennis
+        time_pilot
+        """.split(),
+        64,
+    ),
+    **dict.fromkeys(
+        """
+        assault haunted_house ice_hockey sir_lancelot solaris surround
+        """.split(),
+        256,
+    ),
+    "yars_revenge": 1024,
+    "elevator_action": 0,
+}
+
+
+def default_reset_pool_size(game: str) -> int:
+    """The ``reset_pool_size`` ``AtariVectorEnv`` uses for ``game`` when none is given.
+
+    Args:
+        game: ROM name, in snake_case.
+
+    Returns:
+        1 for ROMs with a single start state (one snapshot per sub-environment),
+        the measured size for ROMs with several, and ``DEFAULT_RESET_POOL_SIZE``
+        for ROMs that were not measured.
+    """
+    if game in _SINGLE_START_STATE_ROMS:
+        return 1
+    return _RESET_POOL_SIZES.get(game, DEFAULT_RESET_POOL_SIZE)
+
 
 class AtariVectorEnv(VectorEnv):
     """Vector environment implementation for ALE."""
@@ -44,7 +107,7 @@ class AtariVectorEnv(VectorEnv):
         life_loss_info: bool = False,
         reward_clipping: bool = True,
         use_fire_reset: bool = True,
-        reset_pool_size: int = 256,
+        reset_pool_size: int | None = None,
         reset_pool_prefill: bool = False,
     ):
         """Constructor for vector environment.
@@ -74,10 +137,14 @@ class AtariVectorEnv(VectorEnv):
             use_fire_reset: If to take fire action on reset if available
             reset_pool_size: Total number of start states captured from real
                 ``reset_game()`` calls and drawn from on later episodes, split evenly
-                between the sub-environments (at least one each).
+                between the sub-environments (at least one each). 0 emulates every
+                reset. ``None`` picks a size for the ROM from how many start states
+                it has (see ``default_reset_pool_size``).
             reset_pool_prefill: If to fill each sub-environment's share of the pool
                 on the first ``reset()`` instead of over its first episodes.
         """
+        if reset_pool_size is None:
+            reset_pool_size = default_reset_pool_size(game)
         if reset_pool_size < 0:
             raise error.Error(
                 f"reset_pool_size must be non-negative, got {reset_pool_size}."

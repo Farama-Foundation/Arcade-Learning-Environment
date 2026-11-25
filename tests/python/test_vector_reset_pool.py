@@ -4,7 +4,13 @@ import hashlib
 
 import numpy as np
 import pytest
-from ale_py import AtariVectorEnv
+from ale_py import ALEInterface, AtariVectorEnv, roms
+from ale_py.vector_env import (
+    _RESET_POOL_SIZES,
+    _SINGLE_START_STATE_ROMS,
+    DEFAULT_RESET_POOL_SIZE,
+    default_reset_pool_size,
+)
 from gymnasium.error import Error
 from gymnasium.utils.env_checker import data_equivalence
 
@@ -178,3 +184,37 @@ def test_reseeding_clears_the_pool():
 def test_negative_pool_size_is_rejected():
     with pytest.raises(Error, match="reset_pool_size"):
         AtariVectorEnv("breakout", num_envs=1, reset_pool_size=-1)
+
+
+@pytest.mark.parametrize(
+    "game, size",
+    [
+        ("breakout", 1),
+        ("seaquest", 64),
+        ("solaris", 256),
+        ("yars_revenge", 1024),
+        ("elevator_action", 0),
+        ("not_a_measured_rom", DEFAULT_RESET_POOL_SIZE),
+    ],
+)
+def test_default_pool_size_per_rom(game, size):
+    assert default_reset_pool_size(game) == size
+
+
+def test_default_pool_sizes_cover_every_single_player_rom():
+    """Every ROM has a measured size, so a typo cannot silently give it the fallback."""
+    measured = _SINGLE_START_STATE_ROMS | _RESET_POOL_SIZES.keys()
+    assert not _SINGLE_START_STATE_ROMS & _RESET_POOL_SIZES.keys()
+    single_player = {
+        game
+        for game in roms.get_all_rom_ids()
+        if ALEInterface.isSupportedROM(roms.get_rom_path(game))
+    }
+    assert measured == single_player
+
+
+def test_default_pool_reproduces_single_start_state_rom():
+    """With the per-ROM default, a one-start-state ROM steps exactly as with no pool."""
+    pooled, _ = rollout_envs("breakout", 6, num_envs=2, reset_pool_size=None)
+    emulated, _ = rollout_envs("breakout", 6, num_envs=2, reset_pool_size=0)
+    assert pooled == emulated

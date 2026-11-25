@@ -109,7 +109,7 @@ envs = AtariVectorEnv(
     full_action_space: bool = False,          # Use full action space (not minimal)
     continuous: bool = False,                 # Whether to use continuous actions
     continuous_action_threshold: float = 0.5, # The threshold above which a continuous action triggers a discrete event
-    reset_pool_size: int = 256,               # Start states captured from real resets and replayed on later resets, split between the sub-environments (0 = emulate every reset)
+    reset_pool_size: int | None = None,       # Start states captured from real resets and replayed on later resets, split between the sub-environments (0 = emulate every reset, None = sized per ROM)
     reset_pool_prefill: bool = False,         # Capture each sub-environment's share of the pool on the first reset instead of over its first episodes
 
     # Performance options
@@ -246,7 +246,7 @@ Snapshots are not shared between sub-environments, so the total number of distin
 
 The pool size does not change the steady-state steps per second, because a draw costs the same however many snapshots there are.
 A larger pool gives more distinct start states, but each sub-environment emulates more resets before it reaches the steady state,
-and fewer sub-environments means a larger share each (with the default of 256, a single environment emulates its first 256 resets).
+and fewer sub-environments means a larger share each (with a pool of 256, a single environment emulates its first 256 resets).
 Each snapshot takes about 6 KB.
 
 A pool rather than a single snapshot is needed because a reset is not a pure function of the ROM:
@@ -254,9 +254,23 @@ the console's timer is redrawn on every reset, some cartridges re-randomise thei
 Every start state reachable through the pool is one a real reset produced.
 A seeded `reset(seed=...)` reloads the ROM and empties the pool.
 
+By default (`reset_pool_size=None`) the pool is sized for the ROM from how many distinct start states its resets produce,
+as returned by `ale_py.vector_env.default_reset_pool_size(game)`:
+
+| Start states | Default `reset_pool_size` | ROMs |
+|---|---:|---|
+| 1 | 1 (one per sub-environment) | 80 ROMs, including `breakout` and `pong` |
+| 2–4 | 64 | 16 ROMs, including `seaquest`, `freeway` and `space_war` |
+| 20–64 | 256 | `assault`, `haunted_house`, `ice_hockey`, `sir_lancelot`, `solaris`, `surround` |
+| 214 | 1,024 | `yars_revenge` |
+| thousands | 0 (every reset emulated) | `elevator_action` |
+
+Each size holds at least 97% of its ROMs' start-state distribution. A ROM with one start state needs only one snapshot, so the pool takes over after each sub-environment's first reset.
+`elevator_action`'s start state varies in the console timer alone, with thousands of values, so no practical pool reproduces it. ROMs that were not measured get 256.
+
 ```python
 # Capture all 256 start states (32 per sub-environment) on the first reset, so every later episode boundary costs the same
-envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_prefill=True)
+envs = AtariVectorEnv(game="solaris", num_envs=8, reset_pool_size=256, reset_pool_prefill=True)
 
 # Emulate every reset, as versions before the pool did
 envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_size=0)
