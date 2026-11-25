@@ -30,6 +30,9 @@ class StellaEnvironmentWrapper {
   // stella_environment.hpp.
  public:
   StellaEnvironmentWrapper(StellaEnvironment& environment);
+  // Emulates one frame of the given input, for game settings that drive a menu
+  // (setMode). Unlike StellaEnvironment::act, it ignores sticky actions and
+  // frame_skip, so the start state does not depend on the agent's configuration.
   reward_t act(Action player_a_action, Action player_b_action,
                float paddle_a_strength = 1.0, float paddle_b_strength = 1.0);
   void softReset();

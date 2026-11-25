@@ -162,6 +162,13 @@ void StellaEnvironment::noopIllegalActions(Action& player_a_action,
 
 reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
                                 float paddle_a_strength, float paddle_b_strength) {
+  return act(player_a_action, player_b_action, paddle_a_strength,
+             paddle_b_strength, m_repeat_action_probability, m_frame_skip);
+}
+
+reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
+                                float paddle_a_strength, float paddle_b_strength,
+                                float repeat_action_probability, size_t frame_skip) {
   // Total reward received as we repeat the action
   reward_t sum_rewards = 0;
 
@@ -169,14 +176,14 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action,
 
   // Apply the same action for a given number of times... note that act() will refuse to emulate
   //  past the terminal state
-  for (size_t i = 0; i < m_frame_skip; i++) {
-    // Stochastically drop actions, according to m_repeat_action_probability
-    if (rng.nextDouble() >= m_repeat_action_probability) {
+  for (size_t i = 0; i < frame_skip; i++) {
+    // Stochastically drop actions, according to repeat_action_probability
+    if (rng.nextDouble() >= repeat_action_probability) {
       m_player_a_action = player_a_action;
       m_paddle_a_strength = paddle_a_strength;
     }
     // @todo Possibly optimize by avoiding call to rand() when player B is "off" ?
-    if (rng.nextDouble() >= m_repeat_action_probability) {
+    if (rng.nextDouble() >= repeat_action_probability) {
       m_player_b_action = player_b_action;
       m_paddle_b_strength = paddle_b_strength;
     }
