@@ -265,3 +265,36 @@ envs = AtariVectorEnv(game="breakout", num_envs=8, reset_pool_size=0)
 `reset_pool_prefill` is off by default because it captures its start states from consecutive resets with no gameplay between them.
 On ROMs whose start state depends on the console RAM left over by the previous episode, it sees fewer distinct start states
 (for example, with 8 start states per sub-environment, `yars_revenge` reaches 8 distinct start states without prefill and 1 with it).
+
+#### Reset Distribution
+
+How many start states a pool needs depends on the ROM. The table counts the distinct start states `reset_game()` produced over 10,000 resets per ROM, at sticky-action probabilities 0 and 0.25; the counts were the same at both. Two start states count as distinct when a fixed 100-step action script played from them gives different frames or rewards. Every count is therefore a lower bound on what an agent can see.
+
+| ROM | Distinct start states | Depends on the previous episode | Probability held by a 256-state pool | ... by a 1,024-state pool |
+|---|---:|:-:|---:|---:|
+| `elevator_action` | 1,870, not saturated (about 9,700 estimated) | no | 0.56 | 0.76 |
+| `yars_revenge` | 214 | yes | 0.72 | 0.98 |
+| `sir_lancelot` | 64 | yes | 0.97 | 1.00 |
+| `solaris` | 62 | no | 0.98 | 1.00 |
+| `assault` | 58 | no | 0.98 | 1.00 |
+| `surround` | 39 | yes | 0.99 | 1.00 |
+| `ice_hockey` | 27 | yes | 0.99 | 1.00 |
+| `haunted_house` | 21 | yes | 0.99 | 1.00 |
+| `space_war` | 4 | no | 1.00 | 1.00 |
+| `hangman` | 3 | yes | 1.00 | 1.00 |
+
+Two start states (14 ROMs): `beam_rider`, `boxing`, `chopper_command`, `demon_attack`, `fishing_derby`, `freeway`, `frostbite`, `hero`, `kaboom`, `pitfall2`, `private_eye`, `seaquest`, `tennis` and `time_pilot`. Every other ROM (80) has a single start state, so any pool size reproduces it exactly. (`double_dunk` showed 14 start states at sticky 0.25 until #765 kept sticky actions out of its options menu.)
+
+The probability columns give the expected share of real resets whose start state a pool of that many draws contains. A pool reproduces `reset_game()` well when this share is close to 1, which with the default of 256 holds for every ROM except two:
+
+* `elevator_action` varies only in emulator state that is neither RAM nor screen (the console timer). It has thousands of start states, and about one reset in seven still produced a new one after 10,000 resets. Use `reset_pool_size=0` if you need its exact start-state distribution.
+* `yars_revenge` has 214 start states, and a pool of 1,024 holds 98% of them by probability.
+
+For ROMs that depend on the previous episode, the start state depends on how that episode was played. The pool captures its start states during the first episodes of training and keeps them for the rest of the run, so later episodes start from states the early policy left behind.
+
+To reproduce the table, or measure another ROM or configuration:
+
+```bash
+python scripts/count-reset-states.py elevator_action solaris yars_revenge --resets 1000 --jobs 8
+python scripts/count-reset-states.py --all --resets 10000 --jobs 22 --cache reset-cache --json resets.json
+```
