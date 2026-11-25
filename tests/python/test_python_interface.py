@@ -701,6 +701,39 @@ def test_rng_output_matches_std_mt19937(game, seed, system_seed):
     )
 
 
+@pytest.mark.parametrize(
+    "game, mode",
+    [("double_dunk", 0), ("berzerk", 1), ("video_cube", 200), ("adventure", 2)],
+)
+def test_set_mode_ignores_sticky_actions_and_frame_skip(game, mode):
+    """The menu input setMode sends on reset ignores sticky actions and frame_skip.
+
+    These are the four games whose setMode presses joystick inputs. When the inputs went
+    through act(), sticky actions dropped or repeated them and frame_skip held each for
+    several frames, so the start state depended on the agent's configuration: Double
+    Dunk's reset took between 6 frames fewer and 14 more at sticky 0.25, depending on
+    the seed.
+    """
+
+    def start_states(seed, repeat_action_probability=0.0, frame_skip=1):
+        ale = ale_py.ALEInterface()
+        ale.setInt("random_seed", seed)
+        ale.setFloat("repeat_action_probability", repeat_action_probability)
+        ale.setInt("frame_skip", frame_skip)
+        ale.loadROM(roms.get_rom_path(game))
+        ale.setMode(mode)
+        states = []
+        for _ in range(3):
+            ale.reset_game()
+            states.append(ale.getRAM().tobytes() + ale.getScreen().tobytes())
+        return states
+
+    for seed in range(5):
+        expected = start_states(seed)
+        assert start_states(seed, repeat_action_probability=0.25) == expected
+        assert start_states(seed, frame_skip=4) == expected
+
+
 @pytest.mark.skipif(ale_py.SDL_SUPPORT is False, reason="SDL is disabled")
 def test_display_screen(ale, tetris_rom_path):
     os.environ["SDL_VIDEODRIVER"] = "dummy"

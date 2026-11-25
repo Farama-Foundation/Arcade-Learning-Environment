@@ -137,6 +137,20 @@ class StellaEnvironment {
   std::unique_ptr<StellaEnvironmentWrapper> getWrapper();
 
  private:
+  // Game settings drive their menus (setMode) through the wrapper, which uses
+  // the act() below.
+  friend class StellaEnvironmentWrapper;
+
+  /** act() with an explicit repeat-action probability and frame skip. The
+   *  wrapper passes 0 and 1, so that menu input in setMode is neither dropped or
+   *  repeated by sticky actions nor held for frame_skip frames: the start state
+   *  does not depend on how the agent is configured. It draws from the
+   *  environment RNG exactly as act() does at frame_skip 1, so seeded runs with
+   *  the default frame_skip are unchanged. */
+  reward_t act(Action player_a_action, Action player_b_action,
+               float paddle_a_strength, float paddle_b_strength,
+               float repeat_action_probability, size_t frame_skip);
+
   /** This applies an action exactly one time step. Helper function to act(). */
   reward_t oneStepAct(Action player_a_action, Action player_b_action,
                       float paddle_a_strength, float paddle_b_strength);
